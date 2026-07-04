@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PLAYDISPLAY — студия интерактивных мультимедиа решений</title>
-  <meta name="description" content="Playdisplay с 2011 года создаёт мультимедийные проекты для общества и бизнеса по всему миру — от концепции до интерактивного пространства под ключ.">
+  <title>PlayDisplay — мы превращаем пространство в игру</title>
+  <meta name="description" content="PlayDisplay — студия интерактивного опыта. Музеи, стенды и шоурумы, в которые играют: идея, игровая механика, софт, железо и монтаж — одной командой. С 2011 года.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -17,211 +17,324 @@
     <div class="pl-logo">PLAY<span>DISPLAY</span></div>
     <div class="pl-bar"><i></i></div>
     <div class="pl-count">000 %</div>
+    <div class="pl-hint">&gt; loading playable space_</div>
   </div>
 
   <!-- Кастомный курсор -->
   <div class="cursor-dot"></div>
-  <div class="cursor-ring"><span class="cursor-label">смотреть</span></div>
+  <div class="cursor-ring"><span class="cursor-label">play</span></div>
 
   <!-- Зерно плёнки -->
   <div class="noise"></div>
 
-  <!-- Шапка -->
+  <!-- Шапка · G-01 -->
   <header class="site-header">
     <div class="container">
-      <a href="#hero" class="logo">PLAY<span>DISPLAY</span></a>
+      <a href="#start" class="logo">PLAY<span>DISPLAY</span></a>
       <nav class="main-nav">
-        <a href="#services"><span class="idx">01</span>что мы делаем</a>
-        <a href="#projects"><span class="idx">02</span>проекты</a>
-        <a href="#about"><span class="idx">03</span>о компании</a>
-        <a href="#contact"><span class="idx">04</span>контакты</a>
+        <a href="#start"><span class="idx">01</span>Start</a>
+        <a href="#work"><span class="idx">02</span>Work</a>
+        <a href="#studio"><span class="idx">03</span>Studio</a>
+        <a href="#contact"><span class="idx">04</span>Contact</a>
       </nav>
+      <a href="#contact" class="btn play-cta header-cta">▶ Сыграем?</a>
       <button class="burger" aria-label="Меню"><i></i><i></i><i></i></button>
     </div>
   </header>
 
   <!-- Мобильное меню -->
   <div class="mobile-menu">
-    <a href="#services"><span>01</span>что мы делаем</a>
-    <a href="#projects"><span>02</span>проекты</a>
-    <a href="#about"><span>03</span>о компании</a>
-    <a href="#contact"><span>04</span>контакты</a>
+    <a href="#start"><span>01</span>Start</a>
+    <a href="#work"><span>02</span>Work</a>
+    <a href="#studio"><span>03</span>Studio</a>
+    <a href="#contact"><span>04</span>Contact</a>
   </div>
 
   <main>
 
-    <!-- HERO -->
-    <section class="hero" id="hero">
+    <!-- ============ 1. START ============ -->
+
+    <!-- S-01 / S-02 / S-03 · Hero -->
+    <section class="hero" id="start">
       <canvas id="particles"></canvas>
       <div class="container hero-inner">
-        <div class="hero-tag" data-scramble="студия интерактивных мультимедиа решений">студия интерактивных мультимедиа решений</div>
+        <div class="hero-tag" data-scramble="студия интерактивного опыта · c 2011">студия интерактивного опыта · c 2011</div>
         <h1>
-          <span class="line"><span>Создаём</span></span>
-          <span class="line"><span class="stroke">интерактивные</span></span>
-          <span class="line"><span class="acid">миры_</span></span>
+          <span class="line"><span>Мы превращаем</span></span>
+          <span class="line"><span class="stroke">пространство</span></span>
+          <span class="line"><span class="acid">в игру._</span></span>
         </h1>
-        <p class="hero-sub">С 2011 года реализуем мультимедийные проекты для общества и бизнеса по всему миру. От концепции до интерактивного пространства под ключ.</p>
+        <p class="hero-sub">Музеи, стенды и шоурумы, в которые играют: идея, игровая механика, софт, железо и монтаж — одной командой.</p>
         <div class="hero-cta">
-          <a href="#projects" class="btn">&gt; смотреть проекты</a>
-          <a href="#contact" class="btn ghost">&gt; обсудить задачу</a>
+          <a href="https://vimeo.com/playdisplay5" target="_blank" rel="noopener" class="btn">▶ смотреть шоурил · 60 сек</a>
+          <a href="#work" class="btn ghost">&gt; кейсы</a>
         </div>
       </div>
       <div class="hero-meta">
         <span>PLAYDISPLAY © 2011—2026</span>
         <span class="scroll-hint">scroll <i></i></span>
-        <span>MOSCOW / ARTPLAY</span>
+        <span>WORLDWIDE / MOSCOW</span>
       </div>
     </section>
 
     <!-- Бегущая строка -->
     <div class="marquee" aria-hidden="true">
       <div class="marquee-track">
-        <span>#впечатляет</span><span>#обучает</span><span>#продаёт</span><span>интерактивные инсталляции</span><span>мультимедиа</span><span>дополненная реальность</span><span>голограммы</span>
-        <span>#впечатляет</span><span>#обучает</span><span>#продаёт</span><span>интерактивные инсталляции</span><span>мультимедиа</span><span>дополненная реальность</span><span>голограммы</span>
+        <span>экран — материал</span><span>пространство — уровень</span><span>зритель — игрок</span><span>press play</span><span>играбельные пространства</span><span>game-grade interaction</span>
+        <span>экран — материал</span><span>пространство — уровень</span><span>зритель — игрок</span><span>press play</span><span>играбельные пространства</span><span>game-grade interaction</span>
       </div>
     </div>
 
-    <!-- ЧТО МЫ ДЕЛАЕМ -->
-    <section class="section-pad" id="services">
+    <!-- S-04 · Манифест -->
+    <section class="section-pad" id="manifesto">
       <div class="container">
-        <div class="sec-head reveal">
-          <span class="num">/01</span>
-          <h2>Что мы делаем</h2>
-        </div>
-        <div class="services-grid reveal">
-          <div class="service">
-            <span class="s-icon">✦</span>
-            <span class="s-num">[ 001 ]</span>
-            <h3>Интерактивные инсталляции</h3>
-            <p>Уникальные разработки на стыке дизайна и технологий — для музеев, выставок, шоурумов и общественных пространств.</p>
-          </div>
-          <div class="service">
-            <span class="s-icon">✦</span>
-            <span class="s-num">[ 002 ]</span>
-            <h3>Мультимедиа пространства под ключ</h3>
-            <p>Полный цикл: концепция, дизайн, производство контента, инженерия, монтаж и запуск.</p>
-          </div>
-          <div class="service">
-            <span class="s-icon">✦</span>
-            <span class="s-num">[ 003 ]</span>
-            <h3>Дополненная реальность и голограммы</h3>
-            <p>AR-панорамы, голографические витрины и технологии, которые стирают границу между цифровым и физическим.</p>
-          </div>
-          <div class="service">
-            <span class="s-icon">✦</span>
-            <span class="s-num">[ 004 ]</span>
-            <h3>Выставочные стенды</h3>
-            <p>Интерактивные стенды, которые собирают очереди: от МИГ-35 до BMW X5.</p>
-          </div>
+        <div class="manifest">
+          <p class="m-line reveal">Игра — первый интерфейс человечества.</p>
+          <p class="m-line reveal">Лучший способ рассказать сложное — <em>дать в него поиграть.</em></p>
+          <p class="m-line reveal">Экран для нас — материал. Пространство — уровень. <em>Зритель — игрок.</em></p>
         </div>
 
-        <div class="stats reveal" style="margin-top:80px">
+        <!-- S-05 · Полоса цифр -->
+        <div class="stats reveal" style="margin-top:100px">
           <div class="stat">
-            <div class="value"><b data-count="15">0</b><sup>лет</sup></div>
-            <div class="label">на рынке с 2011 года</div>
+            <div class="value"><b data-count="2011">0</b></div>
+            <div class="label">строим играбельные пространства</div>
           </div>
           <div class="stat">
-            <div class="value"><b data-count="100">0</b><sup>+</sup></div>
-            <div class="label">реализованных инсталляций</div>
+            <div class="value"><b data-count="115">0</b></div>
+            <div class="label">тачскринов в одном музее</div>
           </div>
           <div class="stat">
-            <div class="value"><b data-count="3">0</b><sup>тв</sup></div>
-            <div class="label">Discovery, RT и Эксперт — о нас</div>
+            <div class="value"><b data-count="3">0</b><sup>нед</sup></div>
+            <div class="label">самый быстрый стенд под ключ</div>
           </div>
           <div class="stat">
-            <div class="value"><b data-count="360">0</b><sup>°</sup></div>
-            <div class="label">панорамы и полное погружение</div>
+            <div class="value">∞</div>
+            <div class="label">полный цикл — от идеи до эксплуатации</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ПРОЕКТЫ: 3D-ТУННЕЛЬ -->
-    <section id="projects" class="projects-sec">
+    <!-- S-06 · Как мы работаем -->
+    <section class="section-pad alt-bg" id="how">
+      <div class="container">
+        <div class="sec-head reveal">
+          <span class="num">/01</span>
+          <h2>Как мы работаем</h2>
+        </div>
+        <div class="services-grid reveal steps-grid">
+          <div class="service">
+            <span class="s-icon">▶</span>
+            <span class="s-num">[ 01 ]</span>
+            <h3>Механика</h3>
+            <p>Придумываем, во что здесь будут играть: цель, правило, награда.</p>
+          </div>
+          <div class="service">
+            <span class="s-icon">▶</span>
+            <span class="s-num">[ 02 ]</span>
+            <h3>Производство</h3>
+            <p>Контент, софт, железо, конструкции — своя разработка.</p>
+          </div>
+          <div class="service">
+            <span class="s-icon">▶</span>
+            <span class="s-num">[ 03 ]</span>
+            <h3>Запуск</h3>
+            <p>Монтаж, настройка и поддержка: инсталляция работает каждый день, без инженера за кулисами.</p>
+          </div>
+        </div>
+
+        <!-- S-07 · Доверие -->
+        <div class="trust reveal">
+          <p>Наши работы показывал канал Discovery. Среди клиентов — BMW, аэропорты, национальные музеи и промышленные корпорации.</p>
+          <img src="assets/CLIENTS2.png" alt="Клиенты PlayDisplay" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 2. WORK ============ -->
+
+    <section class="section-pad" id="work">
       <div class="container">
         <div class="sec-head reveal">
           <span class="num">/02</span>
-          <h2>Проекты</h2>
+          <h2>Не смотрите. Играйте.</h2>
+        </div>
+        <p class="work-intro reveal">Выберите, что нужно вашему пространству:</p>
+
+        <!-- W-02 · Фильтр по задачам -->
+        <div class="work-filter reveal">
+          <button class="f-btn active" data-f="all">все</button>
+          <button class="f-btn" data-f="wow">Удивить</button>
+          <button class="f-btn" data-f="tell">Рассказать</button>
+          <button class="f-btn" data-f="sell">Продать сложное</button>
+        </div>
+
+        <div class="cases-grid">
+
+          <!-- W-C1 -->
+          <a class="case reveal" data-cat="tell" href="https://playdisplay.com/work/vdnh_space/" target="_blank" rel="noopener" style="--img:url('assets/space_st-960x960.jpg')">
+            <div class="img-wrap"><img src="assets/space_st-960x960.jpg" alt="Space Museum" loading="lazy"></div>
+            <div class="case-body">
+              <span class="case-task">// рассказать</span>
+              <h3>Space Museum</h3>
+              <div class="case-chips"><span>115 тачскринов</span><span>46 3D-моделей</span><span>1 система</span></div>
+              <p>Вся история космонавтики — в единой играбельной системе: интерактивные 3D-модели кораблей и станций, единый визуальный язык, разработанный специально для музея.</p>
+              <p class="case-punch">Посетитель не читает экспозицию — он исследует её.</p>
+            </div>
+          </a>
+
+          <!-- W-C2 -->
+          <a class="case reveal" data-cat="sell" href="https://playdisplay.com/work/bmwx5/" target="_blank" rel="noopener" style="--img:url('assets/bmw_start.jpg')">
+            <div class="img-wrap"><img src="assets/bmw_start.jpg" alt="BMW X5 Configurator" loading="lazy"></div>
+            <div class="case-body">
+              <span class="case-task">// продать сложное</span>
+              <h3>BMW X5 Configurator</h3>
+              <div class="case-chips"><span>VR</span><span>тачскрин</span><span>голограмма</span></div>
+              <p>Кастомизатор автомобиля для офиса продаж. Покупатель собирает свой X5 — диски, цвет, отделку салона — и смотрит его в футуристическом гараже или на пустынном шоссе, глазами водителя.</p>
+              <p class="case-punch">Машину, которую собрал сам, хочется купить.</p>
+            </div>
+          </a>
+
+          <!-- W-C3 -->
+          <a class="case reveal" data-cat="wow" href="https://playdisplay.com/work/mig2019/" target="_blank" rel="noopener" style="--img:url('assets/mig_booth-960x960.jpg')">
+            <div class="img-wrap"><img src="assets/mig_booth-960x960.jpg" alt="Fighter Jet Stage" loading="lazy"></div>
+            <div class="case-body">
+              <span class="case-task">// удивить</span>
+              <h3>Fighter Jet Stage</h3>
+              <div class="case-chips"><span>15-метровый LED</span><span>3D-контент</span><span>дизайн ливреи</span></div>
+              <p>Сцена для истребителя на международном авиасалоне: подиум, LED-экран и 3D-контент, раскрывающий характеристики машины. Бонус-уровень: дизайн ливреи самого самолёта.</p>
+              <p class="case-punch">Самолёт и так звезда — мы построили ему сцену.</p>
+            </div>
+          </a>
+
+          <!-- W-C4 -->
+          <a class="case reveal" data-cat="sell" href="https://playdisplay.com/work/sinara/" target="_blank" rel="noopener" style="--img:url('assets/stm_cover2.jpg')">
+            <div class="img-wrap"><img src="assets/stm_cover2.jpg" alt="Industrial Expo" loading="lazy"></div>
+            <div class="case-body">
+              <span class="case-task">// продать сложное</span>
+              <h3>Industrial Expo</h3>
+              <div class="case-chips"><span>голограммы</span><span>интерактивные карты</span><span>24/7</span></div>
+              <p>Экспозиции для машиностроительных корпораций: голограммы двигателей, интерактивные карты производств, инсталляции, объясняющие технологию без слов.</p>
+              <p class="case-punch">Сложный продукт продаёт тот, кто дал его потрогать.</p>
+            </div>
+          </a>
+
+          <!-- W-C5 -->
+          <a class="case reveal" data-cat="wow" href="https://playdisplay.com/work/urban-forum-2018/" target="_blank" rel="noopener" style="--img:url('assets/GERB_loop.webp')">
+            <div class="img-wrap"><img src="assets/GERB_loop.webp" alt="City Forum Installation" loading="lazy"></div>
+            <div class="case-body">
+              <span class="case-task">// удивить</span>
+              <h3>City Forum Installation</h3>
+              <div class="case-chips"><span>живая графика</span><span>реакция на зрителя</span><span>городские данные</span></div>
+              <p>Интерактивная инсталляция для главного городского форума: живая графика, реагирующая на посетителей. Городские данные превращаются в образ, с которым выстраивается очередь сфотографироваться.</p>
+              <p class="case-punch">Очередь к инсталляции — лучшая метрика.</p>
+            </div>
+          </a>
+
+          <!-- W-C6 -->
+          <a class="case reveal" data-cat="tell" href="https://playdisplay.com/work/stallingrad/" target="_blank" rel="noopener" style="--img:url('assets/stalingrad.jpg')">
+            <div class="img-wrap"><img src="assets/stalingrad.jpg" alt="Memorial Installation" loading="lazy"></div>
+            <div class="case-body">
+              <span class="case-task">// рассказать</span>
+              <h3>Memorial Installation</h3>
+              <div class="case-chips"><span>свет</span><span>звук</span><span>интерактив</span></div>
+              <p>Мультимедийная инсталляция памяти: история, которую посетитель проживает, а не читает. Свет, звук и интерактив создают тихое, сильное пространство.</p>
+              <p class="case-punch">Игра умеет говорить и о серьёзном.</p>
+            </div>
+          </a>
+
         </div>
       </div>
+    </section>
+
+    <!-- Бонус-уровень: 3D-туннель по архиву -->
+    <section class="projects-sec" id="bonus">
+      <div class="container">
+        <div class="sec-head reveal">
+          <span class="num">/&#9733;</span>
+          <h2>Бонус-уровень</h2>
+        </div>
+        <p class="work-intro reveal">Полёт по архиву студии — 15 проектов. Скролл = газ.</p>
+      </div>
       <div class="tunnel-stage">
-        <div class="hud-hint">// скрольте — вы летите сквозь проекты</div>
+        <div class="hud-hint">// скролл = полёт · клик = открыть проект</div>
         <div class="tunnel">
           <div class="t-grid floor"></div>
           <div class="t-grid ceil"></div>
           <div class="tunnel-world">
 
-                      <a class="t-card" data-title="Промышленность РФ" href="https://playdisplay.com/work/%d1%81%d1%83%d0%b4%d0%be%d1%81%d1%82%d1%80%d0%be%d0%b5%d0%bd%d0%b8%d0%b5/" target="_blank" rel="noopener" style="--img:url('assets/site_ships_23_2-960x960.png')">
+            <a class="t-card" data-title="Промышленность РФ" href="https://playdisplay.com/work/%d1%81%d1%83%d0%b4%d0%be%d1%81%d1%82%d1%80%d0%be%d0%b5%d0%bd%d0%b8%d0%b5/" target="_blank" rel="noopener" style="--img:url('assets/site_ships_23_2-960x960.png')">
               <div class="img-wrap"><img src="assets/site_ships_23_2-960x960.png" alt="Промышленность РФ" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>Промышленность РФ</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Аэропорты России" href="https://playdisplay.com/work/%d0%b0%d1%8d%d1%80%d0%be%d0%bf%d0%be%d1%80%d1%82%d1%8b-%d1%80%d0%be%d1%81%d1%81%d0%b8%d0%b8/" target="_blank" rel="noopener" style="--img:url('assets/site_airports_23-960x960.png')">
+            <a class="t-card" data-title="Аэропорты России" href="https://playdisplay.com/work/%d0%b0%d1%8d%d1%80%d0%be%d0%bf%d0%be%d1%80%d1%82%d1%8b-%d1%80%d0%be%d1%81%d1%81%d0%b8%d0%b8/" target="_blank" rel="noopener" style="--img:url('assets/site_airports_23-960x960.png')">
               <div class="img-wrap"><img src="assets/site_airports_23-960x960.png" alt="Аэропорты России" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>Аэропорты России</h3></div>
             </a>
 
-                      <a class="t-card" data-title="ОДК ОАК" href="https://playdisplay.com/work/%d0%be%d0%b4%d0%ba-%d0%be%d0%b0%d0%ba/" target="_blank" rel="noopener" style="--img:url('assets/site_odk_21_2-960x960.png')">
+            <a class="t-card" data-title="ОДК ОАК" href="https://playdisplay.com/work/%d0%be%d0%b4%d0%ba-%d0%be%d0%b0%d0%ba/" target="_blank" rel="noopener" style="--img:url('assets/site_odk_21_2-960x960.png')">
               <div class="img-wrap"><img src="assets/site_odk_21_2-960x960.png" alt="ОДК ОАК" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>ОДК ОАК</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Прорыв" href="https://playdisplay.com/work/%d1%80%d0%be%d1%81%d1%82%d0%b5%d1%85-%d1%8d%d0%ba%d1%81%d0%bf%d0%be/" target="_blank" rel="noopener" style="--img:url('assets/site_ra_24-1-960x960.png')">
+            <a class="t-card" data-title="Прорыв" href="https://playdisplay.com/work/%d1%80%d0%be%d1%81%d1%82%d0%b5%d1%85-%d1%8d%d0%ba%d1%81%d0%bf%d0%be/" target="_blank" rel="noopener" style="--img:url('assets/site_ra_24-1-960x960.png')">
               <div class="img-wrap"><img src="assets/site_ra_24-1-960x960.png" alt="Прорыв" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>Прорыв</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Ростех-Экспо" href="https://playdisplay.com/work/rostec/" target="_blank" rel="noopener" style="--img:url('assets/01_logo_v03-960x960.jpg')">
+            <a class="t-card" data-title="Ростех-Экспо" href="https://playdisplay.com/work/rostec/" target="_blank" rel="noopener" style="--img:url('assets/01_logo_v03-960x960.jpg')">
               <div class="img-wrap"><img src="assets/01_logo_v03-960x960.jpg" alt="Ростех-Экспо" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>Ростех-Экспо</h3></div>
             </a>
 
-                      <a class="t-card" data-title="PTK Group" href="https://playdisplay.com/work/ptk-group/" target="_blank" rel="noopener" style="--img:url('assets/ptk_start_2.webp')">
+            <a class="t-card" data-title="PTK Group" href="https://playdisplay.com/work/ptk-group/" target="_blank" rel="noopener" style="--img:url('assets/ptk_start_2.webp')">
               <div class="img-wrap"><img src="assets/ptk_start_2.webp" alt="PTK Group" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>PTK Group</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Стенд МИГ-35" href="https://playdisplay.com/work/mig2019/" target="_blank" rel="noopener" style="--img:url('assets/mig_booth-960x960.jpg')">
+            <a class="t-card" data-title="Стенд МИГ-35" href="https://playdisplay.com/work/mig2019/" target="_blank" rel="noopener" style="--img:url('assets/mig_booth-960x960.jpg')">
               <div class="img-wrap"><img src="assets/mig_booth-960x960.jpg" alt="Стенд МИГ-35" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">выставки</span><h3>Стенд МИГ-35</h3></div>
             </a>
 
-                      <a class="t-card" data-title="BMW X5" href="https://playdisplay.com/work/bmwx5/" target="_blank" rel="noopener" style="--img:url('assets/bmw_start.jpg')">
+            <a class="t-card" data-title="BMW X5" href="https://playdisplay.com/work/bmwx5/" target="_blank" rel="noopener" style="--img:url('assets/bmw_start.jpg')">
               <div class="img-wrap"><img src="assets/bmw_start.jpg" alt="BMW X5" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">выставки / инсталляция</span><h3>BMW X5</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Панорама 360" href="https://playdisplay.com/work/pano360/" target="_blank" rel="noopener" style="--img:url('assets/pano_bg-960x536.jpg')">
+            <a class="t-card" data-title="Панорама 360" href="https://playdisplay.com/work/pano360/" target="_blank" rel="noopener" style="--img:url('assets/pano_bg-960x536.jpg')">
               <div class="img-wrap"><img src="assets/pano_bg-960x536.jpg" alt="Панорама 360" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">дополненная реальность</span><h3>Панорама 360</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Urban Forum 2018" href="https://playdisplay.com/work/urban-forum-2018/" target="_blank" rel="noopener" style="--img:url('assets/GERB_loop.webp')">
+            <a class="t-card" data-title="Urban Forum 2018" href="https://playdisplay.com/work/urban-forum-2018/" target="_blank" rel="noopener" style="--img:url('assets/GERB_loop.webp')">
               <div class="img-wrap"><img src="assets/GERB_loop.webp" alt="Urban Forum 2018" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>Urban Forum 2018</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Пароль победы «Сталинград»" href="https://playdisplay.com/work/stallingrad/" target="_blank" rel="noopener" style="--img:url('assets/stalingrad.jpg')">
+            <a class="t-card" data-title="Пароль победы «Сталинград»" href="https://playdisplay.com/work/stallingrad/" target="_blank" rel="noopener" style="--img:url('assets/stalingrad.jpg')">
               <div class="img-wrap"><img src="assets/stalingrad.jpg" alt="Пароль победы «Сталинград»" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>Пароль победы «Сталинград»</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Сухой порт COALCO" href="https://playdisplay.com/work/coalco/" target="_blank" rel="noopener" style="--img:url('assets/coalco.jpg')">
+            <a class="t-card" data-title="Сухой порт COALCO" href="https://playdisplay.com/work/coalco/" target="_blank" rel="noopener" style="--img:url('assets/coalco.jpg')">
               <div class="img-wrap"><img src="assets/coalco.jpg" alt="Сухой порт COALCO" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>Сухой порт COALCO</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Синара ТМ" href="https://playdisplay.com/work/sinara/" target="_blank" rel="noopener" style="--img:url('assets/stm_cover2.jpg')">
+            <a class="t-card" data-title="Синара ТМ" href="https://playdisplay.com/work/sinara/" target="_blank" rel="noopener" style="--img:url('assets/stm_cover2.jpg')">
               <div class="img-wrap"><img src="assets/stm_cover2.jpg" alt="Синара Транспортные Машины" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">голограмма / музей</span><h3>Синара ТМ</h3></div>
             </a>
 
-                      <a class="t-card" data-title="ВДНХ Космос" href="https://playdisplay.com/work/vdnh_space/" target="_blank" rel="noopener" style="--img:url('assets/space_st-960x960.jpg')">
+            <a class="t-card" data-title="ВДНХ Космос" href="https://playdisplay.com/work/vdnh_space/" target="_blank" rel="noopener" style="--img:url('assets/space_st-960x960.jpg')">
               <div class="img-wrap"><img src="assets/space_st-960x960.jpg" alt="ВДНХ Космос" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">музей / инсталляция</span><h3>ВДНХ Космос</h3></div>
             </a>
 
-                      <a class="t-card" data-title="Центр «Космонавтика и авиация»" href="https://playdisplay.com/work/vdnh_space-2/" target="_blank" rel="noopener" style="--img:url('assets/space_sm2-960x960.jpg')">
+            <a class="t-card" data-title="Центр «Космонавтика и авиация»" href="https://playdisplay.com/work/vdnh_space-2/" target="_blank" rel="noopener" style="--img:url('assets/space_sm2-960x960.jpg')">
               <div class="img-wrap"><img src="assets/space_sm2-960x960.jpg" alt="Центр «Космонавтика и авиация»" loading="lazy"></div>
               <div class="t-meta"><span class="t-cat">инсталляция</span><h3>Центр «Космонавтика и авиация»</h3></div>
             </a>
@@ -234,55 +347,70 @@
             <span class="hud-title">Промышленность РФ</span>
           </div>
           <div class="projects-progress"><i></i></div>
-          <a href="https://playdisplay.com/projects/" target="_blank" rel="noopener" class="btn ghost">&gt; все проекты</a>
+          <a href="https://playdisplay.com/projects/" target="_blank" rel="noopener" class="btn ghost">&gt; весь архив</a>
         </div>
       </div>
     </section>
 
-    <!-- О КОМПАНИИ -->
-    <section class="section-pad" id="about">
+    <!-- ============ 3. STUDIO ============ -->
+
+    <section class="section-pad alt-bg" id="studio">
       <div class="container">
         <div class="sec-head reveal">
           <span class="num">/03</span>
-          <h2>О компании</h2>
+          <h2>Studio</h2>
         </div>
+
+        <!-- ST-01 · Манифест полный -->
         <div class="about-grid">
           <div class="about-copy reveal">
-            <p class="big">Playdisplay — это захватывающий пользовательский опыт, который <em>впечатляет, обучает и продаёт</em>.</p>
-            <p>Компания Playdisplay с 2011 года реализует мультимедийные проекты для общества и бизнеса по всему миру — от концепции до интерактивного пространства под ключ. Мы создаём удивительные вещи на стыке дизайна и технологий.</p>
-            <div class="hashtags">
-              <span>#впечатляет</span>
-              <span>#обучает</span>
-              <span>#продаёт</span>
+            <p class="big">Игра — первый интерфейс человечества. Ребёнок познаёт мир игрой раньше, чем словами. Лучший способ рассказать сложное — <em>дать в него поиграть.</em></p>
+            <p>Поэтому мы строим пространства как игры: с правилами, понятными без инструкций; с открытиями, которые зритель совершает сам; с глубиной, которая раскрывается тем, кто остался подольше.</p>
+            <p style="margin-top:16px">Экран для нас — материал. Пространство — уровень. Зритель — игрок.</p>
+            <p class="press-play">Нажмите Play.</p>
+
+            <!-- ST-02 · Принцип 5/5 -->
+            <div class="rule55 reveal">
+              <div class="r55">
+                <div class="r55-num">5<i>сек</i></div>
+                <p>ребёнок понимает, что делать</p>
+              </div>
+              <div class="r55">
+                <div class="r55-num">5<i>мин</i></div>
+                <p>эксперт находит глубину</p>
+              </div>
+              <p class="r55-note">Правило студии: один объект — для всех зрителей сразу.</p>
             </div>
-            <div class="clients-strip">
-              <div class="cs-label">// наши клиенты</div>
-              <img src="assets/CLIENTS2.png" alt="Клиенты Playdisplay" loading="lazy">
-            </div>
+
+            <!-- ST-03 · Как устроена студия -->
+            <p style="margin-top:40px">PlayDisplay — распределённая студия. Креативное ядро ведёт каждый проект от идеи до запуска, а под задачу собирается точная команда: геймдизайнеры, 3D-художники, разработчики, инженеры.</p>
+            <p style="margin-top:16px">Никакого раздутого штата — только те, кто нужен вашему проекту.</p>
           </div>
+
+          <!-- ST-04 · Основатель -->
           <aside class="founder reveal">
             <img src="assets/pult_preview_cam_01_crop.png" alt="Андрей Судариков" loading="lazy">
             <h3>Андрей Судариков</h3>
-            <div class="role">Основатель, креативный директор</div>
-            <p>Стаж в сфере дизайна с 1999 года. Графический, промышленный, мультимедиа дизайн. Московская школа управления Сколково.</p>
+            <div class="role">Основатель и креативный директор</div>
+            <p>В дизайне с 1999 года: графический, промышленный, мультимедиа. Выпускник Московской школы управления «Сколково». Лично ведёт каждый проект студии.</p>
           </aside>
         </div>
       </div>
     </section>
 
-    <!-- СМИ -->
+    <!-- ST-05 · Пресса -->
     <section class="section-pad" style="padding-top:0">
       <div class="container">
         <div class="sec-head reveal">
           <span class="num">/04</span>
-          <h2>СМИ о нас</h2>
+          <h2>Пресса</h2>
         </div>
         <div class="media-grid reveal">
           <a class="media-card" href="https://www.youtube.com/watch?v=aYUlL2LoWWw" target="_blank" rel="noopener">
             <span class="m-year">2018</span>
             <div class="m-play">▶</div>
-            <h3>Discovery</h3>
-            <p>Передача «Ручная работа» о технологиях Playdisplay.</p>
+            <h3>Discovery Channel</h3>
+            <p>Передача «Ручная работа» о технологиях PlayDisplay.</p>
           </a>
           <a class="media-card" href="https://www.youtube.com/watch?v=kC11pYZpEys" target="_blank" rel="noopener">
             <span class="m-year">2015</span>
@@ -294,51 +422,50 @@
             <span class="m-year">2013</span>
             <div class="m-play">▶</div>
             <h3>Телеканал Эксперт</h3>
-            <p>Передача «Новый бизнес» о студии Playdisplay.</p>
+            <p>Передача «Новый бизнес» о студии.</p>
           </a>
+        </div>
+
+        <!-- S-08 · Финальный CTA -->
+        <div class="final-cta reveal">
+          <h2>Есть пространство?<br><span class="stroke">Сделаем из него игру.</span></h2>
+          <a href="#contact" class="btn play-cta">▶ Сыграем?</a>
         </div>
       </div>
     </section>
 
-    <!-- КОНТАКТЫ -->
+    <!-- ============ 4. CONTACT ============ -->
+
     <section class="section-pad contact-sec" id="contact">
       <div class="container">
-        <h2 class="contact-huge reveal">Обсудим<br><span class="stroke">ваш проект?_</span></h2>
-        <div class="contact-grid">
-          <div class="contact-info reveal">
-            <div class="ci-block">
-              <div class="ci-label">// адрес</div>
-              <div class="ci-value">Москва, АРТПЛЕЙ<br>Нижняя Сыромятническая 11 / Б</div>
-            </div>
-            <div class="ci-block">
-              <div class="ci-label">// e-mail</div>
-              <a class="ci-value" href="mailto:info@playdisplay.com">info@playdisplay.com</a>
-            </div>
-            <div class="ci-block">
-              <div class="ci-label">// соцсети</div>
-              <div class="ci-value" style="display:flex;gap:20px;font-size:.95rem">
-                <a href="https://vimeo.com/playdisplay5" target="_blank" rel="noopener">Vimeo</a>
-                <a href="https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ" target="_blank" rel="noopener">YouTube</a>
-                <a href="https://www.instagram.com/play.display/" target="_blank" rel="noopener">Instagram</a>
-              </div>
-            </div>
+        <h2 class="contact-huge reveal">Сыграем<span class="stroke">?_</span></h2>
+        <p class="work-intro reveal">Расскажите о вашем пространстве — вернёмся с идеей игры за несколько дней.</p>
+
+        <!-- C-03 · Каналы: WhatsApp — кнопка №1 -->
+        <div class="channels reveal">
+          <!-- TODO: заменить номер WhatsApp на реальный -->
+          <a class="btn play-cta ch-main" href="https://wa.me/70000000000" target="_blank" rel="noopener">▶ Написать в WhatsApp</a>
+          <a class="btn ghost" href="mailto:info@playdisplay.com">info@playdisplay.com</a>
+          <a class="btn ghost" href="https://www.instagram.com/play.display/" target="_blank" rel="noopener">Instagram</a>
+          <a class="btn ghost" href="https://vimeo.com/playdisplay5" target="_blank" rel="noopener">Vimeo</a>
+        </div>
+        <p class="langs reveal">Говорим по-русски, по-английски и по-португальски.</p>
+
+        <div class="contact-info reveal" style="margin-top:56px">
+          <div class="ci-block">
+            <div class="ci-label">// адрес</div>
+            <div class="ci-value">Москва, АРТПЛЕЙ · Нижняя Сыромятническая 11 / Б</div>
           </div>
-          <form class="contact-form reveal">
-            <div class="field"><input type="text" name="name" placeholder="&gt; ваше имя *" required></div>
-            <div class="field"><input type="email" name="email" placeholder="&gt; ваш e-mail *" required></div>
-            <div class="field"><input type="text" name="subject" placeholder="&gt; тема"></div>
-            <div class="field"><textarea name="message" placeholder="&gt; расскажите о задаче"></textarea></div>
-            <button type="submit" class="btn">&gt; отправить запрос</button>
-          </form>
         </div>
       </div>
     </section>
 
   </main>
 
+  <!-- G-03 · Футер -->
   <footer class="site-footer">
     <div class="container">
-      <span>© 2011—2026 PLAYDISPLAY</span>
+      <span>PlayDisplay — студия интерактивного опыта. Работаем по всему миру с 2011 года.</span>
       <div class="socials">
         <a href="https://vimeo.com/playdisplay5" target="_blank" rel="noopener">VM</a>
         <a href="https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ" target="_blank" rel="noopener">YT</a>

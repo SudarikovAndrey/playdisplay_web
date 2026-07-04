@@ -409,6 +409,26 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
+/* ---------- 13b. Work: фильтр кейсов по задачам ---------- */
+(function workFilter() {
+  const btns = document.querySelectorAll('.f-btn');
+  const cases = document.querySelectorAll('.case');
+  if (!btns.length) return;
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.f;
+      cases.forEach(c => {
+        const show = f === 'all' || c.dataset.cat === f;
+        c.classList.toggle('hidden', !show);
+        if (show) gsap.fromTo(c, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .5, ease: 'power2.out' });
+      });
+      ScrollTrigger.refresh(); // высота сетки изменилась — пересчёт пина туннеля
+    });
+  });
+})();
+
 /* ---------- 14. Форма ---------- */
 const form = document.querySelector('.contact-form');
 if (form) {
