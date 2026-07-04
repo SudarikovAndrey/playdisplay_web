@@ -36,14 +36,20 @@ const isMobile = () => innerWidth <= 960;
 
 /* ---------- 2. Появление hero ---------- */
 function heroIntro() {
-  gsap.timeline()
-    .from('.hero-tag', { x: -40, opacity: 0, duration: .6, ease: 'power3.out' })
-    .from('.hero h1 .line > span', {
+  const tl = gsap.timeline()
+    .from('.hero-tag', { x: -40, opacity: 0, duration: .6, ease: 'power3.out' });
+
+  if (document.body.classList.contains('led-on')) {
+    tl.add(() => ledHero.ignite(), '-=.2'); // LED-стена зажигается волной
+  } else {
+    tl.from('.hero h1 .line > span', {
       yPercent: 110, duration: .9, stagger: .12, ease: 'power4.out'
-    }, '-=.3')
-    .from('.hero-sub, .hero-cta', {
+    }, '-=.3');
+  }
+
+  tl.from('.hero-sub, .hero-cta', {
       y: 30, opacity: 0, stagger: .15, duration: .7, ease: 'power3.out'
-    }, '-=.5')
+    }, '-=.3')
     .from('.hero-meta', { opacity: 0, duration: .8 }, '-=.3');
 
   document.querySelectorAll('[data-scramble]').forEach((el, i) => {
@@ -52,13 +58,16 @@ function heroIntro() {
 }
 
 /* ---------- 3. Эффект расшифровки текста ---------- */
-function scramble(el) {
+function scramble(el, text) {
   const chars = '!<>-_\\/[]{}—=+*^?#01';
-  const original = el.dataset.scramble || el.textContent;
+  const original = text || el.dataset.scramble || el.textContent;
+  // токен отменяет предыдущий незавершённый scramble на этом же элементе
+  const token = (el._scrToken = (el._scrToken || 0) + 1);
   let frame = 0;
   const total = original.length * 3;
 
   const update = () => {
+    if (el._scrToken !== token) return; // запущен новый — выходим
     let out = '';
     for (let i = 0; i < original.length; i++) {
       if (i < frame / 3) out += original[i];
@@ -98,80 +107,109 @@ function scramble(el) {
   });
 })();
 
-/* ---------- 5. Частицы в hero ---------- */
-(function particles() {
+/* ---------- 5. LED-стена в hero: заголовок из светящихся пикселей ---------- */
+const ledHero = (function () {
   const canvas = document.getElementById('particles');
-  if (!canvas) return;
+  if (!canvas) return null;
   const ctx = canvas.getContext('2d');
-  let W, H, pts = [];
+  const hero = canvas.parentElement;
+  const h1 = hero.querySelector('h1');
   const mouse = { x: -9999, y: -9999 };
-  const N = isTouch ? 45 : 90;
+  let dots = [], W = 0, H = 0, R = 3;
+  const state = { ignition: isTouch ? 1 : 0 };
 
-  const resize = () => {
-    W = canvas.width = canvas.offsetWidth;
-    H = canvas.height = canvas.offsetHeight;
-  };
-  resize();
-  addEventListener('resize', resize);
+  // цвета строк: белый / светло-зелёный / кислотный
+  const LINE_COLORS = [[242, 255, 245], [157, 255, 184], [62, 224, 110]];
 
-  for (let i = 0; i < N; i++) {
-    pts.push({
-      x: Math.random() * innerWidth,
-      y: Math.random() * innerHeight,
-      vx: (Math.random() - .5) * .4,
-      vy: (Math.random() - .5) * .4,
-      r: Math.random() * 1.6 + .6
+  function build() {
+    W = canvas.width = hero.offsetWidth;
+    H = canvas.height = hero.offsetHeight;
+    const GAP = Math.max(7, Math.round(W / 150));
+    R = GAP * 0.34;
+
+    // рисуем текст h1 в offscreen-канвас и сэмплируем в LED-точки
+    const heroRect = hero.getBoundingClientRect();
+    const spans = h1.querySelectorAll('.line > span');
+    const off = document.createElement('canvas');
+    off.width = W; off.height = H;
+    const octx = off.getContext('2d', { willReadFrequently: true });
+    const meta = [];
+
+    spans.forEach((sp, i) => {
+      const r = sp.getBoundingClientRect();
+      const fs = r.height * 0.82;
+      octx.font = `800 ${fs}px Unbounded, sans-serif`;
+      octx.textBaseline = 'middle';
+      octx.fillStyle = '#fff';
+      octx.fillText(sp.textContent, r.left - heroRect.left, r.top - heroRect.top + r.height / 2);
+      meta.push({
+        top: r.top - heroRect.top,
+        bottom: r.bottom - heroRect.top,
+        color: LINE_COLORS[i] || LINE_COLORS[2]
+      });
     });
+
+    const data = octx.getImageData(0, 0, W, H).data;
+    dots = [];
+    for (let gy = GAP / 2; gy < H; gy += GAP) {
+      for (let gx = GAP / 2; gx < W; gx += GAP) {
+        const a = data[(Math.floor(gy) * W + Math.floor(gx)) * 4 + 3];
+        if (a > 100) {
+          const m = meta.find(m => gy >= m.top && gy <= m.bottom) || meta[meta.length - 1];
+          dots.push({ x: gx, y: gy, c: m.color, text: true, b: 0, fl: 1 + Math.random() * 3 });
+        } else if (Math.random() < 0.05) {
+          // редкие фоновые пиксели — LED-стена дышит
+          dots.push({ x: gx, y: gy, c: [62, 224, 110], text: false, b: 0, fl: 1 + Math.random() * 3 });
+        }
+      }
+    }
   }
 
-  canvas.parentElement.addEventListener('mousemove', e => {
+  hero.addEventListener('mousemove', e => {
     const b = canvas.getBoundingClientRect();
     mouse.x = e.clientX - b.left;
     mouse.y = e.clientY - b.top;
   });
-  canvas.parentElement.addEventListener('mouseleave', () => {
-    mouse.x = -9999; mouse.y = -9999;
-  });
+  hero.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
 
+  let visible = true;
+  new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(hero);
+
+  let t = 0;
   (function draw() {
+    requestAnimationFrame(draw);
+    if (!visible || !dots.length) return;
+    t += 0.05;
     ctx.clearRect(0, 0, W, H);
+    const igniteX = state.ignition * W * 1.3;
 
-    for (const p of pts) {
-      const dx = p.x - mouse.x, dy = p.y - mouse.y;
-      const d = Math.hypot(dx, dy);
-      if (d < 140 && d > 0) {
-        p.vx += (dx / d) * .25;
-        p.vy += (dy / d) * .25;
-      }
-      p.vx *= .96; p.vy *= .96;
-      p.vx += (Math.random() - .5) * .02;
-      p.vy += (Math.random() - .5) * .02;
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    for (const d of dots) {
+      let target = d.text ? 0.9 : 0.13;
+      target *= 0.82 + 0.18 * Math.sin(t * d.fl + d.x); // мерцание диодов
+      if (d.x > igniteX) target = 0;                     // волна включения
+
+      const dx = d.x - mouse.x, dy = d.y - mouse.y;
+      const dist2 = dx * dx + dy * dy;
+      const boost = dist2 < 26000 ? 1 - Math.sqrt(dist2) / 161 : 0;
+
+      d.b += (Math.min(1.3, target + boost * (d.text ? 0.5 : 0.85)) - d.b) * 0.14;
+      if (d.b < 0.02) continue;
 
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(62, 224, 110, .7)';
+      ctx.arc(d.x, d.y, R * (d.text ? 1 : 0.62) * (1 + boost * 0.5), 0, 6.284);
+      ctx.fillStyle = `rgba(${d.c[0]},${d.c[1]},${d.c[2]},${d.b})`;
       ctx.fill();
     }
-
-    for (let i = 0; i < pts.length; i++) {
-      for (let j = i + 1; j < pts.length; j++) {
-        const a = pts[i], b = pts[j];
-        const d = Math.hypot(a.x - b.x, a.y - b.y);
-        if (d < 130) {
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(62, 224, 110, ${.14 * (1 - d / 130)})`;
-          ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(draw);
   })();
+
+  addEventListener('resize', () => document.fonts.ready.then(build));
+  document.fonts.ready.then(build);
+
+  return {
+    ignite: () => gsap.to(state, { ignition: 1, duration: 1.8, ease: 'power2.inOut' })
+  };
 })();
+if (ledHero && !isTouch) document.body.classList.add('led-on');
 
 /* ---------- 6. Шапка: скрытие и фон ---------- */
 (function header() {
@@ -217,7 +255,7 @@ function scramble(el) {
   const N = cards.length;
   const SP = 560;              // расстояние между проектами по глубине
   const LEAD = 750;            // разгон до первой карточки
-  const EXIT = 220;            // вылет за последнюю
+  const EXIT = 40;             // финал: последняя карточка остаётся в кадре
   const DEPTH = LEAD + (N - 1) * SP + EXIT;
 
   // раскладка: карточки чередуются слева / справа / по центру
@@ -230,6 +268,9 @@ function scramble(el) {
     z: -(LEAD + i * SP),
     tilt: X[i % X.length] === 0 ? 0 : (X[i % X.length] < 0 ? 10 : -10)
   }));
+  // финальная карточка — по центру, чистый финал полёта
+  const last = layout[N - 1];
+  last.x = 0; last.y = 0; last.tilt = 0;
 
   let progress = 0, mx = 0, my = 0, smx = 0, smy = 0;
 
@@ -252,18 +293,28 @@ function scramble(el) {
   });
   stage.addEventListener('mouseleave', () => { mx = 0; my = 0; });
 
-  let lastIdx = -1;
+  let lastIdx = -1, lastCam = -1;
 
   (function frame() {
     const camZ = progress * DEPTH;
+
+    // ничего не изменилось — пропускаем кадр (экономим CPU)
+    if (Math.abs(camZ - lastCam) < .05 &&
+        Math.abs(mx - smx) < .002 && Math.abs(my - smy) < .002) {
+      requestAnimationFrame(frame);
+      return;
+    }
+    lastCam = camZ;
 
     // лёгкий параллакс всей сцены за мышью
     smx += (mx - smx) * .06;
     smy += (my - smy) * .06;
     world.style.transform = `rotateY(${smx * 7}deg) rotateX(${-smy * 5}deg)`;
 
-    // сетка пола/потолка "едет" под камерой
-    grids.forEach(g => { g.style.backgroundPosition = `0px ${camZ}px, 0px ${camZ}px`; });
+    // сетка пола/потолка "едет" под камерой (transform — без перерисовки)
+    const gShift = camZ % 140;
+    grids[0].style.transform = `translate(-50%,-50%) rotateX(90deg) translateZ(-46svh) translateY(${gShift}px)`;
+    grids[1].style.transform = `translate(-50%,-50%) rotateX(90deg) translateZ(46svh) translateY(${gShift}px)`;
 
     for (const c of layout) {
       const rel = c.z + camZ;
@@ -281,10 +332,7 @@ function scramble(el) {
     if (idx !== lastIdx) {
       lastIdx = idx;
       if (hudIdx) hudIdx.textContent = String(idx + 1).padStart(2, '0') + ' / ' + N;
-      if (hudTitle) {
-        hudTitle.textContent = cards[idx].dataset.title;
-        scramble(hudTitle);
-      }
+      if (hudTitle) scramble(hudTitle, cards[idx].dataset.title);
     }
 
     requestAnimationFrame(frame);
@@ -378,12 +426,13 @@ if (form) {
 /* ---------- 15. Объёмный параллакс в hero ---------- */
 if (!isTouch) {
   const hero = document.querySelector('.hero');
+  const ledOn = document.body.classList.contains('led-on');
   const layers = [
     { el: document.querySelector('.hero-tag'), d: 14 },
-    { el: document.querySelector('.hero h1'), d: 30 },
+    ledOn ? null : { el: document.querySelector('.hero h1'), d: 30 },
     { el: document.querySelector('.hero-sub'), d: 20 },
     { el: document.querySelector('.hero-cta'), d: 12 }
-  ].filter(l => l.el);
+  ].filter(l => l && l.el);
   let on = false, hx = 0, hy = 0, shx = 0, shy = 0;
   setTimeout(() => on = true, 4200); // ждём окончания интро-анимаций
 
