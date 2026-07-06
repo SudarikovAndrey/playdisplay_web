@@ -73,6 +73,46 @@
     background: rgba(0,0,0,.4); color: #fff; font-size: 16px; cursor: pointer;
     backdrop-filter: blur(4px); }
   #player-close:hover { background: rgba(0,0,0,.65); }
+
+  /* ---- Панель настроек ---- */
+  #settings { position: fixed; top: 24px; right: 24px; z-index: 30;
+    font: 11px/1.4 -apple-system, 'Segoe UI', Arial, sans-serif; color: var(--ink);
+    user-select: none; }
+  #settings-toggle { width: 40px; height: 40px; margin-left: auto; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    background: rgba(255,255,255,.35); border: 1px solid rgba(128,128,128,.4);
+    backdrop-filter: blur(10px); font-size: 18px; transition: transform .3s; }
+  body.dark-env #settings-toggle { background: rgba(0,0,0,.35); }
+  #settings-toggle:hover { transform: rotate(45deg); }
+  #settings-body { margin-top: 10px; width: 232px; padding: 16px 16px 14px;
+    border-radius: 14px; background: rgba(240,240,242,.82); border: 1px solid rgba(128,128,128,.35);
+    backdrop-filter: blur(16px); box-shadow: 0 14px 50px rgba(0,0,0,.22);
+    display: none; }
+  body.dark-env #settings-body { background: rgba(24,24,28,.82); }
+  #settings.open #settings-body { display: block; }
+  #settings-body h4 { font-size: 10px; letter-spacing: .28em; text-transform: uppercase;
+    opacity: .5; margin-bottom: 14px; font-weight: 700; }
+  #settings-body h4.set-sub { margin-top: 4px; margin-bottom: 12px; padding-top: 12px;
+    border-top: 1px solid rgba(128,128,128,.28); }
+  .set-row { margin-bottom: 13px; }
+  .set-row .set-label { display: flex; justify-content: space-between; margin-bottom: 5px;
+    letter-spacing: .02em; }
+  .set-row .set-label b { font-variant-numeric: tabular-nums; opacity: .85; font-weight: 600; }
+  .set-row input[type=range] { -webkit-appearance: none; appearance: none; width: 100%;
+    height: 3px; border-radius: 3px; background: rgba(128,128,128,.35); outline: none; cursor: pointer; }
+  .set-row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none;
+    width: 13px; height: 13px; border-radius: 50%; background: var(--ink);
+    border: 2px solid rgba(255,255,255,.8); }
+  .set-row input[type=range]::-moz-range-thumb { width: 13px; height: 13px; border-radius: 50%;
+    background: var(--ink); border: 2px solid rgba(255,255,255,.8); }
+  #settings-actions { display: flex; gap: 8px; margin-top: 16px; }
+  #settings-actions button { flex: 1; padding: 9px 0; border-radius: 9px; cursor: pointer;
+    font: inherit; font-weight: 600; letter-spacing: .04em; transition: all .2s; }
+  #s-save { background: var(--ink); color: #d9d9db; border: 1px solid var(--ink); }
+  body.dark-env #s-save { color: #1a1a1e; }
+  #s-save:hover { opacity: .85; }
+  #s-reset { background: transparent; color: var(--ink); border: 1px solid rgba(128,128,128,.5); }
+  #s-reset:hover { background: rgba(128,128,128,.15); }
 </style>
 </head>
 <body>
@@ -92,6 +132,42 @@
 <button id="play-btn">▶</button>
 <div class="ui" id="dots"></div>
 <input type="range" id="scrub" min="0" max="1000" step="0.1" value="0">
+
+<div id="settings" class="open">
+  <div id="settings-toggle" title="Свернуть / развернуть настройки">⚙</div>
+  <div id="settings-body">
+    <h4>Настройки камеры</h4>
+    <div class="set-row">
+      <div class="set-label"><span>Высота камеры</span><b id="v-height">0</b></div>
+      <input type="range" id="s-height" min="-10" max="40" step="0.5">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Линза (FOV)</span><b id="v-fov">50°</b></div>
+      <input type="range" id="s-fov" min="25" max="100" step="1">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Расстояние до центра</span><b id="v-dist">55</b></div>
+      <input type="range" id="s-dist" min="15" max="100" step="0.5">
+    </div>
+    <h4 class="set-sub">Точки</h4>
+    <div class="set-row">
+      <div class="set-label"><span>Размер точек</span><b id="v-size">1.0×</b></div>
+      <input type="range" id="s-size" min="0.3" max="3" step="0.05">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Кол-во точек</span><b id="v-count">100%</b></div>
+      <input type="range" id="s-count" min="0.05" max="1" step="0.01">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Разрежённость</span><b id="v-spread">0.0</b></div>
+      <input type="range" id="s-spread" min="0" max="3" step="0.05">
+    </div>
+    <div id="settings-actions">
+      <button id="s-reset">Сброс</button>
+      <button id="s-save">Сохранить</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="textures.js"></script>
@@ -121,19 +197,33 @@ const EMBEDS = [
 ];
 
 const N = WORKS.length;
-const ORBIT_R = 55.1, ORBIT_H = 7; // камера на 5% ближе к центру (было 58)
+// ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
+const SETTINGS_KEY = 'pd_proto_settings';
+const SETTINGS_DEFAULTS = { height: 0, fov: 50, dist: 55.1, size: 1, count: 0.2, spread: 0 };
+// height — сдвиг высоты, fov — линза, dist — радиус орбиты,
+// size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
+const S = Object.assign({}, SETTINGS_DEFAULTS);
+let _hadSaved = false;
+try { const raw = localStorage.getItem(SETTINGS_KEY); if (raw) { Object.assign(S, JSON.parse(raw)); _hadSaved = true; } } catch (e) {}
+// слабые устройства: на телефонах по умолчанию меньше точек (перф)
+const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || Math.min(innerWidth, innerHeight) < 620;
+if (isMobile && !_hadSaved) S.count = Math.min(S.count, 0.12);
+// потолок генерации точек: сцена сэмплируется в PT_MUL раз плотнее, слайдер «Кол-во» показывает долю
+const PT_MUL = 10, GEN_LIN = Math.sqrt(PT_MUL);
+
+const ORBIT_R = S.dist, ORBIT_H = 7; // радиус орбиты берётся из настроек (по умолч. 55.1)
 const SPACING = Math.PI * 2 / N;
 const PROJ_FOV = 26; // кадр сжат в центральную часть экрана — читаемое ядро
 const GROUND_Y = -8;
 
 // ---------- Рендерер ----------
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.5 : 2));
 renderer.setSize(innerWidth, innerHeight);
 document.getElementById('stage').appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.5, 900);
+const camera = new THREE.PerspectiveCamera(S.fov, innerWidth / innerHeight, 0.5, 900);
 const CENTER = new THREE.Vector3(0, 0, 0);
 const TARGET = new THREE.Vector3(0, -3, 0); // фокус камеры: центр сцены, чуть выше пола
 
@@ -150,13 +240,15 @@ const rnd = mulberry(42);
 // ---------- Проекторы ----------
 // спираль: идеальные точки на разной высоте — от почти у пола до высоких
 // плавный профиль высот: одна мягкая волна вокруг круга — камера поднимается
-// и опускается постепенно, без резких скачков вверх на каждом перегоне
+// и опускается постепенно, без резких скачков. Орбита опущена: высота над
+// землёй = 65% от прежней (ниже на 35%); точка фокуса (TARGET) не меняется.
 const projH = i => { const k = clamp(i, 0, N - 1) / Math.max(N - 1, 1);
-  return 8 + 6 * Math.sin(k * Math.PI) + 2 * Math.sin(k * Math.PI * 2); };
+  const base = 8 + 6 * Math.sin(k * Math.PI) + 2 * Math.sin(k * Math.PI * 2);
+  return GROUND_Y + 0.65 * (base - GROUND_Y); };
 const projectors = [];
 for (let i = 0; i < N; i++) {
   const az = i * SPACING;
-  const pos = new THREE.Vector3(Math.sin(az) * ORBIT_R, projH(i), Math.cos(az) * ORBIT_R);
+  const pos = new THREE.Vector3(Math.sin(az) * ORBIT_R, projH(i) + S.height, Math.cos(az) * ORBIT_R);
   const pc = new THREE.PerspectiveCamera(PROJ_FOV, WORKS[i].aspect, 1, 220);
   pc.position.copy(pos);
   pc.lookAt(TARGET);
@@ -191,8 +283,17 @@ const voxVert = `
   varying float vRand;
   varying float vDist;
   uniform float uPx;
+  uniform float uSizeMul;   // размер точек
+  uniform float uCount;     // доля видимых точек (кол-во)
+  uniform float uSpread;    // разрежённость — сдвиг расстановки
   void main() {
-    vWorld = (modelMatrix * vec4(position, 1.0)).xyz;
+    // кол-во точек: прячем точки с aRand выше порога (геометрию не трогаем)
+    if (aRand > uCount) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
+    vec3 wpos = (modelMatrix * vec4(position, 1.0)).xyz;
+    // разрежённость: псевдослучайный сдвиг каждой точки (0 = ровная расстановка)
+    vec3 jit = vec3(fract(aRand * 13.13), fract(aRand * 71.7), fract(aRand * 191.3)) - 0.5;
+    wpos += jit * uSpread;
+    vWorld = wpos;
     vNormal = normalize(mat3(modelMatrix) * normal);
     vRand = aRand;
     vec4 mv = viewMatrix * vec4(vWorld, 1.0);
@@ -201,7 +302,7 @@ const voxVert = `
     // центр (пол-сцена, где собирается изображение) — полная плотность;
     // периферия (дальний пол и задний план) — до 20 раз мельче, воздушнее
     float airy = mix(1.0, 0.05, smoothstep(24.0, 55.0, length(vWorld.xz)));
-    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy, 1.0, 16.0);
+    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy * uSizeMul, 1.0, 16.0 * uSizeMul);
   }`;
 
 // объявления сэмплеров и цепочка выбора — генерируются под любое число работ
@@ -264,6 +365,12 @@ const voxFrag = `
     col = (col - 0.5) * 1.08 + 0.5;
     float lum = dot(col, vec3(0.299, 0.587, 0.114));
     col = mix(vec3(lum), col, 1.16);
+    // LED-пиксель: яркое ядро + лёгкий тёмный зазор у края через gl_PointCoord —
+    // «дисплейная» фактура, пиксели читаются раздельно (проекция чётче)
+    float pled = smoothstep(0.5, 0.08, length(gl_PointCoord - 0.5));
+    col *= mix(0.75, 1.15, pled);
+    // мягкий bloom по светам — голографический подсвет ярких точек
+    col += pow(max(col - 0.62, 0.0), vec3(1.6)) * 0.6;
     // дымка
     col = mix(col, uFogC, smoothstep(uFogN, uFogF, vDist));
     gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
@@ -281,6 +388,9 @@ const voxUniforms = {
   uFogN:   fogU.n,
   uFogF:   fogU.f,
   uPx:     PXU,
+  uSizeMul: { value: S.size },   // размер точек
+  uCount:   { value: S.count },  // кол-во (доля видимых)
+  uSpread:  { value: S.spread }, // разрежённость
 };
 projectors.forEach((p, i) => { voxUniforms['uTex' + i] = { value: p.tex }; });
 const voxMat = new THREE.ShaderMaterial({ vertexShader: voxVert, fragmentShader: voxFrag,
@@ -310,19 +420,20 @@ function sampleInto(st, geo, m, density, cell) {
     Nv.crossVectors(ab, ac);
     const area = Nv.length() * 0.5;
     Nv.normalize();
-    let cnt = Math.floor(area * density) + (rnd() < (area * density) % 1 ? 1 : 0);
+    const dd = density * PT_MUL, qc = cell / GEN_LIN; // плотнее сэмплинг + мельче воксель-сетка → ×PT_MUL точек
+    let cnt = Math.floor(area * dd) + (rnd() < (area * dd) % 1 ? 1 : 0);
     for (let k = 0; k < cnt; k++) {
       let u = rnd(), v = rnd();
       if (u + v > 1) { u = 1 - u; v = 1 - v; }
       P.copy(A).addScaledVector(ab, u).addScaledVector(ac, v);
-      const qx = Math.round(P.x / cell), qy = Math.round(P.y / cell), qz = Math.round(P.z / cell);
+      const qx = Math.round(P.x / qc), qy = Math.round(P.y / qc), qz = Math.round(P.z / qc);
       const key = qx * 73856093 ^ qy * 19349663 ^ qz * 83492791;
       if (st.seen.has(key)) continue;
       st.seen.add(key);
-      st.p.push(qx * cell, qy * cell, qz * cell);
+      st.p.push(qx * qc, qy * qc, qz * qc);
       st.n.push(Nv.x, Nv.y, Nv.z);
       st.r.push(rnd());
-      st.s.push(cell);
+      st.s.push(cell); // размер точки прежний — меняется только плотность
     }
   }
 }
@@ -352,10 +463,10 @@ const spinners = [], floaters = [], shrinkers = [];
 const float_ = (m, amp = 1, f = 0.3) =>
   floaters.push({ mesh: m, y0: m.position.y, amp, ph: rnd() * 6.28, f });
 
-/* --- Плаза: полярная сетка точек, плотная в центре, редеет вдаль --- */
-for (let r = 0.8; r < 155; r += 0.5 + r * 0.024) {
+/* --- Плаза: полярная сетка точек, плотная в центре, редеет вдаль (×PT_MUL плотнее) --- */
+for (let r = 0.8; r < 155; r += (0.5 + r * 0.024) / GEN_LIN) {
   const cell = 0.5 + r * 0.024;
-  const cnt = Math.floor(Math.PI * 2 * r / cell);
+  const cnt = Math.floor(Math.PI * 2 * r / (cell / GEN_LIN));
   for (let k = 0; k < cnt; k++) {
     const a = (k / cnt) * Math.PI * 2;
     STATIC.p.push(Math.sin(a) * r, GROUND_Y, Math.cos(a) * r);
@@ -549,17 +660,18 @@ const bdFrag = `
     // плавное радиальное затухание; линза добирает плотность
     float a = uWb * mask * exp(-max(rr - 0.62, 0.0) * 1.9 * (1.0 - lens * 0.85)) * 0.97;
     a = max(a, uWb * lens * 0.98);
+    a *= smoothstep(0.5, 0.1, length(gl_PointCoord - 0.5)); // мягкий круглый светящийся пиксель кадра
     if (a < 0.012) discard;
     gl_FragColor = vec4(col, a);
   }`;
 const backMats = [], backPts = [];
 // неравномерная сетка: плотная в центре, плавно редеет наружу — без швов
 function frameGrid(p, i) {
-  const D = ORBIT_R + 38;
+  const D = S.dist + 38;
   const Hf = 2 * D * Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2)); // высота кадра
   const aspect = WORKS[i].aspect;
   const EXT = 1.7;      // поле до 1.7 полукадра наружу
-  const S0 = 0.017;     // шаг в центре (в долях полукадра)
+  const S0 = 0.012;     // плотнее ядро сетки → резче изображение (было 0.017)
   function axis(scale) { // координаты с нарастающим шагом от центра
     const cs = [], st = [];
     let c = 0;
@@ -605,6 +717,28 @@ function frameGrid(p, i) {
   backMats.push(mat); backPts.push(cloud);
 }
 projectors.forEach((p, i) => frameGrid(p, i));
+
+// ---------- Перестройка проекторов/кадров под текущую точку зрения ----------
+// Проекция «читается» из точки проектора. Если камера сдвинулась (высота/расстояние
+// из настроек), проекторы надо переставить на ту же орбиту, иначе изображение плывёт.
+const _projCam = new THREE.PerspectiveCamera(PROJ_FOV, 1, 1, 220);
+function updateProjectors() {               // дёшево — можно вживую при перетаскивании
+  for (let i = 0; i < N; i++) {
+    const p = projectors[i];
+    p.pos.set(Math.sin(p.az) * S.dist, projH(i) + S.height, Math.cos(p.az) * S.dist);
+    _projCam.aspect = WORKS[i].aspect;
+    _projCam.position.copy(p.pos);
+    _projCam.lookAt(TARGET);
+    _projCam.updateMatrixWorld(true);
+    _projCam.updateProjectionMatrix();
+    p.vp.multiplyMatrices(_projCam.projectionMatrix, _projCam.matrixWorldInverse);
+  }
+}
+function rebuildGrids() {                    // дороже — вызываем на отпускании слайдера
+  for (const c of backPts) { scene.remove(c); if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); }
+  backMats.length = 0; backPts.length = 0;
+  projectors.forEach((p, i) => frameGrid(p, i));
+}
 
 /* --- Небо: градиентный купол --- */
 const skyMat = new THREE.ShaderMaterial({
@@ -762,12 +896,12 @@ function updateCamera(time, wMax) {
   const m = Math.pow(Math.sin(Math.PI * gtc), 2); // 0 в точках, 1 в середине перегона
   // высота: сплайн через высоты идеальных точек + мягкая дуга перегона
   const hSpline = catmullRom(projH(i0 - 1), projH(i0), projH(i0 + 1), projH(i0 + 2), f);
-  const h = Math.max(hSpline + m * arcH(i0), GROUND_Y + 3.5);
+  const h = Math.max(hSpline + S.height + m * arcH(i0), GROUND_Y + 3.5);
   // радиус: в точках ровно ORBIT_R, между — плавный вынос наружу
-  const r = ORBIT_R + m * arcR(i0);
+  const r = S.dist + m * arcR(i0);
   camera.position.set(Math.sin(az) * r, h, Math.cos(az) * r);
   camera.lookAt(TARGET); // фокус всегда в центре сцены, чуть выше пола
-  camera.fov = 50 + m * 3 * Math.sin(time * 0.35) - 8 * playE;
+  camera.fov = S.fov + m * 3 * Math.sin(time * 0.35) - 8 * playE;
   camera.updateProjectionMatrix();
   PXU.value = innerHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
 }
@@ -987,6 +1121,45 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
+
+// ---------- Панель настроек ----------
+(function () {
+  const g = id => document.getElementById(id);
+  const el  = { height: g('s-height'), fov: g('s-fov'), dist: g('s-dist'), size: g('s-size'), count: g('s-count'), spread: g('s-spread') };
+  const lbl = { height: g('v-height'), fov: g('v-fov'), dist: g('v-dist'), size: g('v-size'), count: g('v-count'), spread: g('v-spread') };
+  const fmt = {
+    height: v => (v > 0 ? '+' : '') + (+v).toFixed(1),
+    fov:    v => Math.round(v) + '°',
+    dist:   v => (+v).toFixed(0),
+    size:   v => (+v).toFixed(2) + '×',
+    count:  v => Math.round(v * 100) + '%',
+    spread: v => (+v).toFixed(1),
+  };
+  const uni = { size: voxUniforms.uSizeMul, count: voxUniforms.uCount, spread: voxUniforms.uSpread };
+  function pushUniforms() { voxUniforms.uSizeMul.value = S.size; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; }
+  function sync() { for (const k in el) { el[k].value = S[k]; lbl[k].textContent = fmt[k](S[k]); } pushUniforms(); }
+  for (const k in el) el[k].addEventListener('input', () => {
+    S[k] = +el[k].value; lbl[k].textContent = fmt[k](S[k]);
+    if (k === 'height' || k === 'dist') updateProjectors(); // проекторы едут за камерой live
+    if (uni[k]) uni[k].value = S[k];                        // размер/кол-во/разрежённость — сразу в шейдер
+  });
+  // сетки кадров пересобираем при отпускании слайдера (тяжелее, чем матрицы)
+  for (const k of ['height', 'dist']) el[k].addEventListener('change', rebuildGrids);
+  const panel = document.getElementById('settings');
+  // колесо над панелью не должно крутить камеру
+  panel.addEventListener('wheel', e => e.stopPropagation());
+  document.getElementById('settings-toggle').addEventListener('click', () => panel.classList.toggle('open'));
+  const saveBtn = document.getElementById('s-save');
+  saveBtn.addEventListener('click', () => {
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, fov: S.fov, dist: S.dist, size: S.size, count: S.count, spread: S.spread }));
+      saveBtn.textContent = 'Сохранено ✓';
+      setTimeout(() => (saveBtn.textContent = 'Сохранить'), 1300);
+    } catch (e) { alert('Не удалось сохранить настройки в этом браузере'); }
+  });
+  document.getElementById('s-reset').addEventListener('click', () => { Object.assign(S, SETTINGS_DEFAULTS); sync(); updateProjectors(); rebuildGrids(); });
+  sync();
+})();
 </script>
 </body>
 </html>
