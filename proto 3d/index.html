@@ -113,6 +113,12 @@
   #s-save:hover { opacity: .85; }
   #s-reset { background: transparent; color: var(--ink); border: 1px solid rgba(128,128,128,.5); }
   #s-reset:hover { background: rgba(128,128,128,.15); }
+  #settings-body select, #s-modelfile { width: 100%; padding: 8px 10px; border-radius: 9px;
+    font: inherit; color: var(--ink); background: rgba(128,128,128,.14);
+    border: 1px solid rgba(128,128,128,.4); cursor: pointer; }
+  #settings-body select { -webkit-appearance: none; appearance: none; }
+  #s-modelfile { font-weight: 600; letter-spacing: .03em; transition: background .2s; }
+  #s-modelfile:hover { background: rgba(128,128,128,.24); }
 </style>
 </head>
 <body>
@@ -151,8 +157,12 @@
     </div>
     <h4 class="set-sub">Точки</h4>
     <div class="set-row">
-      <div class="set-label"><span>Размер точек</span><b id="v-size">1.0×</b></div>
-      <input type="range" id="s-size" min="0.3" max="3" step="0.05">
+      <div class="set-label"><span>Размер точек · мин</span><b id="v-sizemin">1</b></div>
+      <input type="range" id="s-sizemin" min="0.5" max="12" step="0.5">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Размер точек · макс</span><b id="v-sizemax">16</b></div>
+      <input type="range" id="s-sizemax" min="2" max="48" step="1">
     </div>
     <div class="set-row">
       <div class="set-label"><span>Разнообразие размера</span><b id="v-sizevar">1.0×</b></div>
@@ -170,6 +180,22 @@
       <div class="set-label"><span>Стягивание к граням</span><b id="v-edge">0</b></div>
       <input type="range" id="s-edge" min="-1" max="1" step="0.05">
     </div>
+    <h4 class="set-sub">Модель центра</h4>
+    <div class="set-row">
+      <select id="s-model">
+        <option value="original">Оригинал (FBX)</option>
+        <option value="sphere">Сфера</option>
+        <option value="torus">Тор</option>
+        <option value="knot">Тор-узел</option>
+        <option value="ico">Икосаэдр</option>
+        <option value="cone">Конус</option>
+        <option value="box">Куб</option>
+      </select>
+    </div>
+    <div class="set-row">
+      <button id="s-modelfile">Загрузить .glb / .obj / .fbx…</button>
+      <input type="file" id="s-modelinput" accept=".glb,.gltf,.obj,.fbx" hidden>
+    </div>
     <div id="settings-actions">
       <button id="s-reset">Сброс</button>
       <button id="s-save">Сохранить</button>
@@ -178,6 +204,12 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script defer src="https://unpkg.com/three@0.128.0/examples/js/libs/fflate.min.js"></script>
+<script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
+<script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
+<script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
 <script src="textures.js"></script>
 <script src="model.js"></script>
 <script>
@@ -207,7 +239,7 @@ const EMBEDS = [
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
 const SETTINGS_KEY = 'pd_proto_settings';
-const SETTINGS_DEFAULTS = { height: 0, fov: 50, dist: 55.1, size: 1, count: 0.2, spread: 0, edge: 0, sizevar: 1 };
+const SETTINGS_DEFAULTS = { height: 0, fov: 50, dist: 55.1, sizemin: 1, sizemax: 16, count: 0.2, spread: 0, edge: 0, sizevar: 1, model: 'original' };
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -292,7 +324,8 @@ const voxVert = `
   varying float vRand;
   varying float vDist;
   uniform float uPx;
-  uniform float uSizeMul;   // размер точек
+  uniform float uSizeMin;   // минимальный размер точки (px)
+  uniform float uSizeMax;   // максимальный размер точки (px)
   uniform float uCount;     // доля видимых точек (кол-во)
   uniform float uSpread;    // разрежённость — случайный сдвиг расстановки
   uniform float uEdgeBias;  // >0 — стягивание к граням, <0 — к центрам полигонов
@@ -318,7 +351,7 @@ const voxVert = `
     // периферия (дальний пол и задний план) — до 20 раз мельче, воздушнее
     float airy = mix(1.0, 0.05, smoothstep(24.0, 55.0, length(vWorld.xz)));
     float sv = mix(1.0, uSizeVar, fract(aRand * 47.3)); // разнообразие: множитель размера 1×..uSizeVar× на точку
-    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy * uSizeMul * sv, 1.0, 16.0 * uSizeMul);
+    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy * sv, uSizeMin, uSizeMax);
   }`;
 
 // объявления сэмплеров и цепочка выбора — генерируются под любое число работ
@@ -404,7 +437,8 @@ const voxUniforms = {
   uFogN:   fogU.n,
   uFogF:   fogU.f,
   uPx:     PXU,
-  uSizeMul: { value: S.size },   // размер точек
+  uSizeMin: { value: S.sizemin },// мин размер точки (px)
+  uSizeMax: { value: S.sizemax },// макс размер точки (px)
   uCount:   { value: S.count },  // кол-во (доля видимых)
   uSpread:  { value: S.spread }, // разрежённость
   uEdgeBias:{ value: S.edge },   // стягивание к граням(+)/центру(−)
@@ -513,8 +547,12 @@ for (let ring = 0; ring < 7; ring++) {
 [[13, 0.5], [10, 1.0], [7, 1.5]].forEach(([r, y]) =>
   vox(new THREE.CylinderGeometry(r, r, 0.5, 48), 0, GROUND_Y + y - 0.25, 0, 0, 0, 0, 6, 0.32));
 
-/* --- Центральный объект: воксельная модель из test_mod1.fbx --- */
-if (typeof MODEL !== 'undefined') {
+/* --- Центральный объект: воксельная модель (оригинал / пресет / загруженный файл) --- */
+let centralCloud = null, centralSpin = null;
+
+// оригинал — воксели из test_mod1.fbx (base64 в model.js)
+function buildOriginalCentral() {
+  if (typeof MODEL === 'undefined') return cloudFromGeometry(presetGeo('ico'));
   const b64 = (s, T) => { const str = atob(s); const u = new Uint8Array(str.length);
     for (let i = 0; i < str.length; i++) u[i] = str.charCodeAt(i);
     return new T(u.buffer); };
@@ -529,13 +567,100 @@ if (typeof MODEL !== 'undefined') {
   g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
   g.setAttribute('aRand', new THREE.BufferAttribute(rands, 1));
   g.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
-  g.setAttribute('aToCenter', new THREE.BufferAttribute(new Float32Array(cnt * 3), 3)); // модель — сырое облако точек, без граней
-  const modelCloud = new THREE.Points(g, voxMat);
-  modelCloud.position.set(0, GROUND_Y + 1.55, 0); // на подиуме
-  scene.add(modelCloud);
-  // медленно вращается; у идеальной точки замирает (calm)
-  spinners.push({ mesh: modelCloud, rx: 0, ry: 0.0009 });
+  g.setAttribute('aToCenter', new THREE.BufferAttribute(new Float32Array(cnt * 3), 3));
+  return new THREE.Points(g, voxMat);
 }
+
+// встроенные фигуры-пресеты
+function presetGeo(kind) {
+  switch (kind) {
+    case 'sphere': return new THREE.SphereGeometry(6, 48, 32);
+    case 'torus':  return new THREE.TorusGeometry(5, 2, 24, 60);
+    case 'knot':   return new THREE.TorusKnotGeometry(4.4, 1.4, 160, 28);
+    case 'ico':    return new THREE.IcosahedronGeometry(6, 1);
+    case 'cone':   return new THREE.ConeGeometry(5, 12, 40);
+    case 'box':    return new THREE.BoxGeometry(9, 9, 9, 4, 4, 4);
+    default:       return new THREE.IcosahedronGeometry(6, 1);
+  }
+}
+
+// вокселизация любой геометрии в облако точек: вписываем в размер ~12, низ на 0
+function cloudFromGeometry(geo) {
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox, size = new THREE.Vector3(), ctr = new THREE.Vector3();
+  bb.getSize(size); bb.getCenter(ctr);
+  const scale = 12 / (Math.max(size.x, size.y, size.z) || 1);
+  const T = new THREE.Matrix4().makeTranslation(-ctr.x, -bb.min.y, -ctr.z);
+  const m = new THREE.Matrix4().multiplyMatrices(new THREE.Matrix4().makeScale(scale, scale, scale), T);
+  const st = newStore();
+  sampleInto(st, geo, m, 2.0, 0.2);
+  return makeCloud(st);
+}
+
+// собрать все меши загруженной сцены в одну неиндексированную геометрию (в мировых координатах)
+function mergeSceneGeometry(root) {
+  root.updateMatrixWorld(true);
+  const positions = [];
+  const v = new THREE.Vector3();
+  root.traverse(o => {
+    if (o.isMesh && o.geometry) {
+      const gg = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry;
+      const p = gg.attributes.position;
+      for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld); positions.push(v.x, v.y, v.z); }
+    }
+  });
+  if (!positions.length) return null;
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  return g;
+}
+
+// поставить облако в центр (снять прежнее)
+function mountCentral(cloud) {
+  if (!cloud) return;
+  if (centralCloud) {
+    scene.remove(centralCloud);
+    if (centralCloud.geometry) centralCloud.geometry.dispose();
+    const i = spinners.indexOf(centralSpin); if (i >= 0) spinners.splice(i, 1);
+  }
+  centralCloud = cloud;
+  cloud.position.set(0, GROUND_Y + 1.55, 0); // на подиуме
+  scene.add(cloud);
+  centralSpin = { mesh: cloud, rx: 0, ry: 0.0009 }; // медленно вращается
+  spinners.push(centralSpin);
+}
+
+function setCentralModel(kind) {
+  mountCentral(kind === 'original' ? buildOriginalCentral() : cloudFromGeometry(presetGeo(kind)));
+}
+
+// загрузка файла .glb/.gltf/.obj
+function loadModelFile(file) {
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      if (ext === 'obj') {
+        if (!THREE.OBJLoader) return alert('Загрузчик OBJ не подгрузился (нет сети?)');
+        const geo = mergeSceneGeometry(new THREE.OBJLoader().parse(reader.result));
+        if (geo) mountCentral(cloudFromGeometry(geo)); else alert('В файле нет геометрии');
+      } else if (ext === 'glb' || ext === 'gltf') {
+        if (!THREE.GLTFLoader) return alert('Загрузчик GLTF не подгрузился (нет сети?)');
+        new THREE.GLTFLoader().parse(reader.result, '', gltf => {
+          const geo = mergeSceneGeometry(gltf.scene);
+          if (geo) mountCentral(cloudFromGeometry(geo)); else alert('В модели нет геометрии');
+        }, () => alert('Не удалось разобрать GLB/GLTF'));
+      } else if (ext === 'fbx') {
+        if (!THREE.FBXLoader) return alert('Загрузчик FBX не подгрузился (нет сети?)');
+        const geo = mergeSceneGeometry(new THREE.FBXLoader().parse(reader.result, ''));
+        if (geo) mountCentral(cloudFromGeometry(geo)); else alert('В FBX нет геометрии');
+      } else alert('Поддерживаются .glb, .gltf, .obj, .fbx');
+    } catch (e) { alert('Ошибка загрузки модели: ' + e.message); }
+  };
+  if (ext === 'obj') reader.readAsText(file); else reader.readAsArrayBuffer(file);
+}
+
+setCentralModel(S.model); // начальная модель из настроек
 
 /* --- Свита малых экранов вокруг модели --- */
 const screenShapes = [
@@ -829,23 +954,12 @@ for (let i = 0; i < 10; i++) {
            60 + rnd() * 90, 0.10 + rnd() * 0.10, 0.5 + rnd() * 0.5);
 }
 
-// ---------- Навигация: свободный полёт + доводка ----------
-let targetGT = 0, midGT = -0.6, gt = -0.6, gtM = -0.6;
+// ---------- Навигация: пружинное движение к цели ----------
+let targetGT = 0, gt = -0.6, gtM = -0.6, gtVel = 0;
 let navigated = false, lastInput = 0;
 const GT_MAX = N - 1;
 const wrapIdx = v => ((Math.round(v) % N) + N) % N; // индекс проекта 0..N-1 из любого gt (для лупа)
-const WHEEL_SENS = 0.005; // легче прокрутка (было 0.0022)
-
-const MAGNET_R = 0.5, MAGNET_DEAD = 0.12, MAGNET_POW = 2.2;
-function magnetize(g) {
-  const i = Math.round(g); // магнит работает на любом целом — галерея зациклена
-  const d = g - i;
-  const a = Math.min(Math.abs(d) / MAGNET_R, 1);
-  const a0 = MAGNET_DEAD / MAGNET_R;
-  if (a >= 1) return g;
-  const t = a <= a0 ? 0 : Math.pow((a - a0) / (1 - a0), MAGNET_POW);
-  return i + d * t;
-}
+const WHEEL_SENS = 0.006; // чувствительность прокрутки
 
 function onInput(delta) {
   targetGT += delta; // без ограничения по краям — галерея зациклена
@@ -889,20 +1003,27 @@ addEventListener('keydown', e => {
 
 function updateNav(dt) {
   const idle = performance.now() - lastInput;
-  if (idle > 180) {
-    const s = smoothstep(180, 900, idle) * 3.5;
-    const snap = Math.round(targetGT); // доводка к ближайшей точке (любой, галерея зациклена)
-    targetGT += (snap - targetGT) * (1 - Math.exp(-dt * s));
+  // Когда пользователь отпустил — мягко ведём ЦЕЛЬ к ближайшему проекту (приземление на
+  // точку обзора). Плавно, без рывка: тянем саму цель, а к ней уже едет пружина.
+  if (idle > 220 && !sliderActive) {
+    const pull = smoothstep(220, 1200, idle) * 3.0;
+    targetGT += (Math.round(targetGT) - targetGT) * (1 - Math.exp(-dt * pull));
   }
-  const k = 1 - Math.exp(-dt * 5.0);
-  midGT += (targetGT - midGT) * k;
-  gt += (midGT - gt) * k;
-  // зацикливание: держим значения в пределах одной петли [0,N), сдвигая все три
-  // синхронно — азимут (кратен 2π) и высота (периодичны), поэтому шов бесшовный
+  if (sliderActive) {
+    // при перетаскивании слайдера — прямое отзывчивое следование
+    gt += (targetGT - gt) * (1 - Math.exp(-dt * 18)); gtVel = 0;
+  } else {
+    // критически задемпфированная пружина к цели: отзывчиво, плавно, без перелёта
+    // и без отдельного «магнита» (который раньше давал рывок при остановке)
+    const STIFF = 42, DAMP = 2 * Math.sqrt(42);
+    gtVel += (STIFF * (targetGT - gt) - DAMP * gtVel) * dt;
+    gt += gtVel * dt;
+  }
+  // зацикливание: держим gt и цель в пределах одной петли [0,N), сдвигая синхронно —
+  // азимут кратен 2π, высота периодична, поэтому шов бесшовный
   const wrapN = Math.floor(gt / N) * N;
-  if (wrapN) { gt -= wrapN; midGT -= wrapN; targetGT -= wrapN; }
-  // при перетаскивании слайдера — свободное скольжение без магнита
-  gtM = sliderActive ? gt : magnetize(gt);
+  if (wrapN) { gt -= wrapN; targetGT -= wrapN; }
+  gtM = gt; // без отдельного магнита — доводка идёт через цель
 }
 
 // сплайн Катмулла-Рома: единая гладкая кривая, проходящая точно через точки
@@ -1153,20 +1274,21 @@ addEventListener('resize', () => {
 // ---------- Панель настроек ----------
 (function () {
   const g = id => document.getElementById(id);
-  const el  = { height: g('s-height'), fov: g('s-fov'), dist: g('s-dist'), size: g('s-size'), sizevar: g('s-sizevar'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge') };
-  const lbl = { height: g('v-height'), fov: g('v-fov'), dist: g('v-dist'), size: g('v-size'), sizevar: g('v-sizevar'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge') };
+  const el  = { height: g('s-height'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge') };
+  const lbl = { height: g('v-height'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge') };
   const fmt = {
     height:  v => (v > 0 ? '+' : '') + (+v).toFixed(1),
     fov:     v => Math.round(v) + '°',
     dist:    v => (+v).toFixed(0),
-    size:    v => (+v).toFixed(2) + '×',
+    sizemin: v => (+v).toFixed(1),
+    sizemax: v => (+v).toFixed(0),
     sizevar: v => (+v).toFixed(1) + '×',
     count:   v => Math.round(v * 100) + '%',
     spread:  v => (+v).toFixed(1),
     edge:    v => (v > 0 ? '+' : '') + (+v).toFixed(2),
   };
-  const uni = { size: voxUniforms.uSizeMul, sizevar: voxUniforms.uSizeVar, count: voxUniforms.uCount, spread: voxUniforms.uSpread, edge: voxUniforms.uEdgeBias };
-  function pushUniforms() { voxUniforms.uSizeMul.value = S.size; voxUniforms.uSizeVar.value = S.sizevar; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; voxUniforms.uEdgeBias.value = S.edge; }
+  const uni = { sizemin: voxUniforms.uSizeMin, sizemax: voxUniforms.uSizeMax, sizevar: voxUniforms.uSizeVar, count: voxUniforms.uCount, spread: voxUniforms.uSpread, edge: voxUniforms.uEdgeBias };
+  function pushUniforms() { voxUniforms.uSizeMin.value = S.sizemin; voxUniforms.uSizeMax.value = S.sizemax; voxUniforms.uSizeVar.value = S.sizevar; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; voxUniforms.uEdgeBias.value = S.edge; }
   function sync() { for (const k in el) { el[k].value = S[k]; lbl[k].textContent = fmt[k](S[k]); } pushUniforms(); }
   for (const k in el) el[k].addEventListener('input', () => {
     S[k] = +el[k].value; lbl[k].textContent = fmt[k](S[k]);
@@ -1179,15 +1301,25 @@ addEventListener('resize', () => {
   // колесо над панелью не должно крутить камеру
   panel.addEventListener('wheel', e => e.stopPropagation());
   document.getElementById('settings-toggle').addEventListener('click', () => panel.classList.toggle('open'));
+  // выбор и загрузка модели центра
+  const modelSel = g('s-model');
+  modelSel.value = S.model;
+  modelSel.addEventListener('change', () => { S.model = modelSel.value; setCentralModel(S.model); });
+  g('s-modelfile').addEventListener('click', () => g('s-modelinput').click());
+  g('s-modelinput').addEventListener('change', e => { const f = e.target.files[0]; if (f) loadModelFile(f); e.target.value = ''; });
+
   const saveBtn = document.getElementById('s-save');
   saveBtn.addEventListener('click', () => {
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, fov: S.fov, dist: S.dist, size: S.size, sizevar: S.sizevar, count: S.count, spread: S.spread, edge: S.edge }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, count: S.count, spread: S.spread, edge: S.edge, model: S.model }));
       saveBtn.textContent = 'Сохранено ✓';
       setTimeout(() => (saveBtn.textContent = 'Сохранить'), 1300);
     } catch (e) { alert('Не удалось сохранить настройки в этом браузере'); }
   });
-  document.getElementById('s-reset').addEventListener('click', () => { Object.assign(S, SETTINGS_DEFAULTS); sync(); updateProjectors(); rebuildGrids(); });
+  document.getElementById('s-reset').addEventListener('click', () => {
+    Object.assign(S, SETTINGS_DEFAULTS); sync(); updateProjectors(); rebuildGrids();
+    modelSel.value = S.model; setCentralModel(S.model);
+  });
   sync();
 })();
 </script>
