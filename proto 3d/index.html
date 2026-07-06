@@ -155,12 +155,20 @@
       <input type="range" id="s-size" min="0.3" max="3" step="0.05">
     </div>
     <div class="set-row">
+      <div class="set-label"><span>Разнообразие размера</span><b id="v-sizevar">1.0×</b></div>
+      <input type="range" id="s-sizevar" min="1" max="10" step="0.1">
+    </div>
+    <div class="set-row">
       <div class="set-label"><span>Кол-во точек</span><b id="v-count">100%</b></div>
       <input type="range" id="s-count" min="0.05" max="1" step="0.01">
     </div>
     <div class="set-row">
       <div class="set-label"><span>Разрежённость</span><b id="v-spread">0.0</b></div>
       <input type="range" id="s-spread" min="0" max="3" step="0.05">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Стягивание к граням</span><b id="v-edge">0</b></div>
+      <input type="range" id="s-edge" min="-1" max="1" step="0.05">
     </div>
     <div id="settings-actions">
       <button id="s-reset">Сброс</button>
@@ -199,7 +207,7 @@ const EMBEDS = [
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
 const SETTINGS_KEY = 'pd_proto_settings';
-const SETTINGS_DEFAULTS = { height: 0, fov: 50, dist: 55.1, size: 1, count: 0.2, spread: 0 };
+const SETTINGS_DEFAULTS = { height: 0, fov: 50, dist: 55.1, size: 1, count: 0.2, spread: 0, edge: 0, sizevar: 1 };
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -242,7 +250,7 @@ const rnd = mulberry(42);
 // плавный профиль высот: одна мягкая волна вокруг круга — камера поднимается
 // и опускается постепенно, без резких скачков. Орбита опущена: высота над
 // землёй = 65% от прежней (ниже на 35%); точка фокуса (TARGET) не меняется.
-const projH = i => { const k = clamp(i, 0, N - 1) / Math.max(N - 1, 1);
+const projH = i => { const k = (((i % N) + N) % N) / (N - 1); // периодический профиль (для зацикливания)
   const base = 8 + 6 * Math.sin(k * Math.PI) + 2 * Math.sin(k * Math.PI * 2);
   return GROUND_Y + 0.65 * (base - GROUND_Y); };
 const projectors = [];
@@ -278,6 +286,7 @@ addEventListener('mousemove', e => { mousePX = e.clientX; mousePY = e.clientY; }
 const voxVert = `
   attribute float aRand;
   attribute float aSize;
+  attribute vec3 aToCenter;  // вектор к центроиду треугольника
   varying vec3 vWorld;
   varying vec3 vNormal;
   varying float vRand;
@@ -285,24 +294,31 @@ const voxVert = `
   uniform float uPx;
   uniform float uSizeMul;   // размер точек
   uniform float uCount;     // доля видимых точек (кол-во)
-  uniform float uSpread;    // разрежённость — сдвиг расстановки
+  uniform float uSpread;    // разрежённость — случайный сдвиг расстановки
+  uniform float uEdgeBias;  // >0 — стягивание к граням, <0 — к центрам полигонов
+  uniform float uSizeVar;   // разнообразие размера точек (1 = одинаковые, до 10 = сильный разброс)
   void main() {
     // кол-во точек: прячем точки с aRand выше порога (геометрию не трогаем)
     if (aRand > uCount) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
-    vec3 wpos = (modelMatrix * vec4(position, 1.0)).xyz;
-    // разрежённость: псевдослучайный сдвиг каждой точки (0 = ровная расстановка)
+    vec3 worig = (modelMatrix * vec4(position, 1.0)).xyz;   // исходная позиция точки
     vec3 jit = vec3(fract(aRand * 13.13), fract(aRand * 71.7), fract(aRand * 191.3)) - 0.5;
-    wpos += jit * uSpread;
-    vWorld = wpos;
+    vec3 tc = mat3(modelMatrix) * aToCenter;                // вектор к центроиду в мировых
+    // рендер-позиция = исходная + разрежённость (случайно) + стягивание к граням(>0)/центру(<0)
+    vec3 wrender = worig + jit * uSpread - tc * uEdgeBias; // разлёт (разрежённость + стягивание к граням)
+    // ВАЖНО: проекцию сэмплируем по ТЕКУЩЕЙ (смещённой) позиции — проектор «красит» картинку
+    // там, где точка сейчас. Как ни двигай точки, на правильной точке обзора картинка ровная,
+    // а точки перекрашиваются на лету.
+    vWorld = wrender;
     vNormal = normalize(mat3(modelMatrix) * normal);
     vRand = aRand;
-    vec4 mv = viewMatrix * vec4(vWorld, 1.0);
+    vec4 mv = viewMatrix * vec4(wrender, 1.0);   // рисуем в смещённой позиции
     vDist = -mv.z;
     gl_Position = projectionMatrix * mv;
     // центр (пол-сцена, где собирается изображение) — полная плотность;
     // периферия (дальний пол и задний план) — до 20 раз мельче, воздушнее
     float airy = mix(1.0, 0.05, smoothstep(24.0, 55.0, length(vWorld.xz)));
-    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy * uSizeMul, 1.0, 16.0 * uSizeMul);
+    float sv = mix(1.0, uSizeVar, fract(aRand * 47.3)); // разнообразие: множитель размера 1×..uSizeVar× на точку
+    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy * uSizeMul * sv, 1.0, 16.0 * uSizeMul);
   }`;
 
 // объявления сэмплеров и цепочка выбора — генерируются под любое число работ
@@ -391,6 +407,8 @@ const voxUniforms = {
   uSizeMul: { value: S.size },   // размер точек
   uCount:   { value: S.count },  // кол-во (доля видимых)
   uSpread:  { value: S.spread }, // разрежённость
+  uEdgeBias:{ value: S.edge },   // стягивание к граням(+)/центру(−)
+  uSizeVar: { value: S.sizevar },// разнообразие размера точек
 };
 projectors.forEach((p, i) => { voxUniforms['uTex' + i] = { value: p.tex }; });
 const voxMat = new THREE.ShaderMaterial({ vertexShader: voxVert, fragmentShader: voxFrag,
@@ -403,7 +421,7 @@ function mat4Of(x, y, z, ry = 0, rx = 0, rz = 0, s = 1) {
     new THREE.Quaternion().setFromEuler(new THREE.Euler(rx, ry, rz)),
     new THREE.Vector3(s, s, s));
 }
-function newStore() { return { p: [], n: [], r: [], s: [], seen: new Set() }; }
+function newStore() { return { p: [], n: [], r: [], s: [], c: [], seen: new Set() }; }
 const STATIC = newStore();
 
 function sampleInto(st, geo, m, density, cell) {
@@ -411,7 +429,7 @@ function sampleInto(st, geo, m, density, cell) {
   const pos = g.attributes.position;
   const A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
   const ab = new THREE.Vector3(), ac = new THREE.Vector3();
-  const P = new THREE.Vector3(), Nv = new THREE.Vector3();
+  const P = new THREE.Vector3(), Nv = new THREE.Vector3(), Ctr = new THREE.Vector3();
   for (let t = 0; t < pos.count; t += 3) {
     A.fromBufferAttribute(pos, t).applyMatrix4(m);
     B.fromBufferAttribute(pos, t + 1).applyMatrix4(m);
@@ -420,6 +438,7 @@ function sampleInto(st, geo, m, density, cell) {
     Nv.crossVectors(ab, ac);
     const area = Nv.length() * 0.5;
     Nv.normalize();
+    Ctr.copy(A).add(B).add(C).multiplyScalar(1 / 3); // центроид треугольника
     const dd = density * PT_MUL, qc = cell / GEN_LIN; // плотнее сэмплинг + мельче воксель-сетка → ×PT_MUL точек
     let cnt = Math.floor(area * dd) + (rnd() < (area * dd) % 1 ? 1 : 0);
     for (let k = 0; k < cnt; k++) {
@@ -430,10 +449,12 @@ function sampleInto(st, geo, m, density, cell) {
       const key = qx * 73856093 ^ qy * 19349663 ^ qz * 83492791;
       if (st.seen.has(key)) continue;
       st.seen.add(key);
-      st.p.push(qx * qc, qy * qc, qz * qc);
+      const px = qx * qc, py = qy * qc, pz = qz * qc;
+      st.p.push(px, py, pz);
       st.n.push(Nv.x, Nv.y, Nv.z);
       st.r.push(rnd());
       st.s.push(cell); // размер точки прежний — меняется только плотность
+      st.c.push(Ctr.x - px, Ctr.y - py, Ctr.z - pz); // вектор к центроиду (для стягивания к граням/центру)
     }
   }
 }
@@ -443,6 +464,7 @@ function makeCloud(st) {
   g.setAttribute('normal', new THREE.Float32BufferAttribute(st.n, 3));
   g.setAttribute('aRand', new THREE.Float32BufferAttribute(st.r, 1));
   g.setAttribute('aSize', new THREE.Float32BufferAttribute(st.s, 1));
+  g.setAttribute('aToCenter', new THREE.Float32BufferAttribute(st.c, 3));
   return new THREE.Points(g, voxMat);
 }
 // статичные объекты копятся в общее облако
@@ -473,6 +495,7 @@ for (let r = 0.8; r < 155; r += (0.5 + r * 0.024) / GEN_LIN) {
     STATIC.n.push(0, 1, 0);
     STATIC.r.push(rnd());
     STATIC.s.push(cell);
+    STATIC.c.push(0, 0, 0); // пол — плоская сетка, стягивание к граням не применяется
   }
 }
 // швы мостовой: кольца плит чуть приподняты
@@ -506,6 +529,7 @@ if (typeof MODEL !== 'undefined') {
   g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
   g.setAttribute('aRand', new THREE.BufferAttribute(rands, 1));
   g.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+  g.setAttribute('aToCenter', new THREE.BufferAttribute(new Float32Array(cnt * 3), 3)); // модель — сырое облако точек, без граней
   const modelCloud = new THREE.Points(g, voxMat);
   modelCloud.position.set(0, GROUND_Y + 1.55, 0); // на подиуме
   scene.add(modelCloud);
@@ -809,12 +833,12 @@ for (let i = 0; i < 10; i++) {
 let targetGT = 0, midGT = -0.6, gt = -0.6, gtM = -0.6;
 let navigated = false, lastInput = 0;
 const GT_MAX = N - 1;
+const wrapIdx = v => ((Math.round(v) % N) + N) % N; // индекс проекта 0..N-1 из любого gt (для лупа)
 const WHEEL_SENS = 0.005; // легче прокрутка (было 0.0022)
 
 const MAGNET_R = 0.5, MAGNET_DEAD = 0.12, MAGNET_POW = 2.2;
 function magnetize(g) {
-  const i = Math.round(g);
-  if (i < 0 || i > GT_MAX) return g;
+  const i = Math.round(g); // магнит работает на любом целом — галерея зациклена
   const d = g - i;
   const a = Math.min(Math.abs(d) / MAGNET_R, 1);
   const a0 = MAGNET_DEAD / MAGNET_R;
@@ -824,7 +848,7 @@ function magnetize(g) {
 }
 
 function onInput(delta) {
-  targetGT = clamp(targetGT + delta, -0.15, GT_MAX + 0.15);
+  targetGT += delta; // без ограничения по краям — галерея зациклена
   lastInput = performance.now();
   navigated = true;
   if (Math.abs(delta) > 0.004) stopPlay();
@@ -857,9 +881,9 @@ scrub.addEventListener('input', () => {
 
 addEventListener('keydown', e => {
   if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) {
-    targetGT = clamp(Math.round(targetGT) + 1, 0, GT_MAX); lastInput = 0; navigated = true; stopPlay();
+    targetGT = Math.round(targetGT) + 1; lastInput = 0; navigated = true; stopPlay();
   } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
-    targetGT = clamp(Math.round(targetGT) - 1, 0, GT_MAX); lastInput = 0; navigated = true; stopPlay();
+    targetGT = Math.round(targetGT) - 1; lastInput = 0; navigated = true; stopPlay();
   } else if (e.key === 'Escape') stopPlay();
 });
 
@@ -867,12 +891,16 @@ function updateNav(dt) {
   const idle = performance.now() - lastInput;
   if (idle > 180) {
     const s = smoothstep(180, 900, idle) * 3.5;
-    const snap = clamp(Math.round(targetGT), 0, GT_MAX);
+    const snap = Math.round(targetGT); // доводка к ближайшей точке (любой, галерея зациклена)
     targetGT += (snap - targetGT) * (1 - Math.exp(-dt * s));
   }
   const k = 1 - Math.exp(-dt * 5.0);
   midGT += (targetGT - midGT) * k;
   gt += (midGT - gt) * k;
+  // зацикливание: держим значения в пределах одной петли [0,N), сдвигая все три
+  // синхронно — азимут (кратен 2π) и высота (периодичны), поэтому шов бесшовный
+  const wrapN = Math.floor(gt / N) * N;
+  if (wrapN) { gt -= wrapN; midGT -= wrapN; targetGT -= wrapN; }
   // при перетаскивании слайдера — свободное скольжение без магнита
   gtM = sliderActive ? gt : magnetize(gt);
 }
@@ -890,7 +918,7 @@ const arcR = i => 5 + 9 * (0.5 + 0.5 * Math.sin(i * 2.63 + 1));   // 5..14 на�
 
 function updateCamera(time, wMax) {
   const az = gtM * SPACING;
-  const gtc = clamp(gtM, 0, GT_MAX);
+  const gtc = gtM; // без клампа — галерея зациклена, projH периодичен
   const i0 = clamp(Math.floor(gtc), 0, GT_MAX);
   const f = clamp01(gtc - i0);
   const m = Math.pow(Math.sin(Math.PI * gtc), 2); // 0 в точках, 1 в середине перегона
@@ -1022,7 +1050,7 @@ function embedUrl(e) {
 
 function startPlay() {
   if (!SHOW_PLAYER) return;
-  const i = clamp(Math.round(gtM), 0, N - 1);
+  const i = wrapIdx(gtM); // индекс с учётом зацикливания
   play.idx = i; play.state = 1;
   playerEl.style.backgroundImage = `url(${WORKS[i].frame || WORKS[i].src})`;
   playerEl.classList.remove('live');
@@ -1078,7 +1106,7 @@ const dots = WORKS.map(() => {
 });
 let uiIdx = -1;
 function updateUI(wMax) {
-  const i = clamp(Math.round(gtM), 0, N - 1);
+  const i = wrapIdx(gtM); // индекс с учётом зацикливания
   if (i !== uiIdx) {
     uiIdx = i;
     el.num.textContent = `${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')}`;
@@ -1125,18 +1153,20 @@ addEventListener('resize', () => {
 // ---------- Панель настроек ----------
 (function () {
   const g = id => document.getElementById(id);
-  const el  = { height: g('s-height'), fov: g('s-fov'), dist: g('s-dist'), size: g('s-size'), count: g('s-count'), spread: g('s-spread') };
-  const lbl = { height: g('v-height'), fov: g('v-fov'), dist: g('v-dist'), size: g('v-size'), count: g('v-count'), spread: g('v-spread') };
+  const el  = { height: g('s-height'), fov: g('s-fov'), dist: g('s-dist'), size: g('s-size'), sizevar: g('s-sizevar'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge') };
+  const lbl = { height: g('v-height'), fov: g('v-fov'), dist: g('v-dist'), size: g('v-size'), sizevar: g('v-sizevar'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge') };
   const fmt = {
-    height: v => (v > 0 ? '+' : '') + (+v).toFixed(1),
-    fov:    v => Math.round(v) + '°',
-    dist:   v => (+v).toFixed(0),
-    size:   v => (+v).toFixed(2) + '×',
-    count:  v => Math.round(v * 100) + '%',
-    spread: v => (+v).toFixed(1),
+    height:  v => (v > 0 ? '+' : '') + (+v).toFixed(1),
+    fov:     v => Math.round(v) + '°',
+    dist:    v => (+v).toFixed(0),
+    size:    v => (+v).toFixed(2) + '×',
+    sizevar: v => (+v).toFixed(1) + '×',
+    count:   v => Math.round(v * 100) + '%',
+    spread:  v => (+v).toFixed(1),
+    edge:    v => (v > 0 ? '+' : '') + (+v).toFixed(2),
   };
-  const uni = { size: voxUniforms.uSizeMul, count: voxUniforms.uCount, spread: voxUniforms.uSpread };
-  function pushUniforms() { voxUniforms.uSizeMul.value = S.size; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; }
+  const uni = { size: voxUniforms.uSizeMul, sizevar: voxUniforms.uSizeVar, count: voxUniforms.uCount, spread: voxUniforms.uSpread, edge: voxUniforms.uEdgeBias };
+  function pushUniforms() { voxUniforms.uSizeMul.value = S.size; voxUniforms.uSizeVar.value = S.sizevar; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; voxUniforms.uEdgeBias.value = S.edge; }
   function sync() { for (const k in el) { el[k].value = S[k]; lbl[k].textContent = fmt[k](S[k]); } pushUniforms(); }
   for (const k in el) el[k].addEventListener('input', () => {
     S[k] = +el[k].value; lbl[k].textContent = fmt[k](S[k]);
@@ -1152,7 +1182,7 @@ addEventListener('resize', () => {
   const saveBtn = document.getElementById('s-save');
   saveBtn.addEventListener('click', () => {
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, fov: S.fov, dist: S.dist, size: S.size, count: S.count, spread: S.spread }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, fov: S.fov, dist: S.dist, size: S.size, sizevar: S.sizevar, count: S.count, spread: S.spread, edge: S.edge }));
       saveBtn.textContent = 'Сохранено ✓';
       setTimeout(() => (saveBtn.textContent = 'Сохранить'), 1300);
     } catch (e) { alert('Не удалось сохранить настройки в этом браузере'); }
