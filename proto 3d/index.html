@@ -252,7 +252,7 @@ const EMBEDS = [
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
 const SETTINGS_KEY = 'pd_proto_settings';
-const SETTINGS_DEFAULTS = { height: 0, fov: 50, dist: 55.1, sizemin: 1, sizemax: 16, count: 0.2, spread: 0, edge: 0, sizevar: 1, projscale: 1, objscale: 1, envon: true, model: 'original' };
+const SETTINGS_DEFAULTS = { height: 0, fov: 50, dist: 55.1, sizemin: 1, sizemax: 16, count: 0.1, spread: 0, edge: 0, sizevar: 1, projscale: 1, objscale: 1, envon: true, model: 'original' };
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -262,7 +262,7 @@ try { const raw = localStorage.getItem(SETTINGS_KEY); if (raw) { Object.assign(S
 const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || Math.min(innerWidth, innerHeight) < 620;
 if (isMobile && !_hadSaved) S.count = Math.min(S.count, 0.12);
 // потолок генерации точек: сцена сэмплируется в PT_MUL раз плотнее, слайдер «Кол-во» показывает долю
-const PT_MUL = 10, GEN_LIN = Math.sqrt(PT_MUL);
+const PT_MUL = 20, GEN_LIN = Math.sqrt(PT_MUL); // потолок кол-ва точек ×20 (тест перфа)
 
 const ORBIT_R = S.dist, ORBIT_H = 7; // радиус орбиты берётся из настроек (по умолч. 55.1)
 const SPACING = Math.PI * 2 / N;
@@ -371,7 +371,12 @@ const voxVert = `
     // периферия (дальний пол и задний план) — до 20 раз мельче, воздушнее
     float airy = mix(1.0, 0.05, smoothstep(24.0, 55.0, length(vWorld.xz)));
     float sv = mix(1.0, uSizeVar, fract(aRand * 47.3)); // разнообразие: множитель размера 1×..uSizeVar× на точку
-    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy * sv, uSizeMin, uSizeMax);
+    // размер по экрану: мелкие в центре (чёткий образ), крупные к краям
+    float edgeDist = clamp(length(scr - uRes * 0.5) / (0.5 * length(uRes)), 0.0, 1.0);
+    float sizeGrad = mix(0.55, 1.8, edgeDist);
+    // под курсором точки мельче — вместе с уплотнением (кол-во→100%) складывается почти полное изображение
+    float lensFine = mix(1.0, 0.5, lens);
+    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy * sv * sizeGrad * lensFine, uSizeMin, uSizeMax);
   }`;
 
 // объявления сэмплеров и цепочка выбора — генерируются под любое число работ
