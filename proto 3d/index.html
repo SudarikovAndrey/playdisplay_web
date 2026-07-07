@@ -136,13 +136,13 @@
   #s-save:hover { opacity: .85; }
   #s-reset { background: transparent; color: var(--ink); border: 1px solid rgba(128,128,128,.5); }
   #s-reset:hover { background: rgba(128,128,128,.15); }
-  #settings-body select, #s-modelfile, #s-envfile, #s-env, #s-sound { width: 100%; padding: 8px 10px; border-radius: 9px;
+  #settings-body select, #s-modelfile, #s-envfile, #s-env, #s-sound, #s-autoq { width: 100%; padding: 8px 10px; border-radius: 9px;
     font: inherit; color: var(--ink); background: rgba(128,128,128,.14);
     border: 1px solid rgba(128,128,128,.4); cursor: pointer; }
   #settings-body select { -webkit-appearance: none; appearance: none; }
-  #s-modelfile, #s-envfile, #s-env, #s-sound { font-weight: 600; letter-spacing: .03em; transition: background .2s; }
-  #s-modelfile:hover, #s-envfile:hover, #s-env:hover, #s-sound:hover { background: rgba(128,128,128,.24); }
-  #s-env.off, #s-sound.off { opacity: .5; }
+  #s-modelfile, #s-envfile, #s-env, #s-sound, #s-autoq { font-weight: 600; letter-spacing: .03em; transition: background .2s; }
+  #s-modelfile:hover, #s-envfile:hover, #s-env:hover, #s-sound:hover, #s-autoq:hover { background: rgba(128,128,128,.24); }
+  #s-env.off, #s-sound.off, #s-autoq.off { opacity: .5; }
 </style>
 </head>
 <body>
@@ -267,6 +267,9 @@
     <div class="set-row">
       <button id="s-sound">Звук: вкл</button>
     </div>
+    <div class="set-row">
+      <button id="s-autoq">Авто-качество: вкл</button>
+    </div>
     <div id="settings-actions">
       <button id="s-reset">Сброс</button>
       <button id="s-save">Сохранить</button>
@@ -310,7 +313,7 @@ const EMBEDS = [
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
 const SETTINGS_KEY = 'pd_proto_settings';
-const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 1, sizemax: 16, count: 0.1, spread: 0, edge: 0, sizevar: 1, projscale: 1, objscale: 1, envscale: 1, morph: 4, vortspeed: 0, vortamp: 0, vortpct: 0, envon: true, sound: true, model: 'original' };
+const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 1, sizemax: 16, count: 0.1, spread: 0, edge: 0, sizevar: 1, projscale: 1, objscale: 1, envscale: 1, morph: 4, vortspeed: 0, vortamp: 0, vortpct: 0, envon: true, sound: true, autoq: true, model: 'original' };
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -1255,6 +1258,24 @@ addEventListener('touchmove', e => {
   tPrev = cur;
 }, { passive: true });
 addEventListener('touchend', () => { tPrev = null; }, { passive: true });
+// перетаскивание мышью по сцене = вращение (как свайп на тач); одиночный клик без протяжки = зум
+let dragOn = false, dragPrev = 0, dragMoved = 0;
+renderer.domElement.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  if (e.pointerType === 'touch') return;             // тач уже обрабатывается свайпом выше
+  dragOn = true; dragPrev = e.clientX + e.clientY; dragMoved = 0;
+});
+addEventListener('pointermove', e => {
+  if (!dragOn) return;
+  const cur = e.clientX + e.clientY;
+  onInput((dragPrev - cur) * 0.0065);                // тянем сцену — крутится
+  dragMoved += Math.abs(cur - dragPrev); dragPrev = cur;
+});
+addEventListener('pointerup', e => {
+  if (!dragOn) return;
+  dragOn = false;
+  if (dragMoved < 6 && play.state === 0 && lastWMax > 0.6) startPlay(); // почти без движения = клик = зум
+});
 // слайдер: прямое скольжение по спирали (магнит на время перетаскивания отключён)
 const scrub = document.getElementById('scrub');
 let sliderActive = false;
@@ -1514,7 +1535,7 @@ function stopPlay() { if (play.state === 1 || play.state === 2) play.state = 3; 
 playBtn.addEventListener('click', startPlay);
 playerClose.addEventListener('click', stopPlay);
 // клик по сцене = Play (курсор «плюс»); запускается на проекте, камера фиксируется точно
-renderer.domElement.addEventListener('click', () => { if (play.state === 0 && lastWMax > 0.6) startPlay(); });
+// клик по сцене обрабатывается в pointerup (только если не было протяжки) — см. выше
 
 function updatePlay(dt, wMax) {
   if (play.state === 1) {
@@ -1596,25 +1617,26 @@ const Sound = (() => {
     comp = ctx.createDynamicsCompressor();          // мягкий предел, чтобы не клиппило
     comp.connect(ctx.destination);
     master = ctx.createGain(); master.gain.value = 0.0001; master.connect(comp);
-    // дрон движения (квинтовый, тёплый — sine/triangle через lowpass)
-    padF = ctx.createBiquadFilter(); padF.type = 'lowpass'; padF.frequency.value = 320; padF.Q.value = 7;
+    // дрон движения — НИЗКИЙ, тёплый, только синусы: корень + октава + квинта (консонанс,
+    // ласкает слух, ничего «декоративного»). Лёгкая расстройка → мягкое биение/теплота.
+    padF = ctx.createBiquadFilter(); padF.type = 'lowpass'; padF.frequency.value = 200; padF.Q.value = 3;
     padG = ctx.createGain(); padG.gain.value = 0; padF.connect(padG); padG.connect(master);
-    const base = 108, spec = [[1, 'sine', 0.5], [1.5, 'sine', 0.32], [2.01, 'triangle', 0.2], [3.0, 'triangle', 0.12]], det = [-5, 6, -8, 9];
+    const base = 55, spec = [[1, 'sine', 0.55], [2, 'sine', 0.34], [1.5, 'sine', 0.22], [4, 'sine', 0.06]], det = [-3, 4, -5, 6];
     spec.forEach((s, i) => { const o = ctx.createOscillator(); o.type = s[1]; o.frequency.value = base * s[0]; o.detune.value = det[i];
       const g = ctx.createGain(); g.gain.value = s[2]; o.connect(g); g.connect(padF); o.start(); });
-    // воздушная текстура — коричневый шум через bandpass
+    // воздушная текстура — коричневый шум через bandpass (тихо, глухо — только намёк)
     const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), d = buf.getChannelData(0); let last = 0;
     for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.2; }
     const noise = ctx.createBufferSource(); noise.buffer = buf; noise.loop = true;
-    noiseF = ctx.createBiquadFilter(); noiseF.type = 'bandpass'; noiseF.frequency.value = 700; noiseF.Q.value = 0.8;
+    noiseF = ctx.createBiquadFilter(); noiseF.type = 'bandpass'; noiseF.frequency.value = 300; noiseF.Q.value = 0.7;
     noiseG = ctx.createGain(); noiseG.gain.value = 0; noise.connect(noiseF); noiseF.connect(noiseG); noiseG.connect(master); noise.start();
-    // «риз» влёта — шиммер, свипирующий вверх с playE
-    riseF = ctx.createBiquadFilter(); riseF.type = 'bandpass'; riseF.frequency.value = 500; riseF.Q.value = 4;
+    // «риз» влёта — мягкий тёплый подъём (ниже прежнего, без блеска)
+    riseF = ctx.createBiquadFilter(); riseF.type = 'bandpass'; riseF.frequency.value = 320; riseF.Q.value = 3;
     riseG = ctx.createGain(); riseG.gain.value = 0; riseF.connect(riseG); riseG.connect(master);
-    [1, 1.5, 2].forEach((r, i) => { const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 330 * r; o.detune.value = (i - 1) * 7;
+    [0.75, 1, 1.5].forEach((r, i) => { const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 196 * r; o.detune.value = (i - 1) * 6;
       const g = ctx.createGain(); g.gain.value = 0.5 / (i + 1); o.connect(g); g.connect(riseF); o.start(); });
-    // медленный LFO — «дышащий» фильтр, чтобы дрон жил
-    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.07; const lg = ctx.createGain(); lg.gain.value = 90;
+    // очень медленный LFO — «дышащий» фильтр, тонко (не декоративно)
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.05; const lg = ctx.createGain(); lg.gain.value = 55;
     lfo.connect(lg); lg.connect(padF.frequency); lfo.start();
     ready = true;
   }
@@ -1622,13 +1644,13 @@ const Sound = (() => {
   function frame(motion, play) {
     if (!ready) return;
     const t = ctx.currentTime, k = (p, v, tau) => p.setTargetAtTime(v, t, tau), M = on ? 1 : 0;
-    k(master.gain, on ? 0.085 : 0.0001, 0.25);
-    k(padG.gain, 0.5 * motion * M, 0.15);
-    k(padF.frequency, 300 + 1300 * motion, 0.2);
-    k(noiseG.gain, 0.3 * motion * M, 0.15);
-    k(noiseF.frequency, 500 + 1600 * motion, 0.2);
-    k(riseG.gain, 0.4 * play * M, 0.08);
-    k(riseF.frequency, 400 + 2200 * play, 0.1);
+    k(master.gain, on ? 0.09 : 0.0001, 0.25);
+    k(padG.gain, 0.6 * motion * M, 0.18);
+    k(padF.frequency, 200 + 520 * motion, 0.25);   // остаётся низким и тёплым
+    k(noiseG.gain, 0.15 * motion * M, 0.2);         // текстура — только намёк
+    k(noiseF.frequency, 280 + 650 * motion, 0.25);
+    k(riseG.gain, 0.3 * play * M, 0.1);
+    k(riseF.frequency, 300 + 1200 * play, 0.12);
   }
   function setEnabled(v) { on = v; if (v) kick(); else if (ctx) master.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.1); }
   return { kick, frame, setEnabled };
@@ -1637,6 +1659,33 @@ const Sound = (() => {
 ['pointerdown', 'wheel', 'keydown', 'touchstart'].forEach(ev =>
   addEventListener(ev, () => { if (S.sound) Sound.kick(); }, { passive: true }));
 
+// ---------- Авто-качество: держим плавность на слабых устройствах ----------
+// По сглаженному FPS: если проседает — сперва снижаем pixel ratio (невидимо, самый большой
+// выигрыш), затем плотность точек; появился запас — плавно возвращаем. Не воюет с ползунком:
+// эффективная плотность = «Кол-во точек» × qScale.
+const _dprFull = () => Math.min(devicePixelRatio || 1, isMobile ? 1.5 : 2);
+let qFps = 60, qScale = 1, qDpr = _dprFull(), qWait = 0, qWarm = 0;
+function autoQuality(dt) {
+  qWarm += dt;
+  qFps += (1 / Math.max(dt, 1e-3) - qFps) * 0.08; // сглаженный FPS
+  if (S.autoq) {
+    qWait -= dt;
+    if (qWarm > 2 && qWait <= 0) {
+      if (qFps < 45) {                              // тормозит — понижаем качество
+        if (qDpr > 1.0) { qDpr = Math.max(1.0, qDpr - 0.25); renderer.setPixelRatio(qDpr); }
+        else if (qScale > 0.3) qScale = Math.max(0.3, qScale - 0.12);
+        qWait = 1.2;
+      } else if (qFps > 57) {                       // есть запас — возвращаем
+        if (qScale < 1) { qScale = Math.min(1, qScale + 0.05); qWait = 1.6; }
+        else if (qDpr < _dprFull()) { qDpr = Math.min(_dprFull(), qDpr + 0.25); renderer.setPixelRatio(qDpr); qWait = 2.0; }
+      }
+    }
+  } else if (qScale !== 1 || qDpr !== _dprFull()) { // выкл — полное качество
+    qScale = 1; qDpr = _dprFull(); renderer.setPixelRatio(qDpr);
+  }
+  voxUniforms.uCount.value = S.count * qScale;       // эффективная плотность
+}
+
 const clock = new THREE.Clock();
 function loop() {
   requestAnimationFrame(loop);
@@ -1644,6 +1693,7 @@ function loop() {
   const time = clock.getElapsedTime();
   voxUniforms.uTime.value = time;
   if (sparkMat) sparkMat.uniforms.uTime.value = time;
+  autoQuality(dt);
   updateNav(dt);
   const wMax = updateWeights();
   lastWMax = wMax;
@@ -1736,18 +1786,23 @@ addEventListener('resize', () => {
   soundBtn.addEventListener('click', () => { S.sound = !S.sound; Sound.setEnabled(S.sound); syncSound(); });
   syncSound();
   if (S.sound) Sound.setEnabled(true); // применить сохранённое (звук всё равно стартует по первому жесту)
+  // тумблер авто-качества
+  const autoqBtn = g('s-autoq');
+  function syncAutoq() { autoqBtn.textContent = 'Авто-качество: ' + (S.autoq ? 'вкл' : 'выкл'); autoqBtn.classList.toggle('off', !S.autoq); }
+  autoqBtn.addEventListener('click', () => { S.autoq = !S.autoq; syncAutoq(); });
+  syncAutoq();
 
   const saveBtn = document.getElementById('s-save');
   saveBtn.addEventListener('click', () => {
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, envon: S.envon, sound: S.sound, model: S.model }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, envon: S.envon, sound: S.sound, autoq: S.autoq, model: S.model }));
       saveBtn.textContent = 'Сохранено ✓';
       setTimeout(() => (saveBtn.textContent = 'Сохранить'), 1300);
     } catch (e) { alert('Не удалось сохранить настройки в этом браузере'); }
   });
   document.getElementById('s-reset').addEventListener('click', () => {
     Object.assign(S, SETTINGS_DEFAULTS); sync(); updateProjectors(); rebuildGrids();
-    modelSel.value = S.model; setCentralModel(S.model); syncEnv(); Sound.setEnabled(S.sound); syncSound();
+    modelSel.value = S.model; setCentralModel(S.model); syncEnv(); Sound.setEnabled(S.sound); syncSound(); syncAutoq();
   });
   sync();
   // аккордеон: разделы сворачиваются по клику на заголовок (первый открыт, остальные свёрнуты)
