@@ -65,7 +65,9 @@
   #player { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
     z-index: 15; overflow: hidden; display: none; opacity: 0;
     background-size: cover; background-position: center;
-    box-shadow: 0 30px 120px rgba(0,0,0,.35); }
+    /* мягкий край: видео растворяется в окружающих точках → без прямоугольного шва */
+    -webkit-mask-image: radial-gradient(ellipse 74% 74% at center, #000 68%, transparent 100%);
+    mask-image: radial-gradient(ellipse 74% 74% at center, #000 68%, transparent 100%); }
   #player iframe { width: 100%; height: 100%; border: 0; opacity: 0; transition: opacity 1.4s; }
   #player.live iframe { opacity: 1; }
   #player-close { position: absolute; top: 12px; right: 12px; z-index: 2;
@@ -73,6 +75,16 @@
     background: rgba(0,0,0,.4); color: #fff; font-size: 16px; cursor: pointer;
     backdrop-filter: blur(4px); }
   #player-close:hover { background: rgba(0,0,0,.65); }
+  #lensring { position: fixed; left: 0; top: 0; width: 510px; height: 510px;
+    margin: -255px 0 0 -255px; z-index: 12; pointer-events: none; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.32); box-shadow: 0 0 24px rgba(255,255,255,.08) inset;
+    opacity: 0; transition: opacity .3s; }
+  #stage { cursor: none; } /* системный курсор прячем — рисуем свой */
+  #pluscursor { position: fixed; left: 0; top: 0; width: 44px; height: 44px;
+    margin: -22px 0 0 -22px; z-index: 41; pointer-events: none; color: #fff;
+    filter: drop-shadow(0 0 2px rgba(0,0,0,.7)); opacity: .9;
+    transition: opacity .3s; }
+  #pluscursor svg { width: 100%; height: 100%; display: block; }
 
   /* ---- Панель настроек ---- */
   #settings { position: fixed; top: 24px; right: 24px; z-index: 30;
@@ -87,13 +99,24 @@
   #settings-body { margin-top: 10px; width: 232px; padding: 16px 16px 14px;
     border-radius: 14px; background: rgba(240,240,242,.82); border: 1px solid rgba(128,128,128,.35);
     backdrop-filter: blur(16px); box-shadow: 0 14px 50px rgba(0,0,0,.22);
-    display: none; }
+    display: none; max-height: calc(100vh - 96px); overflow-y: auto; overscroll-behavior: contain; }
+  /* тонкий скроллбар в панели */
+  #settings-body::-webkit-scrollbar { width: 8px; }
+  #settings-body::-webkit-scrollbar-thumb { background: rgba(128,128,128,.42); border-radius: 8px;
+    border: 2px solid transparent; background-clip: padding-box; }
+  #settings-body::-webkit-scrollbar-track { background: transparent; }
+  #settings-body { scrollbar-width: thin; scrollbar-color: rgba(128,128,128,.42) transparent; }
   body.dark-env #settings-body { background: rgba(24,24,28,.82); }
   #settings.open #settings-body { display: block; }
   #settings-body h4 { font-size: 10px; letter-spacing: .28em; text-transform: uppercase;
-    opacity: .5; margin-bottom: 14px; font-weight: 700; }
+    opacity: .5; margin-bottom: 14px; font-weight: 700; cursor: pointer; user-select: none; }
+  #settings-body h4:hover { opacity: .75; }
+  #settings-body h4::after { content: '▾'; float: right; font-size: 9px; opacity: .8; letter-spacing: 0; }
+  #settings-body h4.collapsed { margin-bottom: 4px; }
+  #settings-body h4.collapsed::after { content: '▸'; }
   #settings-body h4.set-sub { margin-top: 4px; margin-bottom: 12px; padding-top: 12px;
     border-top: 1px solid rgba(128,128,128,.28); }
+  #settings-body h4.set-sub.collapsed { margin-bottom: 4px; }
   .set-row { margin-bottom: 13px; }
   .set-row .set-label { display: flex; justify-content: space-between; margin-bottom: 5px;
     letter-spacing: .02em; }
@@ -113,13 +136,13 @@
   #s-save:hover { opacity: .85; }
   #s-reset { background: transparent; color: var(--ink); border: 1px solid rgba(128,128,128,.5); }
   #s-reset:hover { background: rgba(128,128,128,.15); }
-  #settings-body select, #s-modelfile, #s-env { width: 100%; padding: 8px 10px; border-radius: 9px;
+  #settings-body select, #s-modelfile, #s-envfile, #s-env, #s-sound { width: 100%; padding: 8px 10px; border-radius: 9px;
     font: inherit; color: var(--ink); background: rgba(128,128,128,.14);
     border: 1px solid rgba(128,128,128,.4); cursor: pointer; }
   #settings-body select { -webkit-appearance: none; appearance: none; }
-  #s-modelfile, #s-env { font-weight: 600; letter-spacing: .03em; transition: background .2s; }
-  #s-modelfile:hover, #s-env:hover { background: rgba(128,128,128,.24); }
-  #s-env.off { opacity: .5; }
+  #s-modelfile, #s-envfile, #s-env, #s-sound { font-weight: 600; letter-spacing: .03em; transition: background .2s; }
+  #s-modelfile:hover, #s-envfile:hover, #s-env:hover, #s-sound:hover { background: rgba(128,128,128,.24); }
+  #s-env.off, #s-sound.off { opacity: .5; }
 </style>
 </head>
 <body>
@@ -127,6 +150,8 @@
 <div id="vignette"></div>
 <div id="grain"></div>
 <div id="frame"></div>
+<div id="lensring"></div>
+<div id="pluscursor"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M22 13.5v17M13.5 22h17" stroke="currentColor" stroke-width="1.5"/></svg></div>
 <div id="player"><button id="player-close">✕</button></div>
 
 <div class="ui" id="logo">PLAY<span>DISPLAY</span></div>
@@ -147,6 +172,10 @@
     <div class="set-row">
       <div class="set-label"><span>Высота камеры</span><b id="v-height">0</b></div>
       <input type="range" id="s-height" min="-10" max="40" step="0.5">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Высота центра обзора</span><b id="v-viewy">0</b></div>
+      <input type="range" id="s-viewy" min="-30" max="30" step="0.5">
     </div>
     <div class="set-row">
       <div class="set-label"><span>Линза (FOV)</span><b id="v-fov">50°</b></div>
@@ -174,6 +203,10 @@
       <input type="range" id="s-projscale" min="0.3" max="3" step="0.05">
     </div>
     <div class="set-row">
+      <div class="set-label"><span>Морфинг в движении</span><b id="v-morph">4</b></div>
+      <input type="range" id="s-morph" min="0" max="16" step="0.1">
+    </div>
+    <div class="set-row">
       <div class="set-label"><span>Кол-во точек</span><b id="v-count">100%</b></div>
       <input type="range" id="s-count" min="0.05" max="1" step="0.01">
     </div>
@@ -184,6 +217,19 @@
     <div class="set-row">
       <div class="set-label"><span>Стягивание к граням</span><b id="v-edge">0</b></div>
       <input type="range" id="s-edge" min="-1" max="1" step="0.05">
+    </div>
+    <h4 class="set-sub">Вихрь</h4>
+    <div class="set-row">
+      <div class="set-label"><span>Скорость вихря</span><b id="v-vortspeed">0.0</b></div>
+      <input type="range" id="s-vortspeed" min="0" max="3" step="0.02">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Закрутка (амплитуда)</span><b id="v-vortamp">0.0</b></div>
+      <input type="range" id="s-vortamp" min="0" max="3" step="0.02">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Доля точек в вихре</span><b id="v-vortpct">0%</b></div>
+      <input type="range" id="s-vortpct" min="0" max="1" step="0.01">
     </div>
     <h4 class="set-sub">Модель центра</h4>
     <div class="set-row">
@@ -200,14 +246,26 @@
     </div>
     <div class="set-row">
       <div class="set-label"><span>Размер объекта</span><b id="v-objscale">1.0×</b></div>
-      <input type="range" id="s-objscale" min="0.3" max="3" step="0.05">
+      <input type="range" id="s-objscale" min="0.3" max="6" step="0.05">
     </div>
     <div class="set-row">
       <button id="s-modelfile">Загрузить .glb / .obj / .fbx…</button>
       <input type="file" id="s-modelinput" accept=".glb,.gltf,.obj,.fbx" hidden>
     </div>
+    <h4 class="set-sub">Окружение</h4>
     <div class="set-row">
-      <button id="s-env">3D-окружение: вкл</button>
+      <button id="s-envfile">Загрузить модель окружения…</button>
+      <input type="file" id="s-envinput" accept=".glb,.gltf,.obj,.fbx" hidden>
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Масштаб модели окр.</span><b id="v-envscale">1.0×</b></div>
+      <input type="range" id="s-envscale" min="0.3" max="10" step="0.05">
+    </div>
+    <div class="set-row">
+      <button id="s-env">Старое окружение: вкл</button>
+    </div>
+    <div class="set-row">
+      <button id="s-sound">Звук: вкл</button>
     </div>
     <div id="settings-actions">
       <button id="s-reset">Сброс</button>
@@ -252,7 +310,7 @@ const EMBEDS = [
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
 const SETTINGS_KEY = 'pd_proto_settings';
-const SETTINGS_DEFAULTS = { height: 0, fov: 50, dist: 55.1, sizemin: 1, sizemax: 16, count: 0.1, spread: 0, edge: 0, sizevar: 1, projscale: 1, objscale: 1, envon: true, model: 'original' };
+const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 1, sizemax: 16, count: 0.1, spread: 0, edge: 0, sizevar: 1, projscale: 1, objscale: 1, envscale: 1, morph: 4, vortspeed: 0, vortamp: 0, vortpct: 0, envon: true, sound: true, model: 'original' };
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -332,10 +390,12 @@ const voxVert = `
   attribute float aRand;
   attribute float aSize;
   attribute vec3 aToCenter;  // вектор к центроиду треугольника
+  attribute float aNoFade;   // 1 = облако модели/окружения (не гасим угасанием), 0 = пол/декор
   varying vec3 vWorld;
   varying vec3 vNormal;
   varying float vRand;
   varying float vDist;
+  varying float vLens;      // близость к курсору (1 под курсором → 0 вне) для фрагмента
   uniform float uPx;
   uniform float uSizeMin;   // минимальный размер точки (px)
   uniform float uSizeMax;   // максимальный размер точки (px)
@@ -346,15 +406,49 @@ const voxVert = `
   uniform vec2 uMousePx;    // курсор в пикселях
   uniform vec2 uRes;        // разрешение окна (px)
   uniform float uLensR;     // радиус линзы чёткости (px)
+  uniform float uMorph;     // 0 на точке обзора → 1 в движении камеры
+  uniform float uMorphAmp;  // амплитуда морфинга при движении
+  uniform float uCamDist;   // расстояние камеры до фокуса (для скрытия переднего плана)
+  uniform float uModelMode; // 1 = загруженная крупная модель: без «воздушного» угасания и скрытия переднего плана
+  uniform float uTime;      // время — лёгкая «жизнь» точек в покое
+  uniform float uVortSpeed; // вихрь: скорость вращения вокруг вертикальной оси
+  uniform float uVortAmp;   // вихрь: закрутка (спираль) — угол растёт с радиусом
+  uniform float uVortPct;   // вихрь: доля задействованных точек (0..1)
   void main() {
     vec3 worig = (modelMatrix * vec4(position, 1.0)).xyz;   // исходная позиция точки
+    // Линза курсора считается по ИСХОДНОЙ позиции (до разлёта) — чтобы можно было
+    // погасить разлёт локально: где точка ДОЛЖНА быть на экране, там и ловим курсор.
+    vec4 clip0 = projectionMatrix * viewMatrix * vec4(worig, 1.0);
+    vec2 scr = (vec2(clip0.x, -clip0.y) / clip0.w * 0.5 + 0.5) * uRes;
+    float lens = clip0.w > 0.0 ? (1.0 - smoothstep(0.0, uLensR, distance(scr, uMousePx))) : 0.0;
+    vLens = lens;
     vec3 jit = vec3(fract(aRand * 13.13), fract(aRand * 71.7), fract(aRand * 191.3)) - 0.5;
     vec3 tc = mat3(modelMatrix) * aToCenter;                // вектор к центроиду в мировых
-    // рендер-позиция = исходная + разрежённость (случайно) + стягивание к граням(>0)/центру(<0)
-    vec3 wrender = worig + jit * uSpread - tc * uEdgeBias; // разлёт (разрежённость + стягивание к граням)
-    // ВАЖНО: проекцию сэмплируем по ТЕКУЩЕЙ (смещённой) позиции — проектор «красит» картинку
-    // там, где точка сейчас. Как ни двигай точки, на правильной точке обзора картинка ровная,
-    // а точки перекрашиваются на лету.
+    // разлёт: разрежённость (постоянно) + морфинг при движении камеры (растёт в полёте, гаснет на точке обзора)
+    vec3 disp = jit * (uSpread + uMorphAmp * uMorph) - tc * uEdgeBias;
+    // ПОД КУРСОРОМ разлёт гасится (×(1-lens)) → точки собираются в свои истинные позиции
+    // и складывают чёткий образ прямо в круге — видно при любом «Кол-ве точек» и в движении.
+    vec3 wrender = worig + disp * (1.0 - lens);
+    // «жизнь» в покое: мягкий дрейф. Слабо у центра (образ читается), сильнее к периферии;
+    // под курсором гасится. Так сцена не выглядит замороженной, когда скролл остановлен.
+    float driftAmp = mix(0.04, 0.55, smoothstep(9.0, 42.0, length(worig.xz))) * (1.0 - lens);
+    wrender += vec3(sin(uTime * 0.7 + aRand * 40.0),
+                    sin(uTime * 0.9 + aRand * 27.0) * 0.6,
+                    cos(uTime * 0.6 + aRand * 33.0)) * driftAmp;
+    // ВИХРЬ-СДУВАНИЕ: задействованная доля точек (aRand<uVortPct) взмывает вокруг вертикальной
+    // оси, расходится наружу+вверх и ГАСНЕТ (размер→0), улетая от формы. Скорость = темп сдувания,
+    // амплитуда = дальность/высота разлёта, доля = сколько точек участвует. Курсор не влияет.
+    float vortFade = 1.0;
+    if (aRand < uVortPct && uVortSpeed != 0.0) {
+      float ph = fract(fract(aRand * 131.7) + uTime * uVortSpeed * 0.12); // жизнь частицы 0..1 (стартовая фаза у каждой своя)
+      vec2 rel = wrender.xz;
+      float ang = ph * (2.5 + uVortAmp * 4.0);                       // закрутка растёт по мере полёта
+      float cc = cos(ang), ss = sin(ang);
+      wrender.xz = (mat2(cc, -ss, ss, cc) * rel) * (1.0 + ph * (0.6 + uVortAmp)); // расходятся наружу
+      wrender.y += ph * (10.0 + 22.0 * uVortAmp);                    // взмывают вверх
+      vortFade = smoothstep(0.0, 0.12, ph) * (1.0 - smoothstep(0.5, 1.0, ph)); // проявились у формы → растворились в полёте
+    }
+    // Проекцию сэмплируем по ТЕКУЩЕЙ позиции — проектор «красит» картинку там, где точка сейчас.
     vWorld = wrender;
     vNormal = normalize(mat3(modelMatrix) * normal);
     vRand = aRand;
@@ -362,21 +456,25 @@ const voxVert = `
     vDist = -mv.z;
     gl_Position = projectionMatrix * mv;
     // кол-во точек: прячем точки с aRand выше порога. Под курсором порог поднимается
-    // к 1.0 (линза чёткости, радиус uLensR, плавный спад) → скрытые точки проявляются.
-    vec2 scr = vec2(gl_Position.x / gl_Position.w * 0.5 + 0.5, 0.5 - gl_Position.y / gl_Position.w * 0.5) * uRes;
-    float lens = gl_Position.w > 0.0 ? (1.0 - smoothstep(0.0, uLensR, distance(scr, uMousePx))) : 0.0;
+    // к 1.0 → скрытые точки проявляются (если есть запас плотности).
     float eff = mix(uCount, 1.0, lens);
     if (aRand > eff) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
     // центр (пол-сцена, где собирается изображение) — полная плотность;
-    // периферия (дальний пол и задний план) — до 20 раз мельче, воздушнее
-    float airy = mix(1.0, 0.05, smoothstep(24.0, 55.0, length(vWorld.xz)));
+    // периферия (дальний пол и задний план) — до 20 раз мельче, воздушнее.
+    // В режиме загруженной модели угасание выключено — крупная модель видна целиком, до краёв экрана.
+    float noFade = max(uModelMode, aNoFade); // модель/окружение не гасим
+    float airy = noFade > 0.5 ? 1.0 : mix(1.0, 0.05, smoothstep(24.0, 55.0, length(vWorld.xz)));
     float sv = mix(1.0, uSizeVar, fract(aRand * 47.3)); // разнообразие: множитель размера 1×..uSizeVar× на точку
+    sv = mix(sv, 1.0, lens);                            // под курсором — единый размер (ровная сетка)
     // размер по экрану: мелкие в центре (чёткий образ), крупные к краям
     float edgeDist = clamp(length(scr - uRes * 0.5) / (0.5 * length(uRes)), 0.0, 1.0);
-    float sizeGrad = mix(0.55, 1.8, edgeDist);
-    // под курсором точки мельче — вместе с уплотнением (кол-во→100%) складывается почти полное изображение
-    float lensFine = mix(1.0, 0.5, lens);
-    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy * sv * sizeGrad * lensFine, uSizeMin, uSizeMax);
+    float sizeGrad = mix(0.42, 2.2, edgeDist);
+    sizeGrad = mix(sizeGrad, 1.0, lens);               // под курсором градиент выключен — равномерно
+    // под курсором точки мельче и одинаковые → плотная ровная сетка складывает полный образ
+    float lensFine = mix(1.0, 0.42, lens);
+    // прячем передний план (ближе фокуса), центр не трогаем; для крупной модели не прячем
+    float nearFade = noFade > 0.5 ? 1.0 : smoothstep(uCamDist * 0.3, uCamDist * 0.62, vDist);
+    gl_PointSize = clamp(aSize * uPx / vDist * 1.3 * airy * sv * sizeGrad * lensFine, uSizeMin, uSizeMax) * nearFade * vortFade;
   }`;
 
 // объявления сэмплеров и цепочка выбора — генерируются под любое число работ
@@ -402,6 +500,7 @@ const voxFrag = `
   varying vec3 vNormal;
   varying float vRand;
   varying float vDist;
+  varying float vLens;
 
   vec3 sampleProj(int i, vec2 uv) {
     ${texChain}
@@ -430,13 +529,15 @@ const voxFrag = `
       // радиальное угасание проекции — без прямоугольной рамки на объектах
       float edge = 1.0 - smoothstep(0.7, 1.05, length(uv * 2.0 - 1.0));
       float grain = sin(vWorld.x * 1.31) * sin(vWorld.y * 1.73 + 2.1) * sin(vWorld.z * 1.07 + 4.2);
-      float w = uW[i] * facing * edge * (0.9 + 0.1 * grain);
+      grain *= (1.0 - vLens);                       // под курсором зерно проекции убрано
+      // под курсором вес проекции к максимуму — картинка проступает полностью
+      float w = mix(uW[i], max(uW[i], 0.96), vLens) * facing * edge * (0.9 + 0.1 * grain);
       col = mix(col, sampleProj(i, clamp(suv, 0.0, 1.0)), w);
     }
-    // точки разного цвета: разнояркость и лёгкий цветовой шум
-    col *= 0.88 + 0.24 * vRand;
-    col *= vec3(1.0 + 0.06 * (vRand - 0.5), 1.0 + 0.06 * (fract(vRand * 7.31) - 0.5),
-                1.0 + 0.06 * (fract(vRand * 13.7) - 0.5));
+    // точки разного цвета: разнояркость и лёгкий цветовой шум — под курсором гасим (ровно и чисто)
+    col *= mix(0.88 + 0.24 * vRand, 1.0, vLens);
+    col *= mix(vec3(1.0 + 0.06 * (vRand - 0.5), 1.0 + 0.06 * (fract(vRand * 7.31) - 0.5),
+                1.0 + 0.06 * (fract(vRand * 13.7) - 0.5)), vec3(1.0), vLens);
     // грейдинг
     col = (col - 0.5) * 1.08 + 0.5;
     float lum = dot(col, vec3(0.299, 0.587, 0.114));
@@ -444,9 +545,14 @@ const voxFrag = `
     // LED-пиксель: яркое ядро + лёгкий тёмный зазор у края через gl_PointCoord —
     // «дисплейная» фактура, пиксели читаются раздельно (проекция чётче)
     float pled = smoothstep(0.5, 0.08, length(gl_PointCoord - 0.5));
-    col *= mix(0.75, 1.15, pled);
+    // под курсором тёмный зазор между «пикселями» убираем → сплошная ровная картинка
+    col *= mix(mix(0.75, 1.15, pled), mix(1.0, 1.12, pled), vLens);
     // мягкий bloom по светам — голографический подсвет ярких точек
     col += pow(max(col - 0.62, 0.0), vec3(1.6)) * 0.6;
+    // ПОД КУРСОРОМ: контраст + яркость картинки заметно поднимаются — образ «проступает»
+    // в круге даже на плотной статичной сцене (не только за счёт уплотнения точек).
+    col = (col - 0.5) * (1.0 + 0.5 * vLens) + 0.5;
+    col += 0.10 * vLens;
     // дымка
     col = mix(col, uFogC, smoothstep(uFogN, uFogF, vDist));
     gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
@@ -473,7 +579,15 @@ const voxUniforms = {
   uProjScale:{ value: S.projscale },// масштаб проецируемой картинки
   uMousePx: { value: new THREE.Vector2(-9999, -9999) }, // курсор (линза чёткости)
   uRes:     { value: new THREE.Vector2(innerWidth, innerHeight) },
-  uLensR:   { value: 300 },      // радиус линзы, px
+  uLensR:   { value: 450 },      // радиус линзы, px (×1.5)
+  uMorph:   { value: 0 },        // морфинг при движении (1-wMax)
+  uMorphAmp:{ value: S.morph },  // амплитуда морфинга
+  uCamDist: { value: 55 },       // расстояние камеры до фокуса
+  uModelMode:{ value: 0 },       // 1 = крупная загруженная модель (без угасаний)
+  uTime:    { value: 0 },        // время анимации (дрейф в покое)
+  uVortSpeed:{ value: 0 },       // вихрь: скорость
+  uVortAmp: { value: 0 },        // вихрь: закрутка
+  uVortPct: { value: 0 },        // вихрь: доля точек
 };
 projectors.forEach((p, i) => { voxUniforms['uTex' + i] = { value: p.tex }; });
 const voxMat = new THREE.ShaderMaterial({ vertexShader: voxVert, fragmentShader: voxFrag,
@@ -523,13 +637,14 @@ function sampleInto(st, geo, m, density, cell) {
     }
   }
 }
-function makeCloud(st) {
+function makeCloud(st, noFade = 0) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(st.p, 3));
   g.setAttribute('normal', new THREE.Float32BufferAttribute(st.n, 3));
   g.setAttribute('aRand', new THREE.Float32BufferAttribute(st.r, 1));
   g.setAttribute('aSize', new THREE.Float32BufferAttribute(st.s, 1));
   g.setAttribute('aToCenter', new THREE.Float32BufferAttribute(st.c, 3));
+  g.setAttribute('aNoFade', new THREE.Float32BufferAttribute(new Float32Array(st.p.length / 3).fill(noFade), 1));
   return new THREE.Points(g, voxMat);
 }
 // статичные объекты копятся в общее облако
@@ -582,7 +697,7 @@ for (let ring = 0; ring < 7; ring++) {
   vox(new THREE.CylinderGeometry(r, r, 0.5, 48), 0, GROUND_Y + y - 0.25, 0, 0, 0, 0, 6, 0.32));
 
 /* --- Центральный объект: воксельная модель (оригинал / пресет / загруженный файл) --- */
-let centralCloud = null, centralSpin = null;
+let centralCloud = null;
 
 // оригинал — воксели из test_mod1.fbx (base64 в model.js)
 function buildOriginalCentral() {
@@ -602,6 +717,7 @@ function buildOriginalCentral() {
   g.setAttribute('aRand', new THREE.BufferAttribute(rands, 1));
   g.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
   g.setAttribute('aToCenter', new THREE.BufferAttribute(new Float32Array(cnt * 3), 3));
+  g.setAttribute('aNoFade', new THREE.BufferAttribute(new Float32Array(cnt), 1));
   g.computeBoundingBox(); const cc = new THREE.Vector3(); g.boundingBox.getCenter(cc);
   g.translate(-cc.x, -cc.y, -cc.z); // центрируем в origin — объект будет по центру экрана
   return new THREE.Points(g, voxMat);
@@ -634,6 +750,25 @@ function cloudFromGeometry(geo) {
   return makeCloud(st);
 }
 
+// облако для ЗАГРУЖЕННОЙ модели: крупно (выходит за края экрана) + плотно (много деталей).
+// FIT — целевой габарит модели в мировых; qcWant — шаг вокселя (мельче → больше точек/деталей).
+function cloudFromModelGeometry(geo) {
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox, size = new THREE.Vector3(), ctr = new THREE.Vector3();
+  bb.getSize(size); bb.getCenter(ctr);
+  const FIT = 56;                                   // крупно — модель заполняет и выходит за экран
+  const scale = FIT / (Math.max(size.x, size.y, size.z) || 1);
+  const T = new THREE.Matrix4().makeTranslation(-ctr.x, -ctr.y, -ctr.z); // центр модели → origin (центр экрана)
+  const m = new THREE.Matrix4().multiplyMatrices(new THREE.Matrix4().makeScale(scale, scale, scale), T);
+  const st = newStore();
+  const qcWant = 0.11;                              // шаг вокселя (детальнее, чем у пресетов)
+  const denWant = 3 / (qcWant * qcWant);            // плотность сэмплов — чтобы заполнить все ячейки
+  sampleInto(st, geo, m, denWant / PT_MUL, qcWant * GEN_LIN);
+  const pointCount = st.p.length / 3;
+  if (pointCount > 900000) console.warn('Модель дала', pointCount, 'точек — на слабом устройстве может тормозить');
+  return makeCloud(st, 1); // модель/окружение — без «воздушного» угасания, видно целиком
+}
+
 // собрать все меши загруженной сцены в одну неиндексированную геометрию (в мировых координатах)
 function mergeSceneGeometry(root) {
   root.updateMatrixWorld(true);
@@ -658,49 +793,72 @@ function mountCentral(cloud) {
   if (centralCloud) {
     scene.remove(centralCloud);
     if (centralCloud.geometry) centralCloud.geometry.dispose();
-    const i = spinners.indexOf(centralSpin); if (i >= 0) spinners.splice(i, 1);
   }
   centralCloud = cloud;
   cloud.position.copy(TARGET); // центр объекта — в точке фокуса камеры (центр экрана)
   cloud.scale.setScalar(S.objscale);         // размер объекта из настроек
   scene.add(cloud);
-  centralSpin = { mesh: cloud, rx: 0, ry: 0.0009 }; // медленно вращается
-  spinners.push(centralSpin);
+  // центральный объект НЕ вращается сам по себе — крутится вся сцена камерой
 }
 
 let centralBillboard = false;
+let modelMode = false;   // true = загруженная крупная модель (окружение выкл, угасания выкл)
+let sceneReady = false;  // окружение готово (setEnv/envObjects созданы) — до этого applySceneMode молчит
+let refreshEnvUI = () => {}; // обновить подпись тумблера окружения (назначается в панели настроек)
 function setCentralModel(kind) {
   centralBillboard = (kind === 'plane');
+  modelMode = false;     // пресет/оригинал → обычный режим с окружением (вариант «куб» сохраняется)
   mountCentral(kind === 'original' ? buildOriginalCentral() : cloudFromGeometry(presetGeo(kind)));
-  if (centralBillboard) centralSpin.ry = 0; // билборд — вращение не нужно, повернём на камеру в цикле
+  applySceneMode();
 }
 
-// загрузка файла .glb/.gltf/.obj
-function loadModelFile(file) {
+// общий разбор файла модели .glb/.gltf/.obj/.fbx → геометрия в onGeo(geo)
+function parseModelFile(file, onGeo) {
   const ext = (file.name.split('.').pop() || '').toLowerCase();
   const reader = new FileReader();
   reader.onload = () => {
-    centralBillboard = false; // загруженный объект вращается (это не плоскость-билборд)
     try {
       if (ext === 'obj') {
         if (!THREE.OBJLoader) return alert('Загрузчик OBJ не подгрузился (нет сети?)');
         const geo = mergeSceneGeometry(new THREE.OBJLoader().parse(reader.result));
-        if (geo) mountCentral(cloudFromGeometry(geo)); else alert('В файле нет геометрии');
+        if (geo) onGeo(geo); else alert('В файле нет геометрии');
       } else if (ext === 'glb' || ext === 'gltf') {
         if (!THREE.GLTFLoader) return alert('Загрузчик GLTF не подгрузился (нет сети?)');
         new THREE.GLTFLoader().parse(reader.result, '', gltf => {
           const geo = mergeSceneGeometry(gltf.scene);
-          if (geo) mountCentral(cloudFromGeometry(geo)); else alert('В модели нет геометрии');
+          if (geo) onGeo(geo); else alert('В модели нет геометрии');
         }, () => alert('Не удалось разобрать GLB/GLTF'));
       } else if (ext === 'fbx') {
         if (!THREE.FBXLoader) return alert('Загрузчик FBX не подгрузился (нет сети?)');
         const geo = mergeSceneGeometry(new THREE.FBXLoader().parse(reader.result, ''));
-        if (geo) mountCentral(cloudFromGeometry(geo)); else alert('В FBX нет геометрии');
+        if (geo) onGeo(geo); else alert('В FBX нет геометрии');
       } else alert('Поддерживаются .glb, .gltf, .obj, .fbx');
     } catch (e) { alert('Ошибка загрузки модели: ' + e.message); }
   };
   if (ext === 'obj') reader.readAsText(file); else reader.readAsArrayBuffer(file);
 }
+
+// центральная модель: крупно+плотно, окружение выкл (в модели уже всё есть)
+function loadModelFile(file) {
+  parseModelFile(file, geo => {
+    centralBillboard = false; modelMode = true;
+    mountCentral(cloudFromModelGeometry(geo)); applySceneMode();
+  });
+}
+
+// модель ОКРУЖЕНИЯ: отдельное облако, всегда видимо, масштаб бегунком (не зависит от вкл/выкл окружения)
+let envUserCloud = null;
+function mountEnvModel(geo) {
+  if (envUserCloud) { scene.remove(envUserCloud); if (envUserCloud.geometry) envUserCloud.geometry.dispose(); }
+  envUserCloud = cloudFromModelGeometry(geo);
+  envUserCloud.position.set(0, -3, 0);          // центр окружения около центра сцены
+  envUserCloud.scale.setScalar(S.envscale);
+  scene.add(envUserCloud);
+  S.envon = false;            // загруженная модель заменяет старое окружение (прячем генеративное)
+  applySceneMode();
+  refreshEnvUI();             // тумблер «3D-окружение» → выкл
+}
+function loadEnvModelFile(file) { parseModelFile(file, mountEnvModel); }
 
 setCentralModel(S.model); // начальная модель из настроек
 
@@ -830,14 +988,17 @@ const bdFrag = `
   uniform vec2 uMouse;
   uniform float uLens;
   uniform float uAsp;
+  uniform float uProjScale;
   varying vec2 vUv;
   varying float vRand;
   void main() {
     // радиальная метрика от центра кадра — никаких прямоугольных граней
     vec2 q = (vUv - 0.5) * 2.0;
     float rr = length(q);
-    // цвет: внутри кадр, за краями пиксели тянутся наружу и уходят в цвет среды
-    vec3 tex = texture2D(uTexB, clamp(vUv, 0.0, 1.0)).rgb;
+    // цвет: внутри кадр, за краями пиксели тянутся наружу и уходят в цвет среды.
+    // uProjScale — картинка занимает ту же долю кадра, что и проекция на точках (совпадение с видео)
+    vec2 suv = (vUv - 0.5) / uProjScale + 0.5;
+    vec3 tex = texture2D(uTexB, clamp(suv, 0.0, 1.0)).rgb;
     vec3 col = mix(tex, uEnv, smoothstep(0.85, 2.3, rr));
     // линза под курсором: изображение проявляется чётко и цельно
     float lens = uLens * (1.0 - smoothstep(0.0, 0.34, distance(vUv * vec2(uAsp, 1.0), uMouse * vec2(uAsp, 1.0))));
@@ -900,7 +1061,8 @@ function frameGrid(p, i) {
   const mat = new THREE.ShaderMaterial({ vertexShader: bdVert, fragmentShader: bdFrag,
     transparent: true, depthWrite: false,
     uniforms: { uTexB: { value: p.tex }, uWb: { value: 0 }, uEnv: { value: envColor },
-                uPx: PXU, uMouse: MOUSE_UV, uLens: LENS, uAsp: { value: aspect } } });
+                uPx: PXU, uMouse: MOUSE_UV, uLens: LENS, uAsp: { value: aspect },
+                uProjScale: voxUniforms.uProjScale } });
   const cloud = new THREE.Points(g, mat);
   cloud.renderOrder = 5;
   cloud.visible = false;
@@ -908,6 +1070,52 @@ function frameGrid(p, i) {
   backMats.push(mat); backPts.push(cloud);
 }
 projectors.forEach((p, i) => frameGrid(p, i));
+
+// ---------- Взлетающие фоновые искры (атмосфера, всегда позади) ----------
+let sparkPts = null, sparkMat = null;
+(function makeSparks() {
+  const SPARK_N = 1300, RANGE = 105;
+  const pos = new Float32Array(SPARK_N * 3), ph = new Float32Array(SPARK_N),
+        sp = new Float32Array(SPARK_N), sz = new Float32Array(SPARK_N);
+  for (let i = 0; i < SPARK_N; i++) {
+    const a = rnd() * Math.PI * 2, rad = 20 + rnd() * 160;
+    pos[i * 3] = Math.cos(a) * rad; pos[i * 3 + 1] = 0; pos[i * 3 + 2] = Math.sin(a) * rad;
+    ph[i] = rnd() * RANGE; sp[i] = 1.2 + rnd() * 2.6; sz[i] = 0.5 + rnd() * 0.9;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aPhase', new THREE.BufferAttribute(ph, 1));
+  g.setAttribute('aSpeed', new THREE.BufferAttribute(sp, 1));
+  g.setAttribute('aSz', new THREE.BufferAttribute(sz, 1));
+  sparkMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uTime: { value: 0 }, uPx: PXU, uRange: { value: RANGE }, uBase: { value: GROUND_Y + 1 } },
+    vertexShader: `
+      attribute float aPhase; attribute float aSpeed; attribute float aSz;
+      uniform float uTime, uRange, uBase, uPx; varying float vA;
+      void main() {
+        float y = mod(aPhase + uTime * aSpeed, uRange);
+        vec3 wp = vec3(position.x, uBase + y, position.z);
+        vA = smoothstep(0.0, 9.0, y) * (1.0 - smoothstep(uRange * 0.5, uRange, y)); // проявление снизу, растворение вверху
+        vec4 mv = viewMatrix * vec4(wp, 1.0);
+        gl_Position = projectionMatrix * mv;
+        // мелкие резкие точки как на модели — крошечный размер, жёсткий потолок
+        gl_PointSize = clamp(aSz * uPx / max(-mv.z, 1.0), 0.8, 2.6);
+      }`,
+    fragmentShader: `
+      varying float vA;
+      void main() {
+        // резкое ядро (почти квадратный пиксель) + тонкая кромка — «дисплейная» фактура, без размытых блобов
+        float d = length(gl_PointCoord - 0.5);
+        float a = smoothstep(0.5, 0.34, d) * vA * 0.42;
+        if (a < 0.01) discard;
+        gl_FragColor = vec4(vec3(1.0), a);
+      }`
+  });
+  sparkPts = new THREE.Points(g, sparkMat);
+  sparkPts.renderOrder = 1; sparkPts.frustumCulled = false;
+  scene.add(sparkPts);
+})();
 
 // ---------- Перестройка проекторов/кадров под текущую точку зрения ----------
 // Проекция «читается» из точки проектора. Если камера сдвинулась (высота/расстояние
@@ -999,20 +1207,35 @@ for (let i = 0; i < 10; i++) {
 
 // ---------- 3D-окружение: вкл/выкл ----------
 // окружение = вся сцена, кроме центрального объекта, неба и сеток кадра
-const _nonEnv = new Set([centralCloud, skyMesh, floorCloud, ...backPts]);
+const _nonEnv = new Set([centralCloud, skyMesh, floorCloud, sparkPts, ...backPts]);
 const envObjects = scene.children.filter(o => !_nonEnv.has(o));
 function setEnv(on) { envObjects.forEach(o => o.visible = on); }
-setEnv(S.envon);
+// Режим сцены. Генеративное («старое») окружение и загруженная модель окружения —
+// ВЗАИМОИСКЛЮЧАЮЩИЕ: тумблер «3D-окружение вкл» показывает старое (и прячет модель),
+// «выкл» — показывает загруженную модель окружения (если есть). Пол виден со старым
+// окружением; под кастом-окружением и в режиме центральной модели — скрыт.
+function applySceneMode() {
+  if (!sceneReady) return;                 // до создания окружения не трогаем
+  const genOn = !modelMode && S.envon;                 // старое (генеративное) окружение
+  const envModelOn = !!envUserCloud && !genOn;          // модель окружения — когда старое выключено
+  setEnv(genOn);
+  if (envUserCloud) envUserCloud.visible = envModelOn;
+  floorCloud.visible = !modelMode;                      // пол окружения виден всегда, кроме режима центральной модели
+  voxUniforms.uModelMode.value = modelMode ? 1 : 0;
+}
+sceneReady = true;
+applySceneMode();
 
 // ---------- Навигация: пружинное движение к цели ----------
 let targetGT = 0, gt = -0.6, gtM = -0.6, gtVel = 0;
+let navTarget = 0; // непрерывное «намерение» прокрутки; цель пружины = ближайший к нему кадр
 let navigated = false, lastInput = 0;
 const GT_MAX = N - 1;
 const wrapIdx = v => ((Math.round(v) % N) + N) % N; // индекс проекта 0..N-1 из любого gt (для лупа)
-const WHEEL_SENS = 0.006; // чувствительность прокрутки
+const WHEEL_SENS = 0.009; // чувствительность прокрутки (один заметный щелчок ≈ один кадр)
 
 function onInput(delta) {
-  targetGT += delta; // без ограничения по краям — галерея зациклена
+  navTarget += delta; // копим непрерывное намерение; цель пружины возьмём как ближайший кадр
   lastInput = performance.now();
   navigated = true;
   if (Math.abs(delta) > 0.004) stopPlay();
@@ -1038,42 +1261,48 @@ let sliderActive = false;
 scrub.addEventListener('pointerdown', () => { sliderActive = true; stopPlay(); });
 addEventListener('pointerup', () => { if (sliderActive) { sliderActive = false; lastInput = performance.now(); } });
 scrub.addEventListener('input', () => {
-  targetGT = (scrub.value / 1000) * GT_MAX;
+  navTarget = (scrub.value / 1000) * GT_MAX; // слайдер — свободное скольжение (без округления во время тяги)
   lastInput = performance.now();
   navigated = true;
 });
 
 addEventListener('keydown', e => {
   if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) {
-    targetGT = Math.round(targetGT) + 1; lastInput = 0; navigated = true; stopPlay();
+    navTarget = Math.round(navTarget) + 1; lastInput = 0; navigated = true; stopPlay();
   } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
-    targetGT = Math.round(targetGT) - 1; lastInput = 0; navigated = true; stopPlay();
+    navTarget = Math.round(navTarget) - 1; lastInput = 0; navigated = true; stopPlay();
   } else if (e.key === 'Escape') stopPlay();
 });
 
+let moveSmooth = 0; // плавная огибающая скорости камеры (морфинг/наезд без рывков)
+let focusAmt = 0;   // «фокус на идеальной точке» (замедлились + подъехали) — сборка/наезд
 function updateNav(dt) {
-  const idle = performance.now() - lastInput;
-  // Когда пользователь отпустил — мягко ведём ЦЕЛЬ к ближайшему проекту (приземление на
-  // точку обзора). Плавно, без рывка: тянем саму цель, а к ней уже едет пружина.
-  if (idle > 220 && !sliderActive) {
-    const pull = smoothstep(220, 1200, idle) * 3.0;
-    targetGT += (Math.round(targetGT) - targetGT) * (1 - Math.exp(-dt * pull));
-  }
   if (sliderActive) {
-    // при перетаскивании слайдера — прямое отзывчивое следование
+    // при перетаскивании слайдера — свободное скольжение по спирали (без округления)
+    targetGT = navTarget;
     gt += (targetGT - gt) * (1 - Math.exp(-dt * 18)); gtVel = 0;
   } else {
-    // критически задемпфированная пружина к цели: отзывчиво, плавно, без перелёта
-    // и без отдельного «магнита» (который раньше давал рывок при остановке)
-    const STIFF = 42, DAMP = 2 * Math.sqrt(42);
+    // ЦЕЛЬ = ближайший к намерению кадр. Округляем сразу (не после паузы), поэтому камера
+    // всегда едет к конкретному стоп-кадру одним чистым подъездом — без промежуточных
+    // остановок и повторных доводок (меньше дёрганья). Быстрый флик = один плавный пролёт
+    // к дальнему кадру, а не серия наездов.
+    targetGT = Math.round(navTarget);
+    const STIFF = 118, DAMP = 2 * Math.sqrt(118);
     gtVel += (STIFF * (targetGT - gt) - DAMP * gtVel) * dt;
     gt += gtVel * dt;
   }
-  // зацикливание: держим gt и цель в пределах одной петли [0,N), сдвигая синхронно —
+  // зацикливание: держим gt и намерение в пределах одной петли [0,N), сдвигая синхронно —
   // азимут кратен 2π, высота периодична, поэтому шов бесшовный
   const wrapN = Math.floor(gt / N) * N;
-  if (wrapN) { gt -= wrapN; targetGT -= wrapN; }
-  gtM = gt; // без отдельного магнита — доводка идёт через цель
+  if (wrapN) { gt -= wrapN; targetGT -= wrapN; navTarget -= wrapN; }
+  gtM = gt; // доводка идёт через округлённую цель
+  // огибающая скорости: быстрый набор, медленный спад. Морфинг/наезд идут по ней,
+  // а не по таймеру ввода — поэтому включаются/гаснут плавно, без рывка за 1 кадр,
+  // и не мигают между щелчками колеса.
+  const spd = Math.abs(gtVel) + (sliderActive ? 1 : 0);
+  const moveTarget = smoothstep(0.02, 0.35, spd);
+  const envRate = moveTarget > moveSmooth ? 16 : 6; // спад быстрее → точки собираются в финал резвее
+  moveSmooth += (moveTarget - moveSmooth) * (1 - Math.exp(-dt * envRate));
 }
 
 // сплайн Катмулла-Рома: единая гладкая кривая, проходящая точно через точки
@@ -1084,8 +1313,8 @@ function catmullRom(p0, p1, p2, p3, t) {
        + (-p0 + 3 * p1 - 3 * p2 + p3) * t3);
 }
 // амплитуды дуги на каждом перегоне: то взлёт почти к виду сверху, то низкий пролёт
-const arcH = i => 0;                                             // без вертикальной дуги — камера не «подпрыгивает»
-const arcR = i => 5 + 9 * (0.5 + 0.5 * Math.sin(i * 2.63 + 1));   // 5..14 наружу
+const arcH = i => 0;   // без вертикальной дуги — камера не «подпрыгивает»
+const arcR = i => 0;   // без радиальной дуги — камера не наезжает в/из сцены на перегонах
 
 function updateCamera(time, wMax) {
   const az = gtM * SPACING;
@@ -1099,10 +1328,17 @@ function updateCamera(time, wMax) {
   // радиус: в точках ровно ORBIT_R, между — плавный вынос наружу
   const r = S.dist + m * arcR(i0);
   camera.position.set(Math.sin(az) * r, h, Math.cos(az) * r);
-  camera.lookAt(TARGET); // фокус всегда в центре сцены, чуть выше пола
-  camera.fov = S.fov + m * 3 * Math.sin(time * 0.35) - 8 * playE;
+  // центр обзора: точка фокуса + смещение высоты из настроек (наклон взгляда вверх/вниз —
+  // кадрирование по высоте, удобно для крупной модели; проекция при этом не сдвигается)
+  camera.lookAt(TARGET.x, TARGET.y + S.viewy, TARGET.z);
+  // наезд: лёгкий при остановке на проекте (камера встала + объект определён),
+  // полный зум сцены на весь экран при Play (видео растёт синхронно — оба совпадают)
+  let fovZoom = 4.0 * focusAmt; // лёгкий наезд на подъезде к идеальной точке
+  fovZoom = Math.max(fovZoom, (S.fov - PROJ_FOV) * playE);
+  camera.fov = S.fov - fovZoom; // без «дыхания» — никакой пульсации при скролле
   camera.updateProjectionMatrix();
   PXU.value = innerHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+  voxUniforms.uCamDist.value = camera.position.distanceTo(TARGET); // для скрытия переднего плана
 }
 
 // ---------- Веса проекторов + окружение ----------
@@ -1145,6 +1381,12 @@ function updateWeights() {
   skyMat.uniforms.uZenith.value.copy(envColor).lerp(WHITE, 0.38);
   const lum = envColor.r * 0.299 + envColor.g * 0.587 + envColor.b * 0.114;
   document.body.classList.toggle('dark-env', lum < 0.52);
+  // «фокус» = НАСКОЛЬКО камера доехала до цели: строго по остатку расстояния |targetGT - gt|.
+  // Пружина критически задемпфирована (без перелёта) → расстояние падает монотонно, и сборка
+  // точек финиширует РОВНО в тот же момент, когда камера доезжает до ракурса (0 рассинхрона).
+  // Во время скролла цель (targetGT) убегает вперёд → расстояние большое → точки разлетаются.
+  focusAmt = smoothstep(0.32, 0.02, Math.abs(targetGT - gt));
+  voxUniforms.uMorph.value = 1 - focusAmt;
   return wMax;
 }
 
@@ -1159,6 +1401,9 @@ function updateDynamics(dt, time, wMax) {
     0.5 - (mousePY - innerHeight / 2) / hPx);
   LENS.value = wMax * (1 - playE);
   voxUniforms.uMousePx.value.set(mousePX, mousePY); // линза чёткости по вокселям
+  plusCursor.style.transform = 'translate(' + mousePX + 'px,' + mousePY + 'px)'; // курсор «плюс»
+  lensRing.style.transform = 'translate(' + mousePX + 'px,' + mousePY + 'px)'; // кольцо линзы
+  lensRing.style.opacity = (play.state === 0 ? 1 : 0) * smoothstep(0.55, 0.95, wMax) * 0.5;
 
   const calm = 1 - wMax * 0.65;
   for (const s of spinners) {
@@ -1189,18 +1434,47 @@ function updateDynamics(dt, time, wMax) {
 // из размытия проступает чистый кадр с растушёванными краями.
 const frameEl = document.getElementById('frame');
 let settle = 0;
+
+// ---------- Кастомный курсор «плюс в кружке» + кольцо-индикатор линзы ----------
+// Прояснение под курсором делают сами точки сцены (уплотняются/мельчают в линзе),
+// поэтому оно идеально совпадает с мэпингом и не имеет жёсткого края. Кольцо — только рамка.
+const plusCursor = document.getElementById('pluscursor');
+const lensRing = document.getElementById('lensring');
+// Точный экранный прямоугольник кадра-сетки проекта idx — проецируем реальные углы
+// картинки (uv∈[0,1] ↔ центральная область Hf×Hf·asp у точки c0). Так DOM-плеер/постер
+// ложатся ровно на точечный образ при ЛЮБЫХ дистанции/линзе/высоте — без «видео крупнее».
+const _UPY = new THREE.Vector3(0, 1, 0);
+function frameScreenRect(idx) {
+  const pr = projectors[idx], asp = WORKS[idx].aspect;
+  const D = S.dist + 38;
+  const Hf = 2 * D * Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2));
+  const dir = TARGET.clone().sub(pr.pos).normalize();
+  const c0 = pr.pos.clone().addScaledVector(dir, D);
+  const rt = new THREE.Vector3().crossVectors(dir, _UPY).normalize();
+  const upv = new THREE.Vector3().crossVectors(rt, dir).normalize();
+  camera.updateMatrixWorld();
+  const toScr = v => { const n = v.project(camera); return { x: (n.x * 0.5 + 0.5) * innerWidth, y: (0.5 - n.y * 0.5) * innerHeight }; };
+  // масштаб проецируемой картинки (uProjScale) — картинка на точках занимает projscale
+  // от кадра; сам плеер/постер подгоняем ровно под неё
+  const ps = S.projscale;
+  const cS = toScr(c0.clone());
+  const tS = toScr(c0.clone().addScaledVector(upv, Hf * ps / 2));
+  const rS = toScr(c0.clone().addScaledVector(rt, Hf * asp * ps / 2));
+  return { cx: cS.x, cy: cS.y, w: 2 * Math.hypot(rS.x - cS.x, rS.y - cS.y), h: 2 * Math.hypot(tS.x - cS.x, tS.y - cS.y) };
+}
+
 function updateFrameReveal(dt, wMax) {
   // чёткий кадр проявляется только когда нажат Play (а не просто при стыковке)
   const revealing = play.state === 1 || play.state === 2;
-  settle = revealing ? Math.min(1, settle + dt * 1.1) : Math.max(0, settle - dt * 3.5);
+  settle = revealing ? Math.min(1, settle + dt * 1.7) : Math.max(0, settle - dt * 3.5); // проявление в темпе наезда
   const e = settle * settle * (3 - 2 * settle);
   const show = e;
   if (show < 0.01) { frameEl.style.opacity = 0; return; }
-  const hFrac = Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2))
-              / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-  const hPx = hFrac * innerHeight * 1.06; // чуть шире воксельного ядра
-  frameEl.style.height = hPx + 'px';
-  frameEl.style.width = hPx * (16 / 9) + 'px';
+  const r = frameScreenRect(play.state ? play.idx : wrapIdx(gtM));
+  frameEl.style.width = r.w * 1.04 + 'px';   // чуть шире воксельного ядра
+  frameEl.style.height = r.h * 1.04 + 'px';
+  frameEl.style.left = r.cx + 'px';
+  frameEl.style.top = r.cy + 'px';
   frameEl.style.opacity = show * 0.97;
   frameEl.style.filter = `blur(${(1 - e) * 14}px)`;
 }
@@ -1212,7 +1486,7 @@ const playerEl = document.getElementById('player');
 const playerClose = document.getElementById('player-close');
 
 const play = { state: 0, p: 0, idx: -1, iframe: null };
-let playE = 0;
+let playE = 0, lastWMax = 0; // lastWMax — для клика-плей по сцене
 
 function embedUrl(e) {
   return e.type === 'vimeo'
@@ -1223,6 +1497,7 @@ function embedUrl(e) {
 function startPlay() {
   if (!SHOW_PLAYER) return;
   const i = wrapIdx(gtM); // индекс с учётом зацикливания
+  navTarget = targetGT = Math.round(gtM); // точно фиксируем камеру на проекте → видео стыкуется бесшовно
   play.idx = i; play.state = 1;
   playerEl.style.backgroundImage = `url(${WORKS[i].frame || WORKS[i].src})`;
   playerEl.classList.remove('live');
@@ -1238,13 +1513,15 @@ function startPlay() {
 function stopPlay() { if (play.state === 1 || play.state === 2) play.state = 3; }
 playBtn.addEventListener('click', startPlay);
 playerClose.addEventListener('click', stopPlay);
+// клик по сцене = Play (курсор «плюс»); запускается на проекте, камера фиксируется точно
+renderer.domElement.addEventListener('click', () => { if (play.state === 0 && lastWMax > 0.6) startPlay(); });
 
 function updatePlay(dt, wMax) {
   if (play.state === 1) {
-    play.p = Math.min(1, play.p + dt * 0.9);
+    play.p = Math.min(1, play.p + dt * 1.6);   // быстрый динамичный «выпад» камеры в кадр
     if (play.p === 1) play.state = 2;
   } else if (play.state === 3) {
-    play.p = Math.max(0, play.p - dt * 1.3);
+    play.p = Math.max(0, play.p - dt * 1.6);
     if (play.p === 0) {
       play.state = 0;
       playerEl.style.display = 'none';
@@ -1252,14 +1529,20 @@ function updatePlay(dt, wMax) {
       if (play.iframe) { play.iframe.remove(); play.iframe = null; }
     }
   }
-  if (play.state === 0) { playE = 0; return; }
+  if (play.state === 0) { playE = 0; voxUniforms.uSpread.value = S.spread; return; }
   if ((play.state === 1 || play.state === 2) && wMax < 0.85) stopPlay();
-  playE = play.p * play.p * (3 - 2 * play.p);
-  const hFrac = Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2))
-              / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-  const hPx = hFrac * innerHeight;
-  playerEl.style.height = hPx + 'px';
-  playerEl.style.width = hPx * WORKS[play.idx].aspect + 'px';
+  // ease-out: наезд/проявление стартуют резко и вместе (динамичный «выпад»), затем плавно доводятся
+  playE = 1 - (1 - play.p) * (1 - play.p);
+  // при влёте сцена ПОЛНОСТЬЮ собирается (разлёт→0) → точечный образ становится идентичен
+  // кадру видео, и видео «вырастает» из точек без шва. По окончании восстанавливается.
+  voxUniforms.uSpread.value = S.spread * (1 - playE);
+  // видео = ТОЧНАЯ экранная проекция прямоугольника кадра-сетки → 1-в-1 на точечный образ,
+  // совпадает по размеру и месту при любой дистанции/линзе/высоте (никакого «видео крупнее»)
+  const r = frameScreenRect(play.idx);
+  playerEl.style.width = r.w + 'px';
+  playerEl.style.height = r.h + 'px';
+  playerEl.style.left = r.cx + 'px';
+  playerEl.style.top = r.cy + 'px';
   playerEl.style.opacity = playE;
   playerEl.style.pointerEvents = play.state === 2 ? 'auto' : 'none';
 }
@@ -1300,18 +1583,76 @@ function updateUI(wMax) {
 }
 
 // ---------- Цикл ----------
+// ---------- Генеративный звук: тихое техно-сопровождение перетаскивания и влётов ----------
+// Дрон на квинтах нарастает с движением камеры; воздушная шумовая текстура; мягкий «риз»
+// на влёте в кадр. Всё через lowpass/bandpass + компрессор — негромко и не резко.
+const Sound = (() => {
+  let ctx, master, comp, padF, padG, noiseF, noiseG, riseF, riseG, ready = false, on = true;
+  function build() {
+    if (ready) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ctx = new AC();
+    comp = ctx.createDynamicsCompressor();          // мягкий предел, чтобы не клиппило
+    comp.connect(ctx.destination);
+    master = ctx.createGain(); master.gain.value = 0.0001; master.connect(comp);
+    // дрон движения (квинтовый, тёплый — sine/triangle через lowpass)
+    padF = ctx.createBiquadFilter(); padF.type = 'lowpass'; padF.frequency.value = 320; padF.Q.value = 7;
+    padG = ctx.createGain(); padG.gain.value = 0; padF.connect(padG); padG.connect(master);
+    const base = 108, spec = [[1, 'sine', 0.5], [1.5, 'sine', 0.32], [2.01, 'triangle', 0.2], [3.0, 'triangle', 0.12]], det = [-5, 6, -8, 9];
+    spec.forEach((s, i) => { const o = ctx.createOscillator(); o.type = s[1]; o.frequency.value = base * s[0]; o.detune.value = det[i];
+      const g = ctx.createGain(); g.gain.value = s[2]; o.connect(g); g.connect(padF); o.start(); });
+    // воздушная текстура — коричневый шум через bandpass
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), d = buf.getChannelData(0); let last = 0;
+    for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.2; }
+    const noise = ctx.createBufferSource(); noise.buffer = buf; noise.loop = true;
+    noiseF = ctx.createBiquadFilter(); noiseF.type = 'bandpass'; noiseF.frequency.value = 700; noiseF.Q.value = 0.8;
+    noiseG = ctx.createGain(); noiseG.gain.value = 0; noise.connect(noiseF); noiseF.connect(noiseG); noiseG.connect(master); noise.start();
+    // «риз» влёта — шиммер, свипирующий вверх с playE
+    riseF = ctx.createBiquadFilter(); riseF.type = 'bandpass'; riseF.frequency.value = 500; riseF.Q.value = 4;
+    riseG = ctx.createGain(); riseG.gain.value = 0; riseF.connect(riseG); riseG.connect(master);
+    [1, 1.5, 2].forEach((r, i) => { const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 330 * r; o.detune.value = (i - 1) * 7;
+      const g = ctx.createGain(); g.gain.value = 0.5 / (i + 1); o.connect(g); g.connect(riseF); o.start(); });
+    // медленный LFO — «дышащий» фильтр, чтобы дрон жил
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.07; const lg = ctx.createGain(); lg.gain.value = 90;
+    lfo.connect(lg); lg.connect(padF.frequency); lfo.start();
+    ready = true;
+  }
+  function kick() { build(); if (ctx && ctx.state === 'suspended') ctx.resume(); } // старт/резюм по жесту пользователя
+  function frame(motion, play) {
+    if (!ready) return;
+    const t = ctx.currentTime, k = (p, v, tau) => p.setTargetAtTime(v, t, tau), M = on ? 1 : 0;
+    k(master.gain, on ? 0.085 : 0.0001, 0.25);
+    k(padG.gain, 0.5 * motion * M, 0.15);
+    k(padF.frequency, 300 + 1300 * motion, 0.2);
+    k(noiseG.gain, 0.3 * motion * M, 0.15);
+    k(noiseF.frequency, 500 + 1600 * motion, 0.2);
+    k(riseG.gain, 0.4 * play * M, 0.08);
+    k(riseF.frequency, 400 + 2200 * play, 0.1);
+  }
+  function setEnabled(v) { on = v; if (v) kick(); else if (ctx) master.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.1); }
+  return { kick, frame, setEnabled };
+})();
+// звук стартует только по первому жесту пользователя (политика автоплея браузеров)
+['pointerdown', 'wheel', 'keydown', 'touchstart'].forEach(ev =>
+  addEventListener(ev, () => { if (S.sound) Sound.kick(); }, { passive: true }));
+
 const clock = new THREE.Clock();
 function loop() {
   requestAnimationFrame(loop);
   const dt = Math.min(clock.getDelta(), 0.05);
   const time = clock.getElapsedTime();
+  voxUniforms.uTime.value = time;
+  if (sparkMat) sparkMat.uniforms.uTime.value = time;
   updateNav(dt);
   const wMax = updateWeights();
+  lastWMax = wMax;
   updateCamera(time, wMax);
   updatePlay(dt, wMax);
   updateFrameReveal(dt, wMax);
   updateDynamics(dt, time, wMax);
   updateUI(wMax);
+  Sound.frame(moveSmooth, playE); // звук следует за движением камеры и влётом
   // плоскость-билборд: центральный объект всегда развёрнут на камеру
   if (centralBillboard && centralCloud) centralCloud.quaternion.copy(camera.quaternion);
   renderer.render(scene, camera);
@@ -1328,36 +1669,47 @@ addEventListener('resize', () => {
 // ---------- Панель настроек ----------
 (function () {
   const g = id => document.getElementById(id);
-  const el  = { height: g('s-height'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale') };
-  const lbl = { height: g('v-height'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale') };
+  const el  = { height: g('s-height'), viewy: g('s-viewy'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), morph: g('s-morph'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale'), envscale: g('s-envscale'), vortspeed: g('s-vortspeed'), vortamp: g('s-vortamp'), vortpct: g('s-vortpct') };
+  const lbl = { height: g('v-height'), viewy: g('v-viewy'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), morph: g('v-morph'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale'), envscale: g('v-envscale'), vortspeed: g('v-vortspeed'), vortamp: g('v-vortamp'), vortpct: g('v-vortpct') };
   const fmt = {
     height:  v => (v > 0 ? '+' : '') + (+v).toFixed(1),
+    viewy:   v => (v > 0 ? '+' : '') + (+v).toFixed(1),
     fov:     v => Math.round(v) + '°',
     dist:    v => (+v).toFixed(0),
     sizemin: v => (+v).toFixed(1),
     sizemax: v => (+v).toFixed(0),
     sizevar: v => (+v).toFixed(1) + '×',
     projscale: v => (+v).toFixed(2) + '×',
+    morph:   v => (+v).toFixed(1),
     count:   v => Math.round(v * 100) + '%',
     spread:  v => (+v).toFixed(1),
     edge:    v => (v > 0 ? '+' : '') + (+v).toFixed(2),
     objscale: v => (+v).toFixed(2) + '×',
+    envscale: v => (+v).toFixed(2) + '×',
+    vortspeed: v => (+v).toFixed(2),
+    vortamp: v => (+v).toFixed(2),
+    vortpct: v => Math.round(v * 100) + '%',
   };
-  const uni = { sizemin: voxUniforms.uSizeMin, sizemax: voxUniforms.uSizeMax, sizevar: voxUniforms.uSizeVar, projscale: voxUniforms.uProjScale, count: voxUniforms.uCount, spread: voxUniforms.uSpread, edge: voxUniforms.uEdgeBias };
-  function pushUniforms() { voxUniforms.uSizeMin.value = S.sizemin; voxUniforms.uSizeMax.value = S.sizemax; voxUniforms.uSizeVar.value = S.sizevar; voxUniforms.uProjScale.value = S.projscale; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; voxUniforms.uEdgeBias.value = S.edge; }
+  const uni = { sizemin: voxUniforms.uSizeMin, sizemax: voxUniforms.uSizeMax, sizevar: voxUniforms.uSizeVar, projscale: voxUniforms.uProjScale, morph: voxUniforms.uMorphAmp, count: voxUniforms.uCount, spread: voxUniforms.uSpread, edge: voxUniforms.uEdgeBias, vortspeed: voxUniforms.uVortSpeed, vortamp: voxUniforms.uVortAmp, vortpct: voxUniforms.uVortPct };
+  function pushUniforms() { voxUniforms.uSizeMin.value = S.sizemin; voxUniforms.uSizeMax.value = S.sizemax; voxUniforms.uSizeVar.value = S.sizevar; voxUniforms.uProjScale.value = S.projscale; voxUniforms.uMorphAmp.value = S.morph; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; voxUniforms.uEdgeBias.value = S.edge; voxUniforms.uVortSpeed.value = S.vortspeed; voxUniforms.uVortAmp.value = S.vortamp; voxUniforms.uVortPct.value = S.vortpct; }
   function applyObjScale() { if (centralCloud) centralCloud.scale.setScalar(S.objscale); }
-  function sync() { for (const k in el) { el[k].value = S[k]; lbl[k].textContent = fmt[k](S[k]); } pushUniforms(); applyObjScale(); }
+  function applyEnvScale() { if (envUserCloud) envUserCloud.scale.setScalar(S.envscale); }
+  function sync() { for (const k in el) { el[k].value = S[k]; lbl[k].textContent = fmt[k](S[k]); } pushUniforms(); applyObjScale(); applyEnvScale(); }
   for (const k in el) el[k].addEventListener('input', () => {
     S[k] = +el[k].value; lbl[k].textContent = fmt[k](S[k]);
     if (k === 'height' || k === 'dist') updateProjectors(); // проекторы едут за камерой live
     if (uni[k]) uni[k].value = S[k];                        // размер/кол-во/картинка — сразу в шейдер
     if (k === 'objscale') applyObjScale();                  // размер центрального объекта
+    if (k === 'envscale') applyEnvScale();                  // размер модели окружения
   });
   // сетки кадров пересобираем при отпускании слайдера (тяжелее, чем матрицы)
   for (const k of ['height', 'dist']) el[k].addEventListener('change', rebuildGrids);
   const panel = document.getElementById('settings');
   // колесо над панелью не должно крутить камеру
   panel.addEventListener('wheel', e => e.stopPropagation());
+  // над панелью прячем свой курсор-«плюс» (там системный курсор для слайдеров)
+  panel.addEventListener('mouseenter', () => plusCursor.style.opacity = 0);
+  panel.addEventListener('mouseleave', () => plusCursor.style.opacity = 0.9);
   document.getElementById('settings-toggle').addEventListener('click', () => panel.classList.toggle('open'));
   // выбор и загрузка модели центра
   const modelSel = g('s-model');
@@ -1365,25 +1717,50 @@ addEventListener('resize', () => {
   modelSel.addEventListener('change', () => { S.model = modelSel.value; setCentralModel(S.model); });
   g('s-modelfile').addEventListener('click', () => g('s-modelinput').click());
   g('s-modelinput').addEventListener('change', e => { const f = e.target.files[0]; if (f) loadModelFile(f); e.target.value = ''; });
-  // тумблер 3D-окружения
+  // загрузка модели окружения
+  g('s-envfile').addEventListener('click', () => g('s-envinput').click());
+  g('s-envinput').addEventListener('change', e => { const f = e.target.files[0]; if (f) loadEnvModelFile(f); e.target.value = ''; });
+  // тумблер «старого» (генеративного) окружения. Вкл — показывает старое окружение
+  // и прячет загруженную модель окружения; выкл — показывает модель (если загружена).
   const envBtn = g('s-env');
-  function syncEnv() { envBtn.textContent = '3D-окружение: ' + (S.envon ? 'вкл' : 'выкл'); envBtn.classList.toggle('off', !S.envon); }
-  envBtn.addEventListener('click', () => { S.envon = !S.envon; setEnv(S.envon); syncEnv(); });
+  function syncEnv() {
+    envBtn.textContent = 'Старое окружение: ' + (S.envon ? 'вкл' : 'выкл');
+    envBtn.classList.toggle('off', !S.envon);
+  }
+  envBtn.addEventListener('click', () => { S.envon = !S.envon; applySceneMode(); syncEnv(); });
+  refreshEnvUI = syncEnv; // чтобы загрузка модели окружения могла обновить подпись
   syncEnv();
+  // тумблер генеративного звука
+  const soundBtn = g('s-sound');
+  function syncSound() { soundBtn.textContent = 'Звук: ' + (S.sound ? 'вкл' : 'выкл'); soundBtn.classList.toggle('off', !S.sound); }
+  soundBtn.addEventListener('click', () => { S.sound = !S.sound; Sound.setEnabled(S.sound); syncSound(); });
+  syncSound();
+  if (S.sound) Sound.setEnabled(true); // применить сохранённое (звук всё равно стартует по первому жесту)
 
   const saveBtn = document.getElementById('s-save');
   saveBtn.addEventListener('click', () => {
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envon: S.envon, model: S.model }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, envon: S.envon, sound: S.sound, model: S.model }));
       saveBtn.textContent = 'Сохранено ✓';
       setTimeout(() => (saveBtn.textContent = 'Сохранить'), 1300);
     } catch (e) { alert('Не удалось сохранить настройки в этом браузере'); }
   });
   document.getElementById('s-reset').addEventListener('click', () => {
     Object.assign(S, SETTINGS_DEFAULTS); sync(); updateProjectors(); rebuildGrids();
-    modelSel.value = S.model; setCentralModel(S.model); setEnv(S.envon); syncEnv();
+    modelSel.value = S.model; setCentralModel(S.model); syncEnv(); Sound.setEnabled(S.sound); syncSound();
   });
   sync();
+  // аккордеон: разделы сворачиваются по клику на заголовок (первый открыт, остальные свёрнуты)
+  document.querySelectorAll('#settings-body > h4').forEach((head, idx) => {
+    const rows = [];
+    let n = head.nextElementSibling;
+    while (n && n.tagName !== 'H4' && n.id !== 'settings-actions') { rows.push(n); n = n.nextElementSibling; }
+    let collapsed = idx !== 0;
+    const upd = () => { head.classList.toggle('collapsed', collapsed); rows.forEach(r => r.style.display = collapsed ? 'none' : ''); };
+    head.addEventListener('click', upd_toggle);
+    function upd_toggle() { collapsed = !collapsed; upd(); }
+    upd();
+  });
 })();
 </script>
 </body>
