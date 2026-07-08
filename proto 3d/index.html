@@ -68,8 +68,9 @@
     /* мягкий край: видео растворяется в окружающих точках → без прямоугольного шва */
     -webkit-mask-image: radial-gradient(ellipse 74% 74% at center, #000 68%, transparent 100%);
     mask-image: radial-gradient(ellipse 74% 74% at center, #000 68%, transparent 100%); }
-  #player iframe { width: 100%; height: 100%; border: 0; opacity: 0; transition: opacity 1.4s; }
-  #player.live iframe { opacity: 1; }
+  #player iframe, #player video { width: 100%; height: 100%; border: 0; opacity: 0; transition: opacity 1.4s;
+    object-fit: cover; display: block; }
+  #player.live iframe, #player.live video { opacity: 1; }
   #player-close { position: absolute; top: 12px; right: 12px; z-index: 2;
     width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.6);
     background: rgba(0,0,0,.4); color: #fff; font-size: 16px; cursor: pointer;
@@ -84,7 +85,9 @@
     margin: -22px 0 0 -22px; z-index: 41; pointer-events: none; color: #fff;
     filter: drop-shadow(0 0 2px rgba(0,0,0,.7)); opacity: .9;
     transition: opacity .3s; }
-  #pluscursor svg { width: 100%; height: 100%; display: block; }
+  #pluscursor svg { width: 100%; height: 100%; display: block;
+    transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+  #pluscursor.close svg { transform: rotate(45deg); } /* + поворачивается в × при открытом видео */
 
   /* ---- Панель настроек ---- */
   #settings { position: fixed; top: 24px; right: 24px; z-index: 30;
@@ -134,8 +137,8 @@
   #s-save { background: var(--ink); color: #d9d9db; border: 1px solid var(--ink); }
   body.dark-env #s-save { color: #1a1a1e; }
   #s-save:hover { opacity: .85; }
-  #s-reset { background: transparent; color: var(--ink); border: 1px solid rgba(128,128,128,.5); }
-  #s-reset:hover { background: rgba(128,128,128,.15); }
+  #s-reset, #s-export, #s-import { background: transparent; color: var(--ink); border: 1px solid rgba(128,128,128,.5); }
+  #s-reset:hover, #s-export:hover, #s-import:hover { background: rgba(128,128,128,.15); }
   #settings-body select, #s-modelfile, #s-envfile, #s-env, #s-sound, #s-autoq { width: 100%; padding: 8px 10px; border-radius: 9px;
     font: inherit; color: var(--ink); background: rgba(128,128,128,.14);
     border: 1px solid rgba(128,128,128,.4); cursor: pointer; }
@@ -271,6 +274,10 @@
       <button id="s-autoq">Авто-качество: вкл</button>
     </div>
     <div id="settings-actions">
+      <button id="s-export">Экспорт</button>
+      <button id="s-import">Импорт</button>
+    </div>
+    <div id="settings-actions">
       <button id="s-reset">Сброс</button>
       <button id="s-save">Сохранить</button>
     </div>
@@ -285,6 +292,7 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
 <script src="textures.js"></script>
+<script src="odk_frame.js"></script>
 <script src="model.js"></script>
 <script>
 /* ============================================================
@@ -310,10 +318,20 @@ const EMBEDS = [
   { type: 'youtube', id: 'bSNki6_F898' }, // Росатом «Прорыв»
 ];
 
+// Локальные mp4-ролики вместо YouTube/Vimeo: путь к файлу + первый кадр как проекция для
+// бесшовной стыковки (точечный образ = первый кадр видео). Индекс = номер проекта.
+// ВАЖНО: для локального теста открывай через простой http-сервер (file:// блокирует видео и
+// текстуры в WebGL). Напр.: cd Web_Playdisplay && python3 -m http.server 8000 →
+// http://localhost:8000/proto%203d/index.html
+// первые кадры проектов как проекция задаются в odk_frame.js (base64 → грузятся и на file://)
+const LOCAL_VIDEO = { 0: '../videos/VDNH.mp4', 9: '../videos/ODK.mp4' }; // 0 = ВДНХ Космос, 9 = ОДК
+
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
 const SETTINGS_KEY = 'pd_proto_settings';
-const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 1, sizemax: 16, count: 0.1, spread: 0, edge: 0, sizevar: 1, projscale: 1, objscale: 1, envscale: 1, morph: 4, vortspeed: 0, vortamp: 0, vortpct: 0, envon: true, sound: true, autoq: true, model: 'original' };
+// Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
+// авто-качество само снизит нагрузку на слабом железе.
+const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 0.5, sizemax: 7, count: 1, spread: 0, edge: -0.6, sizevar: 1, projscale: 1.5, objscale: 1, envscale: 1, morph: 4.6, vortspeed: 0, vortamp: 0, vortpct: 0, envon: true, sound: true, autoq: true, model: 'original' };
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -1274,7 +1292,10 @@ addEventListener('pointermove', e => {
 addEventListener('pointerup', e => {
   if (!dragOn) return;
   dragOn = false;
-  if (dragMoved < 6 && play.state === 0 && lastWMax > 0.6) startPlay(); // почти без движения = клик = зум
+  if (dragMoved < 6) {                                  // почти без движения = клик
+    if (play.state === 1 || play.state === 2) stopPlay();       // повторный клик закрывает видео → в 3D
+    else if (play.state === 0 && lastWMax > 0.6) startPlay();   // клик на кадре = зум в видео
+  }
 });
 // слайдер: прямое скольжение по спирали (магнит на время перетаскивания отключён)
 const scrub = document.getElementById('scrub');
@@ -1522,18 +1543,30 @@ function startPlay() {
   play.idx = i; play.state = 1;
   playerEl.style.backgroundImage = `url(${WORKS[i].frame || WORKS[i].src})`;
   playerEl.classList.remove('live');
-  if (play.iframe) play.iframe.remove();
-  const f = document.createElement('iframe');
-  f.src = embedUrl(EMBEDS[i]);
-  f.allow = 'autoplay; fullscreen';
-  playerEl.appendChild(f);
-  play.iframe = f;
-  f.addEventListener('load', () => setTimeout(() => playerEl.classList.add('live'), 500));
+  if (play.iframe) { play.iframe.remove(); play.iframe = null; }
+  if (LOCAL_VIDEO[i]) {
+    // локальный mp4 — тег <video>: стыкуется с первым кадром, играет с сервера/локально
+    const v = document.createElement('video');
+    v.src = LOCAL_VIDEO[i]; v.muted = true; v.loop = true; v.playsInline = true;
+    v.setAttribute('playsinline', ''); v.autoplay = true; v.preload = 'auto';
+    playerEl.appendChild(v);
+    play.iframe = v;
+    v.addEventListener('canplay', () => playerEl.classList.add('live'), { once: true });
+    v.play().catch(() => {});
+  } else {
+    const f = document.createElement('iframe');
+    f.src = embedUrl(EMBEDS[i]);
+    f.allow = 'autoplay; fullscreen';
+    playerEl.appendChild(f);
+    play.iframe = f;
+    f.addEventListener('load', () => setTimeout(() => playerEl.classList.add('live'), 500));
+  }
   playerEl.style.display = 'block';
 }
 function stopPlay() { if (play.state === 1 || play.state === 2) play.state = 3; }
 playBtn.addEventListener('click', startPlay);
 playerClose.addEventListener('click', stopPlay);
+playerEl.addEventListener('click', stopPlay); // клик по самому видео тоже закрывает
 // клик по сцене = Play (курсор «плюс»); запускается на проекте, камера фиксируется точно
 // клик по сцене обрабатывается в pointerup (только если не было протяжки) — см. выше
 
@@ -1595,6 +1628,7 @@ function updateUI(wMax) {
     : wMax > 0.95 ? '● совпадение' : wMax > 0.3 ? 'сборка' : 'полёт';
   playBtn.classList.toggle('visible', SHOW_PLAYER && wMax > 0.97 && play.state === 0);
   playBtn.classList.toggle('playing', play.state === 1 || play.state === 2);
+  plusCursor.classList.toggle('close', play.state === 1 || play.state === 2); // + → × при открытом видео
   // слайдер следует за камерой (если его не тянут) + заливка акцентом
   if (!sliderActive) scrub.value = clamp01(gt / GT_MAX) * 1000;
   const pct = clamp01(gt / GT_MAX) * 100;
@@ -1792,17 +1826,36 @@ addEventListener('resize', () => {
   autoqBtn.addEventListener('click', () => { S.autoq = !S.autoq; syncAutoq(); });
   syncAutoq();
 
+  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, envon: S.envon, sound: S.sound, autoq: S.autoq, model: S.model });
+  // применить весь набор настроек к сцене (после сброса/импорта)
+  function applyAll() {
+    sync(); updateProjectors(); rebuildGrids();
+    modelSel.value = S.model; setCentralModel(S.model); syncEnv(); Sound.setEnabled(S.sound); syncSound(); syncAutoq();
+  }
   const saveBtn = document.getElementById('s-save');
   saveBtn.addEventListener('click', () => {
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, envon: S.envon, sound: S.sound, autoq: S.autoq, model: S.model }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(persistObj()));
       saveBtn.textContent = 'Сохранено ✓';
       setTimeout(() => (saveBtn.textContent = 'Сохранить'), 1300);
     } catch (e) { alert('Не удалось сохранить настройки в этом браузере'); }
   });
   document.getElementById('s-reset').addEventListener('click', () => {
-    Object.assign(S, SETTINGS_DEFAULTS); sync(); updateProjectors(); rebuildGrids();
-    modelSel.value = S.model; setCentralModel(S.model); syncEnv(); Sound.setEnabled(S.sound); syncSound(); syncAutoq();
+    Object.assign(S, SETTINGS_DEFAULTS); applyAll();
+  });
+  // экспорт/импорт: перенос связки настроек между браузерами/устройствами
+  const expBtn = g('s-export'), impBtn = g('s-import');
+  expBtn.addEventListener('click', () => {
+    const code = JSON.stringify(persistObj());
+    const done = () => { expBtn.textContent = 'Скопировано ✓'; setTimeout(() => (expBtn.textContent = 'Экспорт'), 1300); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, () => prompt('Скопируйте код настроек:', code));
+    else prompt('Скопируйте код настроек:', code);
+  });
+  impBtn.addEventListener('click', () => {
+    const t = prompt('Вставьте код настроек:');
+    if (!t) return;
+    try { const o = JSON.parse(t); Object.assign(S, o); applyAll(); }
+    catch (e) { alert('Не удалось разобрать код настроек'); }
   });
   sync();
   // аккордеон: разделы сворачиваются по клику на заголовок (первый открыт, остальные свёрнуты)
