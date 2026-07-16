@@ -82,7 +82,9 @@
     margin: -255px 0 0 -255px; z-index: 12; pointer-events: none; border-radius: 50%;
     border: 1px solid rgba(255,255,255,.32); box-shadow: 0 0 24px rgba(255,255,255,.08) inset;
     opacity: 0; transition: opacity .3s; }
-  #stage { cursor: none; } /* системный курсор прячем — рисуем свой */
+  /* системный курсор прячем везде, кроме панели настроек — рисуем свой «плюс». */
+  html, body, #stage, #player, #frame, #scrub, #play-btn, #player-close, #dots { cursor: none; }
+  #settings, #settings * { cursor: auto; } /* в панели — обычный курсор (там свой «плюс» скрыт) */
   #pluscursor { position: fixed; left: 0; top: 0; width: 44px; height: 44px;
     margin: -22px 0 0 -22px; z-index: 41; pointer-events: none; color: #fff;
     filter: drop-shadow(0 0 2px rgba(0,0,0,.7)); opacity: .9;
@@ -1768,8 +1770,10 @@ const Sound = (() => {
   return { kick, frame, setEnabled };
 })();
 // звук стартует только по первому жесту пользователя (политика автоплея браузеров)
-['pointerdown', 'wheel', 'keydown', 'touchstart'].forEach(ev =>
-  addEventListener(ev, () => { if (S.sound) Sound.kick(); }, { passive: true }));
+// звук стартует по «жесту активации» (клик/тач/клавиша/перетаскивание) — политика браузеров.
+// wheel/scroll таким жестом НЕ считается, поэтому ловим широкий набор и резюмим контекст.
+['pointerdown', 'pointerup', 'mousedown', 'click', 'keydown', 'touchstart', 'touchend', 'wheel'].forEach(ev =>
+  addEventListener(ev, () => { if (S.sound) Sound.kick(); }, { passive: true, capture: true }));
 
 // ---------- Авто-качество: держим плавность на слабых устройствах ----------
 // По сглаженному FPS: если проседает — сперва снижаем pixel ratio (невидимо, самый большой
