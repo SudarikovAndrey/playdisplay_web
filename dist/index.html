@@ -27,8 +27,8 @@
   #scene-info { bottom: 92px; left: 34px; }
   #scene-num { font-size: 11px; letter-spacing: .32em; opacity: .5; margin-bottom: 8px;
                font-variant-numeric: tabular-nums; }
-  #scene-title { font-size: clamp(26px, 3.8vw, 52px); font-weight: 800; letter-spacing: -0.01em;
-                 line-height: 1.02; transition: opacity .5s; }
+  #scene-title { font-size: clamp(15px, 1.5vw, 21px); font-weight: 700; letter-spacing: .02em;
+                 line-height: 1.1; transition: opacity .5s; text-transform: uppercase; }
   #phase-label { font-size: 10px; letter-spacing: .3em; opacity: .45; margin-top: 10px; text-transform: uppercase; }
   #hint { bottom: 40%; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: .38em;
           opacity: .55; text-transform: uppercase; transition: opacity .6s; animation: pulse 2.4s infinite; }
@@ -332,7 +332,7 @@ const EMBEDS = [
 // текстуры в WebGL). Напр.: cd Web_Playdisplay && python3 -m http.server 8000 →
 // http://localhost:8000/proto%203d/index.html
 // первые кадры проектов как проекция задаются в odk_frame.js (base64 → грузятся и на file://)
-const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 9: 'videos/ODK.mp4', 10: 'videos/ra.mp4', 11: 'videos/VDNH_airports.mp4' }; // 0 ВДНХ, 9 ОДК, 10 Росатом, 11 Аэропорты России (новый проект)
+const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 6: 'videos/coalco.mp4', 9: 'videos/ODK.mp4', 10: 'videos/ra.mp4', 11: 'videos/VDNH_airports.mp4' }; // 0 ВДНХ, 1 BMW, 6 COALCO, 9 ОДК, 10 Росатом, 11 Аэропорты
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------

@@ -4,18 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PLAYDISPLAY — воксельное портфолио (прототип)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style id="brand-override">
-  /* сцена живёт внутри лендинга: служебный UI спрятан, шрифты и позиции — бренд PLAYDISPLAY */
-  #settings, #logo, #hint { display: none !important; }
-  #scene-info { bottom: 118px; left: 64px; }
-  #scene-num { font-family: 'Roboto Mono', monospace; letter-spacing: .3em; opacity: .55; }
-  #scene-title { font-family: 'Unbounded', sans-serif; font-weight: 700; letter-spacing: -0.01em; }
-  #phase-label { font-family: 'Roboto Mono', monospace; letter-spacing: .28em; }
-  #scrub { left: 64px; right: 64px; width: calc(100% - 128px); bottom: 46px; }
-  #dots { right: 64px; bottom: 66px; }
-</style>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { --ink: #1a1a1e;
@@ -39,8 +27,8 @@
   #scene-info { bottom: 92px; left: 34px; }
   #scene-num { font-size: 11px; letter-spacing: .32em; opacity: .5; margin-bottom: 8px;
                font-variant-numeric: tabular-nums; }
-  #scene-title { font-size: clamp(26px, 3.8vw, 52px); font-weight: 800; letter-spacing: -0.01em;
-                 line-height: 1.02; transition: opacity .5s; }
+  #scene-title { font-size: clamp(15px, 1.5vw, 21px); font-weight: 700; letter-spacing: .02em;
+                 line-height: 1.1; transition: opacity .5s; text-transform: uppercase; }
   #phase-label { font-size: 10px; letter-spacing: .3em; opacity: .45; margin-top: 10px; text-transform: uppercase; }
   #hint { bottom: 40%; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: .38em;
           opacity: .55; text-transform: uppercase; transition: opacity .6s; animation: pulse 2.4s infinite; }
@@ -344,7 +332,7 @@ const EMBEDS = [
 // текстуры в WebGL). Напр.: cd Web_Playdisplay && python3 -m http.server 8000 →
 // http://localhost:8000/proto%203d/index.html
 // первые кадры проектов как проекция задаются в odk_frame.js (base64 → грузятся и на file://)
-const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 9: 'videos/ODK.mp4', 10: 'videos/ra.mp4', 11: 'videos/VDNH_airports.mp4' }; // 0 ВДНХ, 9 ОДК, 10 Росатом, 11 Аэропорты России (новый проект)
+const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 6: 'videos/coalco.mp4', 9: 'videos/ODK.mp4', 10: 'videos/ra.mp4', 11: 'videos/VDNH_airports.mp4' }; // 0 ВДНХ, 1 BMW, 6 COALCO, 9 ОДК, 10 Росатом, 11 Аэропорты
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
@@ -524,7 +512,27 @@ const voxVert = `
   }`;
 
 // объявления сэмплеров и цепочка выбора — генерируются под любое число работ
-const texDecls = WORKS.map((_, i) => `uniform sampler2D uTex${i};`).join('\n  ');
+const texDecls = WORKS.map((_, i) => `uniform sampler2D uTex${i};`).join('\<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style id="brand-override">
+  /* сцена живёт внутри лендинга: служебный UI спрятан, шрифты и позиции — бренд PLAYDISPLAY */
+  #settings, #logo, #hint { display: none !important; }
+  body.dbg #settings { display: block !important; } /* отладка: панель настроек по кнопке DEV */
+  #scene-info { bottom: 118px; left: 64px; }
+  #scene-num { font-family: 'Roboto Mono', monospace; letter-spacing: .3em; opacity: .55; }
+  #scene-title { font-family: 'Roboto Mono', monospace; font-weight: 500; font-size: 12px;
+                 letter-spacing: .24em; text-transform: uppercase; opacity: .85; }
+  #phase-label { font-family: 'Roboto Mono', monospace; letter-spacing: .28em; }
+  #scrub { left: 64px; right: 64px; width: calc(100% - 128px); bottom: 46px; }
+  #dots { right: 64px; bottom: 66px; }
+  /* кнопка отладки: едва заметная, нижний левый угол */
+  #dbg-toggle { position: fixed; left: 14px; bottom: 12px; z-index: 60;
+    font: 500 9px 'Roboto Mono', monospace; letter-spacing: .2em; color: currentColor;
+    opacity: .18; background: none; border: 1px solid currentColor; border-radius: 6px;
+    padding: 4px 8px; cursor: pointer; }
+  #dbg-toggle:hover { opacity: .6; }
+</style>
+n  ');
 const texChain = WORKS.map((_, i) => i === N - 1
   ? `return texture2D(uTex${i}, uv).rgb;`
   : `if (i == ${i}) return texture2D(uTex${i}, uv).rgb;`).join('\n    ');
@@ -2035,6 +2043,15 @@ addEventListener('resize', () => {
     function upd_toggle() { collapsed = !collapsed; upd(); }
     upd();
   });
+})();
+</script>
+<script>
+// отладочная кнопка DEV: показывает/прячет панель настроек 3D-сцены
+(function(){
+  var b = document.createElement('button');
+  b.id = 'dbg-toggle'; b.textContent = 'DEV';
+  b.addEventListener('click', function(){ document.body.classList.toggle('dbg'); });
+  document.body.appendChild(b);
 })();
 </script>
 </body>
