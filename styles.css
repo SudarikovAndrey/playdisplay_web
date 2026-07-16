@@ -1,0 +1,216 @@
+/* PlayDisplay — Webfonts · "Spatial Capture" system
+
+   Digital brand type (2026):
+   - Unbounded — monumental geometric display (headlines, wordmark-scale).
+   - Onest — clean humanist body/UI sans.
+   - Roboto Mono — technical/telemetry/HUD readouts (self-hosted).
+   All three cover Cyrillic + Latin Extended (EN / RU / PT-BR).
+   Unbounded + Onest are delivered from Google Fonts (CDN); Roboto Mono is
+   self-hosted from the client-supplied file.
+
+   Blender Pro (client-supplied) is retained ONLY for the logo lockup and any
+   legacy print collateral — it is not the digital display face anymore. */
+
+@import url("https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700&display=swap");
+
+@font-face {
+  font-family: "Blender Pro";
+  src: url("./assets/fonts/BlenderPro-Book.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Blender Pro";
+  src: url("./assets/fonts/BlenderPro-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("./assets/fonts/RobotoMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* PlayDisplay — Color tokens · "Spatial Capture" system (2026)
+   The identity reads as a point-cloud / spatial-capture instrument: a deep,
+   cool, near-black scan field lit by a cool TEAL (data / scan) and a single
+   warm AMBER (live / interactive / REC) — the Blade Runner 2049 warm-cool
+   tension. Magenta is the third category accent. Black/white base is retained
+   from the logo for light surfaces and print. */
+
+:root {
+  /* ---- Neutral ink → paper (cool-tinted) ---- */
+  --ink-0: #06141a;   /* near-black, faint teal cast — default text/border */
+  --ink-1: #0b1e25;
+  --ink-2: #142c34;
+  --ink-3: #274048;
+  --ink-4: #45606a;
+  --ink-5: #6b858e;
+  --ink-6: #97adb4;
+  --ink-7: #c2d2d6;
+  --ink-8: #e2eaec;
+  --ink-9: #f2f6f7;
+  --paper: #ffffff;
+
+  /* ---- Spatial dark surfaces (the scan field) ---- */
+  --space-void: #030c10;    /* deepest — page base behind a scene */
+  --space-deep: #05141a;    /* primary dark canvas */
+  --space-panel: #0b1e25;   /* raised dark panel / card */
+  --space-line: rgba(220, 238, 240, 0.12); /* hairline on dark */
+  --scan-white: #dceef0;    /* primary text on dark */
+  --scan-white-dim: rgba(220, 238, 240, 0.62);
+  --scan-white-faint: rgba(220, 238, 240, 0.40);
+
+  /* ---- Signal accents ---- */
+  --signal-teal: #2be0c6;    /* scan / data / focus (cool) */
+  --signal-amber: #ff6a3d;   /* live / interactive / REC (warm) */
+  --signal-magenta: #ff3d8a; /* third category accent */
+
+  /* Back-compat aliases (older components referenced these names) */
+  --signal-cyan: var(--signal-teal);
+  --signal-volt: var(--signal-amber);
+
+  --signal-teal-dim: #1d9e8c;
+  --signal-amber-dim: #c74e28;
+  --signal-magenta-dim: #c72277;
+  --signal-cyan-dim: var(--signal-teal-dim);
+  --signal-volt-dim: var(--signal-amber-dim);
+
+  /* ---- Semantic ---- */
+  --success: #2be0a0;
+  --warning: #ffb23d;
+  --danger: #ff4d5e;
+  --info: var(--signal-teal);
+
+  /* ---- Surfaces ---- */
+  --surface-canvas: var(--paper);
+  --surface-canvas-dark: var(--space-deep);
+  --surface-card: var(--paper);
+  --surface-card-dark: var(--space-panel);
+  --surface-sunken: var(--ink-9);
+  --surface-overlay: rgba(3, 12, 16, 0.80);
+  --surface-inverse: var(--space-deep);
+
+  /* ---- Text ---- */
+  --text-primary: var(--ink-0);
+  --text-secondary: var(--ink-4);
+  --text-tertiary: var(--ink-5);
+  --text-on-dark: var(--scan-white);
+  --text-on-dark-secondary: var(--scan-white-dim);
+  --text-link: var(--ink-0);
+  --text-link-hover: var(--signal-amber);
+
+  /* ---- Borders ---- */
+  --border-default: var(--ink-8);
+  --border-strong: var(--ink-0);
+  --border-on-dark: var(--space-line);
+  --border-focus: var(--signal-teal);
+
+  /* ---- Brand aliases (use in components) ---- */
+  --brand-fg: var(--ink-0);
+  --brand-bg: var(--paper);
+  --brand-accent: var(--signal-amber);   /* primary interactive / CTA */
+  --brand-accent-2: var(--signal-teal);  /* data / scan / focus */
+  --brand-accent-3: var(--signal-magenta);
+}
+
+/* PlayDisplay — Type tokens · "Spatial Capture" system
+
+   Unbounded (display) is monumental and geometric — used at large sizes with
+   tight negative tracking; NOT forced all-caps like the old system (title/
+   sentence case reads more modern and cinematic). Onest carries body/UI.
+   Roboto Mono carries every technical readout (telemetry, coordinates,
+   counts, labels) — the "instrument" voice of the brand. */
+
+:root {
+  --font-display: "Unbounded", "Arial Black", sans-serif;
+  --font-body: "Onest", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Roboto Mono", "SF Mono", Consolas, monospace;
+
+  /* Legacy brand face — logo/print only */
+  --font-brand-legacy: "Blender Pro", "Eurostile", sans-serif;
+
+  /* Sizes — display uses Unbounded */
+  --text-display-1: 800 6rem/0.92 var(--font-display);
+  --text-display-2: 800 4rem/0.94 var(--font-display);
+  --text-h1: 700 2.75rem/1.02 var(--font-display);
+  --text-h2: 700 2rem/1.08 var(--font-display);
+  --text-h3: 600 1.375rem/1.2 var(--font-display);
+  --text-h4: 600 1.0625rem/1.3 var(--font-display);
+  --text-body-lg: 400 1.1875rem/1.6 var(--font-body);
+  --text-body: 400 1rem/1.6 var(--font-body);
+  --text-body-sm: 400 0.875rem/1.5 var(--font-body);
+  --text-caption: 400 0.75rem/1.4 var(--font-body);
+  /* Technical/HUD label — mono, tracked, uppercase */
+  --text-hud: 400 0.6875rem/1.2 var(--font-mono);
+  --text-label: 600 0.75rem/1.2 var(--font-body);
+
+  --tracking-display: -0.02em;  /* tighten large Unbounded */
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;
+  --tracking-hud: 0.18em;   /* mono telemetry / kickers */
+  --tracking-label: 0.12em;
+}
+
+/* PlayDisplay — Spacing, radius, shadow, motion tokens · "Spatial Capture" */
+
+:root {
+  /* Spacing — 4px base scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Radius — the system is technical/instrument-like: mostly square, small
+     radii only. The angled CORNER CUT (clip-path) is the signature shape,
+     reserved for primary/live actions — echoes the wordmark's diagonal cuts. */
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-pill: 999px;
+  --cut-sm: 8px;    /* clip-path corner cut — small controls */
+  --cut-md: 14px;   /* clip-path corner cut — primary CTA */
+
+  /* Instrument chrome */
+  --hairline: 1px;                 /* viewport rules, dividers, brackets */
+  --bracket-size: 46px;            /* corner viewfinder brackets */
+  --tick-gap: 60px;                /* ruler tick spacing */
+
+  /* Shadow — flat by default. Depth reads as a GLOW (scan bloom) or a hard
+     hairline, not a soft drop shadow. Hard offset kept for light-surface
+     cards; on dark, use glows. */
+  --shadow-none: none;
+  --shadow-hard: 3px 3px 0 0 var(--ink-0);
+  --shadow-hard-sm: 2px 2px 0 0 var(--ink-0);
+  --shadow-panel: 0 1px 0 0 var(--ink-0), 0 18px 40px rgba(6, 20, 26, 0.10);
+  --glow-teal: 0 0 0 3px rgba(43, 224, 198, 0.30);
+  --glow-amber: 0 0 0 3px rgba(255, 106, 61, 0.30);
+  --glow-teal-soft: 0 0 24px rgba(43, 224, 198, 0.45);
+  --glow-amber-soft: 0 0 24px rgba(255, 106, 61, 0.45);
+
+  /* Motion — smooth but alive: a subtle overshoot, never a cartoon bounce.
+     Cinematic durations for atmospheric transitions. */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1); /* @kind other */
+  --ease-overshoot: cubic-bezier(0.34, 1.28, 0.64, 1); /* @kind other */
+  --duration-fast: 140ms; /* @kind other */
+  --duration-base: 240ms; /* @kind other */
+  --duration-slow: 480ms; /* @kind other */
+  --duration-cine: 900ms; /* @kind other */
+}

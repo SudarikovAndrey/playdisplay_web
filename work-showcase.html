@@ -1,0 +1,167 @@
+<!-- @dsCard group="Site" viewport="1440x900" name="Work — Scan-Assembly (эффект)" subtitle="Портфолио: проекты собираются из точек по скроллу" -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlayDisplay — Work / Scan Assembly</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--space-void); color: var(--scan-white); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+  .head { max-width: 1280px; margin: 0 auto; padding: 96px 64px 32px; }
+  .kick { display: inline-flex; align-items: center; gap: 14px; font: 500 12px var(--font-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--signal-amber); }
+  .kick::before { content: ""; width: 30px; height: 1px; background: var(--signal-amber); }
+  .head h1 { margin-top: 22px; font: 800 clamp(40px,5vw,76px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .head p { margin-top: 14px; font: 400 17px var(--font-body); color: var(--scan-white-dim); }
+
+  .band { max-width: 1280px; margin: 0 auto; padding: 60px 64px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: center; min-height: 78vh; }
+  .band:nth-child(even) { grid-template-columns: 0.85fr 1.15fr; }
+  .band:nth-child(even) .stage { order: 2; }
+  .stage { position: relative; aspect-ratio: 16/10; border: 1px solid var(--space-line); background: #071319; overflow: hidden; cursor: pointer; }
+  .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  /* reticle */
+  .ret { position: absolute; width: 26px; height: 26px; border: 1.5px solid var(--signal-teal); opacity: 0; transition: opacity .3s, transform .45s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+  .ret.tl { top: 14px; left: 14px; border-right: none; border-bottom: none; transform: translate(10px,10px); }
+  .ret.tr { top: 14px; right: 14px; border-left: none; border-bottom: none; transform: translate(-10px,10px); }
+  .ret.bl { bottom: 14px; left: 14px; border-right: none; border-top: none; transform: translate(10px,-10px); }
+  .ret.br { bottom: 14px; right: 14px; border-left: none; border-top: none; transform: translate(-10px,-10px); }
+  .stage:hover .ret { opacity: .9; transform: translate(0,0); }
+  .enter { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(8px); opacity: 0; transition: all .3s; display: flex; align-items: center; gap: 9px; font: 500 11px var(--font-mono); letter-spacing: .2em; text-transform: uppercase; color: #F1FBFC; text-shadow: 0 1px 6px #000; }
+  .stage:hover .enter { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .meta .idx { font: 500 12px var(--font-mono); letter-spacing: .18em; color: var(--scan-white-faint); }
+  .meta .task { display: inline-block; margin: 14px 0 16px; font: 500 10.5px var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--space-void); background: var(--signal-amber); padding: 5px 11px; }
+  .meta h2 { font: 700 clamp(26px,2.6vw,40px)/1.02 var(--font-display); letter-spacing: -0.015em; color: #F1FBFC; }
+  .meta .line { margin-top: 16px; font: 400 16px/1.55 var(--font-body); color: var(--scan-white-dim); max-width: 42ch; }
+  .telemetry { margin-top: 26px; display: flex; gap: 30px; }
+  .telemetry .t .v { font: 400 15px var(--font-mono); color: var(--signal-teal); }
+  .telemetry .t .k { margin-top: 5px; font: 400 10px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--scan-white-faint); }
+
+  @media (max-width: 900px) {
+    .head { padding: 72px 20px 20px; }
+    .band, .band:nth-child(even) { grid-template-columns: 1fr; gap: 24px; padding: 40px 20px; min-height: 0; }
+    .band:nth-child(even) .stage { order: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kick">Work — scan assembly</div>
+  <h1>Не смотрите.<br>Играйте.</h1>
+  <p>Каждый проект пересобирается из облака точек по мере прокрутки — как скан, проявляющий кадр.</p>
+</div>
+<div id="bands"></div>
+
+<script src="textures.js"></script>
+<script>
+  // featured: индекс в WORKS + подпись/задача/строка/цифры
+  var FEAT = [
+    { wi:0, task:"Рассказать", title:"ВДНХ Космос", line:"Вся история космонавтики — играбельная система: 115 тачскринов и интерактивные 3D-модели.", stats:[["115","тачскринов"],["46","3D-моделей"],["1","визуальный язык"]] },
+    { wi:1, task:"Продать сложное", title:"BMW X5", line:"Кастомизатор авто: VR, тачскрин и голограмма. Собери свой X5 и увидь его глазами водителя.", stats:[["VR","режим"],["Touch","экран"],["Holo","витрина"]] },
+    { wi:2, task:"Удивить", title:"Стенд МИГ-35", line:"Сцена для истребителя на авиасалоне: подиум, 15-метровый LED и 3D-контент.", stats:[["15 м","LED"],["3D","контент"],["+1","ливрея"]] },
+    { wi:9, task:"Продать сложное", title:"ОДК ОАК", line:"Авиадвигателестроение на МАКС: голограммы двигателей и разбор технологий без слов.", stats:[["Holo","двигатели"],["MAKS","2021"],["0","слов"]] },
+    { wi:6, task:"Продать сложное", title:"Сухой порт COALCO", line:"Логистический хаб как живая 3D-модель: масштаб и работа считываются с одного взгляда.", stats:[["3D","модель"],["Live","данные"],["1","хаб"]] },
+    { wi:10, task:"Удивить", title:"Прорыв", line:"«Росатом»: замкнутый ядерный топливный цикл превращён в наглядный зрелищный интерактив.", stats:[["Atom","цикл"],["Live","сим"],["∞","глубина"]] }
+  ];
+
+  var bandsEl = document.getElementById('bands');
+  var stages = [];
+
+  FEAT.forEach(function(f, i){
+    var band = document.createElement('div');
+    band.className = 'band';
+    var idx = String(i+1).padStart(2,'0') + ' / ' + String(FEAT.length).padStart(2,'0');
+    band.innerHTML =
+      '<div class="stage"><canvas></canvas>'+
+        '<span class="ret tl"></span><span class="ret tr"></span><span class="ret bl"></span><span class="ret br"></span>'+
+        '<span class="enter">▶ Enter scene</span></div>'+
+      '<div class="meta"><div class="idx">'+idx+'</div>'+
+        '<span class="task">'+f.task+'</span>'+
+        '<h2>'+f.title+'</h2>'+
+        '<div class="line">'+f.line+'</div>'+
+        '<div class="telemetry">'+f.stats.map(function(s){return '<div class="t"><div class="v">'+s[0]+'</div><div class="k">'+s[1]+'</div></div>';}).join('')+
+        '<div class="t"><div class="v" data-pts>0</div><div class="k">point count</div></div></div>'+
+      '</div>';
+    bandsEl.appendChild(band);
+    setupStage(band.querySelector('.stage'), band.querySelector('canvas'), WORKS[f.wi].src, band.querySelector('[data-pts]'));
+  });
+
+  function setupStage(stage, cv, src, ptsEl){
+    var ctx = cv.getContext('2d'), pts = null, W, H, step, dpr = Math.min(devicePixelRatio||1, 2);
+    var progress = 0, hover = 0, ptsTotal = 0;
+    var img = new Image();
+    img.onload = function(){ build(); };
+    img.src = src;
+    function build(){
+      var r = stage.getBoundingClientRect(); if (!r.width) { requestAnimationFrame(build); return; }
+      W = cv.width = Math.round(r.width*dpr); H = cv.height = Math.round(r.height*dpr);
+      var tmp = document.createElement('canvas'); tmp.width=W; tmp.height=H; var tc = tmp.getContext('2d');
+      var s = Math.max(W/img.naturalWidth, H/img.naturalHeight), iw=img.naturalWidth*s, ih=img.naturalHeight*s;
+      tc.drawImage(img,(W-iw)/2,(H-ih)/2,iw,ih);
+      var d = tc.getImageData(0,0,W,H).data;
+      step = Math.max(3, Math.round(3.2*dpr)); pts = [];
+      for (var y=0;y<H;y+=step) for (var x=0;x<W;x+=step){
+        var idx=(y*W+x)*4; if (d[idx+3]<20) continue;
+        pts.push([x, y, d[idx], d[idx+1], d[idx+2], x/W, (Math.random()-0.5), (Math.random()-0.5)]);
+      }
+      ptsTotal = pts.length;
+      stages.push({ stage:stage, draw:draw, set:function(p,h){progress=p;hover=h;} });
+    }
+    function draw(){
+      if (!pts) return;
+      var eff = Math.max(progress, hover);            // hover форсирует сборку
+      ctx.clearRect(0,0,W,H);
+      var sz = Math.max(1.3, step*0.82);
+      var scanX = eff * 1.25 - 0.12;                  // положение сканирующей линии по X (0..1)
+      var shown = 0;
+      for (var i=0;i<pts.length;i++){ var p=pts[i];
+        // точка «проявляется», когда сканирующая линия прошла её X
+        var rev = (scanX - p[5]) / 0.18; rev = rev<0?0:rev>1?1:rev;
+        if (rev<=0){ continue; }
+        var spread = (1-rev) * 60 * dpr;
+        ctx.globalAlpha = rev;
+        ctx.fillStyle = 'rgb('+p[2]+','+p[3]+','+p[4]+')';
+        ctx.fillRect(p[0]+p[6]*spread, p[1]+p[7]*spread, sz, sz);
+        shown++;
+      }
+      // сканирующая линия (тонкая, teal, свечение)
+      if (scanX>0 && scanX<1.05){
+        var lx = scanX*W;
+        ctx.globalAlpha = 0.9; ctx.fillStyle = '#2be0c6';
+        ctx.fillRect(lx-1*dpr, 0, 2*dpr, H);
+        ctx.globalAlpha = 0.18; ctx.fillRect(lx-14*dpr, 0, 28*dpr, H);
+      }
+      ctx.globalAlpha = 1;
+      if (ptsEl) ptsEl.textContent = (shown*7).toLocaleString('ru-RU');
+    }
+    stage.addEventListener('mouseenter', function(){ hoverTarget(stage,1); });
+    stage.addEventListener('mouseleave', function(){ hoverTarget(stage,0); });
+  }
+
+  // hover с плавностью на уровне общего цикла
+  var hoverMap = new WeakMap();
+  function hoverTarget(stage,v){ hoverMap.set(stage, v); }
+
+  function centerProgress(rect){
+    var vh = innerHeight, c = rect.top + rect.height/2, dist = Math.abs(c - vh/2);
+    return 1 - Math.min(dist / (vh*0.62), 1);
+  }
+  function loop(){
+    for (var i=0;i<stages.length;i++){ var s=stages[i];
+      var rect = s.stage.getBoundingClientRect();
+      var prog = centerProgress(rect);
+      var ht = hoverMap.get(s.stage) || 0;
+      s._h = (s._h==null?0:s._h) + (ht - (s._h||0))*0.15;
+      s.set(prog, s._h);
+      if (rect.bottom>0 && rect.top<innerHeight) s.draw();
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+</script>
+</body>
+</html>
