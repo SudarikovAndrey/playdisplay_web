@@ -4,6 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PLAYDISPLAY — воксельное портфолио (прототип)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style id="brand-override">
+  /* сцена живёт внутри лендинга: служебный UI спрятан, шрифты и позиции — бренд PLAYDISPLAY */
+  #settings, #logo, #hint { display: none !important; }
+  body.dbg #settings { display: block !important; } /* отладка: панель настроек по кнопке DEV */
+  #scene-info { bottom: 118px; left: 64px; }
+  #scene-num { font-family: 'Roboto Mono', monospace; letter-spacing: .3em; opacity: .55; }
+  #scene-title { font-family: 'Roboto Mono', monospace; font-weight: 500; font-size: 12px;
+                 letter-spacing: .24em; text-transform: uppercase; opacity: .85; }
+  #phase-label { font-family: 'Roboto Mono', monospace; letter-spacing: .28em; }
+  #scrub { left: 64px; right: 64px; width: calc(100% - 128px); bottom: 46px; }
+  #dots { right: 64px; bottom: 66px; }
+  #dbg-toggle { position: fixed; left: 14px; bottom: 12px; z-index: 60;
+    font: 500 9px 'Roboto Mono', monospace; letter-spacing: .2em; color: currentColor;
+    opacity: .18; background: none; border: 1px solid currentColor; border-radius: 6px;
+    padding: 4px 8px; cursor: pointer; }
+  #dbg-toggle:hover { opacity: .6; }
+</style>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { --ink: #1a1a1e;
@@ -512,27 +531,7 @@ const voxVert = `
   }`;
 
 // объявления сэмплеров и цепочка выбора — генерируются под любое число работ
-const texDecls = WORKS.map((_, i) => `uniform sampler2D uTex${i};`).join('\<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style id="brand-override">
-  /* сцена живёт внутри лендинга: служебный UI спрятан, шрифты и позиции — бренд PLAYDISPLAY */
-  #settings, #logo, #hint { display: none !important; }
-  body.dbg #settings { display: block !important; } /* отладка: панель настроек по кнопке DEV */
-  #scene-info { bottom: 118px; left: 64px; }
-  #scene-num { font-family: 'Roboto Mono', monospace; letter-spacing: .3em; opacity: .55; }
-  #scene-title { font-family: 'Roboto Mono', monospace; font-weight: 500; font-size: 12px;
-                 letter-spacing: .24em; text-transform: uppercase; opacity: .85; }
-  #phase-label { font-family: 'Roboto Mono', monospace; letter-spacing: .28em; }
-  #scrub { left: 64px; right: 64px; width: calc(100% - 128px); bottom: 46px; }
-  #dots { right: 64px; bottom: 66px; }
-  /* кнопка отладки: едва заметная, нижний левый угол */
-  #dbg-toggle { position: fixed; left: 14px; bottom: 12px; z-index: 60;
-    font: 500 9px 'Roboto Mono', monospace; letter-spacing: .2em; color: currentColor;
-    opacity: .18; background: none; border: 1px solid currentColor; border-radius: 6px;
-    padding: 4px 8px; cursor: pointer; }
-  #dbg-toggle:hover { opacity: .6; }
-</style>
-n  ');
+const texDecls = WORKS.map((_, i) => `uniform sampler2D uTex${i};`).join('\n  ');
 const texChain = WORKS.map((_, i) => i === N - 1
   ? `return texture2D(uTex${i}, uv).rgb;`
   : `if (i == ${i}) return texture2D(uTex${i}, uv).rgb;`).join('\n    ');
