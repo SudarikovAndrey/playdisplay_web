@@ -1,0 +1,615 @@
+<!-- @dsCard group="Site" viewport="1440x900" name="Landing — Spatial Capture (RU)" subtitle="Long-form landing: Start / Work / Studio / Contact + case viewer" -->
+<!-- @startingPoint section="Site" subtitle="PlayDisplay long-form landing (RU)" viewport="1440x900" -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlayDisplay — Мы превращаем пространство в игру</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--space-void);
+    color: var(--scan-white);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--signal-amber); color: var(--space-void); }
+
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 0 64px; }
+  .mono { font-family: var(--font-mono); }
+  .kicker {
+    display: inline-flex; align-items: center; gap: 14px;
+    font: 500 12px var(--font-mono); letter-spacing: var(--tracking-hud);
+    text-transform: uppercase; color: var(--signal-amber);
+  }
+  .kicker::before { content: ""; width: 30px; height: 1px; background: var(--signal-amber); }
+  .kicker.teal { color: var(--signal-teal); }
+  .kicker.teal::before { background: var(--signal-teal); }
+
+  /* ---------- top nav ---------- */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    transition: background var(--duration-base), border-color var(--duration-base);
+    border-bottom: 1px solid transparent;
+  }
+  header.scrolled { background: rgba(3,12,16,0.82); backdrop-filter: blur(12px); border-bottom: 1px solid var(--space-line); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 22px 64px; }
+  .logo { height: 19px; filter: brightness(0) invert(1); }
+  nav.links { display: flex; gap: 34px; }
+  nav.links a { font: 700 12.5px "Blender Pro", var(--font-body); letter-spacing: 0.24em; text-transform: uppercase; color: var(--scan-white-dim); transition: color var(--duration-fast); }
+  nav.links a:hover { color: var(--scan-white); }
+  .cta-play {
+    display: inline-flex; align-items: center; gap: 9px;
+    font: 700 13px "Blender Pro", var(--font-body); letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--signal-amber); color: var(--space-void);
+    padding: 11px 20px; cursor: pointer; border: none;
+    clip-path: polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+    transition: transform var(--duration-base) var(--ease-overshoot), box-shadow var(--duration-base);
+  }
+  .cta-play:hover { transform: translateY(-2px); box-shadow: var(--glow-amber-soft); }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; min-height: 100vh; display: flex; align-items: flex-start; overflow: hidden; background: var(--space-void); }
+  .hero-scene { position: absolute; inset: 0; border: 0; width: 100%; height: 100%; }
+  .hero-grade { position: absolute; inset: 0; pointer-events: none; background:
+      radial-gradient(900px 620px at 6% 96%, rgba(3,12,16,0.92) 0%, rgba(3,12,16,0.45) 40%, transparent 70%),
+      linear-gradient(180deg, rgba(3,12,16,0.55) 0%, transparent 20%, transparent 72%, rgba(3,12,16,0.85) 100%); }
+  .hero-inner { position: relative; z-index: 2; width: 100%; padding-top: 168px; pointer-events: none; }
+  .hero-inner .kicker, .hero-inner h1, .hero-inner .sub { pointer-events: none; }
+  .hero-btns { pointer-events: auto; }
+  .hero h1 { font: 600 clamp(24px, 2.6vw, 42px)/1.08 var(--font-display); letter-spacing: var(--tracking-display); color: rgba(241,251,252,0.94); max-width: 17ch; text-shadow: 0 4px 40px rgba(3,12,16,0.9); }
+  .hero h1 em { font-style: normal; color: var(--signal-teal); }
+  .hero-btns { display: flex; gap: 16px; margin-top: 30px; align-items: center; pointer-events: auto; }
+  .btn-line {
+    display: inline-flex; align-items: center; gap: 12px;
+    font: 600 13px var(--font-body); letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--scan-white); border: 1px solid var(--scan-white-faint); background: rgba(3,12,16,0.3);
+    padding: 15px 22px; cursor: pointer; transition: border-color var(--duration-fast), background var(--duration-fast); }
+  .btn-line:hover { border-color: var(--signal-teal); background: rgba(43,224,198,0.08); }
+  .btn-line .tri { color: var(--signal-teal); }
+  .btn-ghost-link { font: 600 13px var(--font-body); letter-spacing: 0.04em; text-transform: uppercase; color: var(--scan-white-dim); cursor: pointer; transition: color var(--duration-fast); }
+  .btn-ghost-link:hover { color: var(--scan-white); }
+  /* corner brackets */
+  .bracket { position: absolute; width: 44px; height: 44px; border: 1.5px solid rgba(43,224,198,0.5); z-index: 3; pointer-events: none; }
+  .bracket.tl { top: 88px; left: 40px; border-right: none; border-bottom: none; }
+  .bracket.tr { top: 88px; right: 40px; border-left: none; border-bottom: none; }
+  .bracket.bl { bottom: 40px; left: 40px; border-right: none; border-top: none; }
+  .bracket.br { bottom: 40px; right: 40px; border-left: none; border-top: none; }
+  /* instrument chrome: rulers, session, readout */
+  .hero .ruler-top { position: absolute; top: 88px; left: 120px; right: 120px; height: 9px; z-index: 3; pointer-events: none;
+    background-image: repeating-linear-gradient(90deg, rgba(220,238,240,0.22) 0 1px, transparent 1px 60px); }
+  .hero .ruler-left { position: absolute; left: 40px; top: 148px; bottom: 100px; width: 9px; z-index: 3; pointer-events: none;
+    background-image: repeating-linear-gradient(180deg, rgba(220,238,240,0.22) 0 1px, transparent 1px 60px); }
+  .hero .session { position: absolute; top: 96px; right: 100px; z-index: 4; pointer-events: none;
+    display: flex; align-items: center; gap: 9px; font: 400 11px var(--font-mono); letter-spacing: 0.14em; color: var(--signal-teal); text-shadow: 0 1px 8px rgba(3,12,16,0.9); }
+  .hero .session .rec { width: 7px; height: 7px; border-radius: 50%; background: var(--signal-amber); box-shadow: 0 0 9px var(--signal-amber); animation: recPulse 2s infinite; }
+  @keyframes recPulse { 50% { opacity: 0.35; } }
+  .hero .readout { position: absolute; top: 40%; right: 100px; z-index: 4; pointer-events: none; text-align: right; display: flex; flex-direction: column; gap: 16px; }
+  .hero .readout .k { font: 400 9px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--scan-white-faint); }
+  .hero .readout .v { font: 400 14px var(--font-mono); color: var(--scan-white); margin-top: 3px; text-shadow: 0 1px 8px rgba(3,12,16,0.9); }
+  .hero .readout .v.accent { color: var(--signal-teal); }
+
+  /* ---------- section shell ---------- */
+  section { position: relative; }
+  .sec-pad { padding: 130px 0; }
+  .eyebrow { margin-bottom: 40px; }
+
+  /* ---------- manifesto ---------- */
+  .manifesto { background: var(--space-deep); }
+  .manifesto .lines { font: 700 clamp(28px,3.6vw,58px)/1.12 var(--font-display); letter-spacing: -0.015em; max-width: 20ch; }
+  .manifesto .lines p { color: rgba(220,238,240,0.28); transition: color var(--duration-slow) var(--ease-standard); margin-bottom: 6px; }
+  .manifesto .lines p.lit { color: #F1FBFC; }
+  .manifesto .lines em { font-style: normal; color: var(--signal-teal); }
+
+  /* ---------- numbers ---------- */
+  .numbers { background: var(--space-void); border-top: 1px solid var(--space-line); border-bottom: 1px solid var(--space-line); }
+  .numbers .grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .numbers .cell { padding: 54px 32px; border-right: 1px solid var(--space-line); }
+  .numbers .cell:last-child { border-right: none; }
+  .numbers .big { font: 800 clamp(30px,3vw,52px)/1 var(--font-display); color: var(--signal-teal); letter-spacing: -0.02em; }
+  .numbers .lbl { margin-top: 14px; font: 400 13px/1.4 var(--font-body); color: var(--scan-white-dim); }
+
+  /* ---------- how ---------- */
+  .how { background: var(--space-deep); }
+  .how .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 12px; }
+  .step { border-top: 2px solid var(--signal-amber); padding-top: 22px; }
+  .step .no { font: 500 13px var(--font-mono); letter-spacing: 0.12em; color: var(--signal-amber); }
+  .step h3 { font: 700 22px var(--font-display); margin: 16px 0 12px; color: #F1FBFC; }
+  .step p { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); }
+
+  /* ---------- trust ---------- */
+  .trust { background: var(--space-void); }
+  .trust p { font: 500 clamp(22px,2.4vw,36px)/1.35 var(--font-display); letter-spacing: -0.01em; max-width: 22ch; color: #F1FBFC; }
+  .trust p b { color: var(--signal-teal); font-weight: 700; }
+
+  /* ---------- work ---------- */
+  .work { background: var(--space-deep); }
+  .work h2 { font: 800 clamp(40px,5vw,80px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .work .intro-sub { margin-top: 18px; font: 400 18px var(--font-body); color: var(--scan-white-dim); }
+  .filter { display: flex; gap: 12px; margin: 40px 0 44px; flex-wrap: wrap; }
+  .filter button {
+    font: 500 13px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--scan-white-dim); background: transparent; border: 1px solid var(--space-line);
+    padding: 11px 20px; cursor: pointer; transition: all var(--duration-fast);
+  }
+  .filter button:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
+  .filter button.on { background: var(--signal-teal); color: var(--space-void); border-color: var(--signal-teal); }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .card {
+    background: var(--space-panel); border: 1px solid var(--space-line);
+    cursor: pointer; overflow: hidden; position: relative;
+    transition: transform var(--duration-base) var(--ease-overshoot), border-color var(--duration-base);
+    display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-4px); border-color: rgba(43,224,198,0.5); }
+  .card-media { height: 210px; position: relative; overflow: hidden; background: #0a2129; }
+  .card-media canvas.scatter { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 1; }
+  .card-media.scatter-on img { opacity: 0; }
+  .card-media:not(.scatter-on)::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background-image: radial-gradient(rgba(220,238,240,0.10) 0.6px, transparent 0.6px); background-size: 4px 4px; mix-blend-mode: overlay; }
+  .card-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: transform var(--duration-slow), opacity var(--duration-base); }
+  .card:hover .card-media img { transform: scale(1.05); opacity: 1; }
+  .card-media .play { position: absolute; left: 18px; bottom: 18px; z-index: 2; display: flex; align-items: center; gap: 8px; font: 500 11px var(--font-mono); letter-spacing: 0.1em; color: #F1FBFC; text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
+  .card-media .task { position: absolute; right: 14px; top: 14px; z-index: 2; }
+  .card-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+  .card-body h3 { font: 700 21px var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
+  .card-body .oneline { font: 400 14px/1.5 var(--font-body); color: var(--scan-white-dim); flex: 1; }
+  .card-stats { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stat { font: 500 10.5px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--signal-teal); border: 1px solid rgba(43,224,198,0.3); padding: 5px 9px; }
+
+  /* ---------- studio ---------- */
+  .studio { background: var(--space-void); }
+  .studio .manifest-full { font: 600 clamp(20px,2vw,30px)/1.4 var(--font-display); letter-spacing: -0.01em; max-width: 26ch; color: #F1FBFC; }
+  .studio .manifest-full em { font-style: normal; color: var(--signal-teal); }
+  .studio .press-note { display: block; margin-top: 24px; font: 700 clamp(22px,2.2vw,34px) var(--font-display); color: var(--signal-amber); }
+  .studio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 72px; }
+  .panel { background: var(--space-panel); border: 1px solid var(--space-line); padding: 34px; }
+  .panel .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
+  .panel h4 { font: 700 20px var(--font-display); color: #F1FBFC; margin-bottom: 12px; }
+  .panel p { font: 400 15px/1.65 var(--font-body); color: var(--scan-white-dim); }
+  .panel p + p { margin-top: 12px; }
+
+  /* ---------- contact ---------- */
+  .contact { background: var(--space-deep); border-top: 1px solid var(--space-line); }
+  .contact h2 { font: 800 clamp(56px,8vw,140px)/0.9 var(--font-display); letter-spacing: -0.03em; color: #F1FBFC; }
+  .contact .csub { margin-top: 24px; max-width: 40ch; font: 400 clamp(17px,1.4vw,21px)/1.6 var(--font-body); color: var(--scan-white-dim); }
+  .channels { display: flex; gap: 14px; margin-top: 44px; align-items: center; flex-wrap: wrap; }
+  .wa {
+    display: inline-flex; align-items: center; gap: 10px;
+    font: 700 15px var(--font-body); letter-spacing: 0.02em;
+    background: var(--signal-amber); color: var(--space-void); padding: 18px 30px; cursor: pointer; border: none;
+    clip-path: polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+    transition: transform var(--duration-base) var(--ease-overshoot), box-shadow var(--duration-base);
+  }
+  .wa:hover { transform: translateY(-3px); box-shadow: var(--glow-amber-soft); }
+  .chan-link { font: 600 13px var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--scan-white-dim); border-bottom: 1px solid var(--space-line); padding-bottom: 3px; transition: color var(--duration-fast), border-color var(--duration-fast); }
+  .chan-link:hover { color: var(--scan-white); border-color: var(--signal-teal); }
+  .langs { margin-top: 28px; font: 400 13px var(--font-mono); letter-spacing: 0.06em; color: var(--scan-white-faint); }
+
+  footer { background: var(--space-void); border-top: 1px solid var(--space-line); }
+  .foot-inner { display: flex; justify-content: space-between; align-items: center; padding: 40px 64px; font: 400 13px var(--font-body); color: var(--scan-white-faint); }
+  .foot-inner .mono { font-size: 12px; letter-spacing: 0.05em; }
+
+  /* ---------- case viewer ---------- */
+  .viewer { position: fixed; inset: 0; z-index: 100; background: rgba(3,12,16,0.94); backdrop-filter: blur(6px); opacity: 0; pointer-events: none; transition: opacity var(--duration-base); overflow-y: auto; }
+  .viewer.open { opacity: 1; pointer-events: auto; }
+  .viewer-inner { max-width: 1100px; margin: 0 auto; padding: 96px 64px 120px; }
+  .viewer-close { position: fixed; top: 30px; right: 40px; z-index: 101; width: 46px; height: 46px; border: 1px solid var(--scan-white-faint); background: rgba(3,12,16,0.5); color: var(--scan-white); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color var(--duration-fast); }
+  .viewer-close:hover { border-color: var(--signal-amber); }
+  .v-media { height: 460px; position: relative; overflow: hidden; border: 1px solid var(--space-line); background: #0a2129; }
+  .v-media img { width: 100%; height: 100%; object-fit: cover; }
+  .v-media .v-grade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(3,12,16,0.85) 100%); }
+  .v-media .v-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 92px; height: 92px; border-radius: 50%; border: 1.5px solid rgba(43,224,198,0.7); display: flex; align-items: center; justify-content: center; background: rgba(3,12,16,0.3); }
+  .v-media .v-play .tri { width: 0; height: 0; border-left: 20px solid #F1FBFC; border-top: 12px solid transparent; border-bottom: 12px solid transparent; margin-left: 5px; }
+  .v-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 34px 0 26px; gap: 24px; flex-wrap: wrap; }
+  .v-head h2 { font: 800 clamp(34px,4vw,58px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .v-stats { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--space-line); margin-bottom: 34px; }
+  .v-stats .s { padding: 26px 24px; border-right: 1px solid var(--space-line); }
+  .v-stats .s:last-child { border-right: none; }
+  .v-stats .sv { font: 800 clamp(22px,2.4vw,38px)/1 var(--font-display); color: var(--signal-teal); letter-spacing: -0.01em; }
+  .v-stats .sl { margin-top: 10px; font: 400 12px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--scan-white-dim); }
+  .v-desc { font: 400 clamp(17px,1.5vw,21px)/1.65 var(--font-body); color: rgba(233,244,246,0.88); max-width: 62ch; }
+  .v-desc .punch { display: block; margin-top: 22px; font: 700 clamp(20px,2vw,28px)/1.3 var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
+
+  @media (max-width: 900px) {
+    .wrap, .nav-inner, .foot-inner { padding-left: 20px; padding-right: 20px; }
+    .numbers .grid, .how .steps, .cards, .studio-grid, .v-stats { grid-template-columns: 1fr; }
+    nav.links { display: none; }
+    .nav-inner { padding-top: 16px; padding-bottom: 16px; }
+    .sec-pad { padding: 72px 0; }
+    .eyebrow { margin-bottom: 26px; }
+    /* hero: scene is the star — full-height, minimal overlay, page scrolls over it */
+    .hero { min-height: 100vh; align-items: flex-start; }
+    .hero-scene { pointer-events: none; }
+    .hero .ruler-top, .hero .ruler-left, .hero .readout, .hero .session, .hero .bracket,
+    .hero .kicker, .hero-btns { display: none; }
+    .hero-grade { background:
+      linear-gradient(180deg, rgba(3,12,16,0.55) 0%, transparent 18%, transparent 80%, rgba(3,12,16,0.55) 100%); }
+    .hero-inner { padding-top: 76px; padding-bottom: 0; }
+    .hero h1 { font-size: 23px; max-width: 15ch; text-shadow: 0 2px 20px rgba(3,12,16,0.95); }
+    .numbers .cell { padding: 32px 20px; border-right: none; border-bottom: 1px solid var(--space-line); }
+    .card-media { height: 220px; }
+    .cards { gap: 16px; }
+    .studio-grid { gap: 16px; margin-top: 44px; }
+    .panel { padding: 26px; }
+    .viewer-inner { padding: 78px 20px 90px; }
+    .v-media { height: 240px; }
+    .viewer-close { top: 20px; right: 20px; }
+    .foot-inner { flex-direction: column; gap: 14px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="nav-inner">
+    <img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="PlayDisplay">
+    <nav class="links">
+      <a href="#start">Start</a>
+      <a href="#work">Work</a>
+      <a href="#studio">Studio</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="cta-play" onclick="location.href='#contact'">▶ Сыграем?</button>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="start">
+  <iframe class="hero-scene" src="hero-scene.html" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <div class="hero-grade"></div>
+  <div class="ruler-top"></div>
+  <div class="ruler-left"></div>
+  <div class="bracket tl"></div>
+  <div class="bracket tr"></div>
+  <div class="bracket bl"></div>
+  <div class="bracket br"></div>
+  <div class="session"><span class="rec"></span> SPATIAL CAPTURE // SESSION 011</div>
+  <div class="readout">
+    <div><div class="k">Point count</div><div class="v accent">2 481 060 pts</div></div>
+    <div><div class="k">Status</div><div class="v">● совпадение</div></div>
+  </div>
+  <div class="wrap hero-inner">
+    <div class="kicker" style="margin-bottom:20px">Студия интерактивного опыта — с 2011</div>
+    <h1>Мы превращаем пространство&nbsp;в&nbsp;<em>игру</em>.</h1>
+    <div class="hero-btns">
+      <button class="btn-line"><span class="tri">▶</span> Шоурил — 60 сек</button>
+      <a href="#work" class="btn-ghost-link">Кейсы →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MANIFESTO ===== -->
+<section class="manifesto sec-pad">
+  <div class="wrap">
+    <div class="kicker teal eyebrow">Манифест</div>
+    <div class="lines" id="manifesto">
+      <p>Игра — первый интерфейс человечества.</p>
+      <p>Лучший способ рассказать сложное — дать в него поиграть.</p>
+      <p>Экран для нас — <em>материал</em>. Пространство — <em>уровень</em>. Зритель — <em>игрок</em>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NUMBERS ===== -->
+<section class="numbers">
+  <div class="wrap" style="padding:0">
+    <div class="grid">
+      <div class="cell"><div class="big">2011</div><div class="lbl">строим играбельные пространства</div></div>
+      <div class="cell"><div class="big">115</div><div class="lbl">тачскринов в одном музее</div></div>
+      <div class="cell"><div class="big">3 нед.</div><div class="lbl">самый быстрый стенд под ключ</div></div>
+      <div class="cell"><div class="big">A→Z</div><div class="lbl">полный цикл — от идеи до эксплуатации</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW ===== -->
+<section class="how sec-pad">
+  <div class="wrap">
+    <div class="kicker teal eyebrow">Как мы работаем</div>
+    <div class="steps">
+      <div class="step"><div class="no">01 · Механика</div><h3>Придумываем, во что играть</h3><p>Цель, правило, награда. Первое взаимодействие — интуитивно, без инструкций.</p></div>
+      <div class="step"><div class="no">02 · Производство</div><h3>Контент, софт, железо</h3><p>Контент, софт, железо, конструкции — своя разработка, а не сборка из чужого.</p></div>
+      <div class="step"><div class="no">03 · Запуск</div><h3>Монтаж и поддержка</h3><p>Инсталляция работает каждый день, без инженера за кулисами.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRUST ===== -->
+<section class="trust sec-pad">
+  <div class="wrap">
+    <div class="kicker eyebrow">Доверие</div>
+    <p>Наши работы показывал канал <b>Discovery</b>. Среди клиентов — <b>BMW</b>, аэропорты, национальные музеи и промышленные корпорации.</p>
+  </div>
+</section>
+
+<!-- ===== WORK ===== -->
+<section class="work sec-pad" id="work">
+  <div class="wrap">
+    <div class="kicker teal eyebrow">Work — кейсы</div>
+    <h2>Не смотрите.<br>Играйте.</h2>
+    <p class="intro-sub">Выберите, что нужно вашему пространству:</p>
+    <div class="filter" id="filter">
+      <button class="on" data-f="all">Все</button>
+      <button data-f="amaze">Удивить</button>
+      <button data-f="tell">Рассказать</button>
+      <button data-f="sell">Продать сложное</button>
+    </div>
+    <div class="cards" id="cards"></div>
+  </div>
+</section>
+
+<!-- ===== STUDIO ===== -->
+<section class="studio sec-pad" id="studio">
+  <div class="wrap">
+    <div class="kicker teal eyebrow">Studio</div>
+    <div class="manifest-full">
+      Игра — первый интерфейс человечества. Ребёнок познаёт мир игрой раньше, чем словами. Лучший способ рассказать сложное — дать в него поиграть. Мы строим пространства как игры: с правилами без инструкций, с открытиями, которые зритель совершает сам, с глубиной для тех, кто остался подольше. Экран — <em>материал</em>. Пространство — <em>уровень</em>. Зритель — <em>игрок</em>.
+      <span class="press-note">Нажмите Play.</span>
+    </div>
+    <div class="studio-grid">
+      <div class="panel">
+        <div class="ptitle">Принцип 5 / 5</div>
+        <h4>5 секунд / 5 минут</h4>
+        <p>Любой наш объект считывается за 5 секунд и раскрывается за 5 минут. За 5 секунд ребёнок понимает, что делать. За 5 минут эксперт находит глубину.</p>
+        <p>Один объект — для всех зрителей сразу.</p>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Как устроена студия</div>
+        <h4>Распределённая модель</h4>
+        <p>Креативное ядро ведёт каждый проект от идеи до запуска, а под задачу собирается точная команда: геймдизайнеры, 3D-художники, разработчики, инженеры.</p>
+        <p>Никакого раздутого штата — только те, кто нужен вашему проекту.</p>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Основатель</div>
+        <h4>Андрей Судариков</h4>
+        <p>Основатель и креативный директор. В дизайне с 1999 года: графический, промышленный, мультимедиа. Выпускник Московской школы управления «Сколково». Лично ведёт каждый проект студии.</p>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Пресса и признание</div>
+        <h4>Discovery Channel и не только</h4>
+        <p>О студии рассказывали Discovery Channel и международные технологические программы. Проекты отмечены отраслевыми дипломами и наградами.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section class="contact sec-pad" id="contact">
+  <div class="wrap">
+    <div class="kicker eyebrow">Contact</div>
+    <h2>Сыграем?</h2>
+    <p class="csub">Расскажите о вашем пространстве — вернёмся с идеей игры за несколько дней.</p>
+    <div class="channels">
+      <button class="wa">▶ Написать в WhatsApp</button>
+      <a href="#" class="chan-link">e-mail</a>
+      <a href="#" class="chan-link">Instagram</a>
+      <a href="#" class="chan-link">Vimeo</a>
+    </div>
+    <div class="langs">Говорим по-русски, по-английски и по-португальски.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <span>PlayDisplay — студия интерактивного опыта. Работаем по всему миру с 2011&nbsp;года.</span>
+    <span class="mono">© 2026 PLAYDISPLAY</span>
+  </div>
+</footer>
+
+<!-- ===== CASE VIEWER ===== -->
+<div class="viewer" id="viewer">
+  <button class="viewer-close" id="viewerClose">✕</button>
+  <div class="viewer-inner" id="viewerInner"></div>
+</div>
+
+<script src="textures.js"></script>
+<script src="odk_frame.js"></script>
+<script>
+  // header scroll state
+  var hdr = document.getElementById('hdr');
+  addEventListener('scroll', function(){ hdr.classList.toggle('scrolled', scrollY > 40); });
+
+  // mobile: горизонтальный свайп по герою вращает 3D-сцену, вертикальный — листает страницу
+  (function(){
+    if (!window.matchMedia || !matchMedia('(max-width: 900px)').matches) return;
+    var hero = document.getElementById('start');
+    var frame = document.querySelector('iframe.hero-scene');
+    var x0 = 0, y0 = 0, axis = null;
+    hero.addEventListener('touchstart', function(e){ var t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; axis = null; }, { passive: true });
+    hero.addEventListener('touchmove', function(e){
+      var t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+      if (axis === null && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) axis = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+      if (axis === 'h') {
+        e.preventDefault();
+        if (frame && frame.contentWindow) frame.contentWindow.postMessage({ pdRotate: -dx * 0.007 }, '*');
+        x0 = t.clientX; y0 = t.clientY;
+      }
+    }, { passive: false });
+  })();
+
+  // manifesto line reveal
+  (function(){
+    var lines = document.querySelectorAll('#manifesto p');
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){
+        lines.forEach(function(l,i){ setTimeout(function(){ l.classList.add('lit'); }, i*260); });
+        io.disconnect();
+      }});
+    }, {threshold: 0.5});
+    if (lines.length) io.observe(lines[0].parentNode);
+  })();
+
+  // cases — реальные проекты с playdisplay.com, новые сверху.
+  // wi = индекс в WORKS (textures.js) с base64-кадром → источник для «разлёта на точки».
+  var IMG = "https://playdisplay.com/wp-content/uploads/";
+  var CASES = [
+    { task:"sell", taskLabel:"Продать сложное", title:"Промышленность РФ", img:IMG+"2026/01/site_ships_23_2-960x960.png",
+      desc:"Интерактивные экспозиции для судостроительной отрасли: продукция и производственные процессы в наглядном цифровом формате.",
+      punch:"Отрасль, которую можно рассмотреть вблизи." },
+    { task:"sell", taskLabel:"Продать сложное", title:"Аэропорты России", img:IMG+"2026/01/site_airports_23-960x960.png", local:"videos/VDNH_airports.mp4", wi:11,
+      desc:"Мультимедийные инсталляции для аэропортов: навигация, история и сервисы объединены в единую визуальную систему.",
+      punch:"Пространство, которое ведёт за руку." },
+    { task:"sell", taskLabel:"Продать сложное", title:"ОДК ОАК", img:IMG+"2026/01/site_odk_21_2-960x960.png", video:["youtube","jgoiEkCIfgQ"], local:"videos/ODK.mp4", wi:9,
+      desc:"Экспозиции авиадвигателестроения на МАКС: голограммы двигателей и интерактивные разборы технологий, объясняющие устройство изделий без единой строчки текста.",
+      punch:"Сложный продукт продаёт тот, кто дал его потрогать." },
+    { task:"amaze", taskLabel:"Удивить", title:"Прорыв", img:IMG+"2026/01/site_ra_24-1-960x960.png", video:["youtube","bSNki6_F898"], local:"videos/ra.mp4", wi:10,
+      desc:"Инсталляция «Росатома» о замкнутом ядерном топливном цикле: сложная физика превращается в наглядный, зрелищный интерактив.",
+      punch:"О технологии будущего — на языке впечатления." },
+    { task:"amaze", taskLabel:"Удивить", title:"Ростех-Экспо", img:IMG+"2021/06/01_logo_v03-960x960.jpg",
+      desc:"Выставочный комплекс госкорпорации: мультимедийная среда, объединяющая десятки предприятий в один сценарий.",
+      punch:"Масштаб корпорации — в одном пространстве." },
+    { task:"sell", taskLabel:"Продать сложное", title:"PTK Group", img:IMG+"2021/02/ptk_start_2.gif", video:["vimeo","522723089"], wi:7,
+      desc:"Интерактивный корпоративный стенд: продукты и процессы компании собраны в единый цифровой сценарий для переговоров и выставок.",
+      punch:"Презентация, в которую вовлекаются." },
+    { task:"amaze", taskLabel:"Удивить", title:"Стенд МИГ-35", img:IMG+"2020/03/mig_booth-960x960.jpg", video:["youtube","YVteDZL90qc"], wi:2,
+      stats:[["15 м","LED-экран"],["3D","контент"],["+1","ливрея борта"]],
+      desc:"Сцена для истребителя на международном авиасалоне: подиум, 15-метровый LED-экран и 3D-контент, раскрывающий характеристики машины. Бонус-уровень: дизайн ливреи самого самолёта.",
+      punch:"Самолёт и так звезда — мы построили ему сцену." },
+    { task:"sell", taskLabel:"Продать сложное", title:"BMW X5", img:IMG+"2020/05/bmw_start.jpg", video:["vimeo","414266169"], wi:1,
+      stats:[["VR","режим"],["Touch","экран"],["Hologram","витрина"]],
+      desc:"Кастомизатор автомобиля для офиса продаж: VR, тачскрин и голограмма. Покупатель собирает свой X5 — диски, цвет, отделку салона — и смотрит его в футуристическом гараже или на пустынном шоссе, глазами водителя.",
+      punch:"Машину, которую собрал сам, хочется купить." },
+    { task:"tell", taskLabel:"Рассказать", title:"Панорама 360", img:IMG+"2020/04/pano_bg-960x536.jpg", video:["vimeo","412364504"], wi:3,
+      desc:"Дополненная реальность 360°: зритель оказывается внутри сцены и осматривает пространство вокруг себя.",
+      punch:"Не окно в историю, а вход в неё." },
+    { task:"amaze", taskLabel:"Удивить", title:"Urban Forum 2018", img:IMG+"2020/04/GERB_loop.gif",
+      desc:"Интерактивная инсталляция для главного городского форума: живая графика реагирует на посетителей, а городские данные превращаются в образ.",
+      punch:"Очередь к инсталляции — лучшая метрика." },
+    { task:"tell", taskLabel:"Рассказать", title:"Пароль победы «Сталинград»", img:IMG+"2020/04/stalingrad.jpg", video:["youtube","IVmCylimRmY"], wi:4,
+      desc:"Мультимедийная инсталляция памяти: история, которую посетитель проживает, а не читает. Свет, звук и интерактив создают тихое, сильное пространство.",
+      punch:"Игра умеет говорить и о серьёзном." },
+    { task:"sell", taskLabel:"Продать сложное", title:"Сухой порт COALCO", img:IMG+"2020/04/coalco.jpg", video:["youtube","6ZBMB54713E"], wi:6,
+      desc:"Интерактивная инсталляция логистического хаба: масштаб и работа сухого порта считываются с одного взгляда на живую 3D-модель.",
+      punch:"Логистику видно, а не читаешь в буклете." },
+    { task:"sell", taskLabel:"Продать сложное", title:"Синара", img:IMG+"2020/03/stm_cover2.jpg", video:["youtube","lfmqw20YzlY"], wi:5,
+      desc:"Голограммы и интерактив для транспортного машиностроения: локомотивы и узлы можно рассмотреть в объёме и разобрать по деталям.",
+      punch:"Тяжёлую технику показываем в ладони." },
+    { task:"tell", taskLabel:"Рассказать", title:"ВДНХ Космос", img:IMG+"2020/03/space_st-960x960.jpg", video:["vimeo","397688406"], local:"videos/VDNH.mp4", wi:0,
+      stats:[["115","тачскринов"],["46","3D-моделей"],["1","визуальный язык"]],
+      desc:"Вся история космонавтики — в единой играбельной системе: 115 тачскринов, интерактивные 3D-модели кораблей и станций, единый визуальный язык, разработанный специально для музея.",
+      punch:"Посетитель не читает экспозицию — он исследует её." },
+    { task:"tell", taskLabel:"Рассказать", title:"Центр «Космонавтика и авиация»", img:IMG+"2020/03/space_sm2-960x960.jpg", video:["vimeo","397679197"], wi:8,
+      desc:"Единая мультимедийная среда крупнейшего музейного комплекса авиации и космонавтики на ВДНХ: интерактивные экспонаты, проекции и цифровые модели техники.",
+      punch:"Музей, который отвечает движением." }
+  ];
+
+  function taskBadge(label){ return '<span style="display:inline-flex;align-items:center;padding:4px 10px;font-family:var(--font-mono);font-weight:500;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;background:var(--signal-amber);color:var(--space-void)">'+label+'</span>'; }
+
+  var cardsEl = document.getElementById('cards');
+  var hasWorks = (typeof WORKS !== 'undefined');
+
+  function setupScatter(media, img){
+    var cv = document.createElement('canvas'); cv.className = 'scatter'; media.appendChild(cv);
+    var ctx = cv.getContext('2d'); var pts = null, W, H, step, cur = 0, target = 0, raf;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    function build(){
+      if (pts) return;
+      if (!img.complete || !img.naturalWidth) { img.addEventListener('load', build, { once: true }); return; }
+      var r = media.getBoundingClientRect(); if (!r.width) return;
+      W = cv.width = Math.round(r.width * dpr); H = cv.height = Math.round(r.height * dpr);
+      var tmp = document.createElement('canvas'); tmp.width = W; tmp.height = H; var tc = tmp.getContext('2d');
+      var s = Math.max(W / img.naturalWidth, H / img.naturalHeight), iw = img.naturalWidth * s, ih = img.naturalHeight * s;
+      var d;
+      try { tc.drawImage(img, (W - iw) / 2, (H - ih) / 2, iw, ih); d = tc.getImageData(0, 0, W, H).data; }
+      catch (e) { cv.remove(); return; }
+      step = Math.max(3, Math.round(4 * dpr)); pts = [];
+      for (var y = 0; y < H; y += step) for (var x = 0; x < W; x += step) {
+        var i = (y * W + x) * 4; if (d[i + 3] < 24) continue;
+        pts.push([x, y, d[i], d[i + 1], d[i + 2], (Math.random() - 0.5), (Math.random() - 0.5)]);
+      }
+      media.classList.add('scatter-on'); draw(0);
+    }
+    function draw(k){
+      ctx.clearRect(0, 0, W, H);
+      var spread = Math.pow(1 - k, 1.5) * 52 * dpr;
+      var sz = Math.max(1.2, step * 0.8);
+      for (var i = 0; i < pts.length; i++) { var p = pts[i];
+        ctx.globalAlpha = 0.5 + 0.5 * k;
+        ctx.fillStyle = 'rgb(' + p[2] + ',' + p[3] + ',' + p[4] + ')';
+        ctx.fillRect(p[0] + p[5] * spread, p[1] + p[6] * spread, sz, sz);
+      }
+    }
+    function loop(){ cur += (target - cur) * 0.14; draw(cur);
+      if (Math.abs(target - cur) > 0.003) raf = requestAnimationFrame(loop); else draw(target); }
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting && !pts) { build(); if (pts) io.disconnect(); } });
+    }, { rootMargin: '150px' });
+    io.observe(media);
+    setTimeout(function(){ if (!pts) build(); }, 1400);
+    media.addEventListener('mouseenter', function(){ if (!pts) build(); if (!pts) return; target = 1; cancelAnimationFrame(raf); loop(); });
+    media.addEventListener('mouseleave', function(){ if (!pts) return; target = 0; cancelAnimationFrame(raf); loop(); });
+  }
+
+  function renderCards(f){
+    cardsEl.innerHTML = "";
+    CASES.filter(function(c){ return f==="all" || c.task===f; }).forEach(function(c){
+      var el = document.createElement('div');
+      el.className = "card";
+      var scatterable = hasWorks && c.wi != null && WORKS[c.wi];
+      var src = scatterable ? WORKS[c.wi].src : c.img;
+      var playMark = (c.video || c.local) ? '<span class="play">▶ смотреть</span>' : '';
+      el.innerHTML =
+        '<div class="card-media"><img src="'+src+'" alt="" loading="lazy">'+
+        '<span class="task">'+taskBadge(c.taskLabel)+'</span>'+playMark+'</div>'+
+        '<div class="card-body"><h3>'+c.title+'</h3><div class="oneline">'+c.punch+'</div></div>';
+      el.addEventListener('click', function(){ openCase(c); });
+      cardsEl.appendChild(el);
+      if (scatterable) setupScatter(el.querySelector('.card-media'), el.querySelector('img'));
+    });
+  }
+  renderCards("all");
+
+  function embedUrl(v){
+    return v[0]==="vimeo"
+      ? "https://player.vimeo.com/video/"+v[1]+"?title=0&byline=0&portrait=0"
+      : "https://www.youtube.com/embed/"+v[1]+"?rel=0&modestbranding=1&playsinline=1";
+  }
+
+  document.getElementById('filter').addEventListener('click', function(e){
+    if (e.target.tagName!=="BUTTON") return;
+    document.querySelectorAll('#filter button').forEach(function(b){ b.classList.remove('on'); });
+    e.target.classList.add('on');
+    renderCards(e.target.dataset.f);
+  });
+
+  // case viewer
+  var viewer = document.getElementById('viewer');
+  var vInner = document.getElementById('viewerInner');
+  function openCase(c){
+    // локальный ролик (с нашего хостинга) в приоритете — без ютуб-обвязки; иначе ембед; иначе кадр
+    var media = c.local
+      ? '<div class="v-media"><video src="'+c.local+'" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
+      : c.video
+      ? '<div class="v-media"><iframe src="'+embedUrl(c.video)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe></div>'
+      : '<div class="v-media"><img src="'+c.img+'" alt=""><div class="v-grade"></div></div>';
+    var statsHtml = c.stats
+      ? '<div class="v-stats">'+c.stats.map(function(s){return '<div class="s"><div class="sv">'+s[0]+'</div><div class="sl">'+s[1]+'</div></div>';}).join('')+'</div>'
+      : '';
+    vInner.innerHTML =
+      '<div class="kicker teal" style="margin-bottom:22px">'+c.taskLabel+'</div>'+
+      media+
+      '<div class="v-head"><h2>'+c.title+'</h2></div>'+
+      statsHtml+
+      '<div class="v-desc">'+c.desc+'<span class="punch">'+c.punch+'</span></div>';
+    viewer.classList.add('open');
+    viewer.scrollTop = 0;
+    document.body.style.overflow = "hidden";
+  }
+  function closeCase(){ viewer.classList.remove('open'); vInner.innerHTML = ""; document.body.style.overflow = ""; }
+  document.getElementById('viewerClose').addEventListener('click', closeCase);
+  viewer.addEventListener('click', function(e){ if(e.target===viewer) closeCase(); });
+  addEventListener('keydown', function(e){ if(e.key==="Escape") closeCase(); });
+</script>
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#05141a"/><g fill="#2be0c6"><circle cx="34" cy="42" r="2"/><circle cx="44" cy="36" r="2"/><circle cx="54" cy="44" r="2"/><circle cx="64" cy="38" r="2"/><circle cx="40" cy="52" r="2"/><circle cx="52" cy="56" r="2"/><circle cx="62" cy="52" r="2"/></g><circle cx="50" cy="50" r="16" fill="none" stroke="#ff6a3d" stroke-width="1.5"/><path d="M46 44l10 6-10 6z" fill="#f1fbfc"/></svg>
+</template>
+</body>
+</html>

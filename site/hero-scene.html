@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PLAYDISPLAY — воксельное портфолио (прототип)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style id="brand-override">
+  /* сцена живёт внутри лендинга: служебный UI спрятан, шрифты и позиции — бренд PLAYDISPLAY */
+  #settings, #logo, #hint { display: none !important; }
+  #scene-info { bottom: 118px; left: 64px; }
+  #scene-num { font-family: 'Roboto Mono', monospace; letter-spacing: .3em; opacity: .55; }
+  #scene-title { font-family: 'Unbounded', sans-serif; font-weight: 700; letter-spacing: -0.01em; }
+  #phase-label { font-family: 'Roboto Mono', monospace; letter-spacing: .28em; }
+  #scrub { left: 64px; right: 64px; width: calc(100% - 128px); bottom: 46px; }
+  #dots { right: 64px; bottom: 66px; }
+</style>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { --ink: #1a1a1e;
@@ -332,7 +344,7 @@ const EMBEDS = [
 // текстуры в WebGL). Напр.: cd Web_Playdisplay && python3 -m http.server 8000 →
 // http://localhost:8000/proto%203d/index.html
 // первые кадры проектов как проекция задаются в odk_frame.js (base64 → грузятся и на file://)
-const LOCAL_VIDEO = { 0: '../videos/VDNH.mp4', 9: '../videos/ODK.mp4', 10: '../videos/ra.mp4', 11: '../videos/VDNH_airports.mp4' }; // 0 ВДНХ, 9 ОДК, 10 Росатом, 11 Аэропорты России (новый проект)
+const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 9: 'videos/ODK.mp4', 10: 'videos/ra.mp4', 11: 'videos/VDNH_airports.mp4' }; // 0 ВДНХ, 9 ОДК, 10 Росатом, 11 Аэропорты России (новый проект)
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------

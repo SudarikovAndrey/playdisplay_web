@@ -1334,6 +1334,11 @@ addEventListener('touchmove', e => {
   tPrev = cur;
 }, { passive: true });
 addEventListener('touchend', () => { tPrev = null; }, { passive: true });
+// вращение по сообщению от родительской страницы (лендинг встраивает сцену в iframe;
+// на мобильных горизонтальный свайп по герою транслируется сюда как pdRotate)
+addEventListener('message', e => {
+  if (e.data && typeof e.data.pdRotate === 'number') onInput(e.data.pdRotate);
+});
 // перетаскивание мышью по сцене = вращение (как свайп на тач); одиночный клик без протяжки = зум
 let dragOn = false, dragPrev = 0, dragMoved = 0;
 renderer.domElement.addEventListener('pointerdown', e => {
