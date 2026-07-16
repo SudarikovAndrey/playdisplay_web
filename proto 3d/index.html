@@ -13,13 +13,15 @@
   body.dark-env { --ink: #f4f4f6; }
   #stage { position: fixed; inset: 0; z-index: 0; }
   canvas { display: block; }
-  #vignette { position: fixed; inset: 0; z-index: 5; pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 62%, rgba(0,0,0,.22) 100%); }
-  #grain { position: fixed; inset: 0; z-index: 6; pointer-events: none; opacity: .07;
-    mix-blend-mode: overlay;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/></filter><rect width="140" height="140" filter="url(%23n)"/></svg>'); }
+  /* виньетка и зерно перенесены в шейдеры (DOM-слои с blend-режимом ели fillrate) */
+  #vignette { display: none; }
+  #grain { display: none; }
   .ui { position: fixed; z-index: 10; pointer-events: none; user-select: none;
         color: var(--ink); transition: color .8s; }
+  #fps-hud { position: fixed; top: 64px; left: 34px; z-index: 30; pointer-events: none;
+    font: 11px/1.5 ui-monospace, Menlo, monospace; color: var(--ink); opacity: .85;
+    text-align: left; white-space: pre; display: none;
+    background: rgba(0,0,0,.25); padding: 6px 10px; border-radius: 6px; color: #fff; }
   #logo { top: 30px; left: 34px; font-weight: 800; letter-spacing: .38em; font-size: 13px; }
   #logo span { opacity: .38; }
   #scene-info { bottom: 92px; left: 34px; }
@@ -139,13 +141,13 @@
   #s-save:hover { opacity: .85; }
   #s-reset, #s-export, #s-import { background: transparent; color: var(--ink); border: 1px solid rgba(128,128,128,.5); }
   #s-reset:hover, #s-export:hover, #s-import:hover { background: rgba(128,128,128,.15); }
-  #settings-body select, #s-modelfile, #s-envfile, #s-env, #s-sound, #s-autoq { width: 100%; padding: 8px 10px; border-radius: 9px;
+  #settings-body select, #s-modelfile, #s-envfile, #s-env, #s-sound, #s-autoq, #s-projfit { width: 100%; padding: 8px 10px; border-radius: 9px;
     font: inherit; color: var(--ink); background: rgba(128,128,128,.14);
     border: 1px solid rgba(128,128,128,.4); cursor: pointer; }
   #settings-body select { -webkit-appearance: none; appearance: none; }
-  #s-modelfile, #s-envfile, #s-env, #s-sound, #s-autoq { font-weight: 600; letter-spacing: .03em; transition: background .2s; }
-  #s-modelfile:hover, #s-envfile:hover, #s-env:hover, #s-sound:hover, #s-autoq:hover { background: rgba(128,128,128,.24); }
-  #s-env.off, #s-sound.off, #s-autoq.off { opacity: .5; }
+  #s-modelfile, #s-envfile, #s-env, #s-sound, #s-autoq, #s-projfit { font-weight: 600; letter-spacing: .03em; transition: background .2s; }
+  #s-modelfile:hover, #s-envfile:hover, #s-env:hover, #s-sound:hover, #s-autoq:hover, #s-projfit:hover { background: rgba(128,128,128,.24); }
+  #s-env.off, #s-sound.off, #s-autoq.off, #s-projfit.off { opacity: .5; }
 </style>
 </head>
 <body>
@@ -158,6 +160,7 @@
 <div id="player"><button id="player-close">✕</button></div>
 
 <div class="ui" id="logo">PLAY<span>DISPLAY</span></div>
+<div id="fps-hud"></div>
 <div class="ui" id="scene-info">
   <div id="scene-num"></div>
   <div id="scene-title"></div>
@@ -273,6 +276,9 @@
     <div class="set-row">
       <button id="s-autoq">Авто-качество: вкл</button>
     </div>
+    <div class="set-row">
+      <button id="s-projfit">Картинка на весь экран: вкл</button>
+    </div>
     <div id="settings-actions">
       <button id="s-export">Экспорт</button>
       <button id="s-import">Импорт</button>
@@ -331,7 +337,7 @@ const N = WORKS.length;
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
 // авто-качество само снизит нагрузку на слабом железе.
-const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 0.5, sizemax: 7, count: 1, spread: 0, edge: -0.6, sizevar: 1, projscale: 1.5, objscale: 1, envscale: 1, morph: 4.6, vortspeed: 0, vortamp: 0, vortpct: 0, envon: true, sound: true, autoq: true, model: 'original' };
+const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 0.5, sizemax: 7, count: 1, spread: 0, edge: -0.6, sizevar: 1, projscale: 1.5, objscale: 1, envscale: 1, morph: 4.6, vortspeed: 0, vortamp: 0, vortpct: 0, envon: true, sound: true, autoq: true, projfit: true, model: 'original' };
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -341,16 +347,20 @@ try { const raw = localStorage.getItem(SETTINGS_KEY); if (raw) { Object.assign(S
 const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || Math.min(innerWidth, innerHeight) < 620;
 if (isMobile && !_hadSaved) S.count = Math.min(S.count, 0.12);
 // потолок генерации точек: сцена сэмплируется в PT_MUL раз плотнее, слайдер «Кол-во» показывает долю
-const PT_MUL = 20, GEN_LIN = Math.sqrt(PT_MUL); // потолок кол-ва точек ×20 (тест перфа)
+// на мобильных потолок ниже: меньше памяти и вершинной нагрузки, глазу незаметно
+const PT_MUL = isMobile ? 8 : 20, GEN_LIN = Math.sqrt(PT_MUL);
 
 const ORBIT_R = S.dist, ORBIT_H = 7; // радиус орбиты берётся из настроек (по умолч. 55.1)
 const SPACING = Math.PI * 2 / N;
 const PROJ_FOV = 26; // кадр сжат в центральную часть экрана — читаемое ядро
+const IMG_ASP = 16 / 9; // соотношение сторон роликов/кадров (для авто-подгона «на весь экран»)
 const GROUND_Y = -8;
 
 // ---------- Рендерер ----------
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.5 : 2));
+// antialias выключен: облако точек MSAA почти не сглаживает, а fillrate ест заметно.
+// DPR ограничен 1.5 (моб. 1.25): на ретине разница неотличима, фрагментов в ~1.8 раза меньше.
+const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.25 : 1.5));
 renderer.setSize(innerWidth, innerHeight);
 document.getElementById('stage').appendChild(renderer.domElement);
 
@@ -418,6 +428,8 @@ const voxVert = `
   varying float vDist;
   varying float vLens;      // близость к курсору (1 под курсором → 0 вне) для фрагмента
   uniform float uPx;
+  uniform mat4 uPV;         // projection × view (предумноженная на CPU)
+  uniform vec4 uViewRow2;   // третья строка view-матрицы (для глубины vDist)
   uniform float uSizeMin;   // минимальный размер точки (px)
   uniform float uSizeMax;   // максимальный размер точки (px)
   uniform float uCount;     // доля видимых точек (кол-во)
@@ -439,10 +451,14 @@ const voxVert = `
     vec3 worig = (modelMatrix * vec4(position, 1.0)).xyz;   // исходная позиция точки
     // Линза курсора считается по ИСХОДНОЙ позиции (до разлёта) — чтобы можно было
     // погасить разлёт локально: где точка ДОЛЖНА быть на экране, там и ловим курсор.
-    vec4 clip0 = projectionMatrix * viewMatrix * vec4(worig, 1.0);
+    vec4 clip0 = uPV * vec4(worig, 1.0); // предумноженная proj×view — вдвое дешевле
     vec2 scr = (vec2(clip0.x, -clip0.y) / clip0.w * 0.5 + 0.5) * uRes;
     float lens = clip0.w > 0.0 ? (1.0 - smoothstep(0.0, uLensR, distance(scr, uMousePx))) : 0.0;
     vLens = lens;
+    // РАННИЙ ВЫХОД: точки сверх «Кол-ва» отбрасываются ДО тяжёлой математики
+    // (морфинг/вихрь/дрейф) — скрытая точка почти бесплатна для GPU.
+    float eff = mix(uCount, 1.0, lens);
+    if (aRand > eff) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
     vec3 jit = vec3(fract(aRand * 13.13), fract(aRand * 71.7), fract(aRand * 191.3)) - 0.5;
     vec3 tc = mat3(modelMatrix) * aToCenter;                // вектор к центроиду в мировых
     // разлёт: разрежённость (постоянно) + морфинг при движении камеры (растёт в полёте, гаснет на точке обзора)
@@ -473,13 +489,8 @@ const voxVert = `
     vWorld = wrender;
     vNormal = normalize(mat3(modelMatrix) * normal);
     vRand = aRand;
-    vec4 mv = viewMatrix * vec4(wrender, 1.0);   // рисуем в смещённой позиции
-    vDist = -mv.z;
-    gl_Position = projectionMatrix * mv;
-    // кол-во точек: прячем точки с aRand выше порога. Под курсором порог поднимается
-    // к 1.0 → скрытые точки проявляются (если есть запас плотности).
-    float eff = mix(uCount, 1.0, lens);
-    if (aRand > eff) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
+    vDist = -dot(uViewRow2, vec4(wrender, 1.0)); // глубина без полного view-умножения
+    gl_Position = uPV * vec4(wrender, 1.0);
     // центр (пол-сцена, где собирается изображение) — полная плотность;
     // периферия (дальний пол и задний план) — до 20 раз мельче, воздушнее.
     // В режиме загруженной модели угасание выключено — крупная модель видна целиком, до краёв экрана.
@@ -516,6 +527,7 @@ const voxFrag = `
   uniform vec3 uFogC;
   uniform float uFogN;
   uniform float uFogF;
+  uniform vec2 uRes;          // разрешение (для виньетки/зерна)
   uniform float uProjScale;   // масштаб проецируемой картинки (>1 крупнее, <1 мельче)
   varying vec3 vWorld;
   varying vec3 vNormal;
@@ -576,6 +588,10 @@ const voxFrag = `
     col += 0.10 * vLens;
     // дымка
     col = mix(col, uFogC, smoothstep(uFogN, uFogF, vDist));
+    // виньетка + зерно в шейдере (вместо полноэкранных DOM-слоёв с blend-режимом)
+    vec2 scn = gl_FragCoord.xy / (uRes * 1.0);
+    col *= 1.0 - 0.24 * smoothstep(0.62, 1.15, length(scn - 0.5) * 2.0);
+    col += (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 0.05;
     gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
   }`;
 
@@ -603,6 +619,8 @@ const voxUniforms = {
   uLensR:   { value: 450 },      // радиус линзы, px (×1.5)
   uMorph:   { value: 0 },        // морфинг при движении (1-wMax)
   uMorphAmp:{ value: S.morph },  // амплитуда морфинга
+  uPV:      { value: new THREE.Matrix4() },  // proj×view, обновляется в updateCamera
+  uViewRow2:{ value: new THREE.Vector4() },
   uCamDist: { value: 55 },       // расстояние камеры до фокуса
   uModelMode:{ value: 0 },       // 1 = крупная загруженная модель (без угасаний)
   uTime:    { value: 0 },        // время анимации (дрейф в покое)
@@ -658,7 +676,30 @@ function sampleInto(st, geo, m, density, cell) {
     }
   }
 }
+// реестр воксельных облаков — для drawRange (реальное сокращение вершинной нагрузки)
+const voxClouds = [];
+function unregisterCloud(pts) {
+  const i = voxClouds.findIndex(c => c.pts === pts);
+  if (i >= 0) voxClouds.splice(i, 1);
+}
+// Перемешиваем точки и назначаем aRand = i/total (по возрастанию вдоль буфера):
+// тогда «спрятать точки с aRand > eff» == «нарисовать первые eff×total точек»,
+// и setDrawRange срезает вершинную работу GPU по-настоящему.
+function shuffleStore(st) {
+  const total = st.r.length;
+  for (let i = total - 1; i > 0; i--) {
+    const j = (rnd() * (i + 1)) | 0;
+    for (let k = 0; k < 3; k++) {
+      let t = st.p[i * 3 + k]; st.p[i * 3 + k] = st.p[j * 3 + k]; st.p[j * 3 + k] = t;
+      t = st.n[i * 3 + k]; st.n[i * 3 + k] = st.n[j * 3 + k]; st.n[j * 3 + k] = t;
+      t = st.c[i * 3 + k]; st.c[i * 3 + k] = st.c[j * 3 + k]; st.c[j * 3 + k] = t;
+    }
+    const t = st.s[i]; st.s[i] = st.s[j]; st.s[j] = t;
+  }
+  for (let i = 0; i < total; i++) st.r[i] = i / total;
+}
 function makeCloud(st, noFade = 0) {
+  shuffleStore(st);
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(st.p, 3));
   g.setAttribute('normal', new THREE.Float32BufferAttribute(st.n, 3));
@@ -666,7 +707,9 @@ function makeCloud(st, noFade = 0) {
   g.setAttribute('aSize', new THREE.Float32BufferAttribute(st.s, 1));
   g.setAttribute('aToCenter', new THREE.Float32BufferAttribute(st.c, 3));
   g.setAttribute('aNoFade', new THREE.Float32BufferAttribute(new Float32Array(st.p.length / 3).fill(noFade), 1));
-  return new THREE.Points(g, voxMat);
+  const pts = new THREE.Points(g, voxMat);
+  voxClouds.push({ pts, n: st.r.length });
+  return pts;
 }
 // статичные объекты копятся в общее облако
 function vox(geo, x, y, z, ry = 0, rx = 0, rz = 0, density = 2.0, cell = 0.55) {
@@ -731,7 +774,15 @@ function buildOriginalCentral() {
   const pos = new Float32Array(pi.length), nrm = new Float32Array(ni.length);
   const rands = new Float32Array(cnt), sizes = new Float32Array(cnt);
   for (let i = 0; i < pi.length; i++) { pos[i] = pi[i] / MODEL.posScale; nrm[i] = ni[i] / 127; }
-  for (let i = 0; i < cnt; i++) { rands[i] = rnd(); sizes[i] = MODEL.cell * 1.2; }
+  // перемешиваем и индексируем aRand — для honestного drawRange (см. shuffleStore)
+  for (let i = cnt - 1; i > 0; i--) {
+    const j = (rnd() * (i + 1)) | 0;
+    for (let k = 0; k < 3; k++) {
+      let t = pos[i * 3 + k]; pos[i * 3 + k] = pos[j * 3 + k]; pos[j * 3 + k] = t;
+      t = nrm[i * 3 + k]; nrm[i * 3 + k] = nrm[j * 3 + k]; nrm[j * 3 + k] = t;
+    }
+  }
+  for (let i = 0; i < cnt; i++) { rands[i] = i / cnt; sizes[i] = MODEL.cell * 1.2; }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
@@ -741,7 +792,9 @@ function buildOriginalCentral() {
   g.setAttribute('aNoFade', new THREE.BufferAttribute(new Float32Array(cnt), 1));
   g.computeBoundingBox(); const cc = new THREE.Vector3(); g.boundingBox.getCenter(cc);
   g.translate(-cc.x, -cc.y, -cc.z); // центрируем в origin — объект будет по центру экрана
-  return new THREE.Points(g, voxMat);
+  const pts = new THREE.Points(g, voxMat);
+  voxClouds.push({ pts, n: cnt });
+  return pts;
 }
 
 // встроенные фигуры-пресеты
@@ -813,6 +866,7 @@ function mountCentral(cloud) {
   if (!cloud) return;
   if (centralCloud) {
     scene.remove(centralCloud);
+    unregisterCloud(centralCloud);
     if (centralCloud.geometry) centralCloud.geometry.dispose();
   }
   centralCloud = cloud;
@@ -870,7 +924,7 @@ function loadModelFile(file) {
 // модель ОКРУЖЕНИЯ: отдельное облако, всегда видимо, масштаб бегунком (не зависит от вкл/выкл окружения)
 let envUserCloud = null;
 function mountEnvModel(geo) {
-  if (envUserCloud) { scene.remove(envUserCloud); if (envUserCloud.geometry) envUserCloud.geometry.dispose(); }
+  if (envUserCloud) { scene.remove(envUserCloud); unregisterCloud(envUserCloud); if (envUserCloud.geometry) envUserCloud.geometry.dispose(); }
   envUserCloud = cloudFromModelGeometry(geo);
   envUserCloud.position.set(0, -3, 0);          // центр окружения около центра сцены
   envUserCloud.scale.setScalar(S.envscale);
@@ -947,15 +1001,12 @@ for (let i = 0; i < 42; i++) {
       Math.sin(a) * r, GROUND_Y + h / 2, Math.cos(a) * r, rnd() * 6.28, 0, 0, 0.3, 1.5);
 }
 
-/* --- Люди на плазе --- */
+/* --- Люди на плазе (в общее статичное облако — один draw call вместо ~25) --- */
 function person(x, z, facing) {
-  const st = newStore();
-  const m = mat4Of(0, 0, 0, facing);
-  sampleInto(st, new THREE.CylinderGeometry(0.16, 0.24, 1.44, 8).translate(0, 0.72, 0), m, 60, 0.12);
-  sampleInto(st, new THREE.SphereGeometry(0.17, 10, 8).translate(0, 1.65, 0), m, 60, 0.12);
-  const pts = makeCloud(st);
-  pts.position.set(x, GROUND_Y + (Math.hypot(x, z) < 13 ? 1.5 : 0.25), z);
-  scene.add(pts);
+  const y = GROUND_Y + (Math.hypot(x, z) < 13 ? 1.5 : 0.25);
+  const m = mat4Of(x, y, z, facing);
+  sampleInto(STATIC, new THREE.CylinderGeometry(0.16, 0.24, 1.44, 8).translate(0, 0.72, 0), m, 60, 0.12);
+  sampleInto(STATIC, new THREE.SphereGeometry(0.17, 10, 8).translate(0, 1.65, 0), m, 60, 0.12);
 }
 for (let c = 0; c < 9; c++) {
   const a = rnd() * 6.28, r = 7 + rnd() * 22;
@@ -1164,15 +1215,20 @@ function rebuildGrids() {                    // дороже — вызывае�
 const skyMat = new THREE.ShaderMaterial({
   side: THREE.BackSide, depthWrite: false, fog: false,
   uniforms: { uHorizon: { value: new THREE.Color(0xd9d9db) },
-              uZenith:  { value: new THREE.Color(0xededf0) } },
+              uZenith:  { value: new THREE.Color(0xededf0) },
+              uRes: voxUniforms.uRes },
   vertexShader: `varying vec3 vDir; void main() { vDir = position;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: `
-    uniform vec3 uHorizon; uniform vec3 uZenith; varying vec3 vDir;
+    uniform vec3 uHorizon; uniform vec3 uZenith; uniform vec2 uRes; varying vec3 vDir;
     void main() {
       float t = normalize(vDir).y;
       vec3 c = mix(uHorizon, uZenith, smoothstep(0.0, 0.55, t));
       c = mix(uHorizon * 0.94, c, smoothstep(-0.25, 0.02, t));
+      // виньетка + зерно (перенесены из DOM-слоёв)
+      vec2 scn = gl_FragCoord.xy / uRes;
+      c *= 1.0 - 0.24 * smoothstep(0.62, 1.15, length(scn - 0.5) * 2.0);
+      c += (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 0.05;
       gl_FragColor = vec4(c, 1.0);
     }`
 });
@@ -1381,6 +1437,12 @@ function updateCamera(time, wMax) {
   camera.updateProjectionMatrix();
   PXU.value = innerHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
   voxUniforms.uCamDist.value = camera.position.distanceTo(TARGET); // для скрытия переднего плана
+  // предумноженная proj×view для вершинного шейдера (экономит mat4-умножение на каждую точку)
+  camera.updateMatrixWorld(true);
+  camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
+  voxUniforms.uPV.value.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  const _ve = camera.matrixWorldInverse.elements;
+  voxUniforms.uViewRow2.value.set(_ve[2], _ve[6], _ve[10], _ve[14]);
 }
 
 // ---------- Веса проекторов + окружение ----------
@@ -1496,9 +1558,9 @@ function frameScreenRect(idx) {
   const upv = new THREE.Vector3().crossVectors(rt, dir).normalize();
   camera.updateMatrixWorld();
   const toScr = v => { const n = v.project(camera); return { x: (n.x * 0.5 + 0.5) * innerWidth, y: (0.5 - n.y * 0.5) * innerHeight }; };
-  // масштаб проецируемой картинки (uProjScale) — картинка на точках занимает projscale
-  // от кадра; сам плеер/постер подгоняем ровно под неё
-  const ps = S.projscale;
+  // масштаб проецируемой картинки (эффективный uProjScale, с учётом авто-подгона под экран) —
+  // плеер/постер подгоняем ровно под то, что спроецировано на точки
+  const ps = voxUniforms.uProjScale.value;
   const cS = toScr(c0.clone());
   const tS = toScr(c0.clone().addScaledVector(upv, Hf * ps / 2));
   const rS = toScr(c0.clone().addScaledVector(rt, Hf * asp * ps / 2));
@@ -1580,7 +1642,14 @@ function updatePlay(dt, wMax) {
       play.state = 0;
       playerEl.style.display = 'none';
       playerEl.classList.remove('live');
-      if (play.iframe) { play.iframe.remove(); play.iframe = null; }
+      if (play.iframe) {
+        // <video> нужно останавливать явно: снятый с DOM элемент иначе
+        // продолжает декодировать (и ест GPU) до сборки мусора
+        if (play.iframe.tagName === 'VIDEO') {
+          try { play.iframe.pause(); play.iframe.removeAttribute('src'); play.iframe.load(); } catch (e) {}
+        }
+        play.iframe.remove(); play.iframe = null;
+      }
     }
   }
   if (play.state === 0) { playE = 0; voxUniforms.uSpread.value = S.spread; return; }
@@ -1614,6 +1683,7 @@ const dots = WORKS.map(() => {
   el.dots.appendChild(d); return d;
 });
 let uiIdx = -1;
+const _ui = { titleOp: -1, phase: '', pct: -1, acc: '', hintOp: -1 }; // кэш DOM-записей
 function updateUI(wMax) {
   const i = wrapIdx(gtM); // индекс с учётом зацикливания
   if (i !== uiIdx) {
@@ -1623,18 +1693,26 @@ function updateUI(wMax) {
     frameEl.style.backgroundImage = `url(${WORKS[i].frame || WORKS[i].src})`;
     dots.forEach((d, di) => d.classList.toggle('active', di === i));
   }
-  el.title.style.opacity = 0.3 + 0.7 * wMax;
-  el.phase.textContent = play.state === 1 || play.state === 2 ? '▶ воспроизведение'
+  // DOM трогаем только при реальном изменении значения — без лишних style/text записей
+  const titleOp = Math.round((0.3 + 0.7 * wMax) * 50) / 50;
+  if (titleOp !== _ui.titleOp) { _ui.titleOp = titleOp; el.title.style.opacity = titleOp; }
+  const phase = play.state === 1 || play.state === 2 ? '▶ воспроизведение'
     : wMax > 0.95 ? '● совпадение' : wMax > 0.3 ? 'сборка' : 'полёт';
+  if (phase !== _ui.phase) { _ui.phase = phase; el.phase.textContent = phase; }
   playBtn.classList.toggle('visible', SHOW_PLAYER && wMax > 0.97 && play.state === 0);
   playBtn.classList.toggle('playing', play.state === 1 || play.state === 2);
   plusCursor.classList.toggle('close', play.state === 1 || play.state === 2); // + → × при открытом видео
   // слайдер следует за камерой (если его не тянут) + заливка акцентом
   if (!sliderActive) scrub.value = clamp01(gt / GT_MAX) * 1000;
-  const pct = clamp01(gt / GT_MAX) * 100;
-  scrub.style.background =
-    `linear-gradient(90deg, #${curAccent.getHexString()} ${pct}%, rgba(128,128,128,.28) ${pct}%)`;
-  el.hint.style.opacity = navigated ? 0 : .6;
+  const pct = Math.round(clamp01(gt / GT_MAX) * 500) / 5; // шаг 0.2%
+  const acc = curAccent.getHexString();
+  if (pct !== _ui.pct || acc !== _ui.acc) {
+    _ui.pct = pct; _ui.acc = acc;
+    scrub.style.background =
+      `linear-gradient(90deg, #${acc} ${pct}%, rgba(128,128,128,.28) ${pct}%)`;
+  }
+  const hintOp = navigated ? 0 : .6;
+  if (hintOp !== _ui.hintOp) { _ui.hintOp = hintOp; el.hint.style.opacity = hintOp; }
 }
 
 // ---------- Цикл ----------
@@ -1697,37 +1775,93 @@ const Sound = (() => {
 // По сглаженному FPS: если проседает — сперва снижаем pixel ratio (невидимо, самый большой
 // выигрыш), затем плотность точек; появился запас — плавно возвращаем. Не воюет с ползунком:
 // эффективная плотность = «Кол-во точек» × qScale.
-const _dprFull = () => Math.min(devicePixelRatio || 1, isMobile ? 1.5 : 2);
+const _dprFull = () => Math.min(devicePixelRatio || 1, isMobile ? 1.25 : 1.5);
 let qFps = 60, qScale = 1, qDpr = _dprFull(), qWait = 0, qWarm = 0;
+let qGood = 0, qLastRaise = -1e9, qRaiseLock = 0; // защита от «качелей»
 function autoQuality(dt) {
   qWarm += dt;
   qFps += (1 / Math.max(dt, 1e-3) - qFps) * 0.08; // сглаженный FPS
   if (S.autoq) {
-    qWait -= dt;
+    qWait -= dt; qRaiseLock -= dt;
+    qGood = qFps > 58 ? qGood + dt : 0;             // сколько секунд подряд есть запас
     if (qWarm > 2 && qWait <= 0) {
-      if (qFps < 45) {                              // тормозит — понижаем качество
+      if (qFps < 45) {                              // тормозит — понижаем
+        // просело сразу после подъёма → это качели: блокируем подъёмы на 30с
+        if (performance.now() / 1000 - qLastRaise < 6) qRaiseLock = 30;
         if (qDpr > 1.0) { qDpr = Math.max(1.0, qDpr - 0.25); renderer.setPixelRatio(qDpr); }
         else if (qScale > 0.3) qScale = Math.max(0.3, qScale - 0.12);
-        qWait = 1.2;
-      } else if (qFps > 57) {                       // есть запас — возвращаем
-        if (qScale < 1) { qScale = Math.min(1, qScale + 0.05); qWait = 1.6; }
-        else if (qDpr < _dprFull()) { qDpr = Math.min(_dprFull(), qDpr + 0.25); renderer.setPixelRatio(qDpr); qWait = 2.0; }
+        qWait = 2.0; qGood = 0;
+      } else if (qGood > 4 && qRaiseLock <= 0) {    // подъём — только после 4с стабильного запаса
+        if (qScale < 1) { qScale = Math.min(1, qScale + 0.05); qWait = 2.0; }
+        else if (qDpr < _dprFull()) { qDpr = Math.min(_dprFull(), qDpr + 0.25); renderer.setPixelRatio(qDpr); qWait = 3.0; }
+        qLastRaise = performance.now() / 1000; qGood = 0;
       }
     }
   } else if (qScale !== 1 || qDpr !== _dprFull()) { // выкл — полное качество
     qScale = 1; qDpr = _dprFull(); renderer.setPixelRatio(qDpr);
   }
   voxUniforms.uCount.value = S.count * qScale;       // эффективная плотность
+  // drawRange: реально срезаем вершинную нагрузку (точки перемешаны, aRand = i/total).
+  // Запас ×1.6 — линзе хватает для проявления скрытых точек, а буфер режется уже с ~60%.
+  const effDraw = clamp01(S.count * qScale * 1.6);
+  if (effDraw !== _lastDraw) {
+    _lastDraw = effDraw;
+    for (const c of voxClouds) c.pts.geometry.setDrawRange(0, Math.ceil(c.n * effDraw));
+  }
+}
+let _lastDraw = -1;
+
+// ---------- FPS-монитор (клавиша F) ----------
+const fpsHud = document.getElementById('fps-hud');
+let hudOn = false, hudT = 0;
+addEventListener('keydown', e => {
+  if (e.key === 'f' || e.key === 'F' || e.key === 'а' || e.key === 'А') {
+    hudOn = !hudOn;
+    fpsHud.style.display = hudOn ? 'block' : 'none';
+  }
+  if (e.key === 'c' || e.key === 'C' || e.key === 'с' || e.key === 'С') {
+    fpsCap = fpsCap ? 0 : 60; // A/B: кап 60 ↔ без капа
+  }
+});
+function updateHud(dt) {
+  if (!hudOn) return;
+  hudT += dt;
+  if (hudT < 0.5) return;
+  hudT = 0;
+  const ri = renderer.info.render;
+  fpsHud.textContent =
+    `FPS ${qFps.toFixed(0)} (cap ${fpsCap || 'off'})\n` +
+    `DPR ${qDpr.toFixed(2)} · плотн. ${(qScale * 100 | 0)}%\n` +
+    `calls ${ri.calls} · точек ${(ri.points / 1e6).toFixed(2)}M`;
 }
 
 const clock = new THREE.Clock();
+// кап 60 FPS: на ProMotion (120 Гц) рендерить каждый кадр — двойная нагрузка на GPU
+// без видимой пользы для этого контента; пропускаем кадры до ~60 Гц.
+let fpsCap = 60; // клавиша C — вкл/выкл кап (для сравнения)
+// Кап с переносом остатка: дружит с адаптивной частотой ProMotion (60↔120 Гц).
+// Рендерим на ближайшем к шагу тике (допуск 3 мс), недобор переносим — стабильные ~60.
+let _capAcc = 0, _dtAcc = 0;
 function loop() {
   requestAnimationFrame(loop);
-  const dt = Math.min(clock.getDelta(), 0.05);
+  const rawDt = clock.getDelta();
+  _dtAcc += rawDt;
+  if (fpsCap) {
+    _capAcc += rawDt;
+    const step = 1 / fpsCap;
+    if (_capAcc < step - 0.003) return;
+    _capAcc = Math.max(0, Math.min(_capAcc - step, step));
+  }
+  const dt = Math.min(_dtAcc, 0.05);
+  _dtAcc = 0;
   const time = clock.getElapsedTime();
   voxUniforms.uTime.value = time;
   if (sparkMat) sparkMat.uniforms.uTime.value = time;
   autoQuality(dt);
+  // авто-подгон «картинка на весь экран»: зум проекции масштабируется под соотношение
+  // сторон экрана (cover). На 16:9 = базовое значение ползунка; шире/уже — зумим сильнее.
+  const A = camera.aspect || (innerWidth / innerHeight);
+  voxUniforms.uProjScale.value = S.projfit ? S.projscale * Math.max(A / IMG_ASP, IMG_ASP / A) : S.projscale;
   updateNav(dt);
   const wMax = updateWeights();
   lastWMax = wMax;
@@ -1739,8 +1873,14 @@ function loop() {
   Sound.frame(moveSmooth, playE); // звук следует за движением камеры и влётом
   // плоскость-билборд: центральный объект всегда развёрнут на камеру
   if (centralBillboard && centralCloud) centralCloud.quaternion.copy(camera.quaternion);
-  renderer.render(scene, camera);
+  // видео развёрнуто → сцена скрыта за ним: рендерим фон в 4 раза реже,
+  // GPU уходит декодеру видео. При переходах (playE<1) рендер полный.
+  _bgTick++;
+  const videoSolid = play.state === 2 && playE >= 0.999;
+  if (!videoSolid || _bgTick % 4 === 0) renderer.render(scene, camera);
+  updateHud(dt);
 }
+let _bgTick = 0;
 loop();
 
 addEventListener('resize', () => {
@@ -1825,12 +1965,17 @@ addEventListener('resize', () => {
   function syncAutoq() { autoqBtn.textContent = 'Авто-качество: ' + (S.autoq ? 'вкл' : 'выкл'); autoqBtn.classList.toggle('off', !S.autoq); }
   autoqBtn.addEventListener('click', () => { S.autoq = !S.autoq; syncAutoq(); });
   syncAutoq();
+  // тумблер «картинка на весь экран» (авто-подгон projscale под соотношение сторон)
+  const projfitBtn = g('s-projfit');
+  function syncProjfit() { projfitBtn.textContent = 'Картинка на весь экран: ' + (S.projfit ? 'вкл' : 'выкл'); projfitBtn.classList.toggle('off', !S.projfit); }
+  projfitBtn.addEventListener('click', () => { S.projfit = !S.projfit; syncProjfit(); });
+  syncProjfit();
 
-  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, envon: S.envon, sound: S.sound, autoq: S.autoq, model: S.model });
+  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, envon: S.envon, sound: S.sound, autoq: S.autoq, projfit: S.projfit, model: S.model });
   // применить весь набор настроек к сцене (после сброса/импорта)
   function applyAll() {
     sync(); updateProjectors(); rebuildGrids();
-    modelSel.value = S.model; setCentralModel(S.model); syncEnv(); Sound.setEnabled(S.sound); syncSound(); syncAutoq();
+    modelSel.value = S.model; setCentralModel(S.model); syncEnv(); Sound.setEnabled(S.sound); syncSound(); syncAutoq(); syncProjfit();
   }
   const saveBtn = document.getElementById('s-save');
   saveBtn.addEventListener('click', () => {
