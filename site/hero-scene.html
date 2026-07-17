@@ -25,6 +25,7 @@
 </style>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { overscroll-behavior: none; } /* горизонтальный свайп ≠ «назад» в браузере */
   body { --ink: #1a1a1e;
          font-family: -apple-system, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
          background: #d9d9db; color: var(--ink);
@@ -1339,12 +1340,15 @@ function onInput(delta) {
   if (Math.abs(delta) > 0.004) stopPlay();
 }
 addEventListener('wheel', e => {
+  // гасим жест по умолчанию: иначе горизонтальный свайп трекпада браузер
+  // трактует как «назад/вперёд по истории» (сцена сама потребляет прокрутку)
+  e.preventDefault();
   let d = e.deltaY + e.deltaX;
   if (e.deltaMode === 1) d *= 16;
   else if (e.deltaMode === 2) d *= innerHeight;
   d = clamp(d, -80, 80);
   onInput(d * WHEEL_SENS);
-}, { passive: true });
+}, { passive: false });
 let tPrev = null;
 addEventListener('touchstart', e => { tPrev = e.touches[0].clientX + e.touches[0].clientY; }, { passive: true });
 addEventListener('touchmove', e => {
