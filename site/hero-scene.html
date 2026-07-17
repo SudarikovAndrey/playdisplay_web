@@ -360,6 +360,8 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 6: 'videos/coal
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
+window.PD_BUILD = 'b1607-4'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
 // авто-качество само снизит нагрузку на слабом железе.
@@ -2101,7 +2103,7 @@ addEventListener('resize', () => {
 // отладочная кнопка DEV: показывает/прячет панель настроек 3D-сцены
 (function(){
   var b = document.createElement('button');
-  b.id = 'dbg-toggle'; b.textContent = 'DEV';
+  b.id = 'dbg-toggle'; b.textContent = 'DEV ' + (window.PD_BUILD || '');
   b.addEventListener('click', function(){ document.body.classList.toggle('dbg'); });
   document.body.appendChild(b);
 })();
