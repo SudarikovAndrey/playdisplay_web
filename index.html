@@ -264,7 +264,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b1707-1" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b1707-2" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -421,8 +421,14 @@
   // вертикальная прокрутка из 3D-сцены (iframe): свайп по герою листает сайт.
   // behavior:'instant' обязателен — иначе CSS scroll-behavior:smooth анимирует каждый шаг и скролл ползёт
   addEventListener('message', function(e){
-    if (e.data && typeof e.data.pdScroll === 'number')
+    if (!e.data) return;
+    if (typeof e.data.pdScroll === 'number')
       window.scrollBy({ top: e.data.pdScroll, left: 0, behavior: 'instant' });
+    // открыта DEV-панель настроек сцены → поднимаем iframe над интерфейсами лендинга
+    if (typeof e.data.pdPanel === 'boolean') {
+      var fr = document.querySelector('iframe.hero-scene');
+      if (fr) fr.style.zIndex = e.data.pdPanel ? 10 : '';
+    }
   });
 
   // mobile: горизонтальный свайп по герою вращает 3D-сцену, вертикальный — листает страницу
