@@ -16,6 +16,7 @@
                  letter-spacing: .24em; text-transform: uppercase; opacity: .85; }
   #phase-label { font-family: 'Roboto Mono', monospace; letter-spacing: .28em; }
   #scrub { left: 64px; right: 64px; width: calc(100% - 128px); bottom: 46px; }
+  #autobar { left: 64px; right: 64px; bottom: 60px; }
   #dots { right: 64px; bottom: 66px; }
   #dbg-toggle { position: fixed; left: 14px; bottom: 12px; z-index: 60;
     font: 500 9px 'Roboto Mono', monospace; letter-spacing: .2em; color: currentColor;
@@ -26,8 +27,9 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { overscroll-behavior: none; } /* горизонтальный свайп ≠ «назад» в браузере */
-  /* автоплей: тонкий бар сверху заполняется до перехода к следующему проекту */
-  #autobar { position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 40;
+  /* автоплей: бар над слайдером заполняется до перехода к следующему проекту */
+  #autobar { position: fixed; left: 34px; right: 34px; bottom: 46px; height: 3px; z-index: 12;
+    transform-origin: left; transform: scaleX(0); border-radius: 3px;
     opacity: 0; transition: opacity .4s; pointer-events: none; }
   body { --ink: #1a1a1e;
          font-family: -apple-system, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
@@ -118,7 +120,7 @@
   #pluscursor.close svg { transform: rotate(45deg); } /* + поворачивается в × при открытом видео */
 
   /* ---- Панель настроек ---- */
-  #settings { position: fixed; top: 24px; right: 24px; z-index: 30;
+  #settings { position: fixed; top: 24px; right: 24px; z-index: 70; /* панель настроек — поверх всех интерфейсов */
     font: 11px/1.4 -apple-system, 'Segoe UI', Arial, sans-serif; color: var(--ink);
     user-select: none; }
   #settings-toggle { width: 40px; height: 40px; margin-left: auto; border-radius: 50%;
@@ -324,9 +326,9 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-<script src="textures.js?v=b1707-1"></script>
-<script src="odk_frame.js?v=b1707-1"></script>
-<script src="model.js?v=b1707-1"></script>
+<script src="textures.js?v=b1707-2"></script>
+<script src="odk_frame.js?v=b1707-2"></script>
+<script src="model.js?v=b1707-2"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -361,7 +363,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 6: 'videos/coal
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-1'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-2'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -1782,9 +1784,11 @@ function updateUI(wMax) {
   playBtn.classList.toggle('playing', play.state === 1 || play.state === 2);
   plusCursor.classList.toggle('close', play.state === 1 || play.state === 2); // + → × при открытом видео
   // автоплей-бар: заполняется на точке обзора, гаснет при действии/видео
-  autobar.style.width = (autoT / AUTO_DWELL * 100) + '%';
-  autobar.style.opacity = autoT > 0.05 ? 0.85 : 0;
-  autobar.style.background = '#' + curAccent.getHexString();
+  autobar.style.transform = 'scaleX(' + (autoT / AUTO_DWELL) + ')';
+  autobar.style.opacity = autoT > 0.05 ? 0.95 : 0;
+  const accHex = '#' + curAccent.getHexString();
+  autobar.style.background = accHex;
+  autobar.style.boxShadow = '0 0 10px ' + accHex; // свечение — бар читается на любом фоне
   // слайдер следует за камерой (если его не тянут) + заливка акцентом
   if (!sliderActive) scrub.value = clamp01(gt / GT_MAX) * 1000;
   const pct = Math.round(clamp01(gt / GT_MAX) * 500) / 5; // шаг 0.2%
@@ -2113,7 +2117,10 @@ addEventListener('resize', () => {
 (function(){
   var b = document.createElement('button');
   b.id = 'dbg-toggle'; b.textContent = 'DEV ' + (window.PD_BUILD || '');
-  b.addEventListener('click', function(){ document.body.classList.toggle('dbg'); });
+  b.addEventListener('click', function(){
+    var on = document.body.classList.toggle('dbg');
+    try { parent.postMessage({ pdPanel: on }, '*'); } catch (e) {}
+  });
   document.body.appendChild(b);
 })();
 </script>
