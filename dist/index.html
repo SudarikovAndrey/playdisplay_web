@@ -375,7 +375,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-12'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-13'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -1755,9 +1755,17 @@ function startPlay() {
     const reveal = () => {
       playerEl.classList.add('live');
       try {
-        const vtex = new THREE.VideoTexture(v);
-        vtex.minFilter = THREE.LinearFilter;
-        setProjTex(i, vtex); // видео живёт на точках — объёмный старт
+        // видео на точки идёт через CANVAS (не VideoTexture): drawImage всегда отдаёт
+        // реальные пиксели, а texImage2D из <video> первые кадры может читать ЧЁРНОЕ
+        // (аппаратный декодер ещё не открыл кадр WebGL) — отсюда была вспышка.
+        const cw = 960, ch = Math.round(960 / IMG_ASP);
+        const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+        const cctx = cv.getContext('2d');
+        cctx.drawImage(v, 0, 0, cw, ch);
+        const ctex = new THREE.CanvasTexture(cv);
+        ctex.minFilter = THREE.LinearFilter;
+        setProjTex(i, ctex); // видео живёт на точках — объёмный старт без чёрного кадра
+        play.liveCv = { cv, cctx, ctex, v };
       } catch (e) {}
     };
     if ('requestVideoFrameCallback' in v) v.requestVideoFrameCallback(reveal);
@@ -1802,6 +1810,7 @@ function captureVideoFrame() {
     const ct = new THREE.CanvasTexture(cv);
     ct.minFilter = THREE.LinearFilter;
     setProjTex(play.idx, ct);                          // проекция на точках = последний кадр
+    play.liveCv = null;                                // живая канвас-проекция больше не нужна
     const w = WORKS[play.idx];
     if (!w._origSrc) { w._origSrc = w.src; w._origFrame = w.frame; } // запомнить стартовый кадр
     const url = cv.toDataURL('image/jpeg', 0.85);
@@ -1819,6 +1828,14 @@ playerEl.addEventListener('click', stopPlay); // клик по самому ви
 // клик по сцене обрабатывается в pointerup (только если не было протяжки) — см. выше
 
 function updatePlay(dt, wMax) {
+  // живая канвас-проекция: каждый кадр видео → канвас → текстура точек
+  if (play.liveCv && (play.state === 1 || play.state === 2)) {
+    const L = play.liveCv;
+    if (L.v.readyState >= 2 && !L.v.paused) {
+      L.cctx.drawImage(L.v, 0, 0, L.cv.width, L.cv.height);
+      L.ctex.needsUpdate = true;
+    }
+  }
   if (play.state === 1) {
     play.p = Math.min(1, play.p + dt * 1.6);   // быстрый динамичный «выпад» камеры в кадр
     if (play.p === 1) play.state = 2;
