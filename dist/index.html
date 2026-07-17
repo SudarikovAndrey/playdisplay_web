@@ -7,10 +7,12 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { overscroll-behavior: none; } /* горизонтальный свайп ≠ «назад» в браузере */
-  /* автоплей: бар над слайдером заполняется до перехода к следующему проекту */
+  /* автоплей: бар над слайдером — только для тач-устройств (на десктопе прогресс
+     показывает кольцо вокруг курсора) */
   #autobar { position: fixed; left: 34px; right: 34px; bottom: 46px; height: 3px; z-index: 12;
     transform-origin: left; transform: scaleX(0); border-radius: 3px;
     opacity: 0; transition: opacity .4s; pointer-events: none; }
+  @media (pointer: fine) { #autobar { display: none; } }
   body { --ink: #1a1a1e;
          font-family: -apple-system, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
          background: #d9d9db; color: var(--ink);
@@ -91,13 +93,19 @@
   /* системный курсор прячем везде, кроме панели настроек — рисуем свой «плюс». */
   html, body, #stage, #player, #frame, #scrub, #play-btn, #player-close, #dots { cursor: none; }
   #settings, #settings * { cursor: auto; } /* в панели — обычный курсор (там свой «плюс» скрыт) */
-  #pluscursor { position: fixed; left: 0; top: 0; width: 44px; height: 44px;
-    margin: -22px 0 0 -22px; z-index: 41; pointer-events: none; color: #fff;
+  #pluscursor { position: fixed; left: 0; top: 0; width: 48px; height: 48px;
+    margin: -24px 0 0 -24px; z-index: 41; pointer-events: none; color: #fff;
     filter: drop-shadow(0 0 2px rgba(0,0,0,.7)); opacity: .9;
     transition: opacity .3s; }
   #pluscursor svg { width: 100%; height: 100%; display: block;
     transition: transform .3s cubic-bezier(.2,.8,.2,1); }
-  #pluscursor.close svg { transform: rotate(45deg); } /* + поворачивается в × при открытом видео */
+  /* курсор-состояния: play (галерея) ↔ крестик (видео открыто); иконки плавно сменяются */
+  #pluscursor .cur-play, #pluscursor .cur-cross { transition: opacity .25s, transform .3s cubic-bezier(.2,.8,.2,1); transform-origin: 24px 24px; }
+  #pluscursor .cur-cross { opacity: 0; transform: rotate(-45deg) scale(.6); }
+  #pluscursor.close .cur-play { opacity: 0; transform: scale(.6); }
+  #pluscursor.close .cur-cross { opacity: 1; transform: rotate(0) scale(1); }
+  #pluscursor.close #cur-ring, #pluscursor.close .cur-ring-bg { opacity: 0; } /* при видео кольцо не нужно */
+  #cur-ring { transition: opacity .3s; }
 
   /* ---- Панель настроек ---- */
   #settings { position: fixed; top: 24px; right: 24px; z-index: 70; /* панель настроек — поверх всех интерфейсов */
@@ -164,7 +172,16 @@
 <div id="grain"></div>
 <div id="frame"></div>
 <div id="lensring"></div>
-<div id="pluscursor"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M22 13.5v17M13.5 22h17" stroke="currentColor" stroke-width="1.5"/></svg></div>
+<div id="pluscursor"><svg viewBox="0 0 48 48">
+  <circle class="cur-ring-bg" cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/>
+  <!-- кольцо-прогресс автоплея: заполняется по кругу до перехода на следующий проект -->
+  <circle id="cur-ring" cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" transform="rotate(-90 24 24)" stroke-dasharray="131.9" stroke-dashoffset="131.9"/>
+  <!-- play: клик по проекту запускает видео -->
+  <path class="cur-play" d="M20.5 16.5l12 7.5-12 7.5z" fill="currentColor"/>
+  <!-- крестик: видео открыто, клик закрывает -->
+  <path class="cur-cross" d="M17 17l14 14M31 17l-14 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg></div>
 <div id="player"><button id="player-close">✕</button></div>
 
 <div class="ui" id="logo">PLAY<span>DISPLAY</span></div>
@@ -343,7 +360,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-7'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-8'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -1398,6 +1415,7 @@ addEventListener('pointerup', e => {
 // слайдер: прямое скольжение по спирали (магнит на время перетаскивания отключён)
 const scrub = document.getElementById('scrub');
 const autobar = document.getElementById('autobar');
+const curRing = document.getElementById('cur-ring');
 let sliderActive = false;
 scrub.addEventListener('pointerdown', () => { sliderActive = true; stopPlay(); });
 addEventListener('pointerup', () => { if (sliderActive) { sliderActive = false; lastInput = performance.now(); } });
@@ -1857,12 +1875,16 @@ function updateUI(wMax) {
   playBtn.classList.toggle('visible', SHOW_PLAYER && wMax > 0.97 && play.state === 0);
   playBtn.classList.toggle('playing', play.state === 1 || play.state === 2);
   plusCursor.classList.toggle('close', play.state === 1 || play.state === 2); // + → × при открытом видео
-  // автоплей-бар: заполняется на точке обзора, гаснет при действии/видео
-  autobar.style.transform = 'scaleX(' + (autoT / AUTO_DWELL) + ')';
-  autobar.style.opacity = autoT > 0.05 ? 0.95 : 0;
+  // автоплей-прогресс: на десктопе — кольцо вокруг курсора, на таче — бар над слайдером
+  const autoK = autoT / AUTO_DWELL;
   const accHex = '#' + curAccent.getHexString();
+  curRing.style.strokeDashoffset = 131.9 * (1 - autoK); // кольцо заполняется по кругу
+  curRing.style.stroke = accHex;
+  curRing.style.opacity = autoK > 0.01 ? 1 : 0;
+  autobar.style.transform = 'scaleX(' + autoK + ')';
+  autobar.style.opacity = autoT > 0.05 ? 0.95 : 0;
   autobar.style.background = accHex;
-  autobar.style.boxShadow = '0 0 10px ' + accHex; // свечение — бар читается на любом фоне
+  autobar.style.boxShadow = '0 0 10px ' + accHex;
   // слайдер следует за камерой (если его не тянут) + заливка акцентом
   if (!sliderActive) scrub.value = clamp01(gt / GT_MAX) * 1000;
   const pct = Math.round(clamp01(gt / GT_MAX) * 500) / 5; // шаг 0.2%
@@ -1874,6 +1896,14 @@ function updateUI(wMax) {
   }
   const hintOp = navigated ? 0 : .6;
   if (hintOp !== _ui.hintOp) { _ui.hintOp = hintOp; el.hint.style.opacity = hintOp; }
+  // живой HUD лендинга: реальное число точек и статус сцены (вместо статичных цифр макета)
+  if (EMBEDDED && (performance.now() - (updateUI._hud || 0)) > 500) {
+    updateUI._hud = performance.now();
+    let pts = 0;
+    scene.traverse(o => { if (o.isPoints && o.visible && o.geometry) pts += o.geometry.getAttribute('position').count; });
+    const status = play.state ? '▶ воспроизведение' : wMax > 0.95 ? '● совпадение' : wMax > 0.3 ? '◌ сборка' : '· полёт';
+    try { parent.postMessage({ pdHud: { pts, status } }, '*'); } catch (e) {}
+  }
 }
 
 // ---------- Цикл ----------

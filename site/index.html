@@ -264,7 +264,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b1707-7" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b1707-8" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -274,8 +274,8 @@
   <div class="bracket br"></div>
   <div class="session"><span class="rec"></span> SPATIAL CAPTURE // SESSION 011</div>
   <div class="readout">
-    <div><div class="k">Point count</div><div class="v accent">2 481 060 pts</div></div>
-    <div><div class="k">Status</div><div class="v">● совпадение</div></div>
+    <div><div class="k">Point count</div><div class="v accent" id="hud-pts">— pts</div></div>
+    <div><div class="k">Status</div><div class="v" id="hud-status">· полёт</div></div>
   </div>
   <div class="wrap hero-inner">
     <div class="kicker" style="margin-bottom:20px">Студия интерактивного опыта — с 2011</div>
@@ -440,6 +440,12 @@
     if (typeof e.data.pdPanel === 'boolean') {
       var fr = document.querySelector('iframe.hero-scene');
       if (fr) fr.style.zIndex = e.data.pdPanel ? 10 : '';
+    }
+    // живой HUD: реальное число точек и статус из 3D-сцены
+    if (e.data.pdHud) {
+      var pe = document.getElementById('hud-pts'), se = document.getElementById('hud-status');
+      if (pe) pe.textContent = e.data.pdHud.pts.toLocaleString('ru-RU') + ' pts';
+      if (se) se.textContent = e.data.pdHud.status;
     }
   });
 
