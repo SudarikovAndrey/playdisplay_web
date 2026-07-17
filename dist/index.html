@@ -343,7 +343,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-5'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-6'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -448,6 +448,7 @@ const voxVert = `
   uniform float uEdgeBias;  // >0 — стягивание к граням, <0 — к центрам полигонов
   uniform float uSizeVar;   // разнообразие размера точек (1 = одинаковые, до 10 = сильный разброс)
   uniform vec2 uMousePx;    // курсор в пикселях
+  uniform vec4 uTrail[6];   // шлейф линзы: xy = позиция (px), z = сила (0..1); [0] = текущая позиция
   uniform vec2 uRes;        // разрешение окна (px)
   uniform float uLensR;     // радиус линзы чёткости (px)
   uniform float uMorph;     // 0 на точке обзора → 1 в движении камеры
@@ -464,7 +465,15 @@ const voxVert = `
     // погасить разлёт локально: где точка ДОЛЖНА быть на экране, там и ловим курсор.
     vec4 clip0 = uPV * vec4(worig, 1.0); // предумноженная proj×view — вдвое дешевле
     vec2 scr = (vec2(clip0.x, -clip0.y) / clip0.w * 0.5 + 0.5) * uRes;
-    float lens = clip0.w > 0.0 ? (1.0 - smoothstep(0.0, uLensR, distance(scr, uMousePx))) : 0.0;
+    // линза со шлейфом: текущая позиция + затухающие «призраки» вдоль траектории курсора —
+    // прояснение тянется хвостом за движением
+    float lens = 0.0;
+    if (clip0.w > 0.0) {
+      for (int k = 0; k < 6; k++) {
+        float dtr = distance(scr, uTrail[k].xy);
+        lens = max(lens, (1.0 - smoothstep(0.0, uLensR, dtr)) * uTrail[k].z);
+      }
+    }
     vLens = lens;
     // РАННИЙ ВЫХОД: точки сверх «Кол-ва» отбрасываются ДО тяжёлой математики
     // (морфинг/вихрь/дрейф) — скрытая точка почти бесплатна для GPU.
@@ -626,6 +635,7 @@ const voxUniforms = {
   uSizeVar: { value: S.sizevar },// разнообразие размера точек
   uProjScale:{ value: S.projscale },// масштаб проецируемой картинки
   uMousePx: { value: new THREE.Vector2(-9999, -9999) }, // курсор (линза чёткости)
+  uTrail:   { value: Array.from({ length: 6 }, () => new THREE.Vector4(-99999, -99999, 0, 0)) }, // шлейф линзы
   uRes:     { value: new THREE.Vector2(innerWidth, innerHeight) },
   uLensR:   { value: 450 },      // радиус линзы, px (×1.5)
   uMorph:   { value: 0 },        // морфинг при движении (1-wMax)
@@ -1404,6 +1414,8 @@ addEventListener('keydown', e => {
 
 let moveSmooth = 0; // плавная огибающая скорости камеры (морфинг/наезд без рывков)
 let focusAmt = 0;   // «фокус на идеальной точке» (замедлились + подъехали) — сборка/наезд
+let parSX = 0, parSY = 0; // сглаженный параллакс от курсора (-1..1)
+const trailHist = [];     // история позиций курсора для шлейфа линзы
 function updateNav(dt) {
   if (sliderActive) {
     // при перетаскивании слайдера — свободное скольжение по спирали (без округления)
@@ -1456,6 +1468,12 @@ function updateCamera(time, wMax) {
   // радиус: в точках ровно ORBIT_R, между — плавный вынос наружу
   const r = S.dist + m * arcR(i0);
   camera.position.set(Math.sin(az) * r, h, Math.cos(az) * r);
+  // параллакс от мыши: камера едва заметно смещается за курсором (взгляд остаётся в фокусе) —
+  // сцена «дышит» глубиной. Сильнее на точке обзора, гаснет при влёте в видео.
+  const parAmp = (0.55 + 1.05 * focusAmt) * (1 - playE);
+  camera.position.x += Math.cos(az) * parSX * parAmp;
+  camera.position.z += -Math.sin(az) * parSX * parAmp;
+  camera.position.y += -parSY * parAmp * 0.7;
   // центр обзора: точка фокуса + смещение высоты из настроек (наклон взгляда вверх/вниз —
   // кадрирование по высоте, удобно для крупной модели; проекция при этом не сдвигается)
   camera.lookAt(TARGET.x, TARGET.y + S.viewy, TARGET.z);
@@ -1507,7 +1525,7 @@ function updateWeights() {
     backPts[i].visible = p.weight > 0.004 && playE > 0.002;
     const wc = 1 - smoothstep(0, SPACING, d);
     envColor.lerp(p.bg, wc * 0.25 + p.weight * 0.5);
-    envColor.lerp(p.accent, wc * 0.12);
+    envColor.lerp(p.accent, wc * 0.24); // заметный подмес фирменного акцента проекта в атмосферу
     curBase.lerp(p.bg, wc * 0.12 + p.weight * 0.22);
     curBase.lerp(p.accent, wc * 0.12);
     curAccent.lerp(p.accent, wc * 0.95);
@@ -1515,7 +1533,8 @@ function updateWeights() {
   }
   voxUniforms.uBase.value.copy(curBase);
   voxUniforms.uAccent.value.copy(curAccent);
-  skyMat.uniforms.uHorizon.value.copy(envColor);
+  // небо: горизонт греется акцентом текущего проекта (свечение города), зенит чище
+  skyMat.uniforms.uHorizon.value.copy(envColor).lerp(curAccent, 0.16 * wMax);
   skyMat.uniforms.uZenith.value.copy(envColor).lerp(WHITE, 0.38);
   const lum = envColor.r * 0.299 + envColor.g * 0.587 + envColor.b * 0.114;
   document.body.classList.toggle('dark-env', lum < 0.52);
@@ -1539,6 +1558,21 @@ function updateDynamics(dt, time, wMax) {
     0.5 - (mousePY - innerHeight / 2) / hPx);
   LENS.value = wMax * (1 - playE);
   voxUniforms.uMousePx.value.set(mousePX, mousePY); // линза чёткости по вокселям
+  // шлейф линзы: [0] — текущая позиция; каждые ~70мс/24px пишем «призрак» в историю,
+  // призраки затухают за ~0.45с → прояснение тянется хвостом за курсором
+  const nowMs = performance.now();
+  if (!trailHist.length || nowMs - trailHist[0].t > 70 ||
+      Math.hypot(mousePX - trailHist[0].x, mousePY - trailHist[0].y) > 24) {
+    trailHist.unshift({ x: mousePX, y: mousePY, t: nowMs });
+    if (trailHist.length > 5) trailHist.pop();
+  }
+  const tr = voxUniforms.uTrail.value;
+  tr[0].set(mousePX, mousePY, 1, 0);
+  for (let k = 1; k < 6; k++) {
+    const hpt = trailHist[k - 1];
+    if (hpt) tr[k].set(hpt.x, hpt.y, Math.exp(-(nowMs - hpt.t) / 450) * 0.75, 0);
+    else tr[k].set(-99999, -99999, 0, 0);
+  }
   plusCursor.style.transform = 'translate(' + mousePX + 'px,' + mousePY + 'px)'; // курсор «плюс»
   lensRing.style.transform = 'translate(' + mousePX + 'px,' + mousePY + 'px)'; // кольцо линзы
   lensRing.style.opacity = (play.state === 0 ? 1 : 0) * smoothstep(0.55, 0.95, wMax) * 0.5;
@@ -1776,6 +1810,7 @@ const _ui = { titleOp: -1, phase: '', pct: -1, acc: '', hintOp: -1 }; // кэш 
 function updateUI(wMax) {
   const i = wrapIdx(gtM); // индекс с учётом зацикливания
   if (i !== uiIdx) {
+    if (uiIdx >= 0) Sound.tick(); // тактильный тик при перелистывании (не на старте)
     uiIdx = i;
     el.num.textContent = `${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')}`;
     el.title.textContent = WORKS[i].title;
@@ -1861,7 +1896,20 @@ const Sound = (() => {
     k(riseF.frequency, 300 + 1200 * play, 0.12);
   }
   function setEnabled(v) { on = v; if (v) kick(); else if (ctx) master.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.1); }
-  return { kick, frame, setEnabled };
+  // короткий тихий «тик» при смене проекта — тактильный отклик перелистывания
+  function tick() {
+    if (!ready || !on) return;
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(520, t);
+    o.frequency.exponentialRampToValueAtTime(260, t + 0.09);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.05, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.18);
+  }
+  return { kick, frame, setEnabled, tick };
 })();
 // звук стартует только по первому жесту пользователя (политика автоплея браузеров)
 // звук стартует по «жесту активации» (клик/тач/клавиша/перетаскивание) — политика браузеров.
@@ -1956,6 +2004,10 @@ function loop() {
   voxUniforms.uTime.value = time;
   if (sparkMat) sparkMat.uniforms.uTime.value = time;
   autoQuality(dt);
+  // сглаженный параллакс: курсор -1..1 → мягкая пружина (без дёрганья)
+  const pk = 1 - Math.exp(-dt * 3.2);
+  parSX += ((mousePX / innerWidth - 0.5) * 2 - parSX) * pk;
+  parSY += ((mousePY / innerHeight - 0.5) * 2 - parSY) * pk;
   // авто-подгон «картинка на весь экран»: зум проекции масштабируется под соотношение
   // сторон экрана (cover). На 16:9 = базовое значение ползунка; шире/уже — зумим сильнее.
   const A = camera.aspect || (innerWidth / innerHeight);
