@@ -418,6 +418,11 @@
   var hdr = document.getElementById('hdr');
   addEventListener('scroll', function(){ hdr.classList.toggle('scrolled', scrollY > 40); });
 
+  // вертикальная прокрутка из 3D-сцены (iframe): свайп по герою листает сайт
+  addEventListener('message', function(e){
+    if (e.data && typeof e.data.pdScroll === 'number') window.scrollBy(0, e.data.pdScroll);
+  });
+
   // mobile: горизонтальный свайп по герою вращает 3D-сцену, вертикальный — листает страницу
   (function(){
     if (!window.matchMedia || !matchMedia('(max-width: 900px)').matches) return;

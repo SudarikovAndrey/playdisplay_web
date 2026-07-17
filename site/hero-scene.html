@@ -26,6 +26,9 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { overscroll-behavior: none; } /* горизонтальный свайп ≠ «назад» в браузере */
+  /* автоплей: тонкий бар сверху заполняется до перехода к следующему проекту */
+  #autobar { position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 40;
+    opacity: 0; transition: opacity .4s; pointer-events: none; }
   body { --ink: #1a1a1e;
          font-family: -apple-system, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
          background: #d9d9db; color: var(--ink);
@@ -192,6 +195,7 @@
 <button id="play-btn">▶</button>
 <div class="ui" id="dots"></div>
 <input type="range" id="scrub" min="0" max="1000" step="0.1" value="0">
+<div id="autobar"></div>
 
 <div id="settings" class="open">
   <div id="settings-toggle" title="Свернуть / развернуть настройки">⚙</div>
@@ -1328,6 +1332,8 @@ applySceneMode();
 // ---------- Навигация: пружинное движение к цели ----------
 let targetGT = 0, gt = -0.6, gtM = -0.6, gtVel = 0;
 let navTarget = 0; // непрерывное «намерение» прокрутки; цель пружины = ближайший к нему кадр
+let autoT = 0;     // автоплей: накопленное время на текущем проекте (бар сверху)
+const AUTO_DWELL = 7; // секунд на проекте до автоперехода
 let navigated = false, lastInput = 0;
 const GT_MAX = N - 1;
 const wrapIdx = v => ((Math.round(v) % N) + N) % N; // индекс проекта 0..N-1 из любого gt (для лупа)
@@ -1337,17 +1343,25 @@ function onInput(delta) {
   navTarget += delta; // копим непрерывное намерение; цель пружины возьмём как ближайший кадр
   lastInput = performance.now();
   navigated = true;
+  autoT = 0; // любое действие пользователя сбрасывает автоплей
   if (Math.abs(delta) > 0.004) stopPlay();
 }
+// сцена встроена в лендинг (iframe)? Тогда вертикальная прокрутка уходит родителю (скролл сайта),
+// а вращение — горизонтальным свайпом/перетаскиванием. Отдельно открытая сцена крутится как раньше.
+const EMBEDDED = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 addEventListener('wheel', e => {
   // гасим жест по умолчанию: иначе горизонтальный свайп трекпада браузер
   // трактует как «назад/вперёд по истории» (сцена сама потребляет прокрутку)
   e.preventDefault();
-  let d = e.deltaY + e.deltaX;
-  if (e.deltaMode === 1) d *= 16;
-  else if (e.deltaMode === 2) d *= innerHeight;
-  d = clamp(d, -80, 80);
-  onInput(d * WHEEL_SENS);
+  let dx = e.deltaX, dy = e.deltaY;
+  if (e.deltaMode === 1) { dx *= 16; dy *= 16; }
+  else if (e.deltaMode === 2) { dx *= innerHeight; dy *= innerHeight; }
+  if (EMBEDDED && Math.abs(dy) > Math.abs(dx)) {
+    // свайп снизу вверх листает сайт вниз (и наоборот)
+    try { parent.postMessage({ pdScroll: dy }, '*'); } catch (err) {}
+    return;
+  }
+  onInput(clamp(dx + dy, -80, 80) * WHEEL_SENS);
 }, { passive: false });
 let tPrev = null;
 addEventListener('touchstart', e => { tPrev = e.touches[0].clientX + e.touches[0].clientY; }, { passive: true });
@@ -1385,6 +1399,7 @@ addEventListener('pointerup', e => {
 });
 // слайдер: прямое скольжение по спирали (магнит на время перетаскивания отключён)
 const scrub = document.getElementById('scrub');
+const autobar = document.getElementById('autobar');
 let sliderActive = false;
 scrub.addEventListener('pointerdown', () => { sliderActive = true; stopPlay(); });
 addEventListener('pointerup', () => { if (sliderActive) { sliderActive = false; lastInput = performance.now(); } });
@@ -1628,6 +1643,23 @@ function embedUrl(e) {
     : `https://www.youtube.com/embed/${e.id}?autoplay=1&mute=1&loop=1&playlist=${e.id}&rel=0&modestbranding=1&playsinline=1`;
 }
 
+// предзагрузка локального ролика текущего проекта: к моменту клика видео уже в буфере →
+// влёт начинается мгновенно, без сетевой задержки
+let preV = null, preIdx = -1;
+function preloadVideo(i) {
+  if (preIdx === i) return;
+  preIdx = i;
+  if (preV && play.iframe !== preV) { preV.removeAttribute('src'); preV.load(); }
+  preV = null;
+  if (LOCAL_VIDEO[i]) {
+    const v = document.createElement('video');
+    v.src = LOCAL_VIDEO[i]; v.muted = true; v.loop = true; v.playsInline = true;
+    v.setAttribute('playsinline', ''); v.preload = 'auto';
+    v.load();
+    preV = v;
+  }
+}
+
 function startPlay() {
   if (!SHOW_PLAYER) return;
   const i = wrapIdx(gtM); // индекс с учётом зацикливания
@@ -1637,13 +1669,18 @@ function startPlay() {
   playerEl.classList.remove('live');
   if (play.iframe) { play.iframe.remove(); play.iframe = null; }
   if (LOCAL_VIDEO[i]) {
-    // локальный mp4 — тег <video>: стыкуется с первым кадром, играет с сервера/локально
-    const v = document.createElement('video');
-    v.src = LOCAL_VIDEO[i]; v.muted = true; v.loop = true; v.playsInline = true;
-    v.setAttribute('playsinline', ''); v.autoplay = true; v.preload = 'auto';
+    // локальный mp4: берём предзагруженный элемент (буфер уже полон) — старт без задержки
+    const v = (preV && preIdx === i) ? preV : (() => {
+      const nv = document.createElement('video');
+      nv.src = LOCAL_VIDEO[i]; nv.muted = true; nv.loop = true; nv.playsInline = true;
+      nv.setAttribute('playsinline', ''); nv.preload = 'auto';
+      return nv;
+    })();
+    v.currentTime = 0;
     playerEl.appendChild(v);
     play.iframe = v;
-    v.addEventListener('canplay', () => playerEl.classList.add('live'), { once: true });
+    if (v.readyState >= 3) playerEl.classList.add('live'); // уже буферизован — показываем сразу
+    else v.addEventListener('canplay', () => playerEl.classList.add('live'), { once: true });
     v.play().catch(() => {});
   } else {
     const f = document.createElement('iframe');
@@ -1722,6 +1759,7 @@ function updateUI(wMax) {
     el.title.textContent = WORKS[i].title;
     frameEl.style.backgroundImage = `url(${WORKS[i].frame || WORKS[i].src})`;
     dots.forEach((d, di) => d.classList.toggle('active', di === i));
+    preloadVideo(i); // ролик проекта в буфер заранее — влёт в видео без задержки
   }
   // DOM трогаем только при реальном изменении значения — без лишних style/text записей
   const titleOp = Math.round((0.3 + 0.7 * wMax) * 50) / 50;
@@ -1732,6 +1770,10 @@ function updateUI(wMax) {
   playBtn.classList.toggle('visible', SHOW_PLAYER && wMax > 0.97 && play.state === 0);
   playBtn.classList.toggle('playing', play.state === 1 || play.state === 2);
   plusCursor.classList.toggle('close', play.state === 1 || play.state === 2); // + → × при открытом видео
+  // автоплей-бар: заполняется на точке обзора, гаснет при действии/видео
+  autobar.style.width = (autoT / AUTO_DWELL * 100) + '%';
+  autobar.style.opacity = autoT > 0.05 ? 0.85 : 0;
+  autobar.style.background = '#' + curAccent.getHexString();
   // слайдер следует за камерой (если его не тянут) + заливка акцентом
   if (!sliderActive) scrub.value = clamp01(gt / GT_MAX) * 1000;
   const pct = Math.round(clamp01(gt / GT_MAX) * 500) / 5; // шаг 0.2%
@@ -1901,6 +1943,13 @@ function loop() {
   updatePlay(dt, wMax);
   updateFrameReveal(dt, wMax);
   updateDynamics(dt, time, wMax);
+  // автоплей: камера встала на проект, видео не открыто, пользователь не трогает — копим время;
+  // бар заполнился → плавный переезд к следующему проекту
+  if (play.state === 0 && !sliderActive && !dragOn && wMax > 0.9 &&
+      performance.now() - lastInput > 1600) {
+    autoT += dt;
+    if (autoT >= AUTO_DWELL) { autoT = 0; navTarget = Math.round(navTarget) + 1; }
+  } else if (play.state !== 0) autoT = 0;
   updateUI(wMax);
   Sound.frame(moveSmooth, playE); // звук следует за движением камеры и влётом
   // плоскость-билборд: центральный объект всегда развёрнут на камеру
