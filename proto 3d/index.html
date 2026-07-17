@@ -343,7 +343,7 @@ const LOCAL_VIDEO = { 0: '../videos/VDNH.mp4', 1: '../videos/bmw.mp4', 2: '../vi
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-4'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-5'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -1689,7 +1689,26 @@ function startPlay() {
   }
   playerEl.style.display = 'block';
 }
-function stopPlay() { if (play.state === 1 || play.state === 2) play.state = 3; }
+// при выходе из видео «замораживаем» его последний кадр на точках: снимаем кадр в canvas
+// и подменяем текстуру проектора + постеры. Точки продолжают показывать то, где остановился
+// ролик — выход полностью органичен (работает для локальных <video>, ембеды пропускаем)
+function captureVideoFrame() {
+  const v = play.iframe;
+  if (!v || v.tagName !== 'VIDEO' || v.readyState < 2 || play.idx < 0) return;
+  try {
+    const cv = document.createElement('canvas');
+    cv.width = v.videoWidth; cv.height = v.videoHeight;
+    cv.getContext('2d').drawImage(v, 0, 0);
+    const p = projectors[play.idx];
+    p.tex.image = cv; p.tex.needsUpdate = true;      // проекция на точках = последний кадр
+    const url = cv.toDataURL('image/jpeg', 0.85);
+    WORKS[play.idx].frame = WORKS[play.idx].src = url; // постеры плеера/кадра — тоже
+    if (uiIdx === play.idx) frameEl.style.backgroundImage = `url(${url})`;
+  } catch (e) {} // canvas может быть «испачкан» кросс-доменным видео — тогда просто пропускаем
+}
+function stopPlay() {
+  if (play.state === 1 || play.state === 2) { captureVideoFrame(); play.state = 3; }
+}
 playBtn.addEventListener('click', startPlay);
 playerClose.addEventListener('click', stopPlay);
 playerEl.addEventListener('click', stopPlay); // клик по самому видео тоже закрывает
@@ -1725,7 +1744,10 @@ function updatePlay(dt, wMax) {
   playE = 1 - (1 - play.p) * (1 - play.p);
   // при влёте сцена ПОЛНОСТЬЮ собирается (разлёт→0) → точечный образ становится идентичен
   // кадру видео, и видео «вырастает» из точек без шва. По окончании восстанавливается.
-  voxUniforms.uSpread.value = S.spread * (1 - playE);
+  // При закрытии — лёгкий «выдох»: точки чуть распухают в середине перехода и оседают
+  // на последнем кадре ролика (снятом в captureVideoFrame) — органичное растворение.
+  const puff = play.state === 3 ? playE * (1 - playE) * 4 : 0;
+  voxUniforms.uSpread.value = S.spread * (1 - playE) + puff * 2.2;
   // видео = ТОЧНАЯ экранная проекция прямоугольника кадра-сетки → 1-в-1 на точечный образ,
   // совпадает по размеру и месту при любой дистанции/линзе/высоте (никакого «видео крупнее»)
   const r = frameScreenRect(play.idx);
