@@ -40,6 +40,19 @@
   /* мета проекта: клиент · год — ярко и читаемо под названием */
   #scene-meta { font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
     opacity: .6; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  /* HUD мини-игры «Полёт» */
+  #game-hud { position: fixed; right: 34px; top: 84px; z-index: 45; text-align: right;
+    display: none; pointer-events: none; }
+  body.game #game-hud { display: block; }
+  #game-score { font-size: 46px; font-weight: 800; letter-spacing: -.02em; line-height: 1;
+    font-variant-numeric: tabular-nums; text-shadow: 0 2px 24px rgba(0,0,0,.5); }
+  #game-label { font-size: 9px; letter-spacing: .3em; opacity: .55; margin-top: 6px; text-transform: uppercase; }
+  #game-exit { font-size: 9px; letter-spacing: .24em; opacity: .35; margin-top: 18px; }
+  /* в игре весь галерейный UI прячется */
+  body.game #scrub, body.game #dots, body.game #scene-info, body.game #corner-status,
+  body.game #lensring, body.game #autobar, body.game #play-btn { display: none !important; }
+  body.game #pluscursor { opacity: 0 !important; } /* курсор = корабль в сцене */
+
   /* мини-HUD в нижних углах: техно-статус облака точек и fps — мелко, второстепенно */
   #corner-status { position: fixed; left: 14px; bottom: 10px; z-index: 11; font-size: 9px;
     letter-spacing: .26em; text-transform: uppercase; opacity: .35; pointer-events: none; }
@@ -220,6 +233,11 @@
 <div class="ui" id="dots"></div>
 <input type="range" id="scrub" min="0" max="1000" step="0.1" value="0">
 <div id="autobar"></div>
+<div id="game-hud">
+  <div id="game-score">0</div>
+  <div id="game-label">ЭНЕРГИЯ СОБРАНА</div>
+  <div id="game-exit">ESC — ВЕРНУТЬСЯ В ГАЛЕРЕЮ</div>
+</div>
 
 <div id="settings" class="open">
   <div id="settings-toggle" title="Свернуть / развернуть настройки">⚙</div>
@@ -384,7 +402,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-15'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-16'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -1388,6 +1406,7 @@ const wrapIdx = v => ((Math.round(v) % N) + N) % N; // индекс проект
 const WHEEL_SENS = 0.009; // чувствительность прокрутки (один заметный щелчок ≈ один кадр)
 
 function onInput(delta) {
+  if (GAME.on) return; // в мини-игре скролл/драг галерею не крутят
   navTarget += delta; // копим непрерывное намерение; цель пружины возьмём как ближайший кадр
   lastInput = performance.now();
   navigated = true;
@@ -1444,6 +1463,7 @@ addEventListener('pointerup', e => {
   if (!dragOn) return;
   dragOn = false;
   if (dragMoved < 6) {                                  // почти без движения = клик
+    if (GAME.on) return;                                // в игре клики сцены не работают
     if (play.state === 1 || play.state === 2) { stopPlay(); return; } // клик закрывает видео → в 3D
     if (play.state !== 0) return;
     // у краёв экрана клик листает на соседний проект (курсор там — стрелка)
@@ -2131,6 +2151,208 @@ function updateHud(dt) {
     `calls ${ri.calls} · точек ${(ri.points / 1e6).toFixed(2)}M`;
 }
 
+// ================= МИНИ-ИГРА «ПОЛЁТ»: корабль над инопланетным ландшафтом =================
+// Курсор становится кораблём; точечный ландшафт генерируется чанками впереди по курсу
+// и утилизируется позади; сферы энергии собираем, хребты облетаем. Esc — назад в галерею.
+const GAME = { on: false, z: 0, speed: 30, score: 0, hurtT: 0,
+  group: null, chunks: [], ship: null, shipP: new THREE.Vector3(0, 12, 0), anims: [] };
+const G_DEPTH = 70, G_AHEAD = 7; // глубина чанка и сколько чанков держим впереди
+
+// детерминированный шум для ландшафта
+function gHash(x, z) { const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return s - Math.floor(s); }
+function gNoise(x, z) {
+  const xi = Math.floor(x), zi = Math.floor(z), xf = x - xi, zf = z - zi;
+  const u = xf * xf * (3 - 2 * xf), v = zf * zf * (3 - 2 * zf);
+  return gHash(xi, zi) * (1 - u) * (1 - v) + gHash(xi + 1, zi) * u * (1 - v)
+       + gHash(xi, zi + 1) * (1 - u) * v + gHash(xi + 1, zi + 1) * u * v;
+}
+function gTerrainH(x, z) { // высота инопланетного рельефа
+  let h = 0, a = 10, f = 0.018;
+  for (let o = 0; o < 3; o++) { h += (gNoise(x * f, z * f) - 0.5) * 2 * a; a *= 0.45; f *= 2.4; }
+  h += Math.pow(Math.max(0, gNoise(x * 0.004 + 40, z * 0.006)), 3) * 46; // редкие высокие хребты
+  return h;
+}
+
+// чанк ландшафта: сетка точек с джиттером, цвет по высоте (глубины→бирюза→янтарные пики)
+function gMakeChunk(zNoise) {
+  const step = 1.6, W = 120;
+  const pts = [], cols = [];
+  const cDeep = new THREE.Color(0x241d3e), cMid = new THREE.Color(0x2be0c6), cTop = new THREE.Color(0xffb054);
+  const tmp = new THREE.Color();
+  for (let z = 0; z < G_DEPTH; z += step) {
+    for (let x = -W; x <= W; x += step) {
+      const jx = (gHash(x + zNoise, z) - 0.5) * step, jz = (gHash(x, z + zNoise) - 0.5) * step;
+      const px = x + jx, pzN = zNoise + z + jz;
+      const h = gTerrainH(px, pzN);
+      pts.push(px, h, z + jz);
+      const k = clamp01((h + 8) / 30);
+      tmp.copy(cDeep).lerp(cMid, Math.min(1, k * 1.4));
+      if (k > 0.72) tmp.lerp(cTop, (k - 0.72) * 3.2);
+      tmp.multiplyScalar(0.55 + 0.45 * gHash(px, pzN)); // разнояркость
+      cols.push(tmp.r, tmp.g, tmp.b);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.42, transparent: true, opacity: 0.95, depthWrite: false });
+  const cloud = new THREE.Points(g, m);
+  const grp = new THREE.Group();
+  grp.add(cloud);
+  grp.userData = { zNoise };
+  // сферы энергии: 0–2 на чанк, парят над рельефом
+  const orbN = Math.floor(gHash(zNoise, 7) * 3);
+  for (let i = 0; i < orbN; i++) {
+    const ox = (gHash(zNoise, i * 13 + 1) - 0.5) * 150;
+    const oz = gHash(zNoise, i * 29 + 2) * G_DEPTH;
+    const oy = gTerrainH(ox, zNoise + oz) + 7 + gHash(zNoise, i) * 9;
+    const og = new THREE.BufferGeometry();
+    const op = [], N_OP = 26;
+    for (let k = 0; k < N_OP; k++) {
+      const a = gHash(i, k) * Math.PI * 2, b = gHash(k, i) * Math.PI, r = 1.1 + gHash(k * 3, i) * 0.5;
+      op.push(Math.sin(b) * Math.cos(a) * r, Math.cos(b) * r, Math.sin(b) * Math.sin(a) * r);
+    }
+    og.setAttribute('position', new THREE.Float32BufferAttribute(op, 3));
+    const om = new THREE.PointsMaterial({ color: 0xffc46a, size: 0.55, transparent: true, opacity: 0.95,
+      blending: THREE.AdditiveBlending, depthWrite: false });
+    const orb = new THREE.Points(og, om);
+    orb.position.set(ox, oy, oz);
+    orb.userData.isOrb = true;
+    grp.add(orb);
+  }
+  return grp;
+}
+
+function gSpawnAhead() {
+  // держим G_AHEAD чанков впереди корабля (корабль на z≈0, полёт в -Z)
+  while (GAME.chunks.length < G_AHEAD) {
+    const last = GAME.chunks[GAME.chunks.length - 1];
+    const zNoise = last ? last.userData.zNoise + G_DEPTH : GAME.z;
+    const c = gMakeChunk(zNoise);
+    c.position.z = -(zNoise - GAME.z) - G_DEPTH; // чанк лежит впереди
+    GAME.group.add(c);
+    GAME.chunks.push(c);
+  }
+}
+
+// корабль: стреловидный кластер светящихся точек
+function gMakeShip() {
+  const p = [], c = [];
+  const teal = new THREE.Color(0x9ff4e8), amber = new THREE.Color(0xffb054);
+  for (let i = 0; i < 90; i++) {
+    const t = gHash(i, 3);                       // вдоль корпуса 0..1 (0 = нос)
+    const spread = 0.15 + t * 1.6;               // расширение к корме
+    const x = (gHash(i, 7) - 0.5) * spread * 2.4;
+    const y = (gHash(i, 11) - 0.5) * spread * 0.8;
+    const z = t * 4.6;
+    p.push(x, y, z);
+    const col = t < 0.25 ? teal : (gHash(i, 5) > 0.5 ? teal : amber);
+    c.push(col.r, col.g, col.b);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.5, transparent: true, opacity: 1,
+    blending: THREE.AdditiveBlending, depthWrite: false });
+  return new THREE.Points(g, m);
+}
+
+let _galleryVis = null;
+function enterGame() {
+  if (GAME.on) return;
+  GAME.on = true; GAME.z = 0; GAME.score = 0; GAME.speed = 30;
+  document.body.classList.add('game');
+  stopPlay();
+  // прячем галерейный мир (кроме неба), запоминая видимость
+  _galleryVis = scene.children.map(o => [o, o.visible]);
+  scene.children.forEach(o => { if (o !== skyMesh) o.visible = false; });
+  GAME.group = new THREE.Group();
+  scene.add(GAME.group);
+  GAME.ship = gMakeShip();
+  GAME.group.add(GAME.ship);
+  GAME.shipP.set(0, 14, 0);
+  gSpawnAhead();
+  gameScore.textContent = '0';
+  if (EMBEDDED) try { parent.postMessage({ pdGameOn: true }, '*'); } catch (e) {}
+}
+function exitGame() {
+  if (!GAME.on) return;
+  GAME.on = false;
+  document.body.classList.remove('game');
+  scene.remove(GAME.group);
+  GAME.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+  GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = [];
+  if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
+  applySceneMode(); // корректная видимость окружения по текущему режиму
+  if (EMBEDDED) try { parent.postMessage({ pdGameOn: false }, '*'); } catch (e) {}
+}
+
+function updateGame(dt, time) {
+  // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной
+  const tx = (mousePX / innerWidth - 0.5) * 120;
+  const ty = clamp((1 - mousePY / innerHeight) * 42 + 3, 3, 46);
+  GAME.shipP.x += (tx - GAME.shipP.x) * (1 - Math.exp(-dt * 4.5));
+  GAME.shipP.y += (ty - GAME.shipP.y) * (1 - Math.exp(-dt * 4.5));
+  GAME.ship.position.copy(GAME.shipP);
+  GAME.ship.rotation.z = clamp((tx - GAME.shipP.x) * -0.02, -0.6, 0.6); // крен в поворот
+  GAME.ship.rotation.x = clamp((ty - GAME.shipP.y) * 0.02, -0.4, 0.4);
+  // полёт: мир едет на нас, скорость медленно растёт
+  GAME.speed = Math.min(64, GAME.speed + dt * 0.7);
+  const dz = GAME.speed * dt;
+  GAME.z += dz;
+  for (const c of GAME.chunks) c.position.z += dz;
+  // утилизация позади, генерация впереди
+  while (GAME.chunks.length && GAME.chunks[0].position.z > G_DEPTH * 0.8) {
+    const c = GAME.chunks.shift();
+    GAME.group.remove(c);
+    c.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+  }
+  gSpawnAhead();
+  // сбор сфер: близость к кораблю
+  for (const c of GAME.chunks) for (const o of c.children) {
+    if (!o.userData.isOrb || o.userData.got) continue;
+    const wz = o.position.z + c.position.z;
+    if (Math.abs(wz - GAME.shipP.z) < 4 &&
+        Math.abs(o.position.x - GAME.shipP.x) < 4.5 &&
+        Math.abs(o.position.y - GAME.shipP.y) < 4.5) {
+      o.userData.got = true;
+      GAME.score++; gameScore.textContent = GAME.score;
+      Sound.tick();
+      GAME.anims.push({ o, t: 0 }); // вспышка-разлёт
+    }
+  }
+  // анимация собранных сфер: раздуваются и тают
+  for (let i = GAME.anims.length - 1; i >= 0; i--) {
+    const a = GAME.anims[i];
+    a.t += dt * 3;
+    a.o.scale.setScalar(1 + a.t * 4);
+    a.o.material.opacity = Math.max(0, 0.95 * (1 - a.t));
+    if (a.t >= 1) { a.o.visible = false; GAME.anims.splice(i, 1); }
+  }
+  // касание рельефа: встряска и штраф (не чаще раза в секунду)
+  GAME.hurtT = Math.max(0, GAME.hurtT - dt);
+  const groundH = gTerrainH(GAME.shipP.x, GAME.z);
+  if (GAME.shipP.y < groundH + 1.5 && GAME.hurtT === 0) {
+    GAME.hurtT = 1;
+    GAME.score = Math.max(0, GAME.score - 1); gameScore.textContent = GAME.score;
+  }
+  const shake = GAME.hurtT > 0.7 ? (GAME.hurtT - 0.7) * 8 : 0;
+  // камера за кораблём
+  camera.position.set(GAME.shipP.x * 0.55 + (Math.random() - 0.5) * shake,
+                      GAME.shipP.y * 0.62 + 7 + (Math.random() - 0.5) * shake, 17);
+  camera.lookAt(GAME.shipP.x * 0.8, GAME.shipP.y * 0.85, -50);
+  camera.fov = S.fov + Math.min(14, GAME.speed * 0.18); // скорость чувствуется линзой
+  camera.updateProjectionMatrix();
+}
+
+const gameScore = document.getElementById('game-score');
+// вход/выход: сообщение от лендинга, клавиша G; Esc — выход
+addEventListener('message', e => { if (e.data && typeof e.data.pdGame === 'boolean') e.data.pdGame ? enterGame() : exitGame(); });
+addEventListener('keydown', e => {
+  if (e.key === 'Escape' && GAME.on) exitGame();
+  else if ((e.key === 'g' || e.key === 'G' || e.key === 'п' || e.key === 'П') && !GAME.on) enterGame();
+});
+
 const clock = new THREE.Clock();
 // кап 60 FPS: на ProMotion (120 Гц) рендерить каждый кадр — двойная нагрузка на GPU
 // без видимой пользы для этого контента; пропускаем кадры до ~60 Гц.
@@ -2154,6 +2376,13 @@ function loop() {
   voxUniforms.uTime.value = time;
   if (sparkMat) sparkMat.uniforms.uTime.value = time;
   autoQuality(dt);
+  // режим мини-игры: свой апдейт, галерейные системы спят
+  if (GAME.on) {
+    updateGame(dt, time);
+    Sound.frame(1, 0); // двигатель = дрон на полной тяге
+    renderer.render(scene, camera);
+    return;
+  }
   // сглаженный параллакс: курсор -1..1 → мягкая пружина (без дёрганья)
   const pk = 1 - Math.exp(-dt * 3.2);
   parSX += ((mousePX / innerWidth - 0.5) * 2 - parSX) * pk;

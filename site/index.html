@@ -77,6 +77,10 @@
   .hero .session, .hero .readout, .hero .ruler-top, .hero .ruler-left { transition: opacity .4s; }
   .hero.video-on .session, .hero.video-on .readout,
   .hero.video-on .ruler-top, .hero.video-on .ruler-left { opacity: 0; }
+  /* режим мини-игры: экран полностью отдан полёту */
+  .hero.game-on .hero-inner, .hero.game-on .session, .hero.game-on .readout,
+  .hero.game-on .ruler-top, .hero.game-on .ruler-left, .hero.game-on .hero-grade { opacity: 0; transition: opacity .5s; }
+  .hero.game-on .hero-inner { pointer-events: none; }
   .hero h1 { font: 600 clamp(24px, 2.6vw, 42px)/1.08 var(--font-display); letter-spacing: var(--tracking-display); color: rgba(241,251,252,0.94); max-width: 17ch; text-shadow: 0 4px 40px rgba(3,12,16,0.9); }
   .hero h1 em { font-style: normal; color: var(--signal-teal); }
   .hero-btns { display: flex; gap: 16px; margin-top: 30px; align-items: center; pointer-events: auto; }
@@ -276,7 +280,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b1707-15" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b1707-16" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -296,7 +300,7 @@
         <div class="kicker" style="margin-bottom:20px">Студия интерактивного опыта — с 2011</div>
         <h1>Мы превращаем пространство&nbsp;в&nbsp;<em>игру</em>.</h1>
         <div class="hero-btns">
-          <button class="btn-line"><span class="tri">▶</span> Шоурил — 60 сек</button>
+          <button class="btn-line" id="btn-game"><span class="tri">▶</span> Сыграть в пространство</button>
           <a href="#work" class="btn-ghost-link">Кейсы →</a>
         </div>
       </div>
@@ -480,6 +484,15 @@
     // видео открыто → слоган перетекает в карточку проекта; закрыто → обратно
     if (typeof e.data.pdPlay === 'boolean')
       document.getElementById('start').classList.toggle('video-on', e.data.pdPlay);
+    // мини-игра: прячем тексты героя, экран отдан полёту
+    if (typeof e.data.pdGameOn === 'boolean')
+      document.getElementById('start').classList.toggle('game-on', e.data.pdGameOn);
+  });
+
+  // кнопка «Сыграть в пространство» → мини-игра в 3D-сцене
+  document.getElementById('btn-game').addEventListener('click', function(){
+    var fr = document.querySelector('iframe.hero-scene');
+    if (fr && fr.contentWindow) fr.contentWindow.postMessage({ pdGame: true }, '*');
   });
 
   // mobile: горизонтальный свайп по герою вращает 3D-сцену, вертикальный — листает страницу
