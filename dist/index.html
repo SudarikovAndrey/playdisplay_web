@@ -432,7 +432,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-18'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-19'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2227,11 +2227,13 @@ function gEpochH(ep, x, z) {
 function gTerrainH(x, z) {
   const e = Math.floor(z / G_EPOCH), t = (z - e * G_EPOCH) / G_EPOCH;
   const ep = ((e % 3) + 3) % 3;
+  let h;
   if (t > 0.92) { // плавный шов между мирами
     const k = (t - 0.92) / 0.08;
-    return gEpochH(ep, x, z) * (1 - k) + gEpochH((ep + 1) % 3, x, z) * k;
-  }
-  return gEpochH(ep, x, z);
+    h = gEpochH(ep, x, z) * (1 - k) + gEpochH((ep + 1) % 3, x, z) * k;
+  } else h = gEpochH(ep, x, z);
+  // постепенное усложнение: первые километры рельеф пологий, дальше — в полную силу
+  return h * (0.35 + 0.65 * Math.min(1, z / 4500));
 }
 
 // водопады: колонны падающих светящихся точек на обрывах (общий шейдер, анимация по uT)
@@ -2386,7 +2388,7 @@ let _galleryVis = null;
 function enterGame() {
   if (GAME.on) return;
   GAME.on = true; GAME.z = 0; GAME.score = 0; GAME.speed = 90; GAME.exit = -1;
-  GAME.enter = 0; GAME.over = false;
+  GAME.enter = 0; GAME.over = false; GAME.grace = 2; // короткая неуязвимость на старте
   GAME.tint.copy(curAccent); // колорит мира = акцент текущего слайда
   gFallMat.uniforms.uOp.value = 1;
   document.body.classList.add('game');
@@ -2432,10 +2434,12 @@ function enterGame() {
   gameOverEl.classList.remove('show');
   if (EMBEDDED) try { parent.postMessage({ pdGameOn: true }, '*'); } catch (e) {}
 }
-// рестарт после столкновения: тот же мир, корабль на безопасной высоте
+// рестарт после столкновения: безопасная высота над РЕАЛЬНЫМ рельефом + период
+// неуязвимости (грейс) — чтобы не было петли мгновенных повторных смертей
 function restartGame() {
-  GAME.over = false; GAME.score = 0; GAME.speed = 90; GAME.hurtT = 0;
-  GAME.shipP.set(0, 30, 0);
+  GAME.over = false; GAME.score = 0; GAME.speed = 60; GAME.hurtT = 0;
+  GAME.grace = 3; // 3 секунды неуязвимости, корабль мигает
+  GAME.shipP.set(0, gTerrainH(0, GAME.z) + 30, 0);
   GAME.ship.visible = true; GAME.ship.scale.setScalar(1); GAME.ship.material.opacity = 1;
   gameScore.textContent = '0';
   gameOverEl.classList.remove('show');
@@ -2449,6 +2453,8 @@ function exitGame() {
   GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = [];
   if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
   applySceneMode(); // корректная видимость окружения по текущему режиму
+  gameOverEl.classList.remove('show'); // игровые оверлеи не должны пережить выход
+  gameDanger.classList.remove('on');
   gamePuff = 1; // портфолио пересобирается из разлёта — плавная перестройка сцены
   if (EMBEDDED) try { parent.postMessage({ pdGameOn: false }, '*'); } catch (e) {}
 }
@@ -2525,8 +2531,7 @@ function updateGame(dt, time) {
         Math.abs(o.position.y - GAME.shipP.y) < 4.5) {
       o.userData.got = true;
       GAME.score++; gameScore.textContent = GAME.score;
-      Sound.tick();
-      GAME.anims.push({ o, t: 0 }); // вспышка-разлёт
+      GAME.anims.push({ o, t: 0 }); // вспышка-разлёт (без звука)
     }
   }
   // анимация собранных сфер: раздуваются и тают
@@ -2552,7 +2557,14 @@ function updateGame(dt, time) {
                                                 ((0.5 - _dngV.y * 0.5) * innerHeight + 26) + 'px)';
     gameDanger.textContent = 'ОПАСНОСТЬ · ' + alt.toFixed(1) + ' М';
   } else gameDanger.classList.remove('on');
-  if (alt < 1.3 && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over) {
+  // грейс-период: после старта/рестарта разбиться нельзя, корабль мигает
+  GAME.grace = Math.max(0, (GAME.grace || 0) - dt);
+  if (GAME.grace > 0) {
+    GAME.ship.material.opacity = 0.35 + 0.65 * Math.abs(Math.sin(time * 8));
+    // если рельеф под нами вырос — мягко выталкиваем корабль вверх, давая шанс
+    if (alt < 6) GAME.shipP.y = groundH + 6;
+  } else if (GAME.ship.material.opacity < 1 && !GAME.over) GAME.ship.material.opacity = 1;
+  if (alt < 1.3 && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over && GAME.grace === 0) {
     GAME.over = true; // столкновение — гейм-овер
     gameDanger.classList.remove('on');
     gameOverEl.querySelector('.go-score').textContent = GAME.score;
@@ -2614,7 +2626,7 @@ function loop() {
   // режим мини-игры: свой апдейт, галерейные системы спят
   if (GAME.on) {
     updateGame(dt, time);
-    Sound.frame(1, 0); // двигатель = дрон на полной тяге
+    Sound.frame(0, 0); // в игре — тишина
     renderer.render(scene, camera);
     return;
   }
