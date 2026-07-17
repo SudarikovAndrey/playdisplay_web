@@ -62,9 +62,21 @@
   .hero-grade { position: absolute; inset: 0; pointer-events: none; background:
       radial-gradient(900px 620px at 6% 96%, rgba(3,12,16,0.92) 0%, rgba(3,12,16,0.45) 40%, transparent 70%),
       linear-gradient(180deg, rgba(3,12,16,0.55) 0%, transparent 20%, transparent 72%, rgba(3,12,16,0.85) 100%); }
-  .hero-inner { position: relative; z-index: 2; width: 100%; padding-top: 168px; pointer-events: none; }
+  /* инфоблок — внизу слева; тексты не мастятся поверх сцены, а живут в одном месте */
+  .hero-inner { position: absolute; left: 0; right: 0; bottom: 110px; z-index: 4; pointer-events: none; }
   .hero-inner .kicker, .hero-inner h1, .hero-inner .sub { pointer-events: none; }
   .hero-btns { pointer-events: auto; }
+  /* слоган ↔ карточка проекта: блоки лежат друг на друге и меняются фейдом */
+  .hero-swap { position: relative; }
+  .swap-block { transition: opacity .45s ease, transform .45s ease; }
+  #project-block { position: absolute; left: 0; bottom: 0; opacity: 0; transform: translateY(14px); }
+  .hero.video-on #slogan-block { opacity: 0; transform: translateY(-10px); }
+  .hero.video-on #slogan-block .hero-btns { pointer-events: none; }
+  .hero.video-on #project-block { opacity: 1; transform: none; }
+  /* при видео лишний HUD гаснет — экран отдан ролику */
+  .hero .session, .hero .readout, .hero .ruler-top, .hero .ruler-left { transition: opacity .4s; }
+  .hero.video-on .session, .hero.video-on .readout,
+  .hero.video-on .ruler-top, .hero.video-on .ruler-left { opacity: 0; }
   .hero h1 { font: 600 clamp(24px, 2.6vw, 42px)/1.08 var(--font-display); letter-spacing: var(--tracking-display); color: rgba(241,251,252,0.94); max-width: 17ch; text-shadow: 0 4px 40px rgba(3,12,16,0.9); }
   .hero h1 em { font-style: normal; color: var(--signal-teal); }
   .hero-btns { display: flex; gap: 16px; margin-top: 30px; align-items: center; pointer-events: auto; }
@@ -96,13 +108,6 @@
   .hero .readout .k { font: 400 9px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--scan-white-faint); }
   .hero .readout .v { font: 400 14px var(--font-mono); color: var(--scan-white); margin-top: 3px; text-shadow: 0 1px 8px rgba(3,12,16,0.9); }
   .hero .readout .v.accent { color: var(--signal-teal); }
-  /* подпись проекта из 3D-сцены: ярко и читаемо — название / клиент / год */
-  .scene-caption { position: absolute; left: 64px; bottom: 96px; z-index: 4; pointer-events: none; }
-  .scene-caption .sc-num { font: 500 10px var(--font-mono); letter-spacing: .3em; color: var(--scan-white-dim); margin-bottom: 8px; }
-  .scene-caption .sc-title { font: 700 clamp(18px, 1.8vw, 26px) var(--font-display); letter-spacing: .02em;
-    text-transform: uppercase; color: #F1FBFC; text-shadow: 0 2px 24px rgba(3,12,16,.9); }
-  .scene-caption .sc-meta { font: 500 11px var(--font-mono); letter-spacing: .2em; text-transform: uppercase;
-    color: var(--signal-teal); margin-top: 7px; }
 
   /* ---------- section shell ---------- */
   section { position: relative; }
@@ -271,7 +276,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b1707-13" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b1707-14" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -284,18 +289,21 @@
     <div><div class="k">Point count</div><div class="v accent" id="hud-pts">— pts</div></div>
     <div><div class="k">Status</div><div class="v" id="hud-status">· полёт</div></div>
   </div>
-  <!-- подпись текущего проекта: рисуется слоем лендинга (над градиентами), данные шлёт сцена -->
-  <div class="scene-caption" id="scene-caption">
-    <div class="sc-num" id="sc-num"></div>
-    <div class="sc-title" id="sc-title"></div>
-    <div class="sc-meta" id="sc-meta"></div>
-  </div>
+  <!-- единый инфоблок внизу слева: слоган студии ↔ карточка проекта (при просмотре видео) -->
   <div class="wrap hero-inner">
-    <div class="kicker" style="margin-bottom:20px">Студия интерактивного опыта — с 2011</div>
-    <h1>Мы превращаем пространство&nbsp;в&nbsp;<em>игру</em>.</h1>
-    <div class="hero-btns">
-      <button class="btn-line"><span class="tri">▶</span> Шоурил — 60 сек</button>
-      <a href="#work" class="btn-ghost-link">Кейсы →</a>
+    <div class="hero-swap">
+      <div class="swap-block" id="slogan-block">
+        <div class="kicker" style="margin-bottom:20px">Студия интерактивного опыта — с 2011</div>
+        <h1>Мы превращаем пространство&nbsp;в&nbsp;<em>игру</em>.</h1>
+        <div class="hero-btns">
+          <button class="btn-line"><span class="tri">▶</span> Шоурил — 60 сек</button>
+          <a href="#work" class="btn-ghost-link">Кейсы →</a>
+        </div>
+      </div>
+      <div class="swap-block" id="project-block">
+        <div class="kicker teal" style="margin-bottom:20px" id="sc-meta">01 / 13</div>
+        <h1 id="sc-title"></h1>
+      </div>
     </div>
   </div>
 </section>
@@ -460,13 +468,18 @@
       if (pe) pe.textContent = e.data.pdHud.pts.toLocaleString('ru-RU') + ' pts';
       if (se) se.textContent = e.data.pdHud.status;
     }
-    // подпись проекта: название / клиент / год — слоем лендинга, над градиентами
+    // карточка проекта (номер · клиент · год + название) — заполняется из сцены
     if (e.data.pdMeta) {
       var m = e.data.pdMeta;
-      document.getElementById('sc-num').textContent = String(m.num).padStart(2, '0') + ' / ' + String(m.total).padStart(2, '0');
+      var parts = [String(m.num).padStart(2, '0') + ' / ' + String(m.total).padStart(2, '0')];
+      if (m.client) parts.push(m.client);
+      if (m.year) parts.push(m.year);
+      document.getElementById('sc-meta').textContent = parts.join(' · ');
       document.getElementById('sc-title').textContent = m.title;
-      document.getElementById('sc-meta').textContent = [m.client, m.year].filter(Boolean).join(' · ');
     }
+    // видео открыто → слоган перетекает в карточку проекта; закрыто → обратно
+    if (typeof e.data.pdPlay === 'boolean')
+      document.getElementById('start').classList.toggle('video-on', e.data.pdPlay);
   });
 
   // mobile: горизонтальный свайп по герою вращает 3D-сцену, вертикальный — листает страницу
