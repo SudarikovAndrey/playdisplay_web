@@ -343,7 +343,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 6: 'videos/coal
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-2'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-3'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -1462,7 +1462,11 @@ function updateCamera(time, wMax) {
   // наезд: лёгкий при остановке на проекте (камера встала + объект определён),
   // полный зум сцены на весь экран при Play (видео растёт синхронно — оба совпадают)
   let fovZoom = 4.0 * focusAmt; // лёгкий наезд на подъезде к идеальной точке
-  fovZoom = Math.max(fovZoom, (S.fov - PROJ_FOV) * playE);
+  // цель зума при Play: видео ЦЕЛИКОМ вписывается по высоте экрана. Учитываем эффективный
+  // масштаб картинки (авто-подгон cover) — иначе камера наезжает слишком близко и кадр вылезает
+  const psEff = voxUniforms.uProjScale.value;
+  const playFov = 2 * THREE.MathUtils.radToDeg(Math.atan(Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2)) * psEff));
+  fovZoom = Math.max(fovZoom, (S.fov - Math.min(playFov, S.fov)) * playE);
   camera.fov = S.fov - fovZoom; // без «дыхания» — никакой пульсации при скролле
   camera.updateProjectionMatrix();
   PXU.value = innerHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
@@ -1709,6 +1713,9 @@ function updatePlay(dt, wMax) {
           try { play.iframe.pause(); play.iframe.removeAttribute('src'); play.iframe.load(); } catch (e) {}
         }
         play.iframe.remove(); play.iframe = null;
+        // выгруженный элемент был и предзагрузкой — пересоздаём её заново,
+        // иначе повторный запуск получает пустое видео и «застревает»
+        preIdx = -1; preloadVideo(wrapIdx(gtM));
       }
     }
   }
