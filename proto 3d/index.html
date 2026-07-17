@@ -112,11 +112,17 @@
   /* курсор берёт на себя роль кнопки Play — большую дублирующую кнопку прячем на десктопе */
   @media (pointer: fine) { #play-btn { display: none !important; } }
   /* курсор-состояния: play (галерея) ↔ крестик (видео открыто); иконки плавно сменяются */
-  #pluscursor .cur-play, #pluscursor .cur-cross { transition: opacity .25s, transform .3s cubic-bezier(.2,.8,.2,1); transform-origin: 24px 24px; }
+  #pluscursor .cur-play, #pluscursor .cur-cross, #pluscursor .cur-prev, #pluscursor .cur-next {
+    transition: opacity .25s, transform .3s cubic-bezier(.2,.8,.2,1); transform-origin: 24px 24px; }
   #pluscursor .cur-cross { opacity: 0; transform: rotate(-45deg) scale(.6); }
+  #pluscursor .cur-prev, #pluscursor .cur-next { opacity: 0; transform: scale(.6); }
   #pluscursor.close .cur-play { opacity: 0; transform: scale(.6); }
   #pluscursor.close .cur-cross { opacity: 1; transform: rotate(0) scale(1); }
   #pluscursor.close #cur-ring, #pluscursor.close .cur-ring-bg { opacity: 0; } /* при видео кольцо не нужно */
+  /* у краёв экрана play сменяется стрелкой перелистывания */
+  #pluscursor.edge-l .cur-play, #pluscursor.edge-r .cur-play { opacity: 0; transform: scale(.6); }
+  #pluscursor.edge-l .cur-prev { opacity: 1; transform: scale(1); }
+  #pluscursor.edge-r .cur-next { opacity: 1; transform: scale(1); }
   #cur-ring { transition: opacity .3s; }
 
   /* ---- Панель настроек ---- */
@@ -193,6 +199,9 @@
   <path class="cur-play" d="M20.5 16.5l12 7.5-12 7.5z" fill="currentColor"/>
   <!-- крестик: видео открыто, клик закрывает -->
   <path class="cur-cross" d="M17 17l14 14M31 17l-14 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <!-- стрелки у краёв экрана: клик листает на соседний проект -->
+  <path class="cur-prev" d="M28 15l-9 9 9 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path class="cur-next" d="M20 15l9 9-9 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
 <div id="player"><button id="player-close">✕</button></div>
 
@@ -375,7 +384,7 @@ const LOCAL_VIDEO = { 0: '../videos/VDNH.mp4', 1: '../videos/bmw.mp4', 2: '../vi
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-14'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-15'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -536,6 +545,18 @@ const voxVert = `
       wrender.xz = (mat2(cc, -ss, ss, cc) * rel) * (1.0 + ph * (0.6 + uVortAmp)); // расходятся наружу
       wrender.y += ph * (10.0 + 22.0 * uVortAmp);                    // взмывают вверх
       vortFade = smoothstep(0.0, 0.12, ph) * (1.0 - smoothstep(0.5, 1.0, ph)); // проявились у формы → растворились в полёте
+    }
+    // ХИТРЫЙ ПЕРЕХОД между кадрами: в полёте мир «сворачивается» — твист вокруг вертикали
+    // с фазой по высоте + бегущая волна по полу. Благодаря перекраске по текущей позиции
+    // картинка остаётся читаемой, а на точке обзора uMorph→0 и мир оседает в чёткий кадр.
+    if (uMorph > 0.002) {
+      float tw = uMorph * uMorph * (uMorphAmp * 0.22);
+      vec2 relT = wrender.xz;
+      float radT = length(relT);
+      float angT = tw * (0.05 * (wrender.y + 10.0) + 0.3 * sin(radT * 0.22 - uTime * 2.2));
+      float cT = cos(angT), sT = sin(angT);
+      wrender.xz = mat2(cT, -sT, sT, cT) * relT;
+      wrender.y += tw * 1.5 * sin(radT * 0.3 + uTime * 1.6); // волна прокатывается по полу
     }
     // Проекцию сэмплируем по ТЕКУЩЕЙ позиции — проектор «красит» картинку там, где точка сейчас.
     vWorld = wrender;
@@ -1423,8 +1444,12 @@ addEventListener('pointerup', e => {
   if (!dragOn) return;
   dragOn = false;
   if (dragMoved < 6) {                                  // почти без движения = клик
-    if (play.state === 1 || play.state === 2) stopPlay();       // повторный клик закрывает видео → в 3D
-    else if (play.state === 0 && lastWMax > 0.6) startPlay();   // клик на кадре = зум в видео
+    if (play.state === 1 || play.state === 2) { stopPlay(); return; } // клик закрывает видео → в 3D
+    if (play.state !== 0) return;
+    // у краёв экрана клик листает на соседний проект (курсор там — стрелка)
+    if (e.clientX < innerWidth * 0.13) { navTarget = Math.round(navTarget) - 1; lastInput = performance.now(); navigated = true; autoT = 0; return; }
+    if (e.clientX > innerWidth * 0.87) { navTarget = Math.round(navTarget) + 1; lastInput = performance.now(); navigated = true; autoT = 0; return; }
+    if (lastWMax > 0.6) startPlay();                    // клик по центру на кадре = зум в видео
   }
 });
 // слайдер: прямое скольжение по спирали (магнит на время перетаскивания отключён)
@@ -1597,6 +1622,11 @@ function updateDynamics(dt, time, wMax) {
     0.5 - (mousePY - innerHeight / 2) / hPx);
   LENS.value = wMax * (1 - playE);
   voxUniforms.uMousePx.value.set(mousePX, mousePY); // линза чёткости по вокселям
+  // края экрана: курсор превращается в стрелку перелистывания (только в режиме галереи)
+  const edgeL = play.state === 0 && mousePX < innerWidth * 0.13;
+  const edgeR = play.state === 0 && mousePX > innerWidth * 0.87;
+  plusCursor.classList.toggle('edge-l', edgeL);
+  plusCursor.classList.toggle('edge-r', edgeR);
   // шлейф линзы: [0] — текущая позиция; каждые ~70мс/24px пишем «призрак» в историю,
   // призраки затухают за ~0.45с → прояснение тянется хвостом за курсором
   const nowMs = performance.now();
