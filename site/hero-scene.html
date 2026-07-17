@@ -158,10 +158,18 @@
   #pluscursor.close .cur-play { opacity: 0; transform: scale(.6); }
   #pluscursor.close .cur-cross { opacity: 1; transform: rotate(0) scale(1); }
   #pluscursor.close #cur-ring, #pluscursor.close .cur-ring-bg { opacity: 0; } /* при видео кольцо не нужно */
-  /* у краёв экрана play сменяется стрелкой перелистывания */
-  #pluscursor.edge-l .cur-play, #pluscursor.edge-r .cur-play { opacity: 0; transform: scale(.6); }
-  #pluscursor.edge-l .cur-prev { opacity: 1; transform: scale(1); }
-  #pluscursor.edge-r .cur-next { opacity: 1; transform: scale(1); }
+  /* у краёв экрана play сменяется стрелкой перелистывания — заметно: диск растёт,
+     подсвечивается акцентом, стрелка пульсирует в сторону перехода */
+  #pluscursor { transition: opacity .3s, background .25s, box-shadow .25s; }
+  #pluscursor.edge-l .cur-play, #pluscursor.edge-r .cur-play { opacity: 0; transform: scale(.4); }
+  #pluscursor.edge-l, #pluscursor.edge-r { background: rgba(43,224,198,.28);
+    box-shadow: 0 0 26px rgba(43,224,198,.35); }
+  #pluscursor.edge-l svg { transform: scale(1.35); }
+  #pluscursor.edge-r svg { transform: scale(1.35); }
+  #pluscursor.edge-l .cur-prev { opacity: 1; animation: nudgeL .9s ease-in-out infinite; }
+  #pluscursor.edge-r .cur-next { opacity: 1; animation: nudgeR .9s ease-in-out infinite; }
+  @keyframes nudgeL { 0%,100% { transform: translateX(0) scale(1); } 50% { transform: translateX(-4px) scale(1.12); } }
+  @keyframes nudgeR { 0%,100% { transform: translateX(0) scale(1); } 50% { transform: translateX(4px) scale(1.12); } }
   #cur-ring { transition: opacity .3s; }
 
   /* ---- Панель настроек ---- */
@@ -262,7 +270,7 @@
 <div id="game-hud">
   <div id="game-score">0</div>
   <div id="game-label">ЭНЕРГИЯ СОБРАНА</div>
-  <div id="game-exit">ESC — ВЕРНУТЬСЯ В ГАЛЕРЕЮ</div>
+  <div id="game-exit">КЛИК ИЛИ ESC — ВЕРНУТЬСЯ В ПОРТФОЛИО</div>
 </div>
 
 <div id="settings" class="open">
@@ -391,9 +399,9 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-<script src="textures.js?v=b1707-16"></script>
-<script src="odk_frame.js?v=b1707-16"></script>
-<script src="model.js?v=b1707-16"></script>
+<script src="textures.js?v=b1707-17"></script>
+<script src="odk_frame.js?v=b1707-17"></script>
+<script src="model.js?v=b1707-17"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -428,7 +436,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-16'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-17'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -1489,7 +1497,7 @@ addEventListener('pointerup', e => {
   if (!dragOn) return;
   dragOn = false;
   if (dragMoved < 6) {                                  // почти без движения = клик
-    if (GAME.on) return;                                // в игре клики сцены не работают
+    if (GAME.on) { startExitGame(); return; }           // клик в полёте = плавный выход в портфолио
     if (play.state === 1 || play.state === 2) { stopPlay(); return; } // клик закрывает видео → в 3D
     if (play.state !== 0) return;
     // у краёв экрана клик листает на соседний проект (курсор там — стрелка)
@@ -1939,7 +1947,7 @@ function updatePlay(dt, wMax) {
       }
     }
   }
-  if (play.state === 0) { playE = 0; voxUniforms.uSpread.value = S.spread; return; }
+  if (play.state === 0) { playE = 0; voxUniforms.uSpread.value = S.spread + gamePuff * 7; return; } // после игры точки слетаются обратно
   if ((play.state === 1 || play.state === 2) && wMax < 0.85) stopPlay();
   // ease-out: наезд/проявление стартуют резко и вместе (динамичный «выпад»), затем плавно доводятся
   playE = 1 - (1 - play.p) * (1 - play.p);
@@ -2180,9 +2188,9 @@ function updateHud(dt) {
 // ================= МИНИ-ИГРА «ПОЛЁТ»: корабль над инопланетным ландшафтом =================
 // Курсор становится кораблём; точечный ландшафт генерируется чанками впереди по курсу
 // и утилизируется позади; сферы энергии собираем, хребты облетаем. Esc — назад в галерею.
-const GAME = { on: false, z: 0, speed: 30, score: 0, hurtT: 0,
+const GAME = { on: false, z: 0, speed: 90, score: 0, hurtT: 0, exit: -1,
   group: null, chunks: [], ship: null, shipP: new THREE.Vector3(0, 12, 0), anims: [] };
-const G_DEPTH = 70, G_AHEAD = 7; // глубина чанка и сколько чанков держим впереди
+const G_DEPTH = 70, G_AHEAD = 9; // глубина чанка и сколько чанков держим впереди
 
 // детерминированный шум для ландшафта
 function gHash(x, z) { const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return s - Math.floor(s); }
@@ -2192,16 +2200,47 @@ function gNoise(x, z) {
   return gHash(xi, zi) * (1 - u) * (1 - v) + gHash(xi + 1, zi) * u * (1 - v)
        + gHash(xi, zi + 1) * (1 - u) * v + gHash(xi + 1, zi + 1) * u * v;
 }
-function gTerrainH(x, z) { // высота инопланетного рельефа
-  let h = 0, a = 10, f = 0.018;
-  for (let o = 0; o < 3; o++) { h += (gNoise(x * f, z * f) - 0.5) * 2 * a; a *= 0.45; f *= 2.4; }
-  h += Math.pow(Math.max(0, gNoise(x * 0.004 + 40, z * 0.006)), 3) * 46; // редкие высокие хребты
+function gTerrainH(x, z) { // высота инопланетного рельефа: биомы + ущелья + террасы + пики
+  const biome = gNoise(x * 0.0022 + 9, z * 0.0022);       // 0 = равнины … 1 = дикие горы
+  let h = 0, a = 9, f = 0.02;
+  for (let o = 0; o < 4; o++) { h += (gNoise(x * f, z * f) - 0.5) * 2 * a; a *= 0.5; f *= 2.2; }
+  h *= 0.35 + 1.6 * biome * biome;                        // равнины гладкие, горы рвутся вверх
+  const ridge = Math.abs(gNoise(x * 0.006 + 31, z * 0.006) - 0.5) * 2;
+  if (ridge < 0.14) h -= Math.pow(1 - ridge / 0.14, 1.6) * 26;         // ущелья-разломы
+  if (biome > 0.6) { const t = Math.floor(h / 7) * 7; h = t + (h - t) * 0.25; } // террасы-скалы
+  h += Math.pow(Math.max(0, gNoise(x * 0.004 + 40, z * 0.006)), 3) * 52;        // одинокие пики
   return h;
 }
 
+// водопады: колонны падающих светящихся точек на обрывах (общий шейдер, анимация по uT)
+const gFallMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { uT: { value: 0 }, uPx: PXU, uOp: { value: 1 } },
+  vertexShader: `
+    attribute float aPh; attribute float aH;
+    uniform float uT, uPx; varying float vA;
+    void main() {
+      vec3 p = position;
+      float f = fract(aPh - uT * 0.5);
+      p.y -= f * aH;                        // точка падает вдоль обрыва
+      vA = 1.0 - f * 0.8;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(uPx * 0.7 / max(-mv.z, 1.0), 0.8, 2.6);
+    }`,
+  fragmentShader: `
+    varying float vA; uniform float uOp;
+    void main() {
+      float d = length(gl_PointCoord - 0.5);
+      float a = smoothstep(0.5, 0.1, d) * vA * uOp * 0.85;
+      if (a < 0.02) discard;
+      gl_FragColor = vec4(0.62, 0.95, 1.0, a);
+    }`
+});
+
 // чанк ландшафта: сетка точек с джиттером, цвет по высоте (глубины→бирюза→янтарные пики)
 function gMakeChunk(zNoise) {
-  const step = 1.6, W = 120;
+  const step = 1.15, W = 120; // плотная сетка — рельеф читается фактурой
   const pts = [], cols = [];
   const cDeep = new THREE.Color(0x241d3e), cMid = new THREE.Color(0x2be0c6), cTop = new THREE.Color(0xffb054);
   const tmp = new THREE.Color();
@@ -2246,12 +2285,34 @@ function gMakeChunk(zNoise) {
     orb.userData.isOrb = true;
     grp.add(orb);
   }
+  // водопады: ищем обрывы (резкий перепад высоты) и вешаем колонны падающих точек
+  let falls = 0;
+  for (let t = 0; t < 26 && falls < 2; t++) {
+    const fx = (gHash(zNoise + 3, t * 17) - 0.5) * 220;
+    const fz = gHash(t * 7, zNoise + 5) * G_DEPTH;
+    const h1 = gTerrainH(fx, zNoise + fz), h2 = gTerrainH(fx, zNoise + fz + 4);
+    const drop = h1 - h2;
+    if (drop > 15) {
+      const N = 130, fp = [], ph = [], hh = [];
+      for (let k = 0; k < N; k++) {
+        fp.push(fx + (gHash(k, t) - 0.5) * 4.5, h1 + 0.5, fz + 2 + (gHash(t, k) - 0.5) * 1.8);
+        ph.push(gHash(k * 3, t + zNoise));
+        hh.push(drop + 4);
+      }
+      const fg = new THREE.BufferGeometry();
+      fg.setAttribute('position', new THREE.Float32BufferAttribute(fp, 3));
+      fg.setAttribute('aPh', new THREE.Float32BufferAttribute(ph, 1));
+      fg.setAttribute('aH', new THREE.Float32BufferAttribute(hh, 1));
+      grp.add(new THREE.Points(fg, gFallMat));
+      falls++;
+    }
+  }
   return grp;
 }
 
 function gSpawnAhead() {
-  // держим G_AHEAD чанков впереди корабля (корабль на z≈0, полёт в -Z)
-  while (GAME.chunks.length < G_AHEAD) {
+  // держим G_AHEAD чанков впереди корабля; не больше одного нового за кадр (без фризов)
+  if (GAME.chunks.length < G_AHEAD) {
     const last = GAME.chunks[GAME.chunks.length - 1];
     const zNoise = last ? last.userData.zNoise + G_DEPTH : GAME.z;
     const c = gMakeChunk(zNoise);
@@ -2286,7 +2347,8 @@ function gMakeShip() {
 let _galleryVis = null;
 function enterGame() {
   if (GAME.on) return;
-  GAME.on = true; GAME.z = 0; GAME.score = 0; GAME.speed = 30;
+  GAME.on = true; GAME.z = 0; GAME.score = 0; GAME.speed = 90; GAME.exit = -1;
+  gFallMat.uniforms.uOp.value = 1;
   document.body.classList.add('game');
   stopPlay();
   // прячем галерейный мир (кроме неба), запоминая видимость
@@ -2310,10 +2372,30 @@ function exitGame() {
   GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = [];
   if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
   applySceneMode(); // корректная видимость окружения по текущему режиму
+  gamePuff = 1; // портфолио пересобирается из разлёта — плавная перестройка сцены
   if (EMBEDDED) try { parent.postMessage({ pdGameOn: false }, '*'); } catch (e) {}
 }
+let gamePuff = 0; // разлёт точек галереи после возврата из игры (тает сам)
 
 function updateGame(dt, time) {
+  gFallMat.uniforms.uT.value = time; // водопады текут
+  // динамическое небо: инопланетная аврора — цвет горизонта медленно дышит
+  const skyK = 0.5 + 0.5 * Math.sin(time * 0.09);
+  skyMat.uniforms.uHorizon.value.setHSL(0.46 + 0.22 * skyK, 0.52, 0.30 + 0.06 * skyK);
+  skyMat.uniforms.uZenith.value.setHSL(0.7, 0.5, 0.09 + 0.05 * (1 - skyK));
+  // плавный выход: мир тает, скорость падает → возврат в портфолио
+  if (GAME.exit >= 0) {
+    GAME.exit += dt / 1.1;
+    const k = 1 - Math.min(1, GAME.exit);
+    GAME.group.traverse(o => {
+      if (o.material && o.material.opacity !== undefined && o.material !== gFallMat)
+        o.material.opacity = (o.userData.baseOp !== undefined ? o.userData.baseOp : 0.95) * k;
+    });
+    gFallMat.uniforms.uOp.value = k;
+    GAME.speed *= Math.pow(0.4, dt * 2); // тормозим
+    camera.fov += (S.fov - camera.fov) * (1 - Math.exp(-dt * 3)); // линза возвращается
+    if (GAME.exit >= 1) { exitGame(); return; }
+  }
   // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной
   const tx = (mousePX / innerWidth - 0.5) * 120;
   const ty = clamp((1 - mousePY / innerHeight) * 42 + 3, 3, 46);
@@ -2322,8 +2404,8 @@ function updateGame(dt, time) {
   GAME.ship.position.copy(GAME.shipP);
   GAME.ship.rotation.z = clamp((tx - GAME.shipP.x) * -0.02, -0.6, 0.6); // крен в поворот
   GAME.ship.rotation.x = clamp((ty - GAME.shipP.y) * 0.02, -0.4, 0.4);
-  // полёт: мир едет на нас, скорость медленно растёт
-  GAME.speed = Math.min(64, GAME.speed + dt * 0.7);
+  // полёт: мир едет на нас, скорость растёт (быстрый разгон)
+  if (GAME.exit < 0) GAME.speed = Math.min(190, GAME.speed + dt * 2.4);
   const dz = GAME.speed * dt;
   GAME.z += dz;
   for (const c of GAME.chunks) c.position.z += dz;
@@ -2367,8 +2449,14 @@ function updateGame(dt, time) {
   camera.position.set(GAME.shipP.x * 0.55 + (Math.random() - 0.5) * shake,
                       GAME.shipP.y * 0.62 + 7 + (Math.random() - 0.5) * shake, 17);
   camera.lookAt(GAME.shipP.x * 0.8, GAME.shipP.y * 0.85, -50);
-  camera.fov = S.fov + Math.min(14, GAME.speed * 0.18); // скорость чувствуется линзой
+  if (GAME.exit < 0) camera.fov = S.fov + Math.min(22, GAME.speed * 0.1); // скорость чувствуется линзой
   camera.updateProjectionMatrix();
+}
+
+// выход по клику: мир тает, скорость гаснет, портфолио пересобирается из точек
+function startExitGame() {
+  if (!GAME.on || GAME.exit >= 0) return;
+  GAME.exit = 0;
 }
 
 const gameScore = document.getElementById('game-score');
@@ -2409,6 +2497,7 @@ function loop() {
     renderer.render(scene, camera);
     return;
   }
+  gamePuff = Math.max(0, gamePuff - dt * 0.8); // разлёт после игры плавно оседает
   // сглаженный параллакс: курсор -1..1 → мягкая пружина (без дёрганья)
   const pk = 1 - Math.exp(-dt * 3.2);
   parSX += ((mousePX / innerWidth - 0.5) * 2 - parSX) * pk;
