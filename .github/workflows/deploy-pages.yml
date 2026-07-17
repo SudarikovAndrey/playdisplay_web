@@ -1,0 +1,41 @@
+# Надёжный деплой сайта на GitHub Pages.
+# Триггерится на КАЖДЫЙ пуш в proto-3d (в отличие от «Deploy from a branch»,
+# который троттлится при частых пушах). Публикует содержимое папки site/.
+# Требование (один раз): Settings → Pages → Source: «GitHub Actions».
+name: Deploy site to Pages
+
+on:
+  push:
+    branches: [proto-3d]
+  workflow_dispatch: {}   # ручной запуск кнопкой Run workflow
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site/ as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
