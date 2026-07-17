@@ -96,6 +96,13 @@
   .hero .readout .k { font: 400 9px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--scan-white-faint); }
   .hero .readout .v { font: 400 14px var(--font-mono); color: var(--scan-white); margin-top: 3px; text-shadow: 0 1px 8px rgba(3,12,16,0.9); }
   .hero .readout .v.accent { color: var(--signal-teal); }
+  /* подпись проекта из 3D-сцены: ярко и читаемо — название / клиент / год */
+  .scene-caption { position: absolute; left: 64px; bottom: 96px; z-index: 4; pointer-events: none; }
+  .scene-caption .sc-num { font: 500 10px var(--font-mono); letter-spacing: .3em; color: var(--scan-white-dim); margin-bottom: 8px; }
+  .scene-caption .sc-title { font: 700 clamp(18px, 1.8vw, 26px) var(--font-display); letter-spacing: .02em;
+    text-transform: uppercase; color: #F1FBFC; text-shadow: 0 2px 24px rgba(3,12,16,.9); }
+  .scene-caption .sc-meta { font: 500 11px var(--font-mono); letter-spacing: .2em; text-transform: uppercase;
+    color: var(--signal-teal); margin-top: 7px; }
 
   /* ---------- section shell ---------- */
   section { position: relative; }
@@ -264,7 +271,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b1707-9" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b1707-10" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -276,6 +283,12 @@
   <div class="readout">
     <div><div class="k">Point count</div><div class="v accent" id="hud-pts">— pts</div></div>
     <div><div class="k">Status</div><div class="v" id="hud-status">· полёт</div></div>
+  </div>
+  <!-- подпись текущего проекта: рисуется слоем лендинга (над градиентами), данные шлёт сцена -->
+  <div class="scene-caption" id="scene-caption">
+    <div class="sc-num" id="sc-num"></div>
+    <div class="sc-title" id="sc-title"></div>
+    <div class="sc-meta" id="sc-meta"></div>
   </div>
   <div class="wrap hero-inner">
     <div class="kicker" style="margin-bottom:20px">Студия интерактивного опыта — с 2011</div>
@@ -446,6 +459,13 @@
       var pe = document.getElementById('hud-pts'), se = document.getElementById('hud-status');
       if (pe) pe.textContent = e.data.pdHud.pts.toLocaleString('ru-RU') + ' pts';
       if (se) se.textContent = e.data.pdHud.status;
+    }
+    // подпись проекта: название / клиент / год — слоем лендинга, над градиентами
+    if (e.data.pdMeta) {
+      var m = e.data.pdMeta;
+      document.getElementById('sc-num').textContent = String(m.num).padStart(2, '0') + ' / ' + String(m.total).padStart(2, '0');
+      document.getElementById('sc-title').textContent = m.title;
+      document.getElementById('sc-meta').textContent = [m.client, m.year].filter(Boolean).join(' · ');
     }
   });
 
