@@ -32,8 +32,8 @@
   #scene-info { bottom: 92px; left: 34px; }
   #scene-num { font-size: 11px; letter-spacing: .32em; opacity: .5; margin-bottom: 8px;
                font-variant-numeric: tabular-nums; }
-  #scene-title { font-size: clamp(15px, 1.5vw, 21px); font-weight: 700; letter-spacing: .02em;
-                 line-height: 1.1; transition: opacity .5s; text-transform: uppercase; }
+  #scene-title { font-size: 13px; font-weight: 600; letter-spacing: .18em;
+                 line-height: 1.2; transition: opacity .5s; text-transform: uppercase; opacity: .92; }
   #phase-label { font-size: 10px; letter-spacing: .3em; opacity: .45; margin-top: 10px; text-transform: uppercase; }
   #hint { bottom: 40%; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: .38em;
           opacity: .55; text-transform: uppercase; transition: opacity .6s; animation: pulse 2.4s infinite; }
@@ -77,7 +77,7 @@
     mask-image: radial-gradient(ellipse 74% 74% at center, #000 68%, transparent 100%); }
   #player iframe, #player video { width: 100%; height: 100%; border: 0; opacity: 0; transition: opacity 1.4s;
     object-fit: cover; display: block; }
-  #player video { transition: opacity .25s; } /* локальный ролик проявляется сразу — старт параллельно подлёту */
+  #player video { transition: opacity .6s; } /* точки уже играют ролик — DOM-кадр лишь «наводит резкость» */
   #player.live iframe, #player.live video { opacity: 1; }
   #player-close { position: absolute; top: 12px; right: 12px; z-index: 2;
     width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.6);
@@ -343,7 +343,7 @@ const LOCAL_VIDEO = { 0: '../videos/VDNH.mp4', 1: '../videos/bmw.mp4', 2: '../vi
 
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-6'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-7'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -1368,8 +1368,11 @@ addEventListener('touchmove', e => {
 addEventListener('touchend', () => { tPrev = null; }, { passive: true });
 // вращение по сообщению от родительской страницы (лендинг встраивает сцену в iframe;
 // на мобильных горизонтальный свайп по герою транслируется сюда как pdRotate)
+let sceneVisible = true; // герой в кадре? (лендинг сообщает через IntersectionObserver)
 addEventListener('message', e => {
-  if (e.data && typeof e.data.pdRotate === 'number') onInput(e.data.pdRotate);
+  if (!e.data) return;
+  if (typeof e.data.pdRotate === 'number') onInput(e.data.pdRotate);
+  if (typeof e.data.pdVisible === 'boolean') { sceneVisible = e.data.pdVisible; Sound.setVisible(sceneVisible); }
 });
 // перетаскивание мышью по сцене = вращение (как свайп на тач); одиночный клик без протяжки = зум
 let dragOn = false, dragPrev = 0, dragMoved = 0;
@@ -1713,6 +1716,13 @@ function startPlay() {
     if (v.readyState >= 3) playerEl.classList.add('live'); // уже буферизован — показываем сразу
     else v.addEventListener('canplay', () => playerEl.classList.add('live'), { once: true });
     v.play().catch(() => {}); // старт немедленно — подлёт камеры идёт параллельно
+    // видео проявляется ИЗ ТОЧЕК: проектор начинает светить живым роликом на точки —
+    // сцена играет видео объёмом, а плоский DOM-кадр лишь плавно «наводит резкость» поверх
+    try {
+      const vtex = new THREE.VideoTexture(v);
+      vtex.minFilter = THREE.LinearFilter;
+      setProjTex(i, vtex);
+    } catch (e) {}
   } else {
     const f = document.createElement('iframe');
     f.src = embedUrl(EMBEDS[i]);
@@ -1723,9 +1733,25 @@ function startPlay() {
   }
   playerEl.style.display = 'block';
 }
-// при выходе из видео «замораживаем» его последний кадр на точках: снимаем кадр в canvas
-// и подменяем текстуру проектора + постеры. Точки продолжают показывать то, где остановился
-// ролик — выход полностью органичен (работает для локальных <video>, ембеды пропускаем)
+// ---- Живые текстуры проекции ----
+// setProjTex подменяет картинку, которую проектор «светит» на точки (и на кадр-сетку):
+// при Play — живое видео (точки сами играют ролик), при закрытии — его последний кадр,
+// при уходе на другой проект — возврат стартового кадра.
+function setProjTex(i, tex) {
+  const p = projectors[i];
+  if (p._ovr && p._ovr !== tex) { try { p._ovr.dispose(); } catch (e) {} }
+  p._ovr = tex || null;
+  voxUniforms['uTex' + i].value = tex || p.tex;
+  if (backMats[i]) backMats[i].uniforms.uTexB.value = tex || p.tex;
+}
+// уходим с проекта — возвращаем стартовый кадр (если после видео остался «замороженный»)
+function restoreFrame(i) {
+  const w = WORKS[i];
+  if (!w || i < 0 || !projectors[i]) return;
+  if (projectors[i]._ovr) setProjTex(i, null);
+  if (w._origSrc) { w.src = w._origSrc; w.frame = w._origFrame; delete w._origSrc; delete w._origFrame; }
+}
+// при выходе из видео «замораживаем» его последний кадр на точках (локальные <video>)
 function captureVideoFrame() {
   const v = play.iframe;
   if (!v || v.tagName !== 'VIDEO' || v.readyState < 2 || play.idx < 0) return;
@@ -1733,10 +1759,13 @@ function captureVideoFrame() {
     const cv = document.createElement('canvas');
     cv.width = v.videoWidth; cv.height = v.videoHeight;
     cv.getContext('2d').drawImage(v, 0, 0);
-    const p = projectors[play.idx];
-    p.tex.image = cv; p.tex.needsUpdate = true;      // проекция на точках = последний кадр
+    const ct = new THREE.CanvasTexture(cv);
+    ct.minFilter = THREE.LinearFilter;
+    setProjTex(play.idx, ct);                          // проекция на точках = последний кадр
+    const w = WORKS[play.idx];
+    if (!w._origSrc) { w._origSrc = w.src; w._origFrame = w.frame; } // запомнить стартовый кадр
     const url = cv.toDataURL('image/jpeg', 0.85);
-    WORKS[play.idx].frame = WORKS[play.idx].src = url; // постеры плеера/кадра — тоже
+    w.frame = w.src = url;                             // постеры плеера/кадра — тоже
     if (uiIdx === play.idx) frameEl.style.backgroundImage = `url(${url})`;
   } catch (e) {} // canvas может быть «испачкан» кросс-доменным видео — тогда просто пропускаем
 }
@@ -1811,6 +1840,7 @@ function updateUI(wMax) {
   const i = wrapIdx(gtM); // индекс с учётом зацикливания
   if (i !== uiIdx) {
     if (uiIdx >= 0) Sound.tick(); // тактильный тик при перелистывании (не на старте)
+    if (uiIdx >= 0) restoreFrame(uiIdx); // уходим с проекта — стартовый кадр возвращается на точки
     uiIdx = i;
     el.num.textContent = `${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')}`;
     el.title.textContent = WORKS[i].title;
@@ -1851,7 +1881,7 @@ function updateUI(wMax) {
 // Дрон на квинтах нарастает с движением камеры; воздушная шумовая текстура; мягкий «риз»
 // на влёте в кадр. Всё через lowpass/bandpass + компрессор — негромко и не резко.
 const Sound = (() => {
-  let ctx, master, comp, padF, padG, noiseF, noiseG, riseF, riseG, ready = false, on = true;
+  let ctx, master, comp, padF, padG, noiseF, noiseG, riseF, riseG, ready = false, on = true, visible = true;
   function build() {
     if (ready) return;
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -1886,8 +1916,8 @@ const Sound = (() => {
   function kick() { build(); if (ctx && ctx.state === 'suspended') ctx.resume(); } // старт/резюм по жесту пользователя
   function frame(motion, play) {
     if (!ready) return;
-    const t = ctx.currentTime, k = (p, v, tau) => p.setTargetAtTime(v, t, tau), M = on ? 1 : 0;
-    k(master.gain, on ? 0.09 : 0.0001, 0.25);
+    const t = ctx.currentTime, k = (p, v, tau) => p.setTargetAtTime(v, t, tau), M = (on && visible) ? 1 : 0;
+    k(master.gain, (on && visible) ? 0.09 : 0.0001, 0.25); // сцена не видна (проскроллили ниже) — тишина
     k(padG.gain, 0.6 * motion * M, 0.18);
     k(padF.frequency, 200 + 520 * motion, 0.25);   // остаётся низким и тёплым
     k(noiseG.gain, 0.15 * motion * M, 0.2);         // текстура — только намёк
@@ -1896,6 +1926,7 @@ const Sound = (() => {
     k(riseF.frequency, 300 + 1200 * play, 0.12);
   }
   function setEnabled(v) { on = v; if (v) kick(); else if (ctx) master.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.1); }
+  function setVisible(v) { visible = v; if (!v && ctx) master.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.15); }
   // короткий тихий «тик» при смене проекта — тактильный отклик перелистывания
   function tick() {
     if (!ready || !on) return;
@@ -1909,7 +1940,7 @@ const Sound = (() => {
     g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
     o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.18);
   }
-  return { kick, frame, setEnabled, tick };
+  return { kick, frame, setEnabled, setVisible, tick };
 })();
 // звук стартует только по первому жесту пользователя (политика автоплея браузеров)
 // звук стартует по «жесту активации» (клик/тач/клавиша/перетаскивание) — политика браузеров.
@@ -2021,7 +2052,7 @@ function loop() {
   updateDynamics(dt, time, wMax);
   // автоплей: камера встала на проект, видео не открыто, пользователь не трогает — копим время;
   // бар заполнился → плавный переезд к следующему проекту
-  if (play.state === 0 && !sliderActive && !dragOn && wMax > 0.9 &&
+  if (play.state === 0 && sceneVisible && !sliderActive && !dragOn && wMax > 0.9 &&
       performance.now() - lastInput > 1600) {
     autoT += dt;
     if (autoT >= AUTO_DWELL) { autoT = 0; navTarget = Math.round(navTarget) + 1; }

@@ -264,7 +264,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b1707-6" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b1707-7" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -417,6 +417,18 @@
   // header scroll state
   var hdr = document.getElementById('hdr');
   addEventListener('scroll', function(){ hdr.classList.toggle('scrolled', scrollY > 40); });
+
+  // видимость героя → сцена глушит звук и автоплей, когда проскроллили ниже
+  (function(){
+    var fr = document.querySelector('iframe.hero-scene');
+    var hero = document.getElementById('start');
+    if (!fr || !hero || !window.IntersectionObserver) return;
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        try { fr.contentWindow.postMessage({ pdVisible: e.isIntersecting }, '*'); } catch (err) {}
+      });
+    }, { threshold: 0.05 }).observe(hero);
+  })();
 
   // вертикальная прокрутка из 3D-сцены (iframe): свайп по герою листает сайт.
   // behavior:'instant' обязателен — иначе CSS scroll-behavior:smooth анимирует каждый шаг и скролл ползёт
