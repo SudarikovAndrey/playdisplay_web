@@ -287,9 +287,17 @@
   #s-modelfile, #s-envfile, #s-env, #s-sound, #s-autoq, #s-projfit { font-weight: 600; letter-spacing: .03em; transition: background .2s; }
   #s-modelfile:hover, #s-envfile:hover, #s-env:hover, #s-sound:hover, #s-autoq:hover, #s-projfit:hover { background: rgba(128,128,128,.24); }
   #s-env.off, #s-sound.off, #s-autoq.off, #s-projfit.off { opacity: .5; }
+  /* тёмный лоадер: перекрывает светлый фон сцены, пока грузятся Three.js/текстуры (иначе «белый экран») */
+  #pd-loader { position: fixed; inset: 0; z-index: 120; display: flex; align-items: center; justify-content: center;
+    background: #05131a; transition: opacity .7s ease; }
+  #pd-loader.hide { opacity: 0; pointer-events: none; }
+  #pd-loader .pl { font: 700 13px/1 'Unbounded', system-ui, sans-serif; letter-spacing: .42em; text-transform: uppercase;
+    color: #eaf6f8; animation: plPulse 1.35s ease-in-out infinite; }
+  @keyframes plPulse { 0%,100% { opacity: .25; } 50% { opacity: .92; } }
 </style>
 </head>
 <body>
+<div id="pd-loader"><div class="pl">PLAY&nbsp;DISPLAY</div></div>
 <div id="stage"></div>
 <div id="vignette"></div>
 <div id="grain"></div>
@@ -572,6 +580,16 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(S.fov, innerWidth / innerHeight, 0.5, 900);
 const CENTER = new THREE.Vector3(0, 0, 0);
 const TARGET = new THREE.Vector3(0, -3, 0); // фокус камеры: центр сцены, чуть выше пола
+// Портрет: при вертикальном FOV широкий кадр 16:9 не влезает по ширине (видно лишь центр = «пятно»).
+// Возвращаем вертикальный FOV, при котором ГОРИЗОНТАЛЬНОЕ поле покрывает ширину кадра. В ландшафте — 0 (без изменений).
+function portraitFitFov() {
+  const asp = camera.aspect || (innerWidth / innerHeight);
+  if (asp >= 1) return 0;
+  const frameHHalf = Math.atan(Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2)) * IMG_ASP); // полуширина кадра, рад
+  const wantHHalf = frameHHalf * 1.06;                                                       // немного воздуха по краям
+  const needV = 2 * THREE.MathUtils.radToDeg(Math.atan(Math.tan(wantHHalf) / Math.max(asp, 0.2)));
+  return Math.min(needV, 94);                                                                // потолок против «рыбьего глаза»
+}
 
 // ---------- Утилиты ----------
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -1587,6 +1605,11 @@ let sceneVisible = true; // герой в кадре? (лендинг сообщ
 addEventListener('message', e => {
   if (!e.data) return;
   if (typeof e.data.pdRotate === 'number') onInput(e.data.pdRotate);
+  // тап по герою на мобиле (лендинг ловит тап и шлёт сюда): запустить / закрыть видео
+  if (e.data.pdTapPlay) {
+    if (play.state === 0) { if (lastWMax > 0.5) startPlay(); }
+    else stopPlay();
+  }
   if (typeof e.data.pdVisible === 'boolean') {
     // в полноэкранном архиве герой-секция вне кадра, но сцена видна — не глушим
     sceneVisible = e.data.pdVisible || (typeof ARCHIVE !== 'undefined' && ARCHIVE.on);
@@ -1722,13 +1745,17 @@ function updateCamera(time, wMax) {
   camera.lookAt(TARGET.x, TARGET.y + S.viewy, TARGET.z);
   // наезд: лёгкий при остановке на проекте (камера встала + объект определён),
   // полный зум сцены на весь экран при Play (видео растёт синхронно — оба совпадают)
-  let fovZoom = 4.0 * focusAmt; // лёгкий наезд на подъезде к идеальной точке
+  // базовое поле: в портрете шире, чтобы кадр 16:9 влезал по ширине (иначе — «пятно»)
+  const baseFov = Math.max(S.fov, portraitFitFov());
+  let fovZoom = 4.0 * focusAmt * (baseFov / S.fov); // лёгкий наезд на подъезде к идеальной точке
   // цель зума при Play: видео ЦЕЛИКОМ вписывается по высоте экрана. Учитываем эффективный
-  // масштаб картинки (авто-подгон cover) — иначе камера наезжает слишком близко и кадр вылезает
+  // масштаб картинки (авто-подгон cover) — иначе камера наезжает слишком близко и кадр вылезает.
+  // В портрете зум не тесней, чем fit по ширине (иначе снова обрежется в «пятно»).
   const psEff = voxUniforms.uProjScale.value;
-  const playFov = 2 * THREE.MathUtils.radToDeg(Math.atan(Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2)) * psEff));
-  fovZoom = Math.max(fovZoom, (S.fov - Math.min(playFov, S.fov)) * playE);
-  camera.fov = S.fov - fovZoom; // без «дыхания» — никакой пульсации при скролле
+  let playFov = 2 * THREE.MathUtils.radToDeg(Math.atan(Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2)) * psEff));
+  playFov = Math.max(playFov, portraitFitFov());
+  fovZoom = Math.max(fovZoom, (baseFov - Math.min(playFov, baseFov)) * playE);
+  camera.fov = baseFov - fovZoom; // без «дыхания» — никакой пульсации при скролле
   camera.updateProjectionMatrix();
   PXU.value = innerHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
   voxUniforms.uCamDist.value = camera.position.distanceTo(TARGET); // для скрытия переднего плана
@@ -3157,7 +3184,13 @@ function loop() {
   // авто-подгон «картинка на весь экран»: зум проекции масштабируется под соотношение
   // сторон экрана (cover). На 16:9 = базовое значение ползунка; шире/уже — зумим сильнее.
   const A = camera.aspect || (innerWidth / innerHeight);
-  voxUniforms.uProjScale.value = S.projfit ? S.projscale * Math.max(A / IMG_ASP, IMG_ASP / A) : S.projscale;
+  // авто-подгон: шире 16:9 — cover по ширине, уже (ландшафт) — cover по высоте.
+  // В ПОРТРЕТЕ (A<1) НЕ зумим (иначе картинка кропится в «пятно») — ширину добираем полем камеры.
+  let coverF;
+  if (A >= IMG_ASP) coverF = A / IMG_ASP;
+  else if (A >= 1)  coverF = IMG_ASP / A;
+  else              coverF = 1;
+  voxUniforms.uProjScale.value = S.projfit ? S.projscale * coverF : S.projscale;
   updateNav(dt);
   // знаковая сглаженная скорость вращения → «резиновый» хвост в шейдере.
   // Мягкий спад: после остановки скролла отставшие частицы плавно долетают.
@@ -3186,9 +3219,19 @@ function loop() {
   _bgTick++;
   const videoSolid = play.state === 2 && playE >= 0.999;
   if (!videoSolid || _bgTick % 4 === 0) renderer.render(scene, camera);
+  hidePdLoader(); // первый отрисованный кадр → убираем тёмный лоадер
   updateHud(dt);
 }
 let _bgTick = 0;
+// лоадер: убираем на первом кадре; страховочный таймаут — на случай медленной/битой инициализации
+let _loaderShown = true;
+function hidePdLoader() {
+  if (!_loaderShown) return;
+  _loaderShown = false;
+  const l = document.getElementById('pd-loader');
+  if (l) { l.classList.add('hide'); setTimeout(() => { if (l.parentNode) l.parentNode.removeChild(l); }, 800); }
+}
+setTimeout(hidePdLoader, 6000);
 loop();
 
 addEventListener('resize', () => {
