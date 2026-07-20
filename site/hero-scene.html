@@ -553,10 +553,14 @@ const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 0
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
-let _hadSaved = false;
-try { const raw = localStorage.getItem(SETTINGS_KEY); if (raw) { Object.assign(S, JSON.parse(raw)); _hadSaved = true; } } catch (e) {}
-// слабые устройства: на телефонах по умолчанию меньше точек (перф)
+// мобильный режим определяем ДО загрузки: тач-устройство или узкий/портретный экран (в т.ч. сжатое окно на десктопе)
 const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || Math.min(innerWidth, innerHeight) < 620;
+// ОТДЕЛЬНЫЙ профиль настроек для мобилы: тюнинг «под телефон» НЕ трогает десктопный профиль
+const SETTINGS_KEY_ACTIVE = isMobile ? SETTINGS_KEY + '_m' : SETTINGS_KEY;
+// режим настройки камеры под мобилу (панель + ручной FOV); включается сообщением pdCam от лендинга (ссылка ?cam=1)
+let camMode = false, _syncPanel = null;
+let _hadSaved = false;
+try { const raw = localStorage.getItem(SETTINGS_KEY_ACTIVE); if (raw) { Object.assign(S, JSON.parse(raw)); _hadSaved = true; } } catch (e) {}
 if (isMobile && !_hadSaved) S.count = Math.min(S.count, 0.12);
 // потолок генерации точек: сцена сэмплируется в PT_MUL раз плотнее, слайдер «Кол-во» показывает долю
 // на мобильных потолок ниже: меньше памяти и вершинной нагрузки, глазу незаметно
@@ -1610,6 +1614,8 @@ addEventListener('message', e => {
     if (play.state === 0) { if (lastWMax > 0.5) startPlay(); }
     else stopPlay();
   }
+  // режим настройки камеры под мобилу (ссылка ?cam=1 на лендинге): открыть панель
+  if (e.data.pdCam) openCamPanel();
   if (typeof e.data.pdVisible === 'boolean') {
     // в полноэкранном архиве герой-секция вне кадра, но сцена видна — не глушим
     sceneVisible = e.data.pdVisible || (typeof ARCHIVE !== 'undefined' && ARCHIVE.on);
@@ -1745,15 +1751,16 @@ function updateCamera(time, wMax) {
   camera.lookAt(TARGET.x, TARGET.y + S.viewy, TARGET.z);
   // наезд: лёгкий при остановке на проекте (камера встала + объект определён),
   // полный зум сцены на весь экран при Play (видео растёт синхронно — оба совпадают)
-  // базовое поле: в портрете шире, чтобы кадр 16:9 влезал по ширине (иначе — «пятно»)
-  const baseFov = Math.max(S.fov, portraitFitFov());
+  // Базовое поле. В мобиле с сохранённым профилем или в режиме настройки (?cam) FOV берём как задал
+  // пользователь; иначе — авто-фит под ширину портрета. На десктопе portraitFitFov()=0 → всё как было.
+  const manualFov = camMode || (isMobile && _hadSaved);
+  const baseFov = manualFov ? S.fov : Math.max(S.fov, portraitFitFov());
   let fovZoom = 4.0 * focusAmt * (baseFov / S.fov); // лёгкий наезд на подъезде к идеальной точке
   // цель зума при Play: видео ЦЕЛИКОМ вписывается по высоте экрана. Учитываем эффективный
   // масштаб картинки (авто-подгон cover) — иначе камера наезжает слишком близко и кадр вылезает.
-  // В портрете зум не тесней, чем fit по ширине (иначе снова обрежется в «пятно»).
   const psEff = voxUniforms.uProjScale.value;
   let playFov = 2 * THREE.MathUtils.radToDeg(Math.atan(Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2)) * psEff));
-  playFov = Math.max(playFov, portraitFitFov());
+  if (!manualFov) playFov = Math.max(playFov, portraitFitFov()); // в портрете-авто не тесней, чем fit по ширине
   fovZoom = Math.max(fovZoom, (baseFov - Math.min(playFov, baseFov)) * playE);
   camera.fov = baseFov - fovZoom; // без «дыхания» — никакой пульсации при скролле
   camera.updateProjectionMatrix();
@@ -3281,8 +3288,10 @@ addEventListener('resize', () => {
   // сетки кадров пересобираем при отпускании слайдера (тяжелее, чем матрицы)
   for (const k of ['height', 'dist']) el[k].addEventListener('change', rebuildGrids);
   const panel = document.getElementById('settings');
-  // колесо над панелью не должно крутить камеру
+  // колесо/тач над панелью не должны крутить камеру (важно на мобиле — тюнинг слайдеров)
   panel.addEventListener('wheel', e => e.stopPropagation());
+  panel.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+  panel.addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
   // над панелью прячем свой курсор-«плюс» (там системный курсор для слайдеров)
   panel.addEventListener('mouseenter', () => plusCursor.style.opacity = 0);
   panel.addEventListener('mouseleave', () => plusCursor.style.opacity = 0.9);
@@ -3332,7 +3341,8 @@ addEventListener('resize', () => {
   const saveBtn = document.getElementById('s-save');
   saveBtn.addEventListener('click', () => {
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(persistObj()));
+      localStorage.setItem(SETTINGS_KEY_ACTIVE, JSON.stringify(persistObj()));
+      _hadSaved = true; // теперь этот профиль (мобильный/десктопный) считается настроенным
       saveBtn.textContent = 'Сохранено ✓';
       setTimeout(() => (saveBtn.textContent = 'Сохранить'), 1300);
     } catch (e) { alert('Не удалось сохранить настройки в этом браузере'); }
@@ -3355,6 +3365,7 @@ addEventListener('resize', () => {
     catch (e) { alert('Не удалось разобрать код настроек'); }
   });
   sync();
+  _syncPanel = sync; // даём внешнему коду (режим ?cam) обновлять слайдеры после программной правки S
   // аккордеон: разделы сворачиваются по клику на заголовок (первый открыт, остальные свёрнуты)
   document.querySelectorAll('#settings-body > h4').forEach((head, idx) => {
     const rows = [];
@@ -3367,6 +3378,17 @@ addEventListener('resize', () => {
     upd();
   });
 })();
+
+// Открыть панель настройки камеры под мобилу (вызов по сообщению pdCam от лендинга — ссылка ?cam=1).
+// Включает ручной FOV (camMode) и подставляет стартовый FOV = авто-фит, чтобы слайдер отражал картинку.
+function openCamPanel() {
+  camMode = true;
+  document.body.classList.add('dbg');
+  const p = document.getElementById('settings');
+  if (p) p.classList.add('open');
+  if (!_hadSaved && isMobile) S.fov = Math.round(Math.max(S.fov, portraitFitFov()));
+  if (_syncPanel) _syncPanel();
+}
 </script>
 <script>
 // отладочная кнопка DEV: показывает/прячет панель настроек 3D-сцены

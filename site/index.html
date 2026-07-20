@@ -705,6 +705,20 @@
     }, { passive: true });
   })();
 
+  // режим настройки камеры под мобилу: ссылка ?cam=1 (или #cam) включает тач-взаимодействие
+  // со сценой и открывает в ней панель настроек. Изменения пишутся в ОТДЕЛЬНЫЙ мобильный профиль.
+  (function(){
+    if (!/[?&]cam=1\b/.test(location.search) && location.hash.indexOf('cam') < 0) return;
+    var fr = document.querySelector('iframe.hero-scene');
+    if (!fr) return;
+    fr.style.pointerEvents = 'auto';   // на мобиле iframe заблокирован (pointer-events:none) — иначе тап по панели не дойдёт
+    fr.style.zIndex = '95';
+    var tell = function(){ try { fr.contentWindow.postMessage({ pdCam: true }, '*'); } catch(e){} };
+    if (fr.contentWindow) tell();
+    fr.addEventListener('load', tell);
+    setTimeout(tell, 1400);
+  })();
+
   // manifesto line reveal
   (function(){
     var lines = document.querySelectorAll('#manifesto p');
