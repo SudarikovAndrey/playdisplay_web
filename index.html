@@ -699,6 +699,10 @@
         x0 = t.clientX; y0 = t.clientY;
       }
     }, { passive: false });
+    // тап без свайпа (axis не определился) = запустить/закрыть видео текущего проекта
+    hero.addEventListener('touchend', function(){
+      if (axis === null && frame && frame.contentWindow) frame.contentWindow.postMessage({ pdTapPlay: true }, '*');
+    }, { passive: true });
   })();
 
   // manifesto line reveal
@@ -1930,5 +1934,3 @@
 <!--/SEO-->
 </body>
 </html>
-
-<!-- redeploy 2026-07-20T21:09Z -->
