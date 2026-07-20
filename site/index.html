@@ -442,6 +442,13 @@
     .v-media { height: 240px; }
     .viewer-close { top: 20px; right: 20px; }
     .foot-inner { flex-direction: column; gap: 14px; align-items: flex-start; }
+    /* мобила: убираем боковой скролл и выделение текста в hero свайпом */
+    html, body { overflow-x: hidden; max-width: 100%; }
+    .viewer, .viewer-inner { overflow-x: hidden; }
+    .v-imgs.small { max-width: 100%; }
+    .v-flow img, .v-flow video, .v-media img, .v-media video, .v-media iframe,
+    .v-imgs img, .v-imgs video { max-width: 100%; }
+    .hero, .hero * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   }
 </style>
 </head>
@@ -456,7 +463,7 @@
       <a href="#studio">Studio</a>
       <a href="#contact">Contact</a>
     </nav>
-    <button class="cta-play" onclick="location.href='#contact'">▶ Сыграем?</button>
+    <button class="cta-play" onclick="location.href='#contact'">▶︎ Сыграем?</button>
   </div>
 </header>
 
@@ -482,7 +489,7 @@
         <div class="kicker" style="margin-bottom:20px">Студия интерактивного опыта — с 2011</div>
         <h1>Мы превращаем пространство&nbsp;в&nbsp;<em>игру</em>.</h1>
         <div class="hero-btns">
-          <button class="btn-line" id="btn-game"><span class="tri">▶</span> Сыграть в пространство</button>
+          <button class="btn-line" id="btn-game"><span class="tri">▶︎</span> Сыграть в пространство</button>
           <a href="#work" class="btn-ghost-link">Кейсы →</a>
         </div>
       </div>
@@ -590,7 +597,7 @@
     <h2>Сыграем?</h2>
     <p class="csub">Расскажите о вашем пространстве — вернёмся с идеей игры за несколько дней.</p>
     <div class="channels">
-      <button class="wa">▶ Написать в WhatsApp</button>
+      <button class="wa">▶︎ Написать в WhatsApp</button>
       <a href="#" class="chan-link">e-mail</a>
       <a href="#" class="chan-link">Instagram</a>
       <a href="#" class="chan-link">Vimeo</a>
@@ -795,7 +802,7 @@
     CASES.forEach(function(c){
       var el = document.createElement('div');
       el.className = "card";
-      var playMark = (c.video || c.local) ? '<span class="play">▶ смотреть</span>' : '';
+      var playMark = (c.video || c.local) ? '<span class="play">▶︎ смотреть</span>' : '';
       var meta = (c.client ? c.client : '') + (c.year ? (c.client ? ' · ' : '') + c.year : '');
       el.innerHTML =
         '<div class="card-media"><img src="'+c.img+'" alt="" loading="lazy">'+playMark+'</div>'+
