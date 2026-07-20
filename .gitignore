@@ -5,3 +5,6 @@ dist.zip
 *.fbx
 *.aep
 videos/raw_videos/
+
+# исходные мастера роликов — только локально (на Pages раздаются сжатые копии в site/videos)
+videos/

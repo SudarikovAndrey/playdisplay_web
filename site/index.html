@@ -5,7 +5,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayDisplay — Мы превращаем пространство в игру</title>
+<title>PlayDisplay — студия интерактивного опыта: мультимедиа-инсталляции, голограммы, AR</title>
+<meta name="description" content="PlayDisplay — студия интерактивного опыта. Мультимедийные инсталляции, голограммы, дополненная реальность и выставочные пространства для музеев, корпораций и выставок. Превращаем пространство в игру.">
+<meta name="keywords" content="мультимедиа инсталляция, голограмма, голокуб, дополненная реальность, AR, выставочный стенд, интерактивная инсталляция, проекционный маппинг, музейная экспозиция, PlayDisplay, Андрей Судариков">
+<meta name="author" content="PlayDisplay">
+<link rel="canonical" href="https://playdisplay.com/">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PlayDisplay">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="PlayDisplay — мы превращаем пространство в игру">
+<meta property="og:description" content="Студия интерактивного опыта: мультимедийные инсталляции, голограммы, дополненная реальность и выставочные пространства для музеев, корпораций и выставок.">
+<meta property="og:url" content="https://playdisplay.com/">
+<meta property="og:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PlayDisplay — мы превращаем пространство в игру">
+<meta name="twitter:description" content="Студия интерактивного опыта: мультимедиа-инсталляции, голограммы, AR, выставочные пространства.">
+<meta name="twitter:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -27,8 +43,9 @@
   .mono { font-family: var(--font-mono); }
   .kicker {
     display: inline-flex; align-items: center; gap: 14px;
-    font: 500 12px var(--font-mono); letter-spacing: var(--tracking-hud);
-    text-transform: uppercase; color: var(--signal-amber);
+    font: 600 12px var(--font-mono); letter-spacing: var(--tracking-hud);
+    text-transform: uppercase; color: #ff8a5c; /* ярче — читаемо на облаке точек */
+    text-shadow: 0 1px 10px rgba(3,12,16,0.95), 0 0 2px rgba(3,12,16,0.8);
   }
   .kicker::before { content: ""; width: 30px; height: 1px; background: var(--signal-amber); }
   .kicker.teal { color: var(--signal-teal); }
@@ -81,6 +98,25 @@
   .hero.game-on .hero-inner, .hero.game-on .session, .hero.game-on .readout,
   .hero.game-on .ruler-top, .hero.game-on .ruler-left, .hero.game-on .hero-grade { opacity: 0; transition: opacity .5s; }
   .hero.game-on .hero-inner { pointer-events: none; }
+  /* ===== 3D-архив проектов: портал в секции Work + полноэкранный режим ===== */
+  .arc-portal { position: relative; margin-top: 46px; height: 380px; overflow: hidden; cursor: pointer;
+    border: 1px solid rgba(159,180,200,.22); background: var(--space-void, #06080d);
+    transition: border-color .3s; }
+  .arc-portal:hover { border-color: var(--signal-teal, #2be0c6); }
+  .arc-portal canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .arc-portal-in { position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px; pointer-events: none; }
+  .arc-portal-t { font: 600 15px var(--font-body, monospace); letter-spacing: .34em;
+    color: rgba(241,251,252,.94); text-transform: uppercase; }
+  .arc-portal-s { font: 500 10px var(--font-body, monospace); letter-spacing: .22em;
+    color: rgba(159,180,200,.75); text-transform: uppercase; }
+  .arc-portal:hover .arc-portal-t { color: #fff; }
+  /* архив открыт: iframe сцены поверх всего, секция растворяется, скролл заперт */
+  body.arc-on { overflow: hidden; }
+  body.arc-on .hero-scene { position: fixed; inset: 0; z-index: 90; pointer-events: auto;
+    animation: arcFadeIn .5s ease; }
+  @keyframes arcFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  body.arc-on .work .wrap { opacity: 0; transition: opacity .6s; }
   .hero h1 { font: 600 clamp(24px, 2.6vw, 42px)/1.08 var(--font-display); letter-spacing: var(--tracking-display); color: rgba(241,251,252,0.94); max-width: 17ch; text-shadow: 0 4px 40px rgba(3,12,16,0.9); }
   .hero h1 em { font-style: normal; color: var(--signal-teal); }
   .hero-btns { display: flex; gap: 16px; margin-top: 30px; align-items: center; pointer-events: auto; }
@@ -158,23 +194,36 @@
   }
   .filter button:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
   .filter button.on { background: var(--signal-teal); color: var(--space-void); border-color: var(--signal-teal); }
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  /* карточки: монохром, без рамок; ховер — цвет возвращается, карточка оживает и пульсирует */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; position: relative; }
+  #cards-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; } /* слой перелёта точек между карточками */
   .card {
-    background: var(--space-panel); border: 1px solid var(--space-line);
-    cursor: pointer; overflow: hidden; position: relative;
-    transition: transform var(--duration-base) var(--ease-overshoot), border-color var(--duration-base);
+    background: transparent; border: none;
+    cursor: pointer; overflow: visible; position: relative;
+    transition: transform .45s var(--ease-overshoot);
     display: flex; flex-direction: column;
   }
-  .card:hover { transform: translateY(-4px); border-color: rgba(43,224,198,0.5); }
-  .card-media { height: 210px; position: relative; overflow: hidden; background: #0a2129; }
-  .card-media canvas.scatter { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 1; }
-  .card-media.scatter-on img { opacity: 0; }
-  .card-media:not(.scatter-on)::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background-image: radial-gradient(rgba(220,238,240,0.10) 0.6px, transparent 0.6px); background-size: 4px 4px; mix-blend-mode: overlay; }
-  .card-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: transform var(--duration-slow), opacity var(--duration-base); }
-  .card:hover .card-media img { transform: scale(1.05); opacity: 1; }
-  .card-media .play { position: absolute; left: 18px; bottom: 18px; z-index: 2; display: flex; align-items: center; gap: 8px; font: 500 11px var(--font-mono); letter-spacing: 0.1em; color: #F1FBFC; text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
-  .card-media .task { position: absolute; right: 14px; top: 14px; z-index: 2; }
+  .card:hover { transform: translateY(-5px) scale(1.02); z-index: 2; }
+  .card-media { height: 250px; position: relative; overflow: hidden; background: #0a1216; }
+  .card-body .cmeta { font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--scan-white-dim); }
+  .card-media img { width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(1) brightness(0.9); opacity: 0.9;
+    transition: filter .5s ease, transform .6s ease, opacity .22s; }
+  .card-media.gone img { opacity: 0 !important; } /* обложка распалась на точки (слой #cards-fx) */
+  /* объёмный влёт: DOM уступает сцену частицам и возвращается КРОСС-ФЕЙДОМ, без ступеньки */
+  section > .wrap, header, #cards-fx { transition: opacity .65s ease; }
+  body.flying section > .wrap, body.flying header, body.flying #cards-fx,
+  body.flying .card-media img, body.flying .card-media .play { opacity: 0 !important; }
+  .card:hover .card-media img { animation: cardAlive 2.4s ease-in-out infinite;
+    filter: grayscale(0); opacity: 1; }
+  /* «переливается своими цветами»: мягкая пульсация насыщенности/яркости и дыхание масштаба */
+  @keyframes cardAlive {
+    0%, 100% { transform: scale(1.05); filter: grayscale(0) saturate(1) brightness(1); }
+    50%      { transform: scale(1.085); filter: grayscale(0) saturate(1.35) brightness(1.10); }
+  }
+  .card-media .play { position: absolute; left: 18px; bottom: 18px; z-index: 2; display: flex; align-items: center; gap: 8px; font: 500 11px var(--font-mono); letter-spacing: 0.1em; color: #F1FBFC; text-shadow: 0 1px 6px rgba(0,0,0,0.8); opacity: 0; transition: opacity .35s; }
+  .card:hover .card-media .play { opacity: 1; }
   .card-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
   .card-body h3 { font: 700 21px var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
   .card-body .oneline { font: 400 14px/1.5 var(--font-body); color: var(--scan-white-dim); flex: 1; }
@@ -215,12 +264,15 @@
   .foot-inner .mono { font-size: 12px; letter-spacing: 0.05em; }
 
   /* ---------- case viewer ---------- */
-  .viewer { position: fixed; inset: 0; z-index: 100; background: rgba(3,12,16,0.94); backdrop-filter: blur(6px); opacity: 0; pointer-events: none; transition: opacity var(--duration-base); overflow-y: auto; }
+  /* фон непрозрачный: мы влетели ВГЛУБЬ проекта, галерея осталась позади камеры.
+     blur убран совсем — он был главным пожирателем кадров при анимации прозрачности */
+  .viewer { position: fixed; inset: 0; z-index: 100; background: #040c10; opacity: 0; pointer-events: none; transition: opacity var(--duration-base); overflow-y: auto; }
   .viewer.open { opacity: 1; pointer-events: auto; }
-  .viewer-inner { max-width: 1100px; margin: 0 auto; padding: 96px 64px 120px; }
+  .viewer-inner { max-width: 1560px; margin: 0 auto; padding: 96px 72px 140px; position: relative; z-index: 1; }
+  #v-dust { position: fixed; inset: 0; z-index: 0; pointer-events: none; } /* фоновая пыль страницы проекта */
   .viewer-close { position: fixed; top: 30px; right: 40px; z-index: 101; width: 46px; height: 46px; border: 1px solid var(--scan-white-faint); background: rgba(3,12,16,0.5); color: var(--scan-white); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color var(--duration-fast); }
   .viewer-close:hover { border-color: var(--signal-amber); }
-  .v-media { height: 460px; position: relative; overflow: hidden; border: 1px solid var(--space-line); background: #0a2129; }
+  .v-media { height: clamp(480px, 72vh, 900px); position: relative; overflow: hidden; border: 1px solid var(--space-line); background: #0a2129; }
   .v-media img { width: 100%; height: 100%; object-fit: cover; }
   .v-media .v-grade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(3,12,16,0.85) 100%); }
   .v-media .v-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 92px; height: 92px; border-radius: 50%; border: 1.5px solid rgba(43,224,198,0.7); display: flex; align-items: center; justify-content: center; background: rgba(3,12,16,0.3); }
@@ -232,8 +284,138 @@
   .v-stats .s:last-child { border-right: none; }
   .v-stats .sv { font: 800 clamp(22px,2.4vw,38px)/1 var(--font-display); color: var(--signal-teal); letter-spacing: -0.01em; }
   .v-stats .sl { margin-top: 10px; font: 400 12px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--scan-white-dim); }
-  .v-desc { font: 400 clamp(17px,1.5vw,21px)/1.65 var(--font-body); color: rgba(233,244,246,0.88); max-width: 62ch; }
+  .v-desc { font: 400 clamp(17px,1.5vw,21px)/1.65 var(--font-body); color: rgba(233,244,246,0.88); max-width: 62ch; margin-top: 34px; }
   .v-desc .punch { display: block; margin-top: 22px; font: 700 clamp(20px,2vw,28px)/1.3 var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
+  /* ===== полная лента проекта (контент оригинала): воздух, плашки, каскад ===== */
+  /* мета на сочных плашках: акцентная кромка, крупные дисплейные значения */
+  .v-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 44px 0 10px; }
+  @media (max-width: 900px) { .v-meta { grid-template-columns: 1fr; } }
+  .v-meta .m { background: rgba(16,30,37,0.5); border: 1px solid rgba(159,180,200,0.13);
+    border-top: 2px solid rgba(43,224,198,0.6); padding: 24px 28px 28px;
+    font: 500 11px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--scan-white-dim);
+    transition: border-color .3s, background .3s; }
+  .v-meta .m:hover { border-top-color: var(--signal-teal); background: rgba(16,30,37,0.75); }
+  .v-meta .m b { display: block; margin-top: 14px; font: 700 clamp(19px,1.8vw,29px)/1.25 var(--font-display);
+    letter-spacing: -0.01em; color: #F1FBFC; text-transform: none; }
+  .v-flow { margin-top: 72px; display: flex; flex-direction: column; gap: 72px; }
+  .vb { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
+  .vb.lit { opacity: 1; transform: none; }
+  /* редакционная сетка: одиночные абзацы уходят вправо от оси заголовков — воздух и ритм */
+  .vb.tx { padding-left: clamp(0px, 11vw, 200px); }
+  /* широкие компоненты не просто накладываются: вырастают из контентной ширины к полной */
+  .vb .v-gal, .vb .v-embed, .vb .v-imgs { transform: scale(0.965); opacity: 0;
+    transition: transform 1s cubic-bezier(.22,.9,.24,1), opacity .9s ease; }
+  .vb.lit .v-gal, .vb.lit .v-embed, .vb.lit .v-imgs { transform: none; opacity: 1; }
+  .vb h3 { font: 700 clamp(28px,3.2vw,46px)/1.1 var(--font-display); color: #F1FBFC; letter-spacing: -0.015em; max-width: 26ch; }
+  .vb h3::after { content: ""; display: block; width: 0; height: 1px; margin-top: 20px;
+    background: linear-gradient(90deg, var(--signal-teal), transparent); transition: width 1.1s ease .25s; }
+  .vb.lit h3::after { width: 100%; }
+  .vb h3 .w { display: inline-block; opacity: 0; transform: translateY(0.55em);
+    transition: opacity .6s ease, transform .6s cubic-bezier(.22,.9,.24,1); }
+  .vb.lit h3 .w { opacity: 1; transform: none; }
+  .vb p { font: 400 clamp(17px,1.4vw,20px)/1.8 var(--font-body); color: rgba(233,244,246,0.84); max-width: 64ch; }
+  .vb .v-goal-k { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
+  /* цель и решение — просторные плашки рядом */
+  .v-duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+  .v-panel { background: rgba(16,30,37,0.5); border: 1px solid rgba(159,180,200,0.13);
+    padding: 36px 40px 40px; }
+  .v-panel p { max-width: none; }
+  /* дети плашек/этапов/аннотаций всплывают каскадом (задержки проставляет JS) */
+  .v-panel, .v-steps .st, .v-notes .nt { opacity: 0; transform: translateY(20px);
+    transition: opacity .65s ease, transform .65s ease; }
+  .vb.lit .v-panel, .vb.lit .v-steps .st, .vb.lit .v-notes .nt { opacity: 1; transform: none; }
+  .v-embed { position: relative; width: 100%; aspect-ratio: 16/9; background: #0a1216; border: 1px solid var(--space-line); overflow: hidden; }
+  .v-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .v-imgs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .v-imgs.single { grid-template-columns: 1fr; }
+  .v-imgs.small { max-width: 460px; }
+  .v-imgs.small img { border: 1px solid rgba(159,180,200,0.12); }
+  .v-imgs img { width: 100%; height: auto; display: block; border: 1px solid rgba(159,180,200,0.12);
+    opacity: 0; transform: scale(0.985); transition: opacity .8s ease, transform .8s ease; }
+  .vb.lit .v-imgs img { opacity: 1; transform: none; }
+  /* интерактивная галерея: без рамок, кадр во всю ширину, симметрично; клик — фулскрин */
+  .v-gal { position: relative; overflow: hidden; }
+  /* простая листалка: трек плавно скользит к нужному кадру, без частиц */
+  .v-gal-track { display: flex; gap: 24px; transition: transform .5s cubic-bezier(.4,0,.2,1); will-change: transform; }
+  .v-gal-track .gs { flex: 0 0 100%; height: clamp(520px, 78vh, 1000px); cursor: zoom-in; }
+  .v-gal-track .gs img, .v-gal-track .gs video { width: 100%; height: 100%; object-fit: contain; display: block;
+    opacity: 0; transition: opacity .6s ease; }
+  .v-gal-track .gs img.on, .v-gal-track .gs video.on { opacity: 1; }
+  .v-imgs video { width: 100%; height: auto; display: block; opacity: 0; transition: opacity .8s ease; }
+  .v-imgs video.on, .vb.lit .v-imgs video { opacity: 1; }
+  .v-gal .g-btn, .lb .g-btn { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+    width: 56px; height: 56px; border: none; border-radius: 50%; background: rgba(10,20,26,0.55);
+    color: #F1FBFC; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .25s, color .25s; }
+  .v-gal .g-btn:hover, .lb .g-btn:hover { background: rgba(43,224,198,0.16); color: var(--signal-teal); }
+  .v-gal .g-prev, .lb .g-prev { left: 10px; }
+  .v-gal .g-next, .lb .g-next { right: 10px; }
+  .v-gal .g-cnt { position: absolute; right: 16px; bottom: 14px; z-index: 3;
+    font: 500 12px var(--font-mono); letter-spacing: 0.22em; color: var(--scan-white-dim); }
+  /* фирменная листалка альбома: ряд точек, активная — тил и крупнее */
+  .g-dots { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; z-index: 3;
+    display: flex; gap: 10px; align-items: center; }
+  .g-dots .gd { width: 6px; height: 6px; background: rgba(159,180,200,0.4); border: none; padding: 0;
+    cursor: pointer; transition: transform .3s, background .3s; transform: rotate(45deg); } /* ромбик-«точка» */
+  .g-dots .gd:hover { background: rgba(241,251,252,0.85); }
+  .g-dots .gd.on { background: var(--signal-teal); transform: rotate(45deg) scale(1.5); }
+  /* width/height:100% обязательны: у абсолютного canvas без них берётся intrinsic-размер
+     (= размер атрибута), и облако выводится уменьшенным и прижатым влево */
+  .g-burst { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
+  /* следующий проект — сквозная листалка кейсов */
+  .v-next { border-top: 1px solid rgba(159,180,200,0.15); padding-top: 44px; cursor: pointer; }
+  .v-next .vn-k { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--scan-white-dim); }
+  .v-next .vn-row { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-top: 18px; }
+  .v-next .vn-t { font: 800 clamp(30px,4vw,56px)/1.05 var(--font-display); color: #F1FBFC; letter-spacing: -0.02em;
+    transition: color .3s; }
+  .v-next:hover .vn-t { color: var(--signal-teal); }
+  .v-next .vn-img { flex: 0 0 clamp(180px, 22vw, 320px); height: clamp(110px, 13vw, 190px); overflow: hidden; }
+  .v-next .vn-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(0.85);
+    transition: filter .45s, transform .45s; }
+  .v-next:hover .vn-img img { filter: none; transform: scale(1.05); }
+  .v-next .vn-a { font-size: 30px; color: var(--scan-white-dim); transition: color .3s, transform .3s; }
+  .v-next:hover .vn-a { color: var(--signal-teal); transform: translateX(8px); }
+  /* смена кейса: контент мягко складывается, новый мягко въезжает — без мгновенной замены */
+  .viewer-inner { transition: opacity .4s ease, transform .4s ease; }
+  .viewer-inner.swapping { opacity: 0; transform: translateY(-18px); }
+  .viewer-inner.arrive { opacity: 0; transform: translateY(20px); transition: none; }
+  .v-head .v-num { font: 500 13px var(--font-mono); letter-spacing: 0.26em; color: var(--scan-white-dim); white-space: nowrap; padding-bottom: 14px; }
+  /* фулскрин-просмотр кадра */
+  .lb { position: fixed; inset: 0; z-index: 120; background: rgba(2,7,10,0.97);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .35s; }
+  .lb.open { opacity: 1; pointer-events: auto; }
+  .lb img { max-width: 94vw; max-height: 90vh; object-fit: contain; }
+  .lb .g-cnt { position: absolute; left: 50%; transform: translateX(-50%); bottom: 22px;
+    font: 500 12px var(--font-mono); letter-spacing: 0.22em; color: var(--scan-white-dim); }
+  .lb .lb-x { position: absolute; top: 26px; right: 34px; width: 46px; height: 46px; border: none;
+    background: transparent; color: #F1FBFC; font-size: 26px; cursor: pointer; opacity: 0.7; transition: opacity .2s; }
+  .lb .lb-x:hover { opacity: 1; }
+  /* тексты страницы складываются каскадом ПОСЛЕ подлёта — частицы собирают только кадр */
+  .viewer-inner .kicker, .viewer-inner .v-head, .viewer-inner .v-meta,
+  .viewer-inner .v-stats, .viewer-inner .v-desc {
+    opacity: 0; transform: translateY(26px);
+    transition: opacity .7s ease, transform .7s ease; }
+  .viewer-inner.settled .kicker { transition-delay: .05s; }
+  .viewer-inner.settled .v-head { transition-delay: .14s; }
+  .viewer-inner.settled .v-meta { transition-delay: .24s; }
+  .viewer-inner.settled .v-stats { transition-delay: .34s; }
+  .viewer-inner.settled .v-desc { transition-delay: .42s; }
+  .viewer-inner.settled .kicker, .viewer-inner.settled .v-head, .viewer-inner.settled .v-meta,
+  .viewer-inner.settled .v-stats, .viewer-inner.settled .v-desc { opacity: 1; transform: none; }
+  /* этапы: крупная лёгкая цифра над тонкой линией — без рамок-коробок */
+  .v-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px 32px; }
+  .v-steps .st { border-top: 1px solid rgba(159,180,200,0.22); padding-top: 22px; transition-property: opacity, transform, border-color; }
+  .v-steps .st:hover { border-top-color: var(--signal-teal); }
+  .v-steps .st .n { font: 200 clamp(38px,3.4vw,54px)/1 var(--font-display); color: rgba(43,224,198,0.9); letter-spacing: 0; }
+  .v-steps .st .t { margin-top: 16px; font: 400 15px/1.6 var(--font-body); color: rgba(233,244,246,0.82); max-width: 34ch; }
+  /* аннотации схемы: номер-маркер и висячий отступ, без скобок */
+  .v-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 6px 40px; }
+  .v-notes .nt { display: flex; gap: 18px; font: 400 15px/1.65 var(--font-body); color: rgba(233,244,246,0.8);
+    padding: 14px 0; border-bottom: 1px solid rgba(159,180,200,0.09); }
+  .v-notes .nt .n { font: 600 13px var(--font-mono); color: var(--signal-teal); letter-spacing: 0.06em;
+    min-width: 30px; padding-top: 3px; text-align: right; }
+  @media (max-width: 900px) { .v-imgs { grid-template-columns: 1fr; } }
 
   @media (max-width: 900px) {
     .wrap, .nav-inner, .foot-inner { padding-left: 20px; padding-right: 20px; }
@@ -280,7 +462,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b1707-19" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b1707-26" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -329,7 +511,7 @@
   <div class="wrap" style="padding:0">
     <div class="grid">
       <div class="cell"><div class="big">2011</div><div class="lbl">строим играбельные пространства</div></div>
-      <div class="cell"><div class="big">115</div><div class="lbl">тачскринов в одном музее</div></div>
+      <div class="cell"><div class="big">115</div><div class="lbl">инсталляций в одном музее</div></div>
       <div class="cell"><div class="big">3 нед.</div><div class="lbl">самый быстрый стенд под ключ</div></div>
       <div class="cell"><div class="big">A→Z</div><div class="lbl">полный цикл — от идеи до эксплуатации</div></div>
     </div>
@@ -361,14 +543,8 @@
   <div class="wrap">
     <div class="kicker teal eyebrow">Work — кейсы</div>
     <h2>Не смотрите.<br>Играйте.</h2>
-    <p class="intro-sub">Выберите, что нужно вашему пространству:</p>
-    <div class="filter" id="filter">
-      <button class="on" data-f="all">Все</button>
-      <button data-f="amaze">Удивить</button>
-      <button data-f="tell">Рассказать</button>
-      <button data-f="sell">Продать сложное</button>
-    </div>
-    <div class="cards" id="cards"></div>
+    <p class="intro-sub">15 проектов для музеев, выставок и корпораций.</p>
+    <div class="cards" id="cards"><canvas id="cards-fx"></canvas></div>
   </div>
 </section>
 
@@ -443,16 +619,23 @@
   var hdr = document.getElementById('hdr');
   addEventListener('scroll', function(){ hdr.classList.toggle('scrolled', scrollY > 40); });
 
-  // видимость героя → сцена глушит звук и автоплей, когда проскроллили ниже
+  // видимость героя + фокус вкладки/окна → сцена глушит звук и автоплей,
+  // когда проскроллили ниже, свернули вкладку или ушли в другое окно
   (function(){
     var fr = document.querySelector('iframe.hero-scene');
     var hero = document.getElementById('start');
     if (!fr || !hero || !window.IntersectionObserver) return;
+    var heroVis = true;
+    function send(){
+      var on = heroVis && !document.hidden && document.hasFocus();
+      try { fr.contentWindow.postMessage({ pdVisible: on }, '*'); } catch (err) {}
+    }
     new IntersectionObserver(function(es){
-      es.forEach(function(e){
-        try { fr.contentWindow.postMessage({ pdVisible: e.isIntersecting }, '*'); } catch (err) {}
-      });
+      es.forEach(function(e){ heroVis = e.isIntersecting; send(); });
     }, { threshold: 0.05 }).observe(hero);
+    addEventListener('visibilitychange', send);
+    addEventListener('blur', send);
+    addEventListener('focus', send);
   })();
 
   // вертикальная прокрутка из 3D-сцены (iframe): свайп по герою листает сайт.
@@ -487,7 +670,12 @@
     // мини-игра: прячем тексты героя, экран отдан полёту
     if (typeof e.data.pdGameOn === 'boolean')
       document.getElementById('start').classList.toggle('game-on', e.data.pdGameOn);
+    // 3D-архив: сцена подтверждает вход/выход — держим iframe поверх страницы
+    if (typeof e.data.pdArchiveOn === 'boolean')
+      document.body.classList.toggle('arc-on', e.data.pdArchiveOn);
   });
+
+  // 3D-архив спрятан с сайта (доработаем позже); вход остался в прототипе (клавиша A)
 
   // кнопка «Сыграть в пространство» → мини-игра в 3D-сцене
   document.getElementById('btn-game').addEventListener('click', function(){
@@ -526,124 +714,618 @@
   })();
 
   // cases — реальные проекты с playdisplay.com, новые сверху.
-  // wi = индекс в WORKS (textures.js) с base64-кадром → источник для «разлёта на точки».
+  // img — локальные обложки (assets/work/, качает download_assets.sh); фолбэк — хотлинк оригинала.
+  // wi = индекс в WORKS (textures.js) с base64-кадром видео.
   var IMG = "https://playdisplay.com/wp-content/uploads/";
+  var AW = "assets/work/";
   var CASES = [
-    { task:"sell", taskLabel:"Продать сложное", title:"Промышленность РФ", img:IMG+"2026/01/site_ships_23_2-960x960.png",
+    { task:"sell", taskLabel:"Продать сложное", title:"Промышленность РФ", slug:"industry-rf", client:"Деп. промышленности", year:2023,
+      img:AW+"industry-rf/site_ships_23_2-960x960.jpg", fb:IMG+"2026/01/site_ships_23_2-960x960.png",
       desc:"Интерактивные экспозиции для судостроительной отрасли: продукция и производственные процессы в наглядном цифровом формате.",
       punch:"Отрасль, которую можно рассмотреть вблизи." },
-    { task:"sell", taskLabel:"Продать сложное", title:"Аэропорты России", img:IMG+"2026/01/site_airports_23-960x960.png", local:"videos/VDNH_airports.mp4", wi:11,
+    { task:"sell", taskLabel:"Продать сложное", title:"Аэропорты России", slug:"airports", client:"Форум «Россия»", year:2023, img:AW+"airports/site_airports_23-960x960.jpg", fb:IMG+"2026/01/site_airports_23-960x960.png", local:"videos/VDNH_airports.mp4", wi:11,
       desc:"Мультимедийные инсталляции для аэропортов: навигация, история и сервисы объединены в единую визуальную систему.",
       punch:"Пространство, которое ведёт за руку." },
-    { task:"sell", taskLabel:"Продать сложное", title:"ОДК ОАК", img:IMG+"2026/01/site_odk_21_2-960x960.png", video:["youtube","jgoiEkCIfgQ"], local:"videos/ODK.mp4", wi:9,
+    { task:"sell", taskLabel:"Продать сложное", title:"ОДК ОАК", slug:"odk-oak", client:"ОДК · МАКС", year:2021, img:AW+"odk-oak/site_odk_21_2-960x960.jpg", fb:IMG+"2026/01/site_odk_21_2-960x960.png", video:["youtube","jgoiEkCIfgQ"], local:"videos/ODK.mp4", wi:9,
       desc:"Экспозиции авиадвигателестроения на МАКС: голограммы двигателей и интерактивные разборы технологий, объясняющие устройство изделий без единой строчки текста.",
       punch:"Сложный продукт продаёт тот, кто дал его потрогать." },
-    { task:"amaze", taskLabel:"Удивить", title:"Прорыв", img:IMG+"2026/01/site_ra_24-1-960x960.png", video:["youtube","bSNki6_F898"], local:"videos/ra.mp4", wi:10,
+    { task:"amaze", taskLabel:"Удивить", title:"Прорыв", slug:"proryv", client:"Росатом", year:2024, img:AW+"proryv/site_ra_24-1-960x960.jpg", fb:IMG+"2026/01/site_ra_24-1-960x960.png", video:["youtube","bSNki6_F898"], local:"videos/ra.mp4", wi:10,
       desc:"Инсталляция «Росатома» о замкнутом ядерном топливном цикле: сложная физика превращается в наглядный, зрелищный интерактив.",
       punch:"О технологии будущего — на языке впечатления." },
-    { task:"amaze", taskLabel:"Удивить", title:"Ростех-Экспо", img:IMG+"2021/06/01_logo_v03-960x960.jpg", local:"videos/rostec.mp4", wi:12,
+    { task:"amaze", taskLabel:"Удивить", title:"Ростех-Экспо", slug:"rostec", client:"Ростех", year:2021, img:AW+"rostec/01_logo_v03-960x960.jpg", fb:IMG+"2021/06/01_logo_v03-960x960.jpg", local:"videos/rostec.mp4", wi:12,
       desc:"Выставочный комплекс госкорпорации: мультимедийная среда, объединяющая десятки предприятий в один сценарий.",
       punch:"Масштаб корпорации — в одном пространстве." },
-    { task:"sell", taskLabel:"Продать сложное", title:"PTK Group", img:IMG+"2021/02/ptk_start_2.gif", video:["vimeo","522723089"], wi:7,
+    { task:"sell", taskLabel:"Продать сложное", title:"PTK Group", slug:"ptk-group", client:"Группа ПТК", year:2019, img:AW+"ptk-group/ptk_start_2_poster.jpg", fb:IMG+"2021/02/ptk_start_2.gif", video:["vimeo","522723089"], wi:7,
       desc:"Интерактивный корпоративный стенд: продукты и процессы компании собраны в единый цифровой сценарий для переговоров и выставок.",
       punch:"Презентация, в которую вовлекаются." },
-    { task:"amaze", taskLabel:"Удивить", title:"Стенд МИГ-35", img:IMG+"2020/03/mig_booth-960x960.jpg", video:["youtube","YVteDZL90qc"], local:"videos/mig.mp4", wi:2,
-      stats:[["15 м","LED-экран"],["3D","контент"],["+1","ливрея борта"]],
+    { task:"amaze", taskLabel:"Удивить", title:"Стенд МИГ-35", slug:"mig2019", client:"РСК «МИГ»", year:2019, img:AW+"mig2019/mig_booth-960x960.jpg", fb:IMG+"2020/03/mig_booth-960x960.jpg", video:["youtube","YVteDZL90qc"], local:"videos/mig.mp4", wi:2,
+      stats:[["50 м²","LED-экран"],["3D","контент"],["+1","ливрея борта"]],
       desc:"Сцена для истребителя на международном авиасалоне: подиум, 15-метровый LED-экран и 3D-контент, раскрывающий характеристики машины. Бонус-уровень: дизайн ливреи самого самолёта.",
       punch:"Самолёт и так звезда — мы построили ему сцену." },
-    { task:"sell", taskLabel:"Продать сложное", title:"BMW X5", img:IMG+"2020/05/bmw_start.jpg", video:["vimeo","414266169"], local:"videos/bmw.mp4", wi:1,
+    { task:"sell", taskLabel:"Продать сложное", title:"BMW X5", slug:"bmwx5", client:"BMW China", year:2016, img:AW+"bmwx5/bmw_start.jpg", fb:IMG+"2020/05/bmw_start.jpg", video:["vimeo","414266169"], local:"videos/bmw.mp4", wi:1,
       stats:[["VR","режим"],["Touch","экран"],["Hologram","витрина"]],
       desc:"Кастомизатор автомобиля для офиса продаж: VR, тачскрин и голограмма. Покупатель собирает свой X5 — диски, цвет, отделку салона — и смотрит его в футуристическом гараже или на пустынном шоссе, глазами водителя.",
       punch:"Машину, которую собрал сам, хочется купить." },
-    { task:"tell", taskLabel:"Рассказать", title:"Панорама 360", img:IMG+"2020/04/pano_bg-960x536.jpg", video:["vimeo","412364504"], wi:3,
+    { task:"tell", taskLabel:"Рассказать", title:"Панорама 360", slug:"pano360", client:"Москва-Сити", year:2018, img:AW+"pano360/pano_bg-960x536.jpg", fb:IMG+"2020/04/pano_bg-960x536.jpg", video:["vimeo","412364504"], wi:3,
       desc:"Дополненная реальность 360°: зритель оказывается внутри сцены и осматривает пространство вокруг себя.",
       punch:"Не окно в историю, а вход в неё." },
-    { task:"amaze", taskLabel:"Удивить", title:"Urban Forum 2018", img:IMG+"2020/04/GERB_loop.gif",
+    { task:"amaze", taskLabel:"Удивить", title:"Urban Forum 2018", slug:"urban-forum-2018", client:"Правительство Москвы", year:2018, img:AW+"urban-forum-2018/GERB_loop_poster.jpg", fb:IMG+"2020/04/GERB_loop.gif",
       desc:"Интерактивная инсталляция для главного городского форума: живая графика реагирует на посетителей, а городские данные превращаются в образ.",
       punch:"Очередь к инсталляции — лучшая метрика." },
-    { task:"tell", taskLabel:"Рассказать", title:"Пароль победы «Сталинград»", img:IMG+"2020/04/stalingrad.jpg", video:["youtube","IVmCylimRmY"], wi:4,
+    { task:"tell", taskLabel:"Рассказать", title:"Пароль победы «Сталинград»", slug:"stalingrad", client:"Музей-заповедник", year:2018, img:AW+"stalingrad/stalingrad.jpg", fb:IMG+"2020/04/stalingrad.jpg", video:["youtube","IVmCylimRmY"], wi:4,
       desc:"Мультимедийная инсталляция памяти: история, которую посетитель проживает, а не читает. Свет, звук и интерактив создают тихое, сильное пространство.",
       punch:"Игра умеет говорить и о серьёзном." },
-    { task:"sell", taskLabel:"Продать сложное", title:"Сухой порт COALCO", img:IMG+"2020/04/coalco.jpg", video:["youtube","6ZBMB54713E"], local:"videos/coalco.mp4", wi:6,
+    { task:"sell", taskLabel:"Продать сложное", title:"Сухой порт COALCO", slug:"coalco", client:"Coalco", year:2016, img:AW+"coalco/coalco.jpg", fb:IMG+"2020/04/coalco.jpg", video:["youtube","6ZBMB54713E"], local:"videos/coalco.mp4", wi:6,
       desc:"Интерактивная инсталляция логистического хаба: масштаб и работа сухого порта считываются с одного взгляда на живую 3D-модель.",
       punch:"Логистику видно, а не читаешь в буклете." },
-    { task:"sell", taskLabel:"Продать сложное", title:"Синара", img:IMG+"2020/03/stm_cover2.jpg", video:["youtube","lfmqw20YzlY"], wi:5,
+    { task:"sell", taskLabel:"Продать сложное", title:"Синара", slug:"sinara", client:"Холдинг СТМ", year:2018, img:AW+"sinara/stm_cover2.jpg", fb:IMG+"2020/03/stm_cover2.jpg", video:["youtube","lfmqw20YzlY"], wi:5,
       desc:"Голограммы и интерактив для транспортного машиностроения: локомотивы и узлы можно рассмотреть в объёме и разобрать по деталям.",
       punch:"Тяжёлую технику показываем в ладони." },
-    { task:"tell", taskLabel:"Рассказать", title:"ВДНХ Космос", img:IMG+"2020/03/space_st-960x960.jpg", video:["vimeo","397688406"], local:"videos/VDNH.mp4", wi:0,
-      stats:[["115","тачскринов"],["46","3D-моделей"],["1","визуальный язык"]],
-      desc:"Вся история космонавтики — в единой играбельной системе: 115 тачскринов, интерактивные 3D-модели кораблей и станций, единый визуальный язык, разработанный специально для музея.",
+    { task:"tell", taskLabel:"Рассказать", title:"ВДНХ Космос", slug:"vdnh-space", client:"ВДНХ", year:2018, img:AW+"vdnh-space/space_st-960x960.jpg", fb:IMG+"2020/03/space_st-960x960.jpg", video:["vimeo","398524179"], wi:0,
+      stats:[["115","инсталляций"],["46","3D-моделей"],["1","визуальный язык"]],
+      desc:"Вся история космонавтики — в единой играбельной системе: 115 инсталляций, интерактивные 3D-модели кораблей и станций, единый визуальный язык, разработанный специально для музея.",
       punch:"Посетитель не читает экспозицию — он исследует её." },
-    { task:"tell", taskLabel:"Рассказать", title:"Центр «Космонавтика и авиация»", img:IMG+"2020/03/space_sm2-960x960.jpg", video:["vimeo","397679197"], wi:8,
+    { task:"tell", taskLabel:"Рассказать", title:"Центр «Космонавтика и авиация»", slug:"vdnh-space-center", client:"ВДНХ", year:2016, img:AW+"vdnh-space-center/space_sm2-960x960.jpg", fb:IMG+"2020/03/space_sm2-960x960.jpg", video:["vimeo","397679197"], wi:8,
       desc:"Единая мультимедийная среда крупнейшего музейного комплекса авиации и космонавтики на ВДНХ: интерактивные экспонаты, проекции и цифровые модели техники.",
       punch:"Музей, который отвечает движением." }
   ];
 
-  function taskBadge(label){ return '<span style="display:inline-flex;align-items:center;padding:4px 10px;font-family:var(--font-mono);font-weight:500;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;background:var(--signal-amber);color:var(--space-void)">'+label+'</span>'; }
-
   var cardsEl = document.getElementById('cards');
-  var hasWorks = (typeof WORKS !== 'undefined');
 
-  function setupScatter(media, img){
-    var cv = document.createElement('canvas'); cv.className = 'scatter'; media.appendChild(cv);
-    var ctx = cv.getContext('2d'); var pts = null, W, H, step, cur = 0, target = 0, raf;
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    function build(){
-      if (pts) return;
-      if (!img.complete || !img.naturalWidth) { img.addEventListener('load', build, { once: true }); return; }
-      var r = media.getBoundingClientRect(); if (!r.width) return;
-      W = cv.width = Math.round(r.width * dpr); H = cv.height = Math.round(r.height * dpr);
-      var tmp = document.createElement('canvas'); tmp.width = W; tmp.height = H; var tc = tmp.getContext('2d');
-      var s = Math.max(W / img.naturalWidth, H / img.naturalHeight), iw = img.naturalWidth * s, ih = img.naturalHeight * s;
-      var d;
-      try { tc.drawImage(img, (W - iw) / 2, (H - ih) / 2, iw, ih); d = tc.getImageData(0, 0, W, H).data; }
-      catch (e) { cv.remove(); return; }
-      step = Math.max(3, Math.round(4 * dpr)); pts = [];
-      for (var y = 0; y < H; y += step) for (var x = 0; x < W; x += step) {
-        var i = (y * W + x) * 4; if (d[i + 3] < 24) continue;
-        pts.push([x, y, d[i], d[i + 1], d[i + 2], (Math.random() - 0.5), (Math.random() - 0.5)]);
-      }
-      media.classList.add('scatter-on'); draw(0);
-    }
-    function draw(k){
-      ctx.clearRect(0, 0, W, H);
-      var spread = Math.pow(1 - k, 1.5) * 52 * dpr;
-      var sz = Math.max(1.2, step * 0.8);
-      for (var i = 0; i < pts.length; i++) { var p = pts[i];
-        ctx.globalAlpha = 0.5 + 0.5 * k;
-        ctx.fillStyle = 'rgb(' + p[2] + ',' + p[3] + ',' + p[4] + ')';
-        ctx.fillRect(p[0] + p[5] * spread, p[1] + p[6] * spread, sz, sz);
-      }
-    }
-    function loop(){ cur += (target - cur) * 0.14; draw(cur);
-      if (Math.abs(target - cur) > 0.003) raf = requestAnimationFrame(loop); else draw(target); }
-    var io = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if (e.isIntersecting && !pts) { build(); if (pts) io.disconnect(); } });
-    }, { rootMargin: '150px' });
-    io.observe(media);
-    setTimeout(function(){ if (!pts) build(); }, 1400);
-    media.addEventListener('mouseenter', function(){ if (!pts) build(); if (!pts) return; target = 1; cancelAnimationFrame(raf); loop(); });
-    media.addEventListener('mouseleave', function(){ if (!pts) return; target = 0; cancelAnimationFrame(raf); loop(); });
-  }
-
-  function renderCards(f){
-    cardsEl.innerHTML = "";
-    CASES.filter(function(c){ return f==="all" || c.task===f; }).forEach(function(c){
+  function renderCards(){
+    if (!cardsEl) return;
+    CASES.forEach(function(c){
       var el = document.createElement('div');
       el.className = "card";
-      var scatterable = hasWorks && c.wi != null && WORKS[c.wi];
-      var src = scatterable ? WORKS[c.wi].src : c.img;
       var playMark = (c.video || c.local) ? '<span class="play">▶ смотреть</span>' : '';
+      var meta = (c.client ? c.client : '') + (c.year ? (c.client ? ' · ' : '') + c.year : '');
       el.innerHTML =
-        '<div class="card-media"><img src="'+src+'" alt="" loading="lazy">'+
-        '<span class="task">'+taskBadge(c.taskLabel)+'</span>'+playMark+'</div>'+
-        '<div class="card-body"><h3>'+c.title+'</h3><div class="oneline">'+c.punch+'</div></div>';
-      el.addEventListener('click', function(){ openCase(c); });
+        '<div class="card-media"><img src="'+c.img+'" alt="" loading="lazy">'+playMark+'</div>'+
+        '<div class="card-body"><div class="cmeta">'+meta+'</div><h3>'+c.title+'</h3><div class="oneline">'+c.punch+'</div></div>';
+      var im = el.querySelector('img');
+      im.addEventListener('error', function(){
+        if (/\.png(\?|$)/i.test(im.src) && !im.dataset.tj) { im.dataset.tj = 1; im.src = im.src.replace(/\.png(\?|$)/i, '.jpg$1'); return; }
+        if (c.fb && im.src.indexOf(c.fb) < 0) im.src = c.fb; // нет локальной копии → хотлинк
+      });
+      el.addEventListener('click', function(){ flyIntoCase(el, c); });
       cardsEl.appendChild(el);
-      if (scatterable) setupScatter(el.querySelector('.card-media'), el.querySelector('img'));
     });
   }
-  renderCards("all");
+  renderCards();
+
+  // ---- живой ховер: СОСЕДНИЕ обложки распадаются на тысячи мельчайших точек,
+  // ---- и точки магнитятся к выбранной картинке; отпустил — разлетаются по домам ----
+  (function(){
+    var fx = document.getElementById('cards-fx');
+    if (!fx || !cardsEl) return;
+    var ctx = fx.getContext('2d');
+    var FXS = 0.85;               // разрешение слоя точек (0.85 экрана — зерно мельче пикселя CSS)
+    var hovered = null, raf = null, lastT = 0;
+    var buf = null, buf32 = null, BW = 0, BH = 0, needClear = false;
+    function fit(){
+      var w = Math.max(2, Math.round(cardsEl.clientWidth * FXS));
+      var h = Math.max(2, Math.round(cardsEl.clientHeight * FXS));
+      if (w === BW && h === BH) return;
+      BW = fx.width = w; BH = fx.height = h;
+      buf = ctx.createImageData(BW, BH);
+      buf32 = new Uint32Array(buf.data.buffer);
+    }
+    // облако точек обложки: позиция-дом, цвет, случайная задержка отрыва (эрозия)
+    function buildCloud(card){
+      var img = card.querySelector('img');
+      if (!img.complete || !img.naturalWidth) return null;
+      if (img.src.indexOf(location.origin) !== 0) return null; // хотлинк → канвас не прочитать
+      var media = card.querySelector('.card-media');
+      var r = media.getBoundingClientRect(), cr = cardsEl.getBoundingClientRect();
+      if (!r.width) return null;
+      var w = r.width, h = r.height, step = 3.6; // шаг ~3.6px — мельчайшая пыль
+      var gw = Math.round(w / step), gh = Math.round(h / step);
+      var t = document.createElement('canvas'); t.width = gw; t.height = gh;
+      var tc = t.getContext('2d');
+      var s = Math.max(gw / img.naturalWidth, gh / img.naturalHeight);
+      var iw = img.naturalWidth * s, ih = img.naturalHeight * s, d;
+      try { tc.drawImage(img, (gw - iw) / 2, (gh - ih) / 2, iw, ih); d = tc.getImageData(0, 0, gw, gh).data; }
+      catch (e) { return null; }
+      var n = gw * gh;
+      var home = new Float32Array(n * 2), col = new Uint32Array(n);
+      var ph = new Float32Array(n), spd = new Float32Array(n);
+      var ox = r.left - cr.left, oy = r.top - cr.top;
+      for (var yy = 0; yy < gh; yy++) for (var xx = 0; xx < gw; xx++) {
+        var m = yy * gw + xx, i = m * 4;
+        home[m * 2] = ox + (xx + 0.5) / gw * w;
+        home[m * 2 + 1] = oy + (yy + 0.5) / gh * h;
+        col[m] = (d[i + 2] << 16) | (d[i + 1] << 8) | d[i]; // BGR для прямой записи в буфер
+        ph[m] = Math.random() * 1.3;          // фаза цикла: поток пыли непрерывный
+        spd[m] = 0.55 + Math.random() * 0.6;  // у каждой точки своя скорость перелёта
+      }
+      return { n: n, home: home, col: col, ph: ph, spd: spd, p: 0, hidden: false,
+               media: media, rx: ox, ry: oy, rw: w, rh: h };
+    }
+    function mediaRect(card){
+      var r = card.querySelector('.card-media').getBoundingClientRect();
+      var cr = cardsEl.getBoundingClientRect();
+      return { x: r.left - cr.left, y: r.top - cr.top, w: r.width, h: r.height, top: r.top, bottom: r.bottom };
+    }
+    function tick(now){
+      raf = null;
+      // вьюер открыт или идёт полёт — пыль сетки не должна жечь процессор под страницей
+      if (document.body.classList.contains('flying') ||
+          (document.getElementById('viewer') || {}).classList && document.getElementById('viewer').classList.contains('open')) {
+        hovered = null;
+      }
+      fit();
+      var dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0.016;
+      lastT = now;
+      var cards = cardsEl.querySelectorAll('.card');
+      var tgt = hovered ? mediaRect(hovered) : null;
+      var anyActive = false;
+      buf32.fill(0);
+      for (var ci = 0; ci < cards.length; ci++) {
+        var card = cards[ci];
+        var want = (hovered && card !== hovered) ? 1 : 0;
+        if (want && !card._cloud) card._cloud = buildCloud(card);
+        var cl = card._cloud;
+        if (!cl) continue;
+        if (want) { // распадаются только карточки в кадре — офскрин не трогаем
+          var vr = cl.media.getBoundingClientRect();
+          if (vr.bottom < -120 || vr.top > innerHeight + 120) want = 0;
+        }
+        cl.p = Math.max(0, Math.min(1, cl.p + (want ? dt * 1.5 : -dt * 2.1)));
+        if (cl.p <= 0) {
+          if (cl.hidden) { cl.hidden = false; cl.media.classList.remove('gone'); }
+          continue;
+        }
+        anyActive = true;
+        if (!cl.hidden && cl.p > 0.02) { cl.hidden = true; cl.media.classList.add('gone'); }
+        // непрерывный поток: каждая точка летит к цели, растворяется у неё,
+        // возрождается дома и летит снова — пока держишь ховер
+        var wgt = cl.p, T = now / 1000;
+        var aBase = Math.min(1, wgt * 3);
+        for (var i = 0; i < cl.n; i++) {
+          var hx = cl.home[i * 2], hy = cl.home[i * 2 + 1], x, y, a;
+          if (!tgt) { x = hx; y = hy; a = aBase; }
+          else if (i % 3) {
+            // 2/3 точек остаются дома: обложка читается как «точечный призрак» себя и дышит
+            x = hx + Math.sin(T * 2.1 + cl.ph[i] * 9) * 1.3;
+            y = hy + Math.cos(T * 1.7 + cl.spd[i] * 14) * 1.1;
+            a = aBase * 0.85;
+          } else {
+            // 1/3 точек — непрерывный ручей к выбранной обложке
+            var f = (T * cl.spd[i] + cl.ph[i]) % 1.3;   // 1.0 — полёт, 0.3 — пауза-возрождение
+            var k = f >= 1 ? 1 : f;
+            k = k * k * (3 - 2 * k);                     // магнит: разгон у цели
+            var e = k * wgt;
+            // летим в ту же относительную точку выбранной обложки — сосед «переносится» на неё
+            var tx = tgt.x + (hx - cl.rx) / cl.rw * tgt.w;
+            var ty = tgt.y + (hy - cl.ry) / cl.rh * tgt.h;
+            x = hx + (tx - hx) * e; y = hy + (ty - hy) * e;
+            // видна почти весь перелёт, растворяется у самой цели — «впиталась» в обложку
+            a = (k < 0.72 ? 1 : (1 - k) / 0.28) * aBase;
+            if (f >= 1) a = 0;                           // пауза перед возрождением
+            else if (f < 0.08) a *= f / 0.08;            // мягкое возрождение дома
+          }
+          if (a < 0.04) continue;
+          var bx = (x * FXS) | 0, by = (y * FXS) | 0;
+          if (bx < 0 || by < 0 || bx >= BW || by >= BH) continue;
+          buf32[by * BW + bx] = (((a * 255) | 0) << 24) | cl.col[i];
+        }
+      }
+      if (anyActive) { ctx.putImageData(buf, 0, 0); needClear = true; }
+      else if (needClear) { ctx.clearRect(0, 0, BW, BH); needClear = false; }
+      if (hovered || anyActive) raf = requestAnimationFrame(tick);
+      else lastT = 0;
+    }
+    function wake(){ if (!raf) raf = requestAnimationFrame(tick); }
+    addEventListener('resize', function(){ // геометрия сетки изменилась — облака пересоберутся
+      cardsEl.querySelectorAll('.card').forEach(function(c){ c._cloud = null; });
+    });
+    cardsEl.addEventListener('mouseover', function(e){
+      var c = e.target.closest ? e.target.closest('.card') : null;
+      if (c) { hovered = c; wake(); }
+    });
+    cardsEl.addEventListener('mouseout', function(e){
+      var c = e.target.closest ? e.target.closest('.card') : null;
+      if (c && hovered === c && !(e.relatedTarget && c.contains(e.relatedTarget))) hovered = null;
+    });
+  })();
+
+  // ---- влёт: ВЕСЬ экран (картинки, тексты, интерфейс) разбирается на частицы
+  // ---- с глубиной, камера летит сквозь них, и из глубины по мере приближения
+  // ---- собирается новая страница проекта — её кадр и её тексты, тоже из точек ----
+  function rasterTexts(g, scale, root, insideViewer){
+    // рисуем все видимые тексты пословно: реальные позиции (Range), шрифты и цвета
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var n, range = document.createRange();
+    var vcache = new Map(); // видимость родителя: не гоняем rect/стили по оффскрин-секциям
+    while ((n = walker.nextNode())) {
+      var txt = n.nodeValue; if (!txt || !txt.trim()) continue;
+      var el = n.parentElement; if (!el) continue;
+      var tn = el.tagName;
+      if (tn === 'SCRIPT' || tn === 'STYLE' || tn === 'TEMPLATE' || tn === 'NOSCRIPT') continue;
+      if (!!el.closest('#viewer') !== insideViewer) continue;
+      var vis = vcache.get(el);
+      if (vis === undefined) {
+        var er = el.getBoundingClientRect();
+        vis = !(er.bottom < -40 || er.top > innerHeight + 40 || er.right < 0 || er.left > innerWidth || !er.width);
+        vcache.set(el, vis);
+      }
+      if (!vis) continue;
+      var st = getComputedStyle(el);
+      if (st.display === 'none' || st.visibility === 'hidden' || +st.opacity === 0) continue;
+      var up = st.textTransform === 'uppercase';
+      g.fillStyle = st.color;
+      g.font = st.fontStyle + ' ' + st.fontWeight + ' ' + (parseFloat(st.fontSize) * scale) + 'px ' + st.fontFamily;
+      try { g.letterSpacing = ((parseFloat(st.letterSpacing) || 0) * scale) + 'px'; } catch (e) {}
+      var re = /\S+/g, m;
+      while ((m = re.exec(txt))) {
+        range.setStart(n, m.index); range.setEnd(n, m.index + m[0].length);
+        var rc = range.getBoundingClientRect();
+        if (!rc.width || rc.bottom < 0 || rc.top > innerHeight || rc.right < 0 || rc.left > innerWidth) continue;
+        g.fillText(up ? m[0].toUpperCase() : m[0], rc.left * scale, (rc.top + rc.height * 0.82) * scale);
+      }
+    }
+  }
+  function coverArgs(im, ra){ // cover-кроп исходника под аспект ra
+    var na = im.naturalWidth / im.naturalHeight;
+    return na > ra
+      ? [(im.naturalWidth - im.naturalHeight * ra) / 2, 0, im.naturalHeight * ra, im.naturalHeight]
+      : [0, (im.naturalHeight - im.naturalWidth / ra) / 2, im.naturalWidth, im.naturalWidth / ra];
+  }
+  function harvest(g, W, H, scale, step){ // канвас → частицы (экранные координаты)
+    var d = g.getImageData(0, 0, W, H).data, out = [];
+    for (var y = 0; y < H; y += step) for (var x = 0; x < W; x += step) {
+      var i = (y * W + x) * 4;
+      if (d[i + 3] < 30) continue;
+      var r = d[i], gg = d[i + 1], b = d[i + 2];
+      if (r + gg + b < 24) continue; // фон и чернота не летают
+      out.push([x / scale, y / scale, r, gg, b, (r + gg + b) / 765]);
+    }
+    return out;
+  }
+  // все <video> вьюера: играют только в кадре — иначе pause (экономия CPU/батареи)
+  var vidIO = new IntersectionObserver(function(es){
+    es.forEach(function(e){ try { e.isIntersecting ? e.target.play() : e.target.pause(); } catch (err) {} });
+  }, { root: document.getElementById('viewer'), threshold: 0.02 });
+  var lastFly = null, flyBusy = false, flyBusySince = 0; // контекст влёта + гард от двойных запусков
+  function busyLock(){ // watchdog: зависший флаг не должен блокировать клики навсегда
+    if (flyBusy && performance.now() - flyBusySince < 4000) return true;
+    flyBusy = false;
+    return false;
+  }
+  function flyIntoCase(card, c){
+    if (busyLock()) return;
+    try { flyIntoCaseInner(card, c); }
+    catch (e) { // любой сбой анимации не должен ломать навигацию
+      console.warn('flyIn fallback:', e);
+      flyBusy = false;
+      document.body.classList.remove('flying');
+      viewer.style.transition = ''; viewer.style.opacity = ''; viewer.style.backdropFilter = '';
+      if (!viewer.classList.contains('open')) openCase(c);
+      vInner.classList.add('settled');
+    }
+  }
+  function flyIntoCaseInner(card, c){
+    var img = card.querySelector('img');
+    var r = card.querySelector('.card-media').getBoundingClientRect();
+    if (!r.width) { openCase(c); requestAnimationFrame(function(){ vInner.classList.add('settled'); }); return; }
+    if (!img.complete || !img.naturalWidth) {
+      // обложка ещё грузится (lazy) — дожидаемся и летим; страховка на случай сбоя сети
+      var done = false;
+      var go = function(){ if (done) return; done = true; flyIntoCase(card, c); };
+      img.addEventListener('load', go, { once: true });
+      setTimeout(function(){ if (!done) { done = true; openCase(c); vInner.classList.add('settled'); } }, 1800);
+      return;
+    }
+    if (img.src.indexOf(location.origin) !== 0) { // обложка с хотлинка: сэмплить нельзя — открываем без полёта
+      openCase(c); requestAnimationFrame(function(){ vInner.classList.add('settled'); });
+      return;
+    }
+    var SC = 0.5, W = Math.round(innerWidth * SC), H = Math.round(innerHeight * SC);
+    // 1) снимок ТЕКУЩЕГО экрана: все картинки по их ректам + все тексты пословно
+    var srcPts;
+    try {
+      var scv = document.createElement('canvas'); scv.width = W; scv.height = H;
+      var sg = scv.getContext('2d', { willReadFrequently: true });
+      [].slice.call(document.images).forEach(function(im){
+        if (!im.complete || !im.naturalWidth || im.closest('#viewer')) return;
+        if (im.src.indexOf(location.origin) !== 0) return; // хотлинк отравил бы канвас (CORS) — пропускаем
+        var rc = im.getBoundingClientRect();
+        if (!rc.width || rc.bottom < 0 || rc.top > innerHeight) return;
+        var stI = getComputedStyle(im);
+        if (stI.visibility === 'hidden' || +stI.opacity === 0) return;
+        var ca = coverArgs(im, rc.width / rc.height);
+        try { sg.drawImage(im, ca[0], ca[1], ca[2], ca[3], rc.left * SC, rc.top * SC, rc.width * SC, rc.height * SC); } catch (e) {}
+      });
+      rasterTexts(sg, SC, document.body, false);
+      srcPts = harvest(sg, W, H, SC, 3); // поле разлёта — зерно крупнее, точек меньше (перф)
+    } catch (e) { srcPts = null; }
+    if (!srcPts || !srcPts.length) { openCase(c); return; }
+    for (var i = 0; i < srcPts.length; i++) {
+      var spt = srcPts[i];
+      // точки ВЫБРАННОЙ карточки — самые дальние: камера летит именно к ним,
+      // и центральный объект держится на оси до самого прибытия
+      var mine = spt[0] >= r.left && spt[0] <= r.right && spt[1] >= r.top && spt[1] <= r.bottom;
+      spt.push(mine ? 2.15 + Math.random() * 0.5 + (0.5 - spt[5]) * 0.25      // [6] глубина
+                    : 0.75 + Math.random() * 1.05 + (0.5 - spt[5]) * 0.3,
+               1.0 + Math.pow(Math.random(), 2.3) * 3.4,                       // [7] зерно: мелких больше всего
+               mine ? 1 : 0,                                                   // [8] флаг выбранной
+               'rgb(' + spt[2] + ',' + spt[3] + ',' + spt[4] + ')');           // [9] готовая строка цвета (без GC в кадре)
+    }
+    // 2) вьюер открываем невидимо: контент грузится, узнаём геометрию новой страницы
+    viewer.style.transition = 'none'; viewer.style.opacity = '0';
+    openCase(c);
+    var mediaEl = vInner.querySelector('.v-media');
+    var tr = mediaEl ? mediaEl.getBoundingClientRect() : { left: innerWidth * 0.2, top: innerHeight * 0.17, width: innerWidth * 0.6, height: innerHeight * 0.55 };
+    // 3) снимок НОВОЙ страницы: кадр проекта + её тексты — мишень, в которую соберутся точки
+    var tgtPts = [], covPts = [];
+    try {
+      var tcv = document.createElement('canvas'); tcv.width = W; tcv.height = H;
+      var tg = tcv.getContext('2d', { willReadFrequently: true });
+      var ca2 = coverArgs(img, tr.width / tr.height);
+      tg.drawImage(img, ca2[0], ca2[1], ca2[2], ca2[3], tr.left * SC, tr.top * SC, tr.width * SC, tr.height * SC);
+      covPts = harvest(tg, W, H, SC, 2);
+      for (i = 0; i < covPts.length; i++) covPts[i].push(4.3 * (0.72 + Math.pow(Math.random(), 2) * 0.5)); // [6] зерно кадра: плотное покрытие
+      // тексты страницы НЕ собираем из точек — они складываются DOM-каскадом после подлёта
+      tgtPts = covPts;
+    } catch (e) { tgtPts = []; covPts = []; }
+    for (i = 0; i < tgtPts.length; i++)
+      tgtPts[i].push(2.3 + Math.random() * 1.2 + (0.5 - tgtPts[i][5]) * 0.4,  // [7] глубина всплытия
+                     Math.random(),                                           // [8] фаза появления
+                     'rgb(' + tgtPts[i][2] + ',' + tgtPts[i][3] + ',' + tgtPts[i][4] + ')'); // [9] цвет
+    var camEnd = 1.5;
+    var dpr = 1; // частицам ретина не нужна — вдвое меньше филлрейта, никаких рывков
+    var cv = document.createElement('canvas');
+    // width/height:100% обязательны: без них канвас отображается в размере атрибута
+    // (×dpr) и на ретине вся сцена уезжает от центра
+    cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:95;pointer-events:none;transition:opacity .55s';
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+    document.body.appendChild(cv);
+    var x = cv.getContext('2d');
+    document.body.classList.add('flying'); // DOM мгновенно уступает сцену частицам
+    viewer.style.backdropFilter = 'none';  // blur под анимируемой прозрачностью — главный пожиратель кадров
+    vInner.classList.remove('settled');    // тексты сложены — разложатся каскадом после подлёта
+    var c0x = r.left + r.width / 2, c0y = r.top + r.height / 2;  // старт оси — выбранная карточка
+    var t1x = tr.left + tr.width / 2, t1y = tr.top + tr.height / 2; // финиш — центр новой страницы
+    // мягкая дуга камеры: квадратичная безье с боковым выносом перпендикулярно пути
+    var dxT = t1x - c0x, dyT = t1y - c0y;
+    var arc = Math.min(180, Math.hypot(dxT, dyT) * 0.55 + 60) * (c0x > innerWidth / 2 ? 1 : -1);
+    var nrm = Math.hypot(dxT, dyT) || 1;
+    var cpx = c0x + dxT * 0.5 - dyT / nrm * arc, cpy = c0y + dyT * 0.5 + dxT / nrm * arc;
+    var t0 = performance.now(), DUR = 1800; // размеренный, без спешки
+    lastFly = { card: card, c: c };
+    flyBusy = true; flyBusySince = t0;
+    // бесшовный перелёт в РОЛИК: пока частицы собираются, перекрашиваем зерно кадра
+    // в живые пиксели играющего видео — к моменту проявления это уже само видео
+    var liveVideo = vInner.querySelector('video');
+    var vcv = document.createElement('canvas'), vg = null, frameN = 0;
+    function resampleVideo(){
+      if (!liveVideo || liveVideo.readyState < 2 || !covPts.length) return;
+      try {
+        var vw2 = 220, vh2 = Math.max(24, Math.round(vw2 * tr.height / tr.width));
+        if (vcv.width !== vw2) { vcv.width = vw2; vcv.height = vh2; vg = vcv.getContext('2d', { willReadFrequently: true }); }
+        var nw = liveVideo.videoWidth, nh = liveVideo.videoHeight;
+        if (!nw) return;
+        var ra4 = tr.width / tr.height, na4 = nw / nh;
+        var ca4 = na4 > ra4 ? [(nw - nh * ra4) / 2, 0, nh * ra4, nh] : [0, (nh - nw / ra4) / 2, nw, nw / ra4];
+        vg.drawImage(liveVideo, ca4[0], ca4[1], ca4[2], ca4[3], 0, 0, vw2, vh2);
+        var vd = vg.getImageData(0, 0, vw2, vh2).data;
+        // чёрный стартовый кадр ролика не должен «гасить» сборку — ждём содержательный кадр
+        var lum = 0, nn = 0;
+        for (var s4 = 0; s4 < vd.length; s4 += 200) { lum += vd[s4] + vd[s4 + 1] + vd[s4 + 2]; nn++; }
+        if (lum / nn < 24) return;
+        for (var j = 0; j < covPts.length; j++) {
+          var q = covPts[j];
+          var vx = Math.min(vw2 - 1, Math.max(0, ((q[0] - tr.left) / tr.width * vw2) | 0));
+          var vy = Math.min(vh2 - 1, Math.max(0, ((q[1] - tr.top) / tr.height * vh2) | 0));
+          var o = (vy * vw2 + vx) * 4;
+          q[9] = 'rgb(' + vd[o] + ',' + vd[o + 1] + ',' + vd[o + 2] + ')';
+        }
+      } catch (e) {}
+    }
+    function anim(now){
+      var k = Math.min(1, (now - t0) / DUR);
+      var ke = k * k * k * (k * (k * 6 - 15) + 10); // smootherstep: бархатный разгон и торможение
+      var cam = camEnd * ke;
+      // фокус скользит по дуге и выходит на центр кадра к 60% пути
+      var fe = Math.min(1, k / 0.6); fe = fe * fe * (3 - 2 * fe);
+      var u = 1 - fe;
+      var Fx = u * u * c0x + 2 * u * fe * cpx + fe * fe * t1x;
+      var Fy = u * u * c0y + 2 * u * fe * cpy + fe * fe * t1y;
+      x.clearRect(0, 0, cv.width, cv.height);
+      x.fillStyle = 'rgba(3,12,16,' + Math.min(0.97, Math.max(0, k / 0.5)) + ')';
+      x.fillRect(0, 0, cv.width, cv.height);
+      var asm = Math.max(0, Math.min(1, (k - 0.5) / 0.4)); // прогресс сборки новой страницы
+      // прежний экран: частицы на своих глубинах проносятся мимо камеры
+      for (var i = 0; i < srcPts.length; i++) {
+        var p = srcPts[i], dz = p[6] - cam;
+        if (dz < 0.05) continue;
+        var s = p[6] / dz;
+        var px = Fx + (p[0] - c0x) * s, py = Fy + (p[1] - c0y) * s;
+        var a = Math.min(1, dz / 0.45) * (1 - ke * 0.3);
+        if (p[8]) a *= 1 - asm; // выбранная уступает место собирающейся странице
+        if (a < 0.03) continue;
+        x.globalAlpha = a;
+        x.fillStyle = p[9];
+        var sz = Math.min(20, p[7] * s) * dpr;
+        x.fillRect(px * dpr - sz / 2, py * dpr - sz / 2, sz, sz);
+      }
+      // подмена через точки: настоящая страница (с уже играющим видео) плавно
+      // проступает СКВОЗЬ собирающиеся частицы — обложка перетекает в ролик бесшовно
+      var rv = Math.max(0, Math.min(1, (k - 0.62) / 0.34));
+      rv = rv * rv * (3 - 2 * rv);
+      viewer.style.opacity = rv;
+      if (rv > 0.4) vInner.classList.add('settled'); // кадр почти собран — тексты складываются каскадом
+      // зерно кадра живёт кадрами видео — подмена неощутима
+      if (k > 0.3 && (frameN++ % 3) === 0) resampleVideo();
+      // новая страница: всплывает из глубины через центр — каждая точка растёт
+      // от оси к своему месту (кадр, заголовок, тексты) и тает, впуская живой контент
+      for (i = 0; i < tgtPts.length; i++) {
+        var q = tgtPts[i];
+        var s2 = q[7] / Math.max(0.2, q[7] - cam);
+        var sEnd = q[7] / (q[7] - camEnd);
+        var g2 = Math.min(1, s2 / sEnd);
+        var qx = Fx + (q[0] - t1x) * g2, qy = Fy + (q[1] - t1y) * g2;
+        var a2 = Math.max(0, Math.min(1, (g2 - 0.22 - q[8] * 0.18) / 0.38)) * (1 - rv * 0.85);
+        if (a2 < 0.03) continue;
+        x.globalAlpha = a2;
+        x.fillStyle = q[9];
+        var sz2 = q[6] * (0.35 + 0.65 * g2) * dpr;
+        x.fillRect(qx * dpr - sz2 / 2, qy * dpr - sz2 / 2, sz2, sz2);
+      }
+      x.globalAlpha = 1;
+      if (k < 1) requestAnimationFrame(anim);
+      else {
+        // страница уже полностью видима под остатками частиц — тихо убираем слой
+        viewer.style.opacity = '1';
+        cv.style.opacity = 0;
+        setTimeout(function(){
+          cv.remove();
+          viewer.style.transition = ''; viewer.style.opacity = ''; viewer.style.backdropFilter = '';
+          document.body.classList.remove('flying');
+          flyBusy = false;
+        }, 600);
+      }
+    }
+    requestAnimationFrame(anim);
+  }
+
+  // ---- закрытие: обратный вылет — страница (с живым кадром видео) уходит в глубину,
+  // ---- галерея прилетает из-за камеры и собирается на свои места. Бесшовно. ----
+  function flyOutOfCase(){
+    try { flyOutInner(); }
+    catch (e) {
+      console.warn('flyOut fallback:', e);
+      flyBusy = false;
+      document.body.classList.remove('flying');
+      viewer.style.transition = ''; viewer.style.opacity = ''; viewer.style.backdropFilter = '';
+      closeCase();
+    }
+  }
+  function flyOutInner(){
+    var lf = lastFly;
+    if (!lf || !document.body.contains(lf.card)) { closeCase(); return; }
+    flyBusy = true; flyBusySince = performance.now();
+    var SC = 0.5, W = Math.round(innerWidth * SC), H = Math.round(innerHeight * SC);
+    var mediaEl = vInner.querySelector('.v-media');
+    var tr = mediaEl ? mediaEl.getBoundingClientRect() : { left: innerWidth * 0.2, top: innerHeight * 0.17, width: innerWidth * 0.6, height: innerHeight * 0.55 };
+    // страница как она есть сейчас: живой кадр видео (или обложка) + её тексты
+    var pagePts = [];
+    try {
+      var pcv = document.createElement('canvas'); pcv.width = W; pcv.height = H;
+      var pg = pcv.getContext('2d', { willReadFrequently: true });
+      var vid = vInner.querySelector('video');
+      var srcEl = (vid && vid.readyState >= 2 && vid.videoWidth) ? vid : lf.card.querySelector('img');
+      var nw = srcEl.videoWidth || srcEl.naturalWidth, nh = srcEl.videoHeight || srcEl.naturalHeight;
+      if (nw) {
+        var ra = tr.width / tr.height, na = nw / nh;
+        var ca = na > ra ? [(nw - nh * ra) / 2, 0, nh * ra, nh] : [0, (nh - nw / ra) / 2, nw, nw / ra];
+        try { pg.drawImage(srcEl, ca[0], ca[1], ca[2], ca[3], tr.left * SC, tr.top * SC, tr.width * SC, tr.height * SC); } catch (e) {}
+      }
+      pagePts = harvest(pg, W, H, SC, 2); // только кадр: тексты складываются DOM-каскадом
+    } catch (e) { pagePts = []; }
+    for (var i = 0; i < pagePts.length; i++)
+      pagePts[i].push(3.6 * (0.72 + Math.pow(Math.random(), 2) * 0.5),          // [6] зерно
+                      2.3 + Math.random() * 1.2 + (0.5 - pagePts[i][5]) * 0.4,  // [7] глубина ухода
+                      Math.random(),                                            // [8] фаза
+                      'rgb(' + pagePts[i][2] + ',' + pagePts[i][3] + ',' + pagePts[i][4] + ')'); // [9]
+    // галерея под вьюером — прилетит из-за камеры на свои места
+    var galPts = [];
+    try {
+      var gcv = document.createElement('canvas'); gcv.width = W; gcv.height = H;
+      var gg = gcv.getContext('2d', { willReadFrequently: true });
+      [].slice.call(document.images).forEach(function(im){
+        if (!im.complete || !im.naturalWidth || im.closest('#viewer')) return;
+        if (im.src.indexOf(location.origin) !== 0) return; // без кросс-доменных: канвас должен остаться читаемым
+        var rc = im.getBoundingClientRect();
+        if (!rc.width || rc.bottom < 0 || rc.top > innerHeight) return;
+        var ca3 = coverArgs(im, rc.width / rc.height);
+        try { gg.drawImage(im, ca3[0], ca3[1], ca3[2], ca3[3], rc.left * SC, rc.top * SC, rc.width * SC, rc.height * SC); } catch (e) {}
+      });
+      rasterTexts(gg, SC, document.body, false);
+      galPts = harvest(gg, W, H, SC, 3);
+    } catch (e) { galPts = []; }
+    if (!pagePts.length && !galPts.length) { closeCase(); flyBusy = false; return; }
+    for (i = 0; i < galPts.length; i++)
+      galPts[i].push(0.75 + Math.random() * 1.05 + (0.5 - galPts[i][5]) * 0.3, // [6] глубина
+                     1.0 + Math.pow(Math.random(), 2.3) * 3.4,                  // [7] зерно
+                     0,
+                     'rgb(' + galPts[i][2] + ',' + galPts[i][3] + ',' + galPts[i][4] + ')'); // [9]
+    var camEnd = 1.5;
+    var dpr = 1;
+    var cv = document.createElement('canvas');
+    cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:105;pointer-events:none;transition:opacity .55s';
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+    document.body.appendChild(cv);
+    var x = cv.getContext('2d');
+    document.body.classList.add('flying');
+    vInner.classList.remove('settled'); // тексты складываются каскадом, улетает только кадр
+    viewer.style.backdropFilter = 'none';
+    viewer.style.transition = 'none'; viewer.style.opacity = '0'; // страница теперь из частиц
+    var cr2 = lf.card.querySelector('.card-media').getBoundingClientRect();
+    var c0x = cr2.left + cr2.width / 2, c0y = cr2.top + cr2.height / 2; // куда возвращаемся
+    var t1x = tr.left + tr.width / 2, t1y = tr.top + tr.height / 2;     // откуда отлетаем
+    var dxT = c0x - t1x, dyT = c0y - t1y;
+    var arc = Math.min(160, Math.hypot(dxT, dyT) * 0.5 + 50) * (c0x > innerWidth / 2 ? -1 : 1);
+    var nrm = Math.hypot(dxT, dyT) || 1;
+    var cpx = t1x + dxT * 0.5 - dyT / nrm * arc, cpy = t1y + dyT * 0.5 + dxT / nrm * arc;
+    var t0 = performance.now(), DUR = 1500;
+    function anim(now){
+      var k = Math.min(1, (now - t0) / DUR);
+      var ke = k * k * k * (k * (k * 6 - 15) + 10);
+      var cam = camEnd * (1 - ke);                 // камера отступает назад
+      var fe = Math.min(1, k / 0.8); fe = fe * fe * (3 - 2 * fe);
+      var u = 1 - fe;
+      var Fx = u * u * t1x + 2 * u * fe * cpx + fe * fe * c0x; // фокус скользит по дуге назад к карточке
+      var Fy = u * u * t1y + 2 * u * fe * cpy + fe * fe * c0y;
+      x.clearRect(0, 0, cv.width, cv.height);
+      x.fillStyle = 'rgba(3,12,16,' + (0.95 * (1 - ke)) + ')'; // тьма отпускает — под ней галерея
+      x.fillRect(0, 0, cv.width, cv.height);
+      // галерея проявляется кросс-фейдом ПОД оседающими частицами — без ступеньки в конце
+      if (k > 0.55) document.body.classList.remove('flying');
+      // галерея: частицы съезжаются из-за камеры на свои места
+      for (var i = 0; i < galPts.length; i++) {
+        var p = galPts[i], dz = p[6] - cam;
+        if (dz < 0.05) continue;
+        var s = p[6] / dz;
+        var px = Fx + (p[0] - c0x) * s, py = Fy + (p[1] - c0y) * s;
+        var a = Math.min(1, dz / 0.45);
+        if (a < 0.03) continue;
+        x.globalAlpha = a;
+        x.fillStyle = p[9];
+        var sz = Math.min(20, p[7] * s) * dpr;
+        x.fillRect(px * dpr - sz / 2, py * dpr - sz / 2, sz, sz);
+      }
+      // страница: уходит в глубину к оси и растворяется
+      for (i = 0; i < pagePts.length; i++) {
+        var q = pagePts[i];
+        var s2 = q[7] / Math.max(0.2, q[7] - cam);
+        var sEnd = q[7] / (q[7] - camEnd);
+        var g2 = Math.min(1, s2 / sEnd);
+        var qx = Fx + (q[0] - t1x) * g2, qy = Fy + (q[1] - t1y) * g2;
+        var a2 = Math.max(0, Math.min(1, (g2 - 0.22 - q[8] * 0.18) / 0.38));
+        if (a2 < 0.03) continue;
+        x.globalAlpha = a2;
+        x.fillStyle = q[9];
+        var sz2 = q[6] * (0.35 + 0.65 * g2) * dpr;
+        x.fillRect(qx * dpr - sz2 / 2, qy * dpr - sz2 / 2, sz2, sz2);
+      }
+      x.globalAlpha = 1;
+      if (k < 1) requestAnimationFrame(anim);
+      else {
+        closeCase();
+        viewer.style.transition = ''; viewer.style.opacity = ''; viewer.style.backdropFilter = '';
+        document.body.classList.remove('flying'); // реальная галерея ровно под частицами
+        cv.style.opacity = 0;
+        setTimeout(function(){ cv.remove(); flyBusy = false; }, 600);
+      }
+    }
+    requestAnimationFrame(anim);
+  }
+  function requestClose(){
+    if (busyLock()) return;
+    if (!viewer.classList.contains('open')) return;
+    flyOutOfCase();
+  }
 
   function embedUrl(v){
     return v[0]==="vimeo"
@@ -651,43 +1333,600 @@
       : "https://www.youtube.com/embed/"+v[1]+"?rel=0&modestbranding=1&playsinline=1";
   }
 
-  document.getElementById('filter').addEventListener('click', function(e){
-    if (e.target.tagName!=="BUTTON") return;
-    document.querySelectorAll('#filter button').forEach(function(b){ b.classList.remove('on'); });
-    e.target.classList.add('on');
-    renderCards(e.target.dataset.f);
-  });
-
   // case viewer
   var viewer = document.getElementById('viewer');
   var vInner = document.getElementById('viewerInner');
+  // полные тексты/картинки/видео проектов — с оригинального playdisplay.com
+  var PROJECTS = null;
+  fetch('data/projects.json').then(function(r){ return r.json(); })
+    .then(function(j){ PROJECTS = {}; j.projects.forEach(function(p){ PROJECTS[p.slug] = p; });
+      if (typeof routeFromHash === 'function') routeFromHash(); }) // прямая ссылка на проект — открыть с полным контентом
+    .catch(function(){});
+  function localAsset(slug, url){ return 'assets/work/' + slug + '/' + url.split('/').pop(); }
+  function ytEmbed(id){ return 'https://www.youtube.com/embed/' + id + '?rel=0&modestbranding=1&playsinline=1'; }
+  function vimeoEmbed(id){ return 'https://player.vimeo.com/video/' + id + '?title=0&byline=0&portrait=0'; }
+  // лента блоков оригинала → анимированная вёрстка (заголовки, тексты, этапы, схемы, галереи)
+  function buildFlow(c, p){
+    var html = '', videoSkipped = false;
+    if (p.goal || p.solution) {
+      html += '<div class="vb"><div class="v-duo">' +
+        (p.goal ? '<div class="v-panel"><div class="v-goal-k">Цель проекта</div><p>' + p.goal + '</p></div>' : '') +
+        (p.solution ? '<div class="v-panel"><div class="v-goal-k">Решение</div><p>' + p.solution + '</p></div>' : '') +
+        '</div></div>';
+    }
+    // сверху страницы стоит только ЭМБЕД (c.video без локального клипа) — его дубль в ленте
+    // пропускаем. Если сверху локальный карусельный клип — ВСЕ оригинальные ролики проекта
+    // с playdisplay.com показываем в ленте полностью, ничего не теряем.
+    var topEmbedId = (!c.local && c.video) ? c.video[1] : null;
+    (p.flow || []).forEach(function(b){
+      if (b.t === 'yt' || b.t === 'vimeo') {
+        if (!videoSkipped && topEmbedId && b.id === topEmbedId) { videoSkipped = true; return; }
+        var src = b.t === 'yt' ? ytEmbed(b.id) : vimeoEmbed(b.id);
+        html += '<div class="vb"><div class="v-embed"><iframe data-src="' + src + '" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>' +
+                (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
+      } else if (b.t === 'h') {
+        html += '<div class="vb"><h3>' + b.text + '</h3></div>';
+      } else if (b.t === 'p') {
+        html += '<div class="vb tx"><p>' + b.text + '</p></div>';
+      } else if (b.t === 'img') {
+        var cap = b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '';
+        if (b.src.length > 2) {
+          // 3+ кадров — интерактивная галерея с перелистыванием
+          var slides = b.src.map(function(u){
+            return '<div class="gs"><img data-lsrc="' + localAsset(p.slug, u) + '" data-fb="' + u.replace('http://', 'https://') + '" alt=""></div>';
+          }).join('');
+          html += '<div class="vb"><div class="v-gal" data-i="0"><div class="v-gal-track">' + slides + '</div>' +
+                  '<button class="g-btn g-prev" aria-label="назад">‹</button>' +
+                  '<button class="g-btn g-next" aria-label="вперёд">›</button>' +
+                  '<div class="g-dots"></div>' +
+                  '<div class="g-cnt">01 / ' + String(b.src.length).padStart(2, '0') + '</div></div>' + cap + '</div>';
+        } else {
+          var imgs = b.src.map(function(u){
+            return '<img data-lsrc="' + localAsset(p.slug, u) + '" data-fb="' + u.replace('http://', 'https://') + '" alt="" loading="lazy">';
+          }).join('');
+          var cls = 'v-imgs' + (b.src.length === 1 ? ' single' : '') + (b.small ? ' small' : '');
+          html += '<div class="vb"><div class="' + cls + '">' + imgs + '</div>' + cap + '</div>';
+        }
+      } else if (b.t === 'steps') {
+        html += '<div class="vb"><div class="v-steps">' + b.items.map(function(it, i){
+          return '<div class="st"><div class="n">' + String(i + 1).padStart(2, '0') + '</div><div class="t">' + it + '</div></div>';
+        }).join('') + '</div></div>';
+      } else if (b.t === 'notes') {
+        html += '<div class="vb"><div class="v-notes">' + b.items.map(function(it, i){
+          return '<div class="nt"><span class="n">' + String(i + 1).padStart(2, '0') + '</span><span>' + it + '</span></div>';
+        }).join('') + '</div></div>';
+      } else if (b.t === 'stats') {
+        html += '<div class="vb"><div class="v-stats" style="grid-template-columns:repeat(4,1fr)">' + b.items.map(function(it){
+          return '<div class="s"><div class="sv">' + it.n + '</div><div class="sl">' + it.label + '</div></div>';
+        }).join('') + '</div></div>';
+      }
+    });
+    // сквозная навигация: следующий проект в конце каждой страницы
+    var idx = CASES.indexOf(c);
+    if (idx >= 0) {
+      var nx = CASES[(idx + 1) % CASES.length];
+      html += '<div class="vb v-next" data-slug="' + nx.slug + '">' +
+        '<div class="vn-k">Следующий проект · ' + String(((idx + 1) % CASES.length) + 1).padStart(2, '0') + ' / ' + String(CASES.length).padStart(2, '0') + '</div>' +
+        '<div class="vn-row"><div class="vn-t">' + nx.title + '</div>' +
+        '<div class="vn-img"><img src="' + nx.img + '" alt="" loading="lazy"' + (nx.fb ? ' onerror="if(this.src.indexOf(this.dataset.fb)<0)this.src=this.dataset.fb" data-fb="' + nx.fb + '"' : '') + '></div>' +
+        '<div class="vn-a">→</div></div></div>';
+    }
+    return '<div class="v-flow">' + html + '</div>';
+  }
+  // ленивая загрузка кадра. Цепочка: локальный файл → пережатый вариант (png→jpg,
+  // тяжёлый gif→mp4-видео) → оригинал с playdisplay.com → битый слайд убираем
+  function loadImg(im){
+    if (!im || !im.hasAttribute('data-lsrc')) return;
+    var lsrc = im.getAttribute('data-lsrc'); im.removeAttribute('data-lsrc');
+    var fb = im.dataset.fb;
+    if (/\.gif$/i.test(lsrc)) {
+      // большие гифы пережаты в mp4 (в 15 раз легче и не грузят процессор)
+      var v = document.createElement('video');
+      v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
+      v.addEventListener('loadeddata', function(){ v.classList.add('on'); });
+      v.addEventListener('error', function(){ vidIO.unobserve(v); v.replaceWith(im); chain(); }); // мелкий gif остался гифом
+      v.src = lsrc.replace(/\.gif$/i, '.mp4');
+      im.replaceWith(v);
+      vidIO.observe(v); // играет только в кадре
+      return;
+    }
+    chain();
+    function chain(){
+      im.addEventListener('load', function(){ im.classList.add('on'); });
+      im.addEventListener('error', function(){
+        if (/\.png(\?|$)/i.test(im.src) && !im.dataset.triedJpg) { im.dataset.triedJpg = 1; im.src = im.src.replace(/\.png(\?|$)/i, '.jpg$1'); return; }
+        if (fb && im.src.indexOf(fb) < 0) { im.src = fb; return; }
+        var gs = im.closest('.gs');                     // оригинала тоже нет — слайд долой
+        if (gs) { var gal = gs.closest('.v-gal'); gs.remove(); if (gal) galSync(gal); }
+        else im.remove();
+      });
+      im.src = lsrc;
+    }
+  }
+  // галерея: позиция трека, счётчик, точки-листалка, догрузка текущего и соседнего кадров
+  function galSync(gal){
+    var track = gal.querySelector('.v-gal-track');
+    var n = track.children.length;
+    if (!n) { var vb = gal.closest('.vb'); if (vb) vb.remove(); return; }
+    var i = Math.max(0, Math.min(+gal.dataset.i || 0, n - 1));
+    gal.dataset.i = i;
+    var st = track.children[0].getBoundingClientRect().width + 24;
+    track.style.transform = 'translateX(' + (-i * st) + 'px)';
+    if (gal.scrollLeft) gal.scrollLeft = 0; // сброс только если контейнер реально «уехал» по горизонтали (при фокусе); во время обычной прокрутки не трогаем
+    var cnt = gal.querySelector('.g-cnt');
+    if (cnt) cnt.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+    var dots = gal.querySelector('.g-dots');
+    if (dots) {
+      if (dots.children.length !== n) {
+        dots.innerHTML = '';
+        for (var k = 0; k < n; k++) { var d = document.createElement('button'); d.className = 'gd'; d.dataset.k = k; dots.appendChild(d); }
+      }
+      for (var k2 = 0; k2 < n; k2++) dots.children[k2].classList.toggle('on', k2 === i);
+    }
+    loadImg(track.children[i].querySelector('img'));
+    if (track.children[i + 1]) loadImg(track.children[i + 1].querySelector('img'));
+    // восстановить кадр, который прежде прятал galBurst (inline opacity), при возврате к нему
+    var cm = track.children[i].querySelector('img, video');
+    if (cm && cm.style.opacity === '0' && !gal._burst) { cm.style.transition = 'opacity .4s'; cm.style.opacity = ''; cm.classList.add('on'); }
+  }
+  // ── фирменный переход между кадрами: уходящий кадр рассыпается в облако частиц
+  //    и уносится в сторону листания, а новый собирается из частиц, влетающих
+  //    с противоположной стороны.
+  // contain-прямоугольник изображения внутри бокса (в координатах страницы)
+  function galFit(el, box){
+    var nw = el.naturalWidth || el.videoWidth || box.width || 1;
+    var nh = el.naturalHeight || el.videoHeight || box.height || 1;
+    var s = Math.min(box.width / nw, box.height / nh);
+    var w = nw * s, h = nh * s;
+    return { left: box.left + (box.width - w) / 2, top: box.top + (box.height - h) / 2, width: w, height: h };
+  }
+  // семплируем кадр в сетку частиц; координаты — в пикселях канваса (× SS от origin gr)
+  function galSample(el, box, gr, SS, GW){
+    var fit = galFit(el, box);
+    if (!(fit.width > 0) || !(fit.height > 0)) return null;
+    var GH = Math.max(24, Math.round(GW * fit.height / fit.width));
+    var t = document.createElement('canvas'); t.width = GW; t.height = GH;
+    var tc = t.getContext('2d'), d;
+    try { tc.drawImage(el, 0, 0, GW, GH); d = tc.getImageData(0, 0, GW, GH).data; }
+    catch (e) { return null; } // чужой домен — канвас «запятнан», семплировать нельзя
+    var out = [], ox = fit.left - gr.left, oy = fit.top - gr.top;
+    // ВСЮ площадь кадра переводим в частицы (не отсеиваем тёмное — иначе на HUD-схемах
+    // остаётся горстка точек в углу). Яркость управляет прозрачностью: тёмное — тускло,
+    // светлое — ярко, покрытие полное.
+    for (var y = 0; y < GH; y++) for (var x = 0; x < GW; x++) {
+      var o = (y * GW + x) * 4;
+      if (d[o + 3] < 8) continue; // только полностью прозрачные
+      var lum = (d[o] + d[o + 1] + d[o + 2]) / 765;
+      var dp = 0.45 + Math.random() * 0.55;
+      out.push({ x: (ox + (x + 0.5) / GW * fit.width) * SS, y: (oy + (y + 0.5) / GH * fit.height) * SS,
+                 c: 'rgb(' + d[o] + ',' + d[o + 1] + ',' + d[o + 2] + ')', dp: dp, lum: lum });
+    }
+    return out;
+  }
+  // общий движок: разлёт oldPts + сборка новых частиц (pollNew отдаёт их, когда кадр готов)
+  function runBurst(g, cv, oldPts, dir, SS, spanX, pollNew, onReveal){
+    for (var i = 0; i < oldPts.length; i++) { var p = oldPts[i];
+      p.vx = dir * (40 + Math.random() * 190) * p.dp;      // разлёт в сторону листания
+      p.vy = (Math.random() - 0.5) * 110 * p.dp;           // разброс по вертикали
+      p.ab = 0.22 + 0.78 * p.lum;                          // тёмное тускло, светлое ярко
+      p.sb = (2.4 + p.dp * 3.4) * SS;                      // крупнее — плотное покрытие
+    }
+    var newPts = null, revealed = false;
+    var t0 = performance.now(), DUR = 780, OUT_END = 0.6, IN_START = 0.32;
+    function reveal(){ if (revealed) return; revealed = true; onReveal && onReveal(); }
+    (function anim(now){
+      var k = Math.min(1, (now - t0) / DUR);
+      g.clearRect(0, 0, cv.width, cv.height);
+      var ok = Math.min(1, k / OUT_END), oe = ok * ok * (3 - 2 * ok);
+      if (ok < 1) for (var a = 0; a < oldPts.length; a++) { var po = oldPts[a];
+        g.globalAlpha = Math.max(0, (1 - oe) * po.ab); g.fillStyle = po.c;
+        var s = po.sb * (1 + oe * 1.4);
+        g.fillRect(po.x + po.vx * oe, po.y + po.vy * oe, s, s);
+      }
+      if (newPts === null) {
+        newPts = pollNew();                                 // null — ещё не готов; [] — не семплируется
+        if (newPts && newPts.length) {
+          for (var b = 0; b < newPts.length; b++) { var q = newPts[b];
+            q.sx = -dir * (spanX * 0.3 + Math.random() * spanX * 0.25); // влёт с противоположной стороны
+            q.sy = (Math.random() - 0.5) * 120 * q.dp;
+            q.ab = 0.22 + 0.78 * q.lum;
+            q.sb = (2.4 + q.dp * 3.4) * SS;
+          }
+        } else if (newPts && !newPts.length) { reveal(); }  // fallback — просто показать кадр
+      }
+      if (newPts && newPts.length) {
+        var ik = Math.max(0, Math.min(1, (k - IN_START) / (1 - IN_START))), ie = ik * ik * (3 - 2 * ik);
+        for (var c = 0; c < newPts.length; c++) { var qi = newPts[c];
+          g.globalAlpha = Math.min(1, ie * 1.2) * qi.ab; g.fillStyle = qi.c;
+          var s2 = qi.sb * (1 + (1 - ie) * 1.1);
+          g.fillRect(qi.x + qi.sx * (1 - ie), qi.y + qi.sy * (1 - ie), s2, s2);
+        }
+        if (ik >= 0.9) reveal();
+      }
+      g.globalAlpha = 1;
+      if (k < 1) requestAnimationFrame(anim);
+      else { g.clearRect(0, 0, cv.width, cv.height); reveal(); }
+    })(t0);
+  }
+  // инлайн-галерея: разлёт текущего кадра + сборка следующего. dir: +1 вперёд, -1 назад.
+  function galBurst(gal, dir){
+    dir = dir || 1;
+    var track = gal.querySelector('.v-gal-track');
+    var curOld = track.children[+gal.dataset.i || 0];
+    var oldEl = curOld && (curOld.querySelector('img') || curOld.querySelector('video'));
+    if (!oldEl || !(oldEl.naturalWidth || oldEl.videoWidth)) return; // кадр не загружен — просто листаем
+    var gr = gal.getBoundingClientRect(), SS = 0.6, GW = 132;
+    var cv = gal.querySelector('.g-burst');
+    if (!cv) { cv = document.createElement('canvas'); cv.className = 'g-burst'; gal.appendChild(cv); }
+    cv.width = Math.round(gr.width * SS); cv.height = Math.round(gr.height * SS);
+    var g = cv.getContext('2d');
+    var oldPts = galSample(oldEl, oldEl.getBoundingClientRect(), gr, SS, GW);
+    if (!oldPts || !oldPts.length) return;
+    oldEl.style.opacity = 0;   // реальный кадр прячем — его несут частицы
+    gal._burst = true;         // пока идёт переход, galSync не показывает кадры сам
+    var newEl = null, hid = false;
+    runBurst(g, cv, oldPts, dir, SS, cv.width, function pollNew(){
+      var cn = track.children[+gal.dataset.i || 0];         // индекс уже обновлён вызвавшим кодом
+      var ne = cn && (cn.querySelector('img') || cn.querySelector('video'));
+      if (!ne) return null;
+      if (!hid) { ne.style.opacity = 0; hid = true; newEl = ne; }
+      if (!(ne.naturalWidth || ne.videoWidth)) return null; // ждём загрузки нового кадра
+      return galSample(ne, ne.getBoundingClientRect(), gr, SS, GW) || [];
+    }, function onReveal(){
+      if (newEl) { newEl.style.transition = 'opacity .3s'; newEl.style.opacity = ''; newEl.classList.add('on'); }
+      gal._burst = false;
+    });
+  }
+  // клики по стрелкам + свайп — делегированно; клик по кадру — фулскрин-просмотр
+  vInner.addEventListener('click', function(e){
+    var btn = e.target.closest ? e.target.closest('.g-btn') : null;
+    if (btn) {
+      var gal = btn.closest('.v-gal');
+      var fwd = btn.classList.contains('g-next');
+      gal.dataset.i = (+gal.dataset.i || 0) + (fwd ? 1 : -1);
+      var n = gal.querySelectorAll('.gs').length;
+      if (+gal.dataset.i < 0) gal.dataset.i = n - 1;    // по кругу
+      if (+gal.dataset.i >= n) gal.dataset.i = 0;
+      galSync(gal);
+      return;
+    }
+    var gd = e.target.closest ? e.target.closest('.g-dots .gd') : null;
+    if (gd) {
+      var gal2 = gd.closest('.v-gal');
+      if (+gal2.dataset.i !== +gd.dataset.k) { gal2.dataset.i = gd.dataset.k; galSync(gal2); }
+      return;
+    }
+    var vn = e.target.closest ? e.target.closest('.v-next') : null;
+    if (vn) { swapCase(vn.dataset.slug); return; }
+    var gs = e.target.closest ? e.target.closest('.gs') : null;
+    if (gs) openLightbox(gs.closest('.v-gal'));
+  });
+  // морф частиц между двумя ректами: узкий кадр расширяется в фулскрин и обратно
+  function morphParticles(srcEl, fromR, toR, onSettle){
+    var pts = [];
+    try {
+      if (srcEl.src && srcEl.src.indexOf('http') === 0 && srcEl.src.indexOf(location.origin) !== 0) throw 'cors';
+      var gw = 72, gh = Math.max(18, Math.round(gw * fromR.height / fromR.width));
+      var t = document.createElement('canvas'); t.width = gw; t.height = gh;
+      t.getContext('2d').drawImage(srcEl, 0, 0, gw, gh);
+      var d = t.getContext('2d').getImageData(0, 0, gw, gh).data;
+      for (var y = 0; y < gh; y++) for (var x = 0; x < gw; x++) {
+        var o = (y * gw + x) * 4;
+        if (d[o] + d[o + 1] + d[o + 2] < 16) continue;
+        pts.push([(x + 0.5) / gw, (y + 0.5) / gh,
+                  'rgb(' + d[o] + ',' + d[o + 1] + ',' + d[o + 2] + ')', Math.random()]);
+      }
+    } catch (e) { pts = null; }
+    if (!pts || !pts.length) { onSettle(); return; }
+    var cv = document.createElement('canvas');
+    cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:125;pointer-events:none;transition:opacity .3s';
+    cv.width = innerWidth; cv.height = innerHeight;
+    document.body.appendChild(cv);
+    var g = cv.getContext('2d');
+    var fromCell = fromR.width / 72, toCell = toR.width / 72;
+    var settled = false;
+    var t0 = performance.now(), DUR = 560;
+    (function anim(now){
+      var k = Math.min(1, (now - t0) / DUR);
+      var e2 = k * k * (3 - 2 * k);
+      g.clearRect(0, 0, cv.width, cv.height);
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        var jx = (p[3] - 0.5) * 26 * Math.sin(Math.PI * e2); // лёгкое дыхание поля в середине пути
+        var px = (fromR.left + p[0] * fromR.width) * (1 - e2) + (toR.left + p[0] * toR.width) * e2 + jx;
+        var py = (fromR.top + p[1] * fromR.height) * (1 - e2) + (toR.top + p[1] * toR.height) * e2;
+        g.globalAlpha = k > 0.82 ? (1 - k) / 0.18 : 1;
+        g.fillStyle = p[2];
+        var s = (fromCell * (1 - e2) + toCell * e2) * (0.55 + p[3] * 0.6);
+        g.fillRect(px, py, s, s);
+      }
+      g.globalAlpha = 1;
+      if (!settled && k >= 0.72) { settled = true; onSettle(); } // реальный кадр проявляется под точками
+      if (k < 1) requestAnimationFrame(anim);
+      else { cv.style.opacity = 0; setTimeout(function(){ cv.remove(); }, 320); }
+    })(t0);
+  }
+  function containRect(aw, ah, maxW, maxH){
+    var s = Math.min(maxW / aw, maxH / ah);
+    var w = aw * s, h = ah * s;
+    return { left: (innerWidth - w) / 2, top: (innerHeight - h) / 2, width: w, height: h };
+  }
+  function openLightbox(gal){
+    lbGal = gal;
+    var track = gal.querySelector('.v-gal-track');
+    var cur = track.children[+gal.dataset.i || 0];
+    var el = cur && (cur.querySelector('img.on') || cur.querySelector('video.on'));
+    if (!el) { lbEl.classList.add('open'); lbShow(); return; }
+    var aw = el.videoWidth || el.naturalWidth || 16, ah = el.videoHeight || el.naturalHeight || 9;
+    morphParticles(el, el.getBoundingClientRect(), containRect(aw, ah, innerWidth * 0.94, innerHeight * 0.9),
+      function(){ lbEl.classList.add('open'); lbShow(); });
+  }
+  function closeLightbox(){
+    var el = lbImg;
+    var gal = lbGal;
+    lbEl.classList.remove('open');
+    if (!el || !el.naturalWidth || !gal) return;
+    var cur = gal.querySelector('.v-gal-track').children[+gal.dataset.i || 0];
+    var tgt = cur && (cur.querySelector('img') || cur.querySelector('video'));
+    if (!tgt) return;
+    morphParticles(el, el.getBoundingClientRect(), tgt.getBoundingClientRect(), function(){});
+  }
+  // сквозная листалка кейсов: контент складывается, следующий собирается каскадом
+  function swapCase(slug){
+    var next = null;
+    for (var i = 0; i < CASES.length; i++) if (CASES[i].slug === slug) next = CASES[i];
+    if (!next) return;
+    var mv2 = vInner.querySelector('.v-media video');
+    if (mv2) try { mv2.pause(); } catch (e) {}
+    vInner.classList.add('swapping');
+    setTimeout(function(){
+      vInner.classList.remove('swapping');
+      openCase(next);
+      vInner.classList.add('arrive');                       // новый контент мягко въезжает снизу
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ vInner.classList.remove('arrive'); }); });
+    }, 380);
+  }
+  // фулскрин-просмотр кадра: стрелки, счётчик, Esc/крестик/фон, синхронизация с галереей
+  var lbEl = document.createElement('div');
+  lbEl.className = 'lb';
+  lbEl.innerHTML = '<img alt=""><button class="g-btn g-prev" aria-label="назад">‹</button>' +
+    '<button class="g-btn g-next" aria-label="вперёд">›</button><div class="g-cnt"></div>' +
+    '<button class="lb-x" aria-label="закрыть">✕</button>';
+  document.body.appendChild(lbEl);
+  var lbImg = lbEl.querySelector('img'), lbCnt = lbEl.querySelector('.g-cnt'), lbGal = null;
+  function lbShow(){
+    if (!lbGal) return;
+    var slides = lbGal.querySelectorAll('.gs img');
+    var i = Math.min(+lbGal.dataset.i || 0, slides.length - 1);
+    var im = slides[i]; if (!im) return;
+    lbImg.onerror = function(){ if (im.dataset.fb && lbImg.src.indexOf(im.dataset.fb) < 0) lbImg.src = im.dataset.fb; };
+    lbImg.src = im.getAttribute('data-lsrc') || im.src;
+    lbCnt.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+  }
+  function lbNav(d){
+    if (!lbGal) return;
+    var n = lbGal.querySelectorAll('.gs').length;
+    lbGal.dataset.i = ((+lbGal.dataset.i || 0) + d + n) % n;
+    galSync(lbGal); lbShow();
+  }
+  lbEl.querySelector('.g-prev').addEventListener('click', function(e){ e.stopPropagation(); lbNav(-1); });
+  lbEl.querySelector('.g-next').addEventListener('click', function(e){ e.stopPropagation(); lbNav(1); });
+  lbEl.querySelector('.lb-x').addEventListener('click', closeLightbox);
+  lbEl.addEventListener('click', function(e){ if (e.target === lbEl) closeLightbox(); });
+  (function(){
+    var lx = null;
+    lbEl.addEventListener('touchstart', function(e){ lx = e.touches[0].clientX; }, { passive: true });
+    lbEl.addEventListener('touchend', function(e){
+      if (lx === null) return;
+      var dx = e.changedTouches[0].clientX - lx;
+      if (Math.abs(dx) > 40) lbNav(dx < 0 ? 1 : -1);
+      lx = null;
+    }, { passive: true });
+  })();
+  addEventListener('keydown', function(e){
+    if (!lbEl.classList.contains('open')) return;
+    if (e.key === 'ArrowRight') lbNav(1);
+    else if (e.key === 'ArrowLeft') lbNav(-1);
+  });
+  (function(){
+    var x0 = null, galT = null;
+    vInner.addEventListener('touchstart', function(e){
+      galT = e.target.closest ? e.target.closest('.v-gal') : null;
+      x0 = galT ? e.touches[0].clientX : null;
+    }, { passive: true });
+    vInner.addEventListener('touchend', function(e){
+      if (!galT || x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) {
+        var nn = galT.querySelectorAll('.gs').length;
+        galT.dataset.i = ((+galT.dataset.i || 0) + (dx < 0 ? 1 : -1) + nn) % nn;
+        galSync(galT);
+      }
+      galT = null; x0 = null;
+    }, { passive: true });
+  })();
+  // вложенный ролик не обязан быть 16:9: узнаём реальный аспект у Vimeo (oEmbed)
+  // и подгоняем контейнер — без пустых полей; высокие ролики ужимаются по высоте
+  var embedAR = {};
+  function fitEmbed(fr, src){
+    var m = (src || '').match(/player\.vimeo\.com\/video\/(\d+)/);
+    if (!m) return;
+    var box = fr.closest('.v-embed');
+    function apply(w, h){
+      if (!w || !h || !box) return;
+      box.style.aspectRatio = w + ' / ' + h;
+      if (h > w * 0.7) { // почти квадратный или вертикальный — не растягиваем на всю ширину
+        box.style.maxWidth = 'min(100%, ' + (76 * w / h).toFixed(1) + 'vh)';
+        box.style.margin = '0 auto';
+      }
+    }
+    if (embedAR[m[1]]) { apply(embedAR[m[1]][0], embedAR[m[1]][1]); return; }
+    fetch('https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F' + m[1])
+      .then(function(r){ return r.json(); })
+      .then(function(j){ embedAR[m[1]] = [j.width, j.height]; apply(j.width, j.height); })
+      .catch(function(){});
+  }
+  // оживление ленты: блоки поднимаются при прокрутке, картинки и ембеды грузятся лениво
+  var flowIO = null;
+  function armFlow(){
+    if (flowIO) { flowIO.disconnect(); flowIO = null; } // прежний наблюдатель — долой (без утечки на смене кейса)
+    var blocks = vInner.querySelectorAll('.vb');
+    if (!blocks.length) return;
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (!e.isIntersecting) return;
+        var el = e.target;
+        // последовательное появление: плашки, этапы и аннотации всплывают друг за другом
+        el.querySelectorAll('.v-panel, .v-steps .st, .v-notes .nt').forEach(function(ch, i){
+          ch.style.transitionDelay = Math.min(i * 90, 540) + 'ms';
+        });
+        el.querySelectorAll('h3 .w').forEach(function(w, i){ w.style.transitionDelay = (i * 55) + 'ms'; }); // слова заголовка
+        el.classList.add('lit');
+        var gal = el.querySelector('.v-gal');
+        if (gal) galSync(gal); // галерея грузит текущий + соседний кадр
+        else el.querySelectorAll('img[data-lsrc]').forEach(loadImg);
+        el.querySelectorAll('iframe[data-src]').forEach(function(fr){
+          fitEmbed(fr, fr.dataset.src);
+          fr.src = fr.dataset.src; fr.removeAttribute('data-src');
+        });
+        io.unobserve(el);
+      });
+    }, { root: viewer, rootMargin: '200px 0px' });
+    blocks.forEach(function(b){ io.observe(b); });
+    flowIO = io;
+  }
   function openCase(c){
     // локальный ролик (с нашего хостинга) в приоритете — без ютуб-обвязки; иначе ембед; иначе кадр
     var media = c.local
-      ? '<div class="v-media"><video src="'+c.local+'" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
+      ? '<div class="v-media"><video src="'+c.local+'" poster="'+c.img+'" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
       : c.video
       ? '<div class="v-media"><iframe src="'+embedUrl(c.video)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe></div>'
       : '<div class="v-media"><img src="'+c.img+'" alt=""><div class="v-grade"></div></div>';
     var statsHtml = c.stats
       ? '<div class="v-stats">'+c.stats.map(function(s){return '<div class="s"><div class="sv">'+s[0]+'</div><div class="sl">'+s[1]+'</div></div>';}).join('')+'</div>'
       : '';
+    var p = PROJECTS && c.slug ? PROJECTS[c.slug] : null;
+    var metaHtml = p ? '<div class="v-meta">' +
+        (p.client ? '<div class="m">Заказчик<b>' + p.client + '</b></div>' : '') +
+        (p.term ? '<div class="m">Срок реализации<b>' + p.term + '</b></div>' : '') +
+        (p.year ? '<div class="m">Год<b>' + p.year + '</b></div>' : '') + '</div>' : '';
+    var num = CASES.indexOf(c);
     vInner.innerHTML =
       '<div class="kicker teal" style="margin-bottom:22px">'+c.taskLabel+'</div>'+
       media+
-      '<div class="v-head"><h2>'+c.title+'</h2></div>'+
+      '<div class="v-head"><h2>'+c.title+'</h2>'+
+      (num >= 0 ? '<div class="v-num">'+String(num+1).padStart(2,'0')+' / '+String(CASES.length).padStart(2,'0')+'</div>' : '')+
+      '</div>'+
+      metaHtml+
       statsHtml+
-      '<div class="v-desc">'+c.desc+'<span class="punch">'+c.punch+'</span></div>';
+      '<div class="v-desc">'+c.desc+'<span class="punch">'+c.punch+'</span></div>'+
+      (p ? buildFlow(c, p) : '');
+    // заголовки секций собираются по словам
+    vInner.querySelectorAll('.vb h3').forEach(function(h){
+      h.innerHTML = h.textContent.split(/\s+/).map(function(w){ return '<span class="w">' + w + '</span>'; }).join(' ');
+    });
+    // ни одно видео не молотит вхолостую: пауза всему, что проскроллено из кадра
+    vidIO.disconnect();
+    var mv = vInner.querySelector('.v-media video');
+    if (mv) vidIO.observe(mv);
+    armFlow();
+    dustOff(); dustOn(); // один цикл пыли (без наложения при смене кейса)
+    heroScene(false);    // hero-сцена Three.js за непрозрачным вьюером не рендерится — экономия GPU
+    // прямое открытие (без полёта) — тексты складываются сразу; в полёте каскад запустит anim
+    requestAnimationFrame(function(){ if (!flyBusy) vInner.classList.add('settled'); });
     viewer.classList.add('open');
     viewer.scrollTop = 0;
+    // компенсация исчезающего скроллбара: без неё вся страница дёргается влево
+    var sbw = innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
+    if (sbw > 0) document.body.style.paddingRight = sbw + "px";
+    setRoute(c.slug); // у каждого проекта своя ссылка #/work/<slug>
   }
-  function closeCase(){ viewer.classList.remove('open'); vInner.innerHTML = ""; document.body.style.overflow = ""; }
-  document.getElementById('viewerClose').addEventListener('click', closeCase);
-  viewer.addEventListener('click', function(e){ if(e.target===viewer) closeCase(); });
-  addEventListener('keydown', function(e){ if(e.key==="Escape") closeCase(); });
+  function closeCase(){
+    if (flowIO) { flowIO.disconnect(); flowIO = null; }
+    vidIO.disconnect();
+    viewer.classList.remove('open'); vInner.innerHTML = ""; // освобождаем DOM/видео/iframe кейса
+    document.body.style.overflow = ""; document.body.style.paddingRight = "";
+    dustOff(); heroScene(true); setRoute(null); // hero снова оживает
+  }
+  // управление рендером hero-сцены (iframe): пауза, пока открыт проект
+  function heroScene(on){
+    var fr = document.querySelector('iframe.hero-scene');
+    if (fr && fr.contentWindow) try { fr.contentWindow.postMessage({ pdVisible: on }, '*'); } catch (e) {}
+  }
+
+  // ---- ссылки: раздел проектов #work, каждый проект #/work/<slug>, кнопка «назад» ----
+  var suppressRoute = false;
+  function setRoute(slug){
+    if (suppressRoute) return;
+    var want = slug ? '#/work/' + slug : '#work';
+    if (location.hash === want) return;
+    try { history.pushState({ slug: slug || null }, '', want); } catch (e) { location.hash = want; }
+  }
+  function caseBySlug(slug){ for (var i = 0; i < CASES.length; i++) if (CASES[i].slug === slug) return CASES[i]; return null; }
+  function routeFromHash(){
+    var m = (location.hash || '').match(/^#\/work\/(.+)$/);
+    var slug = m ? decodeURIComponent(m[1]) : null;
+    var c = slug ? caseBySlug(slug) : null;
+    suppressRoute = true;
+    if (c) {
+      var openSlug = viewer.classList.contains('open') && lastFly && lastFly.c && lastFly.c.slug;
+      if (openSlug !== c.slug) { lastFly = { card: null, c: c }; openCase(c); }
+    } else if (viewer.classList.contains('open')) {
+      closeCase();
+    }
+    suppressRoute = false;
+  }
+  addEventListener('popstate', routeFromHash);
+  // фоновая пыль страницы проекта: редкие мелкие точки дрейфуют с параллаксом от прокрутки
+  var dustRaf = null;
+  function dustOn(){
+    var cv = document.getElementById('v-dust');
+    if (!cv) { cv = document.createElement('canvas'); cv.id = 'v-dust'; viewer.insertBefore(cv, viewer.firstChild); }
+    var ctx = cv.getContext('2d');
+    var pts = [];
+    for (var i = 0; i < 110; i++)
+      pts.push([Math.random(), Math.random() * 2, Math.random(), Math.random() * 6.28]); // x, y(2 экрана), глубина, фаза
+    function fit(){ cv.width = innerWidth; cv.height = innerHeight; }
+    fit();
+    var t = 0;
+    function tick(){
+      if (!viewer.classList.contains('open')) { dustRaf = null; ctx.clearRect(0, 0, cv.width, cv.height); return; }
+      dustRaf = requestAnimationFrame(tick);
+      t += 0.016;
+      if (cv.width !== innerWidth) fit();
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      var sc = viewer.scrollTop;
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        var x = (p[0] + Math.sin(t * 0.12 + p[3]) * 0.015) * cv.width;
+        var y = ((p[1] - sc * (0.00004 + p[2] * 0.00008)) % 2 + 2) % 2 * cv.height - cv.height * 0.5;
+        ctx.globalAlpha = 0.10 + p[2] * 0.22;
+        ctx.fillStyle = i % 7 === 0 ? '#2be0c6' : '#9fb4c8';
+        var s = 1 + p[2] * 1.6;
+        ctx.fillRect(x, y, s, s);
+      }
+      ctx.globalAlpha = 1;
+    }
+    if (!dustRaf) tick();
+  }
+  function dustOff(){ if (dustRaf) { cancelAnimationFrame(dustRaf); dustRaf = null; } var cv = document.getElementById('v-dust'); if (cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); }
+  document.getElementById('viewerClose').addEventListener('click', requestClose);
+  viewer.addEventListener('click', function(e){ if(e.target===viewer) requestClose(); });
+  addEventListener('keydown', function(e){
+    if (e.key !== "Escape") return;
+    if (lbEl.classList.contains('open')) { closeLightbox(); return; } // сначала закрывается фулскрин-кадр
+    requestClose();
+  });
 </script>
 <template id="__bundler_thumbnail">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#05141a"/><g fill="#2be0c6"><circle cx="34" cy="42" r="2"/><circle cx="44" cy="36" r="2"/><circle cx="54" cy="44" r="2"/><circle cx="64" cy="38" r="2"/><circle cx="40" cy="52" r="2"/><circle cx="52" cy="56" r="2"/><circle cx="62" cy="52" r="2"/></g><circle cx="50" cy="50" r="16" fill="none" stroke="#ff6a3d" stroke-width="1.5"/><path d="M46 44l10 6-10 6z" fill="#f1fbfc"/></svg>
 </template>
+<!--SEO-->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "PlayDisplay", "url": "https://playdisplay.com/", "description": "PlayDisplay — студия интерактивного опыта. Проектируем мультимедийные инсталляции, голограммы, дополненную реальность и выставочные пространства для музеев, корпораций и выставок. Превращаем пространство в игру.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "founder": {"@type": "Person", "name": "Андрей Судариков"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "PlayDisplay", "url": "https://playdisplay.com/", "inLanguage": "ru"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "Проекты PlayDisplay", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://playdisplay.com/work/industry-rf/", "name": "Промышленность РФ"}, {"@type": "ListItem", "position": 2, "url": "https://playdisplay.com/work/airports/", "name": "Аэропорты России"}, {"@type": "ListItem", "position": 3, "url": "https://playdisplay.com/work/odk-oak/", "name": "ОДК ОАК"}, {"@type": "ListItem", "position": 4, "url": "https://playdisplay.com/work/proryv/", "name": "Прорыв"}, {"@type": "ListItem", "position": 5, "url": "https://playdisplay.com/work/rostec/", "name": "Ростех-Экспо"}, {"@type": "ListItem", "position": 6, "url": "https://playdisplay.com/work/ptk-group/", "name": "PTK Group"}, {"@type": "ListItem", "position": 7, "url": "https://playdisplay.com/work/mig2019/", "name": "Стенд МИГ-35"}, {"@type": "ListItem", "position": 8, "url": "https://playdisplay.com/work/bmwx5/", "name": "BMW X5"}, {"@type": "ListItem", "position": 9, "url": "https://playdisplay.com/work/pano360/", "name": "Панорама 360"}, {"@type": "ListItem", "position": 10, "url": "https://playdisplay.com/work/urban-forum-2018/", "name": "Urban Forum 2018"}, {"@type": "ListItem", "position": 11, "url": "https://playdisplay.com/work/stalingrad/", "name": "Пароль победы «Сталинград»"}, {"@type": "ListItem", "position": 12, "url": "https://playdisplay.com/work/coalco/", "name": "Сухой порт COALCO"}, {"@type": "ListItem", "position": 13, "url": "https://playdisplay.com/work/sinara/", "name": "Синара Транспортные Машины"}, {"@type": "ListItem", "position": 14, "url": "https://playdisplay.com/work/vdnh-space/", "name": "ВДНХ Космос"}, {"@type": "ListItem", "position": 15, "url": "https://playdisplay.com/work/vdnh-space-center/", "name": "Центр «Космонавтика и авиация»"}]}</script>
+<noscript><section><h2>Проекты PlayDisplay</h2><ul><li><a href="work/industry-rf/">Промышленность РФ</a> — Отрасль, которую можно рассмотреть вблизи. У государства — масштабные планы по развитию судостроения: новейшие гражданские суда, прорывные инженерные решения…</li><li><a href="work/airports/">Аэропорты России</a> — Пространство, которое ведёт за руку. Показать три международных аэропорта России на Форуме «Россия» так, чтобы каждый раскрыл свою уникальную архитектуру и х…</li><li><a href="work/odk-oak/">ОДК ОАК</a> — Сложный продукт продаёт тот, кто дал его потрогать. МАКС — Международный авиационно-космический салон, одно из главных авиационных событий мира. На нём Объед…</li><li><a href="work/proryv/">Прорыв</a> — О технологии будущего — на языке впечатления. Создание инсталляции, в наглядном виде демонстрирующей принцип работы технологической платформы атомной энергет…</li><li><a href="work/rostec/">Ростех-Экспо</a> — Масштаб корпорации — в одном пространстве. Создать центральный экспонат у входа в павильон «Ростех Экспо» и объединить продукцию всех предприятий холдинга Ро…</li><li><a href="work/ptk-group/">PTK Group</a> — Презентация, в которую вовлекаются. Группа ПТК выпускает современную путевую технику — машины для строительства, ремонта и обслуживания железных дорог. Почти…</li><li><a href="work/mig2019/">Стенд МИГ-35</a> — Самолёт и так звезда — мы построили ему сцену. Выделить МИГ-35 среди представленной продукции других производителей, реализовать демонстрационный инструмент …</li><li><a href="work/bmwx5/">BMW X5</a> — Машину, которую собрал сам, хочется купить. Оснастить офис продаж интерактивным решением для выбора и кастомизации автомобиля.</li><li><a href="work/pano360/">Панорама 360</a> — Не окно в историю, а вход в неё. Дать гостям одной из самых высоких смотровых площадок Европы — «Панорама 360» на 89-м этаже башни «Федерация» в Москва-Сити …</li><li><a href="work/urban-forum-2018/">Urban Forum 2018</a> — Очередь к инсталляции — лучшая метрика. Стенд для Правительства Москвы, которое говорит с горожанами на одном языке — наглядно показывая, что меняется в горо…</li><li><a href="work/stalingrad/">Пароль победы «Сталинград»</a> — Игра умеет говорить и о серьёзном. Популяризация объекта культурного наследия федерального значения и достоверный рассказ о Сталинградской битве 1942–1943 гг…</li><li><a href="work/coalco/">Сухой порт COALCO</a> — Логистику видно, а не читаешь в буклете. Масштаб проекта сухого порта столь велик, что показать его нужно целиком: как устроен новый транспортно-логистически…</li><li><a href="work/sinara/">Синара Транспортные Машины</a> — Тяжёлую технику показываем в ладони. Холдинг «Синара — Транспортные Машины» строит новейшие локомотивы. Показать нужно было не только сами машины, но и совре…</li><li><a href="work/vdnh-space/">ВДНХ Космос</a> — Посетитель не читает экспозицию — он исследует её. Вся история космонавтики — в единой играбельной системе: 115 инсталляций, интерактивные 3D-модели кораблей…</li><li><a href="work/vdnh-space-center/">Центр «Космонавтика и авиация»</a> — Музей, который отвечает движением. Рассказать историю космонавтики и ракетостроения благодаря высокотехнологичным решениям.</li></ul></section></noscript>
+<!--/SEO-->
 </body>
 </html>

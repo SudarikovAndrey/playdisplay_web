@@ -94,6 +94,49 @@
   body.game #lensring, body.game #autobar, body.game #play-btn { display: none !important; }
   body.game #pluscursor { opacity: 0 !important; } /* курсор = корабль в сцене */
 
+  /* ===== АРХИВ ПРОЕКТОВ «Спейс-индекс»: кольцо стел из точек ===== */
+  body.archive #scrub, body.archive #dots, body.archive #scene-info, body.archive #corner-status,
+  body.archive #lensring, body.archive #autobar, body.archive #play-btn, body.archive #hint { display: none !important; }
+  body.archive #pluscursor { opacity: 0 !important; }
+  body.archive #stage { cursor: grab; }
+  body.archive.arc-drag #stage { cursor: grabbing; }
+  #arc-hud { display: none; }
+  body.archive #arc-hud { display: block; }
+  #arc-count { position: fixed; right: 96px; top: 30px; z-index: 45; font-size: 10px;
+    letter-spacing: .3em; opacity: .6; pointer-events: none; font-variant-numeric: tabular-nums;
+    text-transform: uppercase; color: var(--ink); }
+  #arc-meta { position: fixed; left: 34px; bottom: 34px; z-index: 45; pointer-events: none;
+    color: var(--ink); max-width: 44vw; }
+  #arc-num { font-size: 11px; letter-spacing: .32em; opacity: .5; margin-bottom: 8px;
+    font-variant-numeric: tabular-nums; }
+  #arc-title { font-size: 17px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    line-height: 1.25; transition: opacity .25s; }
+  #arc-sub { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; opacity: .6;
+    margin-top: 6px; font-variant-numeric: tabular-nums; transition: opacity .25s; }
+  #arc-hint { font-size: 9px; letter-spacing: .26em; opacity: .35; margin-top: 16px; text-transform: uppercase; }
+  #arc-radar { position: fixed; right: 30px; bottom: 30px; z-index: 45; width: 96px; height: 96px;
+    pointer-events: none; opacity: .9; }
+  /* скобки захвата цели: рисуются по проекции стелы на экран */
+  #arc-lock { position: fixed; z-index: 44; pointer-events: none; opacity: 0; transition: opacity .2s; }
+  body.archive #arc-lock.on { opacity: 1; }
+  #arc-lock i { position: absolute; width: 16px; height: 16px; border: 2px solid var(--ink); opacity: .85; }
+  #arc-lock .tl { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+  #arc-lock .tr { right: 0; top: 0; border-left: 0; border-bottom: 0; }
+  #arc-lock .bl { left: 0; bottom: 0; border-right: 0; border-top: 0; }
+  #arc-lock .br { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+  /* временная панель проекта после влёта (до полноценных внутренних страниц) */
+  #arc-page { position: fixed; inset: 0; z-index: 48; display: none;
+    align-items: center; justify-content: center; background: rgba(6,7,10,.55);
+    backdrop-filter: blur(4px); }
+  #arc-page.show { display: flex; }
+  #arc-page-in { max-width: 620px; padding: 40px; color: var(--ink); }
+  #ap-num { font-size: 11px; letter-spacing: .32em; opacity: .5; }
+  #ap-title { font-size: 30px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    margin: 12px 0 6px; line-height: 1.15; }
+  #ap-meta { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; opacity: .6; margin-bottom: 22px; }
+  #ap-goal, #ap-sol { font-size: 13px; line-height: 1.65; opacity: .85; margin: 0 0 14px; }
+  #ap-hint { font-size: 9px; letter-spacing: .26em; opacity: .4; margin-top: 26px; text-transform: uppercase; }
+
   /* мини-HUD в нижних углах: техно-статус облака точек и fps — мелко, второстепенно */
   #corner-status { position: fixed; left: 14px; bottom: 10px; z-index: 11; font-size: 9px;
     letter-spacing: .26em; text-transform: uppercase; opacity: .35; pointer-events: none; }
@@ -295,6 +338,28 @@
   <div class="go-hint">КЛИК — ЕЩЁ РАЗ · ESC — В ПОРТФОЛИО</div>
 </div>
 
+<div id="arc-hud">
+  <div id="arc-count">РАЗВЕДАНО 00/15</div>
+  <div id="arc-meta">
+    <div id="arc-num"></div>
+    <div id="arc-title"></div>
+    <div id="arc-sub"></div>
+    <div id="arc-hint">ТЯНИ ИЛИ СКРОЛЛЬ — ВРАЩЕНИЕ · КЛИК — ВЛЁТ · ESC — ВЫХОД</div>
+  </div>
+  <canvas id="arc-radar" width="192" height="192"></canvas>
+</div>
+<div id="arc-lock"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+<div id="arc-page">
+  <div id="arc-page-in">
+    <div id="ap-num"></div>
+    <h2 id="ap-title"></h2>
+    <div id="ap-meta"></div>
+    <p id="ap-goal"></p>
+    <p id="ap-sol"></p>
+    <div id="ap-hint">ESC ИЛИ КЛИК — НАЗАД В АРХИВ</div>
+  </div>
+</div>
+
 <div id="settings" class="open">
   <div id="settings-toggle" title="Свернуть / развернуть настройки">⚙</div>
   <div id="settings-body">
@@ -361,6 +426,10 @@
       <div class="set-label"><span>Доля точек в вихре</span><b id="v-vortpct">0%</b></div>
       <input type="range" id="s-vortpct" min="0" max="1" step="0.01">
     </div>
+    <div class="set-row">
+      <div class="set-label"><span>Резина скролла</span><b id="v-rubber">0.24×</b></div>
+      <input type="range" id="s-rubber" min="0" max="1.2" step="0.02">
+    </div>
     <h4 class="set-sub">Модель центра</h4>
     <div class="set-row">
       <select id="s-model">
@@ -421,9 +490,9 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-<script src="textures.js?v=b1707-19"></script>
-<script src="odk_frame.js?v=b1707-19"></script>
-<script src="model.js?v=b1707-19"></script>
+<script src="textures.js?v=b1707-26"></script>
+<script src="odk_frame.js?v=b1707-26"></script>
+<script src="model.js?v=b1707-26"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -456,14 +525,23 @@ const EMBEDS = [
 // первые кадры проектов как проекция задаются в odk_frame.js (base64 → грузятся и на file://)
 const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.mp4', 6: 'videos/coalco.mp4', 9: 'videos/ODK.mp4', 10: 'videos/ra.mp4', 11: 'videos/VDNH_airports.mp4', 12: 'videos/rostec.mp4' }; // 0 ВДНХ, 1 BMW, 2 МИГ-35, 6 COALCO, 9 ОДК, 10 Росатом, 11 Аэропорты, 12 Ростех
 
+// СТАРТОВАЯ КАРУСЕЛЬ = только проекты с подготовленными клипами. Привязываем локальный
+// ролик к записи по ИСХОДНОМУ индексу и выкидываем проекты без клипа (Панорама 360,
+// Сталинград, Синара, PTK, Космонавтика) — они остаются в разделе Work на лендинге.
+(function () {
+  for (let i = WORKS.length - 1; i >= 0; i--) {
+    WORKS[i].local = LOCAL_VIDEO[i] || null;
+    if (!WORKS[i].local) WORKS.splice(i, 1);
+  }
+})();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b1707-19'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b1707-26'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
 // авто-качество само снизит нагрузку на слабом железе.
-const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 0.5, sizemax: 7, count: 1, spread: 0, edge: -0.6, sizevar: 1, projscale: 1.5, objscale: 1, envscale: 1, morph: 4.6, vortspeed: 0, vortamp: 0, vortpct: 0, envon: true, sound: true, autoq: true, projfit: true, model: 'original' };
+const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 0.5, sizemax: 7, count: 1, spread: 0, edge: -0.6, sizevar: 1, projscale: 1.5, objscale: 1, envscale: 1, morph: 4.6, vortspeed: 0, vortamp: 0, vortpct: 0, rubber: 0.24, envon: true, sound: true, autoq: true, projfit: true, model: 'original' };
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -568,6 +646,8 @@ const voxVert = `
   uniform float uLensR;     // радиус линзы чёткости (px)
   uniform float uMorph;     // 0 на точке обзора → 1 в движении камеры
   uniform float uMorphAmp;  // амплитуда морфинга при движении
+  uniform float uVel;       // знаковая скорость вращения камеры — «резина» тянется против движения
+  uniform float uRubber;    // сила резинового хвоста (настройка в панели)
   uniform float uCamDist;   // расстояние камеры до фокуса (для скрытия переднего плана)
   uniform float uModelMode; // 1 = загруженная крупная модель: без «воздушного» угасания и скрытия переднего плана
   uniform float uTime;      // время — лёгкая «жизнь» точек в покое
@@ -624,13 +704,17 @@ const voxVert = `
     // с фазой по высоте + бегущая волна по полу. Благодаря перекраске по текущей позиции
     // картинка остаётся читаемой, а на точке обзора uMorph→0 и мир оседает в чёткий кадр.
     if (uMorph > 0.002) {
-      float tw = uMorph * uMorph * (uMorphAmp * 0.22);
+      // РЕЗИНОВОСТЬ: хвост тянется ПРОТИВ направления поворота (знак и сила — от скорости
+      // камеры), а ~2.5% частиц отстают заметно сильнее и «долетают» позже — живость.
+      float dirK = clamp(-uVel * 1.2, -1.0, 1.0) * uRubber; // uRubber — сила «резины» (панель, раздел Вихрь)
+      float tw = uMorph * uMorph * (uMorphAmp * 0.22) * dirK;
+      float lag = fract(aRand * 523.7) > 0.975 ? 3.2 : 1.0;
       vec2 relT = wrender.xz;
       float radT = length(relT);
-      float angT = tw * (0.05 * (wrender.y + 10.0) + 0.3 * sin(radT * 0.22 - uTime * 2.2));
+      float angT = tw * lag * (0.05 * (wrender.y + 10.0) + 0.3 * sin(radT * 0.22 - uTime * 2.2));
       float cT = cos(angT), sT = sin(angT);
       wrender.xz = mat2(cT, -sT, sT, cT) * relT;
-      wrender.y += tw * 1.5 * sin(radT * 0.3 + uTime * 1.6); // волна прокатывается по полу
+      wrender.y += tw * lag * 1.5 * sin(radT * 0.3 + uTime * 1.6); // волна прокатывается по полу
     }
     // Проекцию сэмплируем по ТЕКУЩЕЙ позиции — проектор «красит» картинку там, где точка сейчас.
     vWorld = wrender;
@@ -767,6 +851,8 @@ const voxUniforms = {
   uLensR:   { value: 450 },      // радиус линзы, px (×1.5)
   uMorph:   { value: 0 },        // морфинг при движении (1-wMax)
   uMorphAmp:{ value: S.morph },  // амплитуда морфинга
+  uVel:     { value: 0 },        // знаковая сглаженная скорость вращения (резиновый хвост)
+  uRubber:  { value: S.rubber }, // сила резинового хвоста (панель → Вихрь)
   uPV:      { value: new THREE.Matrix4() },  // proj×view, обновляется в updateCamera
   uViewRow2:{ value: new THREE.Vector4() },
   uCamDist: { value: 55 },       // расстояние камеры до фокуса
@@ -1463,6 +1549,7 @@ const WHEEL_SENS = 0.009; // чувствительность прокрутки
 
 function onInput(delta) {
   if (GAME.on) return; // в мини-игре скролл/драг галерею не крутят
+  if (typeof ARCHIVE !== 'undefined' && ARCHIVE.on) { arcInput(delta); return; } // в архиве — вращение кольца
   navTarget += delta; // копим непрерывное намерение; цель пружины возьмём как ближайший кадр
   lastInput = performance.now();
   navigated = true;
@@ -1479,7 +1566,7 @@ addEventListener('wheel', e => {
   let dx = e.deltaX, dy = e.deltaY;
   if (e.deltaMode === 1) { dx *= 16; dy *= 16; }
   else if (e.deltaMode === 2) { dx *= innerHeight; dy *= innerHeight; }
-  if (EMBEDDED && Math.abs(dy) > Math.abs(dx)) {
+  if (EMBEDDED && !(typeof ARCHIVE !== 'undefined' && ARCHIVE.on) && Math.abs(dy) > Math.abs(dx)) {
     // свайп снизу вверх листает сайт вниз (и наоборот)
     try { parent.postMessage({ pdScroll: dy }, '*'); } catch (err) {}
     return;
@@ -1500,14 +1587,27 @@ let sceneVisible = true; // герой в кадре? (лендинг сообщ
 addEventListener('message', e => {
   if (!e.data) return;
   if (typeof e.data.pdRotate === 'number') onInput(e.data.pdRotate);
-  if (typeof e.data.pdVisible === 'boolean') { sceneVisible = e.data.pdVisible; Sound.setVisible(sceneVisible); }
+  if (typeof e.data.pdVisible === 'boolean') {
+    // в полноэкранном архиве герой-секция вне кадра, но сцена видна — не глушим
+    sceneVisible = e.data.pdVisible || (typeof ARCHIVE !== 'undefined' && ARCHIVE.on);
+    Sound.setVisible(sceneVisible);
+  }
 });
+// standalone-прототип: звук только когда вкладка видима и окно в фокусе
+// (в составе сайта этим управляет лендинг через pdVisible)
+if (!EMBEDDED) {
+  const updVis = () => { sceneVisible = !document.hidden; Sound.setVisible(sceneVisible && document.hasFocus()); };
+  addEventListener('visibilitychange', updVis);
+  addEventListener('blur', () => Sound.setVisible(false));
+  addEventListener('focus', updVis);
+}
 // перетаскивание мышью по сцене = вращение (как свайп на тач); одиночный клик без протяжки = зум
 let dragOn = false, dragPrev = 0, dragMoved = 0;
 renderer.domElement.addEventListener('pointerdown', e => {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   if (e.pointerType === 'touch') return;             // тач уже обрабатывается свайпом выше
   dragOn = true; dragPrev = e.clientX + e.clientY; dragMoved = 0;
+  if (typeof ARCHIVE !== 'undefined' && ARCHIVE.on) document.body.classList.add('arc-drag');
 });
 addEventListener('pointermove', e => {
   if (!dragOn) return;
@@ -1518,8 +1618,10 @@ addEventListener('pointermove', e => {
 addEventListener('pointerup', e => {
   if (!dragOn) return;
   dragOn = false;
+  document.body.classList.remove('arc-drag');
   if (dragMoved < 6) {                                  // почти без движения = клик
     if (GAME.on) { GAME.over ? restartGame() : startExitGame(); return; } // клик: гейм-овер → заново, полёт → выход
+    if (typeof ARCHIVE !== 'undefined' && ARCHIVE.on) { arcClick(); return; } // архив: влёт в захваченную стелу
     if (play.state === 1 || play.state === 2) { stopPlay(); return; } // клик закрывает видео → в 3D
     if (play.state !== 0) return;
     // у краёв экрана клик листает на соседний проект (курсор там — стрелка)
@@ -1553,6 +1655,7 @@ addEventListener('keydown', e => {
 });
 
 let moveSmooth = 0; // плавная огибающая скорости камеры (морфинг/наезд без рывков)
+let _gtPrev = 0, _velTw = 0; // знаковая скорость вращения — для «резинового» хвоста в шейдере
 let focusAmt = 0;   // «фокус на идеальной точке» (замедлились + подъехали) — сборка/наезд
 let parSX = 0, parSY = 0; // сглаженный параллакс от курсора (-1..1)
 const trailHist = [];     // история позиций курсора для шлейфа линзы
@@ -1819,9 +1922,9 @@ function preloadVideo(i) {
   preIdx = i;
   if (preV && play.iframe !== preV) { preV.removeAttribute('src'); preV.load(); }
   preV = null;
-  if (LOCAL_VIDEO[i]) {
+  if (WORKS[i] && WORKS[i].local) {
     const v = document.createElement('video');
-    v.src = LOCAL_VIDEO[i]; v.muted = true; v.loop = true; v.playsInline = true;
+    v.src = WORKS[i].local; v.muted = true; v.loop = true; v.playsInline = true;
     v.setAttribute('playsinline', ''); v.preload = 'auto';
     v.load();
     // прогрев декодера: беззвучно проигрываем долю секунды и откатываемся на 0 —
@@ -1846,11 +1949,11 @@ function startPlay() {
   playerEl.style.backgroundImage = `url(${WORKS[i].frame || WORKS[i].src})`;
   playerEl.classList.remove('live');
   if (play.iframe) { play.iframe.remove(); play.iframe = null; }
-  if (LOCAL_VIDEO[i]) {
+  if (WORKS[i] && WORKS[i].local) {
     // локальный mp4: берём предзагруженный элемент (буфер уже полон) — старт без задержки
     const v = (preV && preIdx === i) ? preV : (() => {
       const nv = document.createElement('video');
-      nv.src = LOCAL_VIDEO[i]; nv.muted = true; nv.loop = true; nv.playsInline = true;
+      nv.src = WORKS[i].local; nv.muted = true; nv.loop = true; nv.playsInline = true;
       nv.setAttribute('playsinline', ''); nv.preload = 'auto';
       return nv;
     })();
@@ -1989,7 +2092,7 @@ function updatePlay(dt, wMax) {
   playerEl.style.top = r.cy + 'px';
   // магия старта: весь подлёт ролик живёт НА ТОЧКАХ (VideoTexture), объёмный и живой,
   // и лишь в финале плоский кадр «наводит резкость» поверх. Для ембедов — как раньше.
-  const domOp = LOCAL_VIDEO[play.idx]
+  const domOp = (WORKS[play.idx] && WORKS[play.idx].local)
     ? clamp01((playE - 0.72) / 0.28)   // локальный ролик: DOM-кадр проявляется в последней четверти
     : Math.min(1, playE * 2);          // ембед: точки видео не играют — показываем раньше
   playerEl.style.opacity = domOp;
@@ -2623,7 +2726,387 @@ const gameOverEl = document.getElementById('game-over');
 addEventListener('message', e => { if (e.data && typeof e.data.pdGame === 'boolean') e.data.pdGame ? enterGame() : startExitGame(); });
 addEventListener('keydown', e => {
   if (e.key === 'Escape' && GAME.on) startExitGame();
-  else if ((e.key === 'g' || e.key === 'G' || e.key === 'п' || e.key === 'П') && !GAME.on) enterGame();
+  else if (e.key === 'Escape' && ARCHIVE.on) { ARCHIVE.page ? arcClosePage() : startExitArchive(); }
+  else if ((e.key === 'g' || e.key === 'G' || e.key === 'п' || e.key === 'П') && !GAME.on && !ARCHIVE.on) enterGame();
+  else if ((e.key === 'a' || e.key === 'A' || e.key === 'ф' || e.key === 'Ф') && !ARCHIVE.on && !GAME.on && !EMBEDDED) enterArchive(); // архив пока только в прототипе (доработаем позже)
+});
+
+// ==================== АРХИВ ПРОЕКТОВ «Спейс-индекс» ====================
+// Кольцо из 15 точечных стел вокруг зрителя. Каждая стела — обложка проекта,
+// разложенная на точки (цвета запекаются из картинки). Драг/скролл вращает кольцо
+// с магнитной докруткой; стела по центру «захватывается» (шум точек стихает,
+// появляются скобки и мета). Клик — влёт сквозь стелу. Вход/выход — растворение,
+// как у мини-игры. Ассеты: site/assets/work/<slug>/ (качает download_assets.sh);
+// пока картинки нет — стела дышит шумом в цвете проекта.
+const ARC_DATA = [
+  { slug: 'industry-rf',       title: 'Промышленность РФ',        sub: 'Вижу · Деп. промышленности · 2023', cover: 'site_ships_23_2-960x960.png', tint: 0x7fb8e0 },
+  { slug: 'airports',          title: 'Аэропорты России',          sub: 'Форум «Россия» · 2023',             cover: 'site_airports_23-960x960.png', tint: 0x86d2c8 },
+  { slug: 'odk-oak',           title: 'ОДК ОАК',                   sub: 'МАКС · 2021',                        cover: 'site_odk_21_2-960x960.png',   tint: 0x9fb6e8 },
+  { slug: 'proryv',            title: 'Прорыв',                    sub: 'Росатом · 2024',                     cover: 'site_ra_24-1-960x960.png',    tint: 0xe8a37f },
+  { slug: 'rostec',            title: 'Ростех-Экспо',              sub: 'Ростех · 2021',                      cover: '01_logo_v03-960x960.jpg',     tint: 0xd8b06f },
+  { slug: 'ptk-group',         title: 'PTK Group',                 sub: 'Группа ПТК · 2019',                  cover: 'ptk_start_2.gif',             tint: 0x8fc8e8 },
+  { slug: 'mig2019',           title: 'Стенд МИГ-35',              sub: 'РСК «МИГ» · МАКС 2019',              cover: 'mig_booth-960x960.jpg',       tint: 0x7fc4e8 },
+  { slug: 'bmwx5',             title: 'BMW X5',                    sub: 'BMW China · 2016',                   cover: 'bmw_start.jpg',               tint: 0x9fb0c8 },
+  { slug: 'pano360',           title: 'Панорама 360',              sub: 'Москва-Сити · 2018',                 cover: 'pano_bg-960x536.jpg',         tint: 0x88c8d8 },
+  { slug: 'urban-forum-2018',  title: 'Urban Forum 2018',          sub: 'Правительство Москвы · 2018',        cover: 'GERB_loop.gif',               tint: 0xd0d0d8 },
+  { slug: 'stalingrad',        title: 'Пароль победы «Сталинград»',sub: 'Музей-заповедник · 2018',            cover: 'stalingrad.jpg',              tint: 0xd8a878 },
+  { slug: 'coalco',            title: 'Сухой порт COALCO',         sub: 'Coalco · 2016',                      cover: 'coalco.jpg',                  tint: 0x90b8d0 },
+  { slug: 'sinara',            title: 'Синара ТМ',                 sub: 'Холдинг СТМ · 2018',                 cover: 'stm_cover2.jpg',              tint: 0x88d0c0 },
+  { slug: 'vdnh-space',        title: 'ВДНХ Космос',               sub: 'ВДНХ · 2018',                        cover: 'space_st-960x960.jpg',        tint: 0x8fa8e0 },
+  { slug: 'vdnh-space-center', title: 'Космонавтика и авиация',    sub: 'ВДНХ · 2016',                        cover: 'space_sm2-960x960.jpg',       tint: 0x9fb8e8 }
+];
+const ARC_N = ARC_DATA.length, ARC_STEP = Math.PI * 2 / ARC_N, ARC_R = 40;
+const ARCHIVE = { on: false, rot: 0, target: 0, vel: 0, lastIn: 0, enter: 0, exit: -1, zoom: 0, zoomK: -1,
+  lock: -1, lockAmt: 0, seen: new Set(), group: null, steles: [], page: false, camStart: new THREE.Vector3(), fovStart: 50 };
+let arcProjects = null; // полные тексты из site/data/projects.json (для панели после влёта)
+fetch('data/projects.json').then(r => r.json()).then(j => { arcProjects = j.projects; }).catch(() => {});
+
+const arcVert = `
+  attribute vec3 aColor; attribute vec3 aRnd;
+  uniform float uTime, uFoc, uOp, uZoom, uPR;
+  varying vec3 vC; varying float vA;
+  void main() {
+    vec3 p = position;
+    float j = 1.0 - uFoc * 0.85;               /* захват стихает шум */
+    p.x += sin(uTime * 1.3 + aRnd.x * 21.0) * 0.55 * j * (0.3 + aRnd.y);
+    p.y += cos(uTime * 1.1 + aRnd.y * 17.0) * 0.5  * j * (0.3 + aRnd.z);
+    p.z += sin(uTime * 1.6 + aRnd.z * 23.0) * 0.7  * j;
+    if (uZoom > 0.001) {                        /* влёт: точки проносятся мимо камеры тоннелем */
+      float k = uZoom * uZoom;
+      p.z  += k * 110.0 * (0.35 + aRnd.x);
+      p.xy *= 1.0 + k * 3.5 * aRnd.y;
+      float tw = k * 2.2;                       /* лёгкий твист тоннеля */
+      float ca = cos(tw * aRnd.z), sa = sin(tw * aRnd.z);
+      p.xy = mat2(ca, -sa, sa, ca) * p.xy;
+    }
+    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+    float lum = dot(aColor, vec3(0.299, 0.587, 0.114));
+    gl_PointSize = clamp((1.5 + 2.6 * lum + 2.2 * uFoc * lum) * uPR * (130.0 / -mv.z), 1.0, 14.0);
+    vC = aColor * (0.8 + 0.5 * uFoc);
+    vA = uOp * (0.22 + 0.78 * lum) * (1.0 - uZoom * 0.55);
+    gl_Position = projectionMatrix * mv;
+  }`;
+const arcFrag = `
+  precision mediump float;
+  varying vec3 vC; varying float vA;
+  void main() {
+    vec2 q = gl_PointCoord - 0.5;
+    if (dot(q, q) > 0.25) discard;
+    gl_FragColor = vec4(vC, vA);
+  }`;
+
+// стела: план облака точек под обложку; до загрузки картинки — шум в цвете проекта
+function arcMakeStele(i) {
+  const d = ARC_DATA[i];
+  const grid = (innerWidth < 800) ? 58 : 82;
+  const n = grid * grid;
+  const pos = new Float32Array(n * 3), col = new Float32Array(n * 3), rnd = new Float32Array(n * 3);
+  const tint = new THREE.Color(d.tint);
+  for (let k = 0; k < n; k++) {
+    const gx = k % grid, gy = (k / grid) | 0;
+    pos[k * 3]     = (gx / (grid - 1) - 0.5) * 15;
+    pos[k * 3 + 1] = (0.5 - gy / (grid - 1)) * 15 + 10.5;   // центр кадра на высоте ~10.5
+    pos[k * 3 + 2] = 0;
+    const s = 0.12 + 0.5 * Math.random() * Math.random();  // плейсхолдер: редкое мерцание
+    col[k * 3] = tint.r * s; col[k * 3 + 1] = tint.g * s; col[k * 3 + 2] = tint.b * s;
+    rnd[k * 3] = Math.random(); rnd[k * 3 + 1] = Math.random(); rnd[k * 3 + 2] = Math.random();
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aColor', new THREE.BufferAttribute(col, 3));
+  g.setAttribute('aRnd', new THREE.BufferAttribute(rnd, 3));
+  const m = new THREE.ShaderMaterial({ vertexShader: arcVert, fragmentShader: arcFrag,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uTime: { value: 0 }, uFoc: { value: 0 }, uOp: { value: 0 },
+                uZoom: { value: 0 }, uPR: { value: renderer.getPixelRatio() } } });
+  const pts = new THREE.Points(g, m);
+  const grp = new THREE.Group();
+  grp.add(pts);
+  // цоколь: тонкая колонна тусклых точек до пола + отметка на полу
+  (function base() {
+    const bn = 130, bp = new Float32Array(bn * 3), bc = new Float32Array(bn * 3), br = new Float32Array(bn * 3);
+    for (let k = 0; k < bn; k++) {
+      bp[k * 3] = (Math.random() - 0.5) * 1.2;
+      bp[k * 3 + 1] = Math.random() * 3.0;
+      bp[k * 3 + 2] = (Math.random() - 0.5) * 1.2;
+      const s = 0.25 + 0.3 * Math.random();
+      bc[k * 3] = tint.r * s; bc[k * 3 + 1] = tint.g * s; bc[k * 3 + 2] = tint.b * s;
+      br[k * 3] = Math.random(); br[k * 3 + 1] = Math.random(); br[k * 3 + 2] = Math.random();
+    }
+    const bg = new THREE.BufferGeometry();
+    bg.setAttribute('position', new THREE.BufferAttribute(bp, 3));
+    bg.setAttribute('aColor', new THREE.BufferAttribute(bc, 3));
+    bg.setAttribute('aRnd', new THREE.BufferAttribute(br, 3));
+    grp.add(new THREE.Points(bg, m));
+  })();
+  const a = i * ARC_STEP;
+  grp.position.set(Math.sin(a) * ARC_R, 0, -Math.cos(a) * ARC_R);
+  grp.lookAt(0, 0, 0); // +Z стелы смотрит в центр (на камеру)
+  // асинхронная запечка цветов обложки в точки
+  const img = new Image();
+  img.onload = () => {
+    const asp = img.width / img.height;
+    const w = 15 * Math.min(1, asp), h = 15 * Math.min(1, 1 / asp);
+    const cv = document.createElement('canvas'); cv.width = grid; cv.height = grid;
+    const cx = cv.getContext('2d', { willReadFrequently: true });
+    cx.drawImage(img, 0, 0, grid, grid);
+    const px = cx.getImageData(0, 0, grid, grid).data;
+    const pa = g.attributes.position.array, ca = g.attributes.aColor.array;
+    for (let k = 0; k < n; k++) {
+      const gx = k % grid, gy = (k / grid) | 0;
+      pa[k * 3]     = (gx / (grid - 1) - 0.5) * w;
+      pa[k * 3 + 1] = (0.5 - gy / (grid - 1)) * h + 10.5;
+      const o = (gy * grid + gx) * 4;
+      ca[k * 3] = Math.pow(px[o] / 255, 1.6); // лёгкая гамма: тёмное темнее, света звенят
+      ca[k * 3 + 1] = Math.pow(px[o + 1] / 255, 1.6);
+      ca[k * 3 + 2] = Math.pow(px[o + 2] / 255, 1.6);
+    }
+    g.attributes.position.needsUpdate = true;
+    g.attributes.aColor.needsUpdate = true;
+    st.w = w; st.h = h; // реальные габариты кадра — для скобок захвата
+  };
+  img.src = 'assets/work/' + d.slug + '/' + d.cover;
+  const st = { grp: grp, mat: m, idx: i, w: 15, h: 15 };
+  return st;
+}
+
+let _arcGalleryVis = null;
+const arcCount = document.getElementById('arc-count');
+const arcNum = document.getElementById('arc-num');
+const arcTitle = document.getElementById('arc-title');
+const arcSub = document.getElementById('arc-sub');
+const arcLockEl = document.getElementById('arc-lock');
+const arcRadar = document.getElementById('arc-radar');
+const arcRC = arcRadar.getContext('2d');
+const arcPageEl = document.getElementById('arc-page');
+
+function enterArchive() {
+  if (ARCHIVE.on) return;
+  if (GAME.on) exitGame();
+  ARCHIVE.on = true; ARCHIVE.enter = 0; ARCHIVE.exit = -1; ARCHIVE.zoom = 0; ARCHIVE.zoomK = -1;
+  ARCHIVE.vel = 0; ARCHIVE.lock = -1; ARCHIVE.lockAmt = 0; ARCHIVE.page = false;
+  ARCHIVE.rot = 0; ARCHIVE.target = 0; ARCHIVE.lastIn = 0;
+  document.body.classList.add('archive');
+  stopPlay();
+  ARCHIVE.camStart.copy(camera.position);
+  ARCHIVE.fovStart = camera.fov;
+  ARCHIVE.zenith0 = skyMat.uniforms.uZenith.value.clone(); // вернём небо при выходе
+  _arcGalleryVis = scene.children.map(o => [o, o.visible]);
+  ARCHIVE.group = new THREE.Group();
+  ARCHIVE.steles = [];
+  for (let i = 0; i < ARC_N; i++) { const s = arcMakeStele(i); ARCHIVE.steles.push(s); ARCHIVE.group.add(s.grp); }
+  // пол: разреженное кольцо-подиум из точек
+  (function floor() {
+    const fn = 1400, fp = new Float32Array(fn * 3), fc = new Float32Array(fn * 3), fr = new Float32Array(fn * 3);
+    for (let k = 0; k < fn; k++) {
+      const a = Math.random() * Math.PI * 2, r = ARC_R * (0.55 + Math.random() * 0.75);
+      fp[k * 3] = Math.sin(a) * r; fp[k * 3 + 1] = 0; fp[k * 3 + 2] = -Math.cos(a) * r;
+      const s = 0.14 + 0.2 * Math.random();
+      fc[k * 3] = s; fc[k * 3 + 1] = s * 1.06; fc[k * 3 + 2] = s * 1.18;
+      fr[k * 3] = Math.random(); fr[k * 3 + 1] = Math.random(); fr[k * 3 + 2] = Math.random();
+    }
+    const fg = new THREE.BufferGeometry();
+    fg.setAttribute('position', new THREE.BufferAttribute(fp, 3));
+    fg.setAttribute('aColor', new THREE.BufferAttribute(fc, 3));
+    fg.setAttribute('aRnd', new THREE.BufferAttribute(fr, 3));
+    const fm = new THREE.ShaderMaterial({ vertexShader: arcVert, fragmentShader: arcFrag,
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      uniforms: { uTime: { value: 0 }, uFoc: { value: 0 }, uOp: { value: 0 },
+                  uZoom: { value: 0 }, uPR: { value: renderer.getPixelRatio() } } });
+    ARCHIVE.floorMat = fm;
+    ARCHIVE.group.add(new THREE.Points(fg, fm));
+  })();
+  scene.add(ARCHIVE.group);
+  arcCount.textContent = 'РАЗВЕДАНО ' + String(ARCHIVE.seen.size).padStart(2, '0') + '/' + ARC_N;
+  arcPageEl.classList.remove('show');
+  if (EMBEDDED) try { parent.postMessage({ pdArchiveOn: true }, '*'); } catch (e) {}
+}
+function exitArchive() {
+  if (!ARCHIVE.on) return;
+  ARCHIVE.on = false;
+  document.body.classList.remove('archive', 'arc-drag');
+  arcLockEl.classList.remove('on');
+  arcPageEl.classList.remove('show');
+  scene.remove(ARCHIVE.group);
+  ARCHIVE.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+  ARCHIVE.group = null; ARCHIVE.steles = [];
+  if (ARCHIVE.zenith0) skyMat.uniforms.uZenith.value.copy(ARCHIVE.zenith0);
+  if (_arcGalleryVis) { _arcGalleryVis.forEach(([o, v]) => o.visible = v); _arcGalleryVis = null; }
+  applySceneMode();
+  gamePuff = 1; // портфолио пересобирается из разлёта
+  if (EMBEDDED) try { parent.postMessage({ pdArchiveOn: false }, '*'); } catch (e) {}
+}
+function startExitArchive() {
+  if (!ARCHIVE.on || ARCHIVE.exit >= 0) return;
+  ARCHIVE.exit = 0;
+}
+// вращение кольца: сюда приходит дельта из onInput (драг/скролл/pdRotate).
+// Пружина к цели, как в галерее: один щелчок колеса ≈ соседняя стела.
+function arcInput(delta) {
+  if (ARCHIVE.page || ARCHIVE.zoom > 0) return;
+  ARCHIVE.target += delta * 0.42;
+  ARCHIVE.lastIn = performance.now();
+}
+// клик: влёт в захваченную стелу; из панели — назад в архив
+function arcClick() {
+  if (ARCHIVE.page) { arcClosePage(); return; }
+  if (ARCHIVE.zoom > 0) return;
+  if (ARCHIVE.lock >= 0 && ARCHIVE.lockAmt > 0.5) {
+    ARCHIVE.zoom = 0.0001; ARCHIVE.zoomK = ARCHIVE.lock;
+    ARCHIVE.seen.add(ARCHIVE.lock);
+    if (S.sound) Sound.kick();
+  }
+}
+function arcOpenPage(i) {
+  const d = ARC_DATA[i];
+  document.getElementById('ap-num').textContent = '[' + String(i + 1).padStart(2, '0') + '/' + ARC_N + ']';
+  document.getElementById('ap-title').textContent = d.title;
+  document.getElementById('ap-meta').textContent = d.sub;
+  let goal = '', sol = '';
+  if (arcProjects) {
+    const p = arcProjects.find(x => x.slug === d.slug);
+    if (p) { goal = p.goal || ''; sol = p.solution || ''; }
+  }
+  document.getElementById('ap-goal').textContent = goal;
+  document.getElementById('ap-sol').textContent = sol;
+  arcPageEl.classList.add('show');
+  ARCHIVE.page = true;
+  arcCount.textContent = 'РАЗВЕДАНО ' + String(ARCHIVE.seen.size).padStart(2, '0') + '/' + ARC_N;
+  if (EMBEDDED) try { parent.postMessage({ pdArcOpen: d.slug }, '*'); } catch (e) {}
+}
+function arcClosePage() {
+  arcPageEl.classList.remove('show');
+  ARCHIVE.page = false;
+  // обратный влёт: стела собирается из тоннеля назад
+  ARCHIVE.zoom = 0.999; ARCHIVE.zoomBack = true;
+}
+const _arcV = new THREE.Vector3();
+function updateArchive(dt, time) {
+  // вход: слайд галереи рассыпается, кольцо архива проявляется, камера перелетает в центр
+  if (ARCHIVE.enter < 1) {
+    ARCHIVE.enter = Math.min(1, ARCHIVE.enter + dt / 1.2);
+    const k = ARCHIVE.enter, ke = k * k * (3 - 2 * k);
+    voxUniforms.uSpread.value = S.spread + ke * 16;
+    if (k >= 0.55 && _arcGalleryVis) {
+      scene.children.forEach(o => { if (o !== skyMesh && o !== ARCHIVE.group) o.visible = false; });
+    }
+  }
+  const eK = ARCHIVE.enter * ARCHIVE.enter * (3 - 2 * ARCHIVE.enter);
+  let wOp = clamp01((ARCHIVE.enter - 0.3) / 0.65);
+  // небо гаснет в глубокий космос: additive-точки стел звенят только на тёмном
+  const skB = 0.5 + 0.5 * Math.sin(time * 0.07);
+  skyMat.uniforms.uHorizon.value.setHSL(0.58, 0.30, (0.035 + 0.02 * skB) + (1 - eK) * 0.25);
+  skyMat.uniforms.uZenith.value.setHSL(0.63, 0.40, 0.015 + (1 - eK) * 0.08);
+  // выход: кольцо тает, камера вернётся сама (exitArchive восстановит галерею)
+  if (ARCHIVE.exit >= 0) {
+    ARCHIVE.exit += dt / 0.9;
+    wOp = Math.min(wOp, 1 - Math.min(1, ARCHIVE.exit));
+    if (ARCHIVE.exit >= 1) { exitArchive(); return; }
+  }
+  // пружина к цели + магнитная докрутка к ближайшей стеле при бездействии
+  if (ARCHIVE.zoom === 0 && !ARCHIVE.page) {
+    if (performance.now() - ARCHIVE.lastIn > 260) {
+      const near = Math.round(ARCHIVE.target / ARC_STEP) * ARC_STEP;
+      ARCHIVE.target += (near - ARCHIVE.target) * (1 - Math.exp(-dt * 4));
+    }
+    const prev = ARCHIVE.rot;
+    ARCHIVE.rot += (ARCHIVE.target - ARCHIVE.rot) * (1 - Math.exp(-dt * 5.5));
+    ARCHIVE.vel = (ARCHIVE.rot - prev) / Math.max(dt, 1e-4); // рад/с — для звука и гейта захвата
+  }
+  ARCHIVE.group.rotation.y = ARCHIVE.rot;
+  // захват: стела ближе всего к фронту (мировой угол ≈ 0)
+  let best = -1, bestD = 1e9;
+  for (let i = 0; i < ARC_N; i++) {
+    let d = (i * ARC_STEP + ARCHIVE.rot) % (Math.PI * 2);
+    if (d > Math.PI) d -= Math.PI * 2; if (d < -Math.PI) d += Math.PI * 2;
+    ARCHIVE.steles[i]._ang = d;
+    const ad = Math.abs(d);
+    if (ad < bestD) { bestD = ad; best = i; }
+  }
+  const locked = bestD < ARC_STEP * 0.5 && Math.abs(ARCHIVE.vel) < 0.6;
+  if (locked && best !== ARCHIVE.lock) {
+    ARCHIVE.lock = best; ARCHIVE.lockAmt = 0;
+    const d = ARC_DATA[best];
+    arcNum.textContent = '[' + String(best + 1).padStart(2, '0') + '/' + ARC_N + ']';
+    arcTitle.textContent = d.title;
+    arcSub.textContent = d.sub;
+    if (S.sound) Sound.tick(); // тихий пинг захвата
+  }
+  ARCHIVE.lockAmt = clamp01(ARCHIVE.lockAmt + (locked ? dt * 2.2 : -dt * 3));
+  if (!locked && ARCHIVE.lockAmt === 0) ARCHIVE.lock = -1;
+  // влёт: камера летит сквозь стелу, точки раскрываются тоннелем; в конце — панель проекта
+  if (ARCHIVE.zoom > 0) {
+    if (ARCHIVE.zoomBack) {
+      ARCHIVE.zoom -= dt / 0.7;
+      if (ARCHIVE.zoom <= 0) { ARCHIVE.zoom = 0; ARCHIVE.zoomBack = false; ARCHIVE.zoomK = -1; }
+    } else {
+      ARCHIVE.zoom += dt / 1.05;
+      if (ARCHIVE.zoom >= 1) { ARCHIVE.zoom = 1; arcOpenPage(ARCHIVE.zoomK); }
+    }
+  }
+  const zm = ARCHIVE.zoom * ARCHIVE.zoom * (3 - 2 * ARCHIVE.zoom);
+  // униформы стел: фокус, прозрачность, зум
+  for (let i = 0; i < ARC_N; i++) {
+    const s = ARCHIVE.steles[i];
+    const foc = (i === ARCHIVE.lock) ? ARCHIVE.lockAmt : 0;
+    s.mat.uniforms.uTime.value = time;
+    s.mat.uniforms.uFoc.value = foc;
+    s.mat.uniforms.uZoom.value = (i === ARCHIVE.zoomK) ? zm : 0;
+    // дальние стелы притухают; при влёте всё, кроме цели, гаснет
+    const dim = 0.35 + 0.65 * clamp01(1 - Math.abs(s._ang) / (Math.PI * 0.8));
+    s.mat.uniforms.uOp.value = wOp * dim * ((ARCHIVE.zoomK >= 0 && i !== ARCHIVE.zoomK) ? (1 - zm) : 1);
+  }
+  ARCHIVE.floorMat.uniforms.uTime.value = time;
+  ARCHIVE.floorMat.uniforms.uOp.value = wOp * (1 - zm);
+  // камера: из ракурса галереи в центр кольца; лёгкий параллакс от курсора; при влёте — вперёд
+  const pk = 1 - Math.exp(-dt * 3);
+  parSX += ((mousePX / innerWidth - 0.5) * 2 - parSX) * pk;
+  parSY += ((mousePY / innerHeight - 0.5) * 2 - parSY) * pk;
+  const camY = 8 + parSY * -1.2;
+  const fwd = zm * (ARC_R - 4); // влёт: до самой стелы
+  camera.position.set(
+    ARCHIVE.camStart.x + (0 - ARCHIVE.camStart.x) * eK,
+    ARCHIVE.camStart.y + (camY - ARCHIVE.camStart.y) * eK,
+    ARCHIVE.camStart.z + (-fwd - ARCHIVE.camStart.z) * eK);
+  camera.lookAt(parSX * 6 * (1 - zm), (9 + parSY * -2) * eK + (1 - eK) * (TARGET.y + S.viewy), -ARC_R * eK + (1 - eK) * TARGET.z);
+  camera.fov = ARCHIVE.fovStart + (S.fov + zm * 16 - ARCHIVE.fovStart) * eK;
+  camera.updateProjectionMatrix();
+  // скобки захвата: проекция углов стелы на экран
+  if (ARCHIVE.lock >= 0 && ARCHIVE.lockAmt > 0.25 && ARCHIVE.zoom === 0 && !ARCHIVE.page) {
+    const s = ARCHIVE.steles[ARCHIVE.lock];
+    let x1 = 1e9, y1 = 1e9, x2 = -1e9, y2 = -1e9, ok = true;
+    const hw = s.w / 2 + 0.9, hh = s.h / 2 + 0.9;
+    for (const [ox, oy] of [[-hw, 10.5 - hh], [hw, 10.5 - hh], [-hw, 10.5 + hh], [hw, 10.5 + hh]]) {
+      _arcV.set(ox, oy, 0).applyMatrix4(s.grp.matrixWorld).project(camera);
+      if (_arcV.z > 1) { ok = false; break; }
+      const sx = (_arcV.x * 0.5 + 0.5) * innerWidth, sy = (-_arcV.y * 0.5 + 0.5) * innerHeight;
+      x1 = Math.min(x1, sx); y1 = Math.min(y1, sy); x2 = Math.max(x2, sx); y2 = Math.max(y2, sy);
+    }
+    if (ok) {
+      arcLockEl.style.left = x1 + 'px'; arcLockEl.style.top = y1 + 'px';
+      arcLockEl.style.width = (x2 - x1) + 'px'; arcLockEl.style.height = (y2 - y1) + 'px';
+      arcLockEl.classList.add('on');
+    } else arcLockEl.classList.remove('on');
+  } else arcLockEl.classList.remove('on');
+  // радар: кольцо меток, сектор обзора вверх, разведанные — залиты
+  const R2 = 96, cR = 74;
+  arcRC.clearRect(0, 0, 192, 192);
+  arcRC.strokeStyle = 'rgba(160,190,215,.45)'; arcRC.lineWidth = 1.5;
+  arcRC.beginPath(); arcRC.arc(R2, R2, cR, 0, 6.2832); arcRC.stroke();
+  arcRC.beginPath(); arcRC.arc(R2, R2, cR * 0.55, 0, 6.2832); arcRC.stroke();
+  arcRC.fillStyle = 'rgba(200,230,255,.14)';
+  arcRC.beginPath(); arcRC.moveTo(R2, R2); arcRC.arc(R2, R2, cR, -Math.PI / 2 - 0.42, -Math.PI / 2 + 0.42); arcRC.fill();
+  for (let i = 0; i < ARC_N; i++) {
+    const a = ARCHIVE.steles[i]._ang - Math.PI / 2;
+    const isL = i === ARCHIVE.lock && ARCHIVE.lockAmt > 0.3;
+    arcRC.fillStyle = isL ? '#eaf6ff' : (ARCHIVE.seen.has(i) ? 'rgba(140,225,175,.9)' : 'rgba(150,185,215,.65)');
+    arcRC.beginPath(); arcRC.arc(R2 + Math.cos(a) * cR * 0.82, R2 + Math.sin(a) * cR * 0.82, isL ? 5 : 3, 0, 6.2832); arcRC.fill();
+  }
+  arcRC.fillStyle = '#eaf6ff'; arcRC.fillRect(R2 - 2, R2 - 2, 4, 4);
+}
+// вход/выход: сообщение от лендинга; клавиша A — для локальной отладки прототипа
+addEventListener('message', e => {
+  if (e.data && typeof e.data.pdArchive === 'boolean') e.data.pdArchive ? enterArchive() : startExitArchive();
 });
 
 const clock = new THREE.Clock();
@@ -2646,6 +3129,9 @@ function loop() {
   const dt = Math.min(_dtAcc, 0.05);
   _dtAcc = 0;
   const time = clock.getElapsedTime();
+  // герой вне кадра или вкладка не в фокусе → не рендерим ВООБЩЕ: 0% GPU, кулер молчит.
+  // rAF продолжает тикать, при возврате сцена мгновенно оживает.
+  if (!sceneVisible && !GAME.on && !ARCHIVE.on) { Sound.frame(0, 0); return; }
   voxUniforms.uTime.value = time;
   if (sparkMat) sparkMat.uniforms.uTime.value = time;
   autoQuality(dt);
@@ -2653,6 +3139,13 @@ function loop() {
   if (GAME.on) {
     updateGame(dt, time);
     Sound.frame(0, 0); // в игре — тишина
+    renderer.render(scene, camera);
+    return;
+  }
+  // режим архива проектов: своё вращение/камера, галерейные системы спят
+  if (ARCHIVE.on) {
+    updateArchive(dt, time);
+    Sound.frame(Math.min(1, Math.abs(ARCHIVE.vel) * 0.9), ARCHIVE.zoom); // шум следует за вращением, влёт звучит как влёт
     renderer.render(scene, camera);
     return;
   }
@@ -2666,6 +3159,11 @@ function loop() {
   const A = camera.aspect || (innerWidth / innerHeight);
   voxUniforms.uProjScale.value = S.projfit ? S.projscale * Math.max(A / IMG_ASP, IMG_ASP / A) : S.projscale;
   updateNav(dt);
+  // знаковая сглаженная скорость вращения → «резиновый» хвост в шейдере.
+  // Мягкий спад: после остановки скролла отставшие частицы плавно долетают.
+  const dGt = gt - _gtPrev; _gtPrev = gt;
+  _velTw += (clamp(dGt / Math.max(dt, 1e-3), -3, 3) - _velTw) * (1 - Math.exp(-dt * 4));
+  voxUniforms.uVel.value = _velTw;
   const wMax = updateWeights();
   lastWMax = wMax;
   updateCamera(time, wMax);
@@ -2703,8 +3201,8 @@ addEventListener('resize', () => {
 // ---------- Панель настроек ----------
 (function () {
   const g = id => document.getElementById(id);
-  const el  = { height: g('s-height'), viewy: g('s-viewy'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), morph: g('s-morph'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale'), envscale: g('s-envscale'), vortspeed: g('s-vortspeed'), vortamp: g('s-vortamp'), vortpct: g('s-vortpct') };
-  const lbl = { height: g('v-height'), viewy: g('v-viewy'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), morph: g('v-morph'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale'), envscale: g('v-envscale'), vortspeed: g('v-vortspeed'), vortamp: g('v-vortamp'), vortpct: g('v-vortpct') };
+  const el  = { height: g('s-height'), viewy: g('s-viewy'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), morph: g('s-morph'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale'), envscale: g('s-envscale'), vortspeed: g('s-vortspeed'), vortamp: g('s-vortamp'), vortpct: g('s-vortpct'), rubber: g('s-rubber') };
+  const lbl = { height: g('v-height'), viewy: g('v-viewy'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), morph: g('v-morph'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale'), envscale: g('v-envscale'), vortspeed: g('v-vortspeed'), vortamp: g('v-vortamp'), vortpct: g('v-vortpct'), rubber: g('v-rubber') };
   const fmt = {
     height:  v => (v > 0 ? '+' : '') + (+v).toFixed(1),
     viewy:   v => (v > 0 ? '+' : '') + (+v).toFixed(1),
@@ -2723,9 +3221,10 @@ addEventListener('resize', () => {
     vortspeed: v => (+v).toFixed(2),
     vortamp: v => (+v).toFixed(2),
     vortpct: v => Math.round(v * 100) + '%',
+    rubber: v => (+v).toFixed(2) + '\u00d7',
   };
-  const uni = { sizemin: voxUniforms.uSizeMin, sizemax: voxUniforms.uSizeMax, sizevar: voxUniforms.uSizeVar, projscale: voxUniforms.uProjScale, morph: voxUniforms.uMorphAmp, count: voxUniforms.uCount, spread: voxUniforms.uSpread, edge: voxUniforms.uEdgeBias, vortspeed: voxUniforms.uVortSpeed, vortamp: voxUniforms.uVortAmp, vortpct: voxUniforms.uVortPct };
-  function pushUniforms() { voxUniforms.uSizeMin.value = S.sizemin; voxUniforms.uSizeMax.value = S.sizemax; voxUniforms.uSizeVar.value = S.sizevar; voxUniforms.uProjScale.value = S.projscale; voxUniforms.uMorphAmp.value = S.morph; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; voxUniforms.uEdgeBias.value = S.edge; voxUniforms.uVortSpeed.value = S.vortspeed; voxUniforms.uVortAmp.value = S.vortamp; voxUniforms.uVortPct.value = S.vortpct; }
+  const uni = { sizemin: voxUniforms.uSizeMin, sizemax: voxUniforms.uSizeMax, sizevar: voxUniforms.uSizeVar, projscale: voxUniforms.uProjScale, morph: voxUniforms.uMorphAmp, count: voxUniforms.uCount, spread: voxUniforms.uSpread, edge: voxUniforms.uEdgeBias, vortspeed: voxUniforms.uVortSpeed, vortamp: voxUniforms.uVortAmp, vortpct: voxUniforms.uVortPct, rubber: voxUniforms.uRubber };
+  function pushUniforms() { voxUniforms.uSizeMin.value = S.sizemin; voxUniforms.uSizeMax.value = S.sizemax; voxUniforms.uSizeVar.value = S.sizevar; voxUniforms.uProjScale.value = S.projscale; voxUniforms.uMorphAmp.value = S.morph; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; voxUniforms.uEdgeBias.value = S.edge; voxUniforms.uVortSpeed.value = S.vortspeed; voxUniforms.uVortAmp.value = S.vortamp; voxUniforms.uVortPct.value = S.vortpct; voxUniforms.uRubber.value = S.rubber; }
   function applyObjScale() { if (centralCloud) centralCloud.scale.setScalar(S.objscale); }
   function applyEnvScale() { if (envUserCloud) envUserCloud.scale.setScalar(S.envscale); }
   function sync() { for (const k in el) { el[k].value = S[k]; lbl[k].textContent = fmt[k](S[k]); } pushUniforms(); applyObjScale(); applyEnvScale(); }
@@ -2781,7 +3280,7 @@ addEventListener('resize', () => {
   projfitBtn.addEventListener('click', () => { S.projfit = !S.projfit; syncProjfit(); });
   syncProjfit();
 
-  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, envon: S.envon, sound: S.sound, autoq: S.autoq, projfit: S.projfit, model: S.model });
+  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, rubber: S.rubber, envon: S.envon, sound: S.sound, autoq: S.autoq, projfit: S.projfit, model: S.model });
   // применить весь набор настроек к сцене (после сброса/импорта)
   function applyAll() {
     sync(); updateProjectors(); rebuildGrids();
