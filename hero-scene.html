@@ -196,7 +196,11 @@
     border: 1px solid rgba(255,255,255,.32); box-shadow: 0 0 24px rgba(255,255,255,.08) inset;
     opacity: 0; transition: opacity .3s; }
   /* системный курсор прячем везде, кроме панели настроек — рисуем свой «плюс». */
-  html, body, #stage, #player, #frame, #scrub, #play-btn, #player-close, #dots { cursor: none; }
+  /* прячем родной курсор ТОЛЬКО на точных указателях (мышь), где рисуем свой #pluscursor.
+     На тач/гибридах (pointer: coarse) кастомный курсор скрыт — родной курсор ДОЛЖЕН остаться, иначе «курсор пропадает». */
+  @media (pointer: fine) {
+    html, body, #stage, #player, #frame, #scrub, #play-btn, #player-close, #dots { cursor: none; }
+  }
   #settings, #settings * { cursor: auto; } /* в панели — обычный курсор (там свой «плюс» скрыт) */
   #pluscursor { position: fixed; left: 0; top: 0; width: 56px; height: 56px;
     margin: -28px 0 0 -28px; z-index: 41; pointer-events: none; color: #fff;
