@@ -54,10 +54,15 @@
   /* ---------- top nav ---------- */
   header {
     position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-    transition: background var(--duration-base), border-color var(--duration-base);
+    transition: background var(--duration-base), border-color var(--duration-base),
+                opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1);
     border-bottom: 1px solid transparent;
   }
   header.scrolled { background: rgba(3,12,16,0.82); backdrop-filter: blur(12px); border-bottom: 1px solid var(--space-line); }
+  /* пока грузится сцена (по центру — лого-лоадер), верхняя панель скрыта, чтобы не было двух лого.
+     Панель «выезжает» сверху, когда сцена сообщает о готовности (pdReady). */
+  body.booting header { opacity: 0; transform: translateY(-100%); pointer-events: none; }
+  .logo-home { display: inline-flex; align-items: center; cursor: pointer; }
   .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 22px 64px; }
   .logo { height: 19px; filter: brightness(0) invert(1); }
   nav.links { display: flex; gap: 34px; }
@@ -455,11 +460,11 @@
   }
 </style>
 </head>
-<body>
+<body class="booting">
 
 <header id="hdr">
   <div class="nav-inner">
-    <img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="PlayDisplay">
+    <a href="#start" class="logo-home" aria-label="PlayDisplay — на главную"><img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="PlayDisplay"></a>
     <nav class="links">
       <a href="#start">Start</a>
       <a href="#work">Work</a>
@@ -652,6 +657,8 @@
   // behavior:'instant' обязателен — иначе CSS scroll-behavior:smooth анимирует каждый шаг и скролл ползёт
   addEventListener('message', function(e){
     if (!e.data) return;
+    // сцена отрисовала первый кадр (лого-лоадер ушёл) → показываем верхнюю панель
+    if (e.data.pdReady) document.body.classList.remove('booting');
     if (typeof e.data.pdScroll === 'number')
       window.scrollBy({ top: e.data.pdScroll, left: 0, behavior: 'instant' });
     // открыта DEV-панель настроек сцены → поднимаем iframe над интерфейсами лендинга
@@ -1906,6 +1913,16 @@
     suppressRoute = false;
   }
   addEventListener('popstate', routeFromHash);
+  // страховка: если сцена не пришлёт pdReady (ошибка/медленно) — всё равно показать шапку
+  setTimeout(function(){ document.body.classList.remove('booting'); }, 6000);
+  // клик по логотипу: закрыть открытый кейс и вернуться на самый верх стартовой
+  var logoHome = document.querySelector('.logo-home');
+  if (logoHome) logoHome.addEventListener('click', function(ev){
+    ev.preventDefault();
+    if (viewer.classList.contains('open')) closeCase();
+    try { history.pushState(null, '', '#start'); } catch (e) { location.hash = '#start'; }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
   // фоновая пыль страницы проекта: редкие мелкие точки дрейфуют с параллаксом от прокрутки
   var dustRaf = null;
   function dustOn(){
