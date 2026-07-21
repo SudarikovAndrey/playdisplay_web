@@ -3245,6 +3245,7 @@ function hidePdLoader() {
   _loaderShown = false;
   const l = document.getElementById('pd-loader');
   if (l) { l.classList.add('hide'); setTimeout(() => { if (l.parentNode) l.parentNode.removeChild(l); }, 800); }
+  if (EMBEDDED) try { parent.postMessage({ pdReady: true }, '*'); } catch (e) {} // лендинг покажет верхнюю панель
 }
 setTimeout(hidePdLoader, 6000);
 loop();
