@@ -1027,43 +1027,314 @@
     flyBusy = false;
     return false;
   }
+  // ==================================================================
+  //  ПЕРЕХОДЫ «ЭКРАН → ПРОЕКТ» на WebGL-частицах. Принципы бесшовности:
+  //  1) волна растворения идёт от точки клика по РЕАЛЬНОМУ экрану —
+  //     DOM остаётся видимым, пока волна его не накрыла (нет шва на старте);
+  //  2) каждая частица вытягивается вдоль своей скорости (motion-стрейк) —
+  //     естественное размытие движения, мягкие светящиеся точки, не квадраты;
+  //  3) обложка выбранной карточки МОРФИТСЯ в кадр новой страницы
+  //     (то же изображение — физическая непрерывность, не кросс-фейд);
+  //  4) сборка выходит из глубины с волной прибытия и передаёт эстафету
+  //     живому DOM микро-наводкой на резкость (scale 1.03 → 1).
+  // ==================================================================
+  var FLY_SLOW = /flyslow/.test(location.search) ? 3 : 1;
+  var isMobileL = matchMedia('(max-width: 900px)').matches || matchMedia('(pointer: coarse)').matches;
+
+  var FlyGL = (function(){
+    var cv, gl, w2, extI, prog, bgp, cornerBuf, instBuf, colBuf,
+        A = {}, U = {}, BU = {}, ok = null, nInst = 0, hideT = null;
+    var VS = `
+      precision highp float;
+      attribute vec2 corner;
+      attribute vec2 aPos;
+      attribute vec2 aPos2;
+      attribute vec4 aData;   // z, size, rnd, rel
+      attribute float aKind;  // 0 поле экрана, 1 выбранная (морф), 2 сборка
+      attribute vec3 aColor;
+      uniform vec2 uRes, uC0, uT1, uF, uFp;
+      uniform float uCam, uCamPrev, uCamEnd, uK, uWave, uRv, uOut, uTime, uAsm;
+      varying vec2 vUv; varying vec4 vCol; varying float vB;
+      void main(){
+        float z = aData.x, size = aData.y, rnd = aData.z, rel = aData.w;
+        vec2 P, Pp; float alpha = 0.0; float px = size; float boost = 1.0;
+        float gate = smoothstep(rel, rel + 0.07, uWave);
+        if (aKind < 0.5) {
+          // поле прежнего экрана: разлетается мимо камеры с турбулентностью
+          float dz = z - uCam, dzp = z - uCamPrev;
+          float s  = z / max(dz,  0.035);
+          float sp = z / max(dzp, 0.035);
+          vec2 pp = aPos;
+          float tamp = gate * smoothstep(0.04, 0.42, uK) * (1.0 - uRv) * (9.0 + z * 7.0);
+          pp += vec2(sin(rnd * 39.0 + uTime * 2.1 + aPos.y * 0.012),
+                     cos(rnd * 57.0 + uTime * 1.6 + aPos.x * 0.010)) * tamp;
+          P  = uF  + (pp - uC0) * s;
+          Pp = uFp + (pp - uC0) * sp;
+          float depthA = smoothstep(0.02, 0.38, dz);
+          alpha = gate * depthA * (1.0 - uK * uK * 0.5);
+          if (uOut > 0.5) alpha *= smoothstep(0.02, 0.16, uK); // вылет: поле выныривает из-за камеры без хлопка
+          float mid = smoothstep(0.12, 0.35, uK) * (1.0 - smoothstep(0.55, 0.85, uK)); // разгар полёта
+          px = min(size * s, 30.0) * (1.0 + mid * 0.9);
+          float pop = gate * (1.0 - smoothstep(rel + 0.07, rel + 0.26, uWave));
+          px *= 1.0 + pop * 0.7; // короткая вспышка-«отслоение» на кромке волны
+          boost = 1.0 + mid * 0.75 + pop * 0.6; // частицы светятся в полёте
+        } else if (aKind < 1.5) {
+          // выбранная обложка: летит вперёд и морфится точно в кадр новой страницы
+          float dz = z - uCam, dzp = z - uCamPrev;
+          float s  = z / max(dz,  0.05);
+          float sp = z / max(dzp, 0.05);
+          vec2 Pf  = uF  + (aPos - uC0) * s;
+          vec2 Pfp = uFp + (aPos - uC0) * sp;
+          float m = smoothstep(0.42, 0.88, uK);
+          m = m * m * (3.0 - 2.0 * m);
+          P  = mix(Pf,  aPos2, m);
+          Pp = mix(Pfp, aPos2, m);
+          alpha = gate * (1.0 - uRv * 0.94);
+          px = mix(min(size * s, 30.0), size * 0.9, m);
+          boost = 1.0 + (1.0 - m) * 0.35;
+        } else {
+          // сборка новой страницы: из глубины через ось, волна прибытия сверху вниз
+          float g0 = (z - uCamEnd) / z;
+          float graw  = clamp(z / max(z - uCam,     0.2) * (z - uCamEnd) / z, 0.0, 1.0);
+          float grawp = clamp(z / max(z - uCamPrev, 0.2) * (z - uCamEnd) / z, 0.0, 1.0);
+          float g  = clamp((graw  - g0) / (1.0 - g0), 0.0, 1.0);
+          float gp = clamp((grawp - g0) / (1.0 - g0), 0.0, 1.0);
+          P  = uF  + (aPos - uT1) * g;
+          Pp = uFp + (aPos - uT1) * gp;
+          float stag = 0.14 + rnd * 0.26 + (aPos.y / uRes.y) * 0.08;
+          if (uOut > 0.5) alpha = smoothstep(stag, stag + 0.34, g) * gate * (1.0 - smoothstep(0.7, 0.98, uK));
+          else            alpha = clamp(smoothstep(stag, stag + 0.34, g) + uAsm * 0.45 * smoothstep(0.02, 0.2, g), 0.0, 1.0) * (1.0 - uRv * 0.9);
+          px = size * (0.35 + 0.65 * g);
+          boost = 1.0 + (1.0 - g) * 0.55; // светится, пока летит из глубины
+        }
+        // штрих по скорости: квад вытягивается вдоль движения — живой motion blur
+        vec2 vel = P - Pp;
+        float vlen = length(vel);
+        vec2 dir = vlen > 0.0001 ? vel / vlen : vec2(1.0, 0.0);
+        vec2 nrm = vec2(-dir.y, dir.x);
+        float hw = max(px * 0.5, 0.35);
+        float hl = hw + min(vlen * 1.35, px * 6.0) * 0.5;
+        alpha *= mix(1.0, clamp(hw / hl, 0.3, 1.0), 0.85); // сохранение «энергии» при растяжении
+        if (alpha < 0.015) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); vUv = vec2(0.0); vCol = vec4(0.0); vB = 1.0; return; }
+        vec2 world = P + dir * (corner.x * hl) + nrm * (corner.y * hw);
+        vec2 clip = world / uRes * 2.0 - 1.0;
+        gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
+        vUv = corner;
+        vCol = vec4(aColor, alpha);
+        vB = boost;
+      }`;
+    var FS = `
+      precision highp float;
+      varying vec2 vUv; varying vec4 vCol; varying float vB;
+      void main(){
+        float r = length(vUv);
+        float m = smoothstep(1.0, 0.3, r);
+        float core = smoothstep(0.5, 0.0, r);
+        float a = vCol.a * m;
+        if (a < 0.012) discard;
+        vec3 col = vCol.rgb * vB * (1.0 + core * 0.45); // тёплое ядро — свечение без блюра
+        gl_FragColor = vec4(col * a, a);
+      }`;
+    var BGVS = `
+      precision highp float;
+      attribute vec2 corner;
+      uniform vec2 uRes;
+      varying vec2 vPos;
+      void main(){
+        vPos = vec2((corner.x + 1.0) * 0.5 * uRes.x, (1.0 - corner.y) * 0.5 * uRes.y);
+        gl_Position = vec4(corner, 0.0, 1.0);
+      }`;
+    var BGFS = `
+      precision highp float;
+      varying vec2 vPos;
+      uniform vec2 uRes, uClick;
+      uniform float uWaveR, uSoft, uDark;
+      uniform vec3 uTint;
+      void main(){
+        float d = distance(vPos, uClick);
+        float inside = 1.0 - smoothstep(uWaveR - uSoft, uWaveR, d);
+        vec2 q = vPos / uRes - 0.5;
+        float vig = 1.0 - dot(q, q) * 0.55;      // мягкая виньетка глубины
+        float a = uDark * inside;
+        vec3 col = uTint * vig;
+        // тонкая светящаяся кромка на фронте волны
+        float ring = smoothstep(uWaveR - uSoft - 34.0, uWaveR - uSoft, d)
+                   * (1.0 - smoothstep(uWaveR - uSoft, uWaveR + 30.0, d));
+        col += vec3(0.30, 0.85, 0.80) * ring * 0.09 * uDark;
+        a = min(a + ring * 0.05 * uDark, 1.0);
+        gl_FragColor = vec4(col * a, a);
+      }`;
+    function mkShader(t, src){ var s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+    function mkProg(vs, fs){ var p = gl.createProgram();
+      gl.attachShader(p, mkShader(gl.VERTEX_SHADER, vs));
+      gl.attachShader(p, mkShader(gl.FRAGMENT_SHADER, fs));
+      gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+      return p; }
+    function divisor(i, d){ w2 ? gl.vertexAttribDivisor(i, d) : extI.vertexAttribDivisorANGLE(i, d); }
+    function init(){
+      if (ok !== null) return ok;
+      try {
+        cv = document.createElement('canvas');
+        cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;display:none;transition:opacity .5s';
+        document.body.appendChild(cv);
+        var attrs = { alpha: true, antialias: false, premultipliedAlpha: true, powerPreference: 'high-performance' };
+        gl = cv.getContext('webgl2', attrs); w2 = !!gl;
+        if (!gl) { gl = cv.getContext('webgl', attrs); if (gl) { extI = gl.getExtension('ANGLE_instanced_arrays'); if (!extI) gl = null; } }
+        if (!gl) { ok = false; return false; }
+        cv.addEventListener('webglcontextlost', function(e){ e.preventDefault(); ok = false; }, false);
+        prog = mkProg(VS, FS); bgp = mkProg(BGVS, BGFS);
+        ['corner','aPos','aPos2','aData','aKind','aColor'].forEach(function(n){ A[n] = gl.getAttribLocation(prog, n); });
+        ['uRes','uC0','uT1','uF','uFp','uCam','uCamPrev','uCamEnd','uK','uWave','uRv','uOut','uTime','uAsm'].forEach(function(n){ U[n] = gl.getUniformLocation(prog, n); });
+        ['uRes','uClick','uWaveR','uSoft','uDark','uTint'].forEach(function(n){ BU[n] = gl.getUniformLocation(bgp, n); });
+        BU.corner = gl.getAttribLocation(bgp, 'corner');
+        cornerBuf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, cornerBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+        instBuf = gl.createBuffer(); colBuf = gl.createBuffer();
+        ok = true;
+      } catch (e) { console.warn('FlyGL init:', e); ok = false; }
+      return ok;
+    }
+    function begin(parts, zIndex){
+      if (!init()) return false;
+      if (hideT) { clearTimeout(hideT); hideT = null; }
+      var dprGL = isMobileL ? 1 : Math.min(devicePixelRatio || 1, 1.5);
+      cv.width = Math.round(innerWidth * dprGL); cv.height = Math.round(innerHeight * dprGL);
+      cv.style.zIndex = zIndex; cv.style.opacity = '1'; cv.style.display = 'block';
+      nInst = parts.length;
+      var f = new Float32Array(nInst * 9), u8 = new Uint8Array(nInst * 3);
+      for (var i = 0; i < nInst; i++) {
+        var p = parts[i], o = i * 9;
+        f[o] = p[0]; f[o+1] = p[1];      // aPos
+        f[o+2] = p[2]; f[o+3] = p[3];    // aPos2 (цель морфа)
+        f[o+4] = p[4]; f[o+5] = p[5];    // z, size
+        f[o+6] = p[6]; f[o+7] = p[7];    // rnd, rel
+        f[o+8] = p[8];                   // kind
+        u8[i*3] = p[9]; u8[i*3+1] = p[10]; u8[i*3+2] = p[11];
+      }
+      gl.bindBuffer(gl.ARRAY_BUFFER, instBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, f, gl.DYNAMIC_DRAW);
+      gl.bindBuffer(gl.ARRAY_BUFFER, colBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, u8, gl.DYNAMIC_DRAW);
+      return true;
+    }
+    function recolor(offsetRecords, u8part){
+      if (!ok) return;
+      gl.bindBuffer(gl.ARRAY_BUFFER, colBuf);
+      gl.bufferSubData(gl.ARRAY_BUFFER, offsetRecords * 3, u8part);
+    }
+    function frame(u){
+      if (!ok) return;
+      gl.viewport(0, 0, cv.width, cv.height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.disable(gl.DEPTH_TEST);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      // фон: волна затемнения от точки клика + кромка
+      gl.useProgram(bgp);
+      gl.uniform2f(BU.uRes, innerWidth, innerHeight);
+      gl.uniform2f(BU.uClick, u.clickX, u.clickY);
+      gl.uniform1f(BU.uWaveR, u.waveR);
+      gl.uniform1f(BU.uSoft, 110);
+      gl.uniform1f(BU.uDark, u.dark);
+      gl.uniform3f(BU.uTint, u.tint[0], u.tint[1], u.tint[2]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, cornerBuf);
+      gl.enableVertexAttribArray(BU.corner);
+      gl.vertexAttribPointer(BU.corner, 2, gl.FLOAT, false, 0, 0);
+      divisor(BU.corner, 0);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      // частицы: инстансированные квады со стрейком
+      gl.useProgram(prog);
+      gl.uniform2f(U.uRes, innerWidth, innerHeight);
+      gl.uniform2f(U.uC0, u.c0x, u.c0y);
+      gl.uniform2f(U.uT1, u.t1x, u.t1y);
+      gl.uniform2f(U.uF, u.fx, u.fy);
+      gl.uniform2f(U.uFp, u.fxp, u.fyp);
+      gl.uniform1f(U.uCam, u.cam);
+      gl.uniform1f(U.uCamPrev, u.camPrev);
+      gl.uniform1f(U.uCamEnd, u.camEnd);
+      gl.uniform1f(U.uK, u.k);
+      gl.uniform1f(U.uWave, u.wave);
+      gl.uniform1f(U.uRv, u.rv);
+      gl.uniform1f(U.uOut, u.out);
+      gl.uniform1f(U.uTime, u.time);
+      gl.uniform1f(U.uAsm, u.asm || 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, cornerBuf);
+      gl.enableVertexAttribArray(A.corner);
+      gl.vertexAttribPointer(A.corner, 2, gl.FLOAT, false, 0, 0);
+      divisor(A.corner, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, instBuf);
+      gl.enableVertexAttribArray(A.aPos);  gl.vertexAttribPointer(A.aPos,  2, gl.FLOAT, false, 36, 0);  divisor(A.aPos, 1);
+      gl.enableVertexAttribArray(A.aPos2); gl.vertexAttribPointer(A.aPos2, 2, gl.FLOAT, false, 36, 8);  divisor(A.aPos2, 1);
+      gl.enableVertexAttribArray(A.aData); gl.vertexAttribPointer(A.aData, 4, gl.FLOAT, false, 36, 16); divisor(A.aData, 1);
+      gl.enableVertexAttribArray(A.aKind); gl.vertexAttribPointer(A.aKind, 1, gl.FLOAT, false, 36, 32); divisor(A.aKind, 1);
+      gl.bindBuffer(gl.ARRAY_BUFFER, colBuf);
+      gl.enableVertexAttribArray(A.aColor); gl.vertexAttribPointer(A.aColor, 3, gl.UNSIGNED_BYTE, true, 3, 0); divisor(A.aColor, 1);
+      w2 ? gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, nInst)
+         : extI.drawArraysInstancedANGLE(gl.TRIANGLE_STRIP, 0, 4, nInst);
+    }
+    function end(){
+      if (!cv) return;
+      cv.style.opacity = '0';
+      hideT = setTimeout(function(){ cv.style.display = 'none'; hideT = null; }, 520);
+    }
+    return { supported: init, begin: begin, frame: frame, end: end, recolor: recolor };
+  })();
+
+  // прогрев WebGL-движка на простое: первый влёт без паузы на компиляцию шейдеров
+  (window.requestIdleCallback || function(f){ setTimeout(f, 2500); })(function(){ try { FlyGL.supported(); } catch (e) {} });
+
+  function smootherstep(t){ t = Math.max(0, Math.min(1, t)); return t * t * t * (t * (t * 6 - 15) + 10); }
+  function sstep(a, b, t){ t = Math.max(0, Math.min(1, (t - a) / (b - a))); return t * t * (3 - 2 * t); }
+
   function flyIntoCase(card, c){
     if (busyLock()) return;
     try { flyIntoCaseInner(card, c); }
     catch (e) { // любой сбой анимации не должен ломать навигацию
       console.warn('flyIn fallback:', e);
       flyBusy = false;
-      document.body.classList.remove('flying');
       viewer.style.transition = ''; viewer.style.opacity = ''; viewer.style.backdropFilter = '';
       if (!viewer.classList.contains('open')) openCase(c);
       vInner.classList.add('settled');
     }
   }
+  function fadeOpenCase(c){ // фолбэк без WebGL: короткий аккуратный кросс-фейд
+    viewer.style.transition = 'none'; viewer.style.opacity = '0';
+    openCase(c);
+    requestAnimationFrame(function(){
+      viewer.style.transition = 'opacity .45s ease';
+      viewer.style.opacity = '1';
+      vInner.classList.add('settled');
+      setTimeout(function(){ viewer.style.transition = ''; viewer.style.opacity = ''; }, 500);
+    });
+  }
   function flyIntoCaseInner(card, c){
     var img = card.querySelector('img');
     var r = card.querySelector('.card-media').getBoundingClientRect();
     if (!r.width) { openCase(c); requestAnimationFrame(function(){ vInner.classList.add('settled'); }); return; }
-    if (!img.complete || !img.naturalWidth) {
-      // обложка ещё грузится (lazy) — дожидаемся и летим; страховка на случай сбоя сети
+    if (!img.naturalWidth) { // complete у lazy-обложек в Chrome бывает ложно false — достаточно naturalWidth
       var done = false;
-      var go = function(){ if (done) return; done = true; flyIntoCase(card, c); };
+      var go = function(){ if (done) return; done = true; clearInterval(iv); flyIntoCase(card, c); };
       img.addEventListener('load', go, { once: true });
-      setTimeout(function(){ if (!done) { done = true; openCase(c); vInner.classList.add('settled'); } }, 1800);
+      var iv = setInterval(function(){ if (img.naturalWidth) go(); }, 120); // load у lazy-img может не прийти — поллим готовность
+      setTimeout(function(){ clearInterval(iv); if (!done) { done = true; openCase(c); vInner.classList.add('settled'); } }, 1800);
       return;
     }
-    if (img.src.indexOf(location.origin) !== 0) { // обложка с хотлинка: сэмплить нельзя — открываем без полёта
-      openCase(c); requestAnimationFrame(function(){ vInner.classList.add('settled'); });
-      return;
-    }
+    if (img.src.indexOf(location.origin) !== 0) { fadeOpenCase(c); return; }
+    if (!FlyGL.supported()) { fadeOpenCase(c); return; }
     var SC = 0.5, W = Math.round(innerWidth * SC), H = Math.round(innerHeight * SC);
-    // 1) снимок ТЕКУЩЕГО экрана: все картинки по их ректам + все тексты пословно
+    var stepSrc = isMobileL ? 3 : 2, stepTgt = isMobileL ? 3 : 2;
+    // 1) снимок ТЕКУЩЕГО экрана: картинки по их ректам + тексты пословно
     var srcPts;
     try {
       var scv = document.createElement('canvas'); scv.width = W; scv.height = H;
       var sg = scv.getContext('2d', { willReadFrequently: true });
       [].slice.call(document.images).forEach(function(im){
-        if (!im.complete || !im.naturalWidth || im.closest('#viewer')) return;
-        if (im.src.indexOf(location.origin) !== 0) return; // хотлинк отравил бы канвас (CORS) — пропускаем
+        if (!im.naturalWidth || im.closest('#viewer')) return;
+        if (im.src.indexOf(location.origin) !== 0) return;
         var rc = im.getBoundingClientRect();
         if (!rc.width || rc.bottom < 0 || rc.top > innerHeight) return;
         var stI = getComputedStyle(im);
@@ -1072,68 +1343,80 @@
         try { sg.drawImage(im, ca[0], ca[1], ca[2], ca[3], rc.left * SC, rc.top * SC, rc.width * SC, rc.height * SC); } catch (e) {}
       });
       rasterTexts(sg, SC, document.body, false);
-      srcPts = harvest(sg, W, H, SC, 3); // поле разлёта — зерно крупнее, точек меньше (перф)
+      srcPts = harvest(sg, W, H, SC, stepSrc);
     } catch (e) { srcPts = null; }
-    if (!srcPts || !srcPts.length) { openCase(c); return; }
-    for (var i = 0; i < srcPts.length; i++) {
-      var spt = srcPts[i];
-      // точки ВЫБРАННОЙ карточки — самые дальние: камера летит именно к ним,
-      // и центральный объект держится на оси до самого прибытия
-      var mine = spt[0] >= r.left && spt[0] <= r.right && spt[1] >= r.top && spt[1] <= r.bottom;
-      spt.push(mine ? 2.15 + Math.random() * 0.5 + (0.5 - spt[5]) * 0.25      // [6] глубина
-                    : 0.75 + Math.random() * 1.05 + (0.5 - spt[5]) * 0.3,
-               1.0 + Math.pow(Math.random(), 2.3) * 3.4,                       // [7] зерно: мелких больше всего
-               mine ? 1 : 0,                                                   // [8] флаг выбранной
-               'rgb(' + spt[2] + ',' + spt[3] + ',' + spt[4] + ')');           // [9] готовая строка цвета (без GC в кадре)
-    }
-    // 2) вьюер открываем невидимо: контент грузится, узнаём геометрию новой страницы
+    if (!srcPts || srcPts.length < 200) { fadeOpenCase(c); return; }
+    // 2) вьюер открываем невидимо: узнаём геометрию новой страницы
     viewer.style.transition = 'none'; viewer.style.opacity = '0';
     openCase(c);
     var mediaEl = vInner.querySelector('.v-media');
     var tr = mediaEl ? mediaEl.getBoundingClientRect() : { left: innerWidth * 0.2, top: innerHeight * 0.17, width: innerWidth * 0.6, height: innerHeight * 0.55 };
-    // 3) снимок НОВОЙ страницы: кадр проекта + её тексты — мишень, в которую соберутся точки
-    var tgtPts = [], covPts = [];
+    // 3) снимок кадра новой страницы — мишень сборки
+    var covPts = [];
     try {
       var tcv = document.createElement('canvas'); tcv.width = W; tcv.height = H;
       var tg = tcv.getContext('2d', { willReadFrequently: true });
       var ca2 = coverArgs(img, tr.width / tr.height);
       tg.drawImage(img, ca2[0], ca2[1], ca2[2], ca2[3], tr.left * SC, tr.top * SC, tr.width * SC, tr.height * SC);
-      covPts = harvest(tg, W, H, SC, 2);
-      for (i = 0; i < covPts.length; i++) covPts[i].push(4.3 * (0.72 + Math.pow(Math.random(), 2) * 0.5)); // [6] зерно кадра: плотное покрытие
-      // тексты страницы НЕ собираем из точек — они складываются DOM-каскадом после подлёта
-      tgtPts = covPts;
-    } catch (e) { tgtPts = []; covPts = []; }
-    for (i = 0; i < tgtPts.length; i++)
-      tgtPts[i].push(2.3 + Math.random() * 1.2 + (0.5 - tgtPts[i][5]) * 0.4,  // [7] глубина всплытия
-                     Math.random(),                                           // [8] фаза появления
-                     'rgb(' + tgtPts[i][2] + ',' + tgtPts[i][3] + ',' + tgtPts[i][4] + ')'); // [9] цвет
-    var camEnd = 1.5;
-    var dpr = 1; // частицам ретина не нужна — вдвое меньше филлрейта, никаких рывков
-    var cv = document.createElement('canvas');
-    // width/height:100% обязательны: без них канвас отображается в размере атрибута
-    // (×dpr) и на ретине вся сцена уезжает от центра
-    cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:95;pointer-events:none;transition:opacity .55s';
-    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
-    document.body.appendChild(cv);
-    var x = cv.getContext('2d');
-    document.body.classList.add('flying'); // DOM мгновенно уступает сцену частицам
-    viewer.style.backdropFilter = 'none';  // blur под анимируемой прозрачностью — главный пожиратель кадров
-    vInner.classList.remove('settled');    // тексты сложены — разложатся каскадом после подлёта
-    var c0x = r.left + r.width / 2, c0y = r.top + r.height / 2;  // старт оси — выбранная карточка
-    var t1x = tr.left + tr.width / 2, t1y = tr.top + tr.height / 2; // финиш — центр новой страницы
-    // мягкая дуга камеры: квадратичная безье с боковым выносом перпендикулярно пути
+      covPts = harvest(tg, W, H, SC, stepTgt);
+    } catch (e) { covPts = []; }
+    // геометрия перехода
+    var c0x = r.left + r.width / 2, c0y = r.top + r.height / 2;   // старт оси — карточка
+    var t1x = tr.left + tr.width / 2, t1y = tr.top + tr.height / 2; // финиш — кадр проекта
+    var clickX = c0x, clickY = c0y;
+    var maxD = 0;
+    [[0,0],[innerWidth,0],[0,innerHeight],[innerWidth,innerHeight]].forEach(function(pt){
+      maxD = Math.max(maxD, Math.hypot(pt[0] - clickX, pt[1] - clickY));
+    });
+    // сборка записей: [x, y, x2, y2, z, size, rnd, rel, kind, r, g, b]
+    var parts = [], i, p, rel, avgR = 0, avgG = 0, avgB = 0;
+    for (i = 0; i < srcPts.length; i++) {
+      p = srcPts[i];
+      var mine = p[0] >= r.left && p[0] <= r.right && p[1] >= r.top && p[1] <= r.bottom;
+      rel = Math.min(1, Math.hypot(p[0] - clickX, p[1] - clickY) / maxD) * 0.92;
+      if (mine) {
+        // морф: та же точка обложки → её место в кадре новой страницы
+        var mx = tr.left + (p[0] - r.left) / r.width * tr.width;
+        var my = tr.top + (p[1] - r.top) / r.height * tr.height;
+        parts.push([p[0], p[1], mx, my,
+                    2.15 + Math.random() * 0.55 + (0.5 - p[5]) * 0.25,
+                    2.2 + Math.pow(Math.random(), 2) * 2.6,
+                    Math.random(), rel * 0.4, 1, p[2], p[3], p[4]]);
+      } else {
+        parts.push([p[0], p[1], 0, 0,
+                    0.75 + Math.random() * 1.05 + (0.5 - p[5]) * 0.3,
+                    1.0 + Math.pow(Math.random(), 2.3) * 3.4,
+                    Math.random(), rel, 0, p[2], p[3], p[4]]);
+      }
+    }
+    var srcTotal = parts.length;
+    for (i = 0; i < covPts.length; i++) {
+      p = covPts[i];
+      avgR += p[2]; avgG += p[3]; avgB += p[4];
+      parts.push([p[0], p[1], 0, 0,
+                  2.3 + Math.random() * 1.2 + (0.5 - p[5]) * 0.4,
+                  4.1 * (0.72 + Math.pow(Math.random(), 2) * 0.5),
+                  Math.random(), 0, 2, p[2], p[3], p[4]]);
+    }
+    var nT = Math.max(1, covPts.length);
+    var tint = [0.012 + avgR / nT / 255 * 0.16, 0.047 + avgG / nT / 255 * 0.14, 0.063 + avgB / nT / 255 * 0.14];
+    if (!FlyGL.begin(parts, 95)) { fadeOpenCase(c); return; }
+    viewer.style.backdropFilter = 'none';
+    vInner.classList.remove('settled');
+    vInner.style.transformOrigin = '50% 30%';
+    // дуга фокуса камеры
     var dxT = t1x - c0x, dyT = t1y - c0y;
-    var arc = Math.min(180, Math.hypot(dxT, dyT) * 0.55 + 60) * (c0x > innerWidth / 2 ? 1 : -1);
+    var arc = Math.min(170, Math.hypot(dxT, dyT) * 0.5 + 55) * (c0x > innerWidth / 2 ? 1 : -1);
     var nrm = Math.hypot(dxT, dyT) || 1;
     var cpx = c0x + dxT * 0.5 - dyT / nrm * arc, cpy = c0y + dyT * 0.5 + dxT / nrm * arc;
-    var t0 = performance.now(), DUR = 1800; // размеренный, без спешки
+    var camEnd = 1.5, DUR = 1900 * FLY_SLOW, t0 = performance.now();
     lastFly = { card: card, c: c };
     flyBusy = true; flyBusySince = t0;
-    // бесшовный перелёт в РОЛИК: пока частицы собираются, перекрашиваем зерно кадра
-    // в живые пиксели играющего видео — к моменту проявления это уже само видео
+    // живой ролик перекрашивает зерно сборки — к моменту проявления это уже видео
     var liveVideo = vInner.querySelector('video');
     var vcv = document.createElement('canvas'), vg = null, frameN = 0;
-    function resampleVideo(){
+    var colTgt = new Uint8Array(covPts.length * 3);
+    function recolorVideo(){
       if (!liveVideo || liveVideo.readyState < 2 || !covPts.length) return;
       try {
         var vw2 = 220, vh2 = Math.max(24, Math.round(vw2 * tr.height / tr.width));
@@ -1144,106 +1427,81 @@
         var ca4 = na4 > ra4 ? [(nw - nh * ra4) / 2, 0, nh * ra4, nh] : [0, (nh - nw / ra4) / 2, nw, nw / ra4];
         vg.drawImage(liveVideo, ca4[0], ca4[1], ca4[2], ca4[3], 0, 0, vw2, vh2);
         var vd = vg.getImageData(0, 0, vw2, vh2).data;
-        // чёрный стартовый кадр ролика не должен «гасить» сборку — ждём содержательный кадр
         var lum = 0, nn = 0;
         for (var s4 = 0; s4 < vd.length; s4 += 200) { lum += vd[s4] + vd[s4 + 1] + vd[s4 + 2]; nn++; }
-        if (lum / nn < 24) return;
+        if (lum / nn < 24) return; // чёрный стартовый кадр не гасит сборку
         for (var j = 0; j < covPts.length; j++) {
           var q = covPts[j];
           var vx = Math.min(vw2 - 1, Math.max(0, ((q[0] - tr.left) / tr.width * vw2) | 0));
           var vy = Math.min(vh2 - 1, Math.max(0, ((q[1] - tr.top) / tr.height * vh2) | 0));
           var o = (vy * vw2 + vx) * 4;
-          q[9] = 'rgb(' + vd[o] + ',' + vd[o + 1] + ',' + vd[o + 2] + ')';
+          colTgt[j*3] = vd[o]; colTgt[j*3+1] = vd[o+1]; colTgt[j*3+2] = vd[o+2];
         }
+        FlyGL.recolor(srcTotal, colTgt);
       } catch (e) {}
     }
+    var camPrev = 0, fxp = c0x, fyp = c0y, settledOn = false;
     function anim(now){
-      var k = Math.min(1, (now - t0) / DUR);
-      var ke = k * k * k * (k * (k * 6 - 15) + 10); // smootherstep: бархатный разгон и торможение
-      var cam = camEnd * ke;
-      // фокус скользит по дуге и выходит на центр кадра к 60% пути
-      var fe = Math.min(1, k / 0.6); fe = fe * fe * (3 - 2 * fe);
-      var u = 1 - fe;
-      var Fx = u * u * c0x + 2 * u * fe * cpx + fe * fe * t1x;
-      var Fy = u * u * c0y + 2 * u * fe * cpy + fe * fe * t1y;
-      x.clearRect(0, 0, cv.width, cv.height);
-      x.fillStyle = 'rgba(3,12,16,' + Math.min(0.97, Math.max(0, k / 0.5)) + ')';
-      x.fillRect(0, 0, cv.width, cv.height);
-      var asm = Math.max(0, Math.min(1, (k - 0.5) / 0.4)); // прогресс сборки новой страницы
-      // прежний экран: частицы на своих глубинах проносятся мимо камеры
-      for (var i = 0; i < srcPts.length; i++) {
-        var p = srcPts[i], dz = p[6] - cam;
-        if (dz < 0.05) continue;
-        var s = p[6] / dz;
-        var px = Fx + (p[0] - c0x) * s, py = Fy + (p[1] - c0y) * s;
-        var a = Math.min(1, dz / 0.45) * (1 - ke * 0.3);
-        if (p[8]) a *= 1 - asm; // выбранная уступает место собирающейся странице
-        if (a < 0.03) continue;
-        x.globalAlpha = a;
-        x.fillStyle = p[9];
-        var sz = Math.min(20, p[7] * s) * dpr;
-        x.fillRect(px * dpr - sz / 2, py * dpr - sz / 2, sz, sz);
-      }
-      // подмена через точки: настоящая страница (с уже играющим видео) плавно
-      // проступает СКВОЗЬ собирающиеся частицы — обложка перетекает в ролик бесшовно
-      var rv = Math.max(0, Math.min(1, (k - 0.62) / 0.34));
-      rv = rv * rv * (3 - 2 * rv);
+      var k = window.__flyK != null ? window.__flyK : Math.min(1, (now - t0) / DUR); // __flyK — отладочная заморозка фазы
+      var wave = sstep(0, 0.26, k);
+      var cam = camEnd * smootherstep((k - 0.07) / 0.85);
+      var fe = sstep(0, 1, Math.min(1, k / 0.62));
+      var u1 = 1 - fe;
+      var fx = u1 * u1 * c0x + 2 * u1 * fe * cpx + fe * fe * t1x;
+      var fy = u1 * u1 * c0y + 2 * u1 * fe * cpy + fe * fe * t1y;
+      var rv = sstep(0.64, 0.96, k);
       viewer.style.opacity = rv;
-      if (rv > 0.4) vInner.classList.add('settled'); // кадр почти собран — тексты складываются каскадом
-      // зерно кадра живёт кадрами видео — подмена неощутима
-      if (k > 0.3 && (frameN++ % 3) === 0) resampleVideo();
-      // новая страница: всплывает из глубины через центр — каждая точка растёт
-      // от оси к своему месту (кадр, заголовок, тексты) и тает, впуская живой контент
-      for (i = 0; i < tgtPts.length; i++) {
-        var q = tgtPts[i];
-        var s2 = q[7] / Math.max(0.2, q[7] - cam);
-        var sEnd = q[7] / (q[7] - camEnd);
-        var g2 = Math.min(1, s2 / sEnd);
-        var qx = Fx + (q[0] - t1x) * g2, qy = Fy + (q[1] - t1y) * g2;
-        var a2 = Math.max(0, Math.min(1, (g2 - 0.22 - q[8] * 0.18) / 0.38)) * (1 - rv * 0.85);
-        if (a2 < 0.03) continue;
-        x.globalAlpha = a2;
-        x.fillStyle = q[9];
-        var sz2 = q[6] * (0.35 + 0.65 * g2) * dpr;
-        x.fillRect(qx * dpr - sz2 / 2, qy * dpr - sz2 / 2, sz2, sz2);
-      }
-      x.globalAlpha = 1;
+      vInner.style.transform = 'scale(' + (1.03 - 0.03 * rv) + ')';
+      if (!settledOn && rv > 0.35) { settledOn = true; vInner.classList.add('settled'); }
+      if (k > 0.25 && (frameN++ % 3) === 0) recolorVideo();
+      FlyGL.frame({
+        clickX: clickX, clickY: clickY,
+        waveR: wave * (maxD + 150), dark: sstep(0, 0.03, k), tint: tint,
+        c0x: c0x, c0y: c0y, t1x: t1x, t1y: t1y,
+        fx: fx, fy: fy, fxp: fxp, fyp: fyp,
+        cam: cam, camPrev: camPrev, camEnd: camEnd,
+        k: k, wave: wave, rv: rv, out: 0, time: now / 1000, asm: sstep(0.40, 0.78, k)
+      });
+      camPrev = cam; fxp = fx; fyp = fy;
       if (k < 1) requestAnimationFrame(anim);
       else {
-        // страница уже полностью видима под остатками частиц — тихо убираем слой
         viewer.style.opacity = '1';
-        cv.style.opacity = 0;
+        vInner.style.transform = '';
+        FlyGL.end();
         setTimeout(function(){
-          cv.remove();
           viewer.style.transition = ''; viewer.style.opacity = ''; viewer.style.backdropFilter = '';
-          document.body.classList.remove('flying');
           flyBusy = false;
-        }, 600);
+        }, 540);
       }
     }
     requestAnimationFrame(anim);
   }
 
-  // ---- закрытие: обратный вылет — страница (с живым кадром видео) уходит в глубину,
-  // ---- галерея прилетает из-за камеры и собирается на свои места. Бесшовно. ----
+  // ---- закрытие: страница растворяется волной от кадра, камера отступает,
+  // ---- галерея выныривает из-за камеры и садится на свои места ----
   function flyOutOfCase(){
     try { flyOutInner(); }
     catch (e) {
       console.warn('flyOut fallback:', e);
       flyBusy = false;
-      document.body.classList.remove('flying');
       viewer.style.transition = ''; viewer.style.opacity = ''; viewer.style.backdropFilter = '';
       closeCase();
     }
   }
   function flyOutInner(){
     var lf = lastFly;
-    if (!lf || !document.body.contains(lf.card)) { closeCase(); return; }
+    if (!lf || !document.body.contains(lf.card) || !FlyGL.supported()) {
+      // фолбэк: мягкое затухание вьюера
+      viewer.style.transition = 'opacity .4s ease'; viewer.style.opacity = '0';
+      setTimeout(function(){ viewer.style.transition = ''; viewer.style.opacity = ''; closeCase(); }, 420);
+      return;
+    }
     flyBusy = true; flyBusySince = performance.now();
     var SC = 0.5, W = Math.round(innerWidth * SC), H = Math.round(innerHeight * SC);
+    var stepSrc = isMobileL ? 3 : 2, stepTgt = isMobileL ? 3 : 2;
     var mediaEl = vInner.querySelector('.v-media');
     var tr = mediaEl ? mediaEl.getBoundingClientRect() : { left: innerWidth * 0.2, top: innerHeight * 0.17, width: innerWidth * 0.6, height: innerHeight * 0.55 };
-    // страница как она есть сейчас: живой кадр видео (или обложка) + её тексты
+    // страница как есть: живой кадр видео (или обложка)
     var pagePts = [];
     try {
       var pcv = document.createElement('canvas'); pcv.width = W; pcv.height = H;
@@ -1256,102 +1514,98 @@
         var ca = na > ra ? [(nw - nh * ra) / 2, 0, nh * ra, nh] : [0, (nh - nw / ra) / 2, nw, nw / ra];
         try { pg.drawImage(srcEl, ca[0], ca[1], ca[2], ca[3], tr.left * SC, tr.top * SC, tr.width * SC, tr.height * SC); } catch (e) {}
       }
-      pagePts = harvest(pg, W, H, SC, 2); // только кадр: тексты складываются DOM-каскадом
+      rasterTexts(pg, SC, document.body, true); // тексты страницы тоже растворяются волной
+      pagePts = harvest(pg, W, H, SC, stepTgt);
     } catch (e) { pagePts = []; }
-    for (var i = 0; i < pagePts.length; i++)
-      pagePts[i].push(3.6 * (0.72 + Math.pow(Math.random(), 2) * 0.5),          // [6] зерно
-                      2.3 + Math.random() * 1.2 + (0.5 - pagePts[i][5]) * 0.4,  // [7] глубина ухода
-                      Math.random(),                                            // [8] фаза
-                      'rgb(' + pagePts[i][2] + ',' + pagePts[i][3] + ',' + pagePts[i][4] + ')'); // [9]
-    // галерея под вьюером — прилетит из-за камеры на свои места
+    // галерея под вьюером — прилетит из-за камеры
     var galPts = [];
     try {
       var gcv = document.createElement('canvas'); gcv.width = W; gcv.height = H;
       var gg = gcv.getContext('2d', { willReadFrequently: true });
       [].slice.call(document.images).forEach(function(im){
-        if (!im.complete || !im.naturalWidth || im.closest('#viewer')) return;
-        if (im.src.indexOf(location.origin) !== 0) return; // без кросс-доменных: канвас должен остаться читаемым
+        if (!im.naturalWidth || im.closest('#viewer')) return;
+        if (im.src.indexOf(location.origin) !== 0) return;
         var rc = im.getBoundingClientRect();
         if (!rc.width || rc.bottom < 0 || rc.top > innerHeight) return;
         var ca3 = coverArgs(im, rc.width / rc.height);
         try { gg.drawImage(im, ca3[0], ca3[1], ca3[2], ca3[3], rc.left * SC, rc.top * SC, rc.width * SC, rc.height * SC); } catch (e) {}
       });
       rasterTexts(gg, SC, document.body, false);
-      galPts = harvest(gg, W, H, SC, 3);
+      galPts = harvest(gg, W, H, SC, stepSrc);
     } catch (e) { galPts = []; }
-    if (!pagePts.length && !galPts.length) { closeCase(); flyBusy = false; return; }
-    for (i = 0; i < galPts.length; i++)
-      galPts[i].push(0.75 + Math.random() * 1.05 + (0.5 - galPts[i][5]) * 0.3, // [6] глубина
-                     1.0 + Math.pow(Math.random(), 2.3) * 3.4,                  // [7] зерно
-                     0,
-                     'rgb(' + galPts[i][2] + ',' + galPts[i][3] + ',' + galPts[i][4] + ')'); // [9]
-    var camEnd = 1.5;
-    var dpr = 1;
-    var cv = document.createElement('canvas');
-    cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:105;pointer-events:none;transition:opacity .55s';
-    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
-    document.body.appendChild(cv);
-    var x = cv.getContext('2d');
-    document.body.classList.add('flying');
-    vInner.classList.remove('settled'); // тексты складываются каскадом, улетает только кадр
-    viewer.style.backdropFilter = 'none';
-    viewer.style.transition = 'none'; viewer.style.opacity = '0'; // страница теперь из частиц
+    if (pagePts.length + galPts.length < 200) {
+      viewer.style.transition = 'opacity .4s ease'; viewer.style.opacity = '0';
+      setTimeout(function(){ viewer.style.transition = ''; viewer.style.opacity = ''; closeCase(); flyBusy = false; }, 420);
+      return;
+    }
     var cr2 = lf.card.querySelector('.card-media').getBoundingClientRect();
     var c0x = cr2.left + cr2.width / 2, c0y = cr2.top + cr2.height / 2; // куда возвращаемся
     var t1x = tr.left + tr.width / 2, t1y = tr.top + tr.height / 2;     // откуда отлетаем
+    var clickX = t1x, clickY = t1y;
+    var maxD = 0;
+    [[0,0],[innerWidth,0],[0,innerHeight],[innerWidth,innerHeight]].forEach(function(pt){
+      maxD = Math.max(maxD, Math.hypot(pt[0] - clickX, pt[1] - clickY));
+    });
+    var parts = [], i, p, rel, avgR = 0, avgG = 0, avgB = 0;
+    for (i = 0; i < galPts.length; i++) {
+      p = galPts[i];
+      parts.push([p[0], p[1], 0, 0,
+                  0.75 + Math.random() * 1.05 + (0.5 - p[5]) * 0.3,
+                  1.0 + Math.pow(Math.random(), 2.3) * 3.4,
+                  Math.random(), 0, 0, p[2], p[3], p[4]]);
+    }
+    for (i = 0; i < pagePts.length; i++) {
+      p = pagePts[i];
+      avgR += p[2]; avgG += p[3]; avgB += p[4];
+      rel = Math.min(1, Math.hypot(p[0] - clickX, p[1] - clickY) / maxD) * 0.92;
+      parts.push([p[0], p[1], 0, 0,
+                  2.3 + Math.random() * 1.2 + (0.5 - p[5]) * 0.4,
+                  3.6 * (0.72 + Math.pow(Math.random(), 2) * 0.5),
+                  Math.random(), rel, 2, p[2], p[3], p[4]]);
+    }
+    var nP = Math.max(1, pagePts.length);
+    var tint = [0.012 + avgR / nP / 255 * 0.16, 0.047 + avgG / nP / 255 * 0.14, 0.063 + avgB / nP / 255 * 0.14];
+    if (!FlyGL.begin(parts, 105)) {
+      viewer.style.transition = 'opacity .4s ease'; viewer.style.opacity = '0';
+      setTimeout(function(){ viewer.style.transition = ''; viewer.style.opacity = ''; closeCase(); flyBusy = false; }, 420);
+      return;
+    }
+    vInner.classList.remove('settled'); // тексты складываются каскадом под волной
+    viewer.style.backdropFilter = 'none';
     var dxT = c0x - t1x, dyT = c0y - t1y;
     var arc = Math.min(160, Math.hypot(dxT, dyT) * 0.5 + 50) * (c0x > innerWidth / 2 ? -1 : 1);
     var nrm = Math.hypot(dxT, dyT) || 1;
     var cpx = t1x + dxT * 0.5 - dyT / nrm * arc, cpy = t1y + dyT * 0.5 + dxT / nrm * arc;
-    var t0 = performance.now(), DUR = 1500;
+    var camEnd = 1.5, DUR = 1600 * FLY_SLOW, t0 = performance.now();
+    var camPrev = camEnd, fxp = t1x, fyp = t1y, domHidden = false;
     function anim(now){
-      var k = Math.min(1, (now - t0) / DUR);
-      var ke = k * k * k * (k * (k * 6 - 15) + 10);
-      var cam = camEnd * (1 - ke);                 // камера отступает назад
-      var fe = Math.min(1, k / 0.8); fe = fe * fe * (3 - 2 * fe);
-      var u = 1 - fe;
-      var Fx = u * u * t1x + 2 * u * fe * cpx + fe * fe * c0x; // фокус скользит по дуге назад к карточке
-      var Fy = u * u * t1y + 2 * u * fe * cpy + fe * fe * c0y;
-      x.clearRect(0, 0, cv.width, cv.height);
-      x.fillStyle = 'rgba(3,12,16,' + (0.95 * (1 - ke)) + ')'; // тьма отпускает — под ней галерея
-      x.fillRect(0, 0, cv.width, cv.height);
-      // галерея проявляется кросс-фейдом ПОД оседающими частицами — без ступеньки в конце
-      if (k > 0.55) document.body.classList.remove('flying');
-      // галерея: частицы съезжаются из-за камеры на свои места
-      for (var i = 0; i < galPts.length; i++) {
-        var p = galPts[i], dz = p[6] - cam;
-        if (dz < 0.05) continue;
-        var s = p[6] / dz;
-        var px = Fx + (p[0] - c0x) * s, py = Fy + (p[1] - c0y) * s;
-        var a = Math.min(1, dz / 0.45);
-        if (a < 0.03) continue;
-        x.globalAlpha = a;
-        x.fillStyle = p[9];
-        var sz = Math.min(20, p[7] * s) * dpr;
-        x.fillRect(px * dpr - sz / 2, py * dpr - sz / 2, sz, sz);
+      var k = window.__flyK != null ? window.__flyK : Math.min(1, (now - t0) / DUR); // __flyK — отладочная заморозка фазы
+      var wave = sstep(0, 0.22, k);
+      var cam = camEnd * (1 - smootherstep((k - 0.05) / 0.85));
+      var fe = sstep(0, 1, Math.min(1, k / 0.8));
+      var u1 = 1 - fe;
+      var fx = u1 * u1 * t1x + 2 * u1 * fe * cpx + fe * fe * c0x;
+      var fy = u1 * u1 * t1y + 2 * u1 * fe * cpy + fe * fe * c0y;
+      if (!domHidden && wave >= 0.999) { // волна накрыла страницу — DOM можно спрятать
+        domHidden = true;
+        viewer.style.transition = 'none'; viewer.style.opacity = '0';
       }
-      // страница: уходит в глубину к оси и растворяется
-      for (i = 0; i < pagePts.length; i++) {
-        var q = pagePts[i];
-        var s2 = q[7] / Math.max(0.2, q[7] - cam);
-        var sEnd = q[7] / (q[7] - camEnd);
-        var g2 = Math.min(1, s2 / sEnd);
-        var qx = Fx + (q[0] - t1x) * g2, qy = Fy + (q[1] - t1y) * g2;
-        var a2 = Math.max(0, Math.min(1, (g2 - 0.22 - q[8] * 0.18) / 0.38));
-        if (a2 < 0.03) continue;
-        x.globalAlpha = a2;
-        x.fillStyle = q[9];
-        var sz2 = q[6] * (0.35 + 0.65 * g2) * dpr;
-        x.fillRect(qx * dpr - sz2 / 2, qy * dpr - sz2 / 2, sz2, sz2);
-      }
-      x.globalAlpha = 1;
+      FlyGL.frame({
+        clickX: clickX, clickY: clickY,
+        waveR: wave * (maxD + 150),
+        dark: 1 - sstep(0.58, 0.96, k), tint: tint,
+        c0x: c0x, c0y: c0y, t1x: t1x, t1y: t1y,
+        fx: fx, fy: fy, fxp: fxp, fyp: fyp,
+        cam: cam, camPrev: camPrev, camEnd: camEnd,
+        k: k, wave: wave, rv: 0, out: 1, time: now / 1000
+      });
+      camPrev = cam; fxp = fx; fyp = fy;
       if (k < 1) requestAnimationFrame(anim);
       else {
         closeCase();
         viewer.style.transition = ''; viewer.style.opacity = ''; viewer.style.backdropFilter = '';
-        document.body.classList.remove('flying'); // реальная галерея ровно под частицами
-        cv.style.opacity = 0;
-        setTimeout(function(){ cv.remove(); flyBusy = false; }, 600);
+        FlyGL.end();
+        setTimeout(function(){ flyBusy = false; }, 540);
       }
     }
     requestAnimationFrame(anim);
