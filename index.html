@@ -1564,6 +1564,7 @@
     }
     var cr2 = lf.card.querySelector('.card-media').getBoundingClientRect();
     var c0x = cr2.left + cr2.width / 2, c0y = cr2.top + cr2.height / 2; // куда возвращаемся
+    var cHW = cr2.width / 2, cHH = cr2.height / 2; // финальная волна сходится в форму этой карточки
     var t1x = tr.left + tr.width / 2, t1y = tr.top + tr.height / 2;     // откуда отлетаем
     var rHW = tr.width / 2, rHH = tr.height / 2; // волна расходится в форме кадра проекта
     var maxD = 0;
@@ -1606,6 +1607,15 @@
     function anim(now){
       var k = window.__flyK != null ? window.__flyK : Math.min(1, (now - t0) / DUR); // __flyK — отладочная заморозка фазы
       var wave = sstep(0, 0.22, k);
+      // финализация: после полного накрытия тьма СХОДИТСЯ волной в карточку-цель (форма карточки),
+      // открывая галерею от краёв к финальному кадру
+      var collapse = sstep(0.45, 0.96, k);
+      var useCard = k >= 0.4;
+      var wrcx = useCard ? c0x : t1x, wrcy = useCard ? c0y : t1y;
+      var wrhw = useCard ? cHW : rHW, wrhh = useCard ? cHH : rHH;
+      var waveR = useCard
+        ? (maxD + 150) * (1 - collapse) - (Math.min(cHW, cHH) + 130) * collapse
+        : wave * (maxD + 150);
       var cam = camEnd * (1 - smootherstep((k - 0.05) / 0.85));
       var fe = sstep(0, 1, Math.min(1, k / 0.8));
       var u1 = 1 - fe;
@@ -1616,9 +1626,9 @@
         viewer.style.transition = 'none'; viewer.style.opacity = '0';
       }
       FlyGL.frame({
-        rectCX: t1x, rectCY: t1y, rectHW: rHW, rectHH: rHH,
-        waveR: wave * (maxD + 150),
-        dark: 1 - sstep(0.58, 0.96, k), tint: tint,
+        rectCX: wrcx, rectCY: wrcy, rectHW: wrhw, rectHH: wrhh,
+        waveR: waveR,
+        dark: 1, tint: tint,
         c0x: c0x, c0y: c0y, t1x: t1x, t1y: t1y,
         fx: fx, fy: fy, fxp: fxp, fyp: fyp,
         cam: cam, camPrev: camPrev, camEnd: camEnd,
