@@ -2358,7 +2358,10 @@ function updateHud(dt) {
 const GAME = { on: false, z: 0, speed: 90, score: 0, hurtT: 0, exit: -1, enter: 0, over: false,
   tint: new THREE.Color(0x9fb2c4), camStart: new THREE.Vector3(), fovStart: 50, danger: null,
   group: null, chunks: [], ship: null, shipP: new THREE.Vector3(0, 12, 0), anims: [] };
-const G_DEPTH = 70, G_AHEAD = 9; // глубина чанка и сколько чанков держим впереди
+// чанки мельче, но их больше: плотность точек выросла в 10 раз, и короткий чанк
+// строится за ~10мс — генерация не даёт фризов (по одному чанку за кадр)
+const G_DEPTH = 24, G_AHEAD = 26;
+const G_STEP = (window.matchMedia && matchMedia('(pointer: coarse)').matches) ? 0.55 : 0.3; // шаг сетки точек (0.95 было)
 
 // детерминированный шум для ландшафта
 function gHash(x, z) { const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return s - Math.floor(s); }
@@ -2368,41 +2371,17 @@ function gNoise(x, z) {
   return gHash(xi, zi) * (1 - u) * (1 - v) + gHash(xi + 1, zi) * u * (1 - v)
        + gHash(xi, zi + 1) * (1 - u) * v + gHash(xi + 1, zi + 1) * u * v;
 }
-// три сменяющих друг друга мира (эпохи по ~560 юнитов пути, с плавным швом):
-// 0 «Разлом» — растрескавшиеся плиты и монолиты-клинья; 1 «Столы» — мегаструктуры-плато
-// со шпилями; 2 «Осколки» — белая равнина с грядами острых сколов.
-const G_EPOCH = 560;
-function gEpochH(ep, x, z) {
-  if (ep === 0) {
-    let h = (gNoise(x * 0.01, z * 0.01) - 0.5) * 6;
-    h += Math.floor(gNoise(x * 0.008 + 3, z * 0.008) * 5) * 2.4;                 // плиты-ступени
-    h += Math.pow(Math.max(0, gNoise(x * 0.02 + 17, z * 0.02) - 0.6), 2) * 320;  // монолиты-клинья
-    const crack = Math.abs(gNoise(x * 0.03 + 7, z * 0.03) - 0.5) * 2;
-    if (crack < 0.05) h -= 3.2;                                                  // трещины в плитах
-    return h;
-  }
-  if (ep === 1) {
-    let h = (gNoise(x * 0.012, z * 0.012) - 0.5) * 8;
-    const mesa = gNoise(x * 0.004 + 50, z * 0.004);
-    if (mesa > 0.62) {
-      h = 34 + (gNoise(x * 0.02, z * 0.02) - 0.5) * 3;                           // плоская столешница
-      h += Math.min(34, Math.pow(Math.max(0, gNoise(x * 0.05 + 9, z * 0.05) - 0.8), 2) * 1100); // шпили
-    } else if (mesa > 0.56) h += (mesa - 0.56) / 0.06 * 30;                      // крутой борт плато
-    return h;
-  }
-  let h = (gNoise(x * 0.009, z * 0.009) - 0.5) * 4;                              // ледяная равнина
-  const ridge = Math.abs(gNoise(x * 0.006 + 31, z * 0.006) - 0.5) * 2;
-  if (ridge < 0.18) h += Math.pow(1 - ridge / 0.18, 1.4) * 28 * (0.4 + 0.6 * gNoise(x * 0.05, z * 0.05)); // гряды сколов
-  return h;
-}
+// естественный рельеф: fBm-холмы + острые хребты + каньоны-провалы. Никаких плоских плит
+// и вертикальных стен, параллельных экрану, — только живые наклонные поверхности
 function gTerrainH(x, z) {
-  const e = Math.floor(z / G_EPOCH), t = (z - e * G_EPOCH) / G_EPOCH;
-  const ep = ((e % 3) + 3) % 3;
-  let h;
-  if (t > 0.92) { // плавный шов между мирами
-    const k = (t - 0.92) / 0.08;
-    h = gEpochH(ep, x, z) * (1 - k) + gEpochH((ep + 1) % 3, x, z) * k;
-  } else h = gEpochH(ep, x, z);
+  let h = (gNoise(x * 0.008, z * 0.008) - 0.5) * 36;            // крупные волны местности
+  h += (gNoise(x * 0.02 + 13, z * 0.02 + 7) - 0.5) * 14;        // средние холмы
+  h += (gNoise(x * 0.05 + 41, z * 0.05 + 3) - 0.5) * 4.6;       // мелкая рябь
+  const r = 1 - Math.abs(gNoise(x * 0.006 + 70, z * 0.006 + 20) * 2 - 1);
+  h += Math.pow(r, 2.8) * 52 * (0.35 + 0.65 * gNoise(x * 0.0025, z * 0.0025 + 9)); // хребты-гряды
+  const cn = Math.abs(gNoise(x * 0.004 + 23, z * 0.004 + 5) * 2 - 1);
+  if (cn < 0.14) h -= Math.pow(1 - cn / 0.14, 1.7) * 30;        // провалы-каньоны
+  h += (gNoise(x * 0.0012 + 3, z * 0.0012) - 0.5) * 30;         // общий уклон, чтобы не было «пола»
   // постепенное усложнение: первые километры рельеф пологий, дальше — в полную силу
   return h * (0.35 + 0.65 * Math.min(1, z / 4500));
 }
@@ -2433,77 +2412,90 @@ const gFallMat = new THREE.ShaderMaterial({
     }`
 });
 
-// чанк ландшафта: сетка точек с джиттером, цвет по высоте (глубины→бирюза→янтарные пики)
+// чанк ландшафта: плотная сетка мелких точек (в 10 раз плотнее прежней).
+// Скорость сборки: высоты считаем на грубой решётке и билинейно интерполируем,
+// всё в типизированных массивах — чанк строится за миллисекунды, без фризов.
 function gMakeChunk(zNoise) {
-  const step = 0.95, W = 120; // плотная сетка — земля читается сплошной поверхностью
-  const pts = [], cols = [];
-  const tmp = new THREE.Color();
-  for (let z = 0; z < G_DEPTH; z += step) {
-    for (let x = -W; x <= W; x += step) {
-      const jx = (gHash(x + zNoise, z) - 0.5) * step, jz = (gHash(x, z + zNoise) - 0.5) * step;
-      const px = x + jx, pzN = zNoise + z + jz;
-      const h = gTerrainH(px, pzN);
-      pts.push(px, h, z + jz);
-      // почти белый монохром (как в референсах), тени по низинам, лёгкий тон проекта
-      const g = 0.42 + 0.5 * clamp01((h + 8) / 40);
-      tmp.setRGB(g, g, g).lerp(GAME.tint, 0.14);
-      const crack = Math.abs(gNoise(px * 0.03 + 7, pzN * 0.03) - 0.5) * 2;
-      if (crack < 0.05) tmp.multiplyScalar(0.5 + crack * 8);  // тёмные трещины
-      tmp.multiplyScalar(0.8 + 0.2 * gHash(px, pzN));         // мягкая разнояркость
-      cols.push(tmp.r, tmp.g, tmp.b);
-    }
-  }
-  // парящие острова-плиты (как в референсах) — изредка, высоко над рельефом
-  if (gHash(zNoise, 91) > 0.55) {
-    const ix = (gHash(zNoise, 41) - 0.5) * 180, iy = 58 + gHash(zNoise, 43) * 30, iz = gHash(zNoise, 47) * G_DEPTH;
-    const rx = 14 + gHash(zNoise, 53) * 14, rz = rx * (0.5 + gHash(zNoise, 59) * 0.7);
-    for (let k = 0; k < 900; k++) {
-      const a = gHash(k, zNoise) * Math.PI * 2, r = Math.sqrt(gHash(zNoise, k));
-      const lx = Math.cos(a) * r * rx, lz = Math.sin(a) * r * rz;
-      const thick = (1 - r) * 5 + 0.5;
-      const ly = -gHash(k * 7, zNoise) * thick + (gHash(k, zNoise * 3) < 0.12 ? -thick * 2.2 : 0); // «сталактиты» снизу
-      pts.push(ix + lx, iy + ly, iz + lz);
-      const gg = 0.6 + 0.32 * gHash(k, zNoise + 1);
-      tmp.setRGB(gg, gg, gg).lerp(GAME.tint, 0.1);
-      cols.push(tmp.r, tmp.g, tmp.b);
+  const W = 120, step = G_STEP;
+  const cols = Math.floor(W * 2 / step) + 1, rows = Math.floor(G_DEPTH / step);
+  const HS = 1.2, hc = Math.floor(W * 2 / HS) + 3, hr = Math.floor(G_DEPTH / HS) + 3;
+  const hgrid = new Float32Array(hc * hr);
+  for (let r = 0; r < hr; r++) for (let c = 0; c < hc; c++)
+    hgrid[r * hc + c] = gTerrainH(-W + c * HS, zNoise + r * HS);
+  const n = cols * rows;
+  const pts = new Float32Array(n * 3), colA = new Float32Array(n * 3);
+  const tR = GAME.tint.r, tG = GAME.tint.g, tB = GAME.tint.b;
+  let o = 0;
+  for (let r = 0; r < rows; r++) {
+    const z = r * step;
+    for (let c = 0; c < cols; c++) {
+      const x = -W + c * step;
+      const j1 = gHash(x + zNoise, z), j2 = gHash(x, z + zNoise);
+      const px = x + (j1 - 0.5) * step, pz = z + (j2 - 0.5) * step;
+      // билинейная высота по грубой решётке + микрорельеф из джиттера
+      const fx = Math.min(hc - 2, Math.max(0, (px + W) / HS)), fz = Math.min(hr - 2, Math.max(0, pz / HS));
+      const ix = fx | 0, iz = fz | 0, ux = fx - ix, uz = fz - iz;
+      const b0 = iz * hc + ix, b1 = b0 + hc;
+      let h = hgrid[b0] * (1 - ux) * (1 - uz) + hgrid[b0 + 1] * ux * (1 - uz)
+            + hgrid[b1] * (1 - ux) * uz + hgrid[b1 + 1] * ux * uz;
+      h += (j1 - 0.5) * 0.5;
+      pts[o] = px; pts[o + 1] = h; pts[o + 2] = pz;
+      // почти белый монохром, тени по низинам, лёгкий тон проекта, мягкая разнояркость
+      const g = 0.40 + 0.5 * clamp01((h + 8) / 40);
+      const vb = 0.78 + 0.22 * j2;
+      colA[o]     = (g + (tR - g) * 0.14) * vb;
+      colA[o + 1] = (g + (tG - g) * 0.14) * vb;
+      colA[o + 2] = (g + (tB - g) * 0.14) * vb;
+      o += 3;
     }
   }
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
-  g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
-  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.42, transparent: true, opacity: 0.95, depthWrite: false });
+  g.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(colA, 3));
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.22, transparent: true, opacity: 0.95, depthWrite: false });
   const cloud = new THREE.Points(g, m);
   const grp = new THREE.Group();
   grp.add(cloud);
   grp.userData = { zNoise };
-  // сферы энергии: 0–2 на чанк, парят над рельефом
-  const orbN = Math.floor(gHash(zNoise, 7) * 3);
-  for (let i = 0; i < orbN; i++) {
-    const ox = (gHash(zNoise, i * 13 + 1) - 0.5) * 150;
-    const oz = gHash(zNoise, i * 29 + 2) * G_DEPTH;
-    const oy = gTerrainH(ox, zNoise + oz) + 7 + gHash(zNoise, i) * 9;
-    const og = new THREE.BufferGeometry();
-    const op = [], N_OP = 26;
-    for (let k = 0; k < N_OP; k++) {
-      const a = gHash(i, k) * Math.PI * 2, b = gHash(k, i) * Math.PI, r = 1.1 + gHash(k * 3, i) * 0.5;
-      op.push(Math.sin(b) * Math.cos(a) * r, Math.cos(b) * r, Math.sin(b) * Math.sin(a) * r);
+  // парящие острова — изредка (чанки короче прежних, вероятность пересчитана)
+  if (gHash(zNoise, 91) > 0.84) {
+    const ix = (gHash(zNoise, 41) - 0.5) * 180, iy = 58 + gHash(zNoise, 43) * 30, iz = gHash(zNoise, 47) * G_DEPTH;
+    const rx = 14 + gHash(zNoise, 53) * 14, rz = rx * (0.5 + gHash(zNoise, 59) * 0.7);
+    const NI = 2600, ip = new Float32Array(NI * 3), ic = new Float32Array(NI * 3);
+    for (let k = 0; k < NI; k++) {
+      const a = gHash(k, zNoise) * Math.PI * 2, r = Math.sqrt(gHash(zNoise, k));
+      const thick = (1 - r) * 5 + 0.5;
+      const ly = -gHash(k * 7, zNoise) * thick + (gHash(k, zNoise * 3) < 0.12 ? -thick * 2.2 : 0);
+      ip[k * 3] = ix + Math.cos(a) * r * rx; ip[k * 3 + 1] = iy + ly; ip[k * 3 + 2] = iz + Math.sin(a) * r * rz;
+      const gg = 0.6 + 0.32 * gHash(k, zNoise + 1);
+      ic[k * 3] = gg + (tR - gg) * 0.1; ic[k * 3 + 1] = gg + (tG - gg) * 0.1; ic[k * 3 + 2] = gg + (tB - gg) * 0.1;
     }
-    og.setAttribute('position', new THREE.Float32BufferAttribute(op, 3));
-    const om = new THREE.PointsMaterial({ color: 0xffc46a, size: 0.55, transparent: true, opacity: 0.95,
-      blending: THREE.AdditiveBlending, depthWrite: false });
-    const orb = new THREE.Points(og, om);
+    const ig = new THREE.BufferGeometry();
+    ig.setAttribute('position', new THREE.BufferAttribute(ip, 3));
+    ig.setAttribute('color', new THREE.BufferAttribute(ic, 3));
+    grp.add(new THREE.Points(ig, m.clone()));
+  }
+  // энергия для сбора: кристалл / гироскоп / спираль из мелких точек, парит и вращается
+  if (gHash(zNoise, 7) > 0.62) {
+    const ox = (gHash(zNoise, 13) - 0.5) * 150;
+    const oz = gHash(zNoise, 29) * G_DEPTH;
+    const oy = gTerrainH(ox, zNoise + oz) + 8 + gHash(zNoise, 3) * 9;
+    const orb = gMakeOrb(zNoise);
     orb.position.set(ox, oy, oz);
     orb.userData.isOrb = true;
+    orb.userData.baseY = oy;
+    orb.userData.ph = gHash(zNoise, 77) * 6.28;
+    orb.userData.spin = 0.7 + gHash(zNoise, 79) * 1.1;
     grp.add(orb);
   }
-  // водопады: ищем обрывы (резкий перепад высоты) и вешаем колонны падающих точек
+  // водопады: ищем перепад высоты и вешаем колонны падающих точек
   let falls = 0;
-  for (let t = 0; t < 26 && falls < 2; t++) {
+  for (let t = 0; t < 10 && falls < 1; t++) {
     const fx = (gHash(zNoise + 3, t * 17) - 0.5) * 220;
     const fz = gHash(t * 7, zNoise + 5) * G_DEPTH;
     const h1 = gTerrainH(fx, zNoise + fz), h2 = gTerrainH(fx, zNoise + fz + 4);
     const drop = h1 - h2;
-    if (drop > 15) {
+    if (drop > 9) {
       const N = 130, fp = [], ph = [], hh = [];
       for (let k = 0; k < N; k++) {
         fp.push(fx + (gHash(k, t) - 0.5) * 4.5, h1 + 0.5, fz + 2 + (gHash(t, k) - 0.5) * 1.8);
@@ -2521,6 +2513,52 @@ function gMakeChunk(zNoise) {
   return grp;
 }
 
+// коллектибл: три вида энергетических объектов из мелких точек
+function gMakeOrb(seed) {
+  const kind = Math.floor(gHash(seed, 111) * 3);
+  const p = [], c = [];
+  function push(x, y, z, r, g, b, k) { p.push(x, y, z); c.push(r * k, g * k, b * k); }
+  const T = [0.62, 0.96, 0.91], A = [1.0, 0.77, 0.42];
+  if (kind === 0) {
+    // кристалл: точки бегут по рёбрам октаэдра, внутри — янтарное ядро
+    const V = [[0, 1.8, 0], [0, -1.8, 0], [1.2, 0, 0], [-1.2, 0, 0], [0, 0, 1.2], [0, 0, -1.2]];
+    const E = [[0,2],[0,3],[0,4],[0,5],[1,2],[1,3],[1,4],[1,5],[2,4],[4,3],[3,5],[5,2]];
+    for (let e = 0; e < E.length; e++) for (let k = 0; k < 9; k++) {
+      const t = (k + 0.5) / 9, a = V[E[e][0]], b = V[E[e][1]];
+      push(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t,
+           T[0], T[1], T[2], 0.75 + 0.25 * gHash(e, k));
+    }
+    for (let k = 0; k < 16; k++)
+      push((gHash(k, 1) - 0.5) * 0.7, (gHash(k, 2) - 0.5) * 1.0, (gHash(k, 3) - 0.5) * 0.7, A[0], A[1], A[2], 1.05);
+  } else if (kind === 1) {
+    // гироскоп: наклонное внешнее кольцо + внутреннее, в центре ядро
+    for (let k = 0; k < 64; k++) {
+      const a = k / 64 * Math.PI * 2;
+      push(Math.cos(a) * 1.7, Math.sin(a) * 0.55, Math.sin(a) * 1.7, T[0], T[1], T[2], 0.7 + 0.3 * gHash(k, 5));
+      push(Math.cos(a) * 1.1, Math.sin(a) * 1.1, Math.sin(a) * 0.3, A[0], A[1], A[2], 0.6 + 0.3 * gHash(k, 9));
+    }
+    for (let k = 0; k < 10; k++)
+      push((gHash(k, 4) - 0.5) * 0.5, (gHash(k, 6) - 0.5) * 0.5, (gHash(k, 7) - 0.5) * 0.5, 1, 1, 1, 1.0);
+  } else {
+    // двойная спираль с перемычками — «энергетическая ДНК»
+    for (let k = 0; k < 48; k++) {
+      const t = k / 48, a = t * Math.PI * 4, y = (t - 0.5) * 3.4;
+      push(Math.cos(a) * 0.95, y, Math.sin(a) * 0.95, T[0], T[1], T[2], 0.75 + 0.25 * gHash(k, 2));
+      push(-Math.cos(a) * 0.95, y, -Math.sin(a) * 0.95, A[0], A[1], A[2], 0.75 + 0.25 * gHash(k, 3));
+      if (k % 8 === 0) for (let mI = 1; mI < 4; mI++) {
+        const mt = mI / 4 * 2 - 1;
+        push(Math.cos(a) * 0.95 * mt, y, Math.sin(a) * 0.95 * mt, T[0], T[1], T[2], 0.45);
+      }
+    }
+  }
+  const og = new THREE.BufferGeometry();
+  og.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+  og.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+  const om = new THREE.PointsMaterial({ vertexColors: true, size: 0.18, transparent: true, opacity: 0.95,
+    blending: THREE.AdditiveBlending, depthWrite: false });
+  return new THREE.Points(og, om);
+}
+
 function gSpawnAhead() {
   // держим G_AHEAD чанков впереди корабля; не больше одного нового за кадр (без фризов)
   if (GAME.chunks.length < G_AHEAD) {
@@ -2533,26 +2571,77 @@ function gSpawnAhead() {
   }
 }
 
-// корабль: стреловидный кластер светящихся точек
+// корабль: облако из 4200 мелких точек, снятых с 3D-модели Crystalline Dreadnought
+// (GLB → семплинг поверхности → квантование Int8 → base64; нос смотрит в -Z)
+const SHIP_SCALE = 3.02344;
+const SHIP_B64 = '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';
+let SHIP_PTS = null;
+function gShipPoints() {
+  if (SHIP_PTS) return SHIP_PTS;
+  const raw = atob(SHIP_B64), n = raw.length;
+  const a = new Float32Array(n);
+  for (let i = 0; i < n; i++) { let v = raw.charCodeAt(i); if (v > 127) v -= 256; a[i] = v / 127 * SHIP_SCALE; }
+  SHIP_PTS = a;
+  return a;
+}
 function gMakeShip() {
-  const p = [], c = [];
-  const teal = new THREE.Color(0x9ff4e8), amber = new THREE.Color(0xffb054);
-  for (let i = 0; i < 90; i++) {
-    const t = gHash(i, 3);                       // вдоль корпуса 0..1 (0 = нос)
-    const spread = 0.15 + t * 1.6;               // расширение к корме
-    const x = (gHash(i, 7) - 0.5) * spread * 2.4;
-    const y = (gHash(i, 11) - 0.5) * spread * 0.8;
-    const z = t * 4.6;
-    p.push(x, y, z);
-    const col = t < 0.25 ? teal : (gHash(i, 5) > 0.5 ? teal : amber);
-    c.push(col.r, col.g, col.b);
+  const base = gShipPoints(), n = base.length / 3;
+  const pos = new Float32Array(base);   // рабочая копия — при краше точки летят по физике
+  const col = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    const z = base[i * 3 + 2];
+    let r = 0.62, g = 0.86, b = 0.92;                                   // ледяной кристаллический корпус
+    if (z > 1.9 && gHash(i, 17) > 0.45) { r = 1.0; g = 0.66; b = 0.34; } // сопла на корме — янтарь
+    else if (gHash(i, 23) > 0.965) { r = g = b = 1.0; }                  // редкие белые искры
+    const hl = 0.72 + 0.28 * gHash(i, 13);                               // разнояркость
+    col[i * 3] = r * hl; col[i * 3 + 1] = g * hl; col[i * 3 + 2] = b * hl;
   }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
-  g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.5, transparent: true, opacity: 1,
+  const g2 = new THREE.BufferGeometry();
+  g2.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g2.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  GAME.shipBase = base;
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.17, transparent: true, opacity: 1,
     blending: THREE.AdditiveBlending, depthWrite: false });
-  return new THREE.Points(g, m);
+  return new THREE.Points(g2, m);
+}
+
+// крушение: каждой точке корпуса — своя скорость. Основной вектор — по курсу (нос -Z),
+// плюс конус разлёта от оси, подброс вверх; дальше гравитация, отскоки от рельефа, затухание
+function gShipCrash() {
+  const pos = GAME.ship.geometry.attributes.position;
+  const n = pos.count, vel = new Float32Array(n * 3);
+  const fwd = -(14 + GAME.speed * 0.24); // инерция по направлению движения
+  for (let i = 0; i < n; i++) {
+    const r1 = gHash(i, 1) - 0.5, r2 = gHash(i, 2) - 0.5, r3 = gHash(i, 3);
+    vel[i * 3]     = r1 * 26 + pos.getX(i) * (2 + r3 * 5);   // вбок + «взрыв» от оси корпуса
+    vel[i * 3 + 1] = 6 + r3 * 18 + pos.getY(i) * 4;          // подброс
+    vel[i * 3 + 2] = fwd * (0.5 + r3) + r2 * 14;             // главная составляющая — вперёд
+  }
+  GAME.debris = { vel: vel, t: 0 };
+}
+function gUpdateDebris(dt) {
+  const d = GAME.debris;
+  if (!d) return;
+  d.t += dt;
+  const pos = GAME.ship.geometry.attributes.position, v = d.vel, n = pos.count;
+  const sx = GAME.ship.position.x, sy = GAME.ship.position.y;
+  const drag = Math.exp(-dt * 0.55);
+  for (let i = 0; i < n; i++) {
+    let px = pos.getX(i) + v[i * 3] * dt,
+        py = pos.getY(i) + v[i * 3 + 1] * dt,
+        pz = pos.getZ(i) + v[i * 3 + 2] * dt;
+    v[i * 3] *= drag; v[i * 3 + 2] *= drag;
+    v[i * 3 + 1] = v[i * 3 + 1] * drag - 46 * dt;            // гравитация
+    const gh = gTerrainH(sx + px, GAME.z - pz) - sy;         // рельеф в локальных координатах корабля
+    if (py < gh + 0.3) {                                     // отскок с потерей энергии
+      py = gh + 0.3;
+      if (v[i * 3 + 1] < 0) v[i * 3 + 1] *= -0.34;
+      v[i * 3] *= 0.6; v[i * 3 + 2] *= 0.6;
+    }
+    pos.setXYZ(i, px, py, pz);
+  }
+  pos.needsUpdate = true;
+  GAME.ship.material.opacity = Math.max(0, 1 - d.t / 2.8);   // обломки постепенно гаснут
 }
 
 let _galleryVis = null;
@@ -2612,6 +2701,12 @@ function restartGame() {
   GAME.grace = 3; // 3 секунды неуязвимости, корабль мигает
   GAME.shipP.set(0, gTerrainH(0, GAME.z) + 30, 0);
   GAME.ship.visible = true; GAME.ship.scale.setScalar(1); GAME.ship.material.opacity = 1;
+  // корпус пересобирается из обломков: вернуть точки на места модели
+  if (GAME.shipBase) {
+    GAME.ship.geometry.attributes.position.array.set(GAME.shipBase);
+    GAME.ship.geometry.attributes.position.needsUpdate = true;
+  }
+  GAME.debris = null;
   gameScore.textContent = '0';
   gameOverEl.classList.remove('show');
 }
@@ -2621,7 +2716,7 @@ function exitGame() {
   document.body.classList.remove('game');
   scene.remove(GAME.group);
   GAME.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
-  GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = [];
+  GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null;
   if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
   applySceneMode(); // корректная видимость окружения по текущему режиму
   gameOverEl.classList.remove('show'); // игровые оверлеи не должны пережить выход
@@ -2650,10 +2745,13 @@ function updateGame(dt, time) {
     });
     gFallMat.uniforms.uOp.value = wOp;
   }
-  // гейм-овер: мир замер, ждём клик (заново) или Esc (выход)
+  // гейм-овер: мир доезжает по инерции, обломки корабля летят по физике; ждём клик/Esc
   if (GAME.over && GAME.exit < 0) {
-    GAME.ship.scale.multiplyScalar(1 + dt * 3);            // корабль рассеивается
-    GAME.ship.material.opacity = Math.max(0, GAME.ship.material.opacity - dt * 2);
+    GAME.speed *= Math.pow(0.05, dt);          // торможение мира — инерция удара
+    const dzc = GAME.speed * dt;
+    GAME.z += dzc;
+    for (const cc of GAME.chunks) cc.position.z += dzc;
+    gUpdateDebris(dt);
     return;
   }
   // динамическое небо: инопланетная аврора — цвет горизонта медленно дышит
@@ -2693,9 +2791,12 @@ function updateGame(dt, time) {
     c.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
   }
   gSpawnAhead();
-  // сбор сфер: близость к кораблю
+  // сбор энергии: объекты живут — вращаются и покачиваются; близость к кораблю = сбор
   for (const c of GAME.chunks) for (const o of c.children) {
     if (!o.userData.isOrb || o.userData.got) continue;
+    o.rotation.y += dt * o.userData.spin;
+    o.rotation.x = Math.sin(time * 0.7 + o.userData.ph) * 0.22;
+    o.position.y = o.userData.baseY + Math.sin(time * 1.4 + o.userData.ph) * 0.8;
     const wz = o.position.z + c.position.z;
     if (Math.abs(wz - GAME.shipP.z) < 4 &&
         Math.abs(o.position.x - GAME.shipP.x) < 4.5 &&
@@ -2737,6 +2838,8 @@ function updateGame(dt, time) {
   } else if (GAME.ship.material.opacity < 1 && !GAME.over) GAME.ship.material.opacity = 1;
   if (alt < 1.3 && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over && GAME.grace === 0) {
     GAME.over = true; // столкновение — гейм-овер
+    gShipCrash();     // корабль разлетается на точки с инерцией по курсу
+    GAME.danger.material.opacity = 0;
     gameDanger.classList.remove('on');
     gameOverEl.querySelector('.go-score').textContent = GAME.score;
     gameOverEl.classList.add('show');
