@@ -317,6 +317,84 @@
   .a-more:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
   @media (max-width: 900px) { .a-grid { grid-template-columns: 1fr; } }
 
+  /* ---------- AI-вход и AI-сессия (демо) ---------- */
+  .ai-invite { background: var(--space-void); border-top: 1px solid var(--space-line); border-bottom: 1px solid var(--space-line); }
+  .ai-invite-in { text-align: center; }
+  .ai-invite .kicker::before { display: none; }
+  .ai-invite h2 { font: 700 clamp(28px,3.4vw,54px)/1.1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .ai-sub { margin: 22px auto 0; max-width: 52ch; font: 400 17px/1.65 var(--font-body); color: var(--scan-white-dim); }
+  /* микрофон: круглая кнопка, глиф собран из рамок — без иконочных шрифтов */
+  .ai-mic { margin-top: 44px; width: 76px; height: 76px; border-radius: 50%; cursor: pointer;
+    border: 1px solid rgba(43,224,198,0.5); background: rgba(16,30,37,0.6); position: relative;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: transform var(--duration-base) var(--ease-overshoot), box-shadow var(--duration-base), border-color .3s; }
+  .ai-mic:hover { transform: scale(1.07); border-color: var(--signal-teal); box-shadow: 0 0 0 14px rgba(43,224,198,0.06), 0 0 40px rgba(43,224,198,0.15); }
+  .mic-i { position: relative; width: 14px; height: 20px; display: block; }
+  .mic-i::before { content: ""; position: absolute; left: 1px; top: 0; width: 10px; height: 14px;
+    border: 2px solid #F1FBFC; border-radius: 7px; }
+  .mic-i::after { content: ""; position: absolute; left: -3px; top: 7px; width: 18px; height: 10px;
+    border: 2px solid #F1FBFC; border-top: none; border-radius: 0 0 11px 11px; }
+  .mic-i.big { transform: scale(1.35); }
+  .ai { position: fixed; inset: 0; z-index: 130; background: #020609; opacity: 0; pointer-events: none;
+    transform: scale(0.97); transition: opacity .6s ease, transform .7s cubic-bezier(.2,.8,.2,1); overflow: hidden; }
+  .ai.open { opacity: 1; pointer-events: auto; transform: none; }
+  /* глубина: медленно дрейфующие концентрические волны — камера ушла в пространство */
+  .ai-depth { position: absolute; inset: -20%; pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, rgba(43,224,198,0.07), transparent 40%),
+      repeating-radial-gradient(circle at 50% 50%, transparent 0 70px, rgba(159,180,200,0.05) 71px 72px);
+    animation: aiDrift 14s linear infinite; }
+  @keyframes aiDrift { to { transform: scale(1.22); } }
+  .ai-x { z-index: 4; }
+  .ai-shell { position: relative; z-index: 2; height: 100%; display: grid; place-items: center; padding: 6vw; overflow-y: auto; }
+  .ai-stage { display: none; width: min(820px, 92vw); text-align: center; }
+  .ai-stage.on { display: block; animation: aiStage .7s ease; }
+  @keyframes aiStage { from { opacity: 0; transform: translateY(16px); } }
+  .ai-stage h2 { font: 700 clamp(28px,4vw,58px)/1.08 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; margin-top: 18px; }
+  .ai-stage p { margin: 22px auto 0; max-width: 56ch; font: 400 17px/1.65 var(--font-body); color: var(--scan-white-dim); }
+  /* большая кнопка записи появляется с задержкой — сначала пауза, потом действие */
+  .ai-rec { margin-top: 46px; width: 92px; height: 92px; border-radius: 50%; cursor: pointer;
+    border: 1px solid rgba(43,224,198,0.55); background: rgba(16,30,37,0.7);
+    display: inline-flex; align-items: center; justify-content: center;
+    opacity: 0; transform: scale(0.7); pointer-events: none; transition: .5s; }
+  .ai.open .ai-stage.on .ai-rec { animation: aiRec .6s ease .9s forwards; }
+  @keyframes aiRec { to { opacity: 1; transform: scale(1); pointer-events: auto; } }
+  .ai-rec.live { animation: none !important; opacity: 1; transform: none; pointer-events: auto;
+    box-shadow: 0 0 0 16px rgba(43,224,198,0.06), 0 0 60px rgba(43,224,198,0.22); }
+  .ai-note { margin-top: 30px; font: 400 11px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--scan-white-faint); }
+  /* режим записи: не чат и не транскрипт — смысловые объекты возникают в пространстве */
+  #aiCapture { width: 100%; height: 100%; position: relative; }
+  .ai-prompt { padding-top: 6vh; }
+  .ai-field { position: absolute; inset: 24% 6% 18%; pointer-events: none; }
+  .ai-word { position: absolute; padding: 11px 16px; border: 1px solid rgba(241,251,252,0.22);
+    background: rgba(10,18,22,0.82); border-radius: 999px; white-space: nowrap;
+    font: 500 14px var(--font-body); color: #dfe9ec;
+    opacity: 0; transform: scale(0.5); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
+  .ai-word.show { opacity: 1; transform: scale(var(--w-scale, 1)); }
+  .ai-word.key { border-color: rgba(43,224,198,0.6); color: #F1FBFC; }
+  #aiCapture .ai-rec { position: absolute; left: 50%; bottom: 6vh; margin: 0; transform: translateX(-50%); }
+  /* карточка концепции */
+  .ai-tags { display: flex; justify-content: center; flex-wrap: wrap; gap: 9px; margin-top: 30px; }
+  .ai-tags span { font: 500 12px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--signal-teal); border: 1px solid rgba(43,224,198,0.3); padding: 8px 12px; }
+  .ai-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 34px; text-align: left; }
+  .ai-duo .m { background: rgba(16,30,37,0.5); border: 1px solid rgba(159,180,200,0.13);
+    border-top: 2px solid rgba(43,224,198,0.6); padding: 22px 26px 26px;
+    font: 500 11px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--scan-white-dim); }
+  .ai-duo .m p { margin-top: 12px; font: 400 15px/1.6 var(--font-body); color: rgba(233,244,246,0.85);
+    text-transform: none; letter-spacing: 0; max-width: none; }
+  .ai-actions { display: flex; justify-content: center; gap: 16px; margin-top: 44px; flex-wrap: wrap; }
+  /* минимальная форма — появляется только после «Отправить» */
+  #aiFormEl { margin-top: 40px; display: grid; gap: 14px; justify-items: center; }
+  #aiFormEl input[type="text"] { width: min(420px, 88vw); font: 400 15px var(--font-body); color: var(--scan-white);
+    background: rgba(16,30,37,0.6); border: 1px solid var(--space-line); padding: 14px 18px; outline: none; }
+  #aiFormEl input[type="text"]:focus { border-color: var(--signal-teal); }
+  .ai-agree { display: flex; align-items: center; gap: 10px; font: 400 13px var(--font-body); color: var(--scan-white-dim); cursor: pointer; }
+  @media (max-width: 900px) {
+    .ai-duo { grid-template-columns: 1fr; }
+    .ai-field { inset: 27% 3% 20%; }
+    .ai-word { font-size: 12.5px; padding: 9px 13px; }
+  }
+
   /* ---------- studio ---------- */
   .studio { background: var(--space-void); }
   .studio .manifest-full { font: 600 clamp(20px,2vw,30px)/1.4 var(--font-display); letter-spacing: -0.01em; max-width: 26ch; color: #F1FBFC; }
@@ -680,6 +758,16 @@
   </div>
 </section>
 
+<!-- ===== AI-ВХОД: помочь посетителю сформулировать сырую идею перед разговором с человеком ===== -->
+<section class="ai-invite sec-pad" id="idea">
+  <div class="wrap ai-invite-in">
+    <div class="kicker eyebrow">Сформулируйте идею</div>
+    <h2>Попробуйте сформулировать идею вслух.</h2>
+    <p class="ai-sub">Не обязательно последовательно. Расскажите так, как рассказываете коллеге, — мы соберём основные смыслы в короткое описание проекта.</p>
+    <button class="ai-mic" id="aiOpen" aria-label="Начать формулирование идеи" title="Рассказать идею"><span class="mic-i"></span></button>
+  </div>
+</section>
+
 <!-- ===== STUDIO ===== -->
 <section class="studio sec-pad" id="studio">
   <div class="wrap">
@@ -737,6 +825,58 @@
     <span class="mono">© 2026 PLAYDISPLAY</span>
   </div>
 </footer>
+
+<!-- ===== AI-СЕССИЯ (демо-режим): сайт растворяется, смыслы собираются в карточку концепции ===== -->
+<div class="ai" id="ai">
+  <div class="ai-depth"></div>
+  <button class="viewer-close ai-x" id="aiClose">✕</button>
+  <div class="ai-shell">
+    <div class="ai-stage on" id="aiIntro">
+      <div class="kicker teal">Начните с того, что уже знаете</div>
+      <h2>Расскажите, какое пространство вы хотите создать.</h2>
+      <p>Мы выделим основные смыслы и соберём их в понятное описание проекта.</p>
+      <button class="ai-rec" id="aiRec" aria-label="Включить микрофон"><span class="mic-i big"></span></button>
+      <div class="ai-note">Демо-режим: распознавание речи подключается позже, сценарий уже рабочий.</div>
+    </div>
+    <div class="ai-stage" id="aiCapture">
+      <h2 class="ai-prompt">Расскажите про вашу идею.</h2>
+      <p class="ai-prompt-sub">Мы будем собирать основные смыслы.</p>
+      <div class="ai-field" id="aiField"></div>
+      <button class="ai-rec live" id="aiStop" aria-label="Завершить рассказ"><span class="mic-i big"></span></button>
+    </div>
+    <div class="ai-stage" id="aiSummary">
+      <div class="kicker teal">Краткое описание</div>
+      <h2 id="aiTitle"></h2>
+      <p id="aiIdea"></p>
+      <div class="ai-tags" id="aiTags"></div>
+      <div class="ai-duo">
+        <div class="m">Для кого<p id="aiWho"></p></div>
+        <div class="m">Что человек должен почувствовать<p id="aiFeel"></p></div>
+      </div>
+      <div class="ai-actions">
+        <button class="btn-line" id="aiMore"><span class="tri">▶︎</span> Рассказать ещё</button>
+        <button class="wa" id="aiSend">▶︎ Отправить в PlayDisplay</button>
+      </div>
+    </div>
+    <div class="ai-stage" id="aiForm">
+      <div class="kicker teal">Почти готово</div>
+      <h2>Куда отправить описание идеи?</h2>
+      <form id="aiFormEl">
+        <input type="text" id="aiName" placeholder="Имя" required>
+        <input type="text" id="aiContact" placeholder="Email или телефон" required>
+        <input type="text" id="aiCompany" placeholder="Компания (необязательно)">
+        <label class="ai-agree"><input type="checkbox" id="aiAgree" required> Согласен на отправку описания идеи в PlayDisplay</label>
+        <div class="ai-actions"><button class="wa" type="submit">▶︎ Отправить</button></div>
+      </form>
+    </div>
+    <div class="ai-stage" id="aiSent">
+      <div class="kicker teal">Запрос отправлен</div>
+      <h2>Спасибо. Мы получили описание проекта.</h2>
+      <p>Следующий шаг — персональная креативная сессия с Андреем Судариковым.</p>
+      <div class="ai-actions"><button class="wa" id="aiBook">▶︎ Забронировать креативную сессию</button></div>
+    </div>
+  </div>
+</div>
 
 <!-- ===== ПРОСМОТР КОНЦЕПЦИИ ===== -->
 <div class="c-view" id="cView">
@@ -2607,6 +2747,135 @@
       search.addEventListener('input', function(){ q = search.value.trim().toLowerCase(); limit = PAGE; render(); });
       moreBtn.addEventListener('click', function(){ limit += PAGE; render(); });
       render();
+    });
+  })();
+</script>
+<script>
+  // ===== AI-сессия формулирования идеи (демо-режим) =====
+  // API-слой отделён от UI: когда подключится реальное распознавание речи и LLM,
+  // заменить методы pdIdea.* — интерфейс останется прежним. Ключей API в клиенте нет.
+  window.pdIdea = (function(){
+    // демо-набор смысловых объектов: рождаются по мере «рассказа», важные — крупнее
+    var POOL = [
+      ['музей', 1.25, true], ['история региона', 1, false], ['дети и семьи', 1.15, true],
+      ['интерактив', 1, false], ['игра', 1.1, true], ['энергия', 1.3, true],
+      ['исследование', 1, false], ['наследие', 0.9, false], ['эмоция', 0.95, false],
+      ['маршрут', 0.9, false], ['коллективное участие', 1.05, false], ['реальные истории', 1, false]
+    ];
+    var timer = null, given = 0;
+    return {
+      startRecording: function(onWord){
+        timer = setInterval(function(){
+          if (given >= POOL.length) { clearInterval(timer); timer = null; return; }
+          var w = POOL[given++];
+          onWord(w[0], w[1], w[2]);
+        }, 850);
+      },
+      stopRecording: function(){ if (timer) { clearInterval(timer); timer = null; } },
+      buildConceptSummary: function(round){
+        var card = {
+          title: 'Интерактивный музей энергии для семейной аудитории',
+          idea: 'Пространство, где посетители через движение, игру и реальные истории исследуют энергию как живую силу — и видят последствия собственных решений.',
+          who: 'Семьи с детьми, школьные группы, молодёжь региона.',
+          feel: 'Энергия — не абстракция, а живая сила, на которую влияют мои собственные решения.',
+          tags: ['Семьи и школьники', 'Интерактивное участие', 'Истории людей', 'Исследование и выбор']
+        };
+        if (round > 1) card.tags = card.tags.concat(['Коллективная игра', 'История региона']);
+        return card;
+      },
+      submitConcept: function(card, contact, done){
+        // демо: реальную отправку (почта/бэкенд) подключить здесь, карточка прикладывается автоматически
+        done();
+      }
+    };
+  })();
+
+  (function(){
+    var ai = document.getElementById('ai');
+    if (!ai) return;
+    var stages = { intro: 'aiIntro', capture: 'aiCapture', summary: 'aiSummary', form: 'aiForm', sent: 'aiSent' };
+    var field = document.getElementById('aiField');
+    var round = 0, card = null;
+
+    function stage(name){
+      Object.keys(stages).forEach(function(k){
+        document.getElementById(stages[k]).className = 'ai-stage' + (k === name ? ' on' : '');
+      });
+    }
+    function openAI(){
+      ai.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      stage('intro');
+    }
+    function closeAI(){
+      window.pdIdea.stopRecording();
+      ai.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // смысловые объекты: свободные слоты, чтобы слова не наслаивались
+    var slots = [];
+    function resetSlots(){
+      slots = [];
+      for (var r = 0; r < 3; r++) for (var c = 0; c < 4; c++)
+        slots.push([6 + c * 24 + Math.random() * 10, 8 + r * 32 + Math.random() * 14]);
+      slots.sort(function(){ return Math.random() - 0.5; });
+    }
+    function addWord(text, scale, key){
+      var el = document.createElement('span');
+      el.className = 'ai-word' + (key ? ' key' : '');
+      el.textContent = text;
+      var s = slots.pop() || [Math.random() * 80, Math.random() * 80];
+      el.style.left = s[0] + '%';
+      el.style.top = s[1] + '%';
+      el.style.setProperty('--w-scale', scale);
+      field.appendChild(el);
+      setTimeout(function(){ el.classList.add('show'); }, 30);
+    }
+
+    function startCapture(){
+      round++;
+      if (round === 1) { field.innerHTML = ''; resetSlots(); }
+      stage('capture');
+      window.pdIdea.startRecording(addWord);
+    }
+    function stopCapture(){
+      window.pdIdea.stopRecording();
+      card = window.pdIdea.buildConceptSummary(round);
+      document.getElementById('aiTitle').textContent = card.title;
+      document.getElementById('aiIdea').textContent = card.idea;
+      document.getElementById('aiWho').textContent = card.who;
+      document.getElementById('aiFeel').textContent = card.feel;
+      var tags = document.getElementById('aiTags');
+      tags.innerHTML = '';
+      card.tags.forEach(function(t){
+        var sp = document.createElement('span');
+        sp.textContent = t;
+        tags.appendChild(sp);
+      });
+      stage('summary');
+    }
+
+    document.getElementById('aiOpen').addEventListener('click', openAI);
+    document.getElementById('aiClose').addEventListener('click', closeAI);
+    document.getElementById('aiRec').addEventListener('click', startCapture);
+    document.getElementById('aiStop').addEventListener('click', stopCapture);
+    document.getElementById('aiMore').addEventListener('click', startCapture); // смыслы не стираются — дополняются
+    document.getElementById('aiSend').addEventListener('click', function(){ stage('form'); });
+    document.getElementById('aiFormEl').addEventListener('submit', function(e){
+      e.preventDefault();
+      window.pdIdea.submitConcept(card, {
+        name: document.getElementById('aiName').value,
+        contact: document.getElementById('aiContact').value,
+        company: document.getElementById('aiCompany').value
+      }, function(){ stage('sent'); });
+    });
+    document.getElementById('aiBook').addEventListener('click', function(){
+      closeAI();
+      location.href = '#contact';
+    });
+    addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && ai.classList.contains('open')) closeAI();
     });
   })();
 </script>
