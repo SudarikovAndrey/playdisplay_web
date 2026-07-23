@@ -245,6 +245,56 @@
   .card-stats { display: flex; gap: 8px; flex-wrap: wrap; }
   .stat { font: 500 10.5px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--signal-teal); border: 1px solid rgba(43,224,198,0.3); padding: 5px 9px; }
 
+  /* ---------- авторские концепции ---------- */
+  .concepts { background: var(--space-void); }
+  .concepts h2 { font: 800 clamp(34px,4.4vw,64px)/1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .concepts .intro-sub { margin-top: 18px; font: 400 18px var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
+  .c-toolbar { display: flex; gap: 18px; margin-top: 40px; flex-wrap: wrap; align-items: center; }
+  .c-search { font: 400 14px var(--font-body); color: var(--scan-white); background: rgba(16,30,37,0.5);
+    border: 1px solid var(--space-line); padding: 12px 18px; min-width: 260px; outline: none; }
+  .c-search:focus { border-color: var(--signal-teal); }
+  .c-grid { margin-top: 44px; }
+  .c-empty { font: 400 15px var(--font-body); color: var(--scan-white-dim); padding: 30px 0; }
+  /* модал концепции: медиа-первый, деталей ровно столько, чтобы начать разговор */
+  .c-view { position: fixed; inset: 0; z-index: 100; background: #040c10; opacity: 0; pointer-events: none;
+    transition: opacity var(--duration-base); overflow-y: auto; }
+  .c-view.open { opacity: 1; pointer-events: auto; }
+  .c-view-in { max-width: 1200px; margin: 0 auto; padding: 96px 72px 120px; }
+  .c-cover { border: 1px solid var(--space-line); background: #0a1216; }
+  .c-cover img { width: 100%; height: auto; display: block; }
+  .c-view-in .kicker { margin: 34px 0 18px; }
+  .c-view-in h2 { font: 800 clamp(34px,4vw,58px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .c-essence { margin-top: 24px; font: 400 clamp(17px,1.5vw,21px)/1.65 var(--font-body); color: rgba(233,244,246,0.88); max-width: 62ch; }
+  .c-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 44px; }
+  .c-meta .m { background: rgba(16,30,37,0.5); border: 1px solid rgba(159,180,200,0.13);
+    border-top: 2px solid rgba(43,224,198,0.6); padding: 24px 28px 28px;
+    font: 500 11px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--scan-white-dim); }
+  .c-meta .m p { margin-top: 14px; font: 400 15.5px/1.65 var(--font-body); color: rgba(233,244,246,0.85);
+    text-transform: none; letter-spacing: 0; }
+  .c-mech { margin-top: 44px; }
+  .c-mech .mt { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 8px; }
+  .c-mech ul { list-style: none; }
+  .c-mech li { display: flex; gap: 16px; padding: 13px 0; border-bottom: 1px solid rgba(159,180,200,0.09);
+    font: 400 15px/1.6 var(--font-body); color: rgba(233,244,246,0.8); }
+  .c-mech li::before { content: "▶︎"; color: var(--signal-teal); font-size: 11px; padding-top: 4px; }
+  .c-imgs { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-top: 44px; }
+  .c-imgs img { width: 100%; height: auto; display: block; border: 1px solid rgba(159,180,200,0.12); }
+  .c-note { margin-top: 44px; border-left: 2px solid var(--signal-amber); padding-left: 24px;
+    font: 500 clamp(17px,1.5vw,21px)/1.6 var(--font-display); color: #F1FBFC; max-width: 56ch; }
+  .c-note small { display: block; margin-top: 12px; font: 400 12px var(--font-mono); letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--scan-white-dim); }
+  .c-rel { margin-top: 44px; }
+  .c-rel .mt { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--scan-white-dim); margin-bottom: 14px; }
+  .c-rel a { display: inline-block; margin: 0 20px 10px 0; font: 600 13px var(--font-body); letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--scan-white-dim); border-bottom: 1px solid var(--space-line); padding-bottom: 3px;
+    transition: color var(--duration-fast), border-color var(--duration-fast); cursor: pointer; }
+  .c-rel a:hover { color: var(--scan-white); border-color: var(--signal-teal); }
+  .c-cta { margin-top: 54px; }
+  @media (max-width: 900px) {
+    .c-view-in { padding: 78px 20px 90px; }
+    .c-meta, .c-imgs { grid-template-columns: 1fr; }
+  }
+
   /* ---------- studio ---------- */
   .studio { background: var(--space-void); }
   .studio .manifest-full { font: 600 clamp(20px,2vw,30px)/1.4 var(--font-display); letter-spacing: -0.01em; max-width: 26ch; color: #F1FBFC; }
@@ -579,6 +629,20 @@
   </div>
 </section>
 
+<!-- ===== АВТОРСКИЕ КОНЦЕПЦИИ: собственная интеллектуальная библиотека студии ===== -->
+<section class="concepts sec-pad" id="concepts">
+  <div class="wrap">
+    <div class="kicker teal eyebrow">Авторские концепции</div>
+    <h2>Идеи будущих пространств.</h2>
+    <p class="intro-sub">Собственные идеи, сценарии и форматы, которые могут стать основой будущих проектов.</p>
+    <div class="c-toolbar" id="cToolbar" hidden>
+      <input class="c-search" id="cSearch" type="search" placeholder="Поиск концепций" aria-label="Поиск концепций">
+      <div class="filter" id="cFilter" style="margin:0"></div>
+    </div>
+    <div class="cards c-grid" id="cGrid"></div>
+  </div>
+</section>
+
 <!-- ===== STUDIO ===== -->
 <section class="studio sec-pad" id="studio">
   <div class="wrap">
@@ -636,6 +700,12 @@
     <span class="mono">© 2026 PLAYDISPLAY</span>
   </div>
 </footer>
+
+<!-- ===== ПРОСМОТР КОНЦЕПЦИИ ===== -->
+<div class="c-view" id="cView">
+  <button class="viewer-close" id="cViewClose">✕</button>
+  <div class="c-view-in" id="cViewIn"></div>
+</div>
 
 <!-- ===== CASE VIEWER ===== -->
 <div class="viewer" id="viewer">
@@ -2310,6 +2380,125 @@
     if (lbEl.classList.contains('open')) { closeLightbox(); return; } // сначала закрывается фулскрин-кадр
     requestClose();
   });
+</script>
+<script>
+  // ===== Авторские концепции: контент в data/concepts.json, карточки в стиле Work =====
+  (function(){
+    var grid = document.getElementById('cGrid');
+    if (!grid) return;
+    var view = document.getElementById('cView');
+    var viewIn = document.getElementById('cViewIn');
+    var toolbar = document.getElementById('cToolbar');
+    var search = document.getElementById('cSearch');
+    var filterBox = document.getElementById('cFilter');
+    var data = null, cat = 'all', q = '';
+
+    function esc(s){
+      return String(s == null ? '' : s).replace(/[&<>"]/g, function(ch){
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
+      });
+    }
+
+    function render(){
+      var list = data.concepts.filter(function(c){
+        if (cat !== 'all' && c.cat !== cat) return false;
+        if (q && (c.title + ' ' + (c.line || '') + ' ' + (c.essence || '')).toLowerCase().indexOf(q) < 0) return false;
+        return true;
+      });
+      grid.innerHTML = '';
+      if (!list.length) { grid.innerHTML = '<div class="c-empty">Ничего не нашлось — попробуйте другой запрос.</div>'; return; }
+      list.forEach(function(c){
+        var el = document.createElement('article');
+        el.className = 'card';
+        el.innerHTML =
+          '<div class="card-media"><img loading="lazy" src="' + esc(c.cover) + '" alt="' + esc(c.title) + '">' +
+          '<div class="play">▶︎ Смотреть концепцию</div></div>' +
+          '<div class="card-body"><div class="cmeta">Концепция · ' + esc(c.catLabel) + '</div>' +
+          '<h3>' + esc(c.title) + '</h3><p class="oneline">' + esc(c.line || c.essence) + '</p></div>';
+        el.addEventListener('click', function(){ openConcept(c); });
+        grid.appendChild(el);
+      });
+    }
+
+    function openConcept(c){
+      var html =
+        '<div class="c-cover"><img src="' + esc(c.cover) + '" alt="' + esc(c.title) + '"></div>' +
+        '<div class="kicker teal">Авторская концепция · ' + esc(c.catLabel) + '</div>' +
+        '<h2>' + esc(c.title) + '</h2>' +
+        '<p class="c-essence">' + esc(c.essence) + '</p>' +
+        '<div class="c-meta">' +
+          '<div class="m">Для каких пространств<p>' + esc(c.spaces) + '</p></div>' +
+          '<div class="m">Что чувствует посетитель<p>' + esc(c.feel) + '</p></div>' +
+        '</div>';
+      if (c.mechanics && c.mechanics.length) {
+        html += '<div class="c-mech"><div class="mt">Возможные механики</div><ul>' +
+          c.mechanics.map(function(m){ return '<li>' + esc(m) + '</li>'; }).join('') + '</ul></div>';
+      }
+      var rest = (c.imgs || []).filter(function(src){ return src !== c.cover; });
+      if (rest.length) {
+        html += '<div class="c-imgs">' + rest.map(function(src){
+          return '<img loading="lazy" src="' + esc(src) + '" alt="' + esc(c.title) + '">';
+        }).join('') + '</div>';
+      }
+      if (c.comment) html += '<div class="c-note">' + esc(c.comment) + '<small>Андрей Судариков, основатель PlayDisplay</small></div>';
+      // связанные проекты: открываем существующий кейс-вьюер по slug
+      var rel = (c.relatedProjectSlugs || []).map(function(slug){
+        var pc = (typeof caseBySlug === 'function') ? caseBySlug(slug) : null;
+        return pc ? '<a data-slug="' + esc(slug) + '">' + esc(pc.title) + ' →</a>' : '';
+      }).join('');
+      if (rel) html += '<div class="c-rel"><div class="mt">Связанные проекты</div>' + rel + '</div>';
+      html += '<div class="c-cta"><button class="wa" id="cDiscuss">▶︎ Обсудить похожую задачу</button></div>';
+      viewIn.innerHTML = html;
+      view.classList.add('open');
+      view.scrollTop = 0;
+      document.body.style.overflow = 'hidden';
+      viewIn.querySelectorAll('.c-rel a').forEach(function(a){
+        a.addEventListener('click', function(){
+          var pc = caseBySlug(a.getAttribute('data-slug'));
+          if (!pc) return;
+          closeConcept();
+          lastFly = { card: null, c: pc };
+          openCase(pc);
+        });
+      });
+      var btn = document.getElementById('cDiscuss');
+      if (btn) btn.addEventListener('click', function(){
+        closeConcept();
+        location.href = '#contact';
+      });
+    }
+
+    function closeConcept(){
+      view.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('cViewClose').addEventListener('click', closeConcept);
+    addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && view.classList.contains('open')) closeConcept();
+    });
+
+    fetch('data/concepts.json?v=1').then(function(r){ return r.json(); }).then(function(json){
+      data = json;
+      // фильтры и поиск показываем, только когда библиотека подрастёт — с одной карточкой они лишние
+      if (data.concepts.length > 6) {
+        toolbar.hidden = false;
+        (data.cats || []).forEach(function(ct){
+          var b = document.createElement('button');
+          b.textContent = ct.label;
+          if (ct.id === cat) b.className = 'on';
+          b.addEventListener('click', function(){
+            cat = ct.id;
+            filterBox.querySelectorAll('button').forEach(function(x){ x.className = ''; });
+            b.className = 'on';
+            render();
+          });
+          filterBox.appendChild(b);
+        });
+        search.addEventListener('input', function(){ q = search.value.trim().toLowerCase(); render(); });
+      }
+      render();
+    });
+  })();
 </script>
 <template id="__bundler_thumbnail">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#05141a"/><g fill="#2be0c6"><circle cx="34" cy="42" r="2"/><circle cx="44" cy="36" r="2"/><circle cx="54" cy="44" r="2"/><circle cx="64" cy="38" r="2"/><circle cx="40" cy="52" r="2"/><circle cx="52" cy="56" r="2"/><circle cx="62" cy="52" r="2"/></g><circle cx="50" cy="50" r="16" fill="none" stroke="#ff6a3d" stroke-width="1.5"/><path d="M46 44l10 6-10 6z" fill="#f1fbfc"/></svg>
