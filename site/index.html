@@ -330,7 +330,8 @@
   .c-view-in.swapping { opacity: 0; transform: translateY(-18px); }
   .c-view-in.arrive { opacity: 0; transform: translateY(20px); transition: none; }
   /* медиа-первый: внутри — та же карусель .v-gal, что и в кейсах проектов (переиспользуем движок) */
-  .c-media { height: clamp(420px, 62vh, 820px); position: relative; overflow: hidden; border: 1px solid var(--space-line); background: #0a1216; }
+  /* без рамки и подложки: только кадр и стрелки */
+  .c-media { height: clamp(420px, 62vh, 820px); position: relative; overflow: hidden; }
   .c-media .v-gal, .c-media .v-gal-track, .c-media .v-gal-track .gs { height: 100%; }
   .c-view-in .kicker { margin: 34px 0 18px; }
   .c-view-in h2 { font: 800 clamp(34px,4vw,58px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
