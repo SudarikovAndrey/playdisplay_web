@@ -259,9 +259,12 @@
   .c-view { position: fixed; inset: 0; z-index: 100; background: #040c10; opacity: 0; pointer-events: none;
     transition: opacity var(--duration-base); overflow-y: auto; }
   .c-view.open { opacity: 1; pointer-events: auto; }
-  .c-view-in { max-width: 1200px; margin: 0 auto; padding: 96px 72px 120px; }
-  .c-cover { border: 1px solid var(--space-line); background: #0a1216; }
-  .c-cover img { width: 100%; height: auto; display: block; }
+  .c-view-in { max-width: 1200px; margin: 0 auto; padding: 96px 72px 120px; transition: opacity .4s ease, transform .4s ease; }
+  .c-view-in.swapping { opacity: 0; transform: translateY(-18px); }
+  .c-view-in.arrive { opacity: 0; transform: translateY(20px); transition: none; }
+  /* медиа-первый: внутри — та же карусель .v-gal, что и в кейсах проектов (переиспользуем движок) */
+  .c-media { height: clamp(420px, 62vh, 820px); position: relative; overflow: hidden; border: 1px solid var(--space-line); background: #0a1216; }
+  .c-media .v-gal, .c-media .v-gal-track, .c-media .v-gal-track .gs { height: 100%; }
   .c-view-in .kicker { margin: 34px 0 18px; }
   .c-view-in h2 { font: 800 clamp(34px,4vw,58px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
   .c-essence { margin-top: 24px; font: 400 clamp(17px,1.5vw,21px)/1.65 var(--font-body); color: rgba(233,244,246,0.88); max-width: 62ch; }
@@ -277,8 +280,6 @@
   .c-mech li { display: flex; gap: 16px; padding: 13px 0; border-bottom: 1px solid rgba(159,180,200,0.09);
     font: 400 15px/1.6 var(--font-body); color: rgba(233,244,246,0.8); }
   .c-mech li::before { content: "▶︎"; color: var(--signal-teal); font-size: 11px; padding-top: 4px; }
-  .c-imgs { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-top: 44px; }
-  .c-imgs img { width: 100%; height: auto; display: block; border: 1px solid rgba(159,180,200,0.12); }
   .c-note { margin-top: 44px; border-left: 2px solid var(--signal-amber); padding-left: 24px;
     font: 500 clamp(17px,1.5vw,21px)/1.6 var(--font-display); color: #F1FBFC; max-width: 56ch; }
   .c-note small { display: block; margin-top: 12px; font: 400 12px var(--font-mono); letter-spacing: 0.1em;
@@ -290,9 +291,23 @@
     transition: color var(--duration-fast), border-color var(--duration-fast); cursor: pointer; }
   .c-rel a:hover { color: var(--scan-white); border-color: var(--signal-teal); }
   .c-cta { margin-top: 54px; }
+  /* переключение на следующую / предыдущую концепцию — по кругу, без выхода из вьюера */
+  .c-nav { margin-top: 60px; border-top: 1px solid rgba(159,180,200,0.15); padding-top: 30px;
+    display: flex; justify-content: space-between; gap: 24px; }
+  .c-nav .c-next { cursor: pointer; display: flex; align-items: center; gap: 14px; max-width: 46%; }
+  .c-nav .c-next.next { flex-direction: row-reverse; text-align: right; margin-left: auto; }
+  .c-nav .c-next .cn-a { font-size: 26px; color: var(--scan-white-dim); transition: color .3s, transform .3s; flex-shrink: 0; }
+  .c-nav .c-next:hover .cn-a { color: var(--signal-teal); }
+  .c-nav .c-next.prev:hover .cn-a { transform: translateX(-6px); }
+  .c-nav .c-next.next:hover .cn-a { transform: translateX(6px); }
+  .c-nav .cn-k { font: 500 11px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--scan-white-dim); }
+  .c-nav .cn-t { margin-top: 6px; font: 700 clamp(17px,2vw,24px)/1.15 var(--font-display); color: #F1FBFC; transition: color .3s; }
+  .c-nav .c-next:hover .cn-t { color: var(--signal-teal); }
   @media (max-width: 900px) {
     .c-view-in { padding: 78px 20px 90px; }
-    .c-meta, .c-imgs { grid-template-columns: 1fr; }
+    .c-meta { grid-template-columns: 1fr; }
+    .c-nav { flex-direction: column; gap: 20px; }
+    .c-nav .c-next, .c-nav .c-next.next { max-width: 100%; margin-left: 0; }
   }
 
   /* ---------- atlas ---------- */
@@ -2206,8 +2221,9 @@
       gal._burst = false;
     });
   }
-  // клики по стрелкам + свайп — делегированно; клик по кадру — фулскрин-просмотр
-  vInner.addEventListener('click', function(e){
+  // клики по стрелкам + свайп — делегированно на весь документ (не только вьюер проекта,
+  // но и вьюер концепций — оба используют один и тот же компонент .v-gal); клик по кадру — фулскрин
+  document.addEventListener('click', function(e){
     var btn = e.target.closest ? e.target.closest('.g-btn') : null;
     if (btn) {
       var gal = btn.closest('.v-gal');
@@ -2227,8 +2243,10 @@
     }
     var vn = e.target.closest ? e.target.closest('.v-next') : null;
     if (vn) { swapCase(vn.dataset.slug); return; }
+    var cn = e.target.closest ? e.target.closest('.c-next') : null;
+    if (cn && typeof swapConcept === 'function') { swapConcept(cn.dataset.dir); return; }
     var gs = e.target.closest ? e.target.closest('.gs') : null;
-    if (gs) openLightbox(gs.closest('.v-gal'));
+    if (gs && gs.querySelector('img')) openLightbox(gs.closest('.v-gal')); // видео в лайтбоксе не открываем — своя логика воспроизведения
   });
   // морф частиц между двумя ректами: узкий кадр расширяется в фулскрин и обратно
   function morphParticles(srcEl, fromR, toR, onSettle){
@@ -2359,11 +2377,11 @@
   });
   (function(){
     var x0 = null, galT = null;
-    vInner.addEventListener('touchstart', function(e){
+    document.addEventListener('touchstart', function(e){
       galT = e.target.closest ? e.target.closest('.v-gal') : null;
       x0 = galT ? e.touches[0].clientX : null;
     }, { passive: true });
-    vInner.addEventListener('touchend', function(e){
+    document.addEventListener('touchend', function(e){
       if (!galT || x0 === null) return;
       var dx = e.changedTouches[0].clientX - x0;
       if (Math.abs(dx) > 40) {
@@ -2560,6 +2578,9 @@
 </script>
 <script>
   // ===== Авторские концепции: контент в data/concepts.json, карточки в стиле Work =====
+  // Открытие/закрытие переиспользует общий движок частиц FlyGL (harvest/rasterTexts/coverArgs/
+  // boxDist/busyLock — определены в скрипте кейсов проектов и доступны здесь как глобальные var).
+  // Переключение на соседнюю концепцию внутри вьюера — как «следующий проект»: простой кросс-фейд.
   (function(){
     var grid = document.getElementById('cGrid');
     if (!grid) return;
@@ -2569,12 +2590,14 @@
     var search = document.getElementById('cSearch');
     var filterBox = document.getElementById('cFilter');
     var data = null, cat = 'all', q = '';
+    var lastFlyC = null, curConceptId = null;
 
     function esc(s){
       return String(s == null ? '' : s).replace(/[&<>"]/g, function(ch){
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
       });
     }
+    function conceptById(id){ for (var i = 0; i < data.concepts.length; i++) if (data.concepts[i].id === id) return data.concepts[i]; return null; }
 
     function render(){
       var list = data.concepts.filter(function(c){
@@ -2592,14 +2615,28 @@
           '<div class="play">▶︎ Смотреть концепцию</div></div>' +
           '<div class="card-body"><div class="cmeta">Концепция · ' + esc(c.catLabel) + '</div>' +
           '<h3>' + esc(c.title) + '</h3><p class="oneline">' + esc(c.line || c.essence) + '</p></div>';
-        el.addEventListener('click', function(){ openConcept(c); });
+        el.addEventListener('click', function(){ flyIntoConcept(el, c); });
         grid.appendChild(el);
       });
     }
 
-    function openConcept(c){
-      var html =
-        '<div class="c-cover"><img src="' + esc(c.cover) + '" alt="' + esc(c.title) + '"></div>' +
+    // разметка внутренней листалки — тот же компонент .v-gal, что и у проектов (поддерживает
+    // фото и видео вперемешку, стрелки/точки/свайп/лайтбокс работают без единой строчки новой логики)
+    function galleryHtml(c){
+      var items = (c.gallery && c.gallery.length) ? c.gallery : [{ type: 'image', src: c.cover }];
+      var slides = items.map(function(m){
+        return m.type === 'video'
+          ? '<div class="gs"><video class="on" autoplay muted loop playsinline' + (m.poster ? ' poster="' + esc(m.poster) + '"' : '') + ' src="' + esc(m.src) + '"></video></div>'
+          : '<div class="gs"><img data-lsrc="' + esc(m.src) + '" alt=""></div>';
+      }).join('');
+      var nav = items.length > 1
+        ? '<button class="g-btn g-prev" aria-label="назад">‹</button><button class="g-btn g-next" aria-label="вперёд">›</button><div class="g-dots"></div><div class="g-cnt">01 / ' + String(items.length).padStart(2, '0') + '</div>'
+        : '';
+      return '<div class="c-media"><div class="v-gal" data-i="0"><div class="v-gal-track">' + slides + '</div>' + nav + '</div></div>';
+    }
+
+    function conceptHtml(c){
+      var html = galleryHtml(c) +
         '<div class="kicker teal">Авторская концепция · ' + esc(c.catLabel) + '</div>' +
         '<h2>' + esc(c.title) + '</h2>' +
         '<p class="c-essence">' + esc(c.essence) + '</p>' +
@@ -2611,12 +2648,6 @@
         html += '<div class="c-mech"><div class="mt">Возможные механики</div><ul>' +
           c.mechanics.map(function(m){ return '<li>' + esc(m) + '</li>'; }).join('') + '</ul></div>';
       }
-      var rest = (c.imgs || []).filter(function(src){ return src !== c.cover; });
-      if (rest.length) {
-        html += '<div class="c-imgs">' + rest.map(function(src){
-          return '<img loading="lazy" src="' + esc(src) + '" alt="' + esc(c.title) + '">';
-        }).join('') + '</div>';
-      }
       if (c.comment) html += '<div class="c-note">' + esc(c.comment) + '<small>Андрей Судариков, основатель PlayDisplay</small></div>';
       // связанные проекты: открываем существующий кейс-вьюер по slug
       // (страховка typeof CASES: если основной скрипт не загрузился, секция живёт без связей)
@@ -2626,7 +2657,22 @@
       }).join('');
       if (rel) html += '<div class="c-rel"><div class="mt">Связанные проекты</div>' + rel + '</div>';
       html += '<div class="c-cta"><button class="wa" id="cDiscuss">▶︎ Обсудить похожую задачу</button></div>';
-      viewIn.innerHTML = html;
+      // переключение на соседнюю концепцию — по кругу среди всех концепций
+      var idx = data.concepts.indexOf(c);
+      if (data.concepts.length > 1 && idx >= 0) {
+        var pr = data.concepts[(idx - 1 + data.concepts.length) % data.concepts.length];
+        var nx = data.concepts[(idx + 1) % data.concepts.length];
+        html += '<div class="c-nav">' +
+          '<div class="c-next prev" data-dir="-1"><div class="cn-a">←</div><div><div class="cn-k">Предыдущая концепция</div><div class="cn-t">' + esc(pr.title) + '</div></div></div>' +
+          '<div class="c-next next" data-dir="1"><div><div class="cn-k">Следующая концепция</div><div class="cn-t">' + esc(nx.title) + '</div></div><div class="cn-a">→</div></div>' +
+        '</div>';
+      }
+      return html;
+    }
+
+    function openConceptCase(c){
+      curConceptId = c.id;
+      viewIn.innerHTML = conceptHtml(c);
       view.classList.add('open');
       view.scrollTop = 0;
       document.body.style.overflow = 'hidden';
@@ -2634,25 +2680,343 @@
         a.addEventListener('click', function(){
           var pc = caseBySlug(a.getAttribute('data-slug'));
           if (!pc) return;
-          closeConcept();
+          closeConceptCase();
           lastFly = { card: null, c: pc };
           openCase(pc);
         });
       });
       var btn = document.getElementById('cDiscuss');
-      if (btn) btn.addEventListener('click', function(){
-        closeConcept();
-        location.href = '#contact';
-      });
+      if (btn) btn.addEventListener('click', function(){ closeConceptCase(); location.href = '#contact'; });
     }
-
-    function closeConcept(){
+    function closeConceptCase(){
       view.classList.remove('open');
+      viewIn.innerHTML = '';
       document.body.style.overflow = '';
     }
-    document.getElementById('cViewClose').addEventListener('click', closeConcept);
+
+    // ---- следующая/предыдущая концепция внутри вьюера: простой кросс-фейд (как «следующий проект») ----
+    function swapConcept(dir){
+      if (!curConceptId) return;
+      var idx = data.concepts.findIndex(function(x){ return x.id === curConceptId; });
+      if (idx < 0) return;
+      var next = data.concepts[(idx + (+dir) + data.concepts.length) % data.concepts.length];
+      viewIn.classList.add('swapping');
+      setTimeout(function(){
+        viewIn.classList.remove('swapping');
+        openConceptCase(next);
+        viewIn.classList.add('arrive');
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ viewIn.classList.remove('arrive'); }); });
+      }, 380);
+    }
+    window.swapConcept = swapConcept; // используется делегированным обработчиком кликов .c-next
+
+    // ---- влёт: карточка сетки растворяется на частицы и собирается в обложку концепции ----
+    // (почти дословная копия flyIntoCaseInner/flyOutInner для проектов — тот же FlyGL, те же
+    // геометрические расчёты волны и камеры; отличие только в целевых DOM-узлах: #cView/#cViewIn)
+    function flyIntoConcept(card, c){
+      if (busyLock()) return;
+      try { flyIntoConceptInner(card, c); }
+      catch (e) {
+        console.warn('concept flyIn fallback:', e);
+        flyBusy = false;
+        view.style.transition = ''; view.style.opacity = ''; view.style.backdropFilter = '';
+        if (!view.classList.contains('open')) openConceptCase(c);
+      }
+    }
+    function fadeOpenConcept(c){
+      view.style.transition = 'none'; view.style.opacity = '0';
+      openConceptCase(c);
+      requestAnimationFrame(function(){
+        view.style.transition = 'opacity .45s ease';
+        view.style.opacity = '1';
+        setTimeout(function(){ view.style.transition = ''; view.style.opacity = ''; }, 500);
+      });
+    }
+    function flyIntoConceptInner(card, c){
+      var img = card.querySelector('img');
+      var r = card.querySelector('.card-media').getBoundingClientRect();
+      if (!r.width) { openConceptCase(c); return; }
+      if (!img.naturalWidth) {
+        var done = false;
+        var go = function(){ if (done) return; done = true; clearInterval(iv); flyIntoConcept(card, c); };
+        img.addEventListener('load', go, { once: true });
+        var iv = setInterval(function(){ if (img.naturalWidth) go(); }, 120);
+        setTimeout(function(){ clearInterval(iv); if (!done) { done = true; openConceptCase(c); } }, 1800);
+        return;
+      }
+      if (img.src.indexOf(location.origin) !== 0) { fadeOpenConcept(c); return; }
+      if (!FlyGL.supported()) { fadeOpenConcept(c); return; }
+      var SC = 0.5, W = Math.round(innerWidth * SC), H = Math.round(innerHeight * SC);
+      var stepSrc = (isMobileL || isWeakHW) ? 3 : 2, stepTgt = (isMobileL || isWeakHW) ? 3 : 2;
+      var srcPts;
+      try {
+        var scv = document.createElement('canvas'); scv.width = W; scv.height = H;
+        var sg = scv.getContext('2d', { willReadFrequently: true });
+        [].slice.call(document.images).forEach(function(im){
+          if (!im.naturalWidth || im.closest('#cView')) return;
+          if (im.src.indexOf(location.origin) !== 0) return;
+          var rc = im.getBoundingClientRect();
+          if (!rc.width || rc.bottom < 0 || rc.top > innerHeight) return;
+          var stI = getComputedStyle(im);
+          if (stI.visibility === 'hidden' || +stI.opacity === 0) return;
+          var ca = coverArgs(im, rc.width / rc.height);
+          try { sg.drawImage(im, ca[0], ca[1], ca[2], ca[3], rc.left * SC, rc.top * SC, rc.width * SC, rc.height * SC); } catch (e) {}
+        });
+        rasterTexts(sg, SC, document.body, false);
+        srcPts = harvest(sg, W, H, SC, stepSrc);
+      } catch (e) { srcPts = null; }
+      if (!srcPts || srcPts.length < 200) { fadeOpenConcept(c); return; }
+      view.style.transition = 'none'; view.style.opacity = '0';
+      openConceptCase(c);
+      var mediaEl = viewIn.querySelector('.c-media');
+      var tr = mediaEl ? mediaEl.getBoundingClientRect() : { left: innerWidth * 0.2, top: innerHeight * 0.17, width: innerWidth * 0.6, height: innerHeight * 0.55 };
+      var covPts = [];
+      try {
+        var tcv = document.createElement('canvas'); tcv.width = W; tcv.height = H;
+        var tg = tcv.getContext('2d', { willReadFrequently: true });
+        var ca2 = coverArgs(img, tr.width / tr.height);
+        tg.drawImage(img, ca2[0], ca2[1], ca2[2], ca2[3], tr.left * SC, tr.top * SC, tr.width * SC, tr.height * SC);
+        viewIn.classList.add('snap');
+        void viewIn.offsetWidth;
+        rasterTexts(tg, SC, document.body, true);
+        viewIn.classList.remove('snap');
+        covPts = harvest(tg, W, H, SC, stepTgt);
+      } catch (e) { covPts = []; }
+      var c0x = r.left + r.width / 2, c0y = r.top + r.height / 2;
+      var t1x = tr.left + tr.width / 2, t1y = tr.top + tr.height / 2;
+      var rHW = r.width / 2, rHH = r.height / 2;
+      var maxD = 0;
+      [[0,0],[innerWidth,0],[0,innerHeight],[innerWidth,innerHeight]].forEach(function(pt){
+        maxD = Math.max(maxD, boxDist(pt[0], pt[1], c0x, c0y, rHW, rHH));
+      });
+      var parts = [], i, p, rel, avgR = 0, avgG = 0, avgB = 0;
+      for (i = 0; i < srcPts.length; i++) {
+        p = srcPts[i];
+        var mine = p[0] >= r.left && p[0] <= r.right && p[1] >= r.top && p[1] <= r.bottom;
+        rel = Math.min(1, boxDist(p[0], p[1], c0x, c0y, rHW, rHH) / maxD) * 0.92;
+        if (mine) {
+          var mx = tr.left + (p[0] - r.left) / r.width * tr.width;
+          var my = tr.top + (p[1] - r.top) / r.height * tr.height;
+          parts.push([p[0], p[1], mx, my,
+                      2.15 + Math.random() * 0.55 + (0.5 - p[5]) * 0.25,
+                      2.2 + Math.pow(Math.random(), 2) * 2.6,
+                      Math.random(), rel * 0.4, 1, p[2], p[3], p[4]]);
+        } else {
+          parts.push([p[0], p[1], 0, 0,
+                      0.6 + Math.random() * 1.9 + (0.5 - p[5]) * 0.3,
+                      1.0 + Math.pow(Math.random(), 2.3) * 3.4,
+                      Math.random(), rel, 0, p[2], p[3], p[4]]);
+        }
+      }
+      var srcTotal = parts.length;
+      for (i = 0; i < covPts.length; i++) {
+        p = covPts[i];
+        avgR += p[2]; avgG += p[3]; avgB += p[4];
+        var sa = Math.random() * Math.PI * 2, sr = 50 + Math.random() * 210;
+        parts.push([p[0], p[1], Math.cos(sa) * sr, Math.sin(sa) * sr,
+                    1.9 + Math.random() * 2.2 + (0.5 - p[5]) * 0.4,
+                    4.1 * (0.72 + Math.pow(Math.random(), 2) * 0.5),
+                    Math.random(), 0, 2, p[2], p[3], p[4]]);
+      }
+      var SPARKS = isMobileL ? 350 : 750;
+      for (i = 0; i < SPARKS; i++) {
+        var tm = Math.random();
+        parts.push([0, 0, 0, 0, 1.0, 1.0 + Math.pow(Math.random(), 2) * 2.4, Math.random(), Math.random(), 3,
+                    Math.round(43 + 191 * tm), Math.round(224 + 22 * tm), Math.round(198 + 50 * tm)]);
+      }
+      var nT = Math.max(1, covPts.length);
+      var tint = [0.012 + avgR / nT / 255 * 0.16, 0.047 + avgG / nT / 255 * 0.14, 0.063 + avgB / nT / 255 * 0.14];
+      if (!FlyGL.begin(parts, 95)) { fadeOpenConcept(c); return; }
+      view.style.backdropFilter = 'none';
+      var dxT = t1x - c0x, dyT = t1y - c0y;
+      var arc = Math.min(170, Math.hypot(dxT, dyT) * 0.5 + 55) * (c0x > innerWidth / 2 ? 1 : -1);
+      var nrm = Math.hypot(dxT, dyT) || 1;
+      var cpx = c0x + dxT * 0.5 - dyT / nrm * arc, cpy = c0y + dyT * 0.5 + dxT / nrm * arc;
+      var camEnd = 1.5, DUR = 1900 * FLY_SLOW, t0 = performance.now();
+      lastFlyC = { card: card, c: c };
+      flyBusy = true; flyBusySince = t0;
+      var camPrev = 0, fxp = c0x, fyp = c0y, waveRPrev = 0;
+      function anim(now){
+        var k = window.__flyK != null ? window.__flyK : Math.min(1, (now - t0) / DUR);
+        var wave = sstep(0, 0.26, k);
+        var cam = camEnd * smootherstep((k - 0.07) / 0.85);
+        var fe = sstep(0, 1, Math.min(1, k / 0.62));
+        var u1 = 1 - fe;
+        var fx = u1 * u1 * c0x + 2 * u1 * fe * cpx + fe * fe * t1x;
+        var fy = u1 * u1 * c0y + 2 * u1 * fe * cpy + fe * fe * t1y;
+        var rv = sstep(0.64, 0.96, k);
+        view.style.opacity = rv;
+        var waveR = wave * (maxD + 150);
+        FlyGL.frame({
+          rectCX: c0x, rectCY: c0y, rectHW: rHW, rectHH: rHH,
+          waveR: waveR, waveRp: waveRPrev, dark: sstep(0, 0.03, k), tint: tint,
+          frontA: sstep(0.02, 0.08, k) * (1 - sstep(0.3, 0.44, k)),
+          c0x: c0x, c0y: c0y, t1x: t1x, t1y: t1y,
+          fx: fx, fy: fy, fxp: fxp, fyp: fyp,
+          cam: cam, camPrev: camPrev, camEnd: camEnd,
+          k: k, wave: wave, rv: rv, out: 0, time: now / 1000, asm: sstep(0.40, 0.78, k)
+        });
+        camPrev = cam; fxp = fx; fyp = fy; waveRPrev = waveR;
+        if (k < 1) requestAnimationFrame(anim);
+        else {
+          view.style.opacity = '1';
+          FlyGL.end();
+          setTimeout(function(){ view.style.transition = ''; view.style.opacity = ''; view.style.backdropFilter = ''; flyBusy = false; }, 540);
+        }
+      }
+      requestAnimationFrame(anim);
+    }
+
+    // ---- закрытие: обложка растворяется, сетка концепций проступает из-за камеры ----
+    function flyOutOfConcept(){
+      try { flyOutConceptInner(); }
+      catch (e) {
+        console.warn('concept flyOut fallback:', e);
+        flyBusy = false;
+        view.style.transition = ''; view.style.opacity = ''; view.style.backdropFilter = '';
+        closeConceptCase();
+      }
+    }
+    function flyOutConceptInner(){
+      var lf = lastFlyC;
+      if (!lf || !document.body.contains(lf.card) || !FlyGL.supported()) {
+        view.style.transition = 'opacity .4s ease'; view.style.opacity = '0';
+        setTimeout(function(){ view.style.transition = ''; view.style.opacity = ''; closeConceptCase(); }, 420);
+        return;
+      }
+      flyBusy = true; flyBusySince = performance.now();
+      var SC = 0.5, W = Math.round(innerWidth * SC), H = Math.round(innerHeight * SC);
+      var stepSrc = (isMobileL || isWeakHW) ? 3 : 2, stepTgt = (isMobileL || isWeakHW) ? 3 : 2;
+      var mediaEl = viewIn.querySelector('.c-media');
+      var tr = mediaEl ? mediaEl.getBoundingClientRect() : { left: innerWidth * 0.2, top: innerHeight * 0.17, width: innerWidth * 0.6, height: innerHeight * 0.55 };
+      var pagePts = [];
+      try {
+        var pcv = document.createElement('canvas'); pcv.width = W; pcv.height = H;
+        var pg = pcv.getContext('2d', { willReadFrequently: true });
+        var vid = viewIn.querySelector('video');
+        var srcEl = (vid && vid.readyState >= 2 && vid.videoWidth) ? vid : lf.card.querySelector('img');
+        var nw = srcEl.videoWidth || srcEl.naturalWidth, nh = srcEl.videoHeight || srcEl.naturalHeight;
+        if (nw) {
+          var ra = tr.width / tr.height, na = nw / nh;
+          var ca = na > ra ? [(nw - nh * ra) / 2, 0, nh * ra, nh] : [0, (nh - nw / ra) / 2, nw, nw / ra];
+          try { pg.drawImage(srcEl, ca[0], ca[1], ca[2], ca[3], tr.left * SC, tr.top * SC, tr.width * SC, tr.height * SC); } catch (e) {}
+        }
+        rasterTexts(pg, SC, document.body, true);
+        pagePts = harvest(pg, W, H, SC, stepTgt);
+      } catch (e) { pagePts = []; }
+      var galPts = [];
+      try {
+        var gcv = document.createElement('canvas'); gcv.width = W; gcv.height = H;
+        var gg = gcv.getContext('2d', { willReadFrequently: true });
+        [].slice.call(document.images).forEach(function(im){
+          if (!im.naturalWidth || im.closest('#cView')) return;
+          if (im.src.indexOf(location.origin) !== 0) return;
+          var rc = im.getBoundingClientRect();
+          if (!rc.width || rc.bottom < 0 || rc.top > innerHeight) return;
+          var ca3 = coverArgs(im, rc.width / rc.height);
+          try { gg.drawImage(im, ca3[0], ca3[1], ca3[2], ca3[3], rc.left * SC, rc.top * SC, rc.width * SC, rc.height * SC); } catch (e) {}
+        });
+        rasterTexts(gg, SC, document.body, false);
+        galPts = harvest(gg, W, H, SC, stepSrc);
+      } catch (e) { galPts = []; }
+      if (pagePts.length + galPts.length < 200) {
+        view.style.transition = 'opacity .4s ease'; view.style.opacity = '0';
+        setTimeout(function(){ view.style.transition = ''; view.style.opacity = ''; closeConceptCase(); flyBusy = false; }, 420);
+        return;
+      }
+      var cr2 = lf.card.querySelector('.card-media').getBoundingClientRect();
+      var c0x = cr2.left + cr2.width / 2, c0y = cr2.top + cr2.height / 2;
+      var cHW = cr2.width / 2, cHH = cr2.height / 2;
+      var t1x = tr.left + tr.width / 2, t1y = tr.top + tr.height / 2;
+      var rHW = tr.width / 2, rHH = tr.height / 2;
+      var maxD = 0;
+      [[0,0],[innerWidth,0],[0,innerHeight],[innerWidth,innerHeight]].forEach(function(pt){
+        maxD = Math.max(maxD, boxDist(pt[0], pt[1], t1x, t1y, rHW, rHH));
+      });
+      var parts = [], i, p, rel, avgR = 0, avgG = 0, avgB = 0;
+      for (i = 0; i < galPts.length; i++) {
+        p = galPts[i];
+        parts.push([p[0], p[1], 0, 0,
+                    0.6 + Math.random() * 1.9 + (0.5 - p[5]) * 0.3,
+                    1.0 + Math.pow(Math.random(), 2.3) * 3.4,
+                    Math.random(), 0, 0, p[2], p[3], p[4]]);
+      }
+      for (i = 0; i < pagePts.length; i++) {
+        p = pagePts[i];
+        avgR += p[2]; avgG += p[3]; avgB += p[4];
+        rel = Math.min(1, boxDist(p[0], p[1], t1x, t1y, rHW, rHH) / maxD) * 0.92;
+        var sa2 = Math.random() * Math.PI * 2, sr2 = 50 + Math.random() * 210;
+        parts.push([p[0], p[1], Math.cos(sa2) * sr2, Math.sin(sa2) * sr2,
+                    1.9 + Math.random() * 2.2 + (0.5 - p[5]) * 0.4,
+                    3.6 * (0.72 + Math.pow(Math.random(), 2) * 0.5),
+                    Math.random(), rel, 2, p[2], p[3], p[4]]);
+      }
+      var SPARKS2 = isMobileL ? 350 : 750;
+      for (i = 0; i < SPARKS2; i++) {
+        var tm2 = Math.random();
+        parts.push([0, 0, 0, 0, 1.0, 1.0 + Math.pow(Math.random(), 2) * 2.4, Math.random(), Math.random(), 3,
+                    Math.round(43 + 191 * tm2), Math.round(224 + 22 * tm2), Math.round(198 + 50 * tm2)]);
+      }
+      var nP = Math.max(1, pagePts.length);
+      var tint = [0.012 + avgR / nP / 255 * 0.16, 0.047 + avgG / nP / 255 * 0.14, 0.063 + avgB / nP / 255 * 0.14];
+      if (!FlyGL.begin(parts, 105)) {
+        view.style.transition = 'opacity .4s ease'; view.style.opacity = '0';
+        setTimeout(function(){ view.style.transition = ''; view.style.opacity = ''; closeConceptCase(); flyBusy = false; }, 420);
+        return;
+      }
+      view.style.backdropFilter = 'none';
+      var dxT = c0x - t1x, dyT = c0y - t1y;
+      var arc = Math.min(160, Math.hypot(dxT, dyT) * 0.5 + 50) * (c0x > innerWidth / 2 ? -1 : 1);
+      var nrm = Math.hypot(dxT, dyT) || 1;
+      var cpx = t1x + dxT * 0.5 - dyT / nrm * arc, cpy = t1y + dyT * 0.5 + dxT / nrm * arc;
+      var camEnd = 1.5, DUR = 1600 * FLY_SLOW, t0 = performance.now();
+      var camPrev = camEnd, fxp = t1x, fyp = t1y, domHidden = false, waveRPrev2 = maxD + 600;
+      function anim(now){
+        var k = window.__flyK != null ? window.__flyK : Math.min(1, (now - t0) / DUR);
+        var wave = sstep(0, 0.22, k);
+        var collapse = sstep(0.42, 0.95, k);
+        var useCard = k >= 0.38;
+        var wrcx = useCard ? c0x : t1x, wrcy = useCard ? c0y : t1y;
+        var wrhw = useCard ? cHW : rHW, wrhh = useCard ? cHH : rHH;
+        var waveR = useCard ? (maxD + 150) * (1 - collapse) : (maxD + 600);
+        var cam = camEnd * (1 - smootherstep((k - 0.05) / 0.85));
+        var fe = sstep(0, 1, Math.min(1, k / 0.8));
+        var u1 = 1 - fe;
+        var fx = u1 * u1 * t1x + 2 * u1 * fe * cpx + fe * fe * c0x;
+        var fy = u1 * u1 * t1y + 2 * u1 * fe * cpy + fe * fe * c0y;
+        if (!domHidden && k >= 0.3) { domHidden = true; view.style.transition = 'none'; view.style.opacity = '0'; }
+        FlyGL.frame({
+          rectCX: wrcx, rectCY: wrcy, rectHW: wrhw, rectHH: wrhh,
+          waveR: waveR, waveRp: waveRPrev2,
+          dark: useCard ? 1 : sstep(0.04, 0.3, k), tint: tint,
+          hole: useCard ? sstep(0.42, 0.6, k) : 0,
+          lock: sstep(0.84, 0.96, k),
+          frontA: useCard ? sstep(0.45, 0.55, k) : 0,
+          c0x: c0x, c0y: c0y, t1x: t1x, t1y: t1y,
+          fx: fx, fy: fy, fxp: fxp, fyp: fyp,
+          cam: cam, camPrev: camPrev, camEnd: camEnd,
+          k: k, wave: wave, rv: 0, out: 1, time: now / 1000
+        });
+        camPrev = cam; fxp = fx; fyp = fy; waveRPrev2 = waveR;
+        if (k < 1) requestAnimationFrame(anim);
+        else {
+          closeConceptCase();
+          view.style.transition = ''; view.style.opacity = ''; view.style.backdropFilter = '';
+          FlyGL.end();
+          setTimeout(function(){ flyBusy = false; }, 540);
+        }
+      }
+      requestAnimationFrame(anim);
+    }
+    function requestCloseConcept(){
+      if (busyLock()) return;
+      if (!view.classList.contains('open')) return;
+      flyOutOfConcept();
+    }
+
+    document.getElementById('cViewClose').addEventListener('click', requestCloseConcept);
     addEventListener('keydown', function(e){
-      if (e.key === 'Escape' && view.classList.contains('open')) closeConcept();
+      if (e.key === 'Escape' && view.classList.contains('open')) requestCloseConcept();
     });
 
     fetch('data/concepts.json?v=1').then(function(r){ return r.json(); }).then(function(json){
