@@ -1055,8 +1055,8 @@
       attribute vec4 aData;   // z, size, rnd, rel
       attribute float aKind;  // 0 поле экрана, 1 выбранная (морф), 2 сборка
       attribute vec3 aColor;
-      uniform vec2 uRes, uC0, uT1, uF, uFp;
-      uniform float uCam, uCamPrev, uCamEnd, uK, uWave, uRv, uOut, uTime, uAsm;
+      uniform vec2 uRes, uC0, uT1, uF, uFp, uRectC2, uRectH2;
+      uniform float uCam, uCamPrev, uCamEnd, uK, uWave, uRv, uOut, uTime, uAsm, uWaveR2, uWaveR2p, uFrontA;
       varying vec2 vUv; varying vec4 vCol; varying float vB;
       void main(){
         float z = aData.x, size = aData.y, rnd = aData.z, rel = aData.w;
@@ -1095,7 +1095,7 @@
           alpha = gate * (1.0 - uRv * 0.94);
           px = mix(min(size * s, 16.0), size * 0.9, m);
           boost = 1.0 + (1.0 - m) * 0.35;
-        } else {
+        } else if (aKind < 2.5) {
           // сборка новой страницы: из глубины через ось, волна прибытия сверху вниз
           float g0 = (z - uCamEnd) / z;
           float graw  = clamp(z / max(z - uCam,     0.2) * (z - uCamEnd) / z, 0.0, 1.0);
@@ -1111,6 +1111,21 @@
           else            alpha = clamp(smoothstep(stag, stag + 0.34, g) + uAsm * 0.45 * smoothstep(0.02, 0.2, g), 0.0, 1.0) * (1.0 - uRv * 0.9);
           px = size * (0.35 + 0.65 * g);
           boost = 1.0 + (1.0 - g) * 0.55; // светится, пока летит из глубины
+        } else {
+          // искры фронта волны: пиксели бегут по кромке (периметр прямоугольника + нормаль * радиус волны)
+          float u4 = fract(rnd + aData.w) * 4.0;
+          vec2 pB, n2;
+          if (u4 < 1.0)      { pB = vec2(mix(-1.0, 1.0, u4),        -1.0); n2 = vec2(0.0, -1.0); }
+          else if (u4 < 2.0) { pB = vec2( 1.0, mix(-1.0, 1.0, u4 - 1.0)); n2 = vec2(1.0, 0.0); }
+          else if (u4 < 3.0) { pB = vec2(mix(1.0, -1.0, u4 - 2.0),   1.0); n2 = vec2(0.0, 1.0); }
+          else               { pB = vec2(-1.0, mix(1.0, -1.0, u4 - 3.0)); n2 = vec2(-1.0, 0.0); }
+          vec2 base = uRectC2 + pB * uRectH2;
+          vec2 jit = vec2(sin(rnd * 61.0 + uTime * 7.0), cos(rnd * 47.0 + uTime * 6.0)) * (3.0 + 15.0 * fract(rnd * 7.7));
+          P  = base + n2 * max(uWaveR2,  0.0) + jit;
+          Pp = base + n2 * max(uWaveR2p, 0.0) + jit;
+          alpha = uFrontA * (0.3 + 0.7 * fract(rnd * 5.3));
+          px = size;
+          boost = 1.7;
         }
         // штрих по скорости: квад вытягивается вдоль движения — живой motion blur
         vec2 vel = P - Pp;
@@ -1154,7 +1169,7 @@
       precision highp float;
       varying vec2 vPos;
       uniform vec2 uRes, uRectC, uRectH;
-      uniform float uWaveR, uSoft, uDark;
+      uniform float uWaveR, uSoft, uDark, uHole, uLock;
       uniform vec3 uTint;
       // волна повторяет ФОРМУ выбранной работы: изодистанты прямоугольника (SDF бокса)
       float boxD(vec2 p){
@@ -1164,17 +1179,22 @@
       void main(){
         float d = boxD(vPos);
         float inside = 1.0 - smoothstep(uWaveR - uSoft, uWaveR, d);
+        // интерьер карточки-цели открывается заранее: фронт «упирается» в её границу, не заезжая внутрь
+        float hole = uHole * (1.0 - smoothstep(-10.0, 8.0, d));
         vec2 q = vPos / uRes - 0.5;
         float vig = 1.0 - dot(q, q) * 0.55;      // мягкая виньетка глубины
-        float a = uDark * inside;
+        float a = uDark * inside * (1.0 - hole);
         vec3 col = uTint * vig;
         // техно-фронт: основная светящаяся кромка + «эхо»-контур позади (двойная линия)
         float ring = smoothstep(uWaveR - uSoft - 30.0, uWaveR - uSoft, d)
                    * (1.0 - smoothstep(uWaveR - uSoft, uWaveR + 26.0, d));
         float echo = smoothstep(uWaveR - uSoft - 140.0, uWaveR - uSoft - 96.0, d)
                    * (1.0 - smoothstep(uWaveR - uSoft - 96.0, uWaveR - uSoft - 52.0, d));
-        col += vec3(0.30, 0.85, 0.80) * (ring * 0.10 + echo * 0.04) * uDark;
-        a = min(a + (ring * 0.05 + echo * 0.02) * uDark, 1.0);
+        col += vec3(0.30, 0.85, 0.80) * (ring * 0.10 + echo * 0.04) * uDark * (1.0 + uLock * 2.0);
+        // фиксация: в момент посадки свечение обнимает границу карточки
+        float lock = uLock * exp(-abs(d) / 26.0);
+        col += vec3(0.32, 0.90, 0.84) * lock * 0.5;
+        a = min(a + (ring * 0.05 + echo * 0.02) * uDark + lock * 0.28, 1.0);
         gl_FragColor = vec4(col * a, a);
       }`;
     function mkShader(t, src){ var s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s);
@@ -1199,8 +1219,8 @@
         cv.addEventListener('webglcontextlost', function(e){ e.preventDefault(); ok = false; }, false);
         prog = mkProg(VS, FS); bgp = mkProg(BGVS, BGFS);
         ['corner','aPos','aPos2','aData','aKind','aColor'].forEach(function(n){ A[n] = gl.getAttribLocation(prog, n); });
-        ['uRes','uC0','uT1','uF','uFp','uCam','uCamPrev','uCamEnd','uK','uWave','uRv','uOut','uTime','uAsm'].forEach(function(n){ U[n] = gl.getUniformLocation(prog, n); });
-        ['uRes','uRectC','uRectH','uWaveR','uSoft','uDark','uTint'].forEach(function(n){ BU[n] = gl.getUniformLocation(bgp, n); });
+        ['uRes','uC0','uT1','uF','uFp','uCam','uCamPrev','uCamEnd','uK','uWave','uRv','uOut','uTime','uAsm','uRectC2','uRectH2','uWaveR2','uWaveR2p','uFrontA'].forEach(function(n){ U[n] = gl.getUniformLocation(prog, n); });
+        ['uRes','uRectC','uRectH','uWaveR','uSoft','uDark','uTint','uHole','uLock'].forEach(function(n){ BU[n] = gl.getUniformLocation(bgp, n); });
         BU.corner = gl.getAttribLocation(bgp, 'corner');
         cornerBuf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, cornerBuf);
@@ -1254,6 +1274,8 @@
       gl.uniform1f(BU.uWaveR, u.waveR);
       gl.uniform1f(BU.uSoft, 110);
       gl.uniform1f(BU.uDark, u.dark);
+      gl.uniform1f(BU.uHole, u.hole || 0);
+      gl.uniform1f(BU.uLock, u.lock || 0);
       gl.uniform3f(BU.uTint, u.tint[0], u.tint[1], u.tint[2]);
       gl.bindBuffer(gl.ARRAY_BUFFER, cornerBuf);
       gl.enableVertexAttribArray(BU.corner);
@@ -1276,6 +1298,11 @@
       gl.uniform1f(U.uOut, u.out);
       gl.uniform1f(U.uTime, u.time);
       gl.uniform1f(U.uAsm, u.asm || 0);
+      gl.uniform2f(U.uRectC2, u.rectCX, u.rectCY);
+      gl.uniform2f(U.uRectH2, u.rectHW, u.rectHH);
+      gl.uniform1f(U.uWaveR2, u.waveR);
+      gl.uniform1f(U.uWaveR2p, u.waveRp != null ? u.waveRp : u.waveR);
+      gl.uniform1f(U.uFrontA, u.frontA || 0);
       gl.bindBuffer(gl.ARRAY_BUFFER, cornerBuf);
       gl.enableVertexAttribArray(A.corner);
       gl.vertexAttribPointer(A.corner, 2, gl.FLOAT, false, 0, 0);
@@ -1423,6 +1450,13 @@
                   4.1 * (0.72 + Math.pow(Math.random(), 2) * 0.5),
                   Math.random(), 0, 2, p[2], p[3], p[4]]);
     }
+    // искры фронта: пиксели, бегущие по кромке волны (тил → белый)
+    var SPARKS = isMobileL ? 350 : 750;
+    for (i = 0; i < SPARKS; i++) {
+      var tm = Math.random();
+      parts.push([0, 0, 0, 0, 1.0, 1.0 + Math.pow(Math.random(), 2) * 2.4, Math.random(), Math.random(), 3,
+                  Math.round(43 + 191 * tm), Math.round(224 + 22 * tm), Math.round(198 + 50 * tm)]);
+    }
     var nT = Math.max(1, covPts.length);
     var tint = [0.012 + avgR / nT / 255 * 0.16, 0.047 + avgG / nT / 255 * 0.14, 0.063 + avgB / nT / 255 * 0.14];
     if (!FlyGL.begin(parts, 95)) { fadeOpenCase(c); return; }
@@ -1466,7 +1500,7 @@
         FlyGL.recolor(srcTotal, colTgt);
       } catch (e) {}
     }
-    var camPrev = 0, fxp = c0x, fyp = c0y, settledOn = false;
+    var camPrev = 0, fxp = c0x, fyp = c0y, settledOn = false, waveRPrev = 0;
     function anim(now){
       var k = window.__flyK != null ? window.__flyK : Math.min(1, (now - t0) / DUR); // __flyK — отладочная заморозка фазы
       var wave = sstep(0, 0.26, k);
@@ -1479,15 +1513,17 @@
       viewer.style.opacity = rv; // страница проявляется сквозь частицы без собственного зума (иначе двойное движение)
       if (!settledOn && rv > 0.35) { settledOn = true; vInner.classList.add('settled'); }
       if (k > 0.25 && (frameN++ % 3) === 0) recolorVideo();
+      var waveR = wave * (maxD + 150);
       FlyGL.frame({
         rectCX: c0x, rectCY: c0y, rectHW: rHW, rectHH: rHH,
-        waveR: wave * (maxD + 150), dark: sstep(0, 0.03, k), tint: tint,
+        waveR: waveR, waveRp: waveRPrev, dark: sstep(0, 0.03, k), tint: tint,
+        frontA: sstep(0.02, 0.08, k) * (1 - sstep(0.3, 0.44, k)),
         c0x: c0x, c0y: c0y, t1x: t1x, t1y: t1y,
         fx: fx, fy: fy, fxp: fxp, fyp: fyp,
         cam: cam, camPrev: camPrev, camEnd: camEnd,
         k: k, wave: wave, rv: rv, out: 0, time: now / 1000, asm: sstep(0.40, 0.78, k)
       });
-      camPrev = cam; fxp = fx; fyp = fy;
+      camPrev = cam; fxp = fx; fyp = fy; waveRPrev = waveR;
       if (k < 1) requestAnimationFrame(anim);
       else {
         viewer.style.opacity = '1';
@@ -1589,6 +1625,12 @@
                   3.6 * (0.72 + Math.pow(Math.random(), 2) * 0.5),
                   Math.random(), rel, 2, p[2], p[3], p[4]]);
     }
+    var SPARKS2 = isMobileL ? 350 : 750; // искры сходящегося фронта
+    for (i = 0; i < SPARKS2; i++) {
+      var tm2 = Math.random();
+      parts.push([0, 0, 0, 0, 1.0, 1.0 + Math.pow(Math.random(), 2) * 2.4, Math.random(), Math.random(), 3,
+                  Math.round(43 + 191 * tm2), Math.round(224 + 22 * tm2), Math.round(198 + 50 * tm2)]);
+    }
     var nP = Math.max(1, pagePts.length);
     var tint = [0.012 + avgR / nP / 255 * 0.16, 0.047 + avgG / nP / 255 * 0.14, 0.063 + avgB / nP / 255 * 0.14];
     if (!FlyGL.begin(parts, 105)) {
@@ -1603,38 +1645,39 @@
     var nrm = Math.hypot(dxT, dyT) || 1;
     var cpx = t1x + dxT * 0.5 - dyT / nrm * arc, cpy = t1y + dyT * 0.5 + dxT / nrm * arc;
     var camEnd = 1.5, DUR = 1600 * FLY_SLOW, t0 = performance.now();
-    var camPrev = camEnd, fxp = t1x, fyp = t1y, domHidden = false;
+    var camPrev = camEnd, fxp = t1x, fyp = t1y, domHidden = false, waveRPrev2 = maxD + 600;
     function anim(now){
       var k = window.__flyK != null ? window.__flyK : Math.min(1, (now - t0) / DUR); // __flyK — отладочная заморозка фазы
-      var wave = sstep(0, 0.22, k);
-      // финализация: после полного накрытия тьма СХОДИТСЯ волной в карточку-цель (форма карточки),
-      // открывая галерею от краёв к финальному кадру
-      var collapse = sstep(0.45, 0.96, k);
-      var useCard = k >= 0.4;
+      var wave = sstep(0, 0.22, k); // гейт растворения страницы (без видимого фронта)
+      // финализация: тьма сходится волной к карточке-цели и УПИРАЕТСЯ в её границу;
+      // интерьер карточки открыт заранее (uHole), в момент посадки — свечение-фиксация (uLock)
+      var collapse = sstep(0.42, 0.95, k);
+      var useCard = k >= 0.38;
       var wrcx = useCard ? c0x : t1x, wrcy = useCard ? c0y : t1y;
       var wrhw = useCard ? cHW : rHW, wrhh = useCard ? cHH : rHH;
-      var waveR = useCard
-        ? (maxD + 150) * (1 - collapse) - (Math.min(cHW, cHH) + 130) * collapse
-        : wave * (maxD + 150);
+      var waveR = useCard ? (maxD + 150) * (1 - collapse) : (maxD + 600); // фаза A: фронт за экраном (глобальное затемнение)
       var cam = camEnd * (1 - smootherstep((k - 0.05) / 0.85));
       var fe = sstep(0, 1, Math.min(1, k / 0.8));
       var u1 = 1 - fe;
       var fx = u1 * u1 * t1x + 2 * u1 * fe * cpx + fe * fe * c0x;
       var fy = u1 * u1 * t1y + 2 * u1 * fe * cpy + fe * fe * c0y;
-      if (!domHidden && wave >= 0.999) { // волна накрыла страницу — DOM можно спрятать
+      if (!domHidden && k >= 0.3) { // затемнение довело — DOM страницы можно спрятать
         domHidden = true;
         viewer.style.transition = 'none'; viewer.style.opacity = '0';
       }
       FlyGL.frame({
         rectCX: wrcx, rectCY: wrcy, rectHW: wrhw, rectHH: wrhh,
-        waveR: waveR,
-        dark: 1, tint: tint,
+        waveR: waveR, waveRp: waveRPrev2,
+        dark: useCard ? 1 : sstep(0.04, 0.3, k), tint: tint,
+        hole: useCard ? sstep(0.42, 0.6, k) : 0,
+        lock: sstep(0.84, 0.96, k),
+        frontA: useCard ? sstep(0.45, 0.55, k) : 0,
         c0x: c0x, c0y: c0y, t1x: t1x, t1y: t1y,
         fx: fx, fy: fy, fxp: fxp, fyp: fyp,
         cam: cam, camPrev: camPrev, camEnd: camEnd,
         k: k, wave: wave, rv: 0, out: 1, time: now / 1000
       });
-      camPrev = cam; fxp = fx; fyp = fy;
+      camPrev = cam; fxp = fx; fyp = fy; waveRPrev2 = waveR;
       if (k < 1) requestAnimationFrame(anim);
       else {
         closeCase();
