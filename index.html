@@ -167,10 +167,14 @@
 
   /* ---------- manifesto ---------- */
   .manifesto { background: var(--space-deep); }
-  .manifesto .lines { font: 700 clamp(28px,3.6vw,58px)/1.12 var(--font-display); letter-spacing: -0.015em; max-width: 20ch; }
+  .manifesto .lines { font: 700 clamp(30px,3.8vw,62px)/1.1 var(--font-display); letter-spacing: -0.015em; max-width: 22ch; }
   .manifesto .lines p { color: rgba(220,238,240,0.28); transition: color var(--duration-slow) var(--ease-standard); margin-bottom: 6px; }
   .manifesto .lines p.lit { color: #F1FBFC; }
   .manifesto .lines em { font-style: normal; color: var(--signal-teal); }
+  /* подстрока манифеста: спокойный поясняющий текст под крупным тезисом */
+  .manifesto .lines .manifesto-sub { margin-top: 28px; font: 400 clamp(17px,1.5vw,22px)/1.6 var(--font-body);
+    letter-spacing: 0; max-width: 52ch; }
+  .manifesto .lines .manifesto-sub.lit { color: var(--scan-white-dim); }
 
   /* ---------- numbers ---------- */
   .numbers { background: var(--space-void); border-top: 1px solid var(--space-line); border-bottom: 1px solid var(--space-line); }
@@ -871,7 +875,8 @@
 <section class="manifesto sec-pad">
   <div class="wrap">
     <div class="lines" id="manifesto">
-      <p>Мы создаём места, о&nbsp;которых люди <em>рассказывают</em> после того, как покидают их.</p>
+      <p>Превращаем пространство в&nbsp;яркое <em>впечатление</em>.</p>
+      <p class="manifesto-sub">Создаём музеи, выставки, бренд-пространства и&nbsp;интерактивные экспозиции — от&nbsp;первой идеи до&nbsp;запуска.</p>
     </div>
   </div>
 </section>
