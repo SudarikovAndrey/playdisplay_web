@@ -318,9 +318,12 @@
   .a-card { background: var(--space-panel); border: 1px solid var(--space-line); padding: 26px 28px 24px;
     display: flex; flex-direction: column; gap: 12px; transition: border-color .3s, transform .3s; }
   .a-card:hover { border-color: rgba(43,224,198,0.45); transform: translateY(-3px); }
+  .a-card { cursor: pointer; }
   .a-card .ac-cat { font: 500 11px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--signal-teal); }
   .a-card h3 { font: 700 19px var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
   .a-card p { font: 400 14px/1.6 var(--font-body); color: var(--scan-white-dim); flex: 1; }
+  .a-card .ac-open { font: 600 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--scan-white-faint); transition: color .25s; }
+  .a-card:hover .ac-open { color: var(--signal-teal); }
   .a-card .ac-rel { display: flex; flex-wrap: wrap; gap: 8px; }
   .a-card .ac-rel a { font: 500 10.5px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--signal-teal); border: 1px solid rgba(43,224,198,0.3); padding: 5px 9px; cursor: pointer;
@@ -331,6 +334,26 @@
     border: 1px solid var(--space-line); padding: 13px 24px; cursor: pointer; transition: all var(--duration-fast); }
   .a-more:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
   @media (max-width: 900px) { .a-grid { grid-template-columns: 1fr; } }
+  /* ---------- урок атласа: разбор одного мультимедийного решения ---------- */
+  .a-view { position: fixed; inset: 0; z-index: 100; background: #040c10; opacity: 0; pointer-events: none;
+    transition: opacity var(--duration-base); overflow-y: auto; }
+  .a-view.open { opacity: 1; pointer-events: auto; }
+  .a-view-in { max-width: 880px; margin: 0 auto; padding: 96px 72px 120px; }
+  .a-view-in .kicker { margin-bottom: 18px; }
+  .a-view-in h2 { font: 800 clamp(32px,3.6vw,52px)/1.05 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .a-view-in .av-desc { margin-top: 20px; font: 400 clamp(17px,1.4vw,20px)/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 62ch; }
+  .av-block { margin-top: 44px; }
+  .av-block .mt { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 14px; }
+  .av-block p { font: 400 clamp(16px,1.3vw,18px)/1.75 var(--font-body); color: rgba(233,244,246,0.88); max-width: 68ch; }
+  .av-block ul { list-style: none; }
+  .av-block li { display: flex; gap: 16px; padding: 13px 0; border-bottom: 1px solid rgba(159,180,200,0.09);
+    font: 400 15px/1.6 var(--font-body); color: rgba(233,244,246,0.8); }
+  .av-block li::before { content: "▶︎"; color: var(--signal-teal); font-size: 11px; padding-top: 4px; flex-shrink: 0; }
+  .av-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .av-tags span { font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--scan-white-dim);
+    border: 1px solid var(--space-line); padding: 6px 10px; }
+  .av-cta { margin-top: 54px; }
+  @media (max-width: 900px) { .a-view-in { padding: 78px 20px 90px; } }
 
   /* ---------- AI-вход и AI-сессия (демо) ---------- */
   .ai-invite { background: var(--space-void); border-top: 1px solid var(--space-line); border-bottom: 1px solid var(--space-line); }
@@ -787,8 +810,8 @@
 <section class="atlas sec-pad" id="atlas">
   <div class="wrap">
     <div class="kicker teal eyebrow">Атлас</div>
-    <h2>Найдите подход для своей задачи.</h2>
-    <p class="intro-sub">База знаний PlayDisplay: механики, технологии, сторителлинг и форматы — связанные с реальными проектами студии.</p>
+    <h2>Изучите мультимедийные решения.</h2>
+    <p class="intro-sub">32 карточки о том, как устроены механики, технологии, сторителлинг и форматы пространственного опыта — с примерами и связями с реальными проектами студии.</p>
     <div class="c-toolbar">
       <input class="c-search" id="aSearch" type="search" placeholder="Поиск по атласу" aria-label="Поиск по атласу">
       <div class="filter" id="aFilter" style="margin:0"></div>
@@ -797,6 +820,12 @@
     <button class="a-more" id="aMore" hidden>Показать ещё материалы</button>
   </div>
 </section>
+
+<!-- ===== УРОК АТЛАСА: разбор одного мультимедийного решения ===== -->
+<div class="a-view" id="aView">
+  <button class="viewer-close" id="aViewClose">✕</button>
+  <div class="a-view-in" id="aViewIn"></div>
+</div>
 
 <!-- ===== AI-ВХОД: помочь посетителю сформулировать сырую идею перед разговором с человеком ===== -->
 <section class="ai-invite sec-pad" id="idea">
@@ -3079,12 +3108,16 @@
 </script>
 <script>
   // ===== Atlas: база знаний из data/atlas.json — поиск, разделы, подгрузка, связи с кейсами =====
+  // Каждая карточка открывается в урок: как устроено решение (principle) и где оно встречается
+  // (examples) — не просто определение, а объяснение, которое реально учит новому.
   (function(){
     var grid = document.getElementById('aGrid');
     if (!grid) return;
     var search = document.getElementById('aSearch');
     var filterBox = document.getElementById('aFilter');
     var moreBtn = document.getElementById('aMore');
+    var view = document.getElementById('aView');
+    var viewIn = document.getElementById('aViewIn');
     var PAGE = 9;
     var data = null, cat = 'Все', q = '', limit = PAGE;
 
@@ -3097,7 +3130,7 @@
     function filtered(){
       return data.items.filter(function(a){
         if (cat !== 'Все' && a.cat !== cat) return false;
-        if (q && (a.title + ' ' + a.desc + ' ' + (a.tags || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
+        if (q && (a.title + ' ' + a.desc + ' ' + (a.principle || '') + ' ' + (a.tags || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
         return true;
       });
     }
@@ -3108,28 +3141,55 @@
       list.slice(0, limit).forEach(function(a){
         var el = document.createElement('article');
         el.className = 'a-card';
-        // связанные кейсы — чипы, открывающие существующий вьюер проекта
-        // (страховка typeof CASES: если основной скрипт не загрузился, атлас живёт без связей)
-        var rel = (a.relatedProjectSlugs || []).map(function(slug){
-          var pc = (typeof caseBySlug === 'function' && typeof CASES !== 'undefined') ? caseBySlug(slug) : null;
-          return pc ? '<a data-slug="' + esc(slug) + '">' + esc(pc.title) + '</a>' : '';
-        }).join('');
         el.innerHTML = '<div class="ac-cat">' + esc(a.cat) + '</div><h3>' + esc(a.title) + '</h3>' +
-          '<p>' + esc(a.desc) + '</p>' + (rel ? '<div class="ac-rel">' + rel + '</div>' : '');
+          '<p>' + esc(a.desc) + '</p><div class="ac-open">Открыть урок →</div>';
+        el.addEventListener('click', function(){ openLesson(a); });
         grid.appendChild(el);
       });
       if (!list.length) grid.innerHTML = '<div class="c-empty">Ничего не нашлось — попробуйте другой запрос.</div>';
       moreBtn.hidden = limit >= list.length;
     }
 
-    grid.addEventListener('click', function(e){
-      var a = e.target.closest ? e.target.closest('.ac-rel a') : null;
-      if (!a) return;
-      var pc = caseBySlug(a.getAttribute('data-slug'));
-      if (!pc) return;
-      lastFly = { card: null, c: pc };
-      openCase(pc);
-    });
+    function itemById(id){ for (var i = 0; i < data.items.length; i++) if (data.items[i].id === id) return data.items[i]; return null; }
+
+    function openLesson(a){
+      var html = '<div class="kicker teal">Атлас · ' + esc(a.cat) + '</div>' +
+        '<h2>' + esc(a.title) + '</h2>' +
+        '<p class="av-desc">' + esc(a.desc) + '</p>';
+      if (a.principle) html += '<div class="av-block"><div class="mt">Как это устроено</div><p>' + esc(a.principle) + '</p></div>';
+      if (a.examples && a.examples.length) {
+        html += '<div class="av-block"><div class="mt">Примеры применения</div><ul>' +
+          a.examples.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>';
+      }
+      if (a.tags && a.tags.length) html += '<div class="av-tags">' + a.tags.map(function(t){ return '<span>' + esc(t) + '</span>'; }).join('') + '</div>';
+      var rel = (a.relatedProjectSlugs || []).map(function(slug){
+        var pc = (typeof caseBySlug === 'function' && typeof CASES !== 'undefined') ? caseBySlug(slug) : null;
+        return pc ? '<a data-slug="' + esc(slug) + '">' + esc(pc.title) + ' →</a>' : '';
+      }).join('');
+      if (rel) html += '<div class="av-block c-rel"><div class="mt">Связанные проекты</div>' + rel + '</div>';
+      html += '<div class="av-cta"><button class="wa" id="avDiscuss">▶︎ Обсудить похожую задачу</button></div>';
+      viewIn.innerHTML = html;
+      view.classList.add('open');
+      view.scrollTop = 0;
+      document.body.style.overflow = 'hidden';
+      viewIn.querySelectorAll('.c-rel a').forEach(function(a2){
+        a2.addEventListener('click', function(){
+          var pc = caseBySlug(a2.getAttribute('data-slug'));
+          if (!pc) return;
+          closeLesson();
+          lastFly = { card: null, c: pc };
+          openCase(pc);
+        });
+      });
+      var btn = document.getElementById('avDiscuss');
+      if (btn) btn.addEventListener('click', function(){ closeLesson(); location.href = '#contact'; });
+    }
+    function closeLesson(){
+      view.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('aViewClose').addEventListener('click', closeLesson);
+    addEventListener('keydown', function(e){ if (e.key === 'Escape' && view.classList.contains('open')) closeLesson(); });
 
     fetch('data/atlas.json?v=1').then(function(r){ return r.json(); }).then(function(json){
       data = json;
