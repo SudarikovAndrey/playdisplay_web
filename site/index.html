@@ -5,22 +5,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayDisplay — студия интерактивного опыта: мультимедиа-инсталляции, голограммы, AR</title>
-<meta name="description" content="PlayDisplay — студия интерактивного опыта. Мультимедийные инсталляции, голограммы, дополненная реальность и выставочные пространства для музеев, корпораций и выставок. Превращаем пространство в игру.">
-<meta name="keywords" content="мультимедиа инсталляция, голограмма, голокуб, дополненная реальность, AR, выставочный стенд, интерактивная инсталляция, проекционный маппинг, музейная экспозиция, PlayDisplay, Андрей Судариков">
+<title>PlayDisplay — пространства, которые люди запоминают: музеи, выставки, интерактивные экспозиции</title>
+<meta name="description" content="PlayDisplay проектирует пространства и впечатления, которые люди запоминают: современные музеи, интерактивные экспозиции, visitor centre, шоурумы и иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.">
+<meta name="keywords" content="разработка концепции музея, дизайн интерактивной экспозиции, мультимедийная экспозиция под ключ, концепция visitor centre, иммерсивная выставка, интерактивный шоурум, мультимедиа инсталляция, проекционный маппинг, музейная экспозиция, PlayDisplay, Андрей Судариков">
 <meta name="author" content="PlayDisplay">
 <link rel="canonical" href="https://playdisplay.com/">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="PlayDisplay">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:title" content="PlayDisplay — мы превращаем пространство в игру">
-<meta property="og:description" content="Студия интерактивного опыта: мультимедийные инсталляции, голограммы, дополненная реальность и выставочные пространства для музеев, корпораций и выставок.">
+<meta property="og:title" content="PlayDisplay — пространства, которые люди запоминают">
+<meta property="og:description" content="Мы превращаем идею, историю, пространство или бренд в опыт, который хочется пережить: музеи, экспозиции, visitor centre, шоурумы и иммерсивные выставки.">
 <meta property="og:url" content="https://playdisplay.com/">
 <meta property="og:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="PlayDisplay — мы превращаем пространство в игру">
-<meta name="twitter:description" content="Студия интерактивного опыта: мультимедиа-инсталляции, голограммы, AR, выставочные пространства.">
+<meta name="twitter:title" content="PlayDisplay — пространства, которые люди запоминают">
+<meta name="twitter:description" content="Музеи, интерактивные экспозиции, visitor centre и иммерсивные выставки: превращаем идею в опыт, который хочется пережить.">
 <meta name="twitter:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -174,13 +174,23 @@
   .numbers .big { font: 800 clamp(30px,3vw,52px)/1 var(--font-display); color: var(--signal-teal); letter-spacing: -0.02em; }
   .numbers .lbl { margin-top: 14px; font: 400 13px/1.4 var(--font-body); color: var(--scan-white-dim); }
 
-  /* ---------- how ---------- */
+  /* ---------- подход: Смысл → Сценарий → Опыт → Технология ---------- */
   .how { background: var(--space-deep); }
-  .how .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 12px; }
-  .step { border-top: 2px solid var(--signal-amber); padding-top: 22px; }
-  .step .no { font: 500 13px var(--font-mono); letter-spacing: 0.12em; color: var(--signal-amber); }
-  .step h3 { font: 700 22px var(--font-display); margin: 16px 0 12px; color: #F1FBFC; }
-  .step p { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); }
+  .approach-lead { font: 700 clamp(26px,3vw,48px)/1.2 var(--font-display); letter-spacing: -0.015em;
+    color: #F1FBFC; max-width: 24ch; }
+  .approach-lead em { font-style: normal; color: var(--signal-teal); }
+  /* цепочка без крупных номеров 01/02/03 — спокойные смысловые объекты со стрелками */
+  .chain { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+    gap: 24px; align-items: start; margin-top: 72px; }
+  .chain .ch { border-top: 1px solid var(--space-line); padding-top: 22px; transition: border-color .3s; }
+  .chain .ch:hover { border-top-color: var(--signal-teal); }
+  .chain .ch h3 { font: 700 22px var(--font-display); color: #F1FBFC; }
+  .chain .ch p { margin-top: 12px; font: 400 14.5px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 24ch; }
+  .chain .ch-arrow { font: 200 28px var(--font-display); color: var(--signal-teal); padding-top: 18px; }
+  @media (max-width: 900px) {
+    .chain { grid-template-columns: 1fr; gap: 18px; margin-top: 44px; }
+    .chain .ch-arrow { padding: 0; transform: rotate(90deg); width: 28px; text-align: center; }
+  }
 
   /* ---------- trust ---------- */
   .trust { background: var(--space-void); }
@@ -251,6 +261,10 @@
   .contact { background: var(--space-deep); border-top: 1px solid var(--space-line); }
   .contact h2 { font: 800 clamp(56px,8vw,140px)/0.9 var(--font-display); letter-spacing: -0.03em; color: #F1FBFC; }
   .contact .csub { margin-top: 24px; max-width: 40ch; font: 400 clamp(17px,1.4vw,21px)/1.6 var(--font-body); color: var(--scan-white-dim); }
+  /* подпись основателя под заголовком сессии — коротко, без длинных объяснений */
+  .cs-founder { margin-top: 30px; display: flex; align-items: baseline; gap: 14px; }
+  .cs-founder b { font: 700 19px var(--font-display); color: #F1FBFC; }
+  .cs-founder span { font: 400 13px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--scan-white-dim); }
   .channels { display: flex; gap: 14px; margin-top: 44px; align-items: center; flex-wrap: wrap; }
   .wa {
     display: inline-flex; align-items: center; gap: 10px;
@@ -467,12 +481,11 @@
   <div class="nav-inner">
     <a href="#start" class="logo-home" aria-label="PlayDisplay — на главную"><img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="PlayDisplay"></a>
     <nav class="links">
-      <a href="#start">Start</a>
-      <a href="#work">Work</a>
-      <a href="#studio">Studio</a>
-      <a href="#contact">Contact</a>
+      <a href="#work">Проекты</a>
+      <a href="#concepts">Концепции</a>
+      <a href="#atlas">Атлас</a>
     </nav>
-    <button class="cta-play" onclick="location.href='#contact'">▶︎ Сыграем?</button>
+    <button class="cta-play" onclick="location.href='#contact'">▶︎ Обсудить идею</button>
   </div>
 </header>
 
@@ -495,11 +508,11 @@
   <div class="wrap hero-inner">
     <div class="hero-swap">
       <div class="swap-block" id="slogan-block">
-        <div class="kicker" style="margin-bottom:20px">Студия интерактивного опыта — с 2011</div>
-        <h1>Мы превращаем пространство&nbsp;в&nbsp;<em>игру</em>.</h1>
+        <div class="kicker" style="margin-bottom:20px">Музеи · выставки · бренды · общественные пространства</div>
+        <h1>Пространства, которые люди <em>запоминают</em>.</h1>
         <div class="hero-btns">
           <button class="btn-line" id="btn-game"><span class="tri">▶︎</span> Сыграть в пространство</button>
-          <a href="#work" class="btn-ghost-link">Кейсы →</a>
+          <a href="#work" class="btn-ghost-link">Проекты →</a>
         </div>
       </div>
       <div class="swap-block" id="project-block">
@@ -510,38 +523,50 @@
   </div>
 </section>
 
-<!-- ===== MANIFESTO ===== -->
+<!-- ===== ЭМОЦИОНАЛЬНЫЙ ПЕРЕХОД: почти пустой экран-пауза после насыщенного hero ===== -->
 <section class="manifesto sec-pad">
   <div class="wrap">
-    <div class="kicker teal eyebrow">Манифест</div>
     <div class="lines" id="manifesto">
-      <p>Игра — первый интерфейс человечества.</p>
-      <p>Лучший способ рассказать сложное — дать в него поиграть.</p>
-      <p>Экран для нас — <em>материал</em>. Пространство — <em>уровень</em>. Зритель — <em>игрок</em>.</p>
+      <p>Мы создаём места, о&nbsp;которых люди <em>рассказывают</em> после того, как покидают их.</p>
     </div>
   </div>
 </section>
 
-<!-- ===== NUMBERS ===== -->
+<!-- ===== ПОДХОД: Смысл → Сценарий → Опыт → Технология ===== -->
+<section class="how sec-pad" id="approach">
+  <div class="wrap">
+    <div class="kicker teal eyebrow">Подход</div>
+    <h2 class="approach-lead">Мы не начинаем с технологии. Сначала мы понимаем, что человек должен <em>почувствовать</em>.</h2>
+    <div class="chain">
+      <div class="ch"><h3>Смысл</h3><p>Зачем это пространство существует.</p></div>
+      <div class="ch-arrow" aria-hidden="true">→</div>
+      <div class="ch"><h3>Сценарий</h3><p>Что человек делает и как проходит путь.</p></div>
+      <div class="ch-arrow" aria-hidden="true">→</div>
+      <div class="ch"><h3>Опыт</h3><p>Что он чувствует и запоминает.</p></div>
+      <div class="ch-arrow" aria-hidden="true">→</div>
+      <div class="ch"><h3>Технология</h3><p>Что помогает этому произойти.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WORK / ПРОЕКТЫ ===== -->
+<section class="work sec-pad" id="work">
+  <div class="wrap">
+    <div class="kicker teal eyebrow">Проекты</div>
+    <h2>Посмотрите, как идеи превращаются в&nbsp;опыт.</h2>
+    <p class="intro-sub">15 реальных проектов: музеи, выставки, бренд-пространства и общественные пространства.</p>
+    <div class="cards" id="cards"><canvas id="cards-fx"></canvas></div>
+  </div>
+</section>
+
+<!-- ===== NUMBERS: доказательства после проектов ===== -->
 <section class="numbers">
   <div class="wrap" style="padding:0">
     <div class="grid">
-      <div class="cell"><div class="big">2011</div><div class="lbl">строим играбельные пространства</div></div>
+      <div class="cell"><div class="big">2011</div><div class="lbl">создаём пространственный опыт</div></div>
       <div class="cell"><div class="big">115</div><div class="lbl">инсталляций в одном музее</div></div>
       <div class="cell"><div class="big">3 нед.</div><div class="lbl">самый быстрый стенд под ключ</div></div>
       <div class="cell"><div class="big">A→Z</div><div class="lbl">полный цикл — от идеи до эксплуатации</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== HOW ===== -->
-<section class="how sec-pad">
-  <div class="wrap">
-    <div class="kicker teal eyebrow">Как мы работаем</div>
-    <div class="steps">
-      <div class="step"><div class="no">01 · Механика</div><h3>Придумываем, во что играть</h3><p>Цель, правило, награда. Первое взаимодействие — интуитивно, без инструкций.</p></div>
-      <div class="step"><div class="no">02 · Производство</div><h3>Контент, софт, железо</h3><p>Контент, софт, железо, конструкции — своя разработка, а не сборка из чужого.</p></div>
-      <div class="step"><div class="no">03 · Запуск</div><h3>Монтаж и поддержка</h3><p>Инсталляция работает каждый день, без инженера за кулисами.</p></div>
     </div>
   </div>
 </section>
@@ -554,23 +579,12 @@
   </div>
 </section>
 
-<!-- ===== WORK ===== -->
-<section class="work sec-pad" id="work">
-  <div class="wrap">
-    <div class="kicker teal eyebrow">Work — кейсы</div>
-    <h2>Не смотрите.<br>Играйте.</h2>
-    <p class="intro-sub">15 проектов для музеев, выставок и корпораций.</p>
-    <div class="cards" id="cards"><canvas id="cards-fx"></canvas></div>
-  </div>
-</section>
-
 <!-- ===== STUDIO ===== -->
 <section class="studio sec-pad" id="studio">
   <div class="wrap">
-    <div class="kicker teal eyebrow">Studio</div>
+    <div class="kicker teal eyebrow">Студия</div>
     <div class="manifest-full">
-      Игра — первый интерфейс человечества. Ребёнок познаёт мир игрой раньше, чем словами. Лучший способ рассказать сложное — дать в него поиграть. Мы строим пространства как игры: с правилами без инструкций, с открытиями, которые зритель совершает сам, с глубиной для тех, кто остался подольше. Экран — <em>материал</em>. Пространство — <em>уровень</em>. Зритель — <em>игрок</em>.
-      <span class="press-note">Нажмите Play.</span>
+      Мы превращаем идею, историю, пространство или бренд в <em>опыт, который хочется пережить</em>. Лучший способ рассказать сложное — дать в него поиграть: с правилами без инструкций, с открытиями, которые посетитель совершает сам, с глубиной для тех, кто остался подольше.
     </div>
     <div class="studio-grid">
       <div class="panel">
@@ -599,14 +613,15 @@
   </div>
 </section>
 
-<!-- ===== CONTACT ===== -->
+<!-- ===== КРЕАТИВНАЯ СЕССИЯ: главный финальный CTA ===== -->
 <section class="contact sec-pad" id="contact">
   <div class="wrap">
-    <div class="kicker eyebrow">Contact</div>
-    <h2>Сыграем?</h2>
-    <p class="csub">Расскажите о вашем пространстве — вернёмся с идеей игры за несколько дней.</p>
+    <div class="kicker eyebrow">Следующий шаг</div>
+    <h2>Креативная сессия</h2>
+    <div class="cs-founder"><b>Андрей Судариков</b><span>Основатель PlayDisplay</span></div>
+    <p class="csub">Если кажется, что проекту нужен нестандартный подход — давайте обсудим его вместе.</p>
     <div class="channels">
-      <button class="wa">▶︎ Написать в WhatsApp</button>
+      <button class="wa">▶︎ Забронировать креативную сессию</button>
       <a href="#" class="chan-link">e-mail</a>
       <a href="#" class="chan-link">Instagram</a>
       <a href="#" class="chan-link">Vimeo</a>
@@ -617,7 +632,7 @@
 
 <footer>
   <div class="foot-inner">
-    <span>PlayDisplay — студия интерактивного опыта. Работаем по всему миру с 2011&nbsp;года.</span>
+    <span>PlayDisplay — пространства, которые люди запоминают. Работаем по всему миру с 2011&nbsp;года.</span>
     <span class="mono">© 2026 PLAYDISPLAY</span>
   </div>
 </footer>
@@ -2300,7 +2315,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#05141a"/><g fill="#2be0c6"><circle cx="34" cy="42" r="2"/><circle cx="44" cy="36" r="2"/><circle cx="54" cy="44" r="2"/><circle cx="64" cy="38" r="2"/><circle cx="40" cy="52" r="2"/><circle cx="52" cy="56" r="2"/><circle cx="62" cy="52" r="2"/></g><circle cx="50" cy="50" r="16" fill="none" stroke="#ff6a3d" stroke-width="1.5"/><path d="M46 44l10 6-10 6z" fill="#f1fbfc"/></svg>
 </template>
 <!--SEO-->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "PlayDisplay", "url": "https://playdisplay.com/", "description": "PlayDisplay — студия интерактивного опыта. Проектируем мультимедийные инсталляции, голограммы, дополненную реальность и выставочные пространства для музеев, корпораций и выставок. Превращаем пространство в игру.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "founder": {"@type": "Person", "name": "Андрей Судариков"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "PlayDisplay", "url": "https://playdisplay.com/", "description": "PlayDisplay проектирует пространства и впечатления, которые люди запоминают: современные музеи, интерактивные экспозиции, visitor centre, шоурумы и иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "founder": {"@type": "Person", "name": "Андрей Судариков"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "PlayDisplay", "url": "https://playdisplay.com/", "inLanguage": "ru"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "Проекты PlayDisplay", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://playdisplay.com/work/industry-rf/", "name": "Промышленность РФ"}, {"@type": "ListItem", "position": 2, "url": "https://playdisplay.com/work/airports/", "name": "Аэропорты России"}, {"@type": "ListItem", "position": 3, "url": "https://playdisplay.com/work/odk-oak/", "name": "ОДК ОАК"}, {"@type": "ListItem", "position": 4, "url": "https://playdisplay.com/work/proryv/", "name": "Прорыв"}, {"@type": "ListItem", "position": 5, "url": "https://playdisplay.com/work/rostec/", "name": "Ростех-Экспо"}, {"@type": "ListItem", "position": 6, "url": "https://playdisplay.com/work/ptk-group/", "name": "PTK Group"}, {"@type": "ListItem", "position": 7, "url": "https://playdisplay.com/work/mig2019/", "name": "Стенд МИГ-35"}, {"@type": "ListItem", "position": 8, "url": "https://playdisplay.com/work/bmwx5/", "name": "BMW X5"}, {"@type": "ListItem", "position": 9, "url": "https://playdisplay.com/work/pano360/", "name": "Панорама 360"}, {"@type": "ListItem", "position": 10, "url": "https://playdisplay.com/work/urban-forum-2018/", "name": "Urban Forum 2018"}, {"@type": "ListItem", "position": 11, "url": "https://playdisplay.com/work/stalingrad/", "name": "Пароль победы «Сталинград»"}, {"@type": "ListItem", "position": 12, "url": "https://playdisplay.com/work/coalco/", "name": "Сухой порт COALCO"}, {"@type": "ListItem", "position": 13, "url": "https://playdisplay.com/work/sinara/", "name": "Синара Транспортные Машины"}, {"@type": "ListItem", "position": 14, "url": "https://playdisplay.com/work/vdnh-space/", "name": "ВДНХ Космос"}, {"@type": "ListItem", "position": 15, "url": "https://playdisplay.com/work/vdnh-space-center/", "name": "Центр «Космонавтика и авиация»"}]}</script>
 <noscript><section><h2>Проекты PlayDisplay</h2><ul><li><a href="work/industry-rf/">Промышленность РФ</a> — Отрасль, которую можно рассмотреть вблизи. У государства — масштабные планы по развитию судостроения: новейшие гражданские суда, прорывные инженерные решения…</li><li><a href="work/airports/">Аэропорты России</a> — Пространство, которое ведёт за руку. Показать три международных аэропорта России на Форуме «Россия» так, чтобы каждый раскрыл свою уникальную архитектуру и х…</li><li><a href="work/odk-oak/">ОДК ОАК</a> — Сложный продукт продаёт тот, кто дал его потрогать. МАКС — Международный авиационно-космический салон, одно из главных авиационных событий мира. На нём Объед…</li><li><a href="work/proryv/">Прорыв</a> — О технологии будущего — на языке впечатления. Создание инсталляции, в наглядном виде демонстрирующей принцип работы технологической платформы атомной энергет…</li><li><a href="work/rostec/">Ростех-Экспо</a> — Масштаб корпорации — в одном пространстве. Создать центральный экспонат у входа в павильон «Ростех Экспо» и объединить продукцию всех предприятий холдинга Ро…</li><li><a href="work/ptk-group/">PTK Group</a> — Презентация, в которую вовлекаются. Группа ПТК выпускает современную путевую технику — машины для строительства, ремонта и обслуживания железных дорог. Почти…</li><li><a href="work/mig2019/">Стенд МИГ-35</a> — Самолёт и так звезда — мы построили ему сцену. Выделить МИГ-35 среди представленной продукции других производителей, реализовать демонстрационный инструмент …</li><li><a href="work/bmwx5/">BMW X5</a> — Машину, которую собрал сам, хочется купить. Оснастить офис продаж интерактивным решением для выбора и кастомизации автомобиля.</li><li><a href="work/pano360/">Панорама 360</a> — Не окно в историю, а вход в неё. Дать гостям одной из самых высоких смотровых площадок Европы — «Панорама 360» на 89-м этаже башни «Федерация» в Москва-Сити …</li><li><a href="work/urban-forum-2018/">Urban Forum 2018</a> — Очередь к инсталляции — лучшая метрика. Стенд для Правительства Москвы, которое говорит с горожанами на одном языке — наглядно показывая, что меняется в горо…</li><li><a href="work/stalingrad/">Пароль победы «Сталинград»</a> — Игра умеет говорить и о серьёзном. Популяризация объекта культурного наследия федерального значения и достоверный рассказ о Сталинградской битве 1942–1943 гг…</li><li><a href="work/coalco/">Сухой порт COALCO</a> — Логистику видно, а не читаешь в буклете. Масштаб проекта сухого порта столь велик, что показать его нужно целиком: как устроен новый транспортно-логистически…</li><li><a href="work/sinara/">Синара Транспортные Машины</a> — Тяжёлую технику показываем в ладони. Холдинг «Синара — Транспортные Машины» строит новейшие локомотивы. Показать нужно было не только сами машины, но и совре…</li><li><a href="work/vdnh-space/">ВДНХ Космос</a> — Посетитель не читает экспозицию — он исследует её. Вся история космонавтики — в единой играбельной системе: 115 инсталляций, интерактивные 3D-модели кораблей…</li><li><a href="work/vdnh-space-center/">Центр «Космонавтика и авиация»</a> — Музей, который отвечает движением. Рассказать историю космонавтики и ракетостроения благодаря высокотехнологичным решениям.</li></ul></section></noscript>
