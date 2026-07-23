@@ -458,6 +458,32 @@
     .ai-word { font-size: 12.5px; padding: 9px 13px; }
   }
 
+  /* ---------- география: карта мира из точек (маска — стилизованные силуэты материков) ---------- */
+  .wm-block { margin-top: 72px; border-top: 1px solid var(--space-line); padding-top: 44px; }
+  .wm-block .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
+  .wm-block h4 { font: 700 24px var(--font-display); color: #F1FBFC; margin-bottom: 30px; }
+  .wm-wrap { position: relative; width: 100%; aspect-ratio: 2/1; max-width: 920px; }
+  .wm-dots { position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(210,220,255,0.9) 0 1.6px, transparent 1.9px);
+    background-size: 13px 13px;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500'%3E%3Cellipse cx='190' cy='110' rx='95' ry='70'/%3E%3Cellipse cx='150' cy='175' rx='70' ry='55'/%3E%3Cellipse cx='230' cy='215' rx='35' ry='30'/%3E%3Cellipse cx='260' cy='255' rx='18' ry='26'/%3E%3Cellipse cx='305' cy='300' rx='82' ry='58'/%3E%3Cellipse cx='325' cy='360' rx='62' ry='58'/%3E%3Cellipse cx='310' cy='412' rx='32' ry='35'/%3E%3Cellipse cx='530' cy='110' rx='60' ry='45'/%3E%3Cellipse cx='470' cy='95' rx='22' ry='30'/%3E%3Cellipse cx='680' cy='105' rx='150' ry='50'/%3E%3Cellipse cx='800' cy='150' rx='90' ry='55'/%3E%3Cellipse cx='600' cy='175' rx='45' ry='30'/%3E%3Cellipse cx='700' cy='200' rx='55' ry='35'/%3E%3Cellipse cx='660' cy='230' rx='30' ry='30'/%3E%3Cellipse cx='655' cy='260' rx='14' ry='22'/%3E%3Cellipse cx='760' cy='245' rx='35' ry='25'/%3E%3Cellipse cx='555' cy='220' rx='55' ry='35'/%3E%3Cellipse cx='565' cy='280' rx='60' ry='45'/%3E%3Cellipse cx='555' cy='345' rx='42' ry='45'/%3E%3Cellipse cx='545' cy='395' rx='22' ry='28'/%3E%3Cellipse cx='615' cy='360' rx='10' ry='20'/%3E%3Cellipse cx='830' cy='350' rx='65' ry='40'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500'%3E%3Cellipse cx='190' cy='110' rx='95' ry='70'/%3E%3Cellipse cx='150' cy='175' rx='70' ry='55'/%3E%3Cellipse cx='230' cy='215' rx='35' ry='30'/%3E%3Cellipse cx='260' cy='255' rx='18' ry='26'/%3E%3Cellipse cx='305' cy='300' rx='82' ry='58'/%3E%3Cellipse cx='325' cy='360' rx='62' ry='58'/%3E%3Cellipse cx='310' cy='412' rx='32' ry='35'/%3E%3Cellipse cx='530' cy='110' rx='60' ry='45'/%3E%3Cellipse cx='470' cy='95' rx='22' ry='30'/%3E%3Cellipse cx='680' cy='105' rx='150' ry='50'/%3E%3Cellipse cx='800' cy='150' rx='90' ry='55'/%3E%3Cellipse cx='600' cy='175' rx='45' ry='30'/%3E%3Cellipse cx='700' cy='200' rx='55' ry='35'/%3E%3Cellipse cx='660' cy='230' rx='30' ry='30'/%3E%3Cellipse cx='655' cy='260' rx='14' ry='22'/%3E%3Cellipse cx='760' cy='245' rx='35' ry='25'/%3E%3Cellipse cx='555' cy='220' rx='55' ry='35'/%3E%3Cellipse cx='565' cy='280' rx='60' ry='45'/%3E%3Cellipse cx='555' cy='345' rx='42' ry='45'/%3E%3Cellipse cx='545' cy='395' rx='22' ry='28'/%3E%3Cellipse cx='615' cy='360' rx='10' ry='20'/%3E%3Cellipse cx='830' cy='350' rx='65' ry='40'/%3E%3C/svg%3E");
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    opacity: 0.85; animation: wmBreathe 9s ease-in-out infinite; }
+  @keyframes wmBreathe { 50% { opacity: 1; } }
+  .wm-pin { position: absolute; transform: translate(-50%,-50%); display: flex; align-items: center; gap: 10px; }
+  .wm-pin .wm-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--signal-amber); box-shadow: 0 0 10px var(--signal-amber); flex-shrink: 0; }
+  .wm-pin .wm-ring { position: absolute; left: 3.5px; top: 3.5px; width: 7px; height: 7px; border-radius: 50%;
+    border: 1px solid var(--signal-amber); transform: translate(-50%,-50%); animation: wmPing 2.6s ease-out infinite; }
+  @keyframes wmPing { from { width: 7px; height: 7px; opacity: .9; } to { width: 34px; height: 34px; opacity: 0; } }
+  .wm-pin .wm-label { font: 600 12px var(--font-mono); letter-spacing: 0.06em; white-space: nowrap; color: #F1FBFC;
+    text-shadow: 0 1px 8px rgba(3,12,16,0.9); }
+  .wm-pin .wm-label small { display: block; font: 400 10px var(--font-body); color: var(--scan-white-dim); letter-spacing: 0.02em; }
+  @media (max-width: 900px) {
+    .wm-wrap { max-width: 100%; }
+    .wm-pin .wm-label { font-size: 10.5px; }
+  }
+
   /* ---------- studio ---------- */
   .studio { background: var(--space-void); }
   .studio .manifest-full { font: 600 clamp(20px,2vw,30px)/1.4 var(--font-display); letter-spacing: -0.01em; max-width: 26ch; color: #F1FBFC; }
@@ -866,6 +892,27 @@
         <div class="ptitle">Пресса и признание</div>
         <h4>Discovery Channel и не только</h4>
         <p>О студии рассказывали Discovery Channel и международные технологические программы. Проекты отмечены отраслевыми дипломами и наградами.</p>
+      </div>
+    </div>
+
+    <!-- ===== ГЕОГРАФИЯ: карта мира из точек — та же эстетика, что и в hero ===== -->
+    <div class="wm-block">
+      <div class="ptitle">География</div>
+      <h4>Работаем по всему миру</h4>
+      <div class="wm-wrap">
+        <div class="wm-dots"></div>
+        <div class="wm-pin" style="left:61.6%;top:25.8%">
+          <span class="wm-dot"></span><span class="wm-ring"></span>
+          <span class="wm-label">Сочи<small>Россия</small></span>
+        </div>
+        <div class="wm-pin" style="left:59.3%;top:33%">
+          <span class="wm-dot"></span><span class="wm-ring"></span>
+          <span class="wm-label">Кипр</span>
+        </div>
+        <div class="wm-pin" style="left:36.5%;top:65.3%">
+          <span class="wm-dot"></span><span class="wm-ring"></span>
+          <span class="wm-label">Флорианополис<small>Бразилия</small></span>
+        </div>
       </div>
     </div>
   </div>
