@@ -2619,8 +2619,9 @@
       }
       if (c.comment) html += '<div class="c-note">' + esc(c.comment) + '<small>Андрей Судариков, основатель PlayDisplay</small></div>';
       // связанные проекты: открываем существующий кейс-вьюер по slug
+      // (страховка typeof CASES: если основной скрипт не загрузился, секция живёт без связей)
       var rel = (c.relatedProjectSlugs || []).map(function(slug){
-        var pc = (typeof caseBySlug === 'function') ? caseBySlug(slug) : null;
+        var pc = (typeof caseBySlug === 'function' && typeof CASES !== 'undefined') ? caseBySlug(slug) : null;
         return pc ? '<a data-slug="' + esc(slug) + '">' + esc(pc.title) + ' →</a>' : '';
       }).join('');
       if (rel) html += '<div class="c-rel"><div class="mt">Связанные проекты</div>' + rel + '</div>';
@@ -2709,8 +2710,9 @@
         var el = document.createElement('article');
         el.className = 'a-card';
         // связанные кейсы — чипы, открывающие существующий вьюер проекта
+        // (страховка typeof CASES: если основной скрипт не загрузился, атлас живёт без связей)
         var rel = (a.relatedProjectSlugs || []).map(function(slug){
-          var pc = (typeof caseBySlug === 'function') ? caseBySlug(slug) : null;
+          var pc = (typeof caseBySlug === 'function' && typeof CASES !== 'undefined') ? caseBySlug(slug) : null;
           return pc ? '<a data-slug="' + esc(slug) + '">' + esc(pc.title) + '</a>' : '';
         }).join('');
         el.innerHTML = '<div class="ac-cat">' + esc(a.cat) + '</div><h3>' + esc(a.title) + '</h3>' +
