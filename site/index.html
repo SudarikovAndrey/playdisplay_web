@@ -2216,10 +2216,10 @@
         if (cardsEl) { cardsEl.style.transition = 'none'; cardsEl.style.transformOrigin = '50% 42%'; }
       }
       if (domHidden && cardsEl) {
+        // только transform+opacity (композитинг): покадровый blur() на сетке во всю ширину дорог и даёт фризы
         var dk = sstep(0.32, 0.96, k), dke = dk * dk * (3 - 2 * dk);
         cardsEl.style.transform = 'perspective(1500px) translateZ(' + (-520 * (1 - dke)) + 'px) rotateX(' + (7 * (1 - dke)) + 'deg) scale(' + (0.92 + 0.08 * dke) + ')';
         cardsEl.style.opacity = String(Math.max(0, dke));
-        cardsEl.style.filter = 'blur(' + (10 * (1 - dke)) + 'px)';
       }
       FlyGL.frame({
         rectCX: wrcx, rectCY: wrcy, rectHW: wrhw, rectHH: wrhh,
@@ -2975,8 +2975,19 @@
       return html;
     }
 
+    // видео концепций: играют только в кадре (экономия CPU), а при смене/закрытии концепции
+    // выгружаются полностью — иначе autoplay-декодеры копятся с каждым свапом и сайт подвисает
+    var cVidIO = window.IntersectionObserver ? new IntersectionObserver(function(es){
+      es.forEach(function(e){ try { e.isIntersecting ? e.target.play() : e.target.pause(); } catch (err) {} });
+    }, { root: view, threshold: 0.02 }) : null;
+    function unloadConceptMedia(){
+      viewIn.querySelectorAll('video').forEach(function(v){
+        try { if (cVidIO) cVidIO.unobserve(v); v.pause(); v.removeAttribute('src'); v.load(); } catch (e) {}
+      });
+    }
     function openConceptCase(c){
       curConceptId = c.id;
+      unloadConceptMedia(); // прежний контент мог держать играющие видео
       viewIn.innerHTML = conceptHtml(c);
       view.classList.add('open');
       view.scrollTop = 0;
@@ -2986,6 +2997,7 @@
       viewIn.querySelectorAll('.v-gal').forEach(function(g){
         if (typeof galSync === 'function') galSync(g);
       });
+      if (cVidIO) viewIn.querySelectorAll('video').forEach(function(v){ cVidIO.observe(v); });
       viewIn.querySelectorAll('.c-rel a').forEach(function(a){
         a.addEventListener('click', function(){
           var pc = caseBySlug(a.getAttribute('data-slug'));
@@ -2999,6 +3011,7 @@
       if (btn) btn.addEventListener('click', function(){ closeConceptCase(); location.href = '#contact'; });
     }
     function closeConceptCase(){
+      unloadConceptMedia(); // остановить и выгрузить видео до сноса DOM
       view.classList.remove('open');
       viewIn.innerHTML = '';
       document.body.style.overflow = '';
@@ -3300,10 +3313,10 @@
           if (grid) { grid.style.transition = 'none'; grid.style.transformOrigin = '50% 42%'; }
         }
         if (domHidden && grid) {
+          // только transform+opacity: покадровый blur() на full-bleed ленте дорог и даёт фризы
           var dk = sstep(0.32, 0.96, k), dke = dk * dk * (3 - 2 * dk);
           grid.style.transform = 'perspective(1500px) translateZ(' + (-520 * (1 - dke)) + 'px) rotateX(' + (7 * (1 - dke)) + 'deg) scale(' + (0.92 + 0.08 * dke) + ')';
           grid.style.opacity = String(Math.max(0, dke));
-          grid.style.filter = 'blur(' + (10 * (1 - dke)) + 'px)';
         }
         FlyGL.frame({
           rectCX: wrcx, rectCY: wrcy, rectHW: wrhw, rectHH: wrhh,
