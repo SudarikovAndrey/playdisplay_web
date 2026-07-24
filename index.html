@@ -279,13 +279,28 @@
   .c-search { font: 400 14px var(--font-body); color: var(--scan-white); background: rgba(16,30,37,0.5);
     border: 1px solid var(--space-line); padding: 12px 18px; min-width: 260px; outline: none; }
   .c-search:focus { border-color: var(--signal-teal); }
+  /* счётчик «N решений» — показывает масштаб библиотеки */
+  .c-count { margin-left: auto; font: 500 12px var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--scan-white-dim); white-space: nowrap; }
+  .c-count b { color: var(--signal-teal); font-weight: 700; }
+  /* листание ленты концептов: стрелки + прогресс-бар */
+  .c-strip-nav { display: flex; align-items: center; gap: 18px; margin-top: 18px; }
+  .csn-btn { width: 42px; height: 42px; flex: 0 0 auto; border-radius: 50%; cursor: pointer;
+    border: 1px solid var(--space-line); background: rgba(16,30,37,0.5); color: #F1FBFC; font-size: 20px;
+    display: flex; align-items: center; justify-content: center; transition: border-color .25s, background .25s, color .25s, opacity .25s; }
+  .csn-btn:hover { border-color: var(--signal-teal); color: var(--signal-teal); background: rgba(43,224,198,0.1); }
+  .csn-btn:disabled { opacity: 0.3; cursor: default; }
+  .csn-bar { flex: 1; height: 2px; background: rgba(159,180,200,0.16); position: relative; overflow: hidden; }
+  .csn-bar span { position: absolute; left: 0; top: 0; height: 100%; width: 20%;
+    background: linear-gradient(90deg, var(--signal-teal), var(--signal-amber)); transition: left .3s ease, width .3s ease; }
   /* сетка концепций: сознательно НЕ как у проектов — компактные плитки-«шевроны» в два ряда,
      секция умещается на один экран; лента прокручивается ВБОК внутри контейнера (готова к 100+ карточкам) */
   /* ВАЖНО: у плиток явные width/height (не aspect-ratio) — при column-flow с auto-рядами
      и auto-колонками aspect-ratio даёт циклическую зависимость размеров, и колонки схлопываются */
-  .c-grid { margin: 28px calc(50% - 50vw) 0; padding: 0 24px 16px; display: grid; gap: 7px;
-    grid-auto-flow: column; grid-template-rows: repeat(4, 1fr); grid-auto-columns: max-content;
-    height: min(72vh, 720px);
+  .c-grid { margin: 28px calc(50% - 50vw) 0; padding: 0 40px 16px; display: grid; gap: 10px;
+    grid-auto-flow: column; grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: none; grid-auto-columns: clamp(215px, 17.5vw, 300px); /* сброс repeat(3,1fr) от .cards — иначе неравные «дыры» между колонками */
+    height: min(74vh, 740px); perspective: 1400px;
     overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
     scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: rgba(43,224,198,0.4) transparent;
     /* края ленты уходят в дымку — сразу видно, что по сторонам есть ещё карточки */
@@ -296,6 +311,11 @@
   .c-grid::-webkit-scrollbar-thumb { background: rgba(43,224,198,0.35); }
   .c-grid::-webkit-scrollbar-thumb:hover { background: rgba(43,224,198,0.6); }
   .c-tile { scroll-snap-align: start; }
+  /* «вываливание» плиток при входе на страницу: падают из глубины с наклоном, каскадом */
+  .c-tile.tile-in { opacity: 0; transform: translateY(46px) scale(0.86) rotateX(-16deg);
+    transform-origin: 50% 120%;
+    transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+  .c-tile.tile-in.on { opacity: 1; transform: none; }
   .c-tile { position: relative; width: clamp(215px, 17.5vw, 300px); height: 100%; cursor: pointer; overflow: hidden;
     /* внешний слой — «рамка»: фон-градиент виден 1px-кантом сквозь зазор до внутреннего слоя */
     --ct-clip: polygon(18px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 18px),
@@ -955,8 +975,15 @@
     <div class="c-toolbar" id="cToolbar" hidden>
       <input class="c-search" id="cSearch" type="search" placeholder="Поиск концепций" aria-label="Поиск концепций">
       <div class="filter" id="cFilter" style="margin:0"></div>
+      <div class="c-count" id="cCount" aria-live="polite"></div>
     </div>
     <div class="cards c-grid" id="cGrid"></div>
+    <!-- листание ленты: стрелки + прогресс; показываются только если карточки не влезли -->
+    <div class="c-strip-nav" id="cStripNav" hidden>
+      <button class="csn-btn" id="cStripPrev" aria-label="Назад">‹</button>
+      <div class="csn-bar"><span id="cStripFill"></span></div>
+      <button class="csn-btn" id="cStripNext" aria-label="Вперёд">›</button>
+    </div>
   </div>
 </section>
 
@@ -3025,8 +3052,66 @@
         el.addEventListener('click', function(){ flyIntoConcept(el, c); });
         grid.appendChild(el);
       });
-      revealGrid(grid);
+      updateCount(list.length);
+      dropInTiles();      // каскадное «вываливание» плиток
+      grid.scrollLeft = 0;
+      requestAnimationFrame(updateStripNav);
     }
+
+    // «вываливание»: плитки падают из глубины друг за другом (колонка за колонкой)
+    function dropInTiles(){
+      var tiles = [].slice.call(grid.querySelectorAll('.c-tile'));
+      tiles.forEach(function(el){ el.classList.add('tile-in'); });
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) { tiles.forEach(function(el){ el.classList.add('on'); }); return; }
+      function run(){
+        tiles.forEach(function(el, i){ setTimeout(function(){ el.classList.add('on'); }, 40 + i * 45); });
+        // после каскада снимаем классы: иначе .tile-in.on перебивает hover-трансформ по специфичности
+        setTimeout(function(){ tiles.forEach(function(el){ el.classList.remove('tile-in', 'on'); }); },
+          40 + tiles.length * 45 + 800);
+      }
+      if (grid._seen || !window.IntersectionObserver) { requestAnimationFrame(run); grid._seen = true; return; }
+      var io = new IntersectionObserver(function(es){
+        es.forEach(function(e){ if (e.isIntersecting) { run(); io.disconnect(); grid._seen = true; } });
+      }, { threshold: 0.08 });
+      io.observe(grid);
+    }
+
+    var countEl = document.getElementById('cCount');
+    function updateCount(n){
+      if (!countEl) return;
+      var total = data ? data.concepts.length : n;
+      countEl.innerHTML = '<b>' + n + '</b> ' + plural(n, 'решение', 'решения', 'решений') +
+        (n < total ? ' из ' + total : '');
+    }
+    function plural(n, one, few, many){
+      var m10 = n % 10, m100 = n % 100;
+      if (m10 === 1 && m100 !== 11) return one;
+      if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+      return many;
+    }
+
+    // листание ленты стрелками + прогресс-бар; всё прячется, если карточки уже влезли
+    var stripNav = document.getElementById('cStripNav');
+    var stripPrev = document.getElementById('cStripPrev');
+    var stripNext = document.getElementById('cStripNext');
+    var stripFill = document.getElementById('cStripFill');
+    function updateStripNav(){
+      if (!stripNav) return;
+      var max = grid.scrollWidth - grid.clientWidth;
+      if (max < 8) { stripNav.hidden = true; return; }
+      stripNav.hidden = false;
+      var p = grid.scrollLeft / max;
+      var vis = Math.max(0.08, grid.clientWidth / grid.scrollWidth);
+      stripFill.style.width = (vis * 100).toFixed(1) + '%';
+      stripFill.style.left = (p * (100 - vis * 100)).toFixed(1) + '%';
+      stripPrev.disabled = grid.scrollLeft <= 4;
+      stripNext.disabled = grid.scrollLeft >= max - 4;
+    }
+    if (grid) grid.addEventListener('scroll', function(){ requestAnimationFrame(updateStripNav); }, { passive: true });
+    if (stripPrev) stripPrev.addEventListener('click', function(){ grid.scrollBy({ left: -grid.clientWidth * 0.8, behavior: 'smooth' }); });
+    if (stripNext) stripNext.addEventListener('click', function(){ grid.scrollBy({ left: grid.clientWidth * 0.8, behavior: 'smooth' }); });
+    addEventListener('resize', function(){ requestAnimationFrame(updateStripNav); });
 
     // разметка внутренней листалки — тот же компонент .v-gal, что и у проектов (поддерживает
     // фото и видео вперемешку, стрелки/точки/свайп/лайтбокс работают без единой строчки новой логики)
