@@ -465,7 +465,9 @@
   /* ===== сквозной AI-виджет: выпуклая линза-«сенсор». Никакого декора — материал и свет:
      ирис-кант с медленным конусным переливом, псевдо-3D стекло (блик + глубинная тень),
      живые частицы на канвасе внутри (JS: aiwFx), точный векторный глиф микрофона ===== */
-  .ai-widget { position: fixed; right: 30px; bottom: 30px; z-index: 90; width: 68px; height: 68px;
+  /* z-index выше вьюеров концепций/атласа/проекта (100–120) — кнопка доступна на всех экранах;
+     во время самой AI-сессии и переходов её скрывают классы body ниже */
+  .ai-widget { position: fixed; right: 30px; bottom: 30px; z-index: 122; width: 68px; height: 68px;
     border: none; padding: 0; border-radius: 50%; cursor: pointer; background: transparent;
     filter: drop-shadow(0 10px 26px rgba(2,8,11,0.65));
     transition: transform var(--duration-base) var(--ease-overshoot), filter .4s, opacity .4s; }
@@ -948,8 +950,8 @@
 <section class="concepts sec-pad" id="concepts">
   <div class="wrap">
     <div class="kicker teal eyebrow">Авторские концепции</div>
-    <h2>Идеи будущих пространств.</h2>
-    <p class="intro-sub">Собственные идеи, сценарии и форматы, которые могут стать основой будущих проектов.</p>
+    <h2>Библиотека решений.</h2>
+    <p class="intro-sub">Авторские концепции. Сценарии. Форматы. Готовые к реализации.</p>
     <div class="c-toolbar" id="cToolbar" hidden>
       <input class="c-search" id="cSearch" type="search" placeholder="Поиск концепций" aria-label="Поиск концепций">
       <div class="filter" id="cFilter" style="margin:0"></div>
@@ -962,8 +964,8 @@
 <section class="atlas sec-pad" id="atlas">
   <div class="wrap">
     <div class="kicker teal eyebrow">Атлас</div>
-    <h2>Изучите мультимедийные решения.</h2>
-    <p class="intro-sub">32 карточки о том, как устроены механики, технологии, сторителлинг и форматы пространственного опыта — с примерами и связями с реальными проектами студии.</p>
+    <h2>Как создаются впечатления.</h2>
+    <p class="intro-sub">База знаний PlayDisplay о механиках, технологиях и сценариях, которые делают пространство живым.</p>
     <div class="c-toolbar">
       <input class="c-search" id="aSearch" type="search" placeholder="Поиск по атласу" aria-label="Поиск по атласу">
       <div class="filter" id="aFilter" style="margin:0"></div>
@@ -2586,7 +2588,7 @@
     if (!cv) { cv = document.createElement('canvas'); cv.className = 'g-burst'; gal.appendChild(cv); }
     cv.width = Math.round(gr.width * SS); cv.height = Math.round(gr.height * SS);
     var g = cv.getContext('2d');
-    try { g.filter = 'blur(0.8px)'; } catch (e) {} // мягкие «атомы» вместо жёстких квадратов
+    // без canvas-фильтра blur (пересчёт на каждую заливку вешает вкладку); круглые точки и так мягкие
     var oldPts = galSample(oldEl, oldEl.getBoundingClientRect(), gr, SS, GW);
     if (!oldPts || !oldPts.length) return;
     oldEl.style.opacity = 0;   // реальный кадр прячем — его несут частицы
@@ -2655,7 +2657,8 @@
     document.body.appendChild(cv);
     var g = cv.getContext('2d');
     g.setTransform(DPR, 0, 0, DPR, 0, 0);
-    g.filter = 'blur(1.1px)'; // мягкое свечение вместо жёстких квадратов — «атомы», не пиксели
+    // точки рисуем круглыми (arc) — уже не «квадраты»; canvas-фильтр blur НЕ применяем:
+    // он пересчитывался бы на каждую из тысяч заливок каждый кадр и намертво вешал вкладку
     var fromCell = fromR.width / 72, toCell = toR.width / 72;
     var settled = false;
     var t0 = performance.now(), DUR = 560;
