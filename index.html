@@ -47,6 +47,18 @@
   .reveal-up { opacity: 0; transform: translateY(28px); filter: blur(7px);
     transition: opacity .85s cubic-bezier(.16,1,.3,1), transform .85s cubic-bezier(.16,1,.3,1), filter .85s ease; }
   .reveal-up.in { opacity: 1; transform: none; filter: none; }
+  /* на ховере каскадная задержка проявления не должна тормозить реакцию карточки */
+  .card:hover, .c-tile:hover { transition-delay: 0s !important; }
+  /* сияние под курсором: мягкий радиальный свет, следует за мышью (только точный указатель) */
+  #cursor-glow { position: fixed; left: 0; top: 0; width: 520px; height: 520px; margin: -260px 0 0 -260px;
+    border-radius: 50%; pointer-events: none; z-index: 60; opacity: 0; will-change: transform, opacity;
+    background: radial-gradient(circle, rgba(43,224,198,0.11), rgba(43,224,198,0.04) 40%, transparent 68%);
+    transition: opacity .5s ease; mix-blend-mode: screen; }
+  @media (pointer: coarse) { #cursor-glow { display: none; } }
+  /* последовательное проявление текстовых блоков (те, что НЕ собираются из частиц) */
+  .rv { opacity: 0; transform: translateY(22px); filter: blur(6px);
+    transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1), filter .8s ease; }
+  .rv.rv-in { opacity: 1; transform: none; filter: none; }
   .kicker {
     display: inline-flex; align-items: center; gap: 14px;
     font: 600 12px var(--font-mono); letter-spacing: var(--tracking-hud);
@@ -166,14 +178,16 @@
   .eyebrow { margin-bottom: 40px; }
 
   /* ---------- manifesto ---------- */
-  .manifesto { background: var(--space-deep); }
-  .manifesto .lines { font: 700 clamp(30px,3.8vw,62px)/1.1 var(--font-display); letter-spacing: -0.015em; max-width: 22ch; }
+  /* манифест + подход читаются как одна композиция: тезис сверху, сразу под ним — подход,
+     без большого провала между секциями (укорочены отступы снизу/сверху) */
+  .manifesto { background: var(--space-deep); padding-top: 118px; padding-bottom: 48px; }
+  .manifesto .lines { font: 700 clamp(32px,4.2vw,68px)/1.06 var(--font-display); letter-spacing: -0.02em; max-width: 20ch; }
   .manifesto .lines p { color: rgba(220,238,240,0.28); transition: color var(--duration-slow) var(--ease-standard); margin-bottom: 6px; }
   .manifesto .lines p.lit { color: #F1FBFC; }
   .manifesto .lines em { font-style: normal; color: var(--signal-teal); }
   /* подстрока манифеста: спокойный поясняющий текст под крупным тезисом */
-  .manifesto .lines .manifesto-sub { margin-top: 28px; font: 400 clamp(17px,1.5vw,22px)/1.6 var(--font-body);
-    letter-spacing: 0; max-width: 52ch; }
+  .manifesto .lines .manifesto-sub { margin-top: 26px; font: 400 clamp(17px,1.5vw,22px)/1.6 var(--font-body);
+    letter-spacing: 0; max-width: 46ch; }
   .manifesto .lines .manifesto-sub.lit { color: var(--scan-white-dim); }
 
   /* ---------- numbers ---------- */
@@ -185,7 +199,7 @@
   .numbers .lbl { margin-top: 14px; font: 400 13px/1.4 var(--font-body); color: var(--scan-white-dim); }
 
   /* ---------- подход: Смысл → Сценарий → Опыт → Технология ---------- */
-  .how { background: var(--space-deep); }
+  .how { background: var(--space-deep); padding-top: 60px; } /* подтянут к манифесту — единый блок без дыры */
   .approach-lead { font: 700 clamp(26px,3vw,48px)/1.2 var(--font-display); letter-spacing: -0.015em;
     color: #F1FBFC; max-width: 24ch; }
   .approach-lead em { font-style: normal; color: var(--signal-teal); }
@@ -257,10 +271,11 @@
   .stat { font: 500 10.5px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--signal-teal); border: 1px solid rgba(43,224,198,0.3); padding: 5px 9px; }
 
   /* ---------- авторские концепции ---------- */
-  .concepts { background: var(--space-void); }
-  .concepts h2 { font: 800 clamp(34px,4.4vw,64px)/1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
-  .concepts .intro-sub { margin-top: 18px; font: 400 18px var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
-  .c-toolbar { display: flex; gap: 18px; margin-top: 40px; flex-wrap: wrap; align-items: center; }
+  /* заголовок и фильтр компактные — максимум высоты отдаём самой ленте карточек */
+  .concepts { background: var(--space-void); padding-top: 96px; padding-bottom: 100px; }
+  .concepts h2 { font: 800 clamp(28px,3.2vw,48px)/1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .concepts .intro-sub { margin-top: 12px; font: 400 16px/1.5 var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
+  .c-toolbar { display: flex; gap: 14px; margin-top: 24px; flex-wrap: wrap; align-items: center; }
   .c-search { font: 400 14px var(--font-body); color: var(--scan-white); background: rgba(16,30,37,0.5);
     border: 1px solid var(--space-line); padding: 12px 18px; min-width: 260px; outline: none; }
   .c-search:focus { border-color: var(--signal-teal); }
@@ -268,9 +283,9 @@
      секция умещается на один экран; лента прокручивается ВБОК внутри контейнера (готова к 100+ карточкам) */
   /* ВАЖНО: у плиток явные width/height (не aspect-ratio) — при column-flow с auto-рядами
      и auto-колонками aspect-ratio даёт циклическую зависимость размеров, и колонки схлопываются */
-  .c-grid { margin: 44px calc(50% - 50vw) 0; padding: 0 24px 16px; display: grid; gap: 8px;
-    grid-auto-flow: column; grid-template-rows: repeat(3, 1fr); grid-auto-columns: max-content;
-    height: min(58vh, 570px);
+  .c-grid { margin: 28px calc(50% - 50vw) 0; padding: 0 24px 16px; display: grid; gap: 7px;
+    grid-auto-flow: column; grid-template-rows: repeat(4, 1fr); grid-auto-columns: max-content;
+    height: min(72vh, 720px);
     overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
     scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: rgba(43,224,198,0.4) transparent;
     /* края ленты уходят в дымку — сразу видно, что по сторонам есть ещё карточки */
@@ -281,7 +296,7 @@
   .c-grid::-webkit-scrollbar-thumb { background: rgba(43,224,198,0.35); }
   .c-grid::-webkit-scrollbar-thumb:hover { background: rgba(43,224,198,0.6); }
   .c-tile { scroll-snap-align: start; }
-  .c-tile { position: relative; width: clamp(220px, 20vw, 320px); height: 100%; cursor: pointer; overflow: hidden;
+  .c-tile { position: relative; width: clamp(215px, 17.5vw, 300px); height: 100%; cursor: pointer; overflow: hidden;
     /* внешний слой — «рамка»: фон-градиент виден 1px-кантом сквозь зазор до внутреннего слоя */
     --ct-clip: polygon(18px 0, calc(100% - 7px) 0, 100% 7px, 100% calc(100% - 18px),
       calc(100% - 18px) 100%, 7px 100%, 0 calc(100% - 7px), 0 18px);
@@ -292,10 +307,11 @@
     transform: translateY(-4px); z-index: 2; }
   .ct-in { position: absolute; inset: 1px; clip-path: var(--ct-clip); background: #081014; overflow: hidden; }
   .c-tile .card-media { position: absolute; inset: 0; height: auto; overflow: hidden; background: #0a1216; }
-  .c-tile .card-media img { width: 100%; height: 100%; object-fit: cover; display: block;
-    filter: grayscale(1) brightness(0.82); transform: scale(1.02);
-    transition: filter .6s ease, transform .8s cubic-bezier(.16,1,.3,1); }
-  .c-tile:hover .card-media img { filter: none; transform: scale(1.07); }
+  /* картинки читаемые сразу: лёгкая десатурация вместо тёмного ЧБ, полный цвет по ховеру */
+  .c-tile .card-media img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;
+    filter: grayscale(0.35) brightness(1.06) contrast(1.04); transform: scale(1.02);
+    transition: filter .45s ease, transform .6s cubic-bezier(.16,1,.3,1); }
+  .c-tile:hover .card-media img { filter: none; transform: scale(1.06); }
   /* техно-подложка текста: своя срезанная грань, монохромное стекло */
   /* минимум текста в кадре: категория + название одной узкой строкой, картинке — весь остальной объём */
   .ct-body { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
@@ -1270,6 +1286,83 @@
     io.observe(wm);
   })();
 
+  // ===== сияние под курсором + лёгкий параллакс + последовательное проявление текстов =====
+  (function(){
+    var coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 1) сияние под курсором — мягкий свет, догоняющий мышь с инерцией
+    if (!coarse) {
+      var glow = document.createElement('div'); glow.id = 'cursor-glow';
+      document.body.appendChild(glow);
+      var gx = innerWidth / 2, gy = innerHeight / 2, cx = gx, cy = gy, shown = false, graf = null;
+      function gloop(){
+        cx += (gx - cx) * 0.16; cy += (gy - cy) * 0.16;
+        glow.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px)';
+        graf = (Math.abs(gx - cx) > 0.4 || Math.abs(gy - cy) > 0.4) ? requestAnimationFrame(gloop) : null;
+      }
+      addEventListener('mousemove', function(e){
+        gx = e.clientX; gy = e.clientY;
+        if (!shown) { shown = true; glow.style.opacity = '1'; }
+        if (!graf) graf = requestAnimationFrame(gloop);
+      }, { passive: true });
+      document.addEventListener('mouseleave', function(){ glow.style.opacity = '0'; });
+    }
+
+    // 2) последовательное проявление текстов. Собираемые из частиц оверлеи (#viewer/#cView/#ai/#aView)
+    //    исключаем — там своя анимация сборки; манифест тоже свой (.lit)
+    var sel = '.how .kicker, .how .approach-lead, .chain .ch, .numbers .cell, .trust p, ' +
+              '.concepts h2, .concepts .intro-sub, .atlas h2, .atlas .intro-sub, ' +
+              '.ai-invite .kicker, .ai-invite h2, .ai-invite p, .ai-invite .ai-invite-cta, ' +
+              '.studio .kicker, .studio h4, .studio h2, .studio .studio-grid > *, ' +
+              '.contact .kicker, .contact h2, .contact p';
+    var secMap = [];
+    if (!reduce && window.IntersectionObserver) {
+      var bySec = [];
+      [].slice.call(document.querySelectorAll(sel)).forEach(function(el){
+        if (el.closest('#viewer') || el.closest('#cView') || el.closest('#ai') || el.closest('#aView')) return;
+        el.classList.add('rv');
+        var sec = el.closest('section') || document.body;
+        var rec = null;
+        for (var i = 0; i < bySec.length; i++) if (bySec[i].sec === sec) { rec = bySec[i]; break; }
+        if (!rec) { rec = { sec: sec, items: [] }; bySec.push(rec); }
+        rec.items.push(el);
+      });
+      var tio = new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if (!e.isIntersecting) return;
+          for (var i = 0; i < bySec.length; i++) if (bySec[i].sec === e.target) {
+            bySec[i].items.forEach(function(el, k){ setTimeout(function(){ el.classList.add('rv-in'); }, k * 85); });
+          }
+          tio.unobserve(e.target);
+        });
+      }, { threshold: 0.12 });
+      bySec.forEach(function(r){ tio.observe(r.sec); });
+    }
+
+    // 3) лёгкий параллакс: контейнеры секций чуть смещаются при прокрутке.
+    //    Двигаем РОДИТЕЛЬСКИЙ .wrap, а не сами тексты — не конфликтует с их reveal-трансформом.
+    if (!reduce) {
+      var pElems = [].slice.call(document.querySelectorAll(
+        '.manifesto .wrap, .how .wrap, .trust .wrap, .ai-invite .wrap, .studio .wrap, .contact .wrap'));
+      var praf = null;
+      function ploop(){
+        praf = null;
+        var vh = innerHeight;
+        pElems.forEach(function(el){
+          var r = el.getBoundingClientRect();
+          if (r.bottom < -80 || r.top > vh + 80) return;          // вне экрана — не считаем
+          var c = (r.top + r.height / 2) - vh / 2;
+          var shift = Math.max(-14, Math.min(14, -c * 0.022));
+          el.style.transform = 'translate3d(0,' + shift.toFixed(1) + 'px,0)';
+        });
+      }
+      addEventListener('scroll', function(){ if (!praf) praf = requestAnimationFrame(ploop); }, { passive: true });
+      addEventListener('resize', function(){ if (!praf) praf = requestAnimationFrame(ploop); }, { passive: true });
+      ploop();
+    }
+  })();
+
   // cases — реальные проекты с playdisplay.com, новые сверху.
   // img — локальные обложки (assets/work/, качает download_assets.sh); фолбэк — хотлинк оригинала.
   // wi = индекс в WORKS (textures.js) с base64-кадром видео.
@@ -1555,9 +1648,11 @@
     });
     function show(){
       items.forEach(function(el){ el.classList.add('in'); });
-      // каскадная задержка нужна только на проявление: снять после, иначе она тормозит ховер-эффекты
-      setTimeout(function(){ items.forEach(function(el){ el.style.transitionDelay = ''; }); },
-        Math.min(items.length, cap) * step + 950);
+      // после проявления полностью снимаем reveal-up и inline-задержку: класс перекрывал
+      // родной transition карточки и тормозил ховер (масштаб/цвет включались с задержкой)
+      setTimeout(function(){ items.forEach(function(el){
+        el.style.transitionDelay = ''; el.classList.remove('reveal-up', 'in');
+      }); }, Math.min(items.length, cap) * step + 950);
     }
     if (container._revealed || !window.IntersectionObserver) {
       requestAnimationFrame(function(){ requestAnimationFrame(show); });
