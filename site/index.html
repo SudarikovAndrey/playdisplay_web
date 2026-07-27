@@ -49,6 +49,9 @@
   .reveal-up.in { opacity: 1; transform: none; filter: none; }
   /* на ховере каскадная задержка проявления не должна тормозить реакцию карточки */
   .card:hover, .c-tile:hover { transition-delay: 0s !important; }
+  /* игра во весь экран: родительские слои не должны ловить мышь и показывать курсор */
+  body.game-live header, body.game-live .ai-widget, body.game-live #cursor-glow {
+    opacity: 0 !important; pointer-events: none !important; transition: opacity .4s; }
   /* сияние под курсором: мягкий радиальный свет, следует за мышью (только точный указатель) */
   #cursor-glow { position: fixed; left: 0; top: 0; width: 520px; height: 520px; margin: -260px 0 0 -260px;
     border-radius: 50%; pointer-events: none; z-index: 60; opacity: 0; will-change: transform, opacity;
@@ -883,7 +886,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game8" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game9" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1248,8 +1251,12 @@
     if (typeof e.data.pdPlay === 'boolean')
       document.getElementById('start').classList.toggle('video-on', e.data.pdPlay);
     // мини-игра: прячем тексты героя, экран отдан полёту
-    if (typeof e.data.pdGameOn === 'boolean')
+    if (typeof e.data.pdGameOn === 'boolean') {
       document.getElementById('start').classList.toggle('game-on', e.data.pdGameOn);
+      // на время игры прячем ВСЁ родительское поверх iframe (хедер/кнопки/виджет/сияние):
+      // иначе над их зонами всплывал системный курсор — «мигание курсора»
+      document.body.classList.toggle('game-live', e.data.pdGameOn);
+    }
     // 3D-архив: сцена подтверждает вход/выход — держим iframe поверх страницы
     if (typeof e.data.pdArchiveOn === 'boolean')
       document.body.classList.toggle('arc-on', e.data.pdArchiveOn);
