@@ -548,9 +548,9 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-<script src="textures.js?v=b2707-game10"></script>
-<script src="odk_frame.js?v=b2707-game10"></script>
-<script src="model.js?v=b2707-game10"></script>
+<script src="textures.js?v=b2707-game11"></script>
+<script src="odk_frame.js?v=b2707-game11"></script>
+<script src="model.js?v=b2707-game11"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -594,7 +594,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2707-game10'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2707-game11'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2477,8 +2477,10 @@ function gTerrainH(x, z) {
     const slot = Math.exp(-(dx * dx) / (2 * 10 * 10));          // проём шириной ~20 на коридоре
     h += gk * 26 * (1 - slot);
   }
-  // постепенное усложнение: первые километры рельеф пологий, дальше — в полную силу
-  return h * (0.35 + 0.65 * Math.min(1, z / 4500));
+  // постепенное усложнение: первые километры рельеф пологий, дальше — в полную силу,
+  // а после 8 км начинается вторая фаза — рельеф ещё на четверть мощнее (скорость к тому
+  // моменту тоже выросла: игра остаётся вызовом, а не прогулкой)
+  return h * (0.35 + 0.65 * Math.min(1, z / 4500)) * (1 + 0.25 * clamp01((z - 8000) / 10000));
 }
 
 // водопады: колонны падающих светящихся точек на обрывах (общий шейдер, анимация по uT)
@@ -2692,11 +2694,15 @@ function gMakeTrail() {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
   g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
-  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.17, transparent: true, opacity: 0.9,
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.16, transparent: true, opacity: 0.9,
     map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
   const pts = new THREE.Points(g, m);
   pts.frustumCulled = false;
-  pts.userData = { ages: new Float32Array(N).fill(9), vel: new Float32Array(N * 3), head: 0, N: N };
+  // SoA: ось частицы (bx,by,bz) + собственная скорость по оси, фаза и радиус спирали —
+  // частицы ЗАКРУЧИВАЮТСЯ вокруг оси струи, как плазма в магнитном поле
+  pts.userData = { ages: new Float32Array(N).fill(9), bx: new Float32Array(N), by: new Float32Array(N),
+    bz: new Float32Array(N), vz: new Float32Array(N), ph: new Float32Array(N), rad: new Float32Array(N),
+    head: 0, N: N };
   return pts;
 }
 // шок-диамонды: яркие узлы в реактивной струе (как маховские диски у настоящих сопел),
@@ -2803,6 +2809,17 @@ function gMakeShip() {
   GAME.shipLights.userData.baseOp = 1;
   grp.add(GAME.shipLights);
 
+  // кольца-турбины на соплах: вращающиеся ободы из точек (фазы ведёт gShipFx)
+  const NR = 16, pn = [], cn = [];
+  SHIP_ENGINES.forEach(() => { for (let k = 0; k < NR; k++) { pn.push(0, 0, 0); cn.push(1, 0.8, 0.5); } });
+  const gn = new THREE.BufferGeometry();
+  gn.setAttribute('position', new THREE.Float32BufferAttribute(pn, 3));
+  gn.setAttribute('color', new THREE.Float32BufferAttribute(cn, 3));
+  GAME.shipNozz = new THREE.Points(gn, new THREE.PointsMaterial({ vertexColors: true, size: 0.12,
+    transparent: true, opacity: 1, map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false }));
+  GAME.shipNozz.userData.baseOp = 1;
+  grp.add(GAME.shipNozz);
+
   GAME.shipBase = base;
   return grp;
 }
@@ -2839,12 +2856,29 @@ function gShipFx(time) {
   }
   lc.needsUpdate = true;
   const gc = GAME.shipGlow.geometry.attributes.color;
-  const th = 0.45 + 0.55 * Math.min(1, GAME.speed / 190);
+  const th = 0.45 + 0.55 * Math.min(1, GAME.speed / 300);
   for (let i = 0; i < gc.count; i++) {
     const fl = th * (0.75 + 0.25 * Math.sin(time * 23 + i * 2.1));
     gc.array[i * 3] = 1.1 * fl; gc.array[i * 3 + 1] = 0.72 * fl; gc.array[i * 3 + 2] = 0.42 * fl;
   }
   gc.needsUpdate = true;
+  // турбины: ободы контрвращаются (чёт/нечёт — в разные стороны), скорость от тяги;
+  // яркость точек по фазе — видно живое вращение, а не статичный круг
+  if (GAME.shipNozz) {
+    const np = GAME.shipNozz.geometry.attributes.position, nc = GAME.shipNozz.geometry.attributes.color;
+    const NR = 16, spin = time * (4 + th * 9);
+    for (let eI = 0; eI < SHIP_ENGINES.length; eI++) {
+      const e = SHIP_ENGINES[eI], dir = eI % 2 ? -1 : 1;
+      for (let k = 0; k < NR; k++) {
+        const a = k / NR * 6.2832 + spin * dir;
+        const iN = eI * NR + k;
+        np.setXYZ(iN, e[0] + Math.cos(a) * 0.52, e[1] + Math.sin(a) * 0.52, e[2] + 0.06);
+        const bl = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(a * 3 + time * 2)); // бегущие блики по ободу
+        nc.setXYZ(iN, 1.0 * bl * th + 0.15, 0.75 * bl * th + 0.12, 0.5 * bl * th + 0.12);
+      }
+    }
+    np.needsUpdate = true; nc.needsUpdate = true;
+  }
 }
 
 // крушение: каждой точке корпуса — своя скорость. Основной вектор — по курсу (нос -Z),
@@ -2870,6 +2904,7 @@ function gShipCrash() {
   // свет и струи гаснут мгновенно — обломки не «работают двигателями»
   if (GAME.shipGlow) GAME.shipGlow.visible = false;
   if (GAME.shipLights) GAME.shipLights.visible = false;
+  if (GAME.shipNozz) GAME.shipNozz.visible = false;
   if (GAME.diam) GAME.diam.visible = false;
 }
 function gUpdateDebris(dt) {
@@ -3056,6 +3091,7 @@ function restartGame() {
     GAME.shipFill.geometry.attributes.position.array.set(GAME.shipBase.subarray(SHIP_EDGE_N * 3));
     GAME.shipFill.geometry.attributes.position.needsUpdate = true;
     GAME.shipGlow.visible = true; GAME.shipLights.visible = true;
+    if (GAME.shipNozz) GAME.shipNozz.visible = true;
     if (GAME.diam) GAME.diam.visible = true;
   }
   GAME.debris = null;
@@ -3069,7 +3105,7 @@ function exitGame() {
   scene.remove(GAME.group);
   GAME.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
   GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null; GAME.trail = null;
-  GAME.diam = null; GAME.shipEdges = null; GAME.shipFill = null; GAME.shipGlow = null; GAME.shipLights = null;
+  GAME.diam = null; GAME.shipEdges = null; GAME.shipFill = null; GAME.shipGlow = null; GAME.shipLights = null; GAME.shipNozz = null;
   _dngN = 0; _dngAttr.fill(null); // ссылки на атрибуты утилизированных чанков не держим
   _ringOp = 0; if (gameRing) gameRing.style.opacity = '0';
   gameOnboard.classList.remove('show');
@@ -3164,7 +3200,7 @@ function updateGame(dt, time) {
   GAME.ship.rotation.z = clamp((tx - GAME.shipP.x) * -0.02, -0.6, 0.6); // крен в поворот
   GAME.ship.rotation.x = clamp((ty - GAME.shipP.y) * 0.02, -0.4, 0.4);
   // полёт: мир едет на нас, скорость растёт (быстрый разгон)
-  if (GAME.exit < 0) GAME.speed = Math.min(190, GAME.speed + dt * 2.4);
+  if (GAME.exit < 0) GAME.speed = Math.min(300, GAME.speed + dt * 2.6); // потолок дальше: на 300 игра уже требует рефлексов
   const dz = GAME.speed * dt;
   GAME.z += dz;
   for (const c of GAME.chunks) c.position.z += dz;
@@ -3186,7 +3222,7 @@ function updateGame(dt, time) {
         if (ddx * ddx + ddy * ddy < 30) {          // прошли сквозь обруч
           o.userData.got = true;
           GAME.score += 5; gameScore.textContent = GAME.score; gScorePulse();
-          GAME.speed = Math.min(230, GAME.speed + 24); // буст
+          GAME.speed = Math.min(340, GAME.speed + 26); // буст
           GAME.anims.push({ o, t: 0 });
           gLabel('СКВОЗЬ КОЛЬЦО · +5 · УСКОРЕНИЕ');
         }
@@ -3227,45 +3263,52 @@ function updateGame(dt, time) {
     const rzS = GAME.ship.rotation.z, cosR = Math.cos(rzS), sinR = Math.sin(rzS);
     const LIFE = 0.42;
     if (!GAME.over) {
-      // струи: 6 частиц на сопло за кадр, РАВНОМЕРНО распределённых вдоль пути кадра —
-      // зазоров между точками нет, струя читается сплошным лучом, не пузырьками
-      const jetV = 26 + th * 34;
+      // спиральная плазма: 6 частиц на сопло за кадр вдоль пути кадра, каждая со своей
+      // фазой и радиусом закрутки — струя выглядит вращающимся жгутом, а не пунктиром
+      const jetV = 26 + th * 36;
       const stepZ = jetV * dt / 6;
       for (let eI = 0; eI < SHIP_ENGINES.length; eI++) {
         const e = SHIP_ENGINES[eI];
         const ex = e[0] * cosR - e[1] * sinR, ey = e[0] * sinR + e[1] * cosR;
         for (let s2 = 0; s2 < 6; s2++) {
           const iT = tud.head = (tud.head + 1) % tud.N;
-          tp.setXYZ(iT, GAME.shipP.x + ex + (Math.random() - 0.5) * 0.09,
-                        GAME.shipP.y + ey + (Math.random() - 0.5) * 0.09,
-                        GAME.shipP.z + e[2] + 0.15 + s2 * stepZ);
-          tud.vel[iT * 3] = (Math.random() - 0.5) * 0.4;
-          tud.vel[iT * 3 + 1] = (Math.random() - 0.5) * 0.4;
-          tud.vel[iT * 3 + 2] = jetV * (0.96 + Math.random() * 0.08);
+          tud.bx[iT] = GAME.shipP.x + ex;
+          tud.by[iT] = GAME.shipP.y + ey;
+          tud.bz[iT] = GAME.shipP.z + e[2] + 0.15 + s2 * stepZ;
+          tud.vz[iT] = jetV * (0.97 + Math.random() * 0.06);
+          tud.ph[iT] = Math.random() * 6.2832;
+          tud.rad[iT] = 0.07 + Math.random() * 0.16;
           tud.ages[iT] = 0;
-          tc.setXYZ(iT, 1.15, 0.9, 0.6);
         }
       }
-      // вихревые нити с законцовок крыльев в крене — геймерский штрих
+      // вихревые нити с законцовок крыльев в крене — широкая ленивая спираль
       if (Math.abs(rzS) > 0.22) for (let wI = 1; wI <= 2; wI++) {
         const w = SHIP_LIGHTS[wI];
         const iT = tud.head = (tud.head + 1) % tud.N;
-        const wx = w[0] * cosR - w[1] * sinR, wy = w[0] * sinR + w[1] * cosR;
-        tp.setXYZ(iT, GAME.shipP.x + wx, GAME.shipP.y + wy, GAME.shipP.z + w[2]);
-        tud.vel[iT * 3] = 0; tud.vel[iT * 3 + 1] = 0; tud.vel[iT * 3 + 2] = 15;
+        tud.bx[iT] = GAME.shipP.x + w[0] * cosR - w[1] * sinR;
+        tud.by[iT] = GAME.shipP.y + w[0] * sinR + w[1] * cosR;
+        tud.bz[iT] = GAME.shipP.z + w[2];
+        tud.vz[iT] = 14;
+        tud.ph[iT] = Math.random() * 6.2832;
+        tud.rad[iT] = -(0.05 + Math.random() * 0.1); // знак = метка «вихрь»: тиловый цвет, медленная закрутка
         tud.ages[iT] = 0;
-        tc.setXYZ(iT, 0.55, 0.85, 0.82);
       }
     }
+    const spinT = time * 21;
     for (let iT = 0; iT < tud.N; iT++) {
       if (tud.ages[iT] > LIFE) continue;
       tud.ages[iT] += dt;
-      tp.setXYZ(iT, tp.getX(iT) + tud.vel[iT * 3] * dt,
-                    tp.getY(iT) + tud.vel[iT * 3 + 1] * dt,
-                    tp.getZ(iT) + tud.vel[iT * 3 + 2] * dt + dz);
+      tud.bz[iT] += tud.vz[iT] * dt + dz;
       const aT = Math.max(0, 1 - tud.ages[iT] / LIFE);
-      const hot = aT * aT; // у сопла — раскалённое ядро, к хвосту остывает в тил
-      tc.setXYZ(iT, aT * (0.5 + 0.65 * hot), aT * (0.72 + 0.2 * hot), aT * (0.55 + 0.42 * (1 - hot)));
+      const vor = tud.rad[iT] < 0;                     // вихрь с крыла
+      const rr = Math.abs(tud.rad[iT]) * (1 + tud.ages[iT] * (vor ? 9 : 4)); // спираль раскрывается конусом
+      const aH = tud.ph[iT] + (vor ? spinT * 0.35 : spinT);
+      tp.setXYZ(iT, tud.bx[iT] + Math.cos(aH) * rr,
+                    tud.by[iT] + Math.sin(aH) * rr * 0.8,
+                    tud.bz[iT]);
+      const hot = aT * aT;
+      if (vor) tc.setXYZ(iT, aT * 0.45, aT * 0.8, aT * 0.78);
+      else tc.setXYZ(iT, aT * (0.5 + 0.68 * hot), aT * (0.72 + 0.2 * hot), aT * (0.55 + 0.42 * (1 - hot)));
     }
     tp.needsUpdate = true; tc.needsUpdate = true;
     // шок-диамонды: узлы в струе, шаг и яркость от тяги, мерцают
@@ -3353,7 +3396,7 @@ function startExitGame() {
 // рискованный сектор горит алым; кольцо проявляется только при угрозе
 const gameRing = document.getElementById('game-ring');
 const _ringCtx = gameRing ? gameRing.getContext('2d') : null;
-let _ringOp = 0, _ringX = -1, _ringY = -1;
+let _ringOp = 0, _riskOp = 0, _ringX = -1, _ringY = -1;
 // кольцо-HUD (по референсу): тонкий постоянный круг вокруг корабля; алые дуги — сектор риска,
 // яркость от близости угрозы; слева скорость, справа энергия; линия горизонта с контрнаклоном
 function gDangerRing(dt, time, alt) {
@@ -3370,10 +3413,12 @@ function gDangerRing(dt, time, alt) {
   const rF = scanAhead(0);
   const rL = Math.max(scanAhead(-11) * 0.9, clamp01(1 - (GAME.shipP.y - gTerrainH(GAME.shipP.x - 9, GAME.z + 8)) / 8));
   const rR = Math.max(scanAhead(11) * 0.9, clamp01(1 - (GAME.shipP.y - gTerrainH(GAME.shipP.x + 9, GAME.z + 8)) / 8));
-  const rD = clamp01(1 - alt / 8);
-  // кольцо живёт весь полёт (не только при риске)
-  const want = (GAME.enter >= 1 && !GAME.over && GAME.exit < 0) ? 0.9 : 0;
+  const rD = clamp01(1 - alt / 9);
+  const maxRisk = Math.max(rF, rD, rL * 0.9, rR * 0.9);
+  // приборы (скорость/энергия/горизонт) видны весь полёт; КРУГ и дуги — только при угрозе
+  const want = (GAME.enter >= 1 && !GAME.over && GAME.exit < 0) ? 0.92 : 0;
   _ringOp += (want - _ringOp) * (1 - Math.exp(-dt * 6));
+  _riskOp += (Math.min(1, maxRisk * 1.5) - _riskOp) * (1 - Math.exp(-dt * 7));
   gameRing.style.opacity = _ringOp.toFixed(2);
   if (_ringOp < 0.03) return;
   // позиция: корабль + мягкое запаздывание — лёгкий параллакс HUD относительно корабля
@@ -3388,26 +3433,34 @@ function gDangerRing(dt, time, alt) {
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.clearRect(0, 0, gameRing.width, gameRing.height);
   const pul = 0.72 + 0.28 * Math.sin(time * 11);
-  // базовый круг — тонкий, различимый всегда
-  g.beginPath(); g.arc(C_X, C_Y, R, 0, Math.PI * 2);
-  g.strokeStyle = 'rgba(220,238,240,0.32)'; g.lineWidth = 1.6 * SS; g.shadowBlur = 0;
-  g.stroke();
-  // алые дуги риска: верх = по курсу, низ = земля, бока = склоны; яркость = близость угрозы
-  const SEC = [
-    { a0: -Math.PI * 0.72, a1: -Math.PI * 0.28, r: rF },
-    { a0: Math.PI * 0.28,  a1: Math.PI * 0.72,  r: rD },
-    { a0: Math.PI * 0.78,  a1: Math.PI * 1.22,  r: rL },
-    { a0: -Math.PI * 0.22, a1: Math.PI * 0.22,  r: rR }
-  ];
-  for (const s of SEC) {
-    if (s.r < 0.06) continue;
-    g.beginPath(); g.arc(C_X, C_Y, R, s.a0, s.a1);
-    g.strokeStyle = 'rgba(224,32,60,' + Math.min(1, s.r * (0.55 + 0.45 * pul)).toFixed(2) + ')';
-    g.lineWidth = (3.4 + 1.6 * s.r) * SS;
-    g.shadowColor = 'rgba(224,32,60,0.85)'; g.shadowBlur = 16 * s.r * SS;
+  // круг и дуги проявляются только при угрозе (_riskOp)
+  if (_riskOp > 0.04) {
+    g.globalAlpha = _riskOp;
+    g.beginPath(); g.arc(C_X, C_Y, R, 0, Math.PI * 2);
+    g.strokeStyle = 'rgba(220,238,240,0.34)'; g.lineWidth = 1.6 * SS; g.shadowBlur = 0;
     g.stroke();
+    // алые дуги: верх = по курсу, низ = земля, бока = склоны; яркость = близость угрозы.
+    // Под дугой — тёмная подложка: красное читается и на фоне светлой земли
+    const SEC = [
+      { a0: -Math.PI * 0.72, a1: -Math.PI * 0.28, r: rF },
+      { a0: Math.PI * 0.28,  a1: Math.PI * 0.72,  r: rD },
+      { a0: Math.PI * 0.78,  a1: Math.PI * 1.22,  r: rL },
+      { a0: -Math.PI * 0.22, a1: Math.PI * 0.22,  r: rR }
+    ];
+    for (const s of SEC) {
+      if (s.r < 0.06) continue;
+      g.beginPath(); g.arc(C_X, C_Y, R, s.a0, s.a1);
+      g.strokeStyle = 'rgba(4,10,14,0.65)'; g.lineWidth = (7.5 + 2 * s.r) * SS; g.shadowBlur = 0;
+      g.stroke();                                             // подложка
+      g.beginPath(); g.arc(C_X, C_Y, R, s.a0, s.a1);
+      g.strokeStyle = 'rgba(232,36,62,' + Math.min(1, 0.35 + s.r * (0.6 + 0.4 * pul)).toFixed(2) + ')';
+      g.lineWidth = (3.6 + 1.8 * s.r) * SS;
+      g.shadowColor = 'rgba(232,36,62,0.9)'; g.shadowBlur = 18 * s.r * SS;
+      g.stroke();
+    }
+    g.shadowBlur = 0;
+    g.globalAlpha = 1;
   }
-  g.shadowBlur = 0;
   // авиагоризонт: линии по бокам кольца с контрнаклоном к крену (горизонт остаётся «мировым»)
   const bank = clamp(-GAME.ship.rotation.z * 0.85, -0.45, 0.45);
   g.save();
