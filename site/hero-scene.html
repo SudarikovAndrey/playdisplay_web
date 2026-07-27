@@ -29,6 +29,13 @@
     opacity: .9; background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.55);
     border-radius: 6px; padding: 6px 10px; cursor: pointer; }
   #dbg-toggle:hover { opacity: 1; background: rgba(0,0,0,.7); }
+  /* плашка версий: раскрывается по клику на DEV — сборка сцены + редакция контента */
+  #dbg-info { position: fixed; left: 14px; bottom: 44px; z-index: 60; display: none;
+    font: 500 10px/1.75 'Roboto Mono', monospace; letter-spacing: .12em; color: #cfe9ee;
+    background: rgba(0,0,0,.62); border: 1px solid rgba(255,255,255,.28); border-radius: 6px;
+    padding: 8px 12px; white-space: pre; pointer-events: none; }
+  #dbg-info.on { display: block; }
+  #dbg-info b { color: #2be0c6; font-weight: 700; }
 </style>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -4322,8 +4329,26 @@ function openCamPanel() {
 (function(){
   var b = document.createElement('button');
   b.id = 'dbg-toggle'; b.textContent = 'DEV ' + (window.PD_BUILD || '');
+  var info = document.createElement('div');
+  info.id = 'dbg-info';
+  document.body.appendChild(info);
+  // версия контента приходит от лендинга (он грузит data/concepts.json) — см. postMessage pdContent
+  var content = null;
+  addEventListener('message', function(e){
+    if (e.data && e.data.pdContent) { content = e.data.pdContent; render(); }
+  });
+  function render(){
+    var lines = ['СЦЕНА     <b>' + (window.PD_BUILD || '—') + '</b>'];
+    if (content) {
+      lines.push('БИБЛИОТЕКА <b>' + (content.rev || '—') + '</b>');
+      lines.push('РЕШЕНИЙ    <b>' + (content.n || 0) + '</b>' + (content.date ? '  ·  ' + content.date : ''));
+    } else lines.push('БИБЛИОТЕКА <b>—</b>  (открыть с лендинга)');
+    info.innerHTML = lines.join('\n');
+  }
+  render();
   b.addEventListener('click', function(){
     var on = document.body.classList.toggle('dbg');
+    info.classList.toggle('on', on);          // клик по DEV показывает версии
     try { parent.postMessage({ pdPanel: on }, '*'); } catch (e) {}
   });
   document.body.appendChild(b);

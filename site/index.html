@@ -3586,8 +3586,15 @@
       if (e.key === 'Escape' && view.classList.contains('open')) requestCloseConcept();
     });
 
-    fetch('data/concepts.json?v=1').then(function(r){ return r.json(); }).then(function(json){
+    fetch('data/concepts.json?v=2').then(function(r){ return r.json(); }).then(function(json){
       data = json;
+      // сообщаем hero-сцене редакцию контента — её показывает плашка по клику на DEV
+      (function tellScene(tries){
+        var fr = document.querySelector('iframe.hero-scene');
+        var msg = { pdContent: { rev: data.rev || '—', n: data.concepts.length, date: data.revDate || '' } };
+        if (fr && fr.contentWindow) { try { fr.contentWindow.postMessage(msg, '*'); } catch (e) {} }
+        if (tries > 0) setTimeout(function(){ tellScene(tries - 1); }, 1200); // сцена может ещё грузиться
+      })(3);
       // фильтры и поиск показываем, только когда библиотека подрастёт — с одной карточкой они лишние
       if (data.concepts.length > 6) {
         toolbar.hidden = false;
