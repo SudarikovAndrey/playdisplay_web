@@ -354,9 +354,9 @@
   .c-tile:hover .ct-body { border-top-color: rgba(43,224,198,0.6); }
   .ct-cat { font: 600 8px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase;
     color: var(--signal-teal); }
-  .ct-body h3 { margin-top: 3px; font: 800 clamp(13px, 1vw, 16px)/1.12 var(--font-display);
+  .ct-body h3 { margin-top: 3px; font: 800 clamp(12.5px, 0.95vw, 15px)/1.18 var(--font-display);
     letter-spacing: -0.015em; color: #F1FBFC;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   /* HUD-номер в срезанном углу — сериальность, как маркировка на корпусе */
   .ct-hud { position: absolute; top: 6px; right: 11px; z-index: 2;
     font: 500 8.5px var(--font-mono); letter-spacing: 0.18em; color: rgba(220,238,240,0.5);
@@ -408,6 +408,9 @@
     font: 500 clamp(17px,1.5vw,21px)/1.6 var(--font-display); color: #F1FBFC; max-width: 56ch; }
   .c-note small { display: block; margin-top: 12px; font: 500 11px var(--font-mono); letter-spacing: 0.22em;
     text-transform: uppercase; color: var(--signal-teal); }
+  /* реплика посетителя — курсивом, как цитата из зала */
+  .c-meta .m p.c-quote { font-style: italic; color: #F1FBFC; }
+  .c-adapt { margin-top: 14px; font: 400 15px/1.7 var(--font-body); color: rgba(233,244,246,0.8); max-width: 68ch; }
   .c-rel { margin-top: 44px; }
   .c-rel .mt { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--scan-white-dim); margin-bottom: 14px; }
   .c-rel a { display: inline-block; margin: 0 20px 10px 0; font: 600 13px var(--font-body); letter-spacing: 0.06em;
@@ -3057,7 +3060,8 @@
       var list = data.concepts.filter(function(c){
         if (cat !== 'all' && c.cat !== cat) return false;
         if (q && (c.title + ' ' + (c.need || c.line || '') + ' ' + (c.essence || '') + ' ' +
-                  (c.spaces || '') + ' ' + (c.mechanics || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
+                  (c.spaces || '') + ' ' + (c.mechanics || []).join(' ') + ' ' +
+                  (c.solves || []).join(' ') + ' ' + (c.adapt || '')).toLowerCase().indexOf(q) < 0) return false;
         return true;
       });
       grid.innerHTML = '';
@@ -3068,7 +3072,7 @@
         // .card-media и <img> внутри обязательны: flyIntoConcept берёт их как источник частиц
         // текста в кадре минимум — категория и название; описание живёт внутри концепции
         el.innerHTML =
-          '<div class="ct-in"><div class="card-media"><img loading="lazy" src="' + esc(c.cover) + '" alt="' + esc(c.title) + '"></div>' +
+          '<div class="ct-in"><div class="card-media"><img loading="lazy" decoding="async" src="' + esc(c.thumb || c.cover) + '" alt="' + esc(c.title) + '"></div>' +
           '<div class="ct-hud">SOL-' + String(i + 1).padStart(2, '0') + '</div>' +
           '<div class="ct-body"><div class="ct-cat">Решение · ' + esc(c.catLabel) + '</div>' +
           '<h3>' + esc(c.title) + '</h3></div></div>';
@@ -3154,14 +3158,21 @@
     function conceptHtml(c){
       // структура ровно по редакции документа: нужно → описание → впечатление →
       // где применять → из чего складывается опыт → почему это работает
+      // структура мастер-документа: когда пригодится → что решает → что это →
+      // что чувствует человек → где применять → из чего складывается опыт →
+      // почему это работает → что можно адаптировать
       var html = galleryHtml(c) +
         '<div class="kicker teal">Решение · ' + esc(c.catLabel) + '</div>' +
         '<h2>' + esc(c.title) + '</h2>' +
         '<p class="c-essence">' + esc(c.essence) + '</p>' +
         '<div class="c-meta">' +
-          '<div class="m">Если вам нужно<p>' + esc(c.need || c.line) + '</p></div>' +
-          '<div class="m">Ключевое впечатление<p>' + esc(c.feel) + '</p></div>' +
+          '<div class="m">Когда пригодится<p>' + esc(c.need || c.line) + '</p></div>' +
+          '<div class="m">Что чувствует человек<p class="c-quote">«' + esc(c.feel) + '»</p></div>' +
         '</div>';
+      if (c.solves && c.solves.length) {
+        html += '<div class="c-mech"><div class="mt">Что решает</div><ul>' +
+          c.solves.map(function(s){ return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></div>';
+      }
       if (c.spaces) {
         html += '<div class="c-mech"><div class="mt">Где применять</div><div class="c-tags">' +
           c.spaces.split(/\s*[•·]\s*/).filter(Boolean).map(function(s){ return '<span>' + esc(s) + '</span>'; }).join('') +
@@ -3172,6 +3183,10 @@
           c.mechanics.map(function(m){ return '<li>' + esc(m) + '</li>'; }).join('') + '</ul></div>';
       }
       if (c.comment) html += '<div class="c-note">' + esc(c.comment) + '<small>Почему это работает</small></div>';
+      if (c.adapt) {
+        html += '<div class="c-mech"><div class="mt">Что можно адаптировать</div>' +
+          '<p class="c-adapt">' + esc(c.adapt) + '</p></div>';
+      }
       // связанные проекты: открываем существующий кейс-вьюер по slug
       // (страховка typeof CASES: если основной скрипт не загрузился, секция живёт без связей)
       var rel = (c.relatedProjectSlugs || []).map(function(slug){
