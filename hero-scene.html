@@ -90,6 +90,13 @@
   #game-onboard .ob:nth-child(4) { animation-delay: 1.5s; }
   @keyframes obIn { to { opacity: 1; transform: none; } }
   #game-onboard.fade { transition: opacity .8s; opacity: 0 !important; }
+  /* метрики производительности: только в игре, слева сверху, моноширинно */
+  #game-metrics { position: fixed; left: 16px; top: 84px; z-index: 46; display: none;
+    font: 500 10px/1.7 ui-monospace, monospace; letter-spacing: .12em; color: rgba(220,238,240,0.72);
+    text-shadow: 0 1px 6px rgba(0,0,0,.8); white-space: pre; pointer-events: none; }
+  body.game #game-metrics { display: block; }
+  #game-metrics b { color: #2be0c6; font-weight: 700; }
+  #game-metrics b.bad { color: #ff5a3d; }
   #game-exit { font-size: 9px; letter-spacing: .24em; opacity: .35; margin-top: 18px; }
   /* маркер опасности: близко к рельефу */
   #game-danger { position: fixed; left: 0; top: 0; z-index: 46; display: none;
@@ -364,6 +371,7 @@
   <div id="game-exit">КЛИК ИЛИ ESC — ВЕРНУТЬСЯ В ПОРТФОЛИО</div>
 </div>
 <div id="game-danger">ОПАСНОСТЬ · РЕЛЬЕФ</div>
+<div id="game-metrics"></div>
 <div id="game-onboard">
   <div class="ob"><b>Мышь</b> — курс и высота</div>
   <div class="ob"><b>Энергоядра</b> — собирай сериями: множитель растёт</div>
@@ -529,9 +537,9 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-<script src="textures.js?v=b2707-game2"></script>
-<script src="odk_frame.js?v=b2707-game2"></script>
-<script src="model.js?v=b2707-game2"></script>
+<script src="textures.js?v=b2707-game3"></script>
+<script src="odk_frame.js?v=b2707-game3"></script>
+<script src="model.js?v=b2707-game3"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -575,7 +583,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2707-game2'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2707-game3'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2709,8 +2717,8 @@ function gMakeShip() {
   g2.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   g2.setAttribute('color', new THREE.BufferAttribute(col, 3));
   GAME.shipBase = base;
-  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.13, transparent: true, opacity: 1,
-    map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.09, transparent: true, opacity: 1,
+    map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false }); // мелкое зерно — чертёжный силуэт
   return new THREE.Points(g2, m);
 }
 
@@ -2719,12 +2727,17 @@ function gMakeShip() {
 function gShipCrash() {
   const pos = GAME.ship.geometry.attributes.position;
   const n = pos.count, vel = new Float32Array(n * 3);
-  const fwd = -(14 + GAME.speed * 0.24); // инерция по направлению движения
+  const fwd = -(8 + GAME.speed * 0.16); // инерция по курсу — заметная, но не доминирующая
   for (let i = 0; i < n; i++) {
-    const r1 = gHash(i, 1) - 0.5, r2 = gHash(i, 2) - 0.5, r3 = gHash(i, 3);
-    vel[i * 3]     = r1 * 26 + pos.getX(i) * (2 + r3 * 5);   // вбок + «взрыв» от оси корпуса
-    vel[i * 3 + 1] = 6 + r3 * 18 + pos.getY(i) * 4;          // подброс
-    vel[i * 3 + 2] = fwd * (0.5 + r3) + r2 * 14;             // главная составляющая — вперёд
+    // сферический разлёт: у каждой точки своё направление (азимут + угол места),
+    // плюс «распирание» от оси корпуса и инерция по курсу — веер, а не струя песка
+    const az = gHash(i, 5) * Math.PI * 2;
+    const el2 = (gHash(i, 6) - 0.3) * 1.9;                   // чаще вверх, чем вниз
+    const sp = (10 + gHash(i, 3) * 34) * (0.6 + gHash(i, 8)); // разброс скоростей — рвано, по-взрывному
+    const ce = Math.cos(el2);
+    vel[i * 3]     = Math.cos(az) * ce * sp * 1.35 + pos.getX(i) * (3 + gHash(i, 1) * 6); // в стороны — шире всего
+    vel[i * 3 + 1] = Math.sin(el2) * sp * 0.9 + 7 + pos.getY(i) * 4;                       // фонтан вверх
+    vel[i * 3 + 2] = Math.sin(az) * ce * sp + fwd * (0.35 + gHash(i, 2) * 0.65);           // вперёд + вглубь/на камеру
   }
   GAME.debris = { vel: vel, t: 0 };
 }
@@ -2871,6 +2884,25 @@ function exitGame() {
   if (EMBEDDED) try { parent.postMessage({ pdGameOn: false }, '*'); } catch (e) {}
 }
 let gamePuff = 0; // разлёт точек галереи после возврата из игры (тает сам)
+
+// экранная диагностика: FPS (сглаженный), кадр в мс, точки/вызовы отрисовки из renderer.info,
+// текущий DPR авто-качества и число живых чанков — чтобы видеть, ЧТО именно тормозит
+const gameMetricsEl = document.getElementById('game-metrics');
+let _mFps = 60, _mAcc = 0;
+function gMetrics(dt) {
+  if (!gameMetricsEl) return;
+  const fps = dt > 0 ? 1 / dt : 60;
+  _mFps += (fps - _mFps) * 0.08;                 // сглаживание
+  _mAcc += dt;
+  if (_mAcc < 0.25) return;                      // обновляем текст 4 раза в секунду
+  _mAcc = 0;
+  const inf = renderer.info.render;
+  const f = Math.round(_mFps);
+  gameMetricsEl.innerHTML =
+    'FPS <b class="' + (f < 45 ? 'bad' : '') + '">' + f + '</b>  ' + (dt * 1000).toFixed(1) + ' MS\n' +
+    'POINTS <b>' + (inf.points / 1000).toFixed(0) + 'K</b>  CALLS <b>' + inf.calls + '</b>\n' +
+    'DPR <b>' + renderer.getPixelRatio().toFixed(2) + '</b>  CHUNKS <b>' + (GAME.chunks ? GAME.chunks.length : 0) + '</b>';
+}
 
 function updateGame(dt, time) {
   gFallMat.uniforms.uT.value = time; // водопады текут
@@ -3502,6 +3534,7 @@ function loop() {
     updateGame(dt, time);
     Sound.frame(0, 0); // в игре — тишина
     renderer.render(scene, camera);
+    gMetrics(dt);      // диагностика производительности на экране
     return;
   }
   // режим архива проектов: своё вращение/камера, галерейные системы спят
