@@ -393,14 +393,18 @@
     text-transform: none; letter-spacing: 0; }
   .c-mech { margin-top: 44px; }
   .c-mech .mt { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 8px; }
+  /* «Где применять» — набор тегов-чипов */
+  .c-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .c-tags span { font: 500 11px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(233,244,246,0.82); border: 1px solid rgba(159,180,200,0.22); padding: 7px 12px; }
   .c-mech ul { list-style: none; }
   .c-mech li { display: flex; gap: 16px; padding: 13px 0; border-bottom: 1px solid rgba(159,180,200,0.09);
     font: 400 15px/1.6 var(--font-body); color: rgba(233,244,246,0.8); }
   .c-mech li::before { content: "▶︎"; color: var(--signal-teal); font-size: 11px; padding-top: 4px; }
   .c-note { margin-top: 44px; border-left: 2px solid var(--signal-amber); padding-left: 24px;
     font: 500 clamp(17px,1.5vw,21px)/1.6 var(--font-display); color: #F1FBFC; max-width: 56ch; }
-  .c-note small { display: block; margin-top: 12px; font: 400 12px var(--font-mono); letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--scan-white-dim); }
+  .c-note small { display: block; margin-top: 12px; font: 500 11px var(--font-mono); letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--signal-teal); }
   .c-rel { margin-top: 44px; }
   .c-rel .mt { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--scan-white-dim); margin-bottom: 14px; }
   .c-rel a { display: inline-block; margin: 0 20px 10px 0; font: 600 13px var(--font-body); letter-spacing: 0.06em;
@@ -3047,7 +3051,8 @@
     function render(){
       var list = data.concepts.filter(function(c){
         if (cat !== 'all' && c.cat !== cat) return false;
-        if (q && (c.title + ' ' + (c.line || '') + ' ' + (c.essence || '')).toLowerCase().indexOf(q) < 0) return false;
+        if (q && (c.title + ' ' + (c.need || c.line || '') + ' ' + (c.essence || '') + ' ' +
+                  (c.spaces || '') + ' ' + (c.mechanics || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
         return true;
       });
       grid.innerHTML = '';
@@ -3059,8 +3064,8 @@
         // текста в кадре минимум — категория и название; описание живёт внутри концепции
         el.innerHTML =
           '<div class="ct-in"><div class="card-media"><img loading="lazy" src="' + esc(c.cover) + '" alt="' + esc(c.title) + '"></div>' +
-          '<div class="ct-hud">CPT-' + String(i + 1).padStart(2, '0') + '</div>' +
-          '<div class="ct-body"><div class="ct-cat">Концепция · ' + esc(c.catLabel) + '</div>' +
+          '<div class="ct-hud">SOL-' + String(i + 1).padStart(2, '0') + '</div>' +
+          '<div class="ct-body"><div class="ct-cat">Решение · ' + esc(c.catLabel) + '</div>' +
           '<h3>' + esc(c.title) + '</h3></div></div>';
         el.addEventListener('click', function(){ flyIntoConcept(el, c); });
         grid.appendChild(el);
@@ -3142,19 +3147,26 @@
     }
 
     function conceptHtml(c){
+      // структура ровно по редакции документа: нужно → описание → впечатление →
+      // где применять → из чего складывается опыт → почему это работает
       var html = galleryHtml(c) +
-        '<div class="kicker teal">Авторская концепция · ' + esc(c.catLabel) + '</div>' +
+        '<div class="kicker teal">Решение · ' + esc(c.catLabel) + '</div>' +
         '<h2>' + esc(c.title) + '</h2>' +
         '<p class="c-essence">' + esc(c.essence) + '</p>' +
         '<div class="c-meta">' +
-          '<div class="m">Для каких пространств<p>' + esc(c.spaces) + '</p></div>' +
-          '<div class="m">Что чувствует посетитель<p>' + esc(c.feel) + '</p></div>' +
+          '<div class="m">Если вам нужно<p>' + esc(c.need || c.line) + '</p></div>' +
+          '<div class="m">Ключевое впечатление<p>' + esc(c.feel) + '</p></div>' +
         '</div>';
+      if (c.spaces) {
+        html += '<div class="c-mech"><div class="mt">Где применять</div><div class="c-tags">' +
+          c.spaces.split(/\s*[•·]\s*/).filter(Boolean).map(function(s){ return '<span>' + esc(s) + '</span>'; }).join('') +
+          '</div></div>';
+      }
       if (c.mechanics && c.mechanics.length) {
-        html += '<div class="c-mech"><div class="mt">Возможные механики</div><ul>' +
+        html += '<div class="c-mech"><div class="mt">Из чего складывается опыт</div><ul>' +
           c.mechanics.map(function(m){ return '<li>' + esc(m) + '</li>'; }).join('') + '</ul></div>';
       }
-      if (c.comment) html += '<div class="c-note">' + esc(c.comment) + '<small>Андрей Судариков, основатель PlayDisplay</small></div>';
+      if (c.comment) html += '<div class="c-note">' + esc(c.comment) + '<small>Почему это работает</small></div>';
       // связанные проекты: открываем существующий кейс-вьюер по slug
       // (страховка typeof CASES: если основной скрипт не загрузился, секция живёт без связей)
       var rel = (c.relatedProjectSlugs || []).map(function(slug){
