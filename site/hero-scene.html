@@ -2371,17 +2371,30 @@ function gNoise(x, z) {
   return gHash(xi, zi) * (1 - u) * (1 - v) + gHash(xi + 1, zi) * u * (1 - v)
        + gHash(xi, zi + 1) * (1 - u) * v + gHash(xi + 1, zi + 1) * u * v;
 }
+// безопасный коридор-змейка (приём эндлесс-раннеров: у трассы всегда есть проходимая линия);
+// вдоль неё же выкладываются цепочки энергии и кольца — дорожка сама ведёт игрока
+function gPathX(z) { return Math.sin(z * 0.006) * 46 + Math.sin(z * 0.0023 + 2.1) * 34; }
 // естественный рельеф: fBm-холмы + острые хребты + каньоны-провалы. Никаких плоских плит
-// и вертикальных стен, параллельных экрану, — только живые наклонные поверхности
+// и вертикальных стен, параллельных экрану. Уровень ПРОХОДИМ: рельеф вдавлен вдоль коридора,
+// горы ограничены мягким потолком (корабль достаёт до 50 при потолке рельефа ~40)
 function gTerrainH(x, z) {
-  let h = (gNoise(x * 0.008, z * 0.008) - 0.5) * 36;            // крупные волны местности
+  let h = (gNoise(x * 0.008, z * 0.008) - 0.5) * 30;            // крупные волны местности
   h += (gNoise(x * 0.02 + 13, z * 0.02 + 7) - 0.5) * 14;        // средние холмы
   h += (gNoise(x * 0.05 + 41, z * 0.05 + 3) - 0.5) * 4.6;       // мелкая рябь
+  // ритм секторов (как в Race the Sun): плотные «поля хребтов» чередуются со спокойными долинами
+  const zone = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(z * 0.0042 + gNoise(1, z * 0.0009) * 2));
   const r = 1 - Math.abs(gNoise(x * 0.006 + 70, z * 0.006 + 20) * 2 - 1);
-  h += Math.pow(r, 2.8) * 52 * (0.35 + 0.65 * gNoise(x * 0.0025, z * 0.0025 + 9)); // хребты-гряды
+  h += Math.pow(r, 2.8) * 46 * zone * (0.35 + 0.65 * gNoise(x * 0.0025, z * 0.0025 + 9)); // хребты-гряды
   const cn = Math.abs(gNoise(x * 0.004 + 23, z * 0.004 + 5) * 2 - 1);
   if (cn < 0.14) h -= Math.pow(1 - cn / 0.14, 1.7) * 30;        // провалы-каньоны
-  h += (gNoise(x * 0.0012 + 3, z * 0.0012) - 0.5) * 30;         // общий уклон, чтобы не было «пола»
+  h += (gNoise(x * 0.0012 + 3, z * 0.0012) - 0.5) * 22;         // общий уклон, чтобы не было «пола»
+  // гарантированный проход: гауссова ложбина вдоль коридора приглушает рельеф
+  const dx = x - gPathX(z);
+  const carve = Math.exp(-(dx * dx) / (2 * 24 * 24));
+  if (h > 2) h -= carve * (h - 2) * 0.8;
+  // мягкий потолок гор: пики не уходят выше досягаемости корабля
+  if (h > 24) h = 24 + (h - 24) * 0.4;
+  if (h > 34) h = 34 + (h - 34) * 0.18;
   // постепенное усложнение: первые километры рельеф пологий, дальше — в полную силу
   return h * (0.35 + 0.65 * Math.min(1, z / 4500));
 }
@@ -2424,7 +2437,12 @@ function gMakeChunk(zNoise) {
     hgrid[r * hc + c] = gTerrainH(-W + c * HS, zNoise + r * HS);
   const n = cols * rows;
   const pts = new Float32Array(n * 3), colA = new Float32Array(n * 3);
-  const tR = GAME.tint.r, tG = GAME.tint.g, tB = GAME.tint.b;
+  // биомы: оттенок мира медленно плывёт по маршруту (тил → фиолет → янтарь) — путь читается как путешествие
+  const zk1 = 0.5 + 0.5 * Math.sin(zNoise * 0.0016), zk2 = 0.5 + 0.5 * Math.sin(zNoise * 0.0007 + 2.0);
+  const zTint = new THREE.Color(GAME.tint.r, GAME.tint.g, GAME.tint.b)
+    .lerp(new THREE.Color(0.58, 0.48, 0.95), zk1 * 0.38)
+    .lerp(new THREE.Color(1.0, 0.70, 0.42), zk2 * 0.26);
+  const tR = zTint.r, tG = zTint.g, tB = zTint.b;
   let o = 0;
   for (let r = 0; r < rows; r++) {
     const z = r * step;
@@ -2475,18 +2493,36 @@ function gMakeChunk(zNoise) {
     ig.setAttribute('color', new THREE.BufferAttribute(ic, 3));
     grp.add(new THREE.Points(ig, m.clone()));
   }
-  // энергия для сбора: кристалл / гироскоп / спираль из мелких точек, парит и вращается
-  if (gHash(zNoise, 7) > 0.62) {
-    const ox = (gHash(zNoise, 13) - 0.5) * 150;
-    const oz = gHash(zNoise, 29) * G_DEPTH;
-    const oy = gTerrainH(ox, zNoise + oz) + 8 + gHash(zNoise, 3) * 9;
-    const orb = gMakeOrb(zNoise);
-    orb.position.set(ox, oy, oz);
-    orb.userData.isOrb = true;
-    orb.userData.baseY = oy;
-    orb.userData.ph = gHash(zNoise, 77) * 6.28;
-    orb.userData.spin = 0.7 + gHash(zNoise, 79) * 1.1;
-    grp.add(orb);
+  // энергия для сбора — ЦЕПОЧКАМИ вдоль коридора (приём раннеров: дорожка объектов ведёт
+  // игрока по безопасной траектории и даёт серию для комбо)
+  if (gHash(zNoise, 7) > 0.5) {
+    const nCh = 4 + Math.floor(gHash(zNoise, 8) * 3);
+    const startZ = gHash(zNoise, 29) * (G_DEPTH * 0.5);
+    for (let ci = 0; ci < nCh; ci++) {
+      const oz = startZ + ci * 5.2;
+      if (oz > G_DEPTH - 1) break;
+      const wz = zNoise + oz;
+      const ox = gPathX(wz) + Math.sin(ci * 0.8 + gHash(zNoise, 5) * 6) * 5;
+      const oy = gTerrainH(ox, wz) + 7 + Math.sin(ci / Math.max(1, nCh - 1) * Math.PI) * 4.5; // дуга
+      const orb = gMakeOrb(zNoise + ci * 7);
+      orb.position.set(ox, oy, oz);
+      orb.userData.isOrb = true;
+      orb.userData.baseY = oy;
+      orb.userData.ph = gHash(zNoise, 77 + ci) * 6.28;
+      orb.userData.spin = 0.7 + gHash(zNoise, 79 + ci) * 1.1;
+      grp.add(orb);
+    }
+  }
+  // кольцо-ускоритель на коридоре (приём Star Fox: пролёт сквозь кольцо = буст и очки)
+  if (gHash(zNoise, 55) > 0.82) {
+    const rz = 2 + gHash(zNoise, 57) * (G_DEPTH - 4);
+    const wx = gPathX(zNoise + rz);
+    const wy = gTerrainH(wx, zNoise + rz) + 13;
+    const ring = gMakeRing(zNoise);
+    ring.position.set(wx, wy, rz);
+    ring.userData.isRing = true;
+    ring.userData.spin = 0.9 + gHash(zNoise, 59) * 0.8;
+    grp.add(ring);
   }
   // водопады: ищем перепад высоты и вешаем колонны падающих точек
   let falls = 0;
@@ -2557,6 +2593,40 @@ function gMakeOrb(seed) {
   const om = new THREE.PointsMaterial({ vertexColors: true, size: 0.18, transparent: true, opacity: 0.95,
     blending: THREE.AdditiveBlending, depthWrite: false });
   return new THREE.Points(og, om);
+}
+
+// кольцо-ускоритель: обруч из мелких точек с янтарными маяками по ободу
+function gMakeRing(seed) {
+  const p = [], c = [];
+  const R = 7;
+  for (let k = 0; k < 96; k++) {
+    const a = k / 96 * Math.PI * 2;
+    const jit = (gHash(k, seed) - 0.5) * 0.5;
+    p.push(Math.cos(a) * (R + jit), Math.sin(a) * (R + jit), (gHash(seed, k) - 0.5) * 0.7);
+    const beacon = k % 12 === 0;
+    if (beacon) c.push(1.0, 0.72, 0.4);
+    else { const b = 0.55 + 0.45 * gHash(k, seed + 3); c.push(0.62 * b, 0.96 * b, 0.91 * b); }
+  }
+  const og = new THREE.BufferGeometry();
+  og.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+  og.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+  const om = new THREE.PointsMaterial({ vertexColors: true, size: 0.22, transparent: true, opacity: 0.95,
+    blending: THREE.AdditiveBlending, depthWrite: false });
+  return new THREE.Points(og, om);
+}
+
+// выхлоп корабля: короткий шлейф частиц за соплами (кольцевой буфер, янтарь гаснет в тил)
+function gMakeTrail() {
+  const N = 150;
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
+  g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.3, transparent: true, opacity: 0.9,
+    blending: THREE.AdditiveBlending, depthWrite: false });
+  const pts = new THREE.Points(g, m);
+  pts.frustumCulled = false;
+  pts.userData = { ages: new Float32Array(N).fill(9), head: 0, N: N };
+  return pts;
 }
 
 function gSpawnAhead() {
@@ -2662,6 +2732,9 @@ function enterGame() {
   scene.add(GAME.group);
   GAME.ship = gMakeShip();
   GAME.group.add(GAME.ship);
+  GAME.trail = gMakeTrail();
+  GAME.group.add(GAME.trail);
+  GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0;
   GAME.shipP.set(0, 16, 0);
   // кольцо в небе (как в референсах): гигантская дуга из точек
   (function ring() {
@@ -2716,7 +2789,7 @@ function exitGame() {
   document.body.classList.remove('game');
   scene.remove(GAME.group);
   GAME.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
-  GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null;
+  GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null; GAME.trail = null;
   if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
   applySceneMode(); // корректная видимость окружения по текущему режиму
   gameOverEl.classList.remove('show'); // игровые оверлеи не должны пережить выход
@@ -2731,14 +2804,17 @@ function updateGame(dt, time) {
   // ВЛЁТ ИЗ СЛАЙДА: первые ~1.2с точки галереи растворяются в пыль, мир полёта проявляется,
   // камера перелетает с ракурса слайда в позицию полёта
   if (GAME.enter < 1) {
-    GAME.enter = Math.min(1, GAME.enter + dt / 1.2);
+    GAME.enter = Math.min(1, GAME.enter + dt / 1.75);
     const k = GAME.enter, ke = k * k * (3 - 2 * k);
-    voxUniforms.uSpread.value = S.spread + ke * 16;       // слайд рассыпается
-    if (k >= 0.55 && _galleryVis && scene.children.includes(GAME.group)) {
+    // ПРОЛЁТ СКВОЗЬ СЦЕНУ: точки галереи стоят на местах, пока камера не вошла в облако
+    // (траектория идёт через его центр, см. блок камеры) — и только затем расталкиваются мимо
+    const sp = clamp01((k - 0.34) / 0.66), spe = sp * sp * (3 - 2 * sp);
+    voxUniforms.uSpread.value = S.spread + spe * 24;
+    if (k >= 0.72 && _galleryVis && scene.children.includes(GAME.group)) {
       // пыль стала невидимой — галерею можно спрятать
       scene.children.forEach(o => { if (o !== skyMesh && o !== GAME.group) o.visible = false; });
     }
-    const wOp = clamp01((k - 0.35) / 0.6);                 // мир проявляется
+    const wOp = clamp01((k - 0.42) / 0.55);                 // мир проявляется
     GAME.group.traverse(o => {
       if (o.material && o.material.opacity !== undefined && o !== GAME.danger)
         o.material.opacity = (o.userData.baseOp !== undefined ? o.userData.baseOp : 0.95) * wOp;
@@ -2773,7 +2849,7 @@ function updateGame(dt, time) {
   }
   // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной
   const tx = (mousePX / innerWidth - 0.5) * 120;
-  const ty = clamp((1 - mousePY / innerHeight) * 42 + 3, 3, 46);
+  const ty = clamp((1 - mousePY / innerHeight) * 48 + 3, 3, 52); // потолок выше потолка гор (~40) — вверх всегда есть выход
   GAME.shipP.x += (tx - GAME.shipP.x) * (1 - Math.exp(-dt * 4.5));
   GAME.shipP.y += (ty - GAME.shipP.y) * (1 - Math.exp(-dt * 4.5));
   GAME.ship.position.copy(GAME.shipP);
@@ -2791,20 +2867,68 @@ function updateGame(dt, time) {
     c.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
   }
   gSpawnAhead();
-  // сбор энергии: объекты живут — вращаются и покачиваются; близость к кораблю = сбор
+  // сбор энергии и кольца: объекты живут — вращаются и покачиваются; близость к кораблю = сбор.
+  // Серия подряд собранных даёт комбо-множитель (приём аркад: строчка ведёт — комбо мотивирует)
   for (const c of GAME.chunks) for (const o of c.children) {
+    if (o.userData.isRing && !o.userData.got) {
+      o.rotation.z += dt * o.userData.spin;
+      const wzr = o.position.z + c.position.z;
+      if (Math.abs(wzr - GAME.shipP.z) < 3.2) {
+        const ddx = o.position.x - GAME.shipP.x, ddy = o.position.y - GAME.shipP.y;
+        if (ddx * ddx + ddy * ddy < 30) {          // прошли сквозь обруч
+          o.userData.got = true;
+          GAME.score += 5; gameScore.textContent = GAME.score;
+          GAME.speed = Math.min(230, GAME.speed + 24); // буст
+          GAME.anims.push({ o, t: 0 });
+          gLabel('СКВОЗЬ КОЛЬЦО · +5 · УСКОРЕНИЕ');
+        }
+      }
+      continue;
+    }
     if (!o.userData.isOrb || o.userData.got) continue;
     o.rotation.y += dt * o.userData.spin;
     o.rotation.x = Math.sin(time * 0.7 + o.userData.ph) * 0.22;
     o.position.y = o.userData.baseY + Math.sin(time * 1.4 + o.userData.ph) * 0.8;
+    o.scale.setScalar(1 + 0.07 * Math.sin(time * 3 + o.userData.ph)); // живая пульсация
     const wz = o.position.z + c.position.z;
     if (Math.abs(wz - GAME.shipP.z) < 4 &&
         Math.abs(o.position.x - GAME.shipP.x) < 4.5 &&
         Math.abs(o.position.y - GAME.shipP.y) < 4.5) {
       o.userData.got = true;
-      GAME.score++; gameScore.textContent = GAME.score;
+      GAME.combo = (time - GAME.lastGet < 2.4) ? GAME.combo + 1 : 1;
+      GAME.lastGet = time;
+      GAME.score += GAME.combo; gameScore.textContent = GAME.score;
       GAME.anims.push({ o, t: 0 }); // вспышка-разлёт (без звука)
+      gLabel(GAME.combo > 1 ? 'СЕРИЯ ×' + GAME.combo : 'ЭНЕРГИЯ СОБРАНА');
     }
+  }
+  // бреющий полёт: держаться у самой земли рискованно — и за это капают очки (риск/награда)
+  if (GAME.enter >= 1 && !GAME.over && GAME.grace === 0) {
+    const altNow = GAME.shipP.y - gTerrainH(GAME.shipP.x, GAME.z);
+    if (altNow > 1.5 && altNow < 6.5) {
+      GAME.lowT += dt;
+      if (GAME.lowT >= 1) { GAME.lowT -= 1; GAME.score += 2; gameScore.textContent = GAME.score; gLabel('БРЕЮЩИЙ ПОЛЁТ · +2'); }
+    } else GAME.lowT = Math.max(0, GAME.lowT - dt * 2);
+  }
+  // шлейф двигателей: кольцевой буфер частиц за соплами
+  if (GAME.trail) {
+    const tud = GAME.trail.userData, tp = GAME.trail.geometry.attributes.position, tc = GAME.trail.geometry.attributes.color;
+    if (!GAME.over) for (let s = 0; s < 3; s++) {   // 3 новых частицы за кадр
+      const iT = tud.head = (tud.head + 1) % tud.N;
+      tp.setXYZ(iT,
+        GAME.shipP.x + (Math.random() - 0.5) * 2.2,
+        GAME.shipP.y + (Math.random() - 0.5) * 0.7,
+        GAME.shipP.z + 2.7 + Math.random() * 0.5);
+      tud.ages[iT] = 0;
+    }
+    for (let iT = 0; iT < tud.N; iT++) {
+      if (tud.ages[iT] > 1.2) continue;
+      tud.ages[iT] += dt;
+      tp.setZ(iT, tp.getZ(iT) + dz + dt * 6);       // отстаёт вместе с миром + собственный дрейф
+      const aT = Math.max(0, 1 - tud.ages[iT] / 1.2);
+      tc.setXYZ(iT, 1.0 * aT, (0.72 - 0.3 * (1 - aT)) * aT, 0.42 * aT + 0.35 * (1 - aT) * aT);
+    }
+    tp.needsUpdate = true; tc.needsUpdate = true;
   }
   // анимация собранных сфер: раздуваются и тают
   for (let i = GAME.anims.length - 1; i >= 0; i--) {
@@ -2845,13 +2969,17 @@ function updateGame(dt, time) {
     gameOverEl.classList.add('show');
   }
   const shake = dangerK > 0.6 ? (dangerK - 0.6) * 1.6 : 0; // лёгкая дрожь у земли
-  // камера за кораблём (при влёте — плавный перелёт с ракурса слайда)
+  // камера за кораблём. При влёте — дуга Безье СКВОЗЬ центр облака точек галереи:
+  // зритель буквально пролетает через точки, которые видел на экране, и летит дальше
   const eK = GAME.enter * GAME.enter * (3 - 2 * GAME.enter);
   const cx = GAME.shipP.x * 0.55 + (Math.random() - 0.5) * shake;
   const cy = GAME.shipP.y * 0.62 + 7 + (Math.random() - 0.5) * shake;
-  camera.position.set(GAME.camStart.x + (cx - GAME.camStart.x) * eK,
-                      GAME.camStart.y + (cy - GAME.camStart.y) * eK,
-                      GAME.camStart.z + (17 - GAME.camStart.z) * eK);
+  const uB = 1 - eK;
+  const mBx = TARGET.x, mBy = TARGET.y + S.viewy, mBz = TARGET.z; // центр облака галереи
+  camera.position.set(
+    uB * uB * GAME.camStart.x + 2 * uB * eK * mBx + eK * eK * cx,
+    uB * uB * GAME.camStart.y + 2 * uB * eK * mBy + eK * eK * cy,
+    uB * uB * GAME.camStart.z + 2 * uB * eK * mBz + eK * eK * 17);
   camera.lookAt(GAME.shipP.x * 0.8 * eK, GAME.shipP.y * 0.85 * eK + (1 - eK) * (TARGET.y + S.viewy), -50 * eK + (1 - eK) * TARGET.z);
   if (GAME.exit < 0) camera.fov = GAME.fovStart + (S.fov + Math.min(22, GAME.speed * 0.1) - GAME.fovStart) * eK;
   camera.updateProjectionMatrix();
@@ -2866,6 +2994,16 @@ function startExitGame() {
 
 const gameScore = document.getElementById('game-score');
 const gameDanger = document.getElementById('game-danger');
+const gameLabel = document.getElementById('game-label');
+// подпись под счётом: событие показывается ~1.6с и возвращается к дефолту
+let _lblT = null;
+function gLabel(t) {
+  if (!gameLabel) return;
+  gameLabel.textContent = t;
+  gameLabel.style.opacity = '0.95';
+  if (_lblT) clearTimeout(_lblT);
+  _lblT = setTimeout(() => { gameLabel.textContent = 'ЭНЕРГИЯ СОБРАНА'; gameLabel.style.opacity = ''; }, 1600);
+}
 const gameOverEl = document.getElementById('game-over');
 // вход/выход: сообщение от лендинга, клавиша G; Esc — плавный выход
 addEventListener('message', e => { if (e.data && typeof e.data.pdGame === 'boolean') e.data.pdGame ? enterGame() : startExitGame(); });
