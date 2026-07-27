@@ -206,6 +206,9 @@
   .approach-lead { font: 700 clamp(26px,3vw,48px)/1.2 var(--font-display); letter-spacing: -0.015em;
     color: #F1FBFC; max-width: 24ch; }
   .approach-lead em { font-style: normal; color: var(--signal-teal); }
+  /* вторая строка тезиса: тише по тону, но той же гарнитурой — продолжение мысли */
+  .approach-lead2 { margin-top: 18px; font: 500 clamp(19px,1.9vw,30px)/1.35 var(--font-display);
+    letter-spacing: -0.01em; color: var(--scan-white-dim); max-width: 30ch; }
   /* цепочка без крупных номеров 01/02/03 — спокойные смысловые объекты со стрелками */
   .chain { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
     gap: 24px; align-items: start; margin-top: 72px; }
@@ -237,12 +240,12 @@
   .filter button:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
   .filter button.on { background: var(--signal-teal); color: var(--space-void); border-color: var(--signal-teal); }
   /* карточки: монохром, без рамок; ховер — цвет возвращается, карточка оживает и пульсирует */
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; position: relative; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; position: relative; margin-top: 56px; }
   #cards-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; } /* слой перелёта точек между карточками */
   .card {
     background: transparent; border: none;
     cursor: pointer; overflow: visible; position: relative;
-    transition: transform .45s var(--ease-overshoot);
+    transition: transform .2s cubic-bezier(.2,.9,.3,1);   /* реакция без задержки */
     display: flex; flex-direction: column;
   }
   .card:hover { transform: translateY(-5px) scale(1.02); z-index: 2; }
@@ -251,7 +254,7 @@
     color: var(--scan-white-dim); }
   .card-media img { width: 100%; height: 100%; object-fit: cover;
     filter: grayscale(1) brightness(0.9); opacity: 0.9;
-    transition: filter .5s ease, transform .6s ease, opacity .22s; }
+    transition: filter .16s ease, transform .22s ease, opacity .14s; } /* цвет включается сразу */
   .card-media.gone img { opacity: 0 !important; } /* обложка распалась на точки (слой #cards-fx) */
   /* объёмный влёт: DOM уступает сцену частицам и возвращается КРОСС-ФЕЙДОМ, без ступеньки */
   section > .wrap, header, #cards-fx { transition: opacity .65s ease, transform 1s cubic-bezier(.4,0,.6,1); }
@@ -264,13 +267,13 @@
     transform: scale(1.16) translate3d(-1.2vw, -2vh, 0);
   }
   .card:hover .card-media img { animation: cardAlive 2.4s ease-in-out infinite;
-    filter: grayscale(0); opacity: 1; }
+    filter: grayscale(0); opacity: 1; transition-delay: 0s; }
   /* «переливается своими цветами»: мягкая пульсация насыщенности/яркости и дыхание масштаба */
   @keyframes cardAlive {
     0%, 100% { transform: scale(1.05); filter: grayscale(0) saturate(1) brightness(1); }
     50%      { transform: scale(1.085); filter: grayscale(0) saturate(1.35) brightness(1.10); }
   }
-  .card-media .play { position: absolute; left: 18px; bottom: 18px; z-index: 2; display: flex; align-items: center; gap: 8px; font: 500 11px var(--font-mono); letter-spacing: 0.1em; color: #F1FBFC; text-shadow: 0 1px 6px rgba(0,0,0,0.8); opacity: 0; transition: opacity .35s; }
+  .card-media .play { position: absolute; left: 18px; bottom: 18px; z-index: 2; display: flex; align-items: center; gap: 8px; font: 500 11px var(--font-mono); letter-spacing: 0.1em; color: #F1FBFC; text-shadow: 0 1px 6px rgba(0,0,0,0.8); opacity: 0; transition: opacity .16s; }
   .card:hover .card-media .play { opacity: 1; }
   .card-body { padding: 26px 4px 4px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
   .card-body .cmeta { margin-bottom: 2px; }
@@ -936,7 +939,8 @@
 <section class="how sec-pad" id="approach">
   <div class="wrap">
     <div class="kicker teal eyebrow">Подход</div>
-    <h2 class="approach-lead">Мы не начинаем с технологии. Сначала мы понимаем, что человек должен <em>почувствовать</em>.</h2>
+    <h2 class="approach-lead">Сначала определяем, что должен <em>почувствовать</em> человек.</h2>
+    <p class="approach-lead2">Потом превращаем это в сценарий, пространство и технологии.</p>
     <div class="chain">
       <div class="ch"><h3>Смысл</h3><p>Зачем это пространство существует.</p></div>
       <div class="ch-arrow" aria-hidden="true">→</div>
@@ -1357,7 +1361,8 @@
 
     // 2) последовательное проявление текстов. Собираемые из частиц оверлеи (#viewer/#cView/#ai/#aView)
     //    исключаем — там своя анимация сборки; манифест тоже свой (.lit)
-    var sel = '.how .kicker, .how .approach-lead, .chain .ch, .numbers .cell, .trust p, ' +
+    var sel = '.how .kicker, .how .approach-lead, .how .approach-lead2, .chain .ch, .numbers .cell, .trust p, ' +
+              '.work .kicker, .work h2, .work .intro-sub, .wm-block .ptitle, .wm-block h4, ' +
               '.concepts h2, .concepts .intro-sub, .atlas h2, .atlas .intro-sub, ' +
               '.ai-invite .kicker, .ai-invite h2, .ai-invite p, .ai-invite .ai-invite-cta, ' +
               '.studio .kicker, .studio h4, .studio h2, .studio .studio-grid > *, ' +
