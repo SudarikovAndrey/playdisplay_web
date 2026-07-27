@@ -251,9 +251,15 @@
     transition: filter .5s ease, transform .6s ease, opacity .22s; }
   .card-media.gone img { opacity: 0 !important; } /* обложка распалась на точки (слой #cards-fx) */
   /* объёмный влёт: DOM уступает сцену частицам и возвращается КРОСС-ФЕЙДОМ, без ступеньки */
-  section > .wrap, header, #cards-fx { transition: opacity .65s ease; }
+  section > .wrap, header, #cards-fx { transition: opacity .65s ease, transform 1s cubic-bezier(.4,0,.6,1); }
   body.flying section > .wrap, body.flying header, body.flying #cards-fx,
   body.flying .card-media img, body.flying .card-media .play { opacity: 0 !important; }
+  /* «кроличья нора» AI: страница физически ныряет к точке виджета (низ-право) и уходит в глубину —
+     не 2D-затухание поверх, а движение самого пространства; выход — обратная сборка из глубины */
+  body.ai-dive section > .wrap, body.ai-dive header {
+    transform-origin: 88% 96%;
+    transform: scale(1.16) translate3d(-1.2vw, -2vh, 0);
+  }
   .card:hover .card-media img { animation: cardAlive 2.4s ease-in-out infinite;
     filter: grayscale(0); opacity: 1; }
   /* «переливается своими цветами»: мягкая пульсация насыщенности/яркости и дыхание масштаба */
@@ -3732,7 +3738,7 @@
       try { flyIntoAIInner(); }
       catch (e) {
         console.warn('ai flyIn fallback:', e);
-        flyBusy = false; document.body.classList.remove('flying');
+        flyBusy = false; document.body.classList.remove('flying'); document.body.classList.remove('ai-dive');
         // панель могла остаться скрытой инлайн-стилями, если сборка прервалась — вернуть видимость
         var aEl = document.getElementById('ai');
         aEl.style.transition = ''; aEl.style.opacity = ''; aEl.style.transform = '';
@@ -3772,8 +3778,9 @@
       for (i = 0; i < srcPts.length; i++) {
         p = srcPts[i];
         rel = Math.min(1, boxDist(p[0], p[1], c0x, c0y, rHW, rHH) / maxD) * 0.92;
+        // широкий разброс глубины: при глубокой камере поле мощно расслаивается и летит МИМО — туннель
         parts.push([p[0], p[1], 0, 0,
-                    0.6 + Math.random() * 1.9 + (0.5 - p[5]) * 0.3,
+                    0.55 + Math.random() * 2.6 + (0.5 - p[5]) * 0.3,
                     1.0 + Math.pow(Math.random(), 2.3) * 3.4,
                     Math.random(), rel, 0, p[2], p[3], p[4]]);
       }
@@ -3809,13 +3816,15 @@
       function restoreAI(){ aiEl.style.transition = ''; aiEl.style.opacity = ''; aiEl.style.transform = ''; }
       var tint = [0.008, 0.018, 0.026];
       if (!FlyGL.begin(parts, 95)) { restoreAI(); return; }
-      document.body.classList.add('flying'); // прячем обычный DOM тем же приёмом, что и у карточек проектов
+      // «нырок»: DOM-страница сама уходит в глубину к точке виджета (класс ai-dive) —
+      // не 2D-затухание поверх, а движение пространства, синхронное с полётом частиц
+      document.body.classList.add('flying', 'ai-dive');
       // дуга фокуса камеры: от виджета к центру экрана (как у проектов — от карточки к кадру)
       var dxT = t1x - c0x, dyT = t1y - c0y;
       var arcA = Math.min(170, Math.hypot(dxT, dyT) * 0.5 + 55) * (c0x > innerWidth / 2 ? 1 : -1);
       var nrmA = Math.hypot(dxT, dyT) || 1;
       var cpx = c0x + dxT * 0.5 - dyT / nrmA * arcA, cpy = c0y + dyT * 0.5 + dxT / nrmA * arcA;
-      var camEnd = 1.35, DUR = 1600 * FLY_SLOW, t0 = performance.now();
+      var camEnd = 2.1, DUR = 1900 * FLY_SLOW, t0 = performance.now(); // камера ныряет ГЛУБЖЕ, чем у проектов
       flyBusy = true; flyBusySince = t0;
       var camPrev = 0, waveRPrev = 0, fxp = c0x, fyp = c0y;
       function anim(now){
@@ -3830,7 +3839,8 @@
         // без CSS-transition (он спорил бы с полётом точек — «двойное движение»)
         var rv = sstep(0.62, 0.96, k);
         aiEl.style.opacity = rv;
-        aiEl.style.transform = 'perspective(1500px) translateZ(' + (-240 * (1 - rv)) + 'px) rotateX(' + (4 * (1 - rv)) + 'deg)';
+        // панель прибывает из БОЛЬШОЙ глубины с наклоном — дно кроличьей норы
+        aiEl.style.transform = 'perspective(1500px) translateZ(' + (-560 * (1 - rv)) + 'px) rotateX(' + (7 * (1 - rv)) + 'deg)';
         var waveR = wave * (maxD + 150);
         FlyGL.frame({
           rectCX: c0x, rectCY: c0y, rectHW: rHW, rectHH: rHH,
@@ -3845,6 +3855,7 @@
         if (k < 1) requestAnimationFrame(anim);
         else {
           document.body.classList.remove('flying');
+          document.body.classList.remove('ai-dive');
           restoreAI();
           FlyGL.end();
           setTimeout(function(){ flyBusy = false; }, 300);
@@ -3857,7 +3868,13 @@
     function flyOutOfAI(){
       if (busyLock()) return;
       try { flyOutOfAIInner(); }
-      catch (e) { console.warn('ai flyOut fallback:', e); flyBusy = false; document.body.classList.remove('flying'); closeAI(); }
+      catch (e) {
+        console.warn('ai flyOut fallback:', e);
+        flyBusy = false; document.body.classList.remove('flying'); document.body.classList.remove('ai-dive');
+        var aE2 = document.getElementById('ai');
+        aE2.style.transition = ''; aE2.style.transform = '';
+        closeAI();
+      }
     }
     function flyOutOfAIInner(){
       var r = widget ? widget.getBoundingClientRect() : null;
@@ -3894,7 +3911,11 @@
       }
       var tint = [0.008, 0.018, 0.026];
       if (!FlyGL.begin(parts, 95)) { closeAI(); return; }
-      document.body.classList.add('flying');
+      // выныривание из норы: страница будет пересобираться ИЗ ГЛУБИНЫ (снятие ai-dive в конце
+      // анимирует .wrap'ы из масштаба обратно к норме синхронно с кросс-фейдом)
+      document.body.classList.add('flying', 'ai-dive');
+      var aiEl2 = document.getElementById('ai');
+      aiEl2.style.transition = 'none';
       var camEnd = 1.35, DUR = 1300 * FLY_SLOW, t0 = performance.now(), closed = false;
       flyBusy = true; flyBusySince = t0;
       var camPrev = camEnd, waveRPrev = maxD + 400;
@@ -3903,7 +3924,15 @@
         var collapse = sstep(0.1, 0.9, k);
         var waveR = (maxD + 150) * (1 - collapse);
         var cam = camEnd * (1 - smootherstep((k - 0.05) / 0.85));
-        if (!closed && k >= 0.32) { closed = true; closeAI(); } // панель прячем, когда тьма её уже накрыла
+        if (!closed && k >= 0.32) {
+          closed = true;
+          aiEl2.style.transition = ''; aiEl2.style.transform = ''; // дальше панель ведёт CSS
+          closeAI(); // панель прячем, когда тьма её уже накрыла
+        } else if (!closed) {
+          // панель НЕ тает на месте: она пролетает МИМО камеры (translateZ к зрителю) — обратный ход норы
+          var pk = sstep(0, 0.32, k);
+          aiEl2.style.transform = 'perspective(1500px) translateZ(' + (pk * 470) + 'px) rotateX(' + (-3 * pk) + 'deg)';
+        }
         FlyGL.frame({
           rectCX: c0x, rectCY: c0y, rectHW: rHW, rectHH: rHH,
           waveR: waveR, waveRp: waveRPrev, dark: 1 - sstep(0.4, 0.9, k), tint: tint,
@@ -3917,7 +3946,10 @@
         camPrev = cam; waveRPrev = waveR;
         if (k < 1) requestAnimationFrame(anim);
         else {
+          // снимаем оба класса разом: opacity и transform анимируются вместе — страница
+          // «выныривает» из глубины, а не просто проявляется плоским слоем
           document.body.classList.remove('flying');
+          document.body.classList.remove('ai-dive');
           FlyGL.end();
           setTimeout(function(){ flyBusy = false; }, 300);
         }
