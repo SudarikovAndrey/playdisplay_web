@@ -579,9 +579,9 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-<script src="textures.js?v=b2707-game12"></script>
-<script src="odk_frame.js?v=b2707-game12"></script>
-<script src="model.js?v=b2707-game12"></script>
+<script src="textures.js?v=b2707-game13"></script>
+<script src="odk_frame.js?v=b2707-game13"></script>
+<script src="model.js?v=b2707-game13"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -625,7 +625,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2707-game12'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2707-game13'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2301,7 +2301,7 @@ function updateUI(wMax) {
 // Дрон на квинтах нарастает с движением камеры; воздушная шумовая текстура; мягкий «риз»
 // на влёте в кадр. Всё через lowpass/bandpass + компрессор — негромко и не резко.
 const Sound = (() => {
-  let ctx, master, comp, padF, padG, noiseF, noiseG, riseF, riseG, ready = false, on = true, visible = true;
+  let ctx, master, comp, padF, padG, noiseF, noiseG, riseF, riseG, nbuf, ready = false, on = true, visible = true;
   function build() {
     if (ready) return;
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -2320,6 +2320,7 @@ const Sound = (() => {
     // воздушная текстура — коричневый шум через bandpass (тихо, глухо — только намёк)
     const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), d = buf.getChannelData(0); let last = 0;
     for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.2; }
+    nbuf = buf; // шумовой буфер переиспользуют one-shot эффекты (sfx)
     const noise = ctx.createBufferSource(); noise.buffer = buf; noise.loop = true;
     noiseF = ctx.createBiquadFilter(); noiseF.type = 'bandpass'; noiseF.frequency.value = 300; noiseF.Q.value = 0.7;
     noiseG = ctx.createGain(); noiseG.gain.value = 0; noise.connect(noiseF); noiseF.connect(noiseG); noiseG.connect(master); noise.start();
@@ -2360,7 +2361,69 @@ const Sound = (() => {
     g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
     o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.18);
   }
-  return { kick, frame, setEnabled, setVisible, tick };
+  // фон полёта в игре: тёплый дрон от скорости + шум потока, крен подчёркивается воздухом
+  function game(m, roll) {
+    if (!ready) return;
+    const t = ctx.currentTime, k = (p, v, tau) => p.setTargetAtTime(v, t, tau), M = (on && visible) ? 1 : 0;
+    k(master.gain, M ? 0.09 : 0.0001, 0.25);
+    k(padG.gain, 0.3 * m * M, 0.3);
+    k(padF.frequency, 170 + 360 * m, 0.35);
+    k(noiseG.gain, (0.08 * m + 0.13 * roll) * M, 0.14);   // вираж = шум набегающего потока
+    k(noiseF.frequency, 260 + 480 * m + 900 * roll, 0.18);
+    k(riseG.gain, 0, 0.2);
+  }
+  // цифровые one-shot'ы игры: мягкие, синтез на месте, всё через мастер (уважают выключатель)
+  function sfx(kind, p) {
+    if (!ready || !on || !visible) return;
+    const t = ctx.currentTime;
+    if (kind === 'collect') {
+      // сбор энергии: тёплый пентатонический блип, выше с ростом серии
+      const f0 = 440 * Math.pow(1.122, Math.min(8, p || 1));       // шаг ~вверх по мажорной пентатонике
+      [[1, 0.05], [1.5, 0.022]].forEach(([r, v]) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f0 * r;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(v, t + 0.014);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
+        o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.3);
+      });
+    } else if (kind === 'ring') {
+      // сверхзвук: восходящий свип шума + тон — «пробили барьер»
+      const n = ctx.createBufferSource(); n.buffer = nbuf; n.loop = true;
+      const bf = ctx.createBiquadFilter(); bf.type = 'bandpass'; bf.Q.value = 1.4;
+      bf.frequency.setValueAtTime(260, t); bf.frequency.exponentialRampToValueAtTime(2600, t + 0.5);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.16, t + 0.06);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.62);
+      n.connect(bf); bf.connect(g); g.connect(master); n.start(t); n.stop(t + 0.7);
+      const o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(196, t); o.frequency.exponentialRampToValueAtTime(523, t + 0.42);
+      const og = ctx.createGain();
+      og.gain.setValueAtTime(0.0001, t);
+      og.gain.exponentialRampToValueAtTime(0.06, t + 0.05);
+      og.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+      o.connect(og); og.connect(master); o.start(t); o.stop(t + 0.55);
+    } else if (kind === 'crash') {
+      // крушение: глухой удар (суб-синус) + осыпающийся фильтрованный шум, без резкости
+      const o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(88, t); o.frequency.exponentialRampToValueAtTime(34, t + 0.55);
+      const og = ctx.createGain();
+      og.gain.setValueAtTime(0.0001, t);
+      og.gain.exponentialRampToValueAtTime(0.34, t + 0.02);
+      og.gain.exponentialRampToValueAtTime(0.0001, t + 0.75);
+      o.connect(og); og.connect(master); o.start(t); o.stop(t + 0.8);
+      const n = ctx.createBufferSource(); n.buffer = nbuf; n.loop = true;
+      const lf = ctx.createBiquadFilter(); lf.type = 'lowpass';
+      lf.frequency.setValueAtTime(1400, t); lf.frequency.exponentialRampToValueAtTime(160, t + 0.9);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.24, t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 1.05);
+      n.connect(lf); lf.connect(g); g.connect(master); n.start(t); n.stop(t + 1.1);
+    }
+  }
+  return { kick, frame, setEnabled, setVisible, tick, game, sfx };
 })();
 // звук стартует только по первому жесту пользователя (политика автоплея браузеров)
 // звук стартует по «жесту активации» (клик/тач/клавиша/перетаскивание) — политика браузеров.
@@ -2869,9 +2932,17 @@ function gShipFx(time) {
   const eP = GAME.shipEdges.geometry.attributes.position;
   const baseC = GAME.shipColE;
   const zs = ((time * 2.4) % 10) - 5;               // фронт волны (с паузой за пределами корпуса)
+  // при бусте корпус вспыхивает целиком и волна света пробегает от кормы к носу
+  const bK = (GAME.boom != null && GAME.boom >= 0) ? Math.max(0, 1 - GAME.boom / 0.55) : 0;
+  const bzs = 3 - (GAME.boom != null && GAME.boom >= 0 ? GAME.boom : 9) * 14; // фронт буста бежит к носу
   for (let i = 0; i < eC.count; i++) {
-    const d = eP.array[i * 3 + 2] - zs;
-    const k = 1 + Math.exp(-d * d / 0.14) * 1.5;    // бегущая вспышка-«сканер»
+    const z = eP.array[i * 3 + 2];
+    const d = z - zs;
+    let k = 1 + Math.exp(-d * d / 0.14) * 1.5;      // бегущая вспышка-«сканер»
+    if (bK > 0) {
+      const db = z - bzs;
+      k += bK * (0.8 + Math.exp(-db * db / 0.5) * 2.2);
+    }
     eC.array[i * 3] = baseC[i * 3] * k;
     eC.array[i * 3 + 1] = baseC[i * 3 + 1] * k;
     eC.array[i * 3 + 2] = baseC[i * 3 + 2] * k;
@@ -3055,6 +3126,45 @@ function gPaintDanger(k, time) {
       _dngTouch(colA, i3);
     }
   }
+  // 3) СВЕРХЗВУКОВАЯ ВОЛНА: тил-белое кольцо бежит по точкам земли от корабля после буста
+  if (GAME.boom != null && GAME.boom >= 0 && GAME.boom < 1.1) {
+    const bt = GAME.boom / 1.1;
+    const br = 8 + bt * 115;                    // радиус фронта
+    const bw = 4 + bt * 6;                      // ширина фронта
+    const amp = (1 - bt) * (1 - bt) * 0.95;     // гаснет к краю
+    for (const c of GAME.chunks) {
+      const zLoc = -c.position.z;
+      if (zLoc + br + bw < 0 || zLoc - br - bw > G_DEPTH) continue;
+      const cloud = c.children[0];
+      const gr = cloud && cloud.userData.grid;
+      if (!gr) continue;
+      const colA = cloud.geometry.attributes.color, posA = cloud.geometry.attributes.position;
+      const rr0 = Math.max(0, Math.floor((zLoc - br - bw) / gr.step)), rr1 = Math.min(gr.rows - 1, Math.ceil((zLoc + br + bw) / gr.step));
+      for (let rw = rr0; rw <= rr1; rw += 2) {          // строки через одну — искристый фронт, дёшево
+        const dzR = rw * gr.step - zLoc;
+        const chord2 = br * br - dzR * dzR;
+        if (chord2 < 0) continue;
+        const chord = Math.sqrt(chord2);
+        for (const sgn of [-1, 1]) {                     // два пересечения кольца со строкой
+          const xC = GAME.shipP.x + sgn * chord;
+          const c0w = Math.max(0, Math.floor((xC + gr.W - bw) / gr.step)), c1w = Math.min(gr.cols - 1, Math.ceil((xC + gr.W + bw) / gr.step));
+          for (let cc = c0w; cc <= c1w; cc += 2) {
+            const idx = rw * gr.cols + cc, i3 = idx * 3;
+            const ddx = posA.array[i3] - GAME.shipP.x, ddz = posA.array[i3 + 2] - zLoc;
+            const dd = Math.sqrt(ddx * ddx + ddz * ddz) - br;
+            if (Math.abs(dd) > bw) continue;
+            if (!_dngSave(colA, i3)) continue;
+            const kk = amp * (1 - Math.abs(dd) / bw);
+            colA.array[i3]     += (0.75 - colA.array[i3])     * kk;
+            colA.array[i3 + 1] += (1.05 - colA.array[i3 + 1]) * kk;
+            colA.array[i3 + 2] += (1.0  - colA.array[i3 + 2]) * kk;
+            _dngTouch(colA, i3);
+          }
+          if (chord < bw) break;                         // у вершины круга окна сливаются
+        }
+      }
+    }
+  }
   _dngFlush();
 }
 
@@ -3080,7 +3190,7 @@ function enterGame() {
   GAME.group.add(GAME.trail);
   GAME.diam = gMakeDiamonds();
   GAME.group.add(GAME.diam);
-  GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0;
+  GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1;
   GAME.shipP.set(0, 16, 0);
   // кольцо в небе (как в референсах): гигантская дуга из точек
   (function ring() {
@@ -3112,7 +3222,7 @@ function enterGame() {
 // неуязвимости (грейс) — чтобы не было петли мгновенных повторных смертей
 function restartGame() {
   GAME.over = false; GAME.score = 0; GAME.speed = 60; GAME.hurtT = 0;
-  GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.z0 = GAME.z;
+  GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1; GAME.z0 = GAME.z;
   GAME.grace = 3; // 3 секунды неуязвимости, корабль мигает
   GAME.shipP.set(0, gTerrainH(0, GAME.z) + 30, 0);
   GAME.ship.visible = true; GAME.ship.scale.setScalar(1); gShipOpacity(1);
@@ -3256,7 +3366,9 @@ function updateGame(dt, time) {
           o.userData.got = true;
           GAME.score += 5; gameScore.textContent = GAME.score; gScorePulse();
           GAME.speed = Math.min(340, GAME.speed + 26); // буст
+          GAME.boom = 0;                                // сверхзвуковая волна (см. gPaintDanger + FOV)
           GAME.anims.push({ o, t: 0 });
+          Sound.sfx('ring');
           gLabel('СКВОЗЬ КОЛЬЦО · +5 · УСКОРЕНИЕ');
         }
       }
@@ -3276,7 +3388,8 @@ function updateGame(dt, time) {
       if (GAME.combo > (GAME.maxCombo || 1)) GAME.maxCombo = GAME.combo;
       GAME.lastGet = time;
       GAME.score += GAME.combo; gameScore.textContent = GAME.score; gScorePulse();
-      GAME.anims.push({ o, t: 0 }); // вспышка-разлёт (без звука)
+      GAME.anims.push({ o, t: 0 });
+      Sound.sfx('collect', GAME.combo);
       gLabel(GAME.combo > 1 ? 'СЕРИЯ ×' + GAME.combo : 'ЭНЕРГИЯ СОБРАНА');
     }
   }
@@ -3396,6 +3509,7 @@ function updateGame(dt, time) {
     GAME.over = true; // столкновение — гейм-овер
     GAME.ship.rotation.set(0, 0, 0); // локальные оси = мировые: физика обломков без искажения креном
     gShipCrash();     // корабль разлетается на точки с инерцией по курсу
+    Sound.sfx('crash');
     gPaintDanger(0, time); // вернуть ландшафту родные цвета
     _ringOp = 0; if (gameRing) gameRing.style.opacity = '0';
     gameDanger.classList.remove('on');
@@ -3405,6 +3519,7 @@ function updateGame(dt, time) {
     document.getElementById('go-combo').textContent = '×' + (GAME.maxCombo || 1);
     gameOverEl.classList.add('show');
   }
+  if (GAME.boom != null && GAME.boom >= 0) { GAME.boom += dt; if (GAME.boom > 1.15) GAME.boom = -1; }
   const shake = dangerK > 0.6 ? (dangerK - 0.6) * 1.6 : 0; // лёгкая дрожь у земли
   // камера за кораблём. При влёте — дуга Безье СКВОЗЬ центр облака точек галереи:
   // зритель буквально пролетает через точки, которые видел на экране, и летит дальше
@@ -3418,7 +3533,9 @@ function updateGame(dt, time) {
     uB * uB * GAME.camStart.y + 2 * uB * eK * mBy + eK * eK * cy,
     uB * uB * GAME.camStart.z + 2 * uB * eK * mBz + eK * eK * 17);
   camera.lookAt(GAME.shipP.x * 0.8 * eK, GAME.shipP.y * 0.85 * eK + (1 - eK) * (TARGET.y + S.viewy), -50 * eK + (1 - eK) * TARGET.z);
-  if (GAME.exit < 0) camera.fov = GAME.fovStart + (S.fov + Math.min(22, GAME.speed * 0.1) - GAME.fovStart) * eK;
+  // FOV-кик сверхзвука: короткий импульс линзы при пробитии кольца
+  const boomFov = (GAME.boom != null && GAME.boom >= 0) ? Math.sin(Math.PI * Math.min(1, GAME.boom / 0.65)) * 7 : 0;
+  if (GAME.exit < 0) camera.fov = GAME.fovStart + (S.fov + Math.min(24, GAME.speed * 0.08) + boomFov - GAME.fovStart) * eK;
   camera.updateProjectionMatrix();
 }
 const _dngV = new THREE.Vector3();
@@ -3438,18 +3555,24 @@ let _ringOp = 0, _riskOp = 0, _ringX = -1, _ringY = -1;
 // яркость от близости угрозы; слева скорость, справа энергия; линия горизонта с контрнаклоном
 function gDangerRing(dt, time, alt) {
   if (!_ringCtx) return;
-  function scanAhead(xOff) {  // риск = насколько мал запас высоты над рельефом впереди
+  function scanAhead(xOff) {  // риск ТОЛЬКО если рельеф впереди поднимается выше траектории
     let worst = 0;
     for (let d = 12; d <= 76; d += 8) {
-      const clr = GAME.shipP.y - gTerrainH(GAME.shipP.x + xOff, GAME.z + d);
-      const kD = clamp01(1 - clr / 9) * (1 - (d - 12) / 80);
-      if (kD > worst) worst = kD;
+      const over = gTerrainH(GAME.shipP.x + xOff, GAME.z + d) - (GAME.shipP.y - 1.5);
+      if (over > 0) {   // просто низкий полёт над ровным — НЕ угроза по курсу (за это отвечает низ)
+        const kD = Math.min(1, 0.45 + over / 6) * (1 - (d - 12) / 80);
+        if (kD > worst) worst = kD;
+      }
     }
     return worst;
   }
+  function sideOver(xOff) {
+    const over = gTerrainH(GAME.shipP.x + xOff, GAME.z + 8) - (GAME.shipP.y - 1.5);
+    return over > 0 ? Math.min(1, 0.5 + over / 6) : 0;
+  }
   const rF = scanAhead(0);
-  const rL = Math.max(scanAhead(-11) * 0.9, clamp01(1 - (GAME.shipP.y - gTerrainH(GAME.shipP.x - 9, GAME.z + 8)) / 8));
-  const rR = Math.max(scanAhead(11) * 0.9, clamp01(1 - (GAME.shipP.y - gTerrainH(GAME.shipP.x + 9, GAME.z + 8)) / 8));
+  const rL = Math.max(scanAhead(-11) * 0.9, sideOver(-9));
+  const rR = Math.max(scanAhead(11) * 0.9, sideOver(9));
   const rD = clamp01(1 - alt / 9);
   const maxRisk = Math.max(rF, rD, rL * 0.9, rR * 0.9);
   // приборы (скорость/энергия/горизонт) видны весь полёт; КРУГ и дуги — только при угрозе
@@ -3972,7 +4095,9 @@ function loop() {
   // режим мини-игры: свой апдейт, галерейные системы спят
   if (GAME.on) {
     updateGame(dt, time);
-    Sound.frame(0, 0); // в игре — тишина
+    // ненавязчивый фон полёта: дрон от скорости, шум потока подчёркивает крен
+    Sound.game(Math.min(1, GAME.speed / 315) * (GAME.over ? 0.15 : 1),
+               GAME.over ? 0 : Math.min(1, Math.abs(GAME.ship ? GAME.ship.rotation.z : 0) * 1.7));
     renderer.render(scene, camera);
     gMetrics(dt);      // диагностика производительности на экране
     return;
