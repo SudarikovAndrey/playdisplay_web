@@ -883,7 +883,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game3" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game4" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -2964,7 +2964,7 @@
   }
   addEventListener('popstate', routeFromHash);
   // страховка: если сцена не пришлёт pdReady (ошибка/медленно) — всё равно показать шапку
-  setTimeout(function(){ document.body.classList.remove('booting'); }, 6000);
+  setTimeout(function(){ document.body.classList.remove('booting'); }, 3200); // шапка не ждёт медленную сцену дольше 3.2с
   // клик по логотипу: закрыть открытый кейс и вернуться на самый верх стартовой
   var logoHome = document.querySelector('.logo-home');
   if (logoHome) logoHome.addEventListener('click', function(ev){
