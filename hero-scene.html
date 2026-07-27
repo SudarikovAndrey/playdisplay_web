@@ -79,9 +79,10 @@
     30% { transform: scale(1.28); color: #2be0c6; text-shadow: 0 0 34px rgba(43,224,198,0.9); }
     100% { transform: scale(1); }
   }
-  /* секторное кольцо опасности вокруг корабля: сектор со стороны риска — алый */
-  #game-ring { position: fixed; left: 0; top: 0; width: 150px; height: 150px; margin: -75px 0 0 -75px;
-    z-index: 46; pointer-events: none; opacity: 0; transition: opacity .25s; }
+  /* кольцо-HUD вокруг корабля: постоянный тонкий круг + алые дуги риска, скорость/энергия
+     по бокам, линия авиагоризонта с контрнаклоном к крену */
+  #game-ring { position: fixed; left: 0; top: 0; width: 1240px; height: 660px; margin: -330px 0 0 -620px;
+    z-index: 46; pointer-events: none; opacity: 0; transition: opacity .35s; }
   body.game #game-ring { display: block; }
   /* онбординг: короткая шпаргалка при старте полёта, гаснет сама */
   #game-onboard { position: fixed; left: 50%; bottom: 12vh; transform: translateX(-50%); z-index: 46;
@@ -114,10 +115,31 @@
     flex-direction: column; align-items: center; justify-content: center; gap: 10px;
     background: rgba(8,4,10,.42); backdrop-filter: blur(3px); pointer-events: none; }
   #game-over.show { display: flex; }
-  #game-over .go-title { font-size: 13px; letter-spacing: .5em; color: #ff5a3d; }
-  #game-over .go-score { font-size: 84px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
-  #game-over .go-sub { font-size: 9px; letter-spacing: .32em; opacity: .55; }
-  #game-over .go-hint { font-size: 10px; letter-spacing: .26em; opacity: .5; margin-top: 26px; }
+  #game-over .go-title { font-size: 14px; letter-spacing: .56em; color: #ff5a3d; text-shadow: 0 0 26px rgba(255,90,61,0.5); }
+  /* карточки результатов: техно-чипы со срезанным углом, каскадное появление */
+  #game-over .go-cards { display: flex; gap: 14px; margin-top: 34px; }
+  #game-over .go-card { min-width: 168px; padding: 22px 24px 18px; text-align: left;
+    background: rgba(10,20,26,0.78); border: 1px solid rgba(43,224,198,0.22);
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+    opacity: 0; transform: translateY(18px); }
+  #game-over.show .go-card { animation: goIn .55s cubic-bezier(.16,1,.3,1) forwards; }
+  #game-over.show .go-card:nth-child(2) { animation-delay: .1s; }
+  #game-over.show .go-card:nth-child(3) { animation-delay: .2s; }
+  #game-over.show .go-card:nth-child(4) { animation-delay: .3s; }
+  @keyframes goIn { to { opacity: 1; transform: none; } }
+  #game-over .gc-v { font-size: 44px; font-weight: 800; letter-spacing: -.02em; line-height: 1; color: #F1FBFC;
+    display: flex; align-items: baseline; gap: 8px; }
+  #game-over .gc-bolt { width: 15px; height: 25px; color: #2be0c6; align-self: center; }
+  #game-over .gc-l { margin-top: 10px; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: rgba(220,238,240,0.55); }
+  /* как играть: одна строка-шпаргалка */
+  #game-over .go-how { display: flex; gap: 26px; margin-top: 30px; opacity: 0; }
+  #game-over.show .go-how { animation: goIn .55s ease .45s forwards; }
+  #game-over .gh { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(220,238,240,0.6);
+    display: flex; flex-direction: column; gap: 5px; text-align: left; }
+  #game-over .gh b { color: #2be0c6; font-size: 10px; letter-spacing: .24em; }
+  #game-over .go-hint { font-size: 10px; letter-spacing: .26em; opacity: 0; margin-top: 34px; }
+  #game-over.show .go-hint { animation: goPulse 2s ease .8s infinite; }
+  @keyframes goPulse { 0%,100% { opacity: .45; } 50% { opacity: .9; } }
   /* в игре весь галерейный UI прячется */
   body.game #scrub, body.game #dots, body.game #scene-info, body.game #corner-status,
   body.game #lensring, body.game #autobar, body.game #play-btn { display: none !important; }
@@ -381,7 +403,7 @@
 </div>
 <div id="game-danger">ОПАСНОСТЬ · РЕЛЬЕФ</div>
 <div id="game-metrics"></div>
-<canvas id="game-ring" width="150" height="150"></canvas>
+<canvas id="game-ring" width="1860" height="990"></canvas>
 <div id="game-onboard">
   <div class="ob"><b>Мышь</b> — курс и высота</div>
   <div class="ob"><b>Энергоядра</b> — собирай сериями: множитель растёт</div>
@@ -390,8 +412,18 @@
 </div>
 <div id="game-over">
   <div class="go-title">СТОЛКНОВЕНИЕ</div>
-  <div class="go-score">0</div>
-  <div class="go-sub">ЭНЕРГИЯ СОБРАНА</div>
+  <div class="go-cards">
+    <div class="go-card"><div class="gc-v"><span class="go-score">0</span><svg viewBox="0 0 24 40" class="gc-bolt"><path d="M14 0 2 22h8L5 40l17-24h-9L20 0z" fill="currentColor"/></svg></div><div class="gc-l">Энергия собрана</div></div>
+    <div class="go-card"><div class="gc-v" id="go-dist">0</div><div class="gc-l">Километров пройдено</div></div>
+    <div class="go-card"><div class="gc-v" id="go-speed">0</div><div class="gc-l">Макс. скорость, км/ч</div></div>
+    <div class="go-card"><div class="gc-v" id="go-combo">×1</div><div class="gc-l">Лучшая серия</div></div>
+  </div>
+  <div class="go-how">
+    <div class="gh"><b>Мышь</b>курс и высота</div>
+    <div class="gh"><b>Энергоядра</b>серии дают множитель</div>
+    <div class="gh"><b>Кольца</b>ускорение +5</div>
+    <div class="gh"><b>Бреющий</b>у земли капает бонус</div>
+  </div>
   <div class="go-hint">КЛИК — ЕЩЁ РАЗ · ESC — В ПОРТФОЛИО</div>
 </div>
 
@@ -547,9 +579,9 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-<script src="textures.js?v=b2707-game7"></script>
-<script src="odk_frame.js?v=b2707-game7"></script>
-<script src="model.js?v=b2707-game7"></script>
+<script src="textures.js?v=b2707-game13"></script>
+<script src="odk_frame.js?v=b2707-game13"></script>
+<script src="model.js?v=b2707-game13"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -593,7 +625,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2707-game7'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2707-game13'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2269,7 +2301,7 @@ function updateUI(wMax) {
 // Дрон на квинтах нарастает с движением камеры; воздушная шумовая текстура; мягкий «риз»
 // на влёте в кадр. Всё через lowpass/bandpass + компрессор — негромко и не резко.
 const Sound = (() => {
-  let ctx, master, comp, padF, padG, noiseF, noiseG, riseF, riseG, ready = false, on = true, visible = true;
+  let ctx, master, comp, padF, padG, noiseF, noiseG, riseF, riseG, nbuf, ready = false, on = true, visible = true;
   function build() {
     if (ready) return;
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -2288,6 +2320,7 @@ const Sound = (() => {
     // воздушная текстура — коричневый шум через bandpass (тихо, глухо — только намёк)
     const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), d = buf.getChannelData(0); let last = 0;
     for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.2; }
+    nbuf = buf; // шумовой буфер переиспользуют one-shot эффекты (sfx)
     const noise = ctx.createBufferSource(); noise.buffer = buf; noise.loop = true;
     noiseF = ctx.createBiquadFilter(); noiseF.type = 'bandpass'; noiseF.frequency.value = 300; noiseF.Q.value = 0.7;
     noiseG = ctx.createGain(); noiseG.gain.value = 0; noise.connect(noiseF); noiseF.connect(noiseG); noiseG.connect(master); noise.start();
@@ -2328,7 +2361,69 @@ const Sound = (() => {
     g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
     o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.18);
   }
-  return { kick, frame, setEnabled, setVisible, tick };
+  // фон полёта в игре: тёплый дрон от скорости + шум потока, крен подчёркивается воздухом
+  function game(m, roll) {
+    if (!ready) return;
+    const t = ctx.currentTime, k = (p, v, tau) => p.setTargetAtTime(v, t, tau), M = (on && visible) ? 1 : 0;
+    k(master.gain, M ? 0.09 : 0.0001, 0.25);
+    k(padG.gain, 0.3 * m * M, 0.3);
+    k(padF.frequency, 170 + 360 * m, 0.35);
+    k(noiseG.gain, (0.08 * m + 0.13 * roll) * M, 0.14);   // вираж = шум набегающего потока
+    k(noiseF.frequency, 260 + 480 * m + 900 * roll, 0.18);
+    k(riseG.gain, 0, 0.2);
+  }
+  // цифровые one-shot'ы игры: мягкие, синтез на месте, всё через мастер (уважают выключатель)
+  function sfx(kind, p) {
+    if (!ready || !on || !visible) return;
+    const t = ctx.currentTime;
+    if (kind === 'collect') {
+      // сбор энергии: тёплый пентатонический блип, выше с ростом серии
+      const f0 = 440 * Math.pow(1.122, Math.min(8, p || 1));       // шаг ~вверх по мажорной пентатонике
+      [[1, 0.05], [1.5, 0.022]].forEach(([r, v]) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f0 * r;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(v, t + 0.014);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
+        o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.3);
+      });
+    } else if (kind === 'ring') {
+      // сверхзвук: восходящий свип шума + тон — «пробили барьер»
+      const n = ctx.createBufferSource(); n.buffer = nbuf; n.loop = true;
+      const bf = ctx.createBiquadFilter(); bf.type = 'bandpass'; bf.Q.value = 1.4;
+      bf.frequency.setValueAtTime(260, t); bf.frequency.exponentialRampToValueAtTime(2600, t + 0.5);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.16, t + 0.06);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.62);
+      n.connect(bf); bf.connect(g); g.connect(master); n.start(t); n.stop(t + 0.7);
+      const o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(196, t); o.frequency.exponentialRampToValueAtTime(523, t + 0.42);
+      const og = ctx.createGain();
+      og.gain.setValueAtTime(0.0001, t);
+      og.gain.exponentialRampToValueAtTime(0.06, t + 0.05);
+      og.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+      o.connect(og); og.connect(master); o.start(t); o.stop(t + 0.55);
+    } else if (kind === 'crash') {
+      // крушение: глухой удар (суб-синус) + осыпающийся фильтрованный шум, без резкости
+      const o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(88, t); o.frequency.exponentialRampToValueAtTime(34, t + 0.55);
+      const og = ctx.createGain();
+      og.gain.setValueAtTime(0.0001, t);
+      og.gain.exponentialRampToValueAtTime(0.34, t + 0.02);
+      og.gain.exponentialRampToValueAtTime(0.0001, t + 0.75);
+      o.connect(og); og.connect(master); o.start(t); o.stop(t + 0.8);
+      const n = ctx.createBufferSource(); n.buffer = nbuf; n.loop = true;
+      const lf = ctx.createBiquadFilter(); lf.type = 'lowpass';
+      lf.frequency.setValueAtTime(1400, t); lf.frequency.exponentialRampToValueAtTime(160, t + 0.9);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.24, t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 1.05);
+      n.connect(lf); lf.connect(g); g.connect(master); n.start(t); n.stop(t + 1.1);
+    }
+  }
+  return { kick, frame, setEnabled, setVisible, tick, game, sfx };
 })();
 // звук стартует только по первому жесту пользователя (политика автоплея браузеров)
 // звук стартует по «жесту активации» (клик/тач/клавиша/перетаскивание) — политика браузеров.
@@ -2476,8 +2571,10 @@ function gTerrainH(x, z) {
     const slot = Math.exp(-(dx * dx) / (2 * 10 * 10));          // проём шириной ~20 на коридоре
     h += gk * 26 * (1 - slot);
   }
-  // постепенное усложнение: первые километры рельеф пологий, дальше — в полную силу
-  return h * (0.35 + 0.65 * Math.min(1, z / 4500));
+  // постепенное усложнение: первые километры рельеф пологий, дальше — в полную силу,
+  // а после 8 км начинается вторая фаза — рельеф ещё на четверть мощнее (скорость к тому
+  // моменту тоже выросла: игра остаётся вызовом, а не прогулкой)
+  return h * (0.35 + 0.65 * Math.min(1, z / 4500)) * (1 + 0.25 * clamp01((z - 8000) / 10000));
 }
 
 // водопады: колонны падающих светящихся точек на обрывах (общий шейдер, анимация по uT)
@@ -2514,8 +2611,11 @@ function gMakeChunk(zNoise) {
   const cols = Math.floor(W * 2 / step) + 1, rows = Math.floor(G_DEPTH / step);
   const HS = 1.2, hc = Math.floor(W * 2 / HS) + 3, hr = Math.floor(G_DEPTH / HS) + 3;
   const hgrid = new Float32Array(hc * hr);
+  // КРИТИЧНО: noise-ось инвертирована относительно локальной z (n = zNoise + G_DEPTH - lz).
+  // Иначе экранный рельеф прокручивается ПРОТИВ коллизионной модели и расходится с ней
+  // до +-G_DEPTH: корабль бился о «невидимые» горы (проверено симуляцией)
   for (let r = 0; r < hr; r++) for (let c = 0; c < hc; c++)
-    hgrid[r * hc + c] = gTerrainH(-W + c * HS, zNoise + r * HS);
+    hgrid[r * hc + c] = gTerrainH(-W + c * HS, zNoise + G_DEPTH - r * HS);
   const n = cols * rows;
   const pts = new Float32Array(n * 3), colA = new Float32Array(n * 3);
   // биомы: оттенок мира медленно плывёт по маршруту (тил → фиолет → янтарь) — путь читается как путешествие
@@ -2583,7 +2683,7 @@ function gMakeChunk(zNoise) {
     for (let ci = 0; ci < nCh; ci++) {
       const oz = startZ + ci * 6.5;
       if (oz > G_DEPTH - 1) break;
-      const wz = zNoise + oz;
+      const wz = zNoise + G_DEPTH - oz; // noise-ось инвертирована (см. hgrid)
       const ox = gPathX(wz) + Math.sin(ci * 0.8 + gHash(zNoise, 5) * 6) * 5;
       const oy = gTerrainH(ox, wz) + 7 + Math.sin(ci / Math.max(1, nCh - 1) * Math.PI) * 4.5; // дуга
       const orb = gMakeOrb(zNoise + ci * 7);
@@ -2598,8 +2698,8 @@ function gMakeChunk(zNoise) {
   // кольцо-ускоритель на коридоре (приём Star Fox: пролёт сквозь кольцо = буст и очки)
   if (gHash(zNoise, 55) > 0.82) {
     const rz = 2 + gHash(zNoise, 57) * (G_DEPTH - 4);
-    const wx = gPathX(zNoise + rz);
-    const wy = gTerrainH(wx, zNoise + rz) + 13;
+    const wx = gPathX(zNoise + G_DEPTH - rz);
+    const wy = gTerrainH(wx, zNoise + G_DEPTH - rz) + 13;
     const ring = gMakeRing(zNoise);
     ring.position.set(wx, wy, rz);
     ring.userData.isRing = true;
@@ -2611,7 +2711,7 @@ function gMakeChunk(zNoise) {
   for (let t = 0; t < 10 && falls < 1; t++) {
     const fx = (gHash(zNoise + 3, t * 17) - 0.5) * 220;
     const fz = gHash(t * 7, zNoise + 5) * G_DEPTH;
-    const h1 = gTerrainH(fx, zNoise + fz), h2 = gTerrainH(fx, zNoise + fz + 4);
+    const h1 = gTerrainH(fx, zNoise + G_DEPTH - fz), h2 = gTerrainH(fx, zNoise + G_DEPTH - fz - 4);
     const drop = h1 - h2;
     if (drop > 9) {
       const N = 130, fp = [], ph = [], hh = [];
@@ -2688,11 +2788,15 @@ function gMakeTrail() {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
   g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
-  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.17, transparent: true, opacity: 0.9,
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.16, transparent: true, opacity: 0.9,
     map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
   const pts = new THREE.Points(g, m);
   pts.frustumCulled = false;
-  pts.userData = { ages: new Float32Array(N).fill(9), vel: new Float32Array(N * 3), head: 0, N: N };
+  // SoA: ось частицы (bx,by,bz) + собственная скорость по оси, фаза и радиус спирали —
+  // частицы ЗАКРУЧИВАЮТСЯ вокруг оси струи, как плазма в магнитном поле
+  pts.userData = { ages: new Float32Array(N).fill(9), bx: new Float32Array(N), by: new Float32Array(N),
+    bz: new Float32Array(N), vz: new Float32Array(N), ph: new Float32Array(N), rad: new Float32Array(N),
+    head: 0, N: N };
   return pts;
 }
 // шок-диамонды: яркие узлы в реактивной струе (как маховские диски у настоящих сопел),
@@ -2799,6 +2903,17 @@ function gMakeShip() {
   GAME.shipLights.userData.baseOp = 1;
   grp.add(GAME.shipLights);
 
+  // кольца-турбины на соплах: вращающиеся ободы из точек (фазы ведёт gShipFx)
+  const NR = 16, pn = [], cn = [];
+  SHIP_ENGINES.forEach(() => { for (let k = 0; k < NR; k++) { pn.push(0, 0, 0); cn.push(1, 0.8, 0.5); } });
+  const gn = new THREE.BufferGeometry();
+  gn.setAttribute('position', new THREE.Float32BufferAttribute(pn, 3));
+  gn.setAttribute('color', new THREE.Float32BufferAttribute(cn, 3));
+  GAME.shipNozz = new THREE.Points(gn, new THREE.PointsMaterial({ vertexColors: true, size: 0.12,
+    transparent: true, opacity: 1, map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false }));
+  GAME.shipNozz.userData.baseOp = 1;
+  grp.add(GAME.shipNozz);
+
   GAME.shipBase = base;
   return grp;
 }
@@ -2817,9 +2932,17 @@ function gShipFx(time) {
   const eP = GAME.shipEdges.geometry.attributes.position;
   const baseC = GAME.shipColE;
   const zs = ((time * 2.4) % 10) - 5;               // фронт волны (с паузой за пределами корпуса)
+  // при бусте корпус вспыхивает целиком и волна света пробегает от кормы к носу
+  const bK = (GAME.boom != null && GAME.boom >= 0) ? Math.max(0, 1 - GAME.boom / 0.55) : 0;
+  const bzs = 3 - (GAME.boom != null && GAME.boom >= 0 ? GAME.boom : 9) * 14; // фронт буста бежит к носу
   for (let i = 0; i < eC.count; i++) {
-    const d = eP.array[i * 3 + 2] - zs;
-    const k = 1 + Math.exp(-d * d / 0.14) * 1.5;    // бегущая вспышка-«сканер»
+    const z = eP.array[i * 3 + 2];
+    const d = z - zs;
+    let k = 1 + Math.exp(-d * d / 0.14) * 1.5;      // бегущая вспышка-«сканер»
+    if (bK > 0) {
+      const db = z - bzs;
+      k += bK * (0.8 + Math.exp(-db * db / 0.5) * 2.2);
+    }
     eC.array[i * 3] = baseC[i * 3] * k;
     eC.array[i * 3 + 1] = baseC[i * 3 + 1] * k;
     eC.array[i * 3 + 2] = baseC[i * 3 + 2] * k;
@@ -2835,12 +2958,29 @@ function gShipFx(time) {
   }
   lc.needsUpdate = true;
   const gc = GAME.shipGlow.geometry.attributes.color;
-  const th = 0.45 + 0.55 * Math.min(1, GAME.speed / 190);
+  const th = 0.45 + 0.55 * Math.min(1, GAME.speed / 300);
   for (let i = 0; i < gc.count; i++) {
     const fl = th * (0.75 + 0.25 * Math.sin(time * 23 + i * 2.1));
     gc.array[i * 3] = 1.1 * fl; gc.array[i * 3 + 1] = 0.72 * fl; gc.array[i * 3 + 2] = 0.42 * fl;
   }
   gc.needsUpdate = true;
+  // турбины: ободы контрвращаются (чёт/нечёт — в разные стороны), скорость от тяги;
+  // яркость точек по фазе — видно живое вращение, а не статичный круг
+  if (GAME.shipNozz) {
+    const np = GAME.shipNozz.geometry.attributes.position, nc = GAME.shipNozz.geometry.attributes.color;
+    const NR = 16, spin = time * (4 + th * 9);
+    for (let eI = 0; eI < SHIP_ENGINES.length; eI++) {
+      const e = SHIP_ENGINES[eI], dir = eI % 2 ? -1 : 1;
+      for (let k = 0; k < NR; k++) {
+        const a = k / NR * 6.2832 + spin * dir;
+        const iN = eI * NR + k;
+        np.setXYZ(iN, e[0] + Math.cos(a) * 0.52, e[1] + Math.sin(a) * 0.52, e[2] + 0.06);
+        const bl = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(a * 3 + time * 2)); // бегущие блики по ободу
+        nc.setXYZ(iN, 1.0 * bl * th + 0.15, 0.75 * bl * th + 0.12, 0.5 * bl * th + 0.12);
+      }
+    }
+    np.needsUpdate = true; nc.needsUpdate = true;
+  }
 }
 
 // крушение: каждой точке корпуса — своя скорость. Основной вектор — по курсу (нос -Z),
@@ -2866,6 +3006,7 @@ function gShipCrash() {
   // свет и струи гаснут мгновенно — обломки не «работают двигателями»
   if (GAME.shipGlow) GAME.shipGlow.visible = false;
   if (GAME.shipLights) GAME.shipLights.visible = false;
+  if (GAME.shipNozz) GAME.shipNozz.visible = false;
   if (GAME.diam) GAME.diam.visible = false;
 }
 function gUpdateDebris(dt) {
@@ -2895,14 +3036,42 @@ function gUpdateDebris(dt) {
   gShipOpacity(Math.max(0, 1 - d.t / 2.8));        // обломки постепенно гаснут
 }
 
-let _dngSaved = [];
+// пул сохранённых цветов БЕЗ аллокаций на кадр (тысячи объектов в кадр давали GC-рывки):
+// параллельные типизированные массивы + переиспользуемый массив ссылок на атрибуты
+const _DNG_CAP = 24000;
+const _dngAttr = new Array(_DNG_CAP);
+const _dngIdx = new Int32Array(_DNG_CAP);
+const _dngRGB = new Float32Array(_DNG_CAP * 3);
+let _dngN = 0;
+function _dngSave(a, i3) {
+  if (_dngN >= _DNG_CAP) return false;
+  _dngAttr[_dngN] = a; _dngIdx[_dngN] = i3;
+  _dngRGB[_dngN * 3] = a.array[i3]; _dngRGB[_dngN * 3 + 1] = a.array[i3 + 1]; _dngRGB[_dngN * 3 + 2] = a.array[i3 + 2];
+  _dngN++;
+  return true;
+}
+const _dngRanges = new Map(); // attr -> {min,max}: грузим в GPU только изменённый диапазон, не весь буфер
+function _dngTouch(a, i3) {
+  let r = _dngRanges.get(a);
+  if (!r) { r = { min: i3, max: i3 }; _dngRanges.set(a, r); }
+  else { if (i3 < r.min) r.min = i3; if (i3 > r.max) r.max = i3; }
+}
+function _dngFlush() {
+  _dngRanges.forEach((r, a) => {
+    a.updateRange.offset = r.min;
+    a.updateRange.count = r.max - r.min + 3;
+    a.needsUpdate = true;
+  });
+  _dngRanges.clear();
+}
 function gPaintDanger(k, time) {
-  for (let i = 0; i < _dngSaved.length; i++) {
-    const s = _dngSaved[i];
-    s.a.array[s.i] = s.r; s.a.array[s.i + 1] = s.g; s.a.array[s.i + 2] = s.b;
-    s.a.needsUpdate = true;
+  for (let i = 0; i < _dngN; i++) {
+    const a = _dngAttr[i], i3 = _dngIdx[i];
+    a.array[i3] = _dngRGB[i * 3]; a.array[i3 + 1] = _dngRGB[i * 3 + 1]; a.array[i3 + 2] = _dngRGB[i * 3 + 2];
+    _dngTouch(a, i3);
+    _dngAttr[i] = null;
   }
-  _dngSaved.length = 0;
+  _dngN = 0;
   if (!GAME.chunks) return;
   const pul = 0.55 + 0.45 * Math.sin(time * 14);      // тревожный пульс
   const yRef = GAME.shipP.y;
@@ -2923,12 +3092,12 @@ function gPaintDanger(k, time) {
         const ddx = posA.array[i3] - GAME.shipP.x, ddz = posA.array[i3 + 2] - zLoc;
         const d2 = ddx * ddx + ddz * ddz;
         if (d2 > R * R) continue;
-        _dngSaved.push({ a: colA, i: i3, r: colA.array[i3], g: colA.array[i3 + 1], b: colA.array[i3 + 2] });
+        if (!_dngSave(colA, i3)) continue;
         const kk = k * pul * (0.35 + 0.65 * (1 - Math.sqrt(d2) / R));
         colA.array[i3]     += (1.0  - colA.array[i3])     * kk;
         colA.array[i3 + 1] += (0.26 - colA.array[i3 + 1]) * kk;
         colA.array[i3 + 2] += (0.16 - colA.array[i3 + 2]) * kk;
-        colA.needsUpdate = true;
+        _dngTouch(colA, i3);
       }
     }
   }
@@ -2950,19 +3119,59 @@ function gPaintDanger(k, time) {
       const distA = zLoc - posA.array[i3 + 2];
       const kk = Math.max(0, 1 - (distA - 12) / 83) * (0.5 + 0.5 * pul);
       if (kk < 0.05) continue;
-      _dngSaved.push({ a: colA, i: i3, r: colA.array[i3], g: colA.array[i3 + 1], b: colA.array[i3 + 2] });
+      if (!_dngSave(colA, i3)) continue;
       colA.array[i3]     += (1.05 - colA.array[i3])     * kk;
       colA.array[i3 + 1] += (0.16 - colA.array[i3 + 1]) * kk;
       colA.array[i3 + 2] += (0.12 - colA.array[i3 + 2]) * kk;
-      colA.needsUpdate = true;
+      _dngTouch(colA, i3);
     }
   }
+  // 3) СВЕРХЗВУКОВАЯ ВОЛНА: тил-белое кольцо бежит по точкам земли от корабля после буста
+  if (GAME.boom != null && GAME.boom >= 0 && GAME.boom < 1.1) {
+    const bt = GAME.boom / 1.1;
+    const br = 8 + bt * 115;                    // радиус фронта
+    const bw = 4 + bt * 6;                      // ширина фронта
+    const amp = (1 - bt) * (1 - bt) * 0.95;     // гаснет к краю
+    for (const c of GAME.chunks) {
+      const zLoc = -c.position.z;
+      if (zLoc + br + bw < 0 || zLoc - br - bw > G_DEPTH) continue;
+      const cloud = c.children[0];
+      const gr = cloud && cloud.userData.grid;
+      if (!gr) continue;
+      const colA = cloud.geometry.attributes.color, posA = cloud.geometry.attributes.position;
+      const rr0 = Math.max(0, Math.floor((zLoc - br - bw) / gr.step)), rr1 = Math.min(gr.rows - 1, Math.ceil((zLoc + br + bw) / gr.step));
+      for (let rw = rr0; rw <= rr1; rw += 2) {          // строки через одну — искристый фронт, дёшево
+        const dzR = rw * gr.step - zLoc;
+        const chord2 = br * br - dzR * dzR;
+        if (chord2 < 0) continue;
+        const chord = Math.sqrt(chord2);
+        for (const sgn of [-1, 1]) {                     // два пересечения кольца со строкой
+          const xC = GAME.shipP.x + sgn * chord;
+          const c0w = Math.max(0, Math.floor((xC + gr.W - bw) / gr.step)), c1w = Math.min(gr.cols - 1, Math.ceil((xC + gr.W + bw) / gr.step));
+          for (let cc = c0w; cc <= c1w; cc += 2) {
+            const idx = rw * gr.cols + cc, i3 = idx * 3;
+            const ddx = posA.array[i3] - GAME.shipP.x, ddz = posA.array[i3 + 2] - zLoc;
+            const dd = Math.sqrt(ddx * ddx + ddz * ddz) - br;
+            if (Math.abs(dd) > bw) continue;
+            if (!_dngSave(colA, i3)) continue;
+            const kk = amp * (1 - Math.abs(dd) / bw);
+            colA.array[i3]     += (0.75 - colA.array[i3])     * kk;
+            colA.array[i3 + 1] += (1.05 - colA.array[i3 + 1]) * kk;
+            colA.array[i3 + 2] += (1.0  - colA.array[i3 + 2]) * kk;
+            _dngTouch(colA, i3);
+          }
+          if (chord < bw) break;                         // у вершины круга окна сливаются
+        }
+      }
+    }
+  }
+  _dngFlush();
 }
 
 let _galleryVis = null;
 function enterGame() {
   if (GAME.on) return;
-  GAME.on = true; GAME.z = 0; GAME.score = 0; GAME.speed = 90; GAME.exit = -1;
+  GAME.on = true; GAME.z = 0; GAME.z0 = 0; GAME.score = 0; GAME.speed = 90; GAME.exit = -1;
   GAME.enter = 0; GAME.over = false; GAME.grace = 2; // короткая неуязвимость на старте
   GAME.tint.copy(curAccent); // колорит мира = акцент текущего слайда
   gFallMat.uniforms.uOp.value = 1;
@@ -2981,7 +3190,7 @@ function enterGame() {
   GAME.group.add(GAME.trail);
   GAME.diam = gMakeDiamonds();
   GAME.group.add(GAME.diam);
-  GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0;
+  GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1;
   GAME.shipP.set(0, 16, 0);
   // кольцо в небе (как в референсах): гигантская дуга из точек
   (function ring() {
@@ -3013,6 +3222,7 @@ function enterGame() {
 // неуязвимости (грейс) — чтобы не было петли мгновенных повторных смертей
 function restartGame() {
   GAME.over = false; GAME.score = 0; GAME.speed = 60; GAME.hurtT = 0;
+  GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1; GAME.z0 = GAME.z;
   GAME.grace = 3; // 3 секунды неуязвимости, корабль мигает
   GAME.shipP.set(0, gTerrainH(0, GAME.z) + 30, 0);
   GAME.ship.visible = true; GAME.ship.scale.setScalar(1); gShipOpacity(1);
@@ -3023,6 +3233,7 @@ function restartGame() {
     GAME.shipFill.geometry.attributes.position.array.set(GAME.shipBase.subarray(SHIP_EDGE_N * 3));
     GAME.shipFill.geometry.attributes.position.needsUpdate = true;
     GAME.shipGlow.visible = true; GAME.shipLights.visible = true;
+    if (GAME.shipNozz) GAME.shipNozz.visible = true;
     if (GAME.diam) GAME.diam.visible = true;
   }
   GAME.debris = null;
@@ -3036,8 +3247,8 @@ function exitGame() {
   scene.remove(GAME.group);
   GAME.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
   GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null; GAME.trail = null;
-  GAME.diam = null; GAME.shipEdges = null; GAME.shipFill = null; GAME.shipGlow = null; GAME.shipLights = null;
-  _dngSaved.length = 0; // ссылки на атрибуты утилизированных чанков не держим
+  GAME.diam = null; GAME.shipEdges = null; GAME.shipFill = null; GAME.shipGlow = null; GAME.shipLights = null; GAME.shipNozz = null;
+  _dngN = 0; _dngAttr.fill(null); // ссылки на атрибуты утилизированных чанков не держим
   _ringOp = 0; if (gameRing) gameRing.style.opacity = '0';
   gameOnboard.classList.remove('show');
   if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
@@ -3125,13 +3336,14 @@ function updateGame(dt, time) {
   // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной
   const tx = (mousePX / innerWidth - 0.5) * 120;
   const ty = clamp((1 - mousePY / innerHeight) * 48 + 3, 3, 52); // потолок выше потолка гор (~40) — вверх всегда есть выход
-  GAME.shipP.x += (tx - GAME.shipP.x) * (1 - Math.exp(-dt * 4.5));
-  GAME.shipP.y += (ty - GAME.shipP.y) * (1 - Math.exp(-dt * 4.5));
+  GAME.shipP.x += (tx - GAME.shipP.x) * (1 - Math.exp(-dt * 6.8)); // отклик ~150мс — без «ватности»
+  GAME.shipP.y += (ty - GAME.shipP.y) * (1 - Math.exp(-dt * 6.8));
   GAME.ship.position.copy(GAME.shipP);
   GAME.ship.rotation.z = clamp((tx - GAME.shipP.x) * -0.02, -0.6, 0.6); // крен в поворот
   GAME.ship.rotation.x = clamp((ty - GAME.shipP.y) * 0.02, -0.4, 0.4);
   // полёт: мир едет на нас, скорость растёт (быстрый разгон)
-  if (GAME.exit < 0) GAME.speed = Math.min(190, GAME.speed + dt * 2.4);
+  if (GAME.exit < 0) GAME.speed = Math.min(315, GAME.speed + dt * 3.2 * Math.max(0.12, 1 - GAME.speed / 315)); // асимптотический разгон
+  if (GAME.speed > (GAME.maxSpeed || 0)) GAME.maxSpeed = GAME.speed;
   const dz = GAME.speed * dt;
   GAME.z += dz;
   for (const c of GAME.chunks) c.position.z += dz;
@@ -3153,8 +3365,10 @@ function updateGame(dt, time) {
         if (ddx * ddx + ddy * ddy < 30) {          // прошли сквозь обруч
           o.userData.got = true;
           GAME.score += 5; gameScore.textContent = GAME.score; gScorePulse();
-          GAME.speed = Math.min(230, GAME.speed + 24); // буст
+          GAME.speed = Math.min(340, GAME.speed + 26); // буст
+          GAME.boom = 0;                                // сверхзвуковая волна (см. gPaintDanger + FOV)
           GAME.anims.push({ o, t: 0 });
+          Sound.sfx('ring');
           gLabel('СКВОЗЬ КОЛЬЦО · +5 · УСКОРЕНИЕ');
         }
       }
@@ -3171,9 +3385,11 @@ function updateGame(dt, time) {
         Math.abs(o.position.y - GAME.shipP.y) < 4.5) {
       o.userData.got = true;
       GAME.combo = (time - GAME.lastGet < 2.4) ? GAME.combo + 1 : 1;
+      if (GAME.combo > (GAME.maxCombo || 1)) GAME.maxCombo = GAME.combo;
       GAME.lastGet = time;
       GAME.score += GAME.combo; gameScore.textContent = GAME.score; gScorePulse();
-      GAME.anims.push({ o, t: 0 }); // вспышка-разлёт (без звука)
+      GAME.anims.push({ o, t: 0 });
+      Sound.sfx('collect', GAME.combo);
       gLabel(GAME.combo > 1 ? 'СЕРИЯ ×' + GAME.combo : 'ЭНЕРГИЯ СОБРАНА');
     }
   }
@@ -3194,45 +3410,52 @@ function updateGame(dt, time) {
     const rzS = GAME.ship.rotation.z, cosR = Math.cos(rzS), sinR = Math.sin(rzS);
     const LIFE = 0.42;
     if (!GAME.over) {
-      // струи: 6 частиц на сопло за кадр, РАВНОМЕРНО распределённых вдоль пути кадра —
-      // зазоров между точками нет, струя читается сплошным лучом, не пузырьками
-      const jetV = 26 + th * 34;
+      // спиральная плазма: 6 частиц на сопло за кадр вдоль пути кадра, каждая со своей
+      // фазой и радиусом закрутки — струя выглядит вращающимся жгутом, а не пунктиром
+      const jetV = 26 + th * 36;
       const stepZ = jetV * dt / 6;
       for (let eI = 0; eI < SHIP_ENGINES.length; eI++) {
         const e = SHIP_ENGINES[eI];
         const ex = e[0] * cosR - e[1] * sinR, ey = e[0] * sinR + e[1] * cosR;
         for (let s2 = 0; s2 < 6; s2++) {
           const iT = tud.head = (tud.head + 1) % tud.N;
-          tp.setXYZ(iT, GAME.shipP.x + ex + (Math.random() - 0.5) * 0.09,
-                        GAME.shipP.y + ey + (Math.random() - 0.5) * 0.09,
-                        GAME.shipP.z + e[2] + 0.15 + s2 * stepZ);
-          tud.vel[iT * 3] = (Math.random() - 0.5) * 0.4;
-          tud.vel[iT * 3 + 1] = (Math.random() - 0.5) * 0.4;
-          tud.vel[iT * 3 + 2] = jetV * (0.96 + Math.random() * 0.08);
+          tud.bx[iT] = GAME.shipP.x + ex;
+          tud.by[iT] = GAME.shipP.y + ey;
+          tud.bz[iT] = GAME.shipP.z + e[2] + 0.15 + s2 * stepZ;
+          tud.vz[iT] = jetV * (0.97 + Math.random() * 0.06);
+          tud.ph[iT] = Math.random() * 6.2832;
+          tud.rad[iT] = 0.07 + Math.random() * 0.16;
           tud.ages[iT] = 0;
-          tc.setXYZ(iT, 1.15, 0.9, 0.6);
         }
       }
-      // вихревые нити с законцовок крыльев в крене — геймерский штрих
+      // вихревые нити с законцовок крыльев в крене — широкая ленивая спираль
       if (Math.abs(rzS) > 0.22) for (let wI = 1; wI <= 2; wI++) {
         const w = SHIP_LIGHTS[wI];
         const iT = tud.head = (tud.head + 1) % tud.N;
-        const wx = w[0] * cosR - w[1] * sinR, wy = w[0] * sinR + w[1] * cosR;
-        tp.setXYZ(iT, GAME.shipP.x + wx, GAME.shipP.y + wy, GAME.shipP.z + w[2]);
-        tud.vel[iT * 3] = 0; tud.vel[iT * 3 + 1] = 0; tud.vel[iT * 3 + 2] = 15;
+        tud.bx[iT] = GAME.shipP.x + w[0] * cosR - w[1] * sinR;
+        tud.by[iT] = GAME.shipP.y + w[0] * sinR + w[1] * cosR;
+        tud.bz[iT] = GAME.shipP.z + w[2];
+        tud.vz[iT] = 14;
+        tud.ph[iT] = Math.random() * 6.2832;
+        tud.rad[iT] = -(0.05 + Math.random() * 0.1); // знак = метка «вихрь»: тиловый цвет, медленная закрутка
         tud.ages[iT] = 0;
-        tc.setXYZ(iT, 0.55, 0.85, 0.82);
       }
     }
+    const spinT = time * 21;
     for (let iT = 0; iT < tud.N; iT++) {
       if (tud.ages[iT] > LIFE) continue;
       tud.ages[iT] += dt;
-      tp.setXYZ(iT, tp.getX(iT) + tud.vel[iT * 3] * dt,
-                    tp.getY(iT) + tud.vel[iT * 3 + 1] * dt,
-                    tp.getZ(iT) + tud.vel[iT * 3 + 2] * dt + dz);
+      tud.bz[iT] += tud.vz[iT] * dt + dz;
       const aT = Math.max(0, 1 - tud.ages[iT] / LIFE);
-      const hot = aT * aT; // у сопла — раскалённое ядро, к хвосту остывает в тил
-      tc.setXYZ(iT, aT * (0.5 + 0.65 * hot), aT * (0.72 + 0.2 * hot), aT * (0.55 + 0.42 * (1 - hot)));
+      const vor = tud.rad[iT] < 0;                     // вихрь с крыла
+      const rr = Math.abs(tud.rad[iT]) * (1 + tud.ages[iT] * (vor ? 9 : 4)); // спираль раскрывается конусом
+      const aH = tud.ph[iT] + (vor ? spinT * 0.35 : spinT);
+      tp.setXYZ(iT, tud.bx[iT] + Math.cos(aH) * rr,
+                    tud.by[iT] + Math.sin(aH) * rr * 0.8,
+                    tud.bz[iT]);
+      const hot = aT * aT;
+      if (vor) tc.setXYZ(iT, aT * 0.45, aT * 0.8, aT * 0.78);
+      else tc.setXYZ(iT, aT * (0.5 + 0.68 * hot), aT * (0.72 + 0.2 * hot), aT * (0.55 + 0.42 * (1 - hot)));
     }
     tp.needsUpdate = true; tc.needsUpdate = true;
     // шок-диамонды: узлы в струе, шаг и яркость от тяги, мерцают
@@ -3286,12 +3509,17 @@ function updateGame(dt, time) {
     GAME.over = true; // столкновение — гейм-овер
     GAME.ship.rotation.set(0, 0, 0); // локальные оси = мировые: физика обломков без искажения креном
     gShipCrash();     // корабль разлетается на точки с инерцией по курсу
+    Sound.sfx('crash');
     gPaintDanger(0, time); // вернуть ландшафту родные цвета
     _ringOp = 0; if (gameRing) gameRing.style.opacity = '0';
     gameDanger.classList.remove('on');
     gameOverEl.querySelector('.go-score').textContent = GAME.score;
+    document.getElementById('go-dist').textContent = ((GAME.z - (GAME.z0 || 0)) * 2.4 / 1000).toFixed(1);
+    document.getElementById('go-speed').textContent = Math.round((GAME.maxSpeed || GAME.speed) * 2.4);
+    document.getElementById('go-combo').textContent = '×' + (GAME.maxCombo || 1);
     gameOverEl.classList.add('show');
   }
+  if (GAME.boom != null && GAME.boom >= 0) { GAME.boom += dt; if (GAME.boom > 1.15) GAME.boom = -1; }
   const shake = dangerK > 0.6 ? (dangerK - 0.6) * 1.6 : 0; // лёгкая дрожь у земли
   // камера за кораблём. При влёте — дуга Безье СКВОЗЬ центр облака точек галереи:
   // зритель буквально пролетает через точки, которые видел на экране, и летит дальше
@@ -3305,7 +3533,9 @@ function updateGame(dt, time) {
     uB * uB * GAME.camStart.y + 2 * uB * eK * mBy + eK * eK * cy,
     uB * uB * GAME.camStart.z + 2 * uB * eK * mBz + eK * eK * 17);
   camera.lookAt(GAME.shipP.x * 0.8 * eK, GAME.shipP.y * 0.85 * eK + (1 - eK) * (TARGET.y + S.viewy), -50 * eK + (1 - eK) * TARGET.z);
-  if (GAME.exit < 0) camera.fov = GAME.fovStart + (S.fov + Math.min(22, GAME.speed * 0.1) - GAME.fovStart) * eK;
+  // FOV-кик сверхзвука: короткий импульс линзы при пробитии кольца
+  const boomFov = (GAME.boom != null && GAME.boom >= 0) ? Math.sin(Math.PI * Math.min(1, GAME.boom / 0.65)) * 7 : 0;
+  if (GAME.exit < 0) camera.fov = GAME.fovStart + (S.fov + Math.min(24, GAME.speed * 0.08) + boomFov - GAME.fovStart) * eK;
   camera.updateProjectionMatrix();
 }
 const _dngV = new THREE.Vector3();
@@ -3320,55 +3550,113 @@ function startExitGame() {
 // рискованный сектор горит алым; кольцо проявляется только при угрозе
 const gameRing = document.getElementById('game-ring');
 const _ringCtx = gameRing ? gameRing.getContext('2d') : null;
-let _ringOp = 0;
+let _ringOp = 0, _riskOp = 0, _ringX = -1, _ringY = -1;
+// кольцо-HUD (по референсу): тонкий постоянный круг вокруг корабля; алые дуги — сектор риска,
+// яркость от близости угрозы; слева скорость, справа энергия; линия горизонта с контрнаклоном
 function gDangerRing(dt, time, alt) {
   if (!_ringCtx) return;
-  const y2 = GAME.shipP.y - 2;
-  function scanAhead(xOff) {  // риск по курсу на смещении xOff: ближайшая гора выше траектории
+  function scanAhead(xOff) {  // риск ТОЛЬКО если рельеф впереди поднимается выше траектории
     let worst = 0;
-    for (let d = 14; d <= 78; d += 8) {
-      if (gTerrainH(GAME.shipP.x + xOff, GAME.z - d) >= y2) { worst = Math.max(worst, 1 - (d - 14) / 64); break; }
+    for (let d = 12; d <= 76; d += 8) {
+      const over = gTerrainH(GAME.shipP.x + xOff, GAME.z + d) - (GAME.shipP.y - 1.5);
+      if (over > 0) {   // просто низкий полёт над ровным — НЕ угроза по курсу (за это отвечает низ)
+        const kD = Math.min(1, 0.45 + over / 6) * (1 - (d - 12) / 80);
+        if (kD > worst) worst = kD;
+      }
     }
     return worst;
   }
-  const rF = scanAhead(0);                                   // прямо по курсу
-  const rL = Math.max(scanAhead(-11), gTerrainH(GAME.shipP.x - 9, GAME.z - 8) >= y2 ? 0.7 : 0);
-  const rR = Math.max(scanAhead(11), gTerrainH(GAME.shipP.x + 9, GAME.z - 8) >= y2 ? 0.7 : 0);
-  const rD = clamp01(1 - alt / 8);                           // земля под брюхом
-  const maxR = Math.max(rF, rD, rL * 0.85, rR * 0.85);
-  _ringOp += ((maxR > 0.12 ? Math.min(1, maxR * 1.3) : 0) - _ringOp) * (1 - Math.exp(-dt * 8));
+  function sideOver(xOff) {
+    const over = gTerrainH(GAME.shipP.x + xOff, GAME.z + 8) - (GAME.shipP.y - 1.5);
+    return over > 0 ? Math.min(1, 0.5 + over / 6) : 0;
+  }
+  const rF = scanAhead(0);
+  const rL = Math.max(scanAhead(-11) * 0.9, sideOver(-9));
+  const rR = Math.max(scanAhead(11) * 0.9, sideOver(9));
+  const rD = clamp01(1 - alt / 9);
+  const maxRisk = Math.max(rF, rD, rL * 0.9, rR * 0.9);
+  // приборы (скорость/энергия/горизонт) видны весь полёт; КРУГ и дуги — только при угрозе
+  const want = (GAME.enter >= 1 && !GAME.over && GAME.exit < 0) ? 0.92 : 0;
+  _ringOp += (want - _ringOp) * (1 - Math.exp(-dt * 6));
+  _riskOp += (Math.min(1, maxRisk * 1.5) - _riskOp) * (1 - Math.exp(-dt * 7));
   gameRing.style.opacity = _ringOp.toFixed(2);
   if (_ringOp < 0.03) return;
-  // позиция — на корабле (проекция в экран)
+  // позиция: корабль + мягкое запаздывание — лёгкий параллакс HUD относительно корабля
   _dngV.copy(GAME.shipP).project(camera);
-  gameRing.style.transform = 'translate(' + ((_dngV.x * 0.5 + 0.5) * innerWidth) + 'px,' +
-                                            ((0.5 - _dngV.y * 0.5) * innerHeight) + 'px)';
-  const g = _ringCtx, C = 75, RAD = 56;
-  g.clearRect(0, 0, 150, 150);
-  const pul = 0.7 + 0.3 * Math.sin(time * 12);
-  // сектора: верх = по курсу, низ = земля, бока = склоны. Углы канваса: 0 = восток, по часовой
-  const SEC = [
-    { a0: -Math.PI * 0.75, a1: -Math.PI * 0.25, r: rF },   // верхний сектор — курс
-    { a0: Math.PI * 0.25,  a1: Math.PI * 0.75,  r: rD },   // нижний — земля
-    { a0: Math.PI * 0.75,  a1: Math.PI * 1.25,  r: rL },   // левый
-    { a0: -Math.PI * 0.25, a1: Math.PI * 0.25,  r: rR }    // правый
-  ];
-  for (const s of SEC) {
-    const gap = 0.09;
-    g.beginPath();
-    g.arc(C, C, RAD, s.a0 + gap, s.a1 - gap);
-    if (s.r > 0.1) {
-      g.strokeStyle = 'rgba(255,66,46,' + (s.r * pul).toFixed(2) + ')';
-      g.lineWidth = 3.5;
-      g.shadowColor = 'rgba(255,66,46,0.9)'; g.shadowBlur = 10 * s.r;
-    } else {
-      g.strokeStyle = 'rgba(220,238,240,0.14)';
-      g.lineWidth = 1.5;
-      g.shadowBlur = 0;
-    }
+  const tx = (_dngV.x * 0.5 + 0.5) * innerWidth, ty = (0.5 - _dngV.y * 0.5) * innerHeight;
+  if (_ringX < 0) { _ringX = tx; _ringY = ty; }
+  _ringX += (tx - _ringX) * (1 - Math.exp(-dt * 7));
+  _ringY += (ty - _ringY) * (1 - Math.exp(-dt * 7));
+  gameRing.style.transform = 'translate(' + _ringX.toFixed(1) + 'px,' + _ringY.toFixed(1) + 'px)';
+  // отрисовка (канвас 1.5x для чёткости на ретине)
+  const g = _ringCtx, SS = 1.5, C_X = 620 * SS, C_Y = 330 * SS, R = 208 * SS;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.clearRect(0, 0, gameRing.width, gameRing.height);
+  const pul = 0.72 + 0.28 * Math.sin(time * 11);
+  // круг и дуги проявляются только при угрозе (_riskOp)
+  if (_riskOp > 0.04) {
+    g.globalAlpha = _riskOp;
+    g.beginPath(); g.arc(C_X, C_Y, R, 0, Math.PI * 2);
+    g.strokeStyle = 'rgba(220,238,240,0.34)'; g.lineWidth = 1.6 * SS; g.shadowBlur = 0;
     g.stroke();
+    // алые дуги: верх = по курсу, низ = земля, бока = склоны; яркость = близость угрозы.
+    // Под дугой — тёмная подложка: красное читается и на фоне светлой земли
+    const SEC = [
+      { a0: -Math.PI * 0.72, a1: -Math.PI * 0.28, r: rF },
+      { a0: Math.PI * 0.28,  a1: Math.PI * 0.72,  r: rD },
+      { a0: Math.PI * 0.78,  a1: Math.PI * 1.22,  r: rL },
+      { a0: -Math.PI * 0.22, a1: Math.PI * 0.22,  r: rR }
+    ];
+    // светится ТОЛЬКО сторона главной угрозы (и вторая, если почти равная) — прицельно
+    let top = null;
+    for (const s of SEC) if (!top || s.r > top.r) top = s;
+    for (const s of SEC) {
+      if (s.r < 0.12) continue;
+      if (s !== top && s.r < top.r * 0.8) continue;           // прочие стороны молчат
+      const mid = (s.a0 + s.a1) / 2;
+      const half = (0.24 + 0.16 * s.r) * Math.PI * 0.5;       // дуга сжимается к точному направлению
+      g.beginPath(); g.arc(C_X, C_Y, R, mid - half, mid + half);
+      g.strokeStyle = 'rgba(4,10,14,0.65)'; g.lineWidth = (7.5 + 2 * s.r) * SS; g.shadowBlur = 0;
+      g.stroke();                                             // подложка
+      g.beginPath(); g.arc(C_X, C_Y, R, mid - half, mid + half);
+      g.strokeStyle = 'rgba(232,36,62,' + Math.min(1, 0.35 + s.r * (0.6 + 0.4 * pul)).toFixed(2) + ')';
+      g.lineWidth = (3.6 + 1.8 * s.r) * SS;
+      g.shadowColor = 'rgba(232,36,62,0.9)'; g.shadowBlur = 18 * s.r * SS;
+      g.stroke();
+    }
+    g.shadowBlur = 0;
+    g.globalAlpha = 1;
   }
-  g.shadowBlur = 0;
+  // авиагоризонт: линии по бокам кольца с контрнаклоном к крену (горизонт остаётся «мировым»)
+  const bank = clamp(-GAME.ship.rotation.z * 0.85, -0.45, 0.45);
+  g.save();
+  g.translate(C_X, C_Y); g.rotate(bank);
+  g.strokeStyle = 'rgba(220,238,240,0.5)'; g.lineWidth = 1.8 * SS;
+  g.beginPath(); g.moveTo(-R - 300 * SS, 0); g.lineTo(-R - 26 * SS, 0); g.stroke();
+  g.beginPath(); g.moveTo(R + 26 * SS, 0); g.lineTo(R + 300 * SS, 0); g.stroke();
+  g.restore();
+  // скорость слева, энергия справа (числа не крутятся — как в приборах)
+  g.textBaseline = 'alphabetic';
+  g.fillStyle = 'rgba(241,251,252,0.95)';
+  g.font = '600 ' + (54 * SS) + 'px ui-monospace, "SF Mono", Menlo, monospace';
+  g.textAlign = 'right';
+  g.fillText(String(Math.round(GAME.speed * 2.4)), C_X - R - 66 * SS, C_Y - 22 * SS);
+  g.font = '600 ' + (15 * SS) + 'px ui-monospace, monospace';
+  g.fillStyle = 'rgba(220,238,240,0.6)';
+  g.fillText('КМ/Ч', C_X - R - 66 * SS, C_Y + 4 * SS);
+  g.font = '600 ' + (54 * SS) + 'px ui-monospace, "SF Mono", Menlo, monospace';
+  g.fillStyle = 'rgba(241,251,252,0.95)';
+  g.textAlign = 'left';
+  const scoreS = String(GAME.score);
+  g.fillText(scoreS, C_X + R + 66 * SS, C_Y - 22 * SS);
+  // молния-глиф энергии
+  const bx = C_X + R + 66 * SS + g.measureText(scoreS).width + 14 * SS, by = C_Y - 52 * SS;
+  g.beginPath();
+  g.moveTo(bx + 14 * SS, by); g.lineTo(bx + 2 * SS, by + 20 * SS); g.lineTo(bx + 10 * SS, by + 20 * SS);
+  g.lineTo(bx + 5 * SS, by + 36 * SS); g.lineTo(bx + 22 * SS, by + 14 * SS); g.lineTo(bx + 13 * SS, by + 14 * SS);
+  g.lineTo(bx + 20 * SS, by); g.closePath();
+  g.fillStyle = 'rgba(241,251,252,0.9)';
+  g.fill();
 }
 
 const gameScore = document.getElementById('game-score');
@@ -3807,7 +4095,9 @@ function loop() {
   // режим мини-игры: свой апдейт, галерейные системы спят
   if (GAME.on) {
     updateGame(dt, time);
-    Sound.frame(0, 0); // в игре — тишина
+    // ненавязчивый фон полёта: дрон от скорости, шум потока подчёркивает крен
+    Sound.game(Math.min(1, GAME.speed / 315) * (GAME.over ? 0.15 : 1),
+               GAME.over ? 0 : Math.min(1, Math.abs(GAME.ship ? GAME.ship.rotation.z : 0) * 1.7));
     renderer.render(scene, camera);
     gMetrics(dt);      // диагностика производительности на экране
     return;
