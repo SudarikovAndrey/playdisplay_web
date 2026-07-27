@@ -8,3 +8,14 @@ videos/raw_videos/
 
 # исходные мастера роликов — только локально (на Pages раздаются сжатые копии в site/videos)
 videos/
+
+# ---- крупные локальные материалы: НЕ коммитить (лимит GitHub 100МБ, ломает push) ----
+site.zip
+dist.zip
+videos/old portfolios/
+concepts raw/
+remade/
+pdf_images_VMF*/
+pdf_images_VMF.zip
+proto 3d/
+.DS_Store
