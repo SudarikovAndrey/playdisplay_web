@@ -840,14 +840,31 @@ function buildPointIndex(pos, def) {
   for (let i = 0; i < n; i++) { const c = cellOf(i); items[fill[c]++] = i; }
   return { cell: CELL, minX: minX, z0: def.zStart, cols: cols, rows: rows, start: cnt, items: items };
 }
-// обход точек в квадрате вокруг (x,z): cb(i) на каждый индекс
-function forPointsNear(idx, x, z, r, cb) {
+// Обход точек в ПРЯМОУГОЛЬНИКЕ. Нужен отдельно от квадратного запроса: подсветка по
+// курсу смотрит узкую длинную полосу (±8 по x, 12..95 вперёд). Через квадратный запрос
+// радиусом 58 это было 400 ячеек вместо 42 — индекс терял смысл и кадр вырастал до 26 мс.
+// step позволяет брать ячейки через одну: для искристого фронта волны точность не нужна.
+function forPointsInBox(idx, x0, x1, z0, z1, cb, step) {
   if (!idx) return;
+  const st = step || 1;
+  const c0 = clamp(Math.floor((x0 - idx.minX) / idx.cell), 0, idx.cols - 1);
+  const c1 = clamp(Math.floor((x1 - idx.minX) / idx.cell), 0, idx.cols - 1);
+  const r0 = clamp(Math.floor((z0 - idx.z0) / idx.cell), 0, idx.rows - 1);
+  const r1 = clamp(Math.floor((z1 - idx.z0) / idx.cell), 0, idx.rows - 1);
+  for (let rr = r0; rr <= r1; rr += st) for (let cc = c0; cc <= c1; cc += st) {
+    const c = rr * idx.cols + cc;
+    for (let k = idx.start[c]; k < idx.start[c + 1]; k++) cb(idx.items[k]);
+  }
+}
+// обход точек в квадрате вокруг (x,z): cb(i) на каждый индекс
+function forPointsNear(idx, x, z, r, cb, step) {
+  if (!idx) return;
+  const st = step || 1;
   const c0 = clamp(Math.floor((x - r - idx.minX) / idx.cell), 0, idx.cols - 1);
   const c1 = clamp(Math.floor((x + r - idx.minX) / idx.cell), 0, idx.cols - 1);
   const r0 = clamp(Math.floor((z - r - idx.z0) / idx.cell), 0, idx.rows - 1);
   const r1 = clamp(Math.floor((z + r - idx.z0) / idx.cell), 0, idx.rows - 1);
-  for (let rr = r0; rr <= r1; rr++) for (let cc = c0; cc <= c1; cc++) {
+  for (let rr = r0; rr <= r1; rr += st) for (let cc = c0; cc <= c1; cc += st) {
     const c = rr * idx.cols + cc;
     for (let k = idx.start[c]; k < idx.start[c + 1]; k++) cb(idx.items[k]);
   }
@@ -1036,6 +1053,7 @@ function makeHeightProbe(plan) {
 root.PDWorld = {
   CONFIG: CONFIG, TYPES: T,
   buildPointIndex: buildPointIndex, forPointsNear: forPointsNear,
+  forPointsInBox: forPointsInBox,
   makeHeightProbe: makeHeightProbe,
   makeRng: makeRng, hash: hash, noise: noise, fbm: fbm, ridged: ridged,
   clamp: clamp, clamp01: clamp01, smoothstep: smoothstep, lerp: lerp,

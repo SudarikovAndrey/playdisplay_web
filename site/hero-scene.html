@@ -666,7 +666,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2807-game25'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2807-game26'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -3193,21 +3193,20 @@ let wMat = null;
 function gWorldMat() {
   if (wMat) return wMat;
   wMat = new THREE.ShaderMaterial({
-    transparent: true, depthWrite: true, depthTest: true, vertexColors: true,
+    transparent: true, depthWrite: true, depthTest: true,
     uniforms: { uPx: { value: innerHeight }, uFogN: { value: 110 }, uFogF: { value: 660 },
                 uFade: { value: 1 } },
     vertexShader: [
-      // ВАЖНО: у сырого ShaderMaterial атрибут color надо объявлять САМОМУ.
-      // vertexColors:true подставляет его только встроенным материалам, а здесь
-      // без этой строки шейдер не компилируется и рельеф не рисуется вовсе.
-      'attribute vec3 color;',
-      'attribute float aSize; attribute float aMask;',
+      // Свой атрибут цвета, а НЕ встроенный color: инъекция color для сырого
+      // ShaderMaterial — поведение недокументированное и разное по версиям THREE,
+      // а цена ошибки здесь — молча не скомпилированный шейдер и мир без рельефа.
+      'attribute vec3 aCol; attribute float aSize; attribute float aMask;',
       'uniform float uPx, uFogN, uFogF, uFade;',
       'varying vec3 vCol; varying float vA;',
       'void main() {',
       '  vec4 mv = modelViewMatrix * vec4(position, 1.0);',
       '  float d = -mv.z;',
-      '  vCol = color;',
+      '  vCol = aCol;',
       // §25: дальние точки очень мелкие, иначе fill rate съедает всё
       '  float sz = aSize * clamp(78.0 / max(d, 7.0), 0.22, 2.6);',
       '  float f = 1.0 - smoothstep(uFogN, uFogF, d);',
@@ -3246,7 +3245,7 @@ function gMakeWorldChunk(index, lod) {
 function gBuildWorldMesh(ch, index, lod) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(ch.positions, 3));
-  g.setAttribute('color', new THREE.BufferAttribute(ch.colors, 3));
+  g.setAttribute('aCol', new THREE.BufferAttribute(ch.colors, 3));
   g.setAttribute('aSize', new THREE.BufferAttribute(ch.sizes, 1));
   const mask = new Float32Array(ch.featureMask.length);
   for (let i = 0; i < mask.length; i++) mask[i] = ch.featureMask[i];
@@ -3332,7 +3331,9 @@ function gSpawnAhead() {
       // скорости это 2.5 секунды запаса. Если Worker недоступен (file://, CSP) —
       // считаем на месте: лучше рывок, чем пустой мир впереди.
       if (WORLD.wk) {
+        if (WORLD.inflight >= 2) return;      // очередь не копим — см. комментарий выше
         WORLD.pending[i] = true;
+        WORLD.inflight++;
         WORLD.wk.postMessage({ cmd: 'chunk', index: i, lod: lod });
       } else {
         gAddWorldChunk(gMakeWorldChunk(i, lod));
@@ -3367,7 +3368,7 @@ function gRecycle() {
   while (GAME.chunks.length) {
     const c = GAME.chunks[0];
     const behind = NEW_WORLD && WORLD
-      ? (GAME.z - c.userData.zEnd > 30)
+      ? (c.userData.wIndex < WORLD.probe.chunkAt(GAME.z) - PDWorld.CONFIG.world.behind)
       : (c.position.z > G_DEPTH * 0.8);
     if (!behind) break;
     GAME.chunks.shift();
@@ -3631,7 +3632,7 @@ function gPaintDangerNew(k, time) {
   for (let ci = 0; ci < GAME.chunks.length; ci++) {
     const u = GAME.chunks[ci].userData;
     if (!u.idx || !u.cloud) continue;
-    const colA = u.cloud.geometry.attributes.color;
+    const colA = u.cloud.geometry.attributes.aCol;
     const posA = u.cloud.geometry.attributes.position.array;
     // 1) диск под кораблём — близость к земле
     if (k > 0.02) {
@@ -3652,7 +3653,7 @@ function gPaintDangerNew(k, time) {
     // 2) алая подсветка рельефа ПО КУРСУ: что выше траектории — то и опасно.
     // Впереди по миру это БОЛЬШИЙ z (в экранных координатах было бы меньший).
     const AH = 95;
-    PDWorld.forPointsNear(u.idx, sx, sz + AH * 0.5 + 6, AH * 0.5 + 10, i => {
+    PDWorld.forPointsInBox(u.idx, sx - 8, sx + 8, sz + 12, sz + AH, i => {
       const i3 = i * 3;
       if (Math.abs(posA[i3] - sx) > 8) return;
       if (posA[i3 + 1] < sy - 2.2) return;                  // ниже траектории — не опасно
@@ -3670,7 +3671,7 @@ function gPaintDangerNew(k, time) {
     if (GAME.boom != null && GAME.boom >= 0 && GAME.boom < 1.1) {
       const bt = GAME.boom / 1.1, br = 8 + bt * 115, bw = 4 + bt * 6;
       const amp = (1 - bt) * (1 - bt) * 0.95;
-      PDWorld.forPointsNear(u.idx, sx, sz, br + bw, i => {
+      PDWorld.forPointsNear(u.idx, sx, sz, br + bw, i => {   // ← через одну ячейку ниже
         const i3 = i * 3;
         const ddx = posA[i3] - sx, ddz = posA[i3 + 2] - sz;
         const dd = Math.sqrt(ddx * ddx + ddz * ddz) - br;
@@ -3681,7 +3682,7 @@ function gPaintDangerNew(k, time) {
         colA.array[i3 + 1] += (1.05 - colA.array[i3 + 1]) * kk;
         colA.array[i3 + 2] += (1.0  - colA.array[i3 + 2]) * kk;
         _dngTouch(colA, i3);
-      });
+      }, 2);
     }
   }
   _dngFlush();
@@ -3806,7 +3807,7 @@ function enterGame() {
     const seed = (Date.now() ^ (Math.random() * 1e6)) | 0;
     const mgr = PDWorld.makeManager(seed, 60);
     WORLD = { seed: seed, mgr: mgr, probe: PDWorld.makeHeightProbe(mgr.plan),
-              wk: null, pending: {} };
+              wk: null, pending: {}, inflight: 0 };
     // Worker считает геометрию, главный поток только заливает в GPU. План уровня
     // детерминирован по seed, поэтому у потока и у главного треда он ОДИН И ТОТ ЖЕ —
     // высота под кораблём (probe тут, в главном) совпадает с точками (там, в потоке).
@@ -3816,6 +3817,7 @@ function enterGame() {
         const m = e.data;
         if (m.cmd !== 'chunkReady' || !WORLD) return;
         WORLD.pending[m.index] = false;
+        WORLD.inflight = Math.max(0, WORLD.inflight - 1);
         if (!GAME.on) return;
         gAddWorldChunk(gBuildWorldMesh(m, m.index, m.lod));
       };
@@ -3966,6 +3968,15 @@ let gamePuff = 0; // разлёт точек галереи после возв�
 // текущий DPR авто-качества и число живых чанков — чтобы видеть, ЧТО именно тормозит
 const gameMetricsEl = document.getElementById('game-metrics');
 let _mFps = 60, _mAcc = 0;
+// сколько точек лежит в геометрии чанков (не путать с отрисованными)
+function gTerrPoints() {
+  let n = 0;
+  if (GAME.chunks) for (let i = 0; i < GAME.chunks.length; i++) {
+    const c = GAME.chunks[i].userData.cloud;
+    if (c && c.geometry && c.geometry.attributes.position) n += c.geometry.attributes.position.count;
+  }
+  return n;
+}
 function gMetrics(dt) {
   if (!gameMetricsEl) return;
   const fps = dt > 0 ? 1 / dt : 60;
@@ -3978,7 +3989,8 @@ function gMetrics(dt) {
   gameMetricsEl.innerHTML =
     'FPS <b class="' + (f < 45 ? 'bad' : '') + '">' + f + '</b>  ' + (dt * 1000).toFixed(1) + ' MS\n' +
     'POINTS <b>' + (inf.points / 1000).toFixed(0) + 'K</b>  CALLS <b>' + inf.calls + '</b>\n' +
-    'DPR <b>' + renderer.getPixelRatio().toFixed(2) + '</b>  CHUNKS <b>' + (GAME.chunks ? GAME.chunks.length : 0) + '</b>  LOD <b>' + G_LOD + '</b>';
+    'DPR <b>' + renderer.getPixelRatio().toFixed(2) + '</b>  CHUNKS <b>' + (GAME.chunks ? GAME.chunks.length : 0) + '</b>  LOD <b>' + G_LOD + '</b>' +
+    (NEW_WORLD && WORLD ? '\nTERR <b>' + (gTerrPoints() / 1000).toFixed(0) + 'K</b>  WAIT <b>' + WORLD.inflight + '</b>' : '');
 }
 
 function updateGame(dt, time) {
