@@ -111,6 +111,13 @@
   #game-metrics b { color: #2be0c6; font-weight: 700; }
   #game-metrics b.bad { color: #ff5a3d; }
   #game-exit { font-size: 9px; letter-spacing: .24em; opacity: .35; margin-top: 18px; }
+  /* МОБИЛА: на компе клик по сцене = выход, но тач во время полёта занят рулём —
+     нужна отдельная кнопка-крестик. Комп её никогда не видит (нет класса is-mobile). */
+  #game-exit-btn { display: none; }
+  body.is-mobile.game #game-exit-btn { display: flex; position: fixed; left: 16px; top: 16px; z-index: 44;
+    width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.35); background: rgba(0,0,0,.32); color: #fff;
+    font-size: 15px; line-height: 1; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
   /* маркер опасности: близко к рельефу */
   #game-danger { position: fixed; left: 0; top: 0; z-index: 46; display: none;
     font-size: 9px; letter-spacing: .3em; color: #ff5a3d; text-shadow: 0 0 12px rgba(255,90,61,.8);
@@ -426,6 +433,9 @@
   <div id="game-label">ЭНЕРГИЯ СОБРАНА</div>
   <div id="game-exit">КЛИК ИЛИ ESC — ВЕРНУТЬСЯ В ПОРТФОЛИО</div>
 </div>
+<!-- МОБИЛА: на тач-экране палец занят рулём корабля, кликом-по-сцене (как на компе) выйти
+     нельзя — отдельный крестик. body.is-mobile ставится в JS, комп его не получает. -->
+<button id="game-exit-btn" aria-label="Вернуться на сайт">✕</button>
 <div id="game-danger">ОПАСНОСТЬ · РЕЛЬЕФ</div>
 <div id="game-metrics"></div>
 <canvas id="game-ring" width="1860" height="990"></canvas>
@@ -654,7 +664,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2807-game18'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2807-game19'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -665,6 +675,7 @@ const SETTINGS_DEFAULTS = { height: 26, viewy: 0, fov: 41, dist: 46, sizemin: 0.
 const S = Object.assign({}, SETTINGS_DEFAULTS);
 // мобильный режим определяем ДО загрузки: тач-устройство или узкий/портретный экран (в т.ч. сжатое окно на десктопе)
 const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || Math.min(innerWidth, innerHeight) < 620;
+if (isMobile) document.body.classList.add('is-mobile'); // хук для мобильных-ТОЛЬКО стилей, комп его не получает
 // ОТДЕЛЬНЫЙ профиль настроек для мобилы: тюнинг «под телефон» НЕ трогает десктопный профиль
 const SETTINGS_KEY_ACTIVE = isMobile ? SETTINGS_KEY + '_m' : SETTINGS_KEY;
 // режим настройки камеры под мобилу (панель + ручной FOV); включается сообщением pdCam от лендинга (ссылка ?cam=1)
@@ -758,6 +769,25 @@ addEventListener('mousemove', e => {
   if (pc) pc.style.transform = 'translate(' + mousePX + 'px,' + mousePY + 'px)';
   if (!document.body.classList.contains('cur-live')) document.body.classList.add('cur-live');
 }, { passive: true });
+// МОБИЛА: полёт касанием — палец целится кораблём, как курсор мыши на компе. Только
+// во время игры (иначе тач продолжает крутить галерею — этим занят другой touchmove ниже,
+// он сам себя гасит через onInput при GAME.on, конфликта нет). Комп эти строки не выполняет.
+let touchPX = mousePX, touchPY = mousePY;
+if (isMobile) {
+  const trackTouch = e => {
+    if (!GAME.on) return;
+    const t = e.touches[0];
+    if (!t) return;
+    touchPX = t.clientX; touchPY = t.clientY;
+  };
+  addEventListener('touchstart', trackTouch, { passive: true });
+  addEventListener('touchmove', trackTouch, { passive: true });
+  // подсказки в онбординге и HUD говорят «мышь»/«клик» — на тач-экране это неверно
+  const obFirst = document.querySelector('#game-onboard .ob');
+  if (obFirst) obFirst.innerHTML = '<b>Палец на экране</b> — курс и высота';
+  const gExit = document.getElementById('game-exit');
+  if (gExit) gExit.textContent = 'КРЕСТИК СЛЕВА ВВЕРХУ — ВЕРНУТЬСЯ В ПОРТФОЛИО';
+}
 
 // ---------- Шейдер воксельных точек ----------
 const voxVert = `
@@ -2061,6 +2091,18 @@ const playerClose = document.getElementById('player-close');
 
 const play = { state: 0, p: 0, idx: -1, iframe: null };
 let playE = 0, lastWMax = 0; // lastWMax — для клика-плей по сцене
+// МОБИЛА: при просмотре ролика — дожать зум в квадратный кроп с затемнением сверху/снизу
+// (комп продолжает получать ролик ровно по сетке точек, без этого слоя — см. updatePlay).
+let mobDimTop = null, mobDimBottom = null;
+if (isMobile) {
+  mobDimTop = document.createElement('div');
+  mobDimBottom = document.createElement('div');
+  const dimCss = 'position:fixed;left:0;right:0;z-index:14;background:#000;opacity:0;pointer-events:none;';
+  mobDimTop.style.cssText = dimCss + 'top:0;';
+  mobDimBottom.style.cssText = dimCss + 'bottom:0;';
+  document.body.appendChild(mobDimTop);
+  document.body.appendChild(mobDimBottom);
+}
 
 function embedUrl(e) {
   return e.type === 'vimeo'
@@ -2226,7 +2268,11 @@ function updatePlay(dt, wMax) {
       }
     }
   }
-  if (play.state === 0) { playE = 0; voxUniforms.uSpread.value = S.spread + gamePuff * 7; return; } // после игры точки слетаются обратно
+  if (play.state === 0) {
+    playE = 0; voxUniforms.uSpread.value = S.spread + gamePuff * 7; // после игры точки слетаются обратно
+    if (mobDimTop) { mobDimTop.style.opacity = 0; mobDimBottom.style.opacity = 0; } // мобила: погасить шторки
+    return;
+  }
   if ((play.state === 1 || play.state === 2) && wMax < 0.85) stopPlay();
   // ease-out: наезд/проявление стартуют резко и вместе (динамичный «выпад»), затем плавно доводятся
   playE = 1 - (1 - play.p) * (1 - play.p);
@@ -2240,10 +2286,32 @@ function updatePlay(dt, wMax) {
   // видео = ТОЧНАЯ экранная проекция прямоугольника кадра-сетки → 1-в-1 на точечный образ,
   // совпадает по размеру и месту при любой дистанции/линзе/высоте (никакого «видео крупнее»)
   const r = frameScreenRect(play.idx);
-  playerEl.style.width = r.w + 'px';
-  playerEl.style.height = r.h + 'px';
-  playerEl.style.left = r.cx + 'px';
-  playerEl.style.top = r.cy + 'px';
+  let pw = r.w, ph = r.h, pcx = r.cx, pcy = r.cy;
+  // МОБИЛА: тот же бесшовный подлёт из точек, что и на компе (r выше — 1-в-1 сетка), но
+  // ближе к концу влёта/началу вылета добираем зум в квадрат — object-fit:cover (уже в CSS)
+  // обрежет бока/верх сам. zoomK завязан на playE напрямую — симметричен на входе и выходе,
+  // отдельного стейта не нужно. Комп (isMobile=false) этот блок не выполняет вовсе.
+  if (isMobile) {
+    const zoomK = smoothstep(0.55, 1, playE);
+    if (zoomK > 0.001) {
+      const side = Math.min(innerWidth * 0.96, innerHeight * 0.6);
+      const tcx = innerWidth / 2, tcy = innerHeight * 0.46; // чуть выше центра, не под HUD счёта
+      pw += (side - r.w) * zoomK;
+      ph += (side - r.h) * zoomK;
+      pcx += (tcx - r.cx) * zoomK;
+      pcy += (tcy - r.cy) * zoomK;
+    }
+    if (mobDimTop) {
+      const topH = Math.max(0, pcy - ph / 2), botH = Math.max(0, innerHeight - (pcy + ph / 2));
+      mobDimTop.style.height = topH + 'px'; mobDimBottom.style.height = botH + 'px';
+      const dimOp = zoomK * 0.72;
+      mobDimTop.style.opacity = dimOp; mobDimBottom.style.opacity = dimOp;
+    }
+  }
+  playerEl.style.width = pw + 'px';
+  playerEl.style.height = ph + 'px';
+  playerEl.style.left = pcx + 'px';
+  playerEl.style.top = pcy + 'px';
   // магия старта: весь подлёт ролик живёт НА ТОЧКАХ (VideoTexture), объёмный и живой,
   // и лишь в финале плоский кадр «наводит резкость» поверх. Для ембедов — как раньше.
   const domOp = (WORKS[play.idx] && WORKS[play.idx].local)
@@ -3234,6 +3302,9 @@ function gPaintDanger(k, time) {
 let _galleryVis = null;
 function enterGame() {
   if (GAME.on) return;
+  // мобила: палец ещё не коснулся экрана полёта — целимся в центр, а не в точку старого тапа
+  // (например, по кнопке «Сыграть»), иначе корабль дёрнется туда в первом же кадре
+  if (isMobile) { touchPX = innerWidth / 2; touchPY = innerHeight / 2; }
   GAME.on = true; GAME.z = 0; GAME.z0 = 0; GAME.score = 0; GAME.speed = 90; GAME.exit = -1;
   GAME.enter = 0; GAME.over = false; GAME.grace = 2; // короткая неуязвимость на старте
   GAME.tint.copy(curAccent); // колорит мира = акцент текущего слайда
@@ -3284,6 +3355,8 @@ function enterGame() {
 // рестарт после столкновения: безопасная высота над РЕАЛЬНЫМ рельефом + период
 // неуязвимости (грейс) — чтобы не было петли мгновенных повторных смертей
 function restartGame() {
+  // то же самое: рестарт часто жмут тапом по кнопке внизу экрана — не наследуем эту точку
+  if (isMobile) { touchPX = innerWidth / 2; touchPY = innerHeight / 2; }
   GAME.over = false; GAME.overT = 0; GAME.score = 0; GAME.speed = 60; GAME.hurtT = 0;
   document.body.classList.remove('over');
   GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1; GAME.z0 = GAME.z;
@@ -3414,9 +3487,11 @@ function updateGame(dt, time) {
     camera.fov += (S.fov - camera.fov) * (1 - Math.exp(-dt * 3)); // линза возвращается
     if (GAME.exit >= 1) { exitGame(); return; }
   }
-  // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной
-  const tx = (mousePX / innerWidth - 0.5) * 120;
-  const ty = clamp((1 - mousePY / innerHeight) * 48 + 3, 3, 52); // потолок выше потолка гор (~40) — вверх всегда есть выход
+  // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной;
+  // на мобиле вместо курсора мыши — палец на экране (touchPX/Y), комп это ветвление не задействует
+  const aimX = isMobile ? touchPX : mousePX, aimY = isMobile ? touchPY : mousePY;
+  const tx = (aimX / innerWidth - 0.5) * 120;
+  const ty = clamp((1 - aimY / innerHeight) * 48 + 3, 3, 52); // потолок выше потолка гор (~40) — вверх всегда есть выход
   GAME.shipP.x += (tx - GAME.shipP.x) * (1 - Math.exp(-dt * 6.8)); // отклик ~150мс — без «ватности»
   GAME.shipP.y += (ty - GAME.shipP.y) * (1 - Math.exp(-dt * 6.8));
   GAME.ship.position.copy(GAME.shipP);
@@ -3766,6 +3841,19 @@ function gDangerRing(dt, time, alt) {
   ga.addEventListener('click', function(e){
     e.stopPropagation();          // не считать это кликом мимо кнопки
     restartGame();
+  });
+})();
+
+// МОБИЛА: крестик-выход во время полёта (палец занят рулём, клика-по-сцене как на компе нет).
+// touchstart гасим отдельно, чтобы этот тап не долетел до window-обработчика руля (иначе
+// корабль дёрнется к углу экрана в момент нажатия крестика).
+if (isMobile) (function(){
+  var geb = document.getElementById('game-exit-btn');
+  if (!geb) return;
+  geb.addEventListener('touchstart', function(e){ e.stopPropagation(); }, { passive: true });
+  geb.addEventListener('click', function(e){
+    e.stopPropagation();
+    if (GAME.over) restartGame(); else startExitGame();
   });
 })();
 
