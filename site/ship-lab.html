@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PlayDisplay — лаборатория корабля из точек</title>
+<!--
+  ЛАБОРАТОРИЯ КОРАБЛЯ (28.07). Инструмент, не часть сайта.
+  Десять принципов из схемы Андрея — отдельными тумблерами, каждый можно ВЫКЛЮЧИТЬ.
+  Смысл именно в выключении: видно, что конкретно даёт каждый приём, и какой из них
+  реально держит форму, а какой добавляет шума.
+
+  Точки берём из настоящей модели игры: fetch('hero-scene.html') и разбор SHIP_B64.
+  Так лаборатория не расходится с игрой и не дублирует 14 КБ данных.
+  Из-за fetch страницу нужно открывать по http (не файлом с диска).
+-->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #070d18;
+    font-family: 'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace; color: #dfeef2; }
+  #stage { position: fixed; inset: 0; }
+  #ui { position: fixed; left: 0; top: 0; bottom: 0; width: 300px; z-index: 10;
+    background: rgba(7,13,24,.9); backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(120,190,220,.18);
+    padding: 16px 16px 22px; overflow-y: auto; }
+  #ui h1 { font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+    color: #7fb4ff; margin: 0 0 2px; font-weight: 700; }
+  #ui .sub { font-size: 9px; letter-spacing: .14em; opacity: .42; margin-bottom: 15px; line-height: 1.55; }
+  .grp { margin-bottom: 14px; }
+  .grp > .lbl { font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+    opacity: .5; margin-bottom: 7px; }
+  /* принцип: тумблер + номер + пояснение. Номера как в схеме, чтобы говорить «выключи 7» */
+  .pr { display: flex; gap: 8px; align-items: flex-start; padding: 6px 7px; margin-bottom: 3px;
+    border: 1px solid rgba(140,200,230,.14); border-radius: 3px; cursor: pointer;
+    background: rgba(255,255,255,.03); transition: background .15s, border-color .15s; }
+  .pr:hover { border-color: rgba(127,180,255,.42); background: rgba(127,180,255,.07); }
+  .pr.on { border-color: rgba(127,180,255,.5); background: rgba(127,180,255,.11); }
+  .pr input { accent-color: #7fb4ff; margin: 1px 0 0; cursor: pointer; flex: 0 0 auto; }
+  .pr .tx { flex: 1; }
+  .pr .nm { font-size: 9.5px; letter-spacing: .07em; font-weight: 600; color: #cfe4f5; }
+  .pr.on .nm { color: #eaf4ff; }
+  .pr .ds { font-size: 8px; letter-spacing: .04em; opacity: .42; margin-top: 2px; line-height: 1.45; }
+  .row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .row label { flex: 0 0 104px; font-size: 9px; letter-spacing: .06em; opacity: .68; }
+  .row input[type=range] { flex: 1; height: 3px; -webkit-appearance: none; appearance: none;
+    background: rgba(160,200,230,.22); border-radius: 2px; outline: none; }
+  .row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px;
+    border-radius: 50%; background: #7fb4ff; cursor: pointer; }
+  .row .val { flex: 0 0 38px; text-align: right; font-size: 9px; color: #7fb4ff;
+    font-variant-numeric: tabular-nums; }
+  .btns { display: flex; gap: 5px; flex-wrap: wrap; }
+  .btns button { flex: 1 1 auto; font: 600 9px inherit; letter-spacing: .1em; text-transform: uppercase;
+    color: #7fb4ff; background: transparent; border: 1px solid rgba(127,180,255,.5);
+    border-radius: 2px; padding: 8px 8px; cursor: pointer; transition: background .15s; }
+  .btns button:hover { background: rgba(127,180,255,.13); }
+  .btns button.alt { color: #9fb0c0; border-color: rgba(160,180,200,.35); }
+  #note { font-size: 8.5px; line-height: 1.6; opacity: .38; margin-top: 13px;
+    border-top: 1px solid rgba(120,190,220,.14); padding-top: 11px; }
+  #hud { position: fixed; right: 16px; top: 14px; z-index: 10; text-align: right;
+    font-size: 9px; letter-spacing: .16em; line-height: 1.9; opacity: .5; pointer-events: none; }
+  #hud b { color: #7fb4ff; font-weight: 700; }
+  #keys { position: fixed; left: 324px; bottom: 14px; z-index: 10; font-size: 9px;
+    letter-spacing: .13em; opacity: .34; pointer-events: none; }
+  #keys b { color: #7fb4ff; font-weight: 700; }
+  #err { position: fixed; inset: 0; display: none; z-index: 30; align-items: center; justify-content: center;
+    background: rgba(7,13,24,.96); text-align: center; padding: 30px; }
+  #err div { max-width: 420px; font-size: 11px; line-height: 1.8; letter-spacing: .06em; }
+  #err b { color: #ff8a5a; }
+  #toast { position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(14px);
+    z-index: 20; background: rgba(127,180,255,.16); border: 1px solid #7fb4ff; color: #eaf4ff;
+    font-size: 9px; letter-spacing: .16em; text-transform: uppercase; padding: 9px 16px;
+    border-radius: 2px; opacity: 0; transition: opacity .3s, transform .3s; pointer-events: none; }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 820px) {
+    #ui { width: 100%; height: 52%; bottom: auto; border-right: 0;
+      border-bottom: 1px solid rgba(120,190,220,.18); }
+    #keys { display: none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<div id="hud">
+  <div>FPS <b id="mFps">—</b></div>
+  <div>ТОЧЕК <b id="mPts">—</b></div>
+  <div>РАКУРС <b id="mView">3/4</b></div>
+</div>
+
+<div id="keys">
+  <b>1–0</b> принципы · <b>V</b> ракурс: 3/4 / спереди / сбоку / сверху ·
+  <b>ПРОБЕЛ</b> вращение · <b>МЫШЬ</b> крен · <b>H</b> панель
+</div>
+
+<div id="ui">
+  <h1>Лаборатория корабля</h1>
+  <div class="sub">Десять принципов по схеме. Выключай по одному —<br>видно, что каждый реально даёт форме.</div>
+
+  <div class="grp">
+    <div class="lbl">Принципы</div>
+    <div id="prList"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Настройка</div>
+    <div id="sliders"></div>
+  </div>
+
+  <div class="grp">
+    <div class="btns">
+      <button id="bAll">Все вкл.</button>
+      <button id="bNone" class="alt">Все выкл.</button>
+      <button id="bCopy">Копировать</button>
+    </div>
+  </div>
+
+  <div id="note">
+    «Все выкл.» — это сырое облако модели, как оно есть.<br>
+    Дальше включай по одному и смотри, что добавляет форму,<br>
+    а что только шум. Настройки копируются как JSON.
+  </div>
+</div>
+
+<div id="err"><div>Не удалось прочитать точки корабля из <b>hero-scene.html</b>.<br><br>
+  Лаборатория берёт модель прямо из файла игры, поэтому страницу нужно открыть
+  <b>по http</b> — с боевого адреса или превью, а не файлом с диска.</div></div>
+
+<div id="toast">Скопировано</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const hash = (x, z) => { const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return s - Math.floor(s); };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const clamp01 = v => clamp(v, 0, 1);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ДЕСЯТЬ ПРИНЦИПОВ. Каждый — тумблер. Порядок и названия как в схеме.
+// ─────────────────────────────────────────────────────────────────────────────
+const PR = {
+  sym:    { n: 1,  name: 'Читаемая симметрия',  ds: 'Форма зеркалится по оси: правый борт копируется на левый', v: true },
+  dens:   { n: 2,  name: 'Иерархия плотности',  ds: 'Ядро / корпус / крылья / шлейф — своя плотность и размер', v: true },
+  outline:{ n: 3,  name: 'Силуэт и контур',     ds: 'Точки на рёбрах ярче и крупнее — контур читается издалека', v: true },
+  focus:  { n: 4,  name: 'Центр фокуса',        ds: 'Тёплое яркое ядро в центре притягивает взгляд', v: true },
+  motion: { n: 5,  name: 'Движение и след',     ds: 'Направленные штрихи назад — читается вектор движения', v: true },
+  ribs:   { n: 6,  name: 'Структура конструкции',ds: 'Внутренние линии-рёбра между узлами каркаса', v: true },
+  depth:  { n: 7,  name: 'Глубина и объём',     ds: 'Ближние точки крупнее и ярче, дальние мельче и тусклее', v: true },
+  accent: { n: 8,  name: 'Цветовой акцент',     ds: 'Тёплый акцент на соплах и законцовках крыльев', v: true },
+  react:  { n: 9,  name: 'Реакция на управление',ds: 'Крен и тангаж за мышью, живой микро-дрейф', v: true },
+  trail:  { n: 10, name: 'Чистый шлейф',        ds: 'Узкая струя, сужается и гаснет назад — без облака пыли', v: true }
+};
+const PR_KEYS = Object.keys(PR);
+
+const S = {
+  size:     { label: 'Размер точки',   min: 0.4, max: 4,   step: 0.05, v: 1.7 },
+  edgeBoost:{ label: 'Контур ярче',    min: 1,   max: 4,   step: 0.05, v: 2.1 },
+  fillDim:  { label: 'Заливка тусклее',min: 0.02,max: 1,   step: 0.02, v: 0.2 },
+  depthK:   { label: 'Сила глубины',   min: 0,   max: 1,   step: 0.02, v: 0.6 },
+  focusK:   { label: 'Яркость ядра',   min: 0,   max: 3,   step: 0.05, v: 1.3 },
+  accentK:  { label: 'Сила акцента',   min: 0,   max: 1,   step: 0.02, v: 0.7 },
+  ribsN:    { label: 'Рёбер',          min: 0,   max: 600, step: 10,   v: 260 },
+  trailLen: { label: 'Длина шлейфа',   min: 2,   max: 30,  step: 0.5,  v: 13 },
+  spin:     { label: 'Вращение',       min: 0,   max: 1,   step: 0.02, v: 0.3 }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// СЦЕНА
+// ─────────────────────────────────────────────────────────────────────────────
+const cv = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 200);
+
+// фон-градиент как в схеме: глубокий синий, чтобы холодный контур читался
+const sky = new THREE.Mesh(new THREE.SphereGeometry(150, 24, 16), new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false,
+  uniforms: { uTop: { value: new THREE.Color(0x050a14) }, uBot: { value: new THREE.Color(0x101f3a) } },
+  vertexShader: 'varying float vY; void main(){ vY=normalize(position).y; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+  fragmentShader: 'varying float vY; uniform vec3 uTop,uBot; void main(){ gl_FragColor=vec4(mix(uBot,uTop,smoothstep(-0.3,0.7,vY)),1.0); }'
+}));
+scene.add(sky);
+
+// мягкий круглый спрайт: точки должны быть светящимися кругляшами, не квадратами
+function softTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d');
+  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,255,255,1)');
+  gr.addColorStop(0.35, 'rgba(255,255,255,0.9)');
+  gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+}
+const TEX = softTex();
+
+// ── шейдер точек ────────────────────────────────────────────────────────────
+// Всё, что зависит от роли точки и от глубины, считается на GPU: иначе иерархию
+// плотности и «объём» пришлось бы пересчитывать на CPU каждый кадр по 14 тысячам точек.
+const uni = {
+  uTex:    { value: TEX },
+  uSize:   { value: S.size.v },
+  uPx:     { value: innerHeight },
+  uEdge:   { value: S.edgeBoost.v },
+  uFill:   { value: S.fillDim.v },
+  uDepthK: { value: S.depthK.v },
+  uAccentK:{ value: S.accentK.v },
+  uT:      { value: 0 },
+  // тумблеры как 0/1 — ветвлений в шейдере почти нет, просто гасим слагаемые
+  fSym:    { value: 1 }, fDens: { value: 1 }, fOutline: { value: 1 },
+  fDepth:  { value: 1 }, fAccent:{ value: 1 }
+};
+const pointMat = new THREE.ShaderMaterial({
+  uniforms: uni, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `
+    attribute float aRole;   // 0 заливка, 1 ребро/контур, 2 сопло, 3 маяк
+    attribute float aZone;   // 0 ядро, 1 корпус, 2 крыло, 3 корма/шлейф
+    attribute float aRand;
+    uniform float uSize, uPx, uEdge, uFill, uDepthK, uAccentK, uT;
+    uniform float fSym, fDens, fOutline, fDepth, fAccent;
+    varying vec3 vCol;
+    varying float vA;
+    void main() {
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      float dist = -mv.z;
+      // базовый холодный тон корпуса, как в схеме
+      vec3 col = vec3(0.62, 0.82, 1.0);
+      float br = 1.0;
+      float sz = uSize;
+      // (3) СИЛУЭТ: рёбра ярче и крупнее, заливка уходит в тень
+      if (aRole > 0.5 && aRole < 1.5) {
+        br *= mix(1.0, uEdge, fOutline);
+        sz *= mix(1.0, 1.35, fOutline);
+      } else if (aRole < 0.5) {
+        br *= mix(0.55, uFill, fOutline);
+      }
+      // (2) ИЕРАРХИЯ ПЛОТНОСТИ: у каждой зоны свой размер и вклад в яркость
+      if (fDens > 0.5) {
+        if (aZone < 0.5)      { sz *= 1.45; br *= 1.25; }   // ядро — плотное и крупное
+        else if (aZone < 1.5) { sz *= 1.05; br *= 1.0;  }   // корпус
+        else if (aZone < 2.5) { sz *= 0.82; br *= 0.9;  }   // крылья — мельче, легче
+        else                  { sz *= 0.7;  br *= 0.75; }   // корма — самая рыхлая
+      }
+      // (8) ЦВЕТОВОЙ АКЦЕНТ: сопла тёплые, маяки белые
+      if (aRole > 1.5 && aRole < 2.5) {
+        col = mix(col, vec3(1.0, 0.66, 0.32), uAccentK * fAccent);
+        sz *= 2.6; br *= 1.5;
+      } else if (aRole > 2.5) {
+        col = mix(col, vec3(1.0, 0.98, 0.92), uAccentK * fAccent);
+        sz *= 1.7;
+        br *= 1.2 + 0.8 * step(0.5, fract(uT * 1.1 + aRand)); // маяк-строб
+      } else if (fAccent > 0.5) {
+        // законцовки крыльев тоже ловят тёплый акцент — форма получает «фары»
+        float tip = smoothstep(1.7, 2.7, abs(position.x));
+        col = mix(col, vec3(1.0, 0.74, 0.45), tip * uAccentK * 0.8);
+      }
+      // (7) ГЛУБИНА: ближе — крупнее и ярче. Ключевой приём объёма для облака точек.
+      if (fDepth > 0.5) {
+        float dn = clamp((dist - 7.0) / 16.0, 0.0, 1.0);     // 0 близко → 1 далеко
+        sz *= mix(1.0, 1.0 - dn * 0.55, uDepthK);
+        br *= mix(1.0, 1.0 - dn * 0.62, uDepthK);
+      }
+      br *= 0.82 + 0.36 * aRand;                              // живая разнояркость
+      vCol = col * br;
+      vA = clamp(br, 0.0, 1.6);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(sz * uPx * 0.0016 / max(dist * 0.08, 0.25), 0.6, 26.0);
+    }`,
+  fragmentShader: `
+    uniform sampler2D uTex;
+    varying vec3 vCol; varying float vA;
+    void main() {
+      float a = texture2D(uTex, gl_PointCoord).a * vA;
+      if (a < 0.01) discard;
+      gl_FragColor = vec4(vCol, a);
+    }`
+});
+
+const shipGrp = new THREE.Group();
+scene.add(shipGrp);
+let pts = null, ribs = null, axis = null, core = null, trail = null, streaks = null;
+let RAW = null;   // { pos:Float32Array, edgeN:number, engines:[], lights:[] }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ЗАГРУЗКА МОДЕЛИ ИЗ ФАЙЛА ИГРЫ
+// ─────────────────────────────────────────────────────────────────────────────
+function decodeShip(txt) {
+  const b64 = txt.match(/const SHIP_B64 = '([^']+)'/);
+  const edgeN = txt.match(/const SHIP_EDGE_N = (\d+)/);
+  const scale = txt.match(/const SHIP_SCALE = ([\d.]+)/);
+  const eng = txt.match(/const SHIP_ENGINES = (\[\[[^;]+?\]\]);/);
+  const lig = txt.match(/const SHIP_LIGHTS = (\[\[[^;]+?\]\]);/);
+  if (!b64 || !edgeN || !scale) return null;
+  const raw = atob(b64[1]), n = raw.length;
+  const a = new Float32Array(n);
+  const sc = parseFloat(scale[1]);
+  for (let i = 0; i < n; i++) { let v = raw.charCodeAt(i); if (v > 127) v -= 256; a[i] = v / 127 * sc; }
+  const parseArr = m => { try { return JSON.parse(m[1].replace(/\s+/g, '')); } catch (e) { return []; } };
+  return { pos: a, edgeN: parseInt(edgeN[1], 10),
+           engines: eng ? parseArr(eng) : [], lights: lig ? parseArr(lig) : [] };
+}
+
+// ── сборка облака с ролями и зонами ────────────────────────────────────────
+function buildShip() {
+  const edgeN = RAW.edgeN, total = RAW.pos.length / 3;
+  const src = RAW.pos;
+  const P = [], role = [], zone = [], rnd = [];
+
+  // (1) СИММЕТРИЯ: берём точки правого борта и зеркалим на левый. Модель из скана
+  // слегка асимметрична, и на облаке точек это читается как «мятая» форма —
+  // зеркаливание сразу даёт чистую ось. Точки у самой оси оставляем как есть.
+  const doSym = PR.sym.v;
+  for (let i = 0; i < total; i++) {
+    const x = src[i * 3], y = src[i * 3 + 1], z = src[i * 3 + 2];
+    const isEdge = i < edgeN;
+    const r = isEdge ? 1 : 0;
+    // зона по геометрии: ядро у центра, крылья по |x|, корма по z
+    let zn;
+    const ax = Math.abs(x);
+    if (z > 1.9) zn = 3;
+    else if (ax > 1.75) zn = 2;
+    else if (ax < 0.55 && Math.abs(z) < 1.5) zn = 0;
+    else zn = 1;
+    if (doSym) {
+      if (ax < 0.12) { P.push(x, y, z); role.push(r); zone.push(zn); rnd.push(hash(i, 3)); }
+      else if (x > 0) {
+        P.push(x, y, z);  role.push(r); zone.push(zn); rnd.push(hash(i, 3));
+        P.push(-x, y, z); role.push(r); zone.push(zn); rnd.push(hash(i, 5));
+      }
+    } else {
+      P.push(x, y, z); role.push(r); zone.push(zn); rnd.push(hash(i, 3));
+    }
+  }
+  // сопла и маяки — отдельными ролями (в схеме: «двигатели читаются отдельной формой»)
+  RAW.engines.forEach((e, k) => { P.push(e[0], e[1], e[2]); role.push(2); zone.push(3); rnd.push(hash(k, 9)); });
+  RAW.lights.forEach((l, k) => { P.push(l[0], l[1], l[2]); role.push(3); zone.push(1); rnd.push(hash(k, 11)); });
+
+  if (pts) { pts.geometry.dispose(); shipGrp.remove(pts); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+  g.setAttribute('aRole', new THREE.Float32BufferAttribute(role, 1));
+  g.setAttribute('aZone', new THREE.Float32BufferAttribute(zone, 1));
+  g.setAttribute('aRand', new THREE.Float32BufferAttribute(rnd, 1));
+  pts = new THREE.Points(g, pointMat);
+  pts.frustumCulled = false;
+  shipGrp.add(pts);
+  document.getElementById('mPts').textContent = (P.length / 3 / 1000).toFixed(1) + 'k';
+  buildRibs(P, role);
+}
+
+// (6) СТРУКТУРА: линии между близкими узлами контура. Даёт «чертёж» вместо пыли.
+function buildRibs(P, role) {
+  if (ribs) { ribs.geometry.dispose(); shipGrp.remove(ribs); ribs = null; }
+  const want = S.ribsN.v | 0;
+  if (!PR.ribs.v || want <= 0) return;
+  // берём подвыборку точек контура: полный перебор 3.5k×3.5k не нужен, хватает ~500
+  const idx = [];
+  for (let i = 0; i < role.length && idx.length < 520; i++) if (role[i] === 1 && hash(i, 17) > 0.85) idx.push(i);
+  const seg = [];
+  for (let a = 0; a < idx.length && seg.length / 6 < want; a++) {
+    const ia = idx[a], ax = P[ia * 3], ay = P[ia * 3 + 1], az = P[ia * 3 + 2];
+    let bestD = 1e9, best = -1;
+    for (let b = 0; b < idx.length; b++) {
+      if (b === a) continue;
+      const ib = idx[b];
+      const dx = P[ib * 3] - ax, dy = P[ib * 3 + 1] - ay, dz = P[ib * 3 + 2] - az;
+      const d = dx * dx + dy * dy + dz * dz;
+      if (d < bestD && d > 0.02) { bestD = d; best = ib; }
+    }
+    if (best >= 0 && bestD < 1.4) seg.push(ax, ay, az, P[best * 3], P[best * 3 + 1], P[best * 3 + 2]);
+  }
+  if (!seg.length) return;
+  const rg = new THREE.BufferGeometry();
+  rg.setAttribute('position', new THREE.Float32BufferAttribute(seg, 3));
+  ribs = new THREE.LineSegments(rg, new THREE.LineBasicMaterial({
+    color: 0x8fc4ff, transparent: true, opacity: 0.26, blending: THREE.AdditiveBlending, depthWrite: false }));
+  ribs.frustumCulled = false;
+  shipGrp.add(ribs);
+}
+
+// доп. элементы: ось, ядро, шлейф, штрихи движения
+function buildExtras() {
+  // ЧЁТКАЯ ОСЬ (доп. из схемы): визуальная линия вдоль корпуса усиливает симметрию
+  if (axis) { axis.geometry.dispose(); shipGrp.remove(axis); axis = null; }
+  if (PR.sym.v) {
+    const ag = new THREE.BufferGeometry();
+    ag.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, -3.4, 0, 0, 3.2], 3));
+    axis = new THREE.Line(ag, new THREE.LineBasicMaterial({ color: 0x7fb4ff, transparent: true,
+      opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }));
+    shipGrp.add(axis);
+  }
+  // (4) ЦЕНТР ФОКУСА: одна крупная тёплая точка в центре масс
+  if (core) { core.geometry.dispose(); shipGrp.remove(core); core = null; }
+  if (PR.focus.v) {
+    const cg = new THREE.BufferGeometry();
+    cg.setAttribute('position', new THREE.Float32BufferAttribute([0, 0.05, 0.1], 3));
+    core = new THREE.Points(cg, new THREE.PointsMaterial({ color: 0xfff0d0, size: 1.5,
+      map: TEX, transparent: true, opacity: clamp01(S.focusK.v / 3) * 0.95,
+      blending: THREE.AdditiveBlending, depthWrite: false }));
+    core.frustumCulled = false;
+    shipGrp.add(core);
+  }
+  // (10) ЧИСТЫЙ ШЛЕЙФ: узкие струи от сопел, сужаются и гаснут назад
+  if (trail) { trail.geometry.dispose(); shipGrp.remove(trail); trail = null; }
+  if (PR.trail.v && RAW.engines.length) {
+    const tp = [], tc = [], L = S.trailLen.v, N = 34;
+    RAW.engines.forEach((e, ei) => {
+      for (let k = 0; k < N; k++) {
+        const t = k / N;
+        const w = (1 - t) * 0.26;                       // сужение к хвосту
+        const a = hash(k, ei * 13) * Math.PI * 2;
+        const rr = w * (0.4 + 0.6 * hash(k * 3, ei));
+        tp.push(e[0] + Math.cos(a) * rr, e[1] + Math.sin(a) * rr * 0.7, e[2] + t * L);
+        const f = Math.pow(1 - t, 1.7);                  // гаснет назад
+        tc.push(1.0 * f, (0.72 + 0.2 * (1 - f)) * f, (0.45 + 0.4 * (1 - f)) * f);
+      }
+    });
+    const tg = new THREE.BufferGeometry();
+    tg.setAttribute('position', new THREE.Float32BufferAttribute(tp, 3));
+    tg.setAttribute('color', new THREE.Float32BufferAttribute(tc, 3));
+    trail = new THREE.Points(tg, new THREE.PointsMaterial({ vertexColors: true, size: 0.42,
+      map: TEX, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+    trail.frustumCulled = false;
+    shipGrp.add(trail);
+  }
+  // (5) ДВИЖЕНИЕ И СЛЕД: короткие штрихи, летящие мимо корпуса — вектор движения
+  if (streaks) { streaks.geometry.dispose(); scene.remove(streaks); streaks = null; }
+  if (PR.motion.v) {
+    const N = 70, sp = new Float32Array(N * 6);
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+    streaks = new THREE.LineSegments(sg, new THREE.LineBasicMaterial({ color: 0x9fd4ff,
+      transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false }));
+    streaks.frustumCulled = false;
+    streaks.userData.p = new Float32Array(N * 3);
+    for (let k = 0; k < N; k++) {
+      streaks.userData.p[k * 3]     = (hash(k, 1) - 0.5) * 16;
+      streaks.userData.p[k * 3 + 1] = (hash(k, 2) - 0.5) * 10;
+      streaks.userData.p[k * 3 + 2] = -18 + hash(k, 3) * 40;
+    }
+    scene.add(streaks);
+  }
+}
+
+function syncUniforms() {
+  uni.uSize.value = S.size.v;
+  uni.uEdge.value = S.edgeBoost.v;
+  uni.uFill.value = S.fillDim.v;
+  uni.uDepthK.value = S.depthK.v;
+  uni.uAccentK.value = S.accentK.v;
+  uni.fDens.value = PR.dens.v ? 1 : 0;
+  uni.fOutline.value = PR.outline.v ? 1 : 0;
+  uni.fDepth.value = PR.depth.v ? 1 : 0;
+  uni.fAccent.value = PR.accent.v ? 1 : 0;
+}
+function rebuild() { syncUniforms(); buildShip(); buildExtras(); }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ИНТЕРФЕЙС
+// ─────────────────────────────────────────────────────────────────────────────
+const prList = document.getElementById('prList');
+PR_KEYS.forEach(k => {
+  const d = PR[k];
+  const el = document.createElement('label');
+  el.className = 'pr' + (d.v ? ' on' : '');
+  el.innerHTML = '<input type="checkbox"' + (d.v ? ' checked' : '') + '>' +
+    '<span class="tx"><span class="nm">' + d.n + '. ' + d.name + '</span>' +
+    '<span class="ds">' + d.ds + '</span></span>';
+  el.querySelector('input').onchange = e => {
+    d.v = e.target.checked;
+    el.classList.toggle('on', d.v);
+    rebuild();
+  };
+  d.el = el;
+  prList.appendChild(el);
+});
+
+const slBox = document.getElementById('sliders');
+for (const k in S) {
+  const d = S[k];
+  const row = document.createElement('div'); row.className = 'row';
+  const lab = document.createElement('label'); lab.textContent = d.label;
+  const inp = document.createElement('input');
+  inp.type = 'range'; inp.min = d.min; inp.max = d.max; inp.step = d.step; inp.value = d.v;
+  const val = document.createElement('div'); val.className = 'val';
+  const fmt = v => d.step < 1 ? (+v).toFixed(2) : String(v | 0);
+  val.textContent = fmt(d.v);
+  inp.oninput = () => { d.v = +inp.value; val.textContent = fmt(inp.value); rebuild(); };
+  row.append(lab, inp, val); slBox.appendChild(row);
+}
+
+function setAll(on) {
+  PR_KEYS.forEach(k => {
+    PR[k].v = on;
+    PR[k].el.classList.toggle('on', on);
+    PR[k].el.querySelector('input').checked = on;
+  });
+  rebuild();
+}
+document.getElementById('bAll').onclick = () => setAll(true);
+document.getElementById('bNone').onclick = () => setAll(false);
+document.getElementById('bCopy').onclick = () => {
+  const p = {}; PR_KEYS.forEach(k => p[PR[k].n + '_' + k] = PR[k].v);
+  const s = {}; for (const k in S) s[k] = S[k].v;
+  const out = JSON.stringify({ principles: p, settings: s }, null, 2);
+  const done = () => { const t = document.getElementById('toast'); t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 1500); };
+  if (navigator.clipboard) navigator.clipboard.writeText(out).then(done, () => { console.log(out); done(); });
+  else { console.log(out); done(); }
+};
+
+// ракурсы: спереди — судить симметрию, сбоку — силуэт, сверху — раскладку крыльев
+let viewMode = 0, spinOn = true, mx = 0, my = 0;
+const VIEWS = ['3/4', 'СПЕРЕДИ', 'СБОКУ', 'СВЕРХУ'];
+addEventListener('keydown', e => {
+  const n = e.key === '0' ? 10 : parseInt(e.key, 10);
+  if (n >= 1 && n <= 10) {
+    const k = PR_KEYS[n - 1]; PR[k].v = !PR[k].v;
+    PR[k].el.classList.toggle('on', PR[k].v);
+    PR[k].el.querySelector('input').checked = PR[k].v;
+    rebuild(); return;
+  }
+  if (e.code === 'Space') { spinOn = !spinOn; e.preventDefault(); return; }
+  if (e.key === 'v' || e.key === 'V' || e.key === 'м' || e.key === 'М') {
+    viewMode = (viewMode + 1) % 4;
+    document.getElementById('mView').textContent = VIEWS[viewMode];
+    return;
+  }
+  if (e.key === 'h' || e.key === 'H' || e.key === 'р' || e.key === 'Р') {
+    const u = document.getElementById('ui');
+    u.style.display = u.style.display === 'none' ? '' : 'none';
+  }
+});
+addEventListener('mousemove', e => { mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5; }, { passive: true });
+addEventListener('resize', () => {
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  uni.uPx.value = innerHeight;
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+const clock = new THREE.Clock();
+let fps = 60, acc = 0, yaw = 0;
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, clock.getDelta());
+  const t = clock.getElapsedTime();
+  uni.uT.value = t;
+
+  if (spinOn) yaw += dt * S.spin.v * 0.55;
+  // (9) РЕАКЦИЯ: крен/тангаж за мышью + микро-дрейф, чтобы форма не была мёртвой
+  const rk = PR.react.v ? 1 : 0;
+  shipGrp.rotation.y = yaw + (PR.react.v ? mx * 0.5 : 0);
+  shipGrp.rotation.z = rk * (-mx * 0.55 + Math.sin(t * 0.7) * 0.03);
+  shipGrp.rotation.x = rk * (my * 0.35 + Math.sin(t * 0.53) * 0.02);
+  shipGrp.position.y = rk * Math.sin(t * 0.9) * 0.06;
+
+  // штрихи движения летят мимо
+  if (streaks) {
+    const p = streaks.userData.p, arr = streaks.geometry.attributes.position.array;
+    for (let k = 0; k < 70; k++) {
+      p[k * 3 + 2] += dt * 26;
+      if (p[k * 3 + 2] > 22) { p[k * 3 + 2] = -18; p[k * 3] = (hash(k, t) - 0.5) * 16; p[k * 3 + 1] = (hash(t, k) - 0.5) * 10; }
+      const o = k * 6;
+      arr[o] = p[k * 3]; arr[o + 1] = p[k * 3 + 1]; arr[o + 2] = p[k * 3 + 2];
+      arr[o + 3] = p[k * 3]; arr[o + 4] = p[k * 3 + 1]; arr[o + 5] = p[k * 3 + 2] - 3.4;
+    }
+    streaks.geometry.attributes.position.needsUpdate = true;
+  }
+  if (core) core.material.opacity = clamp01(S.focusK.v / 3) * (0.72 + 0.28 * Math.sin(t * 2.1));
+
+  const R = 11;
+  if (viewMode === 0)      camera.position.set(R * 0.72, R * 0.42, R * 0.8);
+  else if (viewMode === 1) camera.position.set(0, 0.6, -R * 1.05);
+  else if (viewMode === 2) camera.position.set(R * 1.05, 0.4, 0);
+  else                     camera.position.set(0, R * 1.05, 0.001);
+  camera.lookAt(0, 0, 0);
+
+  renderer.render(scene, camera);
+  const f = dt > 0 ? 1 / dt : 60;
+  fps += (f - fps) * 0.08; acc += dt;
+  if (acc > 0.25) { acc = 0; document.getElementById('mFps').textContent = Math.round(fps); }
+}
+
+fetch('hero-scene.html').then(r => r.text()).then(txt => {
+  RAW = decodeShip(txt);
+  if (!RAW) throw new Error('no ship data');
+  rebuild();
+  loop();
+}).catch(() => { document.getElementById('err').style.display = 'flex'; });
+</script>
+</body>
+</html>
