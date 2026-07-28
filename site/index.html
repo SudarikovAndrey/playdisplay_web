@@ -193,26 +193,18 @@
   /* типы пространств в левом верхнем углу: ниже шапки и угловой скобки, по сетке .wrap */
   .hero-top { position: absolute; left: 0; right: 0; top: clamp(104px, 15vh, 172px);
     z-index: 4; pointer-events: none; }
-  .hero-kinds { display: flex; align-items: center; gap: 18px; }
-  .hero-kinds .hk-dash { width: 42px; height: 1px; flex: 0 0 auto; background: var(--signal-amber);
-    box-shadow: 0 0 12px rgba(255,138,42,0.5); }
-  /* высота под одну строку: слова лежат друг на друге и сменяются без сдвига соседей */
-  .hero-kinds .hk-stack { position: relative; display: block; height: 1.16em;
-    font: 600 clamp(19px, 2.25vw, 33px)/1.16 var(--font-display); letter-spacing: -0.015em; }
-  .hero-kinds .hk { position: absolute; left: 0; top: 0; white-space: nowrap;
-    color: rgba(241,251,252,0.94); text-shadow: 0 2px 18px rgba(3,12,16,0.95), 0 0 42px rgba(3,12,16,0.7);
-    opacity: 0; transform: translateY(0.42em); filter: blur(5px);
-    transition: opacity .6s ease, transform .8s cubic-bezier(.16,1,.3,1), filter .6s ease; }
-  .hero-kinds .hk.on { opacity: 1; transform: none; filter: none; }
-  .hero-kinds .hk.out { opacity: 0; transform: translateY(-0.36em); filter: blur(6px); }
+  /* моношрифт в наборе капителью — тот же язык, что у надписей HUD в этой же сцене;
+     дисплейное начертание в 33 px спорило с заголовком */
+  .hero-kinds .hk-line { display: inline-block; min-height: 1.2em;
+    font: 500 clamp(13.5px, 1.2vw, 17px)/1.2 var(--font-mono);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(241,251,252,0.82); }
+  /* полный список — только для разметки, из потока убран */
+  .hero-kinds .hk-all { position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip-path: inset(50%); white-space: nowrap; }
   @media (max-width: 700px) {
     .hero-top { top: 84px; }
-    .hero-kinds { gap: 12px; }
-    .hero-kinds .hk-dash { width: 24px; }
-    .hero-kinds .hk-stack { font-size: 17px; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hero-kinds .hk { transition: opacity .35s ease; transform: none; filter: none; }
+    .hero-kinds .hk-line { font-size: 12px; letter-spacing: 0.16em; }
   }
   .hero-btns { display: flex; gap: 16px; margin-top: 30px; align-items: center; pointer-events: auto; }
   .btn-line {
@@ -1079,22 +1071,14 @@
     <div><div class="k">Point count</div><div class="v accent" id="hud-pts">— pts</div></div>
     <div><div class="k">Status</div><div class="v" id="hud-status">· полёт</div></div>
   </div>
-  <!-- Типы пространств: сменяются по очереди. Стоят в левом верхнем углу по той же
-       модульной сетке, что заголовок — оба внутри .wrap, поэтому левый край совпадает.
-       Раньше это была строка моношрифтом 11 px поверх облака точек: не читалась. -->
+  <!-- Типы пространств: сменяются «расшифровкой» символов. Стоят в левом верхнем углу
+       по той же модульной сетке, что заголовок — оба внутри .wrap, левый край совпадает.
+       Видимая строка одна, её перебирает скрипт; полный список лежит рядом скрытым,
+       чтобы слова остались в разметке для поиска. -->
   <div class="wrap hero-top">
     <div class="hero-kinds" id="heroKinds">
-      <span class="hk-dash" aria-hidden="true"></span>
-      <span class="hk-stack">
-        <span class="hk on">Музеи</span>
-        <span class="hk">Выставки</span>
-        <span class="hk">Visitor centre</span>
-        <span class="hk">Шоурумы</span>
-        <span class="hk">Иммерсивные комнаты</span>
-        <span class="hk">Бренд-пространства</span>
-        <span class="hk">Общественные пространства</span>
-        <span class="hk">Корпоративные пространства</span>
-      </span>
+      <span class="hk-line" id="hkLine">Музеи</span>
+      <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Бренд-пространства · Общественные пространства · Корпоративные пространства</span>
     </div>
   </div>
 
@@ -1640,32 +1624,45 @@
     io.observe(wm);
   })();
 
-  // ===== типы пространств в левом верхнем углу hero сменяют друг друга =====
+  // ===== типы пространств: смена «расшифровкой» символов =====
+  // Буквы сначала сыплются случайным набором, затем фиксируются слева направо —
+  // тот же язык, что у HUD-надписей сцены. Плавное затухание тут выглядело вяло.
   (function(){
-    var box = document.getElementById('heroKinds');
-    if (!box) return;
-    var words = [].slice.call(box.querySelectorAll('.hk'));
-    if (words.length < 2) return;
-    var i = 0, timer = 0;
+    var line = document.getElementById('hkLine');
+    if (!line) return;
+    var WORDS = ['Музеи', 'Выставки', 'Визит-центры', 'Шоурумы', 'Иммерсивные комнаты',
+                 'Бренд-пространства', 'Общественные пространства', 'Корпоративные пространства'];
+    var GLYPHS = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯ0123456789/\\|<>#*+=·';
+    var i = 0, timer = 0, raf = 0;
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var HOLD = reduce ? 5200 : 2600;
-    function show(n){
-      var prev = words[i];
-      prev.classList.remove('on'); prev.classList.add('out');
-      // класс out снимаем после ухода, иначе слово вернётся не с той стороны
-      setTimeout(function(){ prev.classList.remove('out'); }, 1200);
-      i = n;
-      words[i].classList.add('on');
+    var HOLD = 2800, DUR = 640, LOCK = 0.5;   // LOCK — доля времени, за которую фронт фиксации проходит строку
+
+    function rnd(){ return GLYPHS[(Math.random() * GLYPHS.length) | 0]; }
+    function morph(from, to){
+      if (reduce) { line.textContent = to; return; }
+      var len = Math.max(from.length, to.length), t0 = performance.now();
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(function step(now){
+        var p = Math.min(1, (now - t0) / DUR), out = '';
+        for (var k = 0; k < len; k++) {
+          var ch = to.charAt(k);
+          if (ch === ' ' || ch === '-') { out += ch; continue; }   // пробелы и дефисы не шифруем
+          var lockAt = LOCK * (k / len);
+          var q = (p - lockAt) / (1 - LOCK);
+          out += q >= 1 ? ch : rnd();
+        }
+        line.textContent = out;
+        if (p < 1) raf = requestAnimationFrame(step); else line.textContent = to;
+      });
     }
-    function tick(){ show((i + 1) % words.length); }
+    function tick(){ var from = line.textContent; i = (i + 1) % WORDS.length; morph(from, WORDS[i]); }
     function start(){ if (!timer) timer = setInterval(tick, HOLD); }
-    function stop(){ if (timer) { clearInterval(timer); timer = 0; } }
+    function stop(){ if (timer) { clearInterval(timer); timer = 0; } cancelAnimationFrame(raf); raf = 0; }
     document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : start(); });
-    // hero занимает первый экран: за его пределами смену слов останавливаем
     if (window.IntersectionObserver) {
       new IntersectionObserver(function(es){
         es.forEach(function(e){ e.isIntersecting ? start() : stop(); });
-      }, { threshold: 0 }).observe(box);
+      }, { threshold: 0 }).observe(line);
     } else start();
   })();
 
