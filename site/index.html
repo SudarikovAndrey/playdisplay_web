@@ -4417,7 +4417,7 @@
       if (e.key === 'Escape' && view.classList.contains('open')) requestCloseConcept();
     });
 
-    fetch('data/concepts.json?v=2').then(function(r){ return r.json(); }).then(function(json){
+    fetch('data/concepts.json', { cache: 'no-cache' }).then(function(r){ return r.json(); }).then(function(json){
       data = json;
       // сообщаем hero-сцене редакцию контента — её показывает плашка по клику на DEV
       (function tellScene(tries){
@@ -4576,7 +4576,7 @@
     document.getElementById('aViewClose').addEventListener('click', closeLesson);
     addEventListener('keydown', function(e){ if (e.key === 'Escape' && view.classList.contains('open')) closeLesson(); });
 
-    fetch('data/atlas.json?v=3').then(function(r){ return r.json(); }).then(function(json){
+    fetch('data/atlas.json', { cache: 'no-cache' }).then(function(r){ return r.json(); }).then(function(json){
       data = json;
       // В фильтре тип во множественном числе («Концепты»), на карточке — в единственном («КОНЦЕПТ»)
       var labels = data.catLabels || {};
