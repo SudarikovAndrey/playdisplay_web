@@ -82,18 +82,28 @@ const CONFIG = {
     lodStep: [1, 1.5, 2.3, 3.6],  // §22: множитель шага на LOD 0..3
     lodEdges: [1, 0.6, 0.15, 0],  // доля акцентных точек по LOD
     ceilMul: 1.35,         // потолок реже пола: он дальше от глаза и не несёт формы
-    budget: 420000         // §23 бюджет активных точек (на референсе 342k)
+    budget: 420000,        // §23 бюджет активных точек (на референсе 342k)
+    // ПЯТНИСТАЯ ПЛОТНОСТЬ: раньше плотность падала ТОЛЬКО монотонно от оси к краю
+    // (far), и при равномерном шаге сетки это читалось как ровная пыль по всему
+    // кадру — «жидко», даже когда общий бюджет точек был выше референса. На
+    // референсе плотность идёт СГУСТКАМИ — где-то заметно гуще, где-то почти
+    // пусто, и именно эта пятнистость даёт ощущение фактуры породы, а не тумана.
+    clumpFreq: 0.02,       // масштаб пятен (в юнитах^-1) — крупнее, чем micro/meso
+    clumpMin: 0.56         // минимальная вероятность сохранить точку в «пустом» пятне
   },
   // §11 четыре слоя. A/B/C уходят в ОДИН буфер (различаются атрибутами role/size),
   // D (атмосфера) живёт отдельно и геометрией не считается.
   layer: { SURFACE: 0, SILHOUETTE: 1, EDGE: 2, SOLID: 3 },
-  // §15 размеры и яркости по ролям
+  // §15 размеры и яркости по ролям. РАЗБРОС УВЕЛИЧЕН НАМЕРЕННО: на референсе кромки
+  // гребней — почти белые и заметно крупнее, чем тусклая мелкая заливка склона.
+  // При старом разбросе (1.4×/1.6×) на расстоянии в игре кромка и заливка сливались
+  // в одинаковую морось — рельеф не читался, хотя бюджет точек был выполнен.
   look: {
-    sizeSurface: 1.0, sizeSilh: 1.55, sizeEdge: 1.4, sizeSolid: 1.15,
+    sizeSurface: 0.78, sizeSilh: 2.1, sizeEdge: 2.7, sizeSolid: 1.3,
     // На референсе освещённые склоны почти белые, а теневые уходят в тёмную бирюзу.
     // Поднял яркость и усилил контраст света (litPow<1 растягивает верх диапазона).
-    brSurface: 0.9, brSilh: 1.15, brEdge: 1.45, brSolid: 1.0, litPow: 0.7, litFloor: 0.12,
-    edgeSlope: 1.7,        // с какого градиента точка считается «кромкой»
+    brSurface: 0.5, brSilh: 1.5, brEdge: 1.9, brSolid: 1.05, litPow: 0.5, litFloor: 0.05,
+    edgeLo: 0.55, edgeHi: 1.9,   // §переход по градиенту непрерывный, не бинарный порог
     tintRoute: 0.3         // насколько ближе к цвету биома точки у маршрута
   },
   fork: { splitAt: 0.28, mergeAt: 0.84, spread: 52, riskNarrow: 0.55 },
@@ -742,6 +752,12 @@ function generateChunk(def, opts) {
       // шаг по x растёт от центра к краю
       const far = smoothstep(D.nearBand, D.farBand, dx);
       const stepX = D.base * stepMul * lerp(1, D.farMul, far);
+      // ПЯТНИСТАЯ ПЛОТНОСТЬ (не монотонный радиальный спад): низкочастотный шум
+      // модулирует вероятность сохранить кандидата — где-то заметно гуще, где-то
+      // почти пусто. Проверяем ДО jitter/baseAt — так пропуск ничего не считает.
+      const clumpN = fbm(x * D.clumpFreq, zw * D.clumpFreq, 2, 0.55);
+      const keep = D.clumpMin + (1 - D.clumpMin) * clumpN;
+      if (hash(x * 3.1 + 5, zw * 3.1 + 5) > keep) { x += stepX; continue; }
       const jx = x + (hash(x, zw) - 0.5) * stepX;
       const jz = zw + (hash(zw, x) - 0.5) * stepZ;
       const zLoc = clamp(jz - def.zStart, 0, L);
@@ -873,15 +889,22 @@ function forPointsNear(idx, x, z, r, cb, step) {
 // одна точка поверхности: цвет/размер/роль по правилам §11 и §15
 function pushPoint(pos, col, siz, msk, x, y, z, slope, hx, hz, dx, far, tint, lod, edgeK, isCeil) {
   const LK = CONFIG.look;
-  // роль: кромка (резкая смена нормали, §13/§14) → акцент; иначе поверхность
-  let role = CONFIG.layer.SURFACE, sz = LK.sizeSurface, br = LK.brSurface;
-  const isEdge = slope > LK.edgeSlope;
-  if (isEdge) {
-    if (hash(x, z) > 1 - edgeK) { role = CONFIG.layer.EDGE; sz = LK.sizeEdge; br = LK.brEdge; }
-    else { role = CONFIG.layer.SILHOUETTE; sz = LK.sizeSilh; br = LK.brSilh; }
-  } else if (hash(x * 3, z * 3) > 0.985) {
-    role = CONFIG.layer.SILHOUETTE; sz = LK.sizeSilh; br = LK.brSilh;   // редкие искры
-  }
+  // РАЗМЕР/ЯРКОСТЬ НЕПРЕРЫВНО ПО ГРАДИЕНТУ (edgeT), а не бинарным порогом: старый
+  // код либо давал «поверхность», либо разом прыгал в «кромка» — на глаз при таком
+  // разбросе (1.4×/1.6×) две группы сливались в одну и рельеф не читался. Теперь
+  // кромка гребня плавно НАБИРАЕТ размер и яркость по мере роста уклона, а плоские
+  // места остаются мелкими и тусклыми — именно контраст «кромка/заливка» рисует
+  // форму, а не абсолютное число точек.
+  const edgeT = clamp01((slope - LK.edgeLo) / Math.max(0.01, LK.edgeHi - LK.edgeLo));
+  let role = CONFIG.layer.SURFACE;
+  if (edgeT > 0.02) role = (hash(x, z) > 1 - edgeK) ? CONFIG.layer.EDGE : CONFIG.layer.SILHOUETTE;
+  const sparkle = (role === CONFIG.layer.SURFACE && hash(x * 3, z * 3) > 0.985);
+  if (sparkle) role = CONFIG.layer.SILHOUETTE;
+  const accentSz = role === CONFIG.layer.EDGE ? LK.sizeEdge : LK.sizeSilh;
+  const accentBr = role === CONFIG.layer.EDGE ? LK.brEdge : LK.brSilh;
+  const accentT = sparkle ? 1 : edgeT;
+  const sz = lerp(LK.sizeSurface, accentSz, accentT);
+  const br = lerp(LK.brSurface, accentBr, accentT);
   // свет по нормали склона — то, что превращает облако в форму
   const nx = -hx, ny = 1.8, nz = -hz;
   const nl = Math.hypot(nx, ny, nz) || 1;
