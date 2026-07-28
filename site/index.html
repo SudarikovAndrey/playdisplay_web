@@ -828,6 +828,11 @@
   footer { background: var(--space-void); border-top: 1px solid var(--space-line); }
   .foot-inner { display: flex; justify-content: space-between; align-items: center; padding: 40px 64px; font: 400 13px var(--font-body); color: var(--scan-white-faint); }
   .foot-inner .mono { font-size: 12px; letter-spacing: 0.05em; }
+  /* подпись авторства: тем же весом, что и остальной подвал, акцент только на имени */
+  .foot-made b { color: var(--signal-teal); font-weight: 600; }
+  @media (max-width: 900px) {
+    .foot-inner { flex-direction: column; align-items: flex-start; gap: 14px; padding: 34px 24px; }
+  }
 
   /* ---------- case viewer ---------- */
   /* фон непрозрачный: мы влетели ВГЛУБЬ проекта, галерея осталась позади камеры.
@@ -1053,8 +1058,9 @@
     <a href="#start" class="logo-home" aria-label="PlayDisplay — на главную"><img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="PlayDisplay"></a>
     <nav class="links">
       <a href="#work">Проекты</a>
-      <a href="#concepts">Концепции</a>
+      <a href="#concepts">Библиотека</a>
       <a href="#atlas">Атлас</a>
+      <a href="#studio">Студия</a>
     </nav>
     <button class="cta-play" onclick="location.href='#contact'">▶︎ Обсудить идею</button>
   </div>
@@ -1158,7 +1164,7 @@
 <section class="trust sec-pad">
   <div class="wrap">
     <div class="kicker eyebrow">Доверие</div>
-    <p>Наши работы показывал канал <b>Discovery</b>. Среди клиентов — <b>автопроизводители</b>, международные аэропорты, национальные музеи и промышленные корпорации.</p>
+    <p>Наши работы показывал канал <b>Discovery</b>. <b>Среди клиентов</b> — автопроизводители, международные аэропорты, национальные музеи и промышленные корпорации.</p>
     <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
     <!-- без reveal-up: этот класс держит opacity:0 до появления класса in,
          а логотипы проявляются своим каскадом -->
@@ -1324,6 +1330,7 @@
 <footer>
   <div class="foot-inner">
     <span>PlayDisplay — пространства, которые люди запоминают. Работаем по всему миру с 2011&nbsp;года.</span>
+    <span class="foot-made">Сайт создан в <b>PlayDisplay</b></span>
     <span class="mono">© 2026 PLAYDISPLAY</span>
   </div>
 </footer>
