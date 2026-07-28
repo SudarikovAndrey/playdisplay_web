@@ -596,9 +596,9 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-<script src="textures.js?v=b2707-game15"></script>
-<script src="odk_frame.js?v=b2707-game15"></script>
-<script src="model.js?v=b2707-game15"></script>
+<script src="textures.js?v=b2707-game16"></script>
+<script src="odk_frame.js?v=b2707-game16"></script>
+<script src="model.js?v=b2707-game16"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -642,7 +642,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2707-game15'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2707-game16'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -4137,9 +4137,11 @@ function loop() {
   const dt = Math.min(_dtAcc, 0.05);
   _dtAcc = 0;
   const time = clock.getElapsedTime();
-  // герой вне кадра или вкладка не в фокусе → не рендерим ВООБЩЕ: 0% GPU, кулер молчит.
-  // rAF продолжает тикать, при возврате сцена мгновенно оживает.
-  if (!sceneVisible && !GAME.on && !ARCHIVE.on) { Sound.frame(0, 0); return; }
+  // герой вне кадра или окно не активно → не рендерим ВООБЩЕ: 0% GPU, кулер молчит.
+  // Игра/архив — исключение ТОЛЬКО если фокус в самом iframe (родитель мигает blur'ом,
+  // когда кликаешь внутрь сцены). Фоновое окно с запущенной игрой больше не жрёт GPU.
+  const engaged = (GAME.on || ARCHIVE.on) && document.hasFocus();
+  if (!sceneVisible && !engaged) { Sound.frame(0, 0); return; }
   voxUniforms.uTime.value = time;
   if (sparkMat) sparkMat.uniforms.uTime.value = time;
   autoQuality(dt);
