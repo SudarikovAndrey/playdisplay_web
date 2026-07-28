@@ -82,16 +82,36 @@ site/ в hybrid-v8
    ▼
 gh-pages ──────► GitHub Pages: sudarikovandrey.github.io/playdisplay_web/
    │
-   │  git pull в SSH-консоли Timeweb
+   │  git pull по SSH на timeweb
    ▼
-~/wordpress_2/public_html/new  ──────► playdisplay.com/new/
+~/wordpress_2/public_html  ──────► playdisplay.com  и  playdisplay.ru
 ```
 
-Папка `/new/` на хостинге — git-клон репозитория на ветке `gh-pages`. Это хорошая новость: заливать архивы не нужно, обновление = одна команда. Поверх клона лежит незакоммиченный `.htaccess` с `X-Robots-Tag: noindex, nofollow`, mime для mp4 и кэш-заголовками — пулл его не трогает.
+Корень сайта на хостинге — git-клон репозитория на ветке `gh-pages`. Заливать архивы не нужно, обновление = одна команда:
+`cd ~/wordpress_2/public_html && git pull --ff-only origin gh-pages`
+
+`.htaccess` теперь тоже в репозитории (`site/.htaccess`) и приезжает вместе с сайтом.
 
 Что мешает: **`.github/workflows/deploy-pages.yml` ждёт пуша в `proto-3d`** и требует `Settings → Pages → Source: GitHub Actions`. Ни то, ни другое не совпадает с реальностью, поэтому автодеплой не срабатывает, а `gh-pages` собирается руками. Варианты: перевести workflow на рабочую ветку и переключить Source, либо удалить workflow. Отдельно можно автоматизировать и третье звено — cron на хостинге с `git pull` (в панели есть Crontab).
 
-Каноникалы в `site/` указывают на корень `playdisplay.com`, где пока стоит старый WordPress. Для `/new/` это нейтрализовано заголовком noindex, так что до переезда домена трогать их не нужно.
+### 2а. Переезд в корень домена — сделано 28.07.2026
+
+Было: в корне `playdisplay.com` стоял WordPress 2021 года, новый сайт прятался в `/new/` под запретом индексации, каноникалы указывали на корень, то есть на чужой сайт.
+
+Стало:
+
+```
+~/wordpress_2/
+  public_html/          ← новый сайт, git-клон gh-pages, В КОРНЕ домена
+    old/                ← статичный слепок старого сайта, noindex
+  wp_old_root/          ← сам WordPress, вынесен из веба. База не тронута
+```
+
+Проверено снаружи после переезда: главная и страницы кейсов отдаются, `robots.txt` разрешает индексацию, `sitemap.xml` и `data/atlas.json` на месте, `/.git/` закрыт (403), `/projects/`, `/about/`, `/contact/`, `/wp-admin/`, `/xmlrpc.php` редиректят, `/old/` жив. `playdisplay.ru` отдаёт тот же сайт с canonical на `.com`.
+
+Редиректы со старых адресов работ: 7 сменили адрес (`аэропорты-россии` → `airports`, `одк-оак` → `odk-oak`, `ростех-экспо` → `rostec`, `судостроение` → `industry-rf`, `vdnh_space` → `vdnh-space`, `vdnh_space-2` → `vdnh-space-center`, `stallingrad` → `stalingrad`), 8 совпадают, 6 отсутствующих уходят в `/old/work/<slug>/`. Проверено на живых адресах.
+
+Осталось: убрать поддомен `products.playdisplay.com` (сейчас отдаёт новый сайт; по нему расходилась PDF-презентация, так что удаление убьёт внешние ссылки на неё) и продлить домен `playdisplay.com` — оплачен до 18 августа 2026, регистратор внешний.
 
 ### 3. `.git` весит 833 МБ
 

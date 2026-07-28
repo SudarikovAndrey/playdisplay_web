@@ -22,11 +22,16 @@ _ARCHIVE/             ← вне git: прошлые поколения сайт
 2. **Ветка `gh-pages`** — содержимое = `site/` без верхней папки. Пересборка:
    `git archive hybrid-v8 site | tar -x --strip-components=1` + `.nojekyll`, новый коммит поверх текущей gh-pages (fast-forward, без force).
    Пуш делает Андрей: `git push origin hybrid-v8 gh-pages` (у песочницы нет git-кредов).
-3. **Хостинг timeweb** — папка `~/wordpress_2/public_html/new` это git-клон репозитория на ветке `gh-pages`. Обновление одной командой в SSH-консоли панели (Дашборд → SSH-консоль):
-   `cd ~/wordpress_2/public_html/new && git pull --ff-only origin gh-pages`
-   Незакоммиченный `.htaccess` там лежит поверх репозитория (его в git нет) и задаёт `X-Robots-Tag: noindex, nofollow`, mime для mp4 и кэш-заголовки. Пулл его не трогает.
+3. **Хостинг timeweb** — папка `~/wordpress_2/public_html` это git-клон репозитория на ветке `gh-pages`, лежащий прямо в корне сайта. Обновление одной командой по SSH (`ssh pdisplay@vh432.timeweb.ru`) или в SSH-консоли панели:
+   `cd ~/wordpress_2/public_html && git pull --ff-only origin gh-pages`
 
-Адреса: превью https://sudarikovandrey.github.io/playdisplay_web/ · боевое превью https://playdisplay.com/new/ · корень https://playdisplay.com — **пока чужой**, там WordPress 2021 года (папка `wordpress_2/public_html`, тот же аккаунт `pdisplay`, PHP 7.1). Canonical в `site/` указывает на корень домена, то есть формально на старый сайт; для `/new/` это нейтрализовано заголовком noindex. Пока домен не переехал, менять canonical не нужно.
+Адреса: превью https://sudarikovandrey.github.io/playdisplay_web/ · боевой https://playdisplay.com и https://playdisplay.ru (обе привязаны к одной папке, canonical у обеих на `.com`).
+
+**Переезд в корень домена состоялся 28.07.2026.** До этого новый сайт жил в подпапке `/new/`, а в корне стоял WordPress 2021 года. Что изменилось:
+- WordPress вынесен из веба в `~/wordpress_2/wp_old_root` (база не тронута). Папку `/new/` подняли в корень вместе с `.git`, сама `new` удалена.
+- Статичный слепок старого сайта лежит в `~/wordpress_2/public_html/old` → https://playdisplay.com/old/ — 646 файлов, 244 МБ, снят `wget -m -p -k -E -nH`. У него свой `.htaccess` с `X-Robots-Tag: noindex, nofollow`. В архиве 21 страница работ, из них 6 (`jihi-studio-lamp`, `holocube_s`, `petrol-bowl`, `summer-17`, `changi2016`, `оживайка`) на новом сайте отсутствуют — возможно, стоит перенести.
+- Герой архивной главной — фоновое видео с Vimeo (id 455829149), wget его забрать не мог. В конец `old/index.html` дописан скрипт-вставка iframe; видео всё равно не проигрывается (нужен приватный хеш встройки), фон сделан чёрным.
+- `site/.htaccess` теперь в репозитории и держит редиректы со всех старых адресов вордпресса, закрывает `.git` и задаёт mime/кэш. Раньше `.htaccess` жил на сервере незакоммиченным.
 
 Сборку пакетов для ручной загрузки (был скрипт `build_upload.py` и папка `deploy/`) убрал 27.07.2026: доставка идёт через `git pull`, второй способ только создавал расхождение между сервером и репозиторием.
 - **Открытый вопрос:** `.github/workflows/deploy-pages.yml` триггерится на пуш в `proto-3d` и требует `Settings → Pages → Source: GitHub Actions`. Сейчас это не совпадает ни с рабочей веткой, ни с реальным каналом раздачи, поэтому автодеплой не срабатывает и gh-pages собирается руками. Решение — либо перевести workflow на рабочую ветку, либо удалить workflow. Пока не решено, воркфлоу не трогать.
