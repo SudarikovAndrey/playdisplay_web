@@ -192,7 +192,11 @@
   .hero h1 em { font-style: normal; color: var(--signal-teal); }
   /* типы пространств в левом верхнем углу: ниже шапки и угловой скобки, по сетке .wrap */
   .hero-top { position: absolute; left: 0; right: 0; top: clamp(104px, 15vh, 172px);
-    z-index: 4; pointer-events: none; }
+    z-index: 4; pointer-events: none;
+    transition: opacity .45s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
+  /* при просмотре видео проекта в кадре остаётся только карточка проекта:
+     список типов пространств уходит вместе со слоганом */
+  .hero.video-on .hero-top { opacity: 0; transform: translateY(-10px); }
   /* моношрифт в наборе капителью — тот же язык, что у надписей HUD в этой же сцене;
      дисплейное начертание в 33 px спорило с заголовком */
   .hero-kinds .hk-line { display: inline-block; min-height: 1.2em;
@@ -1078,7 +1082,7 @@
   <div class="wrap hero-top">
     <div class="hero-kinds" id="heroKinds">
       <span class="hk-line" id="hkLine">Музеи</span>
-      <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Бренд-пространства · Общественные пространства · Корпоративные пространства</span>
+      <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Иммерсивные аттракционы · Дополненная и виртуальная реальность · Веб-пространства · Бренд-пространства · Общественные пространства · Корпоративные пространства</span>
     </div>
   </div>
 
@@ -1631,11 +1635,13 @@
     var line = document.getElementById('hkLine');
     if (!line) return;
     var WORDS = ['Музеи', 'Выставки', 'Визит-центры', 'Шоурумы', 'Иммерсивные комнаты',
-                 'Бренд-пространства', 'Общественные пространства', 'Корпоративные пространства'];
+                 'Иммерсивные аттракционы', 'Дополненная и виртуальная реальность',
+                 'Веб-пространства', 'Бренд-пространства', 'Общественные пространства',
+                 'Корпоративные пространства'];
     var GLYPHS = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯ0123456789/\\|<>#*+=·';
     var i = 0, timer = 0, raf = 0;
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var HOLD = 2800, DUR = 640, LOCK = 0.5;   // LOCK — доля времени, за которую фронт фиксации проходит строку
+    var HOLD = 2800, DUR = 768, LOCK = 0.5;   // LOCK — доля времени, за которую фронт фиксации проходит строку
 
     function rnd(){ return GLYPHS[(Math.random() * GLYPHS.length) | 0]; }
     function morph(from, to){
@@ -1658,10 +1664,17 @@
     function tick(){ var from = line.textContent; i = (i + 1) % WORDS.length; morph(from, WORDS[i]); }
     function start(){ if (!timer) timer = setInterval(tick, HOLD); }
     function stop(){ if (timer) { clearInterval(timer); timer = 0; } cancelAnimationFrame(raf); raf = 0; }
-    document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : start(); });
+    document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : sync(); });
+    // пока идёт видео проекта, строка скрыта — незачем крутить перебор впустую
+    var hero = document.querySelector('.hero'), inView = true;
+    function sync(){ (inView && hero && !hero.classList.contains('video-on')) ? start() : stop(); }
+    if (hero && window.MutationObserver) {
+      new MutationObserver(sync).observe(hero, { attributes: true, attributeFilter: ['class'] });
+    }
     if (window.IntersectionObserver) {
       new IntersectionObserver(function(es){
-        es.forEach(function(e){ e.isIntersecting ? start() : stop(); });
+        es.forEach(function(e){ inView = e.isIntersecting; });
+        sync();
       }, { threshold: 0 }).observe(line);
     } else start();
   })();
