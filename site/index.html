@@ -3825,9 +3825,11 @@
 
     fetch('data/atlas.json?v=2').then(function(r){ return r.json(); }).then(function(json){
       data = json;
+      // В фильтре тип во множественном числе («Концепты»), на карточке — в единственном («КОНЦЕПТ»)
+      var labels = data.catLabels || {};
       ['Все'].concat(data.cats).forEach(function(ct, i){
         var b = document.createElement('button');
-        b.textContent = ct;
+        b.textContent = labels[ct] || ct;
         if (i === 0) b.className = 'on';
         b.addEventListener('click', function(){
           cat = ct; limit = PAGE;
