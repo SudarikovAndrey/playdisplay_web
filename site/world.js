@@ -89,12 +89,35 @@ const CONFIG = {
   layer: { SURFACE: 0, SILHOUETTE: 1, EDGE: 2, SOLID: 3 },
   // §15 размеры и яркости по ролям
   look: {
-    sizeSurface: 1.0, sizeSilh: 1.5, sizeEdge: 1.35, sizeSolid: 1.15,
-    brSurface: 0.72, brSilh: 0.95, brEdge: 1.25, brSolid: 0.9,
+    sizeSurface: 1.0, sizeSilh: 1.55, sizeEdge: 1.4, sizeSolid: 1.15,
+    // На референсе освещённые склоны почти белые, а теневые уходят в тёмную бирюзу.
+    // Поднял яркость и усилил контраст света (litPow<1 растягивает верх диапазона).
+    brSurface: 0.9, brSilh: 1.15, brEdge: 1.45, brSolid: 1.0, litPow: 0.7, litFloor: 0.12,
     edgeSlope: 1.7,        // с какого градиента точка считается «кромкой»
     tintRoute: 0.3         // насколько ближе к цвету биома точки у маршрута
   },
   fork: { splitAt: 0.28, mergeAt: 0.84, spread: 52, riskNarrow: 0.55 },
+  // ПРИРОДНАЯ ДИСТОРСИЯ (domain warp). Аналитические формы — стены, тор арки, капсулы —
+  // сами по себе идеально ровные, и глаз мгновенно читает «примитив». Лечится не
+  // добавлением шума К ВЫСОТЕ (это даёт лишь шершавость поверх той же ровной формы),
+  // а искажением САМОЙ ОБЛАСТИ ВЫБОРКИ: спрашиваем высоту не в точке (x,z), а в
+  // сдвинутой на fbm. Тогда «ровная» стена изгибается, дуга арки становится
+  // выветренной, а колонна — кривой. Два масштаба: крупный гнёт силуэт, мелкий грызёт край.
+  warp: { bigAmp: 26, bigFreq: 0.0042, smallAmp: 7, smallFreq: 0.017, solid: 3.2 },
+  // ОТСЕЧЕНИЕ НЕВИДИМОГО (§12 «меньше точек за камерой и на дальних поверхностях»).
+  // Летим на −z, поэтому дальние скаты гребней не видны никогда. Плюс горизонтная
+  // проверка: точка в яме за близким гребнем не видна тоже. Это не только бюджет —
+  // именно это даёт слоистые силуэты, ради которых всё и делается.
+  // eyeBack — на каком удалении стоит камера при проверке. С 34 юнитами проверка была
+  // почти бесполезна (перекрытия случаются на сотне и дальше): отсекала 10k, стала 18k,
+  // и при этом СТАЛА БЫСТРЕЕ — меньше точек доходит до тяжёлого сэмплинга стеканий.
+  cull: { enabled: true, backface: 0.06, horizon: true, steps: 16, eyeUp: 20, eyeBack: 140 },
+  // ВЕРТИКАЛЬНЫЕ СТЕКАНИЯ на крутых гранях: на референсе обрывы «текут» вниз
+  // колоннами точек. Сетка по (x,z) на вертикали вырождается, поэтому доливаем вдоль стены.
+// prob — доля крутых точек,которых стекает колонна. Без неё стекания давали
+  // 109k точек на чанк из 157k: стена превращалась в монолит и съедала весь бюджет.
+  // На референсе обрывы «текут» ПРЕРЫВИСТО, отдельными струями — так и честнее, и дешевле.
+  stripes: { slope: 1.5, step: 1.6, maxLen: 32, jitter: 0.6, prob: 0.6, maxN: 14 },
   // §7 фазы сложности и правила сборки
   phases: ['INTRO', 'LEARN', 'CHOICE', 'PRESSURE', 'RELEASE', 'COMBINATION', 'CLIMAX']
 };
@@ -317,6 +340,20 @@ function chunkField(def) {
   // meso: гребни и выступы на стенах
   const meso = (x, zw) => ridged(x * 0.012, zw * 0.012, 3, 2.2);
 
+  // ── DOMAIN WARP: гнём саму область, в которой спрашиваем форму ────────────
+  // Ключевой приём против «видны чистые примитивы». Смещение общее для пола и
+  // потолка и для солидов — иначе тоннель разъехался бы со своими же стенами.
+  const Wp = CONFIG.warp;
+  const wSeed = (def.seed & 1023) * 0.37;
+  function warpX(x, zw) {
+    return (fbm(x * Wp.bigFreq + wSeed, zw * Wp.bigFreq, 3, 0.55) - 0.5) * 2 * Wp.bigAmp
+         + (fbm(x * Wp.smallFreq + 31 + wSeed, zw * Wp.smallFreq + 17, 2, 0.5) - 0.5) * 2 * Wp.smallAmp;
+  }
+  function warpZ(x, zw) {
+    return (fbm(x * Wp.bigFreq + 71 + wSeed, zw * Wp.bigFreq + 53, 3, 0.55) - 0.5) * 2 * Wp.bigAmp
+         + (fbm(x * Wp.smallFreq + 97 + wSeed, zw * Wp.smallFreq + 61, 2, 0.5) - 0.5) * 2 * Wp.smallAmp;
+  }
+
   // база стен: чем дальше от оси, тем выше — это и есть «каньон»
   function wallProfile(dx, wallH, w) {
     const t = clamp01((Math.abs(dx) - w) / Math.max(1, w * 0.9));
@@ -329,7 +366,16 @@ function chunkField(def) {
     // КРУПНАЯ форма пола, без мелкой фактуры. Разделение нужно для кэша: базу
     // считаем на редкой решётке и интерполируем, а micro добавляем на каждую
     // точку — иначе шершавость смазалась бы. ТЗ §8: micro не создаёт формы.
-    floorBase: function (x, t) {
+    floorBase: function (x0, t0) {
+      // ДИСТОРСИЯ: спрашиваем форму в СМЕЩЁННОЙ точке — это и ломает «чистый примитив».
+      // НО искажение до 33 юнитов способно надвинуть стену прямо на трассу, поэтому
+      // у коридора оно погашено в ноль и набирает силу только за его пределами:
+      // где искажение декоративно — оно есть, где функционально — его нет.
+      const zwT = def.zStart + t0 * L;
+      const dxTrue = x0 - C(t0)[0];               // неискажённое расстояние до оси
+      const wMask = smoothstep(def.corridorW * 0.95, def.corridorW * 2.3, Math.abs(dxTrue));
+      const x = x0 + warpX(x0, zwT) * wMask;
+      const t = clamp01(t0 + warpZ(x0, zwT) * wMask / L);
       const zw = def.zStart + t * L;
       const m = C(t);                             // геометрическая середина чанка
       const dx = x - m[0];
@@ -627,9 +673,44 @@ function generateChunk(def, opts) {
          + cache[i1] * (1 - ux) * uz + cache[i1 + 1] * ux * uz;
   };
 
+  // ── ОТСЕЧЕНИЕ НЕВИДИМОГО ────────────────────────────────────────────────
+  // «Глаз» — там, где будет камера: над коридором и чуть позади. Летим на −z,
+  // поэтому камера всегда со стороны БОЛЬШЕГО z относительно точки.
+  const CU = CONFIG.cull;
+  const eyeYAt = zLoc => {                                  // высота глаза над трассой
+    const t = clamp01(zLoc / L);
+    const i = Math.min(corridor.length - 1, Math.round(t * (corridor.length - 1)));
+    return corridor[i].y + CU.eyeUp;
+  };
+  // 1) ЗАДНИЙ СКАТ. Нормаль поля высот ∝ (−dh/dx, 1, −dh/dz). Вектор на глаз
+  //    смотрит в +z. Если скалярное произведение отрицательное, поверхность
+  //    отвёрнута от камеры — этот склон не виден НИКОГДА, и именно его вырезание
+  //    даёт слоистые силуэты гребней, как на референсе.
+  // 2) ГОРИЗОНТ. Шагаем от точки к глазу и смотрим, не поднимается ли рельеф выше
+  //    луча зрения. Поднимается — точка в «тени» ближнего гребня, её не видно.
+  function visible(px, py, pzLoc, hx, hz) {
+    if (!CU.enabled) return true;
+    const eyeY = eyeYAt(pzLoc);
+    const vz = CU.eyeBack, vy = eyeY - py;                   // вектор точка → глаз
+    const nDotV = (-hz / (2 * CS)) * vz + vy;                // N·V без члена по x (глаз над осью)
+    if (nDotV < CU.backface * Math.hypot(vy, vz)) return false;
+    if (!CU.horizon) return true;
+    // луч до глаза: если рельеф на пути выше луча — закрыт
+    for (let s = 1; s <= CU.steps; s++) {
+      const k = s / CU.steps;
+      const sz = pzLoc + vz * k;
+      if (sz > L) break;
+      const rayY = py + vy * k;
+      if (baseAt(px, sz) > rayY + 1.2) return false;
+    }
+    return true;
+  }
+
   // ── пол и стены ─────────────────────────────────────────────────────────
   // Идём по z равномерно, а по x — ПЕРЕМЕННЫМ шагом: густо у маршрута, редко на
   // периферии (§12). Это ключ к «детально, но точек мало».
+  const ST = CONFIG.stripes;
+  let culled = 0;
   const stepZ = D.base * stepMul * 1.15;
   for (let z = 0; z < L; z += stepZ) {
     const t = z / L;
@@ -650,7 +731,21 @@ function generateChunk(def, opts) {
       const hx = baseAt(jx + e, zLoc) - baseAt(jx - e, zLoc);
       const hz = baseAt(jx, clamp(zLoc + e, 0, L)) - baseAt(jx, clamp(zLoc - e, 0, L));
       const slope = Math.hypot(hx, hz) / (2 * e) * 2.2;   // ×2.2 — приведение к прежней шкале
+      if (!visible(jx, y, zLoc, hx, hz)) { culled++; x += stepX; continue; }
       pushPoint(pos, col, siz, msk, jx, y, jz, slope, hx, hz, dx, far, tint, lod, edgeK, false);
+      // ВЕРТИКАЛЬНЫЕ СТЕКАНИЯ: на крутой грани сетка по (x,z) вырождается — между
+      // соседними столбцами зияет вертикальная дыра. Доливаем точки ВНИЗ по стене,
+      // это и читается как «текущие» обрывы на референсе.
+      if (slope > ST.slope && lod < 3 && hash(jx * 13, jz * 7) < ST.prob) {
+        const drop = Math.min(ST.maxLen, slope * 6);
+        const n = Math.min(ST.maxN, Math.floor(drop / (ST.step * stepMul)));
+        for (let k = 1; k < n; k++) {
+          const py = y - k * ST.step * stepMul;
+          const sx = jx + (hash(k, jx) - 0.5) * ST.jitter;
+          const sz2 = jz + (hash(jx, k) - 0.5) * ST.jitter;
+          pushPoint(pos, col, siz, msk, sx, py, sz2, slope * 0.8, hx, hz, dx, far, tint, lod, edgeK * 0.5, false);
+        }
+      }
       x += stepX;
     }
   }
@@ -673,6 +768,8 @@ function generateChunk(def, opts) {
           const e = 0.9;
           const c1 = F.ceil(jx + e, jt), c2 = F.ceil(jx - e, jt);
           const slope = (isFinite(c1) && isFinite(c2)) ? Math.abs(c1 - c2) / (2 * e) : 3;
+          // потолок виден только изнутри полости: если ниже него нет пола-пола на
+          // расстоянии полёта, точка снаружи и не нужна
           pushPoint(pos, col, siz, msk, jx, cy2, jz, slope, 0, 0, dx, far, tint, lod, edgeK, true);
         }
       }
@@ -690,7 +787,7 @@ function generateChunk(def, opts) {
     sizes: new Float32Array(siz),
     featureMask: new Uint8Array(msk),
     colliders: F.solids,
-    stats: { points: pos.length / 3, ms: t1 - t0, lod: lod, drawCalls: 1 }
+    stats: { points: pos.length / 3, ms: t1 - t0, lod: lod, drawCalls: 1, culled: culled }
   };
 }
 
@@ -710,7 +807,7 @@ function pushPoint(pos, col, siz, msk, x, y, z, slope, hx, hz, dx, far, tint, lo
   const nx = -hx, ny = 1.8, nz = -hz;
   const nl = Math.hypot(nx, ny, nz) || 1;
   const lit = clamp01((nx * -0.45 + ny * 0.82 + nz * -0.36) / nl);
-  let g = br * (0.2 + 0.8 * Math.pow(lit, 0.85));
+  let g = br * (CONFIG.look.litFloor + (1 - CONFIG.look.litFloor) * Math.pow(lit, CONFIG.look.litPow));
   if (isCeil) g *= 0.66;                       // потолок в тени — читается как свод
   g *= lerp(1.12, 0.6, far);                   // §12/§15 периферия тусклее
   const vb = 0.84 + 0.16 * hash(x * 7, z * 7);
@@ -725,7 +822,15 @@ function pushPoint(pos, col, siz, msk, x, y, z, slope, hx, hz, dx, far, tint, lo
 // оказалась прозрачной, а толстая колонна — не съела бюджет
 function sampleSolid(s, pos, col, siz, msk, tint, stepMul) {
   const LK = CONFIG.look;
-  const put = (x, y, z, up) => {
+  const WS = CONFIG.warp.solid;
+  // Деформация оболочки: без неё тор арки и капсула колонны читаются как идеальные
+  // примитивы (ровно то, на что была жалоба). Смещение берётся из того же шума,
+  // поэтому форма гнётся связно, а не рассыпается в кашу.
+  const put = (x0, y0, z0, up) => {
+    const dx = (fbm(x0 * 0.05, z0 * 0.05, 2, 0.5) - 0.5) * 2 * WS;
+    const dy = (fbm(y0 * 0.05 + 19, z0 * 0.05 + 7, 2, 0.5) - 0.5) * 2 * WS * 0.7;
+    const dz = (fbm(x0 * 0.05 + 41, y0 * 0.05 + 3, 2, 0.5) - 0.5) * 2 * WS;
+    const x = x0 + dx, y = y0 + dy, z = z0 + dz;
     const g = LK.brSolid * (0.42 + 0.58 * clamp01(up));
     const vb = 0.84 + 0.16 * hash(x * 5, z * 5);
     col.push((g + (tint[0] - g) * 0.24) * vb, (g + (tint[1] - g) * 0.24) * vb, (g + (tint[2] - g) * 0.24) * vb);

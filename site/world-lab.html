@@ -153,13 +153,19 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
 renderer.setSize(innerWidth, innerHeight);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.5, 3000);
-scene.fog = new THREE.Fog(0x0b1d26, 160, 620);
+// Палитра снята с референса: у горизонта плотный тёмно-бирюзовый, кверху уходит
+// почти в чёрно-синий. Туман ТОГО ЖЕ цвета, что горизонт — иначе дальние гребни
+// растворяются в чужой цвет и глубина читается фальшиво.
+const FOG_COL = 0x123b46, SKY_TOP = 0x05090f, SKY_HORIZON = 0x14424e;
+scene.fog = new THREE.Fog(FOG_COL, 120, 700);
 
 scene.add(new THREE.Mesh(new THREE.SphereGeometry(2400, 24, 16), new THREE.ShaderMaterial({
   side: THREE.BackSide, depthWrite: false, fog: false,
-  uniforms: { uT: { value: new THREE.Color(0x04070c) }, uB: { value: new THREE.Color(0x0f2c36) } },
+  uniforms: { uT: { value: new THREE.Color(SKY_TOP) }, uB: { value: new THREE.Color(SKY_HORIZON) } },
+  // Градиент сжат к горизонту (smoothstep -0.02..0.42): на референсе светлая полоса
+  // узкая и лежит прямо на линии рельефа, а не размазана на полнеба.
   vertexShader: 'varying float vY; void main(){ vY=normalize(position).y; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);} ',
-  fragmentShader: 'varying float vY; uniform vec3 uT,uB; void main(){ gl_FragColor=vec4(mix(uB,uT,smoothstep(-0.08,0.6,vY)),1.0);} '
+  fragmentShader: 'varying float vY; uniform vec3 uT,uB; void main(){ gl_FragColor=vec4(mix(uB,uT,smoothstep(-0.02,0.42,vY)),1.0);} '
 })));
 
 // один материал на весь мир (ТЗ §10). Размер точки — атрибутом, роль — маской.
@@ -176,10 +182,14 @@ const pointMat = new THREE.ShaderMaterial({
       float d = -mv.z;
       vCol = color;
       // §25: дальние точки очень мелкие — иначе fill rate съедает всё
-      float sz = aSize * clamp(70.0 / max(d, 6.0), 0.25, 2.4);
+      float sz = aSize * clamp(78.0 / max(d, 7.0), 0.22, 2.6);
       // акценты можно погасить тумблером, чтобы увидеть их вклад
       if (aMask > 1.5 && aMask < 2.5) { sz *= mix(0.7, 1.0, uEdges); vCol *= mix(0.55, 1.0, uEdges); }
-      vA = 1.0 - smoothstep(uFogN, uFogF, d);
+      // Дальние точки не только мельче, но и ТУСКЛЕЕ по кубу — на референсе дальний
+      // план уходит в дымку почти полностью, и именно это даёт ощущение масштаба.
+      float f = 1.0 - smoothstep(uFogN, uFogF, d);
+      vA = f;
+      vCol *= 0.34 + 0.66 * f * f;
       gl_Position = projectionMatrix * mv;
       gl_PointSize = clamp(sz * uPx * 0.0022, 0.5, 7.0);
     }`,
@@ -194,13 +204,51 @@ const pointMat = new THREE.ShaderMaterial({
   vertexColors: true
 });
 
+// ── АТМОСФЕРА (слой D по ТЗ §11) ───────────────────────────────────────────
+// Крупинки, висящие над рельефом. На референсе они хорошо видны в верхней части
+// кадра и дают воздух между камерой и горизонтом. Держим ОТДЕЛЬНО от геометрии:
+// §11 прямо требует не смешивать — у пыли своя логика движения и свой размер.
+const DUST_N = 900;
+const dustGeo = new THREE.BufferGeometry();
+const dustPos = new Float32Array(DUST_N * 3);
+const dustPh = new Float32Array(DUST_N);
+for (let i = 0; i < DUST_N; i++) {
+  dustPos[i * 3] = (Math.random() - 0.5) * 460;
+  dustPos[i * 3 + 1] = 20 + Math.random() * 150;
+  dustPos[i * 3 + 2] = -Math.random() * 900;
+  dustPh[i] = Math.random() * 6.28;
+}
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+const dustMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { uPx: uni.uPx, uT: { value: 0 } },
+  vertexShader: `uniform float uPx, uT; varying float vA;
+    void main(){
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      float d = -mv.z;
+      vA = (1.0 - smoothstep(180.0, 900.0, d)) * 0.5;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(1.5 * uPx * 0.0022 * (60.0 / max(d, 30.0)), 0.6, 3.0);
+    }`,
+  fragmentShader: `varying float vA;
+    void main(){
+      float r = length(gl_PointCoord - vec2(0.5));
+      float a = smoothstep(0.5, 0.1, r) * vA;
+      if (a < 0.02) discard;
+      gl_FragColor = vec4(0.78, 0.94, 1.0, a);
+    }`
+});
+const dust = new THREE.Points(dustGeo, dustMat);
+dust.frustumCulled = false;
+scene.add(dust);
+
 // ── состояние ──────────────────────────────────────────────────────────────
 let seed = 4242, mode = 'level', singleType = TY.CANYON;
 let params = {};                       // правки параметров одиночного чанка
 let live = new Map();                  // index → { obj, helpers }
 let plan = [], curIdx = 0, camMode = 0, paused = false, flyT = 0, tsec = 0;
 let totalPts = 0, totalMs = 0, badCount = 0;
-const DBG = { corridor: true, colliders: true, axis: true, sockets: true, edges: true, density: false };
+const DBG = { corridor: false, colliders: false, cull: true, edges: true, dust: true };
 
 // ── ГЕНЕРАТОР: Worker если можно, иначе главный поток ──────────────────────
 // Worker обязателен для ИГРЫ (там 40 мс в кадре недопустимы), но для редактора —
@@ -302,7 +350,8 @@ function addChunk(m) {
       const l = new THREE.Line(gg, mat); l.name = 'collider'; helpers.add(l);
     }
   });
-  live.set(m.index, { pts: pts, helpers: helpers, stats: m.stats, valid: m.valid, fallback: m.fallback });
+  live.set(m.index, { pts: pts, helpers: helpers, stats: m.stats, valid: m.valid,
+    fallback: m.fallback, cor: m.corridor });
   recount();
   syncDebug();
 }
@@ -322,12 +371,18 @@ function recount() {
   document.getElementById('mMs').textContent = totalMs.toFixed(0) + ' мс';
   document.getElementById('mBad').textContent = badCount;
 }
+function rebuildAll() {
+  [...live.keys()].forEach(dropChunk);
+  wanted.clear(); queue.length = 0;
+  if (mode === 'single') showSingle(); else requestWindow(true);
+}
 function syncDebug() {
   live.forEach(e => e.helpers.traverse(o => {
     if (o.name === 'corridor') o.visible = DBG.corridor;
     if (o.name === 'collider') o.visible = DBG.colliders;
   }));
   uni.uEdges.value = DBG.edges ? 1 : 0;
+  dust.visible = DBG.dust;
 }
 
 // ── окно стриминга (§19) ───────────────────────────────────────────────────
@@ -422,12 +477,18 @@ function renderSliders(def) {
   });
 }
 const dbgBox = document.getElementById('dbgBox');
-const DBG_LBL = { corridor: 'Коридор полёта', colliders: 'Коллайдеры', axis: 'Ось маршрута',
-                  sockets: 'Стыки чанков', edges: 'Акцентные точки', density: 'Карта плотности' };
+const DBG_LBL = { corridor: 'Коридор полёта', colliders: 'Коллайдеры',
+                  cull: 'Не рисовать невидимые точки', edges: 'Акцентные точки',
+                  dust: 'Атмосфера (пыль)' };
 Object.keys(DBG).forEach(k => {
   const l = document.createElement('label'); l.className = 'chk';
   const i = document.createElement('input'); i.type = 'checkbox'; i.checked = DBG[k];
-  i.onchange = () => { DBG[k] = i.checked; syncDebug(); };
+  i.onchange = () => {
+    DBG[k] = i.checked;
+    // отсечение меняет саму геометрию — чанки надо пересобрать
+    if (k === 'cull') { W.CONFIG.cull.enabled = i.checked; rebuildAll(); }
+    syncDebug();
+  };
   const s = document.createElement('span'); s.textContent = DBG_LBL[k];
   l.append(i, s); dbgBox.appendChild(l);
 });
@@ -483,9 +544,18 @@ function loop() {
   if (p) {
     const zc = p.zStart + (p.zEnd - p.zStart) * flyT;
     if (camMode === 0) {
-      // ПРОЛЁТ по коридору: главный режим — как это увидит игрок
-      camera.position.set(Math.sin(tsec * 0.13) * 6, 26, zc + 26);
-      camera.lookAt(0, 14, zc - 90);
+      // ПРОЛЁТ ПО КОРИДОРУ: главный режим — ровно то, что увидит игрок.
+      // Высоту берём из самого коридора, а не константой: иначе на обрыве и в
+      // каверне камера уезжает в породу. И это же допущение использует отсечение
+      // невидимых точек (глаз над трассой) — иначе вырезалось бы не то, что не видно.
+      const e = live.get(curIdx);
+      let cx = 0, cy = 26;
+      if (e && e.cor && e.cor.length) {
+        const i = Math.min(e.cor.length - 1, Math.max(0, Math.round(flyT * (e.cor.length - 1))));
+        cx = e.cor[i].x; cy = e.cor[i].y + W.CONFIG.cull.eyeUp * 0.55;
+      }
+      camera.position.set(cx + Math.sin(tsec * 0.13) * 5, cy, zc + 30);
+      camera.lookAt(cx, cy - 12, zc - 150);
     } else if (camMode === 1) {
       const a = tsec * 0.12, R = 190;
       camera.position.set(Math.cos(a) * R, 96, zc + Math.sin(a) * R);
@@ -495,6 +565,9 @@ function loop() {
       camera.lookAt(0, 0, zc - 40);
     }
   }
+  // пыль следует за камерой: иначе она кончается через один чанк
+  dust.position.z = camera.position.z - 300;
+  dustMat.uniforms.uT.value = tsec;
   renderer.render(scene, camera);
   const f = dt > 0 ? 1 / dt : 60;
   fps += (f - fps) * 0.08; acc += dt;
