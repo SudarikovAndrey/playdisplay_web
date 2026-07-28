@@ -140,7 +140,14 @@
   /* режим мини-игры: экран полностью отдан полёту */
   .hero.game-on .hero-inner, .hero.game-on .session, .hero.game-on .readout,
   .hero.game-on .ruler-top, .hero.game-on .ruler-left, .hero.game-on .hero-grade { opacity: 0; transition: opacity .5s; }
+  /* .hero-btns сама включает себе pointer-events:auto (нужно для обычного клика по кнопкам),
+     и этот auto НЕ перебивается pointer-events:none у родителя .hero-inner — pointer-events
+     не каскадируется, как opacity. Поэтому во время игры кнопки «Сыграть» и «Проекты →»
+     оставались кликабельными и ловили курсор, хотя визуально были не видны (opacity:0) —
+     из-за этого управление кораблём «дёргалось», когда курсор проходил над их зоной внизу слева.
+     Гасим сам .hero-btns явно, с более высокой специфичностью. */
   .hero.game-on .hero-inner { pointer-events: none; }
+  .hero.game-on .hero-inner .hero-btns { pointer-events: none; }
   /* ===== 3D-архив проектов: портал в секции Work + полноэкранный режим ===== */
   .arc-portal { position: relative; margin-top: 46px; height: 380px; overflow: hidden; cursor: pointer;
     border: 1px solid rgba(159,180,200,.22); background: var(--space-void, #06080d);
@@ -969,7 +976,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game17" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game18" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1410,10 +1417,10 @@
     if (typeof e.data.pdPlay === 'boolean')
       document.getElementById('start').classList.toggle('video-on', e.data.pdPlay);
     // мини-игра: прячем тексты героя, экран отдан полёту
-    // из игры нажали «Вернуться на сайт» — плавно уводим к разделу проектов
+    // выход из игры (кнопка / ESC / клик во время полёта) — ВСЕГДА уводим на самый верх
+    // сайта, к галерее hero: точки к этому моменту уже пересобираются в неё бесшовно
     if (e.data.pdGoSite) {
-      var w2 = document.getElementById('work');
-      if (w2) w2.scrollIntoView({ behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     if (typeof e.data.pdGameOn === 'boolean') {
       document.getElementById('start').classList.toggle('game-on', e.data.pdGameOn);
