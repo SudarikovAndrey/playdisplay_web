@@ -22,14 +22,23 @@ self.onmessage = function (e) {
   if (m.cmd === 'chunk') {
     if (!MGR) return;
     const ch = MGR.build(m.index, m.lod);
+    // Пространственный индекс точек уходит вместе с геометрией: по нему главный
+    // поток каждый кадр ищет окрестность корабля для подсветки опасности. Пересчитать
+    // его на месте — это снова обход всех точек, то есть тот самый рывок, от которого
+    // мы и ушли в поток. Его типизированные массивы тоже отдаём с transfer.
+    const ix = ch.index;
     self.postMessage({
       cmd: 'chunkReady', index: m.index, lod: m.lod,
       positions: ch.positions, colors: ch.colors, sizes: ch.sizes, featureMask: ch.featureMask,
+      pointIndex: ix ? { cell: ix.cell, minX: ix.minX, z0: ix.z0, cols: ix.cols, rows: ix.rows,
+                         start: ix.start, items: ix.items } : null,
       // коллизия и коридор — обычные объекты, они мелкие
       colliders: ch.colliders, corridor: ch.corridor.map(function (p) {
         return { t: p.t, x: p.x, y: p.y, z: p.z, r: p.r };
       }),
       valid: ch.valid.ok, fallback: !!ch.fallback, stats: ch.stats
-    }, [ch.positions.buffer, ch.colors.buffer, ch.sizes.buffer, ch.featureMask.buffer]);
+    }, ix ? [ch.positions.buffer, ch.colors.buffer, ch.sizes.buffer, ch.featureMask.buffer,
+             ix.start.buffer, ix.items.buffer]
+          : [ch.positions.buffer, ch.colors.buffer, ch.sizes.buffer, ch.featureMask.buffer]);
   }
 };

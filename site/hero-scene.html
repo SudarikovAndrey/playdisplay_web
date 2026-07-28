@@ -622,6 +622,7 @@
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
 <script src="ship-points.js?v=b2807-game23"></script>
+<script src="world.js?v=b2807-game24"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -665,7 +666,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2807-game23'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2807-game24'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2607,6 +2608,13 @@ const GAME = { on: false, z: 0, speed: 90, score: 0, hurtT: 0, exit: -1, enter: 
 // чанки мельче, но их больше: короткий чанк строится за миллисекунды — без фризов.
 // Бюджет GPU: 16 чанков × ~40k точек ≈ 0.6М — вентилятор молчит, картинка та же
 // (дальние/боковые точки на экране субпиксельные, их отсутствие не видно)
+// ── НОВЫЙ МИР (28.07). Генератор трассы вынесен в world.js: граф маршрута, 10 типов
+// чанков-ситуаций, дисторсия формы, отсечение невидимых точек. Старый путь оставлен
+// целиком и включается ?oldworld=1 — страховка на случай, если в новом что-то не так
+// на реальном железе: я не могу проверить игру глазами из песочницы.
+const NEW_WORLD = !/[?&]oldworld=1/.test(location.search) && typeof PDWorld !== 'undefined';
+let WORLD = null;   // { mgr, probe, seed } — живёт от enterGame до exitGame
+let worldEnvFade = 1;   // общий множитель яркости мира: влёт в игру и выход из неё
 const G_DEPTH = 24, G_AHEAD = 16;
 const G_STEP = (window.matchMedia && matchMedia('(pointer: coarse)').matches) ? 0.62 : 0.36; // шаг сетки точек
 // адаптивный LOD для слабых машин: если FPS держится ниже 45 — новые чанки строятся реже
@@ -2653,7 +2661,15 @@ const G_ONSET = { feature: 500, mesa: 1300, blade: 2300, chasm: 3300 };
 // естественный рельеф: fBm-холмы + острые хребты + каньоны-провалы. Никаких плоских плит
 // и вертикальных стен, параллельных экрану. Уровень ПРОХОДИМ: рельеф вдавлен вдоль коридора,
 // горы ограничены мягким потолком (корабль достаёт до 50 при потолке рельефа ~40)
+// ПЕРЕХОДНИК ВЫСОТЫ. Снаружи имя gTerrainH сохранено намеренно: от него зависят
+// коллизия корабля, подсветка опасности, спавн ядер, камера и бонус за бреющий полёт —
+// переписывать все эти места было бы лишним риском. В новом мире высоту отдаёт
+// world.js (поле нужного чанка), в старом — прежняя функция, теперь gTerrainHOld.
 function gTerrainH(x, z) {
+  if (NEW_WORLD && WORLD) return WORLD.probe.floor(x, z);
+  return gTerrainHOld(x, z);
+}
+function gTerrainHOld(x, z) {
   const wFeature = gStage(z, G_ONSET.feature, 300);   // шпили/каньоны/ворота — появляются первыми
   const wMesa    = gStage(z, G_ONSET.mesa, 350);      // ритмичные столовые плато
   // силуэт 2 (слалом) с 28.07 — НЕ рельеф: настоящие наклонные 3D-колонны/балки,
@@ -3106,6 +3122,18 @@ function gMakeBeam(a, b, rad, seed, tint) {
 // столкновение с балкой: ближайшая точка на отрезке a-b (мировые координаты) к кораблю —
 // если ближе радиуса, это гейм-овер (см. вызов в updateGame, рядом с проверкой рельефа)
 function gHazardHit() {
+  if (NEW_WORLD && WORLD) {
+    // коллизия по примитивам из world.js (ТЗ §18: точки в коллизии не участвуют).
+    // Корабль и коллайдеры оба в МИРОВЫХ координатах, поэтому z берём как GAME.z.
+    const P = [GAME.shipP.x, GAME.shipP.y, GAME.z];
+    const R = PDWorld.CONFIG.ship.radius;
+    for (let ci = 0; ci < GAME.chunks.length; ci++) {
+      const cl = GAME.chunks[ci].userData.colliders;
+      if (!cl) continue;
+      for (let i = 0; i < cl.length; i++) if (PDWorld.solidDist(P, cl[i]) < R) return true;
+    }
+    return false;
+  }
   for (const c of GAME.chunks) {
     const hz = c.userData.hazards;
     if (!hz) continue;
@@ -3157,7 +3185,154 @@ function gMakeDiamonds() {
   return pts;
 }
 
+// ═══ НОВЫЙ МИР: материал и сборка чанка ════════════════════════════════════
+// ОДИН материал на весь мир и ОДИН буфер на чанк (ТЗ §10). Роль и размер точки —
+// атрибуты, а не отдельные объекты: раньше каждая форма была своим THREE.Points со
+// своим материалом, отсюда и было 51 draw call при трёх типах форм.
+let wMat = null;
+function gWorldMat() {
+  if (wMat) return wMat;
+  wMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: true, depthTest: true, vertexColors: true,
+    uniforms: { uPx: { value: innerHeight }, uFogN: { value: 110 }, uFogF: { value: 660 },
+                uFade: { value: 1 } },
+    vertexShader: [
+      'attribute float aSize; attribute float aMask;',
+      'uniform float uPx, uFogN, uFogF, uFade;',
+      'varying vec3 vCol; varying float vA;',
+      'void main() {',
+      '  vec4 mv = modelViewMatrix * vec4(position, 1.0);',
+      '  float d = -mv.z;',
+      '  vCol = color;',
+      // §25: дальние точки очень мелкие, иначе fill rate съедает всё
+      '  float sz = aSize * clamp(78.0 / max(d, 7.0), 0.22, 2.6);',
+      '  float f = 1.0 - smoothstep(uFogN, uFogF, d);',
+      '  vA = f * uFade;',   // мягкое проявление чанка + общий фейд входа/выхода
+      '  vCol *= 0.34 + 0.66 * f * f;',   // дальний план уходит в дымку — это даёт масштаб
+      '  gl_Position = projectionMatrix * mv;',
+      '  gl_PointSize = clamp(sz * uPx * 0.0022, 0.5, 7.0);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying vec3 vCol; varying float vA;',
+      'void main() {',
+      '  float d = length(gl_PointCoord - vec2(0.5));',
+      '  float a = smoothstep(0.5, 0.26, d) * vA;',
+      '  if (a < 0.02) discard;',
+      '  gl_FragColor = vec4(vCol, a);',
+      '}'
+    ].join('\n')
+  });
+  return wMat;
+}
+
+// Сборка чанка нового мира.
+// СИСТЕМЫ КООРДИНАТ. world.js живёт в мировых: z растёт ВПЕРЁД по трассе. Игра живёт
+// в экранных: корабль на z≈0, рельеф набегает из минуса. Связь: z_экр = GAME.z − z_мир.
+// Поэтому группе ставим scale.z = −1 и position.z = GAME.z. Это важнее, чем кажется:
+// так буфер остаётся в МИРОВЫХ координатах и совпадает 1-в-1 с пространственным
+// индексом точек, по которому каждый кадр ищется окрестность корабля для подсветки.
+// Если бы координаты пересчитывались при заливке, индекс пришлось бы либо
+// перестраивать, либо держать вторую копию позиций (6 МБ на окно).
+function gMakeWorldChunk(index, lod) {
+  return gBuildWorldMesh(WORLD.mgr.build(index, lod), index, lod);
+}
+// Сборка меша из ГОТОВЫХ массивов. Отделена от генерации, потому что массивы могут
+// приехать из Worker — тогда считать нечего, надо только залить в GPU.
+function gBuildWorldMesh(ch, index, lod) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(ch.positions, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(ch.colors, 3));
+  g.setAttribute('aSize', new THREE.BufferAttribute(ch.sizes, 1));
+  const mask = new Float32Array(ch.featureMask.length);
+  for (let i = 0; i < mask.length; i++) mask[i] = ch.featureMask[i];
+  g.setAttribute('aMask', new THREE.BufferAttribute(mask, 1));
+  const pts = new THREE.Points(g, gWorldMat());
+  pts.frustumCulled = false;
+  const grp = new THREE.Group();
+  // Материал общий на весь мир, но юниформы заливаются перед КАЖДЫМ draw call —
+  // поэтому «своё» значение фейда для чанка подставляем здесь, не плодя материалы.
+  pts.onBeforeRender = function () {
+    wMat.uniforms.uFade.value = (grp.userData.fade === undefined ? 1 : grp.userData.fade) * worldEnvFade;
+  };
+  grp.scale.z = -1;
+  grp.add(pts);
+  const def = ch.def || WORLD.mgr.plan[index];
+  grp.userData = {
+    spawnTime: clock.getElapsedTime(), fade: 0,   // проявляется плавно, см. updateGame
+    wIndex: index, def: def, zStart: def.zStart, zEnd: def.zEnd,
+    idx: ch.index || ch.pointIndex, colliders: ch.colliders, corridor: ch.corridor,
+    cloud: pts, baseOp: 1
+  };
+  // награды по коридору: ядра цепочкой и кольцо-ускоритель. Ставим их в ЭКРАННЫХ
+  // координатах внутри перевёрнутой группы — то есть в мировых, как и точки рельефа.
+  gWorldRewards(grp, ch, def);
+  return grp;
+}
+// ядра и кольца по коридору: маршрут сам ведёт игрока (§16 «навигация без стрелок»)
+function gWorldRewards(grp, ch, def) {
+  const cor = ch.corridor;
+  const r = PDWorld.makeRng(def.seed ^ 0x2b1d);
+  const nOrb = 3 + Math.floor(r() * 4);
+  for (let k = 0; k < nOrb; k++) {
+    const t = 0.18 + 0.64 * ((k + 0.5) / nOrb);
+    const ci = Math.min(cor.length - 1, Math.round(t * (cor.length - 1)));
+    const c = cor[ci];
+    const orb = gMakeOrb(def.seed + k * 7);
+    // ядра слегка гуляют вокруг линии полёта — дорожка живая, а не рельс
+    orb.position.set(c.x + (r() - 0.5) * 7, c.y + (r() - 0.5) * 5, c.z);
+    orb.userData.isOrb = true;
+    orb.userData.baseY = orb.position.y;
+    orb.userData.ph = r() * 6.28;
+    orb.userData.spin = 0.7 + r() * 1.1;
+    if (r() > 0.88) { orb.userData.rare = true; orb.userData.baseScale = 1.5; }
+    grp.add(orb);
+  }
+  if (r() > 0.55) {
+    const ci = Math.round((0.42 + r() * 0.3) * (cor.length - 1));
+    const c = cor[Math.min(cor.length - 1, ci)];
+    const ring = gMakeRing(def.seed);
+    ring.position.set(c.x, c.y, c.z);
+    ring.userData.isRing = true;
+    ring.userData.spin = 0.9 + r() * 0.8;
+    grp.add(ring);
+  }
+}
+
+function gAddWorldChunk(grp) {
+  if (!GAME.on || !GAME.group) return;         // успели выйти из игры — чанк уже не нужен
+  GAME.group.add(grp);
+  GAME.chunks.push(grp);
+  GAME.chunks.sort((a, b) => a.userData.wIndex - b.userData.wIndex);
+}
 function gSpawnAhead() {
+  if (NEW_WORLD && WORLD) {
+    // окно стриминга по ИНДЕКСАМ чанков (§19): чанки теперь 140–260 юнитов, их мало,
+    // и «сколько штук впереди» считается от положения корабля, а не по длине.
+    const C = PDWorld.CONFIG.world;
+    const cur = WORLD.probe.chunkAt(GAME.z);
+    const have = {};
+    for (let i = 0; i < GAME.chunks.length; i++) have[GAME.chunks[i].userData.wIndex] = true;
+    const to = Math.min(WORLD.mgr.plan.length - 1, cur + C.ahead);
+    for (let i = Math.max(0, cur - C.behind); i <= to; i++) {
+      if (have[i] || WORLD.pending[i]) continue;
+      const d = i - cur;
+      const lod = d <= 1 ? 0 : d === 2 ? 1 : d === 3 ? 2 : 3;
+      // ГЕНЕРАЦИЯ В WORKER (ТЗ §20, §36.8 «не блокирует основной поток»). Чанк
+      // считается 40–90 мс — в кадре это видимый рывок примерно раз в секунду.
+      // Асинхронность безопасна: впереди держим 4 чанка (около 800 юнитов), на полной
+      // скорости это 2.5 секунды запаса. Если Worker недоступен (file://, CSP) —
+      // считаем на месте: лучше рывок, чем пустой мир впереди.
+      if (WORLD.wk) {
+        WORLD.pending[i] = true;
+        WORLD.wk.postMessage({ cmd: 'chunk', index: i, lod: lod });
+      } else {
+        gAddWorldChunk(gMakeWorldChunk(i, lod));
+      }
+      return;                       // не больше одной заявки за кадр
+    }
+    return;
+  }
   // держим G_AHEAD чанков впереди корабля; не больше одного нового за кадр (без фризов)
   if (GAME.chunks.length < gLodAhead()) {
     const last = GAME.chunks[GAME.chunks.length - 1];
@@ -3166,6 +3341,31 @@ function gSpawnAhead() {
     c.position.z = -(zNoise - GAME.z) - G_DEPTH; // чанк лежит впереди
     GAME.group.add(c);
     GAME.chunks.push(c);
+  }
+}
+// Движение мира. В старом пути чанк ехал приращением position.z. В новом группа
+// перевёрнута (scale.z=−1) и её позиция — это просто текущее GAME.z: точки лежат в
+// мировых координатах, а сдвиг делает сама позиция группы. Приращение тут дало бы
+// накопление ошибки, а так связь z_экр = GAME.z − z_мир соблюдается точно.
+function gMoveChunks(dz) {
+  if (NEW_WORLD && WORLD) {
+    for (let i = 0; i < GAME.chunks.length; i++) GAME.chunks[i].position.z = GAME.z;
+    return;
+  }
+  for (const c of GAME.chunks) c.position.z += dz;
+}
+// утилизация позади: в новом мире граница — конец чанка, а не фиксированная длина
+function gRecycle() {
+  while (GAME.chunks.length) {
+    const c = GAME.chunks[0];
+    const behind = NEW_WORLD && WORLD
+      ? (GAME.z - c.userData.zEnd > 30)
+      : (c.position.z > G_DEPTH * 0.8);
+    if (!behind) break;
+    GAME.chunks.shift();
+    GAME.group.remove(c);
+    c.traverse(o => { if (o.geometry) o.geometry.dispose();
+                      if (o.material && o.material !== wMat && o.material !== gFallMat) o.material.dispose(); });
   }
 }
 
@@ -3410,6 +3610,74 @@ function _dngFlush() {
   });
   _dngRanges.clear();
 }
+// ── ПОДСВЕТКА ОПАСНОСТИ В НОВОМ МИРЕ ──────────────────────────────────────
+// Старая версия индексировала РЕГУЛЯРНУЮ сетку точек: знала cols/rows/step и по ним
+// вычисляла нужные индексы напрямую. В новом мире плотность НЕРАВНОМЕРНАЯ (§12: густо
+// у трассы, редко на периферии) — регулярной сетки больше нет, и та арифметика
+// неприменима в принципе. Поэтому здесь поиск идёт через пространственный индекс из
+// world.js: точки разложены по ячейкам при генерации, обход берёт только нужные.
+// Замер: 600 запросов радиуса 5 — 4 мс против 62 мс перебором.
+function gPaintDangerNew(k, time) {
+  const pul = 0.55 + 0.45 * Math.sin(time * 14);
+  const sx = GAME.shipP.x, sy = GAME.shipP.y, sz = GAME.z;   // корабль в МИРОВЫХ координатах
+  for (let ci = 0; ci < GAME.chunks.length; ci++) {
+    const u = GAME.chunks[ci].userData;
+    if (!u.idx || !u.cloud) continue;
+    const colA = u.cloud.geometry.attributes.color;
+    const posA = u.cloud.geometry.attributes.position.array;
+    // 1) диск под кораблём — близость к земле
+    if (k > 0.02) {
+      const R = 4.4 + 1.1 * k * Math.sin(time * 12);
+      PDWorld.forPointsNear(u.idx, sx, sz, R, i => {
+        const i3 = i * 3;
+        const ddx = posA[i3] - sx, ddz = posA[i3 + 2] - sz;
+        const d2 = ddx * ddx + ddz * ddz;
+        if (d2 > R * R) return;
+        if (!_dngSave(colA, i3)) return;
+        const kk = k * pul * (0.35 + 0.65 * (1 - Math.sqrt(d2) / R));
+        colA.array[i3]     += (1.0  - colA.array[i3])     * kk;
+        colA.array[i3 + 1] += (0.26 - colA.array[i3 + 1]) * kk;
+        colA.array[i3 + 2] += (0.16 - colA.array[i3 + 2]) * kk;
+        _dngTouch(colA, i3);
+      });
+    }
+    // 2) алая подсветка рельефа ПО КУРСУ: что выше траектории — то и опасно.
+    // Впереди по миру это БОЛЬШИЙ z (в экранных координатах было бы меньший).
+    const AH = 95;
+    PDWorld.forPointsNear(u.idx, sx, sz + AH * 0.5 + 6, AH * 0.5 + 10, i => {
+      const i3 = i * 3;
+      if (Math.abs(posA[i3] - sx) > 8) return;
+      if (posA[i3 + 1] < sy - 2.2) return;                  // ниже траектории — не опасно
+      const ahead = posA[i3 + 2] - sz;
+      if (ahead < 12 || ahead > AH) return;
+      const kk = Math.max(0, 1 - (ahead - 12) / (AH - 12)) * (0.5 + 0.5 * pul);
+      if (kk < 0.05) return;
+      if (!_dngSave(colA, i3)) return;
+      colA.array[i3]     += (1.05 - colA.array[i3])     * kk;
+      colA.array[i3 + 1] += (0.16 - colA.array[i3 + 1]) * kk;
+      colA.array[i3 + 2] += (0.12 - colA.array[i3 + 2]) * kk;
+      _dngTouch(colA, i3);
+    });
+    // 3) сверхзвуковая волна: тил-белое кольцо расходится от корабля
+    if (GAME.boom != null && GAME.boom >= 0 && GAME.boom < 1.1) {
+      const bt = GAME.boom / 1.1, br = 8 + bt * 115, bw = 4 + bt * 6;
+      const amp = (1 - bt) * (1 - bt) * 0.95;
+      PDWorld.forPointsNear(u.idx, sx, sz, br + bw, i => {
+        const i3 = i * 3;
+        const ddx = posA[i3] - sx, ddz = posA[i3 + 2] - sz;
+        const dd = Math.sqrt(ddx * ddx + ddz * ddz) - br;
+        if (Math.abs(dd) > bw) return;
+        if (!_dngSave(colA, i3)) return;
+        const kk = amp * (1 - Math.abs(dd) / bw);
+        colA.array[i3]     += (0.75 - colA.array[i3])     * kk;
+        colA.array[i3 + 1] += (1.05 - colA.array[i3 + 1]) * kk;
+        colA.array[i3 + 2] += (1.0  - colA.array[i3 + 2]) * kk;
+        _dngTouch(colA, i3);
+      });
+    }
+  }
+  _dngFlush();
+}
 function gPaintDanger(k, time) {
   for (let i = 0; i < _dngN; i++) {
     const a = _dngAttr[i], i3 = _dngIdx[i];
@@ -3419,6 +3687,7 @@ function gPaintDanger(k, time) {
   }
   _dngN = 0;
   if (!GAME.chunks) return;
+  if (NEW_WORLD && WORLD) { gPaintDangerNew(k, time); return; }
   const pul = 0.55 + 0.45 * Math.sin(time * 14);      // тревожный пульс
   const yRef = GAME.shipP.y;
   // 1) диск под кораблём — близость к земле
@@ -3523,6 +3792,30 @@ function enterGame() {
   GAME.on = true; GAME.z = 0; GAME.z0 = 0; GAME.score = 0; GAME.speed = 90; GAME.exit = -1;
   GAME.enter = 0; GAME.over = false; GAME.grace = 2; // короткая неуязвимость на старте
   GAME.tint.copy(curAccent); // колорит мира = акцент текущего слайда
+  // НОВЫЙ МИР: план уровня и переходник высоты создаём ДО первого спавна — от
+  // probe.floor зависит и стартовая высота корабля, и коллизия с первого кадра.
+  if (NEW_WORLD) {
+    const seed = (Date.now() ^ (Math.random() * 1e6)) | 0;
+    const mgr = PDWorld.makeManager(seed, 60);
+    WORLD = { seed: seed, mgr: mgr, probe: PDWorld.makeHeightProbe(mgr.plan),
+              wk: null, pending: {} };
+    // Worker считает геометрию, главный поток только заливает в GPU. План уровня
+    // детерминирован по seed, поэтому у потока и у главного треда он ОДИН И ТОТ ЖЕ —
+    // высота под кораблём (probe тут, в главном) совпадает с точками (там, в потоке).
+    try {
+      const wk = new Worker('world-worker.js?v=b2807-game24');
+      wk.onmessage = function (e) {
+        const m = e.data;
+        if (m.cmd !== 'chunkReady' || !WORLD) return;
+        WORLD.pending[m.index] = false;
+        if (!GAME.on) return;
+        gAddWorldChunk(gBuildWorldMesh(m, m.index, m.lod));
+      };
+      wk.onerror = function () { if (WORLD) { WORLD.wk = null; } };  // молча на главный поток
+      wk.postMessage({ cmd: 'init', seed: seed, count: 60 });
+      WORLD.wk = wk;
+    } catch (err) { /* Worker недоступен — считаем в главном потоке */ }
+  }
   gFallMat.uniforms.uOp.value = 1;
   document.body.classList.add('game');
   stopPlay();
@@ -3643,6 +3936,8 @@ function exitGame() {
   GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null; GAME.trail = null;
   GAME.diam = null; GAME.shipEdges = null; GAME.shipFill = null; GAME.shipGlow = null; GAME.shipLights = null; GAME.shipNozz = null;
   GAME.streaks = null; GAME.chainLine = null;
+  if (WORLD && WORLD.wk) { try { WORLD.wk.terminate(); } catch (e) {} }
+  WORLD = null;   // план уровня, кэш полей и Worker живут только внутри полёта
   // инерционный сдвиг HUD не должен пережить выход (панели вернутся на свои места)
   _hudVX = _hudVY = _hudPX = _hudPY = 0;
   if (gameHud) gameHud.style.transform = '';
@@ -3694,6 +3989,7 @@ function updateGame(dt, time) {
       scene.children.forEach(o => { if (o !== skyMesh && o !== GAME.group) o.visible = false; });
     }
     const wOp = clamp01((k - 0.42) / 0.55);                 // мир проявляется
+    worldEnvFade = wOp;   // новый мир гасится юниформой: у его шейдера нет material.opacity
     GAME.group.traverse(o => {
       if (o.material && o.material.opacity !== undefined)
         o.material.opacity = (o.userData.baseOp !== undefined ? o.userData.baseOp : 0.95) * wOp;
@@ -3713,12 +4009,8 @@ function updateGame(dt, time) {
     GAME.speed += (CRUISE - GAME.speed) * (1 - Math.exp(-dt * 1.1));
     const dzc = GAME.speed * dt;
     GAME.z += dzc;
-    for (const cc of GAME.chunks) cc.position.z += dzc;
-    while (GAME.chunks.length && GAME.chunks[0].position.z > G_DEPTH * 0.8) {
-      const c0 = GAME.chunks.shift();
-      GAME.group.remove(c0);
-      c0.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
-    }
+    gMoveChunks(dzc);
+    gRecycle();
     gSpawnAhead();                              // мир продолжает достраиваться впереди
     gUpdateDebris(dt);
     // камера плавно поднимается и отъезжает — «пролёт над местом падения»
@@ -3739,6 +4031,7 @@ function updateGame(dt, time) {
   if (GAME.exit >= 0) {
     GAME.exit += dt / 1.1;
     const k = 1 - Math.min(1, GAME.exit);
+    worldEnvFade = k;
     GAME.group.traverse(o => {
       if (o.material && o.material.opacity !== undefined && o.material !== gFallMat)
         o.material.opacity = (o.userData.baseOp !== undefined ? o.userData.baseOp : 0.95) * k;
@@ -3751,9 +4044,15 @@ function updateGame(dt, time) {
   // мягкое проявление свежих чанков впереди (см. финал gMakeChunk) — вне влёта/выхода из
   // игры, те гасят/зажигают весь мир своим общим множителем и сюда бы просто не дали дойти
   if (GAME.enter >= 1 && GAME.exit < 0) {
+    worldEnvFade = 1;
     for (const c of GAME.chunks) {
       if (c.userData.faded) continue;
       const kf = smoothstep(0, 0.7, time - (c.userData.spawnTime || 0));
+      if (NEW_WORLD && WORLD) {                 // новый мир: фейд через юниформу
+        c.userData.fade = kf;
+        if (kf >= 1) c.userData.faded = true;
+        continue;
+      }
       c.traverse(o => {
         if (o.isPoints && o.material && o.material !== gFallMat && o.userData.baseOp !== undefined)
           o.material.opacity = o.userData.baseOp * kf;
@@ -3777,13 +4076,8 @@ function updateGame(dt, time) {
   if (GAME.speed > (GAME.maxSpeed || 0)) GAME.maxSpeed = GAME.speed;
   const dz = GAME.speed * dt;
   GAME.z += dz;
-  for (const c of GAME.chunks) c.position.z += dz;
-  // утилизация позади, генерация впереди
-  while (GAME.chunks.length && GAME.chunks[0].position.z > G_DEPTH * 0.8) {
-    const c = GAME.chunks.shift();
-    GAME.group.remove(c);
-    c.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
-  }
+  gMoveChunks(dz);
+  gRecycle();   // утилизация позади, генерация впереди
   gSpawnAhead();
   // стрики скорости: головы едут с миром (z += dz), хвост дорисовывается назад по скорости —
   // чем быстрее, тем длиннее штрих и ярче линия; ниже ~110 скорости стрики невидимы вовсе

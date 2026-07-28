@@ -787,8 +787,50 @@ function generateChunk(def, opts) {
     sizes: new Float32Array(siz),
     featureMask: new Uint8Array(msk),
     colliders: F.solids,
+    index: buildPointIndex(pos, def),
     stats: { points: pos.length / 3, ms: t1 - t0, lod: lod, drawCalls: 1, culled: culled }
   };
+}
+
+// ── ПРОСТРАНСТВЕННЫЙ ИНДЕКС ТОЧЕК ──────────────────────────────────────────
+// Игре нужно каждый кадр перекрашивать точки рядом с кораблём (диск под днищем,
+// алая подсветка по курсу, сверхзвуковая волна). Раньше это делалось индексацией
+// РЕГУЛЯРНОЙ сетки — но §12 требует неравномерную плотность, и регулярной сетки
+// больше нет. Поэтому раскладываем индексы точек по ячейкам один раз при генерации:
+// поиск в окрестности становится обходом нескольких ячеек вместо перебора 70 тысяч.
+// Плоские типизированные массивы, без Map и без объекта на точку (ТЗ §10).
+function buildPointIndex(pos, def) {
+  const CELL = 6;
+  const n = pos.length / 3;
+  if (!n) return null;
+  let minX = Infinity, maxX = -Infinity;
+  for (let i = 0; i < n; i++) { const x = pos[i * 3]; if (x < minX) minX = x; if (x > maxX) maxX = x; }
+  const cols = Math.max(1, Math.ceil((maxX - minX) / CELL) + 1);
+  const rows = Math.max(1, Math.ceil(def.length / CELL) + 2);
+  const cnt = new Uint32Array(cols * rows + 1);
+  const cellOf = i => {
+    const cx = clamp(Math.floor((pos[i * 3] - minX) / CELL), 0, cols - 1);
+    const cz = clamp(Math.floor((pos[i * 3 + 2] - def.zStart) / CELL), 0, rows - 1);
+    return cz * cols + cx;
+  };
+  for (let i = 0; i < n; i++) cnt[cellOf(i) + 1]++;
+  for (let c = 0; c < cols * rows; c++) cnt[c + 1] += cnt[c];   // префиксные суммы
+  const items = new Uint32Array(n);
+  const fill = cnt.slice(0, cols * rows);
+  for (let i = 0; i < n; i++) { const c = cellOf(i); items[fill[c]++] = i; }
+  return { cell: CELL, minX: minX, z0: def.zStart, cols: cols, rows: rows, start: cnt, items: items };
+}
+// обход точек в квадрате вокруг (x,z): cb(i) на каждый индекс
+function forPointsNear(idx, x, z, r, cb) {
+  if (!idx) return;
+  const c0 = clamp(Math.floor((x - r - idx.minX) / idx.cell), 0, idx.cols - 1);
+  const c1 = clamp(Math.floor((x + r - idx.minX) / idx.cell), 0, idx.cols - 1);
+  const r0 = clamp(Math.floor((z - r - idx.z0) / idx.cell), 0, idx.rows - 1);
+  const r1 = clamp(Math.floor((z + r - idx.z0) / idx.cell), 0, idx.rows - 1);
+  for (let rr = r0; rr <= r1; rr++) for (let cc = c0; cc <= c1; cc++) {
+    const c = rr * idx.cols + cc;
+    for (let k = idx.start[c]; k < idx.start[c + 1]; k++) cb(idx.items[k]);
+  }
 }
 
 // одна точка поверхности: цвет/размер/роль по правилам §11 и §15
@@ -920,8 +962,61 @@ function makeManager(seed, count) {
   };
 }
 
+// ── ГЛОБАЛЬНАЯ ВЫСОТА ПО МИРОВОМУ z ────────────────────────────────────────
+// Игра спрашивает высоту рельефа в произвольной точке: от этого зависят коллизия
+// корабля, спавн ядер, камера и «бреющий полёт». Поля живут внутри чанков, поэтому
+// нужен переходник: найти чанк по z и спросить его поле. Поля кэшируются — иначе
+// на каждый кадр пересоздавался бы chunkField со всеми замыканиями.
+function makeHeightProbe(plan) {
+  const cache = new Map();
+  function fieldFor(i) {
+    let f = cache.get(i);
+    if (!f) {
+      const def = plan[i];
+      if (!def.axis) def.axis = axisFor(def);
+      f = chunkField(def);
+      cache.set(i, f);
+      if (cache.size > 12) cache.delete(cache.keys().next().value);
+    }
+    return f;
+  }
+  function chunkAt(z) {
+    // план отсортирован по z, чанков десятки — линейный поиск дешевле бинарного
+    for (let i = 0; i < plan.length; i++) if (z >= plan[i].zStart && z < plan[i].zEnd) return i;
+    return z < 0 ? 0 : plan.length - 1;
+  }
+  return {
+    chunkAt: chunkAt,
+    fieldFor: fieldFor,
+    floor: function (x, z) {
+      const i = chunkAt(z), def = plan[i];
+      const t = clamp01((z - def.zStart) / def.length);
+      return fieldFor(i).floor(x, t);
+    },
+    ceil: function (x, z) {
+      const i = chunkAt(z), def = plan[i];
+      const t = clamp01((z - def.zStart) / def.length);
+      return fieldFor(i).ceil(x, t);
+    },
+    // ближайшая точка коридора — по ней ведём камеру и спавним награды
+    corridorAt: function (z) {
+      const i = chunkAt(z), def = plan[i];
+      const t = clamp01((z - def.zStart) / def.length);
+      const a = def.axis ? def.axis(t) : axisFor(def)(t);
+      const F = fieldFor(i);
+      const fy = F.floor(a[0], t), cy = F.ceil(a[0], t);
+      let y = fy + CONFIG.ship.floorClear + 4;
+      if (isFinite(cy)) y = Math.min(y, cy - CONFIG.ship.ceilClear);
+      return { x: a[0], y: clamp(y, CONFIG.ship.yMin + 2, CONFIG.ship.yMax - 2),
+               chunk: i, type: def.type, w: def.corridorW };
+    }
+  };
+}
+
 root.PDWorld = {
   CONFIG: CONFIG, TYPES: T,
+  buildPointIndex: buildPointIndex, forPointsNear: forPointsNear,
+  makeHeightProbe: makeHeightProbe,
   makeRng: makeRng, hash: hash, noise: noise, fbm: fbm, ridged: ridged,
   clamp: clamp, clamp01: clamp01, smoothstep: smoothstep, lerp: lerp,
   planLevel: planLevel, makeChunkDef: makeChunkDef, buildRoute: buildRoute,
