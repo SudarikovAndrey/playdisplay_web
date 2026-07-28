@@ -925,7 +925,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game15" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game16" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1253,10 +1253,9 @@
         maybeReveal();
       }
     });
-    if (document.readyState === 'complete') pageLoaded = true;
-    else addEventListener('load', function(){ pageLoaded = true; maybeReveal(); });
-    // кнопку не нажали, всё загрузилось — открываем сайт (кнопке даём секунду на «заметить»)
-    function maybeReveal(){ if (sceneReady && pageLoaded && !gone) setTimeout(function(){ dismiss(); }, 1100); }
+    // сайт открываем по готовности сцены (главного тяжёлого куска) — остальное грузится лениво;
+    // ждать window.load нельзя: на медленном канале это десятки секунд на лоадере
+    function maybeReveal(){ if (sceneReady && !gone) setTimeout(function(){ dismiss(); }, 2000); }
     function dismiss(){
       if (gone) return; gone = true;
       boot.classList.add('out');
@@ -1264,7 +1263,7 @@
       setTimeout(function(){ if (boot.parentNode) boot.parentNode.removeChild(boot); }, 800);
     }
     // страховка: сцена молчит (ошибка/очень слабое железо) — не держим человека на лоадере
-    setTimeout(function(){ tgt = 1; dismiss(); }, 12000);
+    setTimeout(function(){ tgt = 1; dismiss(); }, 9000);
     btn.addEventListener('click', function(){
       if (!frame || !frame.contentWindow) { dismiss(); return; }
       scrollTo(0, 0);
@@ -1279,6 +1278,32 @@
       lit.style.clipPath = 'inset(0 ' + Math.max(0, (1 - cur) * 100).toFixed(2) + '% 0 0)';
       requestAnimationFrame(anim);
     })();
+  })();
+
+  // ===== активность окна: сайт в фоне (другое окно поверх / другая вкладка) — снимаем нагрузку =====
+  // все rAF-эффекты лендинга сверяются с pdActive; видео ставятся на паузу и возвращаются сами
+  window.pdActive = document.hasFocus() && !document.hidden;
+  (function(){
+    var paused = [];
+    function setActive(on){
+      if (window.pdActive === on) return;
+      window.pdActive = on;
+      try {
+        if (!on) {
+          paused = [];
+          document.querySelectorAll('video').forEach(function(v){
+            if (!v.paused && !v.ended) { paused.push(v); v.pause(); }
+          });
+        } else {
+          paused.forEach(function(v){ var p = v.play(); if (p && p.catch) p.catch(function(){}); });
+          paused = [];
+        }
+      } catch (e) {}
+    }
+    function upd(){ setActive(document.hasFocus() && !document.hidden); }
+    addEventListener('blur', function(){ setTimeout(upd, 120); }); // таймаут: blur при клике в iframe — не считается уходом
+    addEventListener('focus', upd);
+    addEventListener('visibilitychange', upd);
   })();
 
   // header scroll state
@@ -1696,6 +1721,7 @@
       }
       if (anyActive) { ctx.putImageData(buf, 0, 0); needClear = true; }
       else if (needClear) { ctx.clearRect(0, 0, BW, BH); needClear = false; }
+      if (window.pdActive === false) { raf = null; lastT = 0; return; } // фон: цикл спит до следующего ховера
       if (hovered || anyActive) raf = requestAnimationFrame(tick);
       else lastT = 0;
     }
@@ -3091,6 +3117,7 @@
     function tick(){
       if (!viewer.classList.contains('open')) { dustRaf = null; ctx.clearRect(0, 0, cv.width, cv.height); return; }
       dustRaf = requestAnimationFrame(tick);
+      if (window.pdActive === false) return; // окно в фоне — пыль замирает, GPU/CPU свободны
       t += 0.016;
       if (cv.width !== innerWidth) fit();
       ctx.clearRect(0, 0, cv.width, cv.height);
