@@ -9,6 +9,13 @@ let MGR = null;
 self.onmessage = function (e) {
   const m = e.data;
   if (m.cmd === 'init') {
+    // Плотность приходит от главного потока: у воркера СВОЯ копия world.js со своим
+    // CONFIG, и если её не синхронизировать, поток посчитает геометрию другой
+    // плотности, чем ожидает игра (и чем даёт probe для коллизии).
+    if (m.dens) {
+      self.PDWorld.CONFIG.density.base = 0.53 / Math.sqrt(m.dens);
+      self.PDWorld.CONFIG.density.budget = Math.round(420000 * m.dens);
+    }
     MGR = self.PDWorld.makeManager(m.seed, m.count);
     // план отдаём сразу: по нему главный поток знает границы чанков и может
     // считать окно стриминга, не дожидаясь геометрии
