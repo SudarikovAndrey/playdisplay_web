@@ -896,7 +896,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game13" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game14" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1262,6 +1262,11 @@
     if (typeof e.data.pdPlay === 'boolean')
       document.getElementById('start').classList.toggle('video-on', e.data.pdPlay);
     // мини-игра: прячем тексты героя, экран отдан полёту
+    // из игры нажали «Вернуться на сайт» — плавно уводим к разделу проектов
+    if (e.data.pdGoSite) {
+      var w2 = document.getElementById('work');
+      if (w2) w2.scrollIntoView({ behavior: 'smooth' });
+    }
     if (typeof e.data.pdGameOn === 'boolean') {
       document.getElementById('start').classList.toggle('game-on', e.data.pdGameOn);
       // на время игры прячем ВСЁ родительское поверх iframe (хедер/кнопки/виджет/сияние):
