@@ -52,6 +52,23 @@
   /* игра во весь экран: родительские слои не должны ловить мышь и показывать курсор */
   body.game-live header, body.game-live .ai-widget, body.game-live #cursor-glow {
     opacity: 0 !important; pointer-events: none !important; transition: opacity .4s; }
+  /* стартовый экран загрузки: лого как прогресс-бар */
+  #boot { position: fixed; inset: 0; z-index: 400; background: #060b10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 44px;
+    transition: opacity .65s ease; cursor: default; }
+  #boot.out { opacity: 0; pointer-events: none; }
+  #boot .bl { position: relative; width: min(58vw, 340px); }
+  #boot .bl img { width: 100%; display: block; -webkit-user-drag: none; user-select: none; }
+  #boot .bl .dim { opacity: .14; }
+  /* яркая копия открывается слева направо по мере загрузки + тиловое свечение у фронта */
+  #boot .bl .lit { position: absolute; inset: 0; clip-path: inset(0 100% 0 0);
+    filter: brightness(1.25) drop-shadow(0 0 16px rgba(43,224,198,0.55)) drop-shadow(0 0 44px rgba(43,224,198,0.22)); }
+  #boot #bootPlay { opacity: 0; transform: translateY(10px); pointer-events: none;
+    font: 600 13px 'Roboto Mono', monospace; letter-spacing: .22em; text-transform: uppercase;
+    color: #04121a; background: #2be0c6; border: none; border-radius: 2px; padding: 16px 34px;
+    cursor: pointer; transition: opacity .5s ease, transform .5s ease, box-shadow .25s; }
+  #boot.ready #bootPlay { opacity: 1; transform: none; pointer-events: auto; }
+  #boot #bootPlay:hover { box-shadow: 0 10px 34px rgba(43,224,198,0.4); }
   /* сияние под курсором: мягкий радиальный свет, следует за мышью (только точный указатель) */
   #cursor-glow { position: fixed; left: 0; top: 0; width: 520px; height: 520px; margin: -260px 0 0 -260px;
     border-radius: 50%; pointer-events: none; z-index: 60; opacity: 0; will-change: transform, opacity;
@@ -882,6 +899,18 @@
 </head>
 <body class="booting">
 
+<!-- Стартовый экран: только логотип; яркая заливка = прогресс загрузки.
+     Первой грузится игра — когда она готова, появляется кнопка «Сыграть в пространство».
+     Если кнопку не нажали — по полной загрузке оверлей растворяется и открывается сайт. -->
+<div id="boot" aria-hidden="true">
+  <div class="bl">
+    <img class="dim" src="assets/logos/playdisplay-logo-white.png" alt="">
+    <img class="lit" src="assets/logos/playdisplay-logo-white.png" alt="PlayDisplay">
+  </div>
+  <button id="bootPlay" type="button">▶︎ Сыграть в пространство</button>
+</div>
+<noscript><style>#boot{display:none!important}</style></noscript>
+
 <header id="hdr">
   <div class="nav-inner">
     <a href="#start" class="logo-home" aria-label="PlayDisplay — на главную"><img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="PlayDisplay"></a>
@@ -896,7 +925,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game14" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2707-game15" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1207,6 +1236,51 @@
 <script src="textures.js"></script>
 <script src="odk_frame.js"></script>
 <script>
+  // ===== стартовый экран: лого-прогресс, «игра первой», кнопка «Сыграть в пространство» =====
+  (function(){
+    var boot = document.getElementById('boot');
+    if (!boot) return;
+    var lit = boot.querySelector('.lit'), btn = document.getElementById('bootPlay');
+    var frame = document.querySelector('iframe.hero-scene');
+    var tgt = 0.06, cur = 0, sceneReady = false, pageLoaded = false, gone = false;
+    if (frame) frame.addEventListener('load', function(){ tgt = Math.max(tgt, 0.5); }); // html сцены получен
+    addEventListener('message', function(e){
+      var d = e.data || {};
+      if (typeof d.pdProgress === 'number') tgt = Math.max(tgt, d.pdProgress);
+      if (d.pdReady && !sceneReady) {
+        sceneReady = true; tgt = 1;
+        boot.classList.add('ready');          // игра готова — показываем кнопку
+        maybeReveal();
+      }
+    });
+    if (document.readyState === 'complete') pageLoaded = true;
+    else addEventListener('load', function(){ pageLoaded = true; maybeReveal(); });
+    // кнопку не нажали, всё загрузилось — открываем сайт (кнопке даём секунду на «заметить»)
+    function maybeReveal(){ if (sceneReady && pageLoaded && !gone) setTimeout(function(){ dismiss(); }, 1100); }
+    function dismiss(){
+      if (gone) return; gone = true;
+      boot.classList.add('out');
+      document.body.classList.remove('booting'); // выезжает шапка, оживает страница
+      setTimeout(function(){ if (boot.parentNode) boot.parentNode.removeChild(boot); }, 800);
+    }
+    // страховка: сцена молчит (ошибка/очень слабое железо) — не держим человека на лоадере
+    setTimeout(function(){ tgt = 1; dismiss(); }, 12000);
+    btn.addEventListener('click', function(){
+      if (!frame || !frame.contentWindow) { dismiss(); return; }
+      scrollTo(0, 0);
+      try { frame.contentWindow.postMessage({ pdGame: true }, '*'); } catch (err) {}
+      dismiss();                              // оверлей уходит — под ним уже идёт влёт в игру
+    });
+    // плавная заливка: догоняем цель + медленно ползём, чтобы не выглядело зависшим
+    (function anim(){
+      if (!boot.parentNode) return;
+      if (!sceneReady && tgt < 0.9) tgt += 0.0007;
+      cur += (tgt - cur) * 0.07;
+      lit.style.clipPath = 'inset(0 ' + Math.max(0, (1 - cur) * 100).toFixed(2) + '% 0 0)';
+      requestAnimationFrame(anim);
+    })();
+  })();
+
   // header scroll state
   var hdr = document.getElementById('hdr');
   addEventListener('scroll', function(){ hdr.classList.toggle('scrolled', scrollY > 40); });
@@ -1235,7 +1309,7 @@
   addEventListener('message', function(e){
     if (!e.data) return;
     // сцена отрисовала первый кадр (лого-лоадер ушёл) → показываем верхнюю панель
-    if (e.data.pdReady) document.body.classList.remove('booting');
+    // pdReady обрабатывает стартовый оверлей (#boot) — он же снимает booting
     if (typeof e.data.pdScroll === 'number')
       window.scrollBy({ top: e.data.pdScroll, left: 0, behavior: 'instant' });
     // открыта DEV-панель настроек сцены → поднимаем iframe над интерфейсами лендинга
@@ -1489,7 +1563,7 @@
       var playMark = (c.video || c.local) ? '<span class="play">▶︎ смотреть</span>' : '';
       var meta = (c.client ? c.client : '') + (c.year ? (c.client ? ' · ' : '') + c.year : '');
       el.innerHTML =
-        '<div class="card-media"><img src="'+c.img+'" alt="" loading="lazy">'+playMark+'</div>'+
+        '<div class="card-media"><img src="'+c.img+'" alt="" loading="lazy" decoding="async">'+playMark+'</div>'+
         '<div class="card-body"><div class="cmeta">'+meta+'</div><h3>'+c.title+'</h3><div class="oneline">'+c.punch+'</div></div>';
       var im = el.querySelector('img');
       im.addEventListener('error', function(){
@@ -2465,7 +2539,7 @@
                   '<div class="g-cnt">01 / ' + String(b.src.length).padStart(2, '0') + '</div></div>' + cap + '</div>';
         } else {
           var imgs = b.src.map(function(u){
-            return '<img data-lsrc="' + localAsset(p.slug, u) + '" data-fb="' + u.replace('http://', 'https://') + '" alt="" loading="lazy">';
+            return '<img data-lsrc="' + localAsset(p.slug, u) + '" data-fb="' + u.replace('http://', 'https://') + '" alt="" loading="lazy" decoding="async">';
           }).join('');
           var cls = 'v-imgs' + (b.src.length === 1 ? ' single' : '') + (b.small ? ' small' : '');
           html += '<div class="vb"><div class="' + cls + '">' + imgs + '</div>' + cap + '</div>';
@@ -2491,7 +2565,7 @@
       html += '<div class="vb v-next" data-slug="' + nx.slug + '">' +
         '<div class="vn-k">Следующий проект · ' + String(((idx + 1) % CASES.length) + 1).padStart(2, '0') + ' / ' + String(CASES.length).padStart(2, '0') + '</div>' +
         '<div class="vn-row"><div class="vn-t">' + nx.title + '</div>' +
-        '<div class="vn-img"><img src="' + nx.img + '" alt="" loading="lazy"' + (nx.fb ? ' onerror="if(this.src.indexOf(this.dataset.fb)<0)this.src=this.dataset.fb" data-fb="' + nx.fb + '"' : '') + '></div>' +
+        '<div class="vn-img"><img src="' + nx.img + '" alt="" loading="lazy" decoding="async"' + (nx.fb ? ' onerror="if(this.src.indexOf(this.dataset.fb)<0)this.src=this.dataset.fb" data-fb="' + nx.fb + '"' : '') + '></div>' +
         '<div class="vn-a">→</div></div></div>';
     }
     return '<div class="v-flow">' + html + '</div>';
@@ -2960,9 +3034,15 @@
   }
   // управление рендером hero-сцены (iframe): пауза, пока открыт проект
   function heroScene(on){
+    // при возобновлении не будим сцену зря: если герой всё равно вне кадра — не включаем
+    if (on) {
+      var h = document.getElementById('start');
+      if (h) { var r = h.getBoundingClientRect(); on = r.bottom > 0 && r.top < innerHeight; }
+    }
     var fr = document.querySelector('iframe.hero-scene');
     if (fr && fr.contentWindow) try { fr.contentWindow.postMessage({ pdVisible: on }, '*'); } catch (e) {}
   }
+  window.pdHeroLive = heroScene; // общий выключатель: вьюер решений, атлас и AI тоже глушат сцену
 
   // ---- ссылки: раздел проектов #work, каждый проект #/work/<slug>, кнопка «назад» ----
   var suppressRoute = false;
@@ -2987,8 +3067,7 @@
     suppressRoute = false;
   }
   addEventListener('popstate', routeFromHash);
-  // страховка: если сцена не пришлёт pdReady (ошибка/медленно) — всё равно показать шапку
-  setTimeout(function(){ document.body.classList.remove('booting'); }, 3200); // шапка не ждёт медленную сцену дольше 3.2с
+  // шапку показывает стартовый оверлей (#boot) при своём уходе — см. блок boot ниже
   // клик по логотипу: закрыть открытый кейс и вернуться на самый верх стартовой
   var logoHome = document.querySelector('.logo-home');
   if (logoHome) logoHome.addEventListener('click', function(ev){
@@ -3151,7 +3230,7 @@
       var items = (c.gallery && c.gallery.length) ? c.gallery : [{ type: 'image', src: c.cover }];
       var slides = items.map(function(m){
         return m.type === 'video'
-          ? '<div class="gs"><video class="on" autoplay muted loop playsinline' + (m.poster ? ' poster="' + esc(m.poster) + '"' : '') + ' src="' + esc(m.src) + '"></video></div>'
+          ? '<div class="gs"><video class="on" autoplay muted loop playsinline preload="metadata"' + (m.poster ? ' poster="' + esc(m.poster) + '"' : '') + ' src="' + esc(m.src) + '"></video></div>'
           : '<div class="gs"><img data-lsrc="' + esc(m.src) + '" alt=""></div>';
       }).join('');
       var nav = items.length > 1
@@ -3230,6 +3309,7 @@
       view.classList.add('open');
       view.scrollTop = 0;
       document.body.style.overflow = 'hidden';
+      if (window.pdHeroLive) window.pdHeroLive(false); // сцена за оверлеем не рендерится
       // ВАЖНО: без galSync первый кадр листалки остаётся пустым — картинки ленивые (data-lsrc),
       // и их загрузку запускает именно galSync (он же строит точки и счётчик)
       viewIn.querySelectorAll('.v-gal').forEach(function(g){
@@ -3253,6 +3333,7 @@
       view.classList.remove('open');
       viewIn.innerHTML = '';
       document.body.style.overflow = '';
+      if (window.pdHeroLive) window.pdHeroLive(true);
     }
 
     // ---- следующая/предыдущая концепция внутри вьюера: простой кросс-фейд (как «следующий проект») ----
@@ -3688,6 +3769,7 @@
       view.classList.add('open');
       view.scrollTop = 0;
       document.body.style.overflow = 'hidden';
+      if (window.pdHeroLive) window.pdHeroLive(false);
       viewIn.querySelectorAll('.c-rel a').forEach(function(a2){
         a2.addEventListener('click', function(){
           var pc = caseBySlug(a2.getAttribute('data-slug'));
@@ -3703,6 +3785,7 @@
     function closeLesson(){
       view.classList.remove('open');
       document.body.style.overflow = '';
+      if (window.pdHeroLive) window.pdHeroLive(true);
     }
     document.getElementById('aViewClose').addEventListener('click', closeLesson);
     addEventListener('keydown', function(e){ if (e.key === 'Escape' && view.classList.contains('open')) closeLesson(); });
@@ -4012,6 +4095,7 @@
       ai.classList.add('open');
       document.body.classList.add('ai-session-open');
       document.body.style.overflow = 'hidden';
+      if (window.pdHeroLive) window.pdHeroLive(false);
       stage('intro');
     }
     function closeAI(){
@@ -4019,6 +4103,7 @@
       ai.classList.remove('open');
       document.body.classList.remove('ai-session-open');
       document.body.style.overflow = '';
+      if (window.pdHeroLive) window.pdHeroLive(true);
     }
 
     // смысловые объекты: свободные слоты, чтобы слова не наслаивались
