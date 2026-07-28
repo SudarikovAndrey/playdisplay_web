@@ -321,6 +321,9 @@
   .c-count b { color: var(--signal-teal); font-weight: 700; }
   /* листание ленты концептов: стрелки + прогресс-бар */
   .c-strip-nav { display: flex; align-items: center; gap: 18px; margin-top: 18px; }
+  /* display:flex перебивал служебный [hidden]: когда прокручивать нечего,
+     панель со стрелками оставалась висеть с мёртвой полосой прогресса */
+  .c-strip-nav[hidden] { display: none; }
   .csn-btn { width: 42px; height: 42px; flex: 0 0 auto; border-radius: 50%; cursor: pointer;
     border: 1px solid var(--space-line); background: rgba(16,30,37,0.5); color: #F1FBFC; font-size: 20px;
     display: flex; align-items: center; justify-content: center; transition: border-color .25s, background .25s, color .25s, opacity .25s; }
@@ -3834,6 +3837,7 @@
       if (!list.length) grid.innerHTML = '<div class="c-empty">Ничего не нашлось — попробуйте другой запрос.</div>';
       else dropInCards();
       grid.scrollLeft = 0;      // после смены фильтра лента возвращается к началу
+      updateStripNav();
       requestAnimationFrame(updateStripNav);
     }
 
