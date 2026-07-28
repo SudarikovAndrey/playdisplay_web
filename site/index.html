@@ -709,10 +709,9 @@
   /* отступ живёт в самом логотипе, а не в gap: только тогда сдвиг на -50% совпадает
      ровно с одним проходом списка и шов ленты не виден */
   .cl-track { display: flex; align-items: center; width: max-content; padding: 10px 0; }
-  /* движение включается только после того, как логотипы проявились по очереди */
-  .cl-strip.rolling .cl-track { animation: clRoll 52s linear infinite; }
-  .cl-strip:hover .cl-track { animation-play-state: paused; }
-  @keyframes clRoll { to { transform: translateX(-50%); } }
+  /* Движением ленты управляет скрипт, а не CSS-анимация: у animation-play-state
+     нет плавности — лента вставала бы за один кадр. Скрипт гасит скорость мягко. */
+  .cl-track { will-change: transform; }
   /* по умолчанию логотипы ВИДНЫ: скрывает их только скрипт, добавив ленте класс cl-anim.
      Если скрипт не выполнится или наблюдатель не сработает, стена клиентов всё равно на месте */
   .cl-logo { flex: 0 0 auto; display: block; height: auto; margin-right: clamp(34px, 3.6vw, 72px);
@@ -722,7 +721,6 @@
   /* при наведении на ленту соседи приглушаются, а нужный знак выходит в полную силу */
   .cl-track:hover .cl-logo.on { opacity: 0.3; }
   .cl-track .cl-logo.on:hover { opacity: 1; filter: none; }
-  @media (prefers-reduced-motion: reduce) { .cl-strip.rolling .cl-track { animation: none; } }
   @media (max-width: 700px) { .cl-logo { margin-right: 26px; } }
 
   /* ---------- география: глобус из точек ---------- */
@@ -1018,7 +1016,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game19" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game20" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1104,40 +1102,40 @@
 <section class="trust sec-pad">
   <div class="wrap">
     <div class="kicker eyebrow">Доверие</div>
-    <p>Наши работы показывал канал <b>Discovery</b>. Среди клиентов — <b>BMW</b>, аэропорты, национальные музеи и промышленные корпорации.</p>
+    <p>Наши работы показывал канал <b>Discovery</b>. Среди клиентов — <b>автопроизводители</b>, международные аэропорты, национальные музеи и промышленные корпорации.</p>
     <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
     <!-- без reveal-up: этот класс держит opacity:0 до появления класса in,
          а логотипы проявляются своим каскадом -->
     <div class="cl-block" id="clBlock">
       <div class="cl-strip" id="clStrip">
         <div class="cl-track" id="clTrack">
-          <img class="cl-logo" src="assets/logos/clients/mars.png" width="142" height="45" alt="MARS" title="MARS" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/s7.png" width="165" height="55" alt="S7 Airlines" title="S7 Airlines" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/changi.png" width="93" height="55" alt="Changi Airport Singapore" title="Changi Airport Singapore" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/coalco.png" width="70" height="63" alt="COALCO Development" title="COALCO Development" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/sap.png" width="106" height="55" alt="SAP" title="SAP" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/zaha-hadid.png" width="239" height="39" alt="Zaha Hadid" title="Zaha Hadid" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/stm.png" width="162" height="55" alt="Синара — Транспортные Машины" title="Синара — Транспортные Машины" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/ptk.png" width="85" height="63" alt="Группа ПТК" title="Группа ПТК" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/mos-gov.png" width="141" height="55" alt="Правительство Москвы" title="Правительство Москвы" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/intel.png" width="94" height="63" alt="Intel" title="Intel" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/garage.png" width="155" height="55" alt="Музей «Гараж»" title="Музей «Гараж»" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/aeroporty-regionov.png" width="56" height="63" alt="Аэропорты Регионов" title="Аэропорты Регионов" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/renault.png" width="62" height="63" alt="Renault" title="Renault" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/bmw.png" width="62" height="63" alt="BMW" title="BMW" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/gorky-park.png" width="120" height="55" alt="Парк Горького" title="Парк Горького" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/kr-properties.png" width="122" height="55" alt="KR Properties" title="KR Properties" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/audi.png" width="100" height="63" alt="Audi" title="Audi" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/lanit.png" width="55" height="63" alt="ЛАНИТ" title="ЛАНИТ" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/coca-cola.png" width="163" height="55" alt="Coca-Cola" title="Coca-Cola" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/rostec.png" width="52" height="63" alt="Ростех" title="Ростех" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/hasbro.png" width="60" height="63" alt="Hasbro" title="Hasbro" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/capital-group.png" width="362" height="39" alt="Capital Group" title="Capital Group" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/vdnh.png" width="59" height="63" alt="ВДНХ" title="ВДНХ" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/roscosmos.png" width="98" height="63" alt="Роскосмос" title="Роскосмос" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/transneft.png" width="94" height="55" alt="Транснефть" title="Транснефть" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/gazprom.png" width="111" height="55" alt="Газпром" title="Газпром" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/rosatom.png" width="50" height="63" alt="Росатом" title="Росатом" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/mars.png" width="102" height="33" alt="MARS" title="MARS" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/s7.png" width="114" height="39" alt="S7 Airlines" title="S7 Airlines" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/changi.png" width="106" height="63" alt="Changi Airport Singapore" title="Changi Airport Singapore" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/coalco.png" width="76" height="69" alt="COALCO Development" title="COALCO Development" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/sap.png" width="74" height="39" alt="SAP" title="SAP" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/zaha-hadid.png" width="200" height="33" alt="Zaha Hadid" title="Zaha Hadid" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/stm.png" width="95" height="33" alt="Синара — Транспортные Машины" title="Синара — Транспортные Машины" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/ptk.png" width="100" height="74" alt="Группа ПТК" title="Группа ПТК" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/mos-gov.png" width="103" height="41" alt="Правительство Москвы" title="Правительство Москвы" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/intel.png" width="80" height="54" alt="Intel" title="Intel" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/garage.png" width="95" height="34" alt="Музей «Гараж»" title="Музей «Гараж»" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/aeroporty-regionov.png" width="51" height="57" alt="Аэропорты Регионов" title="Аэропорты Регионов" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/renault.png" width="78" height="79" alt="Renault" title="Renault" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/bmw.png" width="47" height="48" alt="BMW" title="BMW" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/gorky-park.png" width="99" height="46" alt="Парк Горького" title="Парк Горького" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/kr-properties.png" width="110" height="50" alt="KR Properties" title="KR Properties" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/audi.png" width="89" height="56" alt="Audi" title="Audi" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/lanit.png" width="53" height="61" alt="ЛАНИТ" title="ЛАНИТ" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/coca-cola.png" width="110" height="38" alt="Coca-Cola" title="Coca-Cola" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/rostec.png" width="61" height="73" alt="Ростех" title="Ростех" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/hasbro.png" width="50" height="53" alt="Hasbro" title="Hasbro" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/capital-group.png" width="302" height="33" alt="Capital Group" title="Capital Group" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/vdnh.png" width="72" height="77" alt="ВДНХ" title="ВДНХ" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/roscosmos.png" width="104" height="66" alt="Роскосмос" title="Роскосмос" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/transneft.png" width="96" height="56" alt="Транснефть" title="Транснефть" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/gazprom.png" width="97" height="48" alt="Газпром" title="Газпром" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/rosatom.png" width="45" height="57" alt="Росатом" title="Росатом" loading="lazy" decoding="async">
         </div>
       </div>
     </div>
@@ -1238,7 +1236,6 @@
     <div class="wm-block reveal-up" id="wmBlock">
       <div class="ptitle">География</div>
       <h4>Работаем по всему миру</h4>
-      <p class="wm-sub">Три центра, из которых ведём проекты: точки стоят там, где мы физически находимся.</p>
       <div class="wm-stage" id="wmStage">
         <canvas id="wmCanvas"></canvas>
         <div class="wm-pins" id="wmPins">
@@ -1755,12 +1752,45 @@
     var all = [].slice.call(track.children);
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     function run(){
-      if (reduce) { all.forEach(function(el){ el.classList.add('on'); }); strip.classList.add('rolling'); return; }
+      if (reduce) { all.forEach(function(el){ el.classList.add('on'); }); return; }
       logos.forEach(function(el, i){ setTimeout(function(){ el.classList.add('on'); }, 60 + i * 55); });
       // копии проявляем сразу — они за кадром
       all.slice(logos.length).forEach(function(el){ el.classList.add('on'); });
-      setTimeout(function(){ strip.classList.add('rolling'); }, 60 + logos.length * 55 + 500);
+      setTimeout(roll, 60 + logos.length * 55 + 500);
     }
+    // Лента едет своим циклом: скорость плавно гаснет при наведении и так же
+    // плавно возвращается. Полшага ленты — ровно один проход списка, поэтому
+    // достаточно вернуть смещение назад на половину, и шва не видно.
+    var x = 0, speed = 0, want = 0, half = 0, raf = 0, live = true;
+    var SPEED = 0.55;                     // пикселей за кадр, около 33 px/с
+    function roll(){
+      if (reduce) return;
+      want = SPEED;
+      strip.addEventListener('pointerenter', function(){ want = 0; });
+      strip.addEventListener('pointerleave', function(){ want = SPEED; });
+      // на тач-экранах наведения нет: касание тормозит ленту на время жеста
+      strip.addEventListener('pointerdown', function(e){ if (e.pointerType === 'touch') want = 0; });
+      strip.addEventListener('pointerup', function(e){ if (e.pointerType === 'touch') want = SPEED; });
+      kick();
+    }
+    function step(){
+      raf = 0;
+      half = track.scrollWidth / 2;
+      speed += (want - speed) * 0.045;               // мягкий разгон и торможение
+      if (speed < 0.004 && want === 0) speed = 0;    // окончательно встали
+      x -= speed;
+      if (half > 0 && -x >= half) x += half;
+      track.style.transform = 'translateX(' + x.toFixed(2) + 'px)';
+      if (live && !document.hidden && (speed > 0 || want > 0)) raf = requestAnimationFrame(step);
+    }
+    function kick(){ if (!raf) raf = requestAnimationFrame(step); }
+    document.addEventListener('visibilitychange', function(){ if (!document.hidden && live) kick(); });
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function(es){
+        es.forEach(function(e){ live = e.isIntersecting; if (live) kick(); });
+      }, { threshold: 0 }).observe(strip);
+    }
+
     if (!window.IntersectionObserver) { run(); return; }
     var io = new IntersectionObserver(function(es){
       es.forEach(function(e){ if (e.isIntersecting) { run(); io.disconnect(); done = true; } });
