@@ -57,12 +57,33 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 44px;
     transition: opacity .65s ease; cursor: default; }
   #boot.out { opacity: 0; pointer-events: none; }
-  #boot .bl { position: relative; width: min(58vw, 340px); }
+  #boot .bl { position: relative; width: min(58vw, 340px); --p: 0%; }
   #boot .bl img { width: 100%; display: block; -webkit-user-drag: none; user-select: none; }
-  #boot .bl .dim { opacity: .14; }
-  /* яркая копия открывается слева направо по мере загрузки + тиловое свечение у фронта */
-  #boot .bl .lit { position: absolute; inset: 0; clip-path: inset(0 100% 0 0);
-    filter: brightness(1.25) drop-shadow(0 0 16px rgba(43,224,198,0.55)) drop-shadow(0 0 44px rgba(43,224,198,0.22)); }
+  #boot .bl .dim { opacity: .12; }
+  /* Заливка идёт слева направо по одной переменной --p, её ведёт скрипт.
+     ВАЖНО: отступы в clip-path отрицательные. С нулевыми свечение срезалось ровно
+     по рамке картинки, и вокруг надписи был виден светлый прямоугольник — именно
+     это и бросалось в глаза. Отрицательные дают свету выйти за буквы. */
+  #boot .bl .tint, #boot .bl .b1, #boot .bl .lit { position: absolute; inset: 0; }
+  /* широкий тиловый ореол по форме букв: цветная подложка в маске самой надписи */
+  #boot .bl .tint { background: #2be0c6;
+    -webkit-mask: url("assets/logos/playdisplay-logo-white.png") center / 100% 100% no-repeat;
+    mask: url("assets/logos/playdisplay-logo-white.png") center / 100% 100% no-repeat;
+    filter: blur(20px); opacity: .62; mix-blend-mode: screen;
+    clip-path: inset(-260% calc(100% - var(--p)) -260% -60%); }
+  /* плотный белый ореол — ближний свет у самих букв */
+  #boot .bl .b1 { filter: blur(7px) brightness(1.4); opacity: .8; mix-blend-mode: screen;
+    clip-path: inset(-120% calc(100% - var(--p)) -120% -24%); }
+  /* резкая копия сверху: она и читается как надпись */
+  #boot .bl .lit { filter: brightness(1.2) drop-shadow(0 0 9px rgba(180,255,246,0.45));
+    clip-path: inset(-70% calc(100% - var(--p)) -70% -10%); }
+  /* блик на фронте: место, где свет прямо сейчас проходит сквозь прорезь */
+  #boot .bl .flare { position: absolute; top: -150%; bottom: -150%; width: 72px; margin-left: -36px;
+    left: var(--p); pointer-events: none; mix-blend-mode: screen;
+    background: radial-gradient(closest-side, rgba(190,255,247,0.5), rgba(43,224,198,0.16) 46%, transparent 72%);
+    filter: blur(7px); opacity: 0; transition: opacity .5s ease; }
+  #boot .bl.lighting .flare { opacity: .6; }
+  @media (prefers-reduced-motion: reduce) { #boot .bl .flare { display: none; } }
   #boot #bootPlay { opacity: 0; transform: translateY(10px); pointer-events: none;
     font: 600 13px 'Roboto Mono', monospace; letter-spacing: .22em; text-transform: uppercase;
     color: #04121a; background: #2be0c6; border: none; border-radius: 2px; padding: 16px 34px;
@@ -1016,9 +1037,14 @@
      Первой грузится игра — когда она готова, появляется кнопка «Сыграть в пространство».
      Если кнопку не нажали — по полной загрузке оверлей растворяется и открывается сайт. -->
 <div id="boot" aria-hidden="true">
-  <div class="bl">
+  <div class="bl" id="bootBl">
     <img class="dim" src="assets/logos/playdisplay-logo-white.png" alt="">
+    <!-- свет как бы проходит сквозь прорезь в панели: широкий тиловый ореол по форме
+         букв, плотный белый ореол, резкая копия и блик на фронте заливки -->
+    <div class="tint" aria-hidden="true"></div>
+    <img class="b1" src="assets/logos/playdisplay-logo-white.png" alt="" aria-hidden="true">
     <img class="lit" src="assets/logos/playdisplay-logo-white.png" alt="PlayDisplay">
+    <div class="flare" aria-hidden="true"></div>
   </div>
   <button id="bootPlay" type="button">▶︎ Сыграть в пространство</button>
 </div>
@@ -1397,7 +1423,7 @@
   (function(){
     var boot = document.getElementById('boot');
     if (!boot) return;
-    var lit = boot.querySelector('.lit'), btn = document.getElementById('bootPlay');
+    var bl = document.getElementById('bootBl'), btn = document.getElementById('bootPlay');
     var frame = document.querySelector('iframe.hero-scene');
     var tgt = 0.06, cur = 0, sceneReady = false, pageLoaded = false, gone = false;
     if (frame) frame.addEventListener('load', function(){ tgt = Math.max(tgt, 0.5); }); // html сцены получен
@@ -1432,7 +1458,10 @@
       if (!boot.parentNode) return;
       if (!sceneReady && tgt < 0.9) tgt += 0.0007;
       cur += (tgt - cur) * 0.07;
-      lit.style.clipPath = 'inset(0 ' + Math.max(0, (1 - cur) * 100).toFixed(2) + '% 0 0)';
+      // одна переменная ведёт все слои свечения сразу
+      bl.style.setProperty('--p', (Math.min(1, Math.max(0, cur)) * 100).toFixed(2) + '%');
+      // блик показываем, пока заливка реально идёт, и гасим в самом конце
+      bl.classList.toggle('lighting', cur > 0.02 && cur < 0.985);
       requestAnimationFrame(anim);
     })();
   })();
