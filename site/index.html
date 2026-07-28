@@ -689,29 +689,58 @@
   }
 
   /* ---------- география: карта мира из точек (маска — стилизованные силуэты материков) ---------- */
-  .wm-block { margin-top: 72px; border-top: 1px solid var(--space-line); padding-top: 44px; }
+  /* ---------- клиенты: лента логотипов ---------- */
+  .cl-block { margin-top: 72px; border-top: 1px solid var(--space-line); padding-top: 44px; }
+  .cl-block .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
+  .cl-block h4 { font: 700 24px var(--font-display); color: #F1FBFC; margin-bottom: 6px; }
+  .cl-block .cl-sub { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
+  /* лента во всю ширину окна, края растворяются */
+  .cl-strip { margin: 26px calc(50% - 50vw) 0; overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%); }
+  /* отступ живёт в самом логотипе, а не в gap: только тогда сдвиг на -50% совпадает
+     ровно с одним проходом списка и шов ленты не виден */
+  .cl-track { display: flex; align-items: center; width: max-content; padding: 10px 0; }
+  /* движение включается только после того, как логотипы проявились по очереди */
+  .cl-strip.rolling .cl-track { animation: clRoll 52s linear infinite; }
+  .cl-strip:hover .cl-track { animation-play-state: paused; }
+  @keyframes clRoll { to { transform: translateX(-50%); } }
+  .cl-logo { flex: 0 0 auto; display: block; height: auto; margin-right: clamp(34px, 3.6vw, 72px);
+    opacity: 0; transform: translateY(12px) scale(0.95);
+    transition: opacity .55s ease, transform .65s cubic-bezier(.16,1,.3,1), filter .3s ease; }
+  .cl-logo.on { opacity: 0.6; transform: none; filter: saturate(0) contrast(0.92); }
+  /* при наведении на ленту соседи приглушаются, а нужный знак выходит в полную силу */
+  .cl-track:hover .cl-logo.on { opacity: 0.3; }
+  .cl-track .cl-logo.on:hover { opacity: 1; filter: none; }
+  @media (prefers-reduced-motion: reduce) { .cl-strip.rolling .cl-track { animation: none; } }
+  @media (max-width: 700px) { .cl-logo { margin-right: 26px; } }
+
+  /* ---------- география: глобус из точек ---------- */
+  .wm-block { margin-top: 64px; border-top: 1px solid var(--space-line); padding-top: 44px; }
   .wm-block .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
-  .wm-block h4 { font: 700 24px var(--font-display); color: #F1FBFC; margin-bottom: 30px; }
-  .wm-wrap { position: relative; width: 100%; aspect-ratio: 2/1; max-width: 920px; }
-  .wm-dots { position: absolute; inset: 0;
-    background-image: radial-gradient(circle, rgba(210,220,255,0.9) 0 1.6px, transparent 1.9px);
-    background-size: 13px 13px;
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500'%3E%3Cellipse cx='190' cy='110' rx='95' ry='70'/%3E%3Cellipse cx='150' cy='175' rx='70' ry='55'/%3E%3Cellipse cx='230' cy='215' rx='35' ry='30'/%3E%3Cellipse cx='260' cy='255' rx='18' ry='26'/%3E%3Cellipse cx='305' cy='300' rx='82' ry='58'/%3E%3Cellipse cx='325' cy='360' rx='62' ry='58'/%3E%3Cellipse cx='310' cy='412' rx='32' ry='35'/%3E%3Cellipse cx='530' cy='110' rx='60' ry='45'/%3E%3Cellipse cx='470' cy='95' rx='22' ry='30'/%3E%3Cellipse cx='680' cy='105' rx='150' ry='50'/%3E%3Cellipse cx='800' cy='150' rx='90' ry='55'/%3E%3Cellipse cx='600' cy='175' rx='45' ry='30'/%3E%3Cellipse cx='700' cy='200' rx='55' ry='35'/%3E%3Cellipse cx='660' cy='230' rx='30' ry='30'/%3E%3Cellipse cx='655' cy='260' rx='14' ry='22'/%3E%3Cellipse cx='760' cy='245' rx='35' ry='25'/%3E%3Cellipse cx='555' cy='220' rx='55' ry='35'/%3E%3Cellipse cx='565' cy='280' rx='60' ry='45'/%3E%3Cellipse cx='555' cy='345' rx='42' ry='45'/%3E%3Cellipse cx='545' cy='395' rx='22' ry='28'/%3E%3Cellipse cx='615' cy='360' rx='10' ry='20'/%3E%3Cellipse cx='830' cy='350' rx='65' ry='40'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500'%3E%3Cellipse cx='190' cy='110' rx='95' ry='70'/%3E%3Cellipse cx='150' cy='175' rx='70' ry='55'/%3E%3Cellipse cx='230' cy='215' rx='35' ry='30'/%3E%3Cellipse cx='260' cy='255' rx='18' ry='26'/%3E%3Cellipse cx='305' cy='300' rx='82' ry='58'/%3E%3Cellipse cx='325' cy='360' rx='62' ry='58'/%3E%3Cellipse cx='310' cy='412' rx='32' ry='35'/%3E%3Cellipse cx='530' cy='110' rx='60' ry='45'/%3E%3Cellipse cx='470' cy='95' rx='22' ry='30'/%3E%3Cellipse cx='680' cy='105' rx='150' ry='50'/%3E%3Cellipse cx='800' cy='150' rx='90' ry='55'/%3E%3Cellipse cx='600' cy='175' rx='45' ry='30'/%3E%3Cellipse cx='700' cy='200' rx='55' ry='35'/%3E%3Cellipse cx='660' cy='230' rx='30' ry='30'/%3E%3Cellipse cx='655' cy='260' rx='14' ry='22'/%3E%3Cellipse cx='760' cy='245' rx='35' ry='25'/%3E%3Cellipse cx='555' cy='220' rx='55' ry='35'/%3E%3Cellipse cx='565' cy='280' rx='60' ry='45'/%3E%3Cellipse cx='555' cy='345' rx='42' ry='45'/%3E%3Cellipse cx='545' cy='395' rx='22' ry='28'/%3E%3Cellipse cx='615' cy='360' rx='10' ry='20'/%3E%3Cellipse cx='830' cy='350' rx='65' ry='40'/%3E%3C/svg%3E");
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-    opacity: 0.85; animation: wmBreathe 9s ease-in-out infinite; }
-  @keyframes wmBreathe { 50% { opacity: 1; } }
-  .wm-pin { position: absolute; transform: translate(-50%,-50%); display: flex; align-items: center; gap: 10px; }
-  .wm-pin .wm-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--signal-amber); box-shadow: 0 0 10px var(--signal-amber); flex-shrink: 0; }
-  .wm-pin .wm-ring { position: absolute; left: 3.5px; top: 3.5px; width: 7px; height: 7px; border-radius: 50%;
-    border: 1px solid var(--signal-amber); transform: translate(-50%,-50%); animation: wmPing 2.6s ease-out infinite; }
-  @keyframes wmPing { from { width: 7px; height: 7px; opacity: .9; } to { width: 34px; height: 34px; opacity: 0; } }
-  .wm-pin .wm-label { font: 600 12px var(--font-mono); letter-spacing: 0.06em; white-space: nowrap; color: #F1FBFC;
-    text-shadow: 0 1px 8px rgba(3,12,16,0.9); }
-  .wm-pin .wm-label small { display: block; font: 400 10px var(--font-body); color: var(--scan-white-dim); letter-spacing: 0.02em; }
-  @media (max-width: 900px) {
-    .wm-wrap { max-width: 100%; }
-    .wm-pin .wm-label { font-size: 10.5px; }
+  .wm-block h4 { font: 700 24px var(--font-display); color: #F1FBFC; margin-bottom: 4px; }
+  .wm-block .wm-sub { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 52ch; }
+  /* сцена на всю ширину окна: глобус — главный объект блока, а не иллюстрация в углу */
+  .wm-stage { position: relative; margin: 10px calc(50% - 50vw) 0;
+    height: clamp(430px, 64vh, 780px); overflow: hidden; cursor: crosshair; }
+  .wm-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .wm-pins { position: absolute; inset: 0; pointer-events: none; }
+  .wm-pin { position: absolute; transform: translate(-50%,-50%); display: flex; align-items: center; gap: 10px;
+    opacity: 0; transition: opacity .4s ease; will-change: left, top; }
+  .wm-pin.vis { opacity: 1; }
+  /* подпись уезжает влево у правого края шара, иначе вылезает за сцену */
+  .wm-pin.flip { flex-direction: row-reverse; }
+  .wm-pin .wm-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--signal-amber);
+    box-shadow: 0 0 12px var(--signal-amber), 0 0 26px rgba(255,138,42,0.35); flex-shrink: 0; }
+  .wm-pin .wm-ring { position: absolute; left: 4px; top: 4px; width: 8px; height: 8px; border-radius: 50%;
+    border: 1px solid var(--signal-amber); transform: translate(-50%,-50%); animation: wmPing 2.8s ease-out infinite; }
+  .wm-pin.flip .wm-ring { left: auto; right: 4px; transform: translate(50%,-50%); }
+  @keyframes wmPing { from { width: 8px; height: 8px; opacity: .9; } to { width: 40px; height: 40px; opacity: 0; } }
+  .wm-pin .wm-label { font: 600 13px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;
+    white-space: nowrap; color: #F1FBFC; text-shadow: 0 1px 10px rgba(3,12,16,0.95); }
+  @media (max-width: 700px) {
+    .wm-stage { height: min(72vw, 420px); cursor: default; }
+    .wm-pin .wm-label { font-size: 10.5px; letter-spacing: 0.06em; }
   }
 
   /* ---------- studio ---------- */
@@ -1158,23 +1187,55 @@
       </div>
     </div>
 
-    <!-- ===== ГЕОГРАФИЯ: карта мира из точек — та же эстетика, что и в hero ===== -->
+    <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
+    <div class="cl-block reveal-up" id="clBlock">
+      <div class="ptitle">Клиенты</div>
+      <h4>С кем мы это делали</h4>
+      <p class="cl-sub">Музеи и корпорации, аэропорты и автомобильные бренды, городские парки и промышленные холдинги.</p>
+      <div class="cl-strip" id="clStrip">
+        <div class="cl-track" id="clTrack">
+          <img class="cl-logo" src="assets/logos/clients/mars.png" width="99" height="32" alt="MARS" title="MARS" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/s7.png" width="109" height="37" alt="S7 Airlines" title="S7 Airlines" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/changi.png" width="62" height="37" alt="Changi Airport Singapore" title="Changi Airport Singapore" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/coalco.png" width="48" height="43" alt="COALCO Development" title="COALCO Development" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/sap.png" width="70" height="37" alt="SAP" title="SAP" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/zaha-hadid.png" width="167" height="28" alt="Zaha Hadid" title="Zaha Hadid" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/stm.png" width="107" height="37" alt="Синара — Транспортные Машины" title="Синара — Транспортные Машины" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/ptk.png" width="58" height="43" alt="Группа ПТК" title="Группа ПТК" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/mos-gov.png" width="93" height="37" alt="Правительство Москвы" title="Правительство Москвы" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/intel.png" width="63" height="43" alt="Intel" title="Intel" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/garage.png" width="102" height="37" alt="Музей «Гараж»" title="Музей «Гараж»" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/aeroporty-regionov.png" width="38" height="43" alt="Аэропорты Регионов" title="Аэропорты Регионов" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/renault.png" width="42" height="43" alt="Renault" title="Renault" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/bmw.png" width="42" height="43" alt="BMW" title="BMW" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/gorky-park.png" width="80" height="37" alt="Парк Горького" title="Парк Горького" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/kr-properties.png" width="81" height="37" alt="KR Properties" title="KR Properties" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/audi.png" width="68" height="43" alt="Audi" title="Audi" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/lanit.png" width="37" height="43" alt="ЛАНИТ" title="ЛАНИТ" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/coca-cola.png" width="108" height="37" alt="Coca-Cola" title="Coca-Cola" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/rostec.png" width="36" height="43" alt="Ростех" title="Ростех" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/hasbro.png" width="41" height="43" alt="Hasbro" title="Hasbro" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/capital-group.png" width="252" height="28" alt="Capital Group" title="Capital Group" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/vdnh.png" width="40" height="43" alt="ВДНХ" title="ВДНХ" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/roscosmos.png" width="67" height="43" alt="Роскосмос" title="Роскосмос" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/transneft.png" width="63" height="37" alt="Транснефть" title="Транснефть" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/gazprom.png" width="74" height="37" alt="Газпром" title="Газпром" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/rosatom.png" width="34" height="43" alt="Росатом" title="Росатом" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ГЕОГРАФИЯ: глобус из точек. Подписи — страны, точки стоят по городам ===== -->
     <div class="wm-block reveal-up" id="wmBlock">
       <div class="ptitle">География</div>
       <h4>Работаем по всему миру</h4>
-      <div class="wm-wrap">
-        <div class="wm-dots"></div>
-        <div class="wm-pin" style="left:61.6%;top:25.8%">
-          <span class="wm-dot"></span><span class="wm-ring"></span>
-          <span class="wm-label">Сочи<small>Россия</small></span>
-        </div>
-        <div class="wm-pin" style="left:59.3%;top:33%">
-          <span class="wm-dot"></span><span class="wm-ring"></span>
-          <span class="wm-label">Кипр</span>
-        </div>
-        <div class="wm-pin" style="left:36.5%;top:65.3%">
-          <span class="wm-dot"></span><span class="wm-ring"></span>
-          <span class="wm-label">Флорианополис<small>Бразилия</small></span>
+      <p class="wm-sub">Три центра, из которых ведём проекты: точки стоят там, где мы физически находимся.</p>
+      <div class="wm-stage" id="wmStage">
+        <canvas id="wmCanvas"></canvas>
+        <div class="wm-pins" id="wmPins">
+          <div class="wm-pin" data-lon="39.73" data-lat="43.60"><span class="wm-dot"></span><span class="wm-ring"></span><span class="wm-label">Россия</span></div>
+          <div class="wm-pin" data-lon="33.04" data-lat="34.68"><span class="wm-dot"></span><span class="wm-ring"></span><span class="wm-label">Кипр</span></div>
+          <div class="wm-pin" data-lon="-48.55" data-lat="-27.60"><span class="wm-dot"></span><span class="wm-ring"></span><span class="wm-label">Бразилия</span></div>
         </div>
       </div>
     </div>
@@ -1500,6 +1561,264 @@
       es.forEach(function(e){ if (e.isIntersecting) { wm.classList.add('in'); io.disconnect(); } });
     }, { threshold: 0.2 });
     io.observe(wm);
+  })();
+
+  // ===== клиенты: логотипы проявляются по очереди, потом лента едет =====
+  (function(){
+    var strip = document.getElementById('clStrip'), track = document.getElementById('clTrack');
+    if (!strip || !track) return;
+    var logos = [].slice.call(track.children);
+    // список дублируется в рантайме, а не в разметке: половина ленты = один проход,
+    // поэтому клавиатурный поиск и SEO видят каждый логотип один раз
+    logos.forEach(function(el){
+      var c = el.cloneNode(true); c.setAttribute('aria-hidden', 'true'); track.appendChild(c);
+    });
+    var all = [].slice.call(track.children);
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function run(){
+      if (reduce) { all.forEach(function(el){ el.classList.add('on'); }); strip.classList.add('rolling'); return; }
+      logos.forEach(function(el, i){ setTimeout(function(){ el.classList.add('on'); }, 60 + i * 55); });
+      // копии проявляем сразу — они за кадром
+      all.slice(logos.length).forEach(function(el){ el.classList.add('on'); });
+      setTimeout(function(){ strip.classList.add('rolling'); }, 60 + logos.length * 55 + 500);
+    }
+    if (!window.IntersectionObserver) { run(); return; }
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) { run(); io.disconnect(); } });
+    }, { threshold: 0.2 });
+    io.observe(strip);
+  })();
+
+  // ===== география: глобус из точек =====
+  // Ортографическая проекция даёт настоящую сферичность: обратная сторона отсекается по знаку z,
+  // а размер и яркость точки зависят от глубины — отсюда объём без всякого 3D-движка.
+  (function(){
+    var stage = document.getElementById('wmStage'), cv = document.getElementById('wmCanvas');
+    if (!stage || !cv || !cv.getContext) return;
+    var ctx = cv.getContext('2d');
+    var pinEls = [].slice.call(document.querySelectorAll('#wmPins .wm-pin'));
+    var pins = pinEls.map(function(el){
+      return { el: el, lon: parseFloat(el.getAttribute('data-lon')), lat: parseFloat(el.getAttribute('data-lat')),
+               dot: el.querySelector('.wm-dot') };
+    });
+
+    // Материки — объединение эллипсов в координатах долгота/широта:
+    // [центр долготы, центр широты, радиус по долготе, радиус по широте, поворот]
+    var LAND = [
+      [-100,60,46,15,0],[-98,40,26,9,0],[-152,64,13,6,0],[-104,24,10,7,-35],[-86,14,8,3,-20],
+      [-42,72,15,9,0],[-75,46,8,4,0],[-125,52,6,8,0],
+      [-70,5,12,7,0],[-58,-6,16,9,0],[-44,-14,11,10,0],[-70,-13,7,11,0],[-64,-33,9,12,0],
+      [-71,-36,3,14,0],[-69,-48,4,6,0],
+      [5,47,12,8,0],[-4,40,5,4,0],[16,63,9,7,-10],[-3,54,3.5,4,0],[13,43,2.6,4.5,20],
+      [21,43,5,4,0],[31,52,11,7,0],
+      [70,60,24,11,0],[120,62,26,10,0],[159,56,3,6,0],[65,45,16,6,0],[45,31,10,8,0],
+      [46,22,8,7,0],[35,39,9,3,0],[78,22,8,9,0],[105,33,16,9,0],[103,16,7,8,0],[108,8,5,5,0],
+      [138,37,3,6,-30],[128,37,2,3,0],[112,-3,14,4,0],[114,0,5,4,0],[140,-5,8,3,-10],
+      [122,12,3,5,0],[90,24,4,4,0],
+      [10,25,23,10,0],[-5,12,14,7,0],[40,8,8,8,0],[20,0,12,8,0],[25,-22,10,10,0],[47,-20,2.6,6,-20],
+      [134,-25,18,10,0],[147,-42,2,2,0],[172,-42,3,5,-25]
+    ];
+    var RAD = Math.PI / 180;
+    function isLand(lon, lat){
+      for (var i = 0; i < LAND.length; i++) {
+        var e = LAND[i], dx = lon - e[0], dy = lat - e[1];
+        if (dx > 180) dx -= 360; if (dx < -180) dx += 360;
+        if (e[4]) { var t = e[4] * RAD, c = Math.cos(t), sn = Math.sin(t), nx = dx * c + dy * sn; dy = -dx * sn + dy * c; dx = nx; }
+        dx /= e[2]; dy /= e[3];
+        if (dx * dx + dy * dy <= 1) return true;
+      }
+      return false;
+    }
+
+    var PTS = [];
+    function buildPoints(step){
+      PTS = [];
+      for (var lat = -84; lat <= 84; lat += step) {
+        var cl = Math.cos(lat * RAD), sl = step / Math.max(0.2, cl);
+        for (var lon = -180; lon < 180; lon += sl) {
+          if (isLand(lon, lat)) {
+            var la = lat * RAD, lo = lon * RAD;
+            // держим готовые синусы-косинусы: в кадре останется только поворот
+            PTS.push([Math.cos(la) * Math.cos(lo), Math.cos(la) * Math.sin(lo), Math.sin(la), Math.random() * 6.283]);
+          }
+        }
+      }
+    }
+
+    var BASE_LON = -12, BASE_LAT = 12;
+    var tLon = BASE_LON, tLat = BASE_LAT, cLon = BASE_LON, cLat = BASE_LAT;
+    var W = 0, H = 0, R = 0, dpr = 1, seen = false, hovering = false;
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function resize(){
+      var b = stage.getBoundingClientRect();
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = Math.round(b.width); H = Math.round(b.height);
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      R = Math.min(W, H) * 0.44;
+      // плотность по площади: на мобиле точек меньше, иначе телефон греется зря
+      buildPoints(W < 700 ? 3.0 : (W < 1200 ? 2.5 : 2.2));
+    }
+    var inited = false;
+
+    // ортографическая проекция уже повёрнутой точки
+    var sinB, cosB, sinL, cosL;
+    function setCenter(lon, lat){
+      sinB = Math.sin(lat * RAD); cosB = Math.cos(lat * RAD);
+      sinL = Math.sin(-lon * RAD); cosL = Math.cos(-lon * RAD);
+    }
+    function proj(x, y, z){
+      // поворот по долготе, затем наклон по широте
+      var x1 = x * cosL - y * sinL, y1 = x * sinL + y * cosL;
+      var zz = cosB * x1 + sinB * z;         // к наблюдателю
+      var yy = -sinB * x1 + cosB * z;        // вверх
+      return [W / 2 + y1 * R, H / 2 - yy * R, zz];
+    }
+    function projLL(lon, lat){
+      var la = lat * RAD, lo = lon * RAD;
+      return proj(Math.cos(la) * Math.cos(lo), Math.cos(la) * Math.sin(lo), Math.sin(la));
+    }
+
+    var BUCKETS = 7;
+    function draw(now){
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+
+      // атмосфера: мягкое свечение по лимбу
+      var g = ctx.createRadialGradient(W / 2, H / 2, R * 0.82, W / 2, H / 2, R * 1.22);
+      g.addColorStop(0, 'rgba(43,224,198,0.055)');
+      g.addColorStop(0.55, 'rgba(43,224,198,0.018)');
+      g.addColorStop(1, 'rgba(43,224,198,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(W / 2, H / 2, R * 1.22, 0, 6.284); ctx.fill();
+      ctx.strokeStyle = 'rgba(159,180,200,0.14)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(W / 2, H / 2, R, 0, 6.284); ctx.stroke();
+
+      // сетка меридианов и параллелей — читается как каркас шара
+      ctx.strokeStyle = 'rgba(159,180,200,0.07)';
+      var k, a, i2, pt, started;
+      for (k = -60; k <= 60; k += 30) {           // параллели
+        ctx.beginPath(); started = false;
+        for (a = -180; a <= 180; a += 4) {
+          pt = projLL(a, k);
+          if (pt[2] > 0) { if (!started) { ctx.moveTo(pt[0], pt[1]); started = true; } else ctx.lineTo(pt[0], pt[1]); }
+          else started = false;
+        }
+        ctx.stroke();
+      }
+      for (k = -180; k < 180; k += 30) {          // меридианы
+        ctx.beginPath(); started = false;
+        for (a = -84; a <= 84; a += 4) {
+          pt = projLL(k, a);
+          if (pt[2] > 0) { if (!started) { ctx.moveTo(pt[0], pt[1]); started = true; } else ctx.lineTo(pt[0], pt[1]); }
+          else started = false;
+        }
+        ctx.stroke();
+      }
+
+      // точки суши: копим в корзины по глубине и заливаем семью проходами —
+      // смена fillStyle на каждой точке съедала бы кадр
+      var rects = [], bi;
+      for (bi = 0; bi < BUCKETS; bi++) rects.push([]);
+      var tw = now * 0.0011;
+      for (var i = 0; i < PTS.length; i++) {
+        var pp = PTS[i], q = proj(pp[0], pp[1], pp[2]);
+        if (q[2] <= 0.015) continue;
+        var z = q[2];
+        var tk = reduce ? 1 : 0.82 + 0.18 * Math.sin(tw + pp[3]);   // мерцание
+        bi = Math.min(BUCKETS - 1, Math.floor(z * BUCKETS));
+        var r = (0.5 + 1.35 * z) * tk;
+        rects[bi].push(q[0] - r, q[1] - r, r * 2);
+      }
+      for (bi = 0; bi < BUCKETS; bi++) {
+        var arr = rects[bi]; if (!arr.length) continue;
+        var zc = (bi + 0.5) / BUCKETS;
+        ctx.fillStyle = 'rgba(214,232,240,' + (0.13 + 0.72 * zc).toFixed(3) + ')';
+        for (var j = 0; j < arr.length; j += 3) ctx.fillRect(arr[j], arr[j + 1], arr[j + 2], arr[j + 2]);
+      }
+
+      // дуги между точками присутствия: большой круг, штрих бежит
+      ctx.lineWidth = 1.1; ctx.setLineDash([3, 7]);
+      ctx.lineDashOffset = -(now * 0.02) % 10;
+      ctx.strokeStyle = 'rgba(43,224,198,0.34)';
+      for (i2 = 0; i2 < pins.length; i2++) {
+        var A = pins[i2], B = pins[(i2 + 1) % pins.length];
+        ctx.beginPath(); started = false;
+        for (var f = 0; f <= 1.0001; f += 1 / 48) {
+          var ll = greatCircle(A.lon, A.lat, B.lon, B.lat, f);
+          pt = projLL(ll[0], ll[1]);
+          if (pt[2] > 0.02) { if (!started) { ctx.moveTo(pt[0], pt[1]); started = true; } else ctx.lineTo(pt[0], pt[1]); }
+          else started = false;
+        }
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+
+      // подписи стран: DOM поверх канваса — текст острее и стилизуется CSS
+      for (i2 = 0; i2 < pins.length; i2++) {
+        var pn = pins[i2], pq = projLL(pn.lon, pn.lat), vis = pq[2] > 0.06;
+        pn.el.classList.toggle('vis', vis);
+        if (!vis) continue;
+        pn.el.style.left = (pq[0] / W * 100).toFixed(2) + '%';
+        pn.el.style.top = (pq[1] / H * 100).toFixed(2) + '%';
+        pn.el.classList.toggle('flip', pq[0] > W * 0.7);
+        var sc = (0.72 + 0.42 * pq[2]).toFixed(2);
+        pn.dot.style.transform = 'scale(' + sc + ')';
+      }
+    }
+    // точка на большом круге между двумя координатами (интерполяция по сфере)
+    function greatCircle(lon1, lat1, lon2, lat2, f){
+      var p1 = [Math.cos(lat1 * RAD) * Math.cos(lon1 * RAD), Math.cos(lat1 * RAD) * Math.sin(lon1 * RAD), Math.sin(lat1 * RAD)];
+      var p2 = [Math.cos(lat2 * RAD) * Math.cos(lon2 * RAD), Math.cos(lat2 * RAD) * Math.sin(lon2 * RAD), Math.sin(lat2 * RAD)];
+      var d = p1[0] * p2[0] + p1[1] * p2[1] + p1[2] * p2[2];
+      d = Math.max(-1, Math.min(1, d));
+      var om = Math.acos(d), so = Math.sin(om);
+      var a1 = so < 1e-6 ? 1 - f : Math.sin((1 - f) * om) / so;
+      var a2 = so < 1e-6 ? f : Math.sin(f * om) / so;
+      var x = a1 * p1[0] + a2 * p2[0], y = a1 * p1[1] + a2 * p2[1], z = a1 * p1[2] + a2 * p2[2];
+      return [Math.atan2(y, x) / RAD, Math.asin(Math.max(-1, Math.min(1, z / Math.sqrt(x * x + y * y + z * z)))) / RAD];
+    }
+
+    var raf = 0;
+    function frame(now){
+      raf = 0;
+      // покой: очень медленное покачивание, чтобы шар не выглядел картинкой
+      if (!hovering && !reduce) {
+        tLon = BASE_LON + Math.sin(now / 9000) * 4.5;
+        tLat = BASE_LAT + Math.sin(now / 13000) * 2.2;
+      }
+      cLon += (tLon - cLon) * 0.055;      // догоняем цель — отсюда инерция при роловере
+      cLat += (tLat - cLat) * 0.055;
+      setCenter(cLon, cLat);
+      draw(now);
+      if (seen && !document.hidden) raf = requestAnimationFrame(frame);
+    }
+    function start(){ if (!raf) raf = requestAnimationFrame(frame); }
+    function stop(){ if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+    stage.addEventListener('pointermove', function(e){
+      if (e.pointerType === 'touch') return;
+      var b = stage.getBoundingClientRect();
+      var nx = (e.clientX - b.left) / b.width - 0.5, ny = (e.clientY - b.top) / b.height - 0.5;
+      hovering = true;
+      tLon = BASE_LON - nx * 46;          // параллакс: шар доворачивается за курсором
+      tLat = BASE_LAT + ny * 26;
+    });
+    stage.addEventListener('pointerleave', function(){ hovering = false; });
+
+    resize();
+    setCenter(cLon, cLat);
+    // первый кадр рисуем сразу: иначе до старта цикла (или в фоновой вкладке,
+    // где кадры не идут) на месте глобуса была бы пустота
+    draw(typeof performance !== 'undefined' ? performance.now() : Date.now());
+    var ro = window.ResizeObserver ? new ResizeObserver(function(){ resize(); }) : null;
+    if (ro) ro.observe(stage); else addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', function(){ if (document.hidden) stop(); else if (seen) start(); });
+
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function(es){
+        es.forEach(function(e){ seen = e.isIntersecting; if (seen) start(); else stop(); });
+      }, { threshold: 0.05 }).observe(stage);
+    } else { seen = true; start(); }
   })();
 
   // ===== сияние под курсором + лёгкий параллакс + последовательное проявление текстов =====
