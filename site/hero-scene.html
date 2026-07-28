@@ -154,6 +154,15 @@
     transition: transform .2s, box-shadow .2s; }
   #game-over.show .go-back { animation: goIn .5s ease .6s forwards; }
   #game-over .go-back:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(43,224,198,0.35); }
+  /* «Новый полёт» — вторая кнопка, вариант с обводкой (сайт остаётся акцентной, но и рестарт заметен) */
+  #game-over .go-btns { display: flex; gap: 14px; margin-top: 26px; }
+  #game-over .go-btns .go-back { margin-top: 0; }
+  #game-over .go-again { opacity: 0; pointer-events: auto; cursor: pointer;
+    font: 600 13px 'Roboto Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
+    color: #2be0c6; background: transparent; border: 1px solid rgba(43,224,198,0.55); border-radius: 2px;
+    padding: 15px 30px; transition: transform .2s, box-shadow .2s, background .2s; }
+  #game-over.show .go-again { animation: goIn .5s ease .55s forwards; }
+  #game-over .go-again:hover { transform: translateY(-2px); background: rgba(43,224,198,0.1); box-shadow: 0 10px 30px rgba(43,224,198,0.2); }
   #game-over.show .go-hint { animation: goPulse 2s ease .8s infinite; }
   @keyframes goPulse { 0%,100% { opacity: .45; } 50% { opacity: .9; } }
   /* в игре весь галерейный UI прячется */
@@ -441,7 +450,10 @@
     <div class="gh"><b>Бреющий</b>у земли капает бонус</div>
   </div>
   <div class="go-hint">КЛИК — ЕЩЁ РАЗ · ESC — В ПОРТФОЛИО</div>
-  <button class="go-back" id="go-back">← Вернуться на сайт PlayDisplay</button>
+  <div class="go-btns">
+    <button class="go-again" id="go-again">↻ Новый полёт</button>
+    <button class="go-back" id="go-back">← Вернуться на сайт PlayDisplay</button>
+  </div>
 </div>
 
 <div id="arc-hud">
@@ -642,7 +654,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2707-game17'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2807-game18'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2564,15 +2576,17 @@ function gPathX(z) { return Math.sin(z * 0.006) * 24 + Math.sin(z * 0.0023 + 2.1
 // 0–1500 гладко → шпиль+каньон+ворота (силуэт 1) → 4000 ритм-плато (силуэт 4) →
 // 7000 слалом-лезвия (силуэт 2) → 10000 пропасть+зубчатый пик (силуэт 3)
 function gStage(z, from, span) { return smoothstep(from, from + span, z); }
-const G_ONSET = { feature: 1500, mesa: 4000, blade: 7000, chasm: 10000 };
+// дистанции укорочены втрое (28.07, по просьбе — «долго лететь до смены ландшафта»):
+// весь набор стадий теперь виден за один пролёт, для быстрого превью без долгого полёта
+const G_ONSET = { feature: 500, mesa: 1300, blade: 2300, chasm: 3300 };
 // естественный рельеф: fBm-холмы + острые хребты + каньоны-провалы. Никаких плоских плит
 // и вертикальных стен, параллельных экрану. Уровень ПРОХОДИМ: рельеф вдавлен вдоль коридора,
 // горы ограничены мягким потолком (корабль достаёт до 50 при потолке рельефа ~40)
 function gTerrainH(x, z) {
-  const wFeature = gStage(z, G_ONSET.feature, 900);   // шпили/каньоны/ворота — появляются первыми
-  const wMesa    = gStage(z, G_ONSET.mesa, 1000);     // ритмичные столовые плато
-  const wBlade   = gStage(z, G_ONSET.blade, 1000);    // узкий частый слалом-хребты
-  const wChasm   = gStage(z, G_ONSET.chasm, 1200);    // финал: глубже каньоны + зубчатые ступени
+  const wFeature = gStage(z, G_ONSET.feature, 300);   // шпили/каньоны/ворота — появляются первыми
+  const wMesa    = gStage(z, G_ONSET.mesa, 350);      // ритмичные столовые плато
+  const wBlade   = gStage(z, G_ONSET.blade, 350);     // узкий частый слалом-хребты
+  const wChasm   = gStage(z, G_ONSET.chasm, 400);     // финал: глубже каньоны + зубчатые ступени
   let h = (gNoise(x * 0.008, z * 0.008) - 0.5) * 30;            // крупные волны местности
   h += (gNoise(x * 0.02 + 13, z * 0.02 + 7) - 0.5) * 14;        // средние холмы
   h += (gNoise(x * 0.05 + 41, z * 0.05 + 3) - 0.5) * 4.6;       // мелкая рябь
@@ -2620,10 +2634,10 @@ function gTerrainH(x, z) {
     const slot = Math.exp(-(dx * dx) / (2 * 10 * 10));          // проём шириной ~20 на коридоре
     h += gk * 26 * (1 - slot) * wFeature;
   }
-  // постепенное усложнение: первые километры рельеф пологий, дальше — в полную силу,
-  // а после 8 км начинается вторая фаза — рельеф ещё на четверть мощнее (скорость к тому
-  // моменту тоже выросла: игра остаётся вызовом, а не прогулкой)
-  return h * (0.35 + 0.65 * Math.min(1, z / 4500)) * (1 + 0.25 * clamp01((z - 8000) / 10000));
+  // постепенное усложнение: первые метры рельеф пологий, дальше — в полную силу,
+  // а после ~2.6 км начинается вторая фаза — рельеф ещё на четверть мощнее (дистанции
+  // укорочены втрое вместе с G_ONSET, чтобы все стадии были видны за один пролёт)
+  return h * (0.35 + 0.65 * Math.min(1, z / 1500)) * (1 + 0.25 * clamp01((z - 2600) / 3300));
 }
 
 // водопады: колонны падающих светящихся точек на обрывах (общий шейдер, анимация по uT)
@@ -3609,10 +3623,17 @@ function updateGame(dt, time) {
 }
 const _dngV = new THREE.Vector3();
 
-// выход по клику: мир тает, скорость гаснет, портфолио пересобирается из точек
+// выход по клику: мир тает, скорость гаснет, портфолио пересобирается из точек.
+// ЛЮБОЙ выход (кнопка «Вернуться на сайт», ESC, клик во время полёта) должен возвращать
+// ровно в одно и то же место — на самую первую обложку галереи, а не туда, где листали
+// до игры: сбрасываем цель прокрутки на 0 ЗАРАНЕЕ, пока обычный цикл сцены ещё не тикает
+// (GAME.on=true его глушит) — когда galerея станет видимой в exitGame(), она уже «целится»
+// в обложку №1, и пружина (gt→targetGT) соберёт точки в неё бесшовно, без скачка.
 function startExitGame() {
   if (!GAME.on || GAME.exit >= 0) return;
   GAME.exit = 0;
+  navTarget = 0; autoT = 0;
+  if (EMBEDDED) try { parent.postMessage({ pdGoSite: true }, '*'); } catch (e) {} // лендинг — на самый верх
 }
 
 // секторное кольцо опасности вокруг корабля: 4 сектора (курс/низ/лево/право),
@@ -3728,14 +3749,23 @@ function gDangerRing(dt, time, alt) {
   g.fill();
 }
 
-// кнопка «Вернуться на сайт»: плавный выход из полёта + сигнал лендингу
+// кнопка «Вернуться на сайт»: плавный выход из полёта (postMessage теперь шлёт сам startExitGame)
 (function(){
   var gb = document.getElementById('go-back');
   if (!gb) return;
   gb.addEventListener('click', function(e){
     e.stopPropagation();          // не считать это кликом «играть заново»
     startExitGame();
-    try { parent.postMessage({ pdGoSite: true }, '*'); } catch (err) {}
+  });
+})();
+
+// кнопка «Новый полёт»: сразу рестарт без выхода на сайт
+(function(){
+  var ga = document.getElementById('go-again');
+  if (!ga) return;
+  ga.addEventListener('click', function(e){
+    e.stopPropagation();          // не считать это кликом мимо кнопки
+    restartGame();
   });
 })();
 
