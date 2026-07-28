@@ -15,7 +15,8 @@
   cloud.userData.grid — а последняя вообще несовместима с неравномерной плотностью
   из §12. Сначала доводим геометрию тут, потом вживляем.
 
-  Открывать по http: чанки считает Web Worker.
+  Работает и по http (чанки считает Web Worker), и файлом с диска
+  (тогда генерация идёт в главном потоке, по чанку на кадр).
 -->
 <style>
   * { box-sizing: border-box; }
@@ -67,10 +68,6 @@
   #keys { position: fixed; left: 322px; bottom: 12px; z-index: 10; font-size: 8.5px;
     letter-spacing: .12em; opacity: .32; pointer-events: none; }
   #keys b { color: #2be0c6; }
-  #err { position: fixed; inset: 0; display: none; z-index: 30; align-items: center; justify-content: center;
-    background: rgba(4,7,12,.96); text-align: center; padding: 30px; }
-  #err div { max-width: 430px; font-size: 11px; line-height: 1.8; }
-  #err b { color: #ff8a5a; }
 </style>
 </head>
 <body>
@@ -84,6 +81,7 @@
   <div>DRAW CALLS <b id="mCalls">—</b></div>
   <div>ГЕНЕРАЦИЯ <b id="mMs">—</b></div>
   <div class="warn">НЕВАЛИДНЫХ <b id="mBad">0</b></div>
+  <div>РЕЖИМ <b id="mMode">—</b></div>
 </div>
 
 <div id="keys"><b>C</b> камера: пролёт / облёт / сверху · <b>ПРОБЕЛ</b> пауза ·
@@ -128,10 +126,6 @@
     </div>
   </div>
 </div>
-
-<div id="err"><div>Не удалось запустить генерацию.<br><br>
-  Редактор считает чанки в <b>Web Worker</b>, поэтому страницу нужно открыть
-  <b>по http</b> — с боевого адреса или превью, а не файлом с диска.</div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="world.js"></script>
@@ -208,20 +202,53 @@ let plan = [], curIdx = 0, camMode = 0, paused = false, flyT = 0, tsec = 0;
 let totalPts = 0, totalMs = 0, badCount = 0;
 const DBG = { corridor: true, colliders: true, axis: true, sockets: true, edges: true, density: false };
 
-let worker = null;
-function startWorker() {
+// ── ГЕНЕРАТОР: Worker если можно, иначе главный поток ──────────────────────
+// Worker обязателен для ИГРЫ (там 40 мс в кадре недопустимы), но для редактора —
+// нет: тут никто не летит на 300 юнитах в секунду. Поэтому если Worker недоступен
+// (страница открыта файлом с диска — на file:// воркеры запрещены), считаем на месте
+// и раскладываем по кадрам, чтобы интерфейс не подвисал. Раньше я на этом месте
+// показывал экран с ошибкой — это было лишнее требование к инструменту.
+let worker = null, localMgr = null, queue = [], draining = false;
+
+function initGen() {
   try {
     worker = new Worker('world-worker.js');
-    worker.onmessage = onWorker;
-    worker.onerror = () => { document.getElementById('err').style.display = 'flex'; };
-    return true;
-  } catch (e) { document.getElementById('err').style.display = 'flex'; return false; }
+    worker.onmessage = e => {
+      const m = e.data;
+      if (m.cmd === 'plan') { plan = m.plan; renderPlan(); requestWindow(true); }
+      else if (m.cmd === 'chunkReady') addChunk(m);
+    };
+    // Ошибка приходит асинхронно (например, воркер не смог загрузить world.js) —
+    // тогда молча переходим на главный поток, а не показываем тупик пользователю.
+    worker.onerror = () => { worker = null; document.getElementById('mMode').textContent = 'ГЛ. ПОТОК'; genInit(); };
+  } catch (e) { worker = null; }
+  document.getElementById('mMode').textContent = worker ? 'WORKER' : 'ГЛ. ПОТОК';
+  genInit();
 }
-
-function onWorker(e) {
-  const m = e.data;
-  if (m.cmd === 'plan') { plan = m.plan; renderPlan(); requestWindow(true); return; }
-  if (m.cmd === 'chunkReady') addChunk(m);
+function genInit() {
+  if (worker) { worker.postMessage({ cmd: 'init', seed: seed, count: 40 }); return; }
+  localMgr = W.makeManager(seed, 40);
+  plan = localMgr.plan.map(c => ({ id: c.id, index: c.index, type: c.type, seed: c.seed,
+    phase: c.phase, length: c.length, zStart: c.zStart, zEnd: c.zEnd,
+    difficulty: c.difficulty, risk: c.risk, corridorW: c.corridorW }));
+  renderPlan(); requestWindow(true);
+}
+function genChunk(index, lod) {
+  if (worker) { worker.postMessage({ cmd: 'chunk', index: index, lod: lod }); return; }
+  queue.push({ index: index, lod: lod });
+  if (!draining) drain();
+}
+// по одному чанку на кадр: 40 мс заметны, но интерфейс остаётся живым
+function drain() {
+  draining = true;
+  const job = queue.shift();
+  if (!job) { draining = false; return; }
+  const ch = localMgr.build(job.index, job.lod);
+  addChunk({ index: job.index, lod: job.lod, positions: ch.positions, colors: ch.colors,
+    sizes: ch.sizes, featureMask: ch.featureMask, colliders: ch.colliders,
+    corridor: ch.corridor.map(p => ({ t: p.t, x: p.x, y: p.y, z: p.z, r: p.r })),
+    valid: ch.valid.ok, fallback: !!ch.fallback, stats: ch.stats });
+  requestAnimationFrame(drain);
 }
 
 // ── сборка меша чанка из готовых массивов ──────────────────────────────────
@@ -320,7 +347,7 @@ function requestWindow(force) {
     if (!force && wanted.has(key) && live.has(i)) return;
     if (live.has(i) && wanted.has(key)) return;
     wanted.add(key);
-    worker.postMessage({ cmd: 'chunk', index: i, lod: lod });
+    genChunk(i, lod);
   });
   const p = plan[curIdx];
   document.getElementById('tTitle').textContent = p.type + '  ·  ' + p.phase;
@@ -409,8 +436,8 @@ function setMode() {
   document.getElementById('bSingle').classList.toggle('alt', mode !== 'single');
   [...typeBtns.children].forEach(b => b.classList.toggle('on', mode === 'single' && TY[b.dataset.k] === singleType));
   if (mode === 'single') showSingle();
-  else { [...live.keys()].forEach(dropChunk); wanted.clear(); renderSliders(null);
-         worker.postMessage({ cmd: 'init', seed: seed, count: 40 }); }
+  else { [...live.keys()].forEach(dropChunk); wanted.clear(); queue.length = 0; renderSliders(null);
+         genInit(); }
 }
 document.getElementById('bLevel').onclick = () => { mode = 'level'; setMode(); };
 document.getElementById('bSingle').onclick = () => { mode = 'single'; setMode(); };
@@ -474,7 +501,9 @@ function loop() {
   if (acc > 0.25) { acc = 0; document.getElementById('mFps').textContent = Math.round(fps); }
 }
 
-if (startWorker()) { setMode(); loop(); }
+initGen();
+setMode();
+loop();
 </script>
 </body>
 </html>

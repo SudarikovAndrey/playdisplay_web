@@ -11,9 +11,10 @@
   Смысл именно в выключении: видно, что конкретно даёт каждый приём, и какой из них
   реально держит форму, а какой добавляет шума.
 
-  Точки берём из настоящей модели игры: fetch('hero-scene.html') и разбор SHIP_B64.
-  Так лаборатория не расходится с игрой и не дублирует 14 КБ данных.
-  Из-за fetch страницу нужно открывать по http (не файлом с диска).
+  Точки берём из ship-points.js — того же файла, что подключает игра. Один источник,
+  без дублирования и без риска расхождения. Раньше данные читались запросом к
+  hero-scene.html, но запросы запрещены на file:// и инструмент не открывался
+  с диска. Обычное подключение скриптом работает везде.
 -->
 <style>
   * { box-sizing: border-box; }
@@ -122,13 +123,14 @@
   </div>
 </div>
 
-<div id="err"><div>Не удалось прочитать точки корабля из <b>hero-scene.html</b>.<br><br>
-  Лаборатория берёт модель прямо из файла игры, поэтому страницу нужно открыть
-  <b>по http</b> — с боевого адреса или превью, а не файлом с диска.</div></div>
+<div id="err"><div>Не загрузились точки корабля.<br><br>
+  Рядом с этой страницей должен лежать файл <b>ship-points.js</b> —
+  это те же данные модели, что использует игра.</div></div>
 
 <div id="toast">Скопировано</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="ship-points.js"></script>
 <script>
 'use strict';
 const hash = (x, z) => { const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return s - Math.floor(s); };
@@ -286,21 +288,15 @@ let RAW = null;   // { pos:Float32Array, edgeN:number, engines:[], lights:[] }
 // ─────────────────────────────────────────────────────────────────────────────
 // ЗАГРУЗКА МОДЕЛИ ИЗ ФАЙЛА ИГРЫ
 // ─────────────────────────────────────────────────────────────────────────────
-function decodeShip(txt) {
-  const b64 = txt.match(/const SHIP_B64 = '([^']+)'/);
-  const edgeN = txt.match(/const SHIP_EDGE_N = (\d+)/);
-  const scale = txt.match(/const SHIP_SCALE = ([\d.]+)/);
-  const eng = txt.match(/const SHIP_ENGINES = (\[\[[^;]+?\]\]);/);
-  const lig = txt.match(/const SHIP_LIGHTS = (\[\[[^;]+?\]\]);/);
-  if (!b64 || !edgeN || !scale) return null;
-  const raw = atob(b64[1]), n = raw.length;
+function decodeShip() {
+  const S = root_PD_SHIP();
+  if (!S) return null;
+  const raw = atob(S.B64), n = raw.length;
   const a = new Float32Array(n);
-  const sc = parseFloat(scale[1]);
-  for (let i = 0; i < n; i++) { let v = raw.charCodeAt(i); if (v > 127) v -= 256; a[i] = v / 127 * sc; }
-  const parseArr = m => { try { return JSON.parse(m[1].replace(/\s+/g, '')); } catch (e) { return []; } };
-  return { pos: a, edgeN: parseInt(edgeN[1], 10),
-           engines: eng ? parseArr(eng) : [], lights: lig ? parseArr(lig) : [] };
+  for (let i = 0; i < n; i++) { let v = raw.charCodeAt(i); if (v > 127) v -= 256; a[i] = v / 127 * S.SCALE; }
+  return { pos: a, edgeN: S.EDGE_N, engines: S.ENGINES, lights: S.LIGHTS };
 }
+function root_PD_SHIP() { return (typeof PD_SHIP !== 'undefined') ? PD_SHIP : null; }
 
 // ── сборка облака с ролями и зонами ────────────────────────────────────────
 function buildShip() {
@@ -584,12 +580,9 @@ function loop() {
   if (acc > 0.25) { acc = 0; document.getElementById('mFps').textContent = Math.round(fps); }
 }
 
-fetch('hero-scene.html').then(r => r.text()).then(txt => {
-  RAW = decodeShip(txt);
-  if (!RAW) throw new Error('no ship data');
-  rebuild();
-  loop();
-}).catch(() => { document.getElementById('err').style.display = 'flex'; });
+RAW = decodeShip();
+if (RAW) { rebuild(); loop(); }
+else document.getElementById('err').style.display = 'flex';
 </script>
 </body>
 </html>
