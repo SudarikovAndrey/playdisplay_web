@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Генерирует SEO-обвязку для сайта PlayDisplay:
+# Генерирует SEO-обвязку для сайта playdisplay:
 #  - статические индексируемые страницы /work/<slug>/index.html (полный текст проекта)
 #  - sitemap.xml, robots.txt, llms.txt
 #  - JSON-LD + мета-теги для главной (вставляются в site/index.html между маркерами)
@@ -9,7 +9,7 @@ import json, os, re, html
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(ROOT, 'site')
 BASE = 'https://playdisplay.com'
-ORG_DESC = ('PlayDisplay проектирует пространства и впечатления, которые люди запоминают: '
+ORG_DESC = ('playdisplay проектирует пространства и впечатления, которые люди запоминают: '
             'современные музеи, интерактивные экспозиции, visitor centre, шоурумы и '
             'иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.')
 SOCIALS = [
@@ -77,7 +77,7 @@ def project_jsonld(slug):
         "url": "%s/work/%s/" % (BASE, slug),
         "image": cover_url(slug),
         "inLanguage": "ru",
-        "creator": {"@type": "Organization", "name": "PlayDisplay", "url": BASE + '/'},
+        "creator": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'},
         "keywords": ", ".join((p.get('tags') or []) + [p.get('client') or '', 'мультимедиа инсталляция']),
     }
     if p.get('year'): data["dateCreated"] = str(p['year'])
@@ -89,18 +89,18 @@ PAGE = '''<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{title} — PlayDisplay</title>
+<title>{title} — playdisplay</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{base}/work/{slug}/">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:type" content="article">
-<meta property="og:title" content="{title} — PlayDisplay">
+<meta property="og:title" content="{title} — playdisplay">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{base}/work/{slug}/">
 <meta property="og:image" content="{cover}">
-<meta property="og:site_name" content="PlayDisplay">
+<meta property="og:site_name" content="playdisplay">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{title} — PlayDisplay">
+<meta name="twitter:title" content="{title} — playdisplay">
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{cover}">
 <script type="application/ld+json">{jsonld}</script>
@@ -123,7 +123,7 @@ PAGE = '''<!DOCTYPE html>
 </head>
 <body>
 <main class="wrap">
-  <nav class="crumbs"><a href="../../">PlayDisplay</a> / <a href="../../#work">Проекты</a> / {title}</nav>
+  <nav class="crumbs"><a href="../../">playdisplay</a> / <a href="../../#work">Проекты</a> / {title}</nav>
   <article>
     <h1>{title}</h1>
     <p style="color:#9fb4c8;font-size:20px">{subtitle}</p>
@@ -132,7 +132,7 @@ PAGE = '''<!DOCTYPE html>
     <a class="cta" href="../../#/work/{slug}">Открыть интерактивную версию →</a>
   </article>
   <footer>
-    <p>PlayDisplay — пространства, которые люди запоминают: музеи, интерактивные экспозиции, visitor centre и иммерсивные выставки.</p>
+    <p>playdisplay — пространства, которые люди запоминают: музеи, интерактивные экспозиции, visitor centre и иммерсивные выставки.</p>
     <p><a href="../../">На главную</a> · <a href="../../#work">Все проекты</a></p>
   </footer>
 </main>
@@ -185,8 +185,8 @@ open(os.path.join(SITE, 'robots.txt'), 'w', encoding='utf-8').write(
     'Sitemap: %s/sitemap.xml\n' % BASE)
 
 # ---------- llms.txt (стандарт для AI-выдачи) ----------
-lines = ['# PlayDisplay', '', '> ' + ORG_DESC, '',
-         'Студия PlayDisplay проектирует и реализует мультимедийные инсталляции, '
+lines = ['# playdisplay', '', '> ' + ORG_DESC, '',
+         'Студия playdisplay проектирует и реализует мультимедийные инсталляции, '
          'голографические кубы, решения дополненной и виртуальной реальности, '
          'проекционные и выставочные пространства. Основатель — Андрей Судариков. '
          'О студии рассказывал Discovery Channel. Среди клиентов — BMW, Ростех, '
@@ -205,18 +205,18 @@ for i, slug in enumerate(ORDER):
     items.append({"@type": "ListItem", "position": i + 1,
                   "url": "%s/work/%s/" % (BASE, slug), "name": p.get('title')})
 home_ld = [
-    {"@context": "https://schema.org", "@type": "Organization", "name": "PlayDisplay",
+    {"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay",
      "url": BASE + '/', "description": ORG_DESC,
      "logo": BASE + '/assets/logos/logo.svg', "sameAs": SOCIALS,
      "founder": {"@type": "Person", "name": "Андрей Судариков"}},
-    {"@context": "https://schema.org", "@type": "WebSite", "name": "PlayDisplay",
+    {"@context": "https://schema.org", "@type": "WebSite", "name": "playdisplay",
      "url": BASE + '/', "inLanguage": "ru"},
-    {"@context": "https://schema.org", "@type": "ItemList", "name": "Проекты PlayDisplay",
+    {"@context": "https://schema.org", "@type": "ItemList", "name": "Проекты playdisplay",
      "itemListElement": items},
 ]
 ld_block = '\n'.join('<script type="application/ld+json">%s</script>' % json.dumps(x, ensure_ascii=False) for x in home_ld)
 ns_items = ''.join('<li><a href="work/%s/">%s</a> — %s</li>' % (slug, esc(PMAP[slug].get('title')), esc(meta_desc(slug))) for slug in ORDER if slug in PMAP)
-noscript = ('<noscript><section><h2>Проекты PlayDisplay</h2><ul>' + ns_items +
+noscript = ('<noscript><section><h2>Проекты playdisplay</h2><ul>' + ns_items +
             '</ul></section></noscript>')
 block = '<!--SEO-->\n' + ld_block + '\n' + noscript + '\n<!--/SEO-->'
 open('/tmp/seo_block.html', 'w', encoding='utf-8').write(block)
