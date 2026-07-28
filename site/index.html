@@ -468,6 +468,10 @@
   .a-card:hover::before { transform: scaleX(1); }
   .a-card:hover { border-color: rgba(43,224,198,0.5); transform: translateY(-6px); background: rgba(16,30,37,0.7); }
   .a-card { cursor: pointer; }
+  /* Тезис — карточка без разбора: читается на месте, поэтому не притворяется кликабельной */
+  .a-card.thesis { cursor: default; }
+  .a-card.thesis:hover { border-color: rgba(43,224,198,0.28); transform: none; background: var(--space-panel); }
+  .a-card.thesis:hover::before { transform: scaleX(0); }
   .a-card .ac-cat { font: 600 11px var(--font-mono); letter-spacing: 0.26em; text-transform: uppercase; color: var(--signal-teal); }
   .a-card h3 { font: 800 26px var(--font-display); color: #F1FBFC; letter-spacing: -0.015em; line-height: 1.15; }
   .a-card p { font: 400 15.5px/1.72 var(--font-body); color: var(--scan-white-dim); flex: 1; }
@@ -1041,7 +1045,7 @@
   <div class="wrap">
     <div class="kicker teal eyebrow">Атлас</div>
     <h2>Как создаются впечатления.</h2>
-    <p class="intro-sub">База знаний PlayDisplay о механиках, технологиях и сценариях, которые делают пространство живым.</p>
+    <p class="intro-sub">Единая карта знаний и подходов студии: концепты, принципы, технологии, наблюдения, приёмы и исследования.</p>
     <div class="c-toolbar">
       <input class="c-search" id="aSearch" type="search" placeholder="Поиск по атласу" aria-label="Поиск по атласу">
       <div class="filter" id="aFilter" style="margin:0"></div>
@@ -3741,7 +3745,7 @@
     var moreBtn = document.getElementById('aMore');
     var view = document.getElementById('aView');
     var viewIn = document.getElementById('aViewIn');
-    var PAGE = 9;
+    var PAGE = 12; // карточек стало ~90, по 9 пришлось бы жать «ещё» десять раз
     var data = null, cat = 'Все', q = '', limit = PAGE;
 
     function esc(s){
@@ -3762,11 +3766,13 @@
       var list = filtered();
       grid.innerHTML = '';
       list.slice(0, limit).forEach(function(a){
+        // Карточка с principle — вход в разбор; без него это тезис, который дочитывается прямо в сетке
+        var lesson = !!a.principle;
         var el = document.createElement('article');
-        el.className = 'a-card';
+        el.className = 'a-card' + (lesson ? '' : ' thesis');
         el.innerHTML = '<div class="ac-cat">' + esc(a.cat) + '</div><h3>' + esc(a.title) + '</h3>' +
-          '<p>' + esc(a.desc) + '</p><div class="ac-open">Открыть урок →</div>';
-        el.addEventListener('click', function(){ openLesson(a); });
+          '<p>' + esc(a.desc) + '</p>' + (lesson ? '<div class="ac-open">Открыть разбор →</div>' : '');
+        if (lesson) el.addEventListener('click', function(){ openLesson(a); });
         grid.appendChild(el);
       });
       if (!list.length) grid.innerHTML = '<div class="c-empty">Ничего не нашлось — попробуйте другой запрос.</div>';
@@ -3817,7 +3823,7 @@
     document.getElementById('aViewClose').addEventListener('click', closeLesson);
     addEventListener('keydown', function(e){ if (e.key === 'Escape' && view.classList.contains('open')) closeLesson(); });
 
-    fetch('data/atlas.json?v=1').then(function(r){ return r.json(); }).then(function(json){
+    fetch('data/atlas.json?v=2').then(function(r){ return r.json(); }).then(function(json){
       data = json;
       ['Все'].concat(data.cats).forEach(function(ct, i){
         var b = document.createElement('button');
