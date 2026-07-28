@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game28';</script>
+<script>window.PD_V = 'b2807-game29';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3285,7 +3285,7 @@ function gBuildWorldMesh(ch, index, lod) {
     spawnTime: clock.getElapsedTime(), fade: 0,   // проявляется плавно, см. updateGame
     wIndex: index, def: def, zStart: def.zStart, zEnd: def.zEnd,
     idx: ch.index || ch.pointIndex, colliders: ch.colliders, corridor: ch.corridor,
-    cloud: pts, baseOp: 1
+    cloud: pts, baseOp: 1, lod: lod    // LOD, с которым СОБРАН чанк — см. gSpawnAhead (апгрейд по приближению)
   };
   // награды по коридору: ядра цепочкой и кольцо-ускоритель. Ставим их в ЭКРАННЫХ
   // координатах внутри перевёрнутой группы — то есть в мировых, как и точки рельефа.
@@ -3328,6 +3328,18 @@ function gWorldRewards(grp, ch, def) {
 
 function gAddWorldChunk(grp) {
   if (!GAME.on || !GAME.group) return;         // успели выйти из игры — чанк уже не нужен
+  // АПГРЕЙД LOD: чанк с этим индексом уже мог стоять — он был собран на дальнем краю
+  // окна (LOD похуже) и теперь заменяется свежим, более плотным. Старую геометрию
+  // снимаем и освобождаем явно (материал общий на весь мир — его не трогаем).
+  const idx = grp.userData.wIndex;
+  for (let i = GAME.chunks.length - 1; i >= 0; i--) {
+    if (GAME.chunks[i].userData.wIndex === idx) {
+      const old = GAME.chunks[i];
+      GAME.group.remove(old);
+      if (old.userData.cloud && old.userData.cloud.geometry) old.userData.cloud.geometry.dispose();
+      GAME.chunks.splice(i, 1);
+    }
+  }
   GAME.group.add(grp);
   GAME.chunks.push(grp);
   GAME.chunks.sort((a, b) => a.userData.wIndex - b.userData.wIndex);
@@ -3339,12 +3351,19 @@ function gSpawnAhead() {
     const C = PDWorld.CONFIG.world;
     const cur = WORLD.probe.chunkAt(GAME.z);
     const have = {};
-    for (let i = 0; i < GAME.chunks.length; i++) have[GAME.chunks[i].userData.wIndex] = true;
+    for (let i = 0; i < GAME.chunks.length; i++) have[GAME.chunks[i].userData.wIndex] = GAME.chunks[i];
     const to = Math.min(WORLD.mgr.plan.length - 1, cur + C.ahead);
     for (let i = Math.max(0, cur - C.behind); i <= to; i++) {
-      if (have[i] || WORLD.pending[i]) continue;
+      if (WORLD.pending[i]) continue;
       const d = i - cur;
       const lod = d <= 1 ? 0 : d === 2 ? 1 : d === 3 ? 2 : 3;
+      // АПГРЕЙД ПО ПРИБЛИЖЕНИЮ: чанк с этим индексом впервые появляется на дальнем
+      // краю окна (d=ahead=4 → LOD3, самая редкая сетка) и раньше на этом навсегда
+      // и оставался — «жидкий» рельеф в игре был именно этим: то, что видно сейчас
+      // рядом с кораблём, было собрано давно, пока было ещё далеко. Раз построенный
+      // чанк уже не хуже нужного LOD — пропускаем, иначе пересобираем плотнее.
+      const ex = have[i];
+      if (ex && ex.userData.lod <= lod) continue;
       // ГЕНЕРАЦИЯ В WORKER (ТЗ §20, §36.8 «не блокирует основной поток»). Чанк
       // считается 40–90 мс — в кадре это видимый рывок примерно раз в секунду.
       // Асинхронность безопасна: впереди держим 4 чанка (около 800 юнитов), на полной
