@@ -158,9 +158,13 @@
   .hero .session, .hero .readout, .hero .ruler-top, .hero .ruler-left { transition: opacity .4s; }
   .hero.video-on .session, .hero.video-on .readout,
   .hero.video-on .ruler-top, .hero.video-on .ruler-left { opacity: 0; }
-  /* режим мини-игры: экран полностью отдан полёту */
+  /* режим мини-игры: экран полностью отдан полёту.
+     .hero-top с типами пространств лежит ОТДЕЛЬНО от .hero-inner, поэтому под общее
+     правило не попадал и надпись висела поверх полёта в левом верхнем углу. */
   .hero.game-on .hero-inner, .hero.game-on .session, .hero.game-on .readout,
-  .hero.game-on .ruler-top, .hero.game-on .ruler-left, .hero.game-on .hero-grade { opacity: 0; transition: opacity .5s; }
+  .hero.game-on .ruler-top, .hero.game-on .ruler-left, .hero.game-on .hero-grade,
+  .hero.game-on .hero-top { opacity: 0; transition: opacity .5s; }
+  .hero.game-on .hero-top { pointer-events: none; }
   /* .hero-btns сама включает себе pointer-events:auto (нужно для обычного клика по кнопкам),
      и этот auto НЕ перебивается pointer-events:none у родителя .hero-inner — pointer-events
      не каскадируется, как opacity. Поэтому во время игры кнопки «Сыграть» и «Проекты →»
@@ -1075,7 +1079,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game21" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game25" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>

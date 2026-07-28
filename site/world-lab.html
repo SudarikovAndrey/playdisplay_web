@@ -174,6 +174,9 @@ const uni = { uPx: { value: innerHeight }, uFogN: { value: 160 }, uFogF: { value
 const pointMat = new THREE.ShaderMaterial({
   uniforms: uni, transparent: true, depthWrite: true, depthTest: true,
   vertexShader: `
+    // ВАЖНО: у сырого ShaderMaterial атрибут color надо объявлять САМОМУ —
+    // vertexColors:true подставляет его только встроенным материалам.
+    attribute vec3 color;
     attribute float aSize; attribute float aMask;
     uniform float uPx, uFogN, uFogF, uEdges;
     varying vec3 vCol; varying float vA;

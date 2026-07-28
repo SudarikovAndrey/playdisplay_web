@@ -666,7 +666,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2807-game24'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2807-game25'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -3197,6 +3197,10 @@ function gWorldMat() {
     uniforms: { uPx: { value: innerHeight }, uFogN: { value: 110 }, uFogF: { value: 660 },
                 uFade: { value: 1 } },
     vertexShader: [
+      // ВАЖНО: у сырого ShaderMaterial атрибут color надо объявлять САМОМУ.
+      // vertexColors:true подставляет его только встроенным материалам, а здесь
+      // без этой строки шейдер не компилируется и рельеф не рисуется вовсе.
+      'attribute vec3 color;',
       'attribute float aSize; attribute float aMask;',
       'uniform float uPx, uFogN, uFogF, uFade;',
       'varying vec3 vCol; varying float vA;',
@@ -3279,8 +3283,12 @@ function gWorldRewards(grp, ch, def) {
     const ci = Math.min(cor.length - 1, Math.round(t * (cor.length - 1)));
     const c = cor[ci];
     const orb = gMakeOrb(def.seed + k * 7);
-    // ядра слегка гуляют вокруг линии полёта — дорожка живая, а не рельс
-    orb.position.set(c.x + (r() - 0.5) * 7, c.y + (r() - 0.5) * 5, c.z);
+    // Ядра стоят В СТОРОНЕ от линии полёта, а не на ней. Когда они лежали точно на
+    // трассе, корабль пролетал сквозь них в упор — на экране это были огромные размытые
+    // пятна во весь кадр. Со сдвигом за ними надо тянуться: и читается чище, и играть
+    // осмысленнее (§16: награда за отклонение от безопасной линии).
+    const side = (k % 2 ? 1 : -1);
+    orb.position.set(c.x + side * (9 + r() * 10), c.y + (r() - 0.5) * 12, c.z);
     orb.userData.isOrb = true;
     orb.userData.baseY = orb.position.y;
     orb.userData.ph = r() * 6.28;
@@ -4023,10 +4031,18 @@ function updateGame(dt, time) {
     camera.updateProjectionMatrix();
     return;
   }
-  // динамическое небо: инопланетная аврора — цвет горизонта медленно дышит
-  const skyK = 0.5 + 0.5 * Math.sin(time * 0.09);
-  skyMat.uniforms.uHorizon.value.setHSL(0.46 + 0.22 * skyK, 0.52, 0.30 + 0.06 * skyK);
-  skyMat.uniforms.uZenith.value.setHSL(0.7, 0.5, 0.09 + 0.05 * (1 - skyK));
+  // Небо. В новом мире палитра снята с референса: плотная тёмная бирюза у горизонта,
+  // почти чёрно-синий в зените. Анимацию оттенка убрал намеренно — «дышащая аврора»
+  // уводила фон в синий и лиловый, из-за чего белые точки рельефа теряли контраст
+  // и картинка читалась вяло. Постоянный холодный фон держит силуэт.
+  if (NEW_WORLD && WORLD) {
+    skyMat.uniforms.uHorizon.value.setRGB(0.075, 0.245, 0.285);
+    skyMat.uniforms.uZenith.value.setRGB(0.017, 0.031, 0.052);
+  } else {
+    const skyK = 0.5 + 0.5 * Math.sin(time * 0.09);
+    skyMat.uniforms.uHorizon.value.setHSL(0.46 + 0.22 * skyK, 0.52, 0.30 + 0.06 * skyK);
+    skyMat.uniforms.uZenith.value.setHSL(0.7, 0.5, 0.09 + 0.05 * (1 - skyK));
+  }
   // плавный выход: мир тает, скорость падает → возврат в портфолио
   if (GAME.exit >= 0) {
     GAME.exit += dt / 1.1;
