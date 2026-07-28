@@ -664,7 +664,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2807-game21'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2807-game22'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2468,8 +2468,10 @@ const Sound = (() => {
     k(master.gain, M ? 0.09 : 0.0001, 0.25);
     k(padG.gain, 0.3 * m * M, 0.3);
     k(padF.frequency, 170 + 360 * m, 0.35);
-    k(noiseG.gain, (0.08 * m + 0.13 * roll) * M, 0.14);   // вираж = шум набегающего потока
-    k(noiseF.frequency, 260 + 480 * m + 900 * roll, 0.18);
+    // плотность звука растёт со скоростью НЕЛИНЕЙНО (28.07): на верхах поток набегающего
+    // воздуха выходит на первый план — слышно, что летишь быстро, а не просто громче гудит
+    k(noiseG.gain, (0.08 * m + 0.16 * m * m * m + 0.13 * roll) * M, 0.14);
+    k(noiseF.frequency, 260 + 480 * m + 620 * m * m + 900 * roll, 0.18);
     k(riseG.gain, 0, 0.2);
   }
   // цифровые one-shot'ы игры: мягкие, синтез на месте, всё через мастер (уважают выключатель)
@@ -2771,9 +2773,19 @@ function gMakeChunk(zNoise) {
       // больше доля цвета биома — рельеф перестаёт быть блёклой пылью
       const g = 0.46 + 0.54 * clamp01((h + 8) / 40);
       const vb = 0.74 + 0.26 * j2;
-      colA[o]     = (g + (tR - g) * 0.26) * vb;
-      colA[o + 1] = (g + (tG - g) * 0.26) * vb;
-      colA[o + 2] = (g + (tB - g) * 0.26) * vb;
+      // ИЕРАРХИЯ ТОЧЕК (28.07): дальняя периферия — фон (тусклее, уходит в дымку), полоса
+      // вдоль коридора — «просканированное» пространство (контрастнее, ближе к цвету биома),
+      // и один процент точек — искры-акценты. Число частиц то же, роли разные: кадр перестаёт
+      // быть однородным шумом и читается как раскрытая, а не просто заполненная сцена.
+      const dPath = Math.abs(px - gPathX(zNoise + G_DEPTH - pz));
+      const near = 1 - smoothstep(26, 86, dPath);            // 1 у трассы → 0 на периферии
+      const role = 0.62 + 0.5 * near;                        // фон тусклее, коридор ярче
+      const tint = 0.16 + 0.24 * near;                       // и цветнее у трассы
+      let gr2 = g * role;
+      if (j2 > 0.99) gr2 *= 1.9;                             // редкие искры-акценты
+      colA[o]     = (gr2 + (tR - gr2) * tint) * vb;
+      colA[o + 1] = (gr2 + (tG - gr2) * tint) * vb;
+      colA[o + 2] = (gr2 + (tB - gr2) * tint) * vb;
       o += 3;
     }
   }
@@ -2850,6 +2862,12 @@ function gMakeChunk(zNoise) {
       orb.userData.baseY = oy;
       orb.userData.ph = gHash(zNoise, 77 + ci) * 6.28;
       orb.userData.spin = 0.7 + gHash(zNoise, 79 + ci) * 1.1;
+      // РЕДКАЯ ЭНЕРГИЯ (28.07, иерархия точек): ~каждый восьмой орб — крупнее, дышит сильнее,
+      // даёт бонус и мощную вспышку при сборе. Особый отклик без роста числа частиц.
+      if (gHash(zNoise, 210 + ci) > 0.88) {
+        orb.userData.rare = true;
+        orb.userData.baseScale = 1.5;
+      }
       grp.add(orb);
     }
   }
@@ -3518,6 +3536,47 @@ function enterGame() {
   GAME.group.add(GAME.trail);
   GAME.diam = gMakeDiamonds();
   GAME.group.add(GAME.diam);
+  // СТРИКИ СКОРОСТИ (28.07): редкие прозрачные линии, пролетающие у камеры, — дешёвая
+  // имитация motion blur (сами точки Points растягивать нельзя без шейдера, а 90 отрезков
+  // почти бесплатны). Длина сегмента и яркость растут со скоростью — см. updateGame.
+  (function streaks() {
+    const N = 90;
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 6), 3));
+    const sm = new THREE.LineBasicMaterial({ color: 0x9fe8e0, transparent: true, opacity: 0,
+      blending: THREE.AdditiveBlending, depthWrite: false });
+    const st = new THREE.LineSegments(sg, sm);
+    st.frustumCulled = false;
+    st.userData.baseOp = 0;                       // фейды входа/выхода его не зажигают
+    st.userData.pts = new Float32Array(N * 3);    // головы стриков (хвост дорисовывается по скорости)
+    for (let k = 0; k < N; k++) {
+      st.userData.pts[k * 3]     = (gHash(k, 1) - 0.5) * 130;
+      st.userData.pts[k * 3 + 1] = 4 + gHash(k, 2) * 46;
+      st.userData.pts[k * 3 + 2] = -150 + gHash(k, 3) * 175;
+    }
+    GAME.streaks = st;
+    GAME.group.add(st);
+  })();
+  // НИТЬ МАРШРУТА (28.07, «собранные формируют линии», сборка/раскрытие пространства):
+  // как только серия пошла, ядра ВПЕРЁД по трассе связываются светящейся нитью — маршрут
+  // проявляется по мере сбора и гаснет, когда серия прервалась.
+  // Почему вперёд, а не «след из собранных»: камера стоит на z≈17 и смотрит в −z, поэтому
+  // всё собранное (ядра стоят у z корабля ≈0) уже через доли секунды оказывается ЗА камерой
+  // и физически невидимо — проверено симуляцией, след жил 0.15с. Нить вперёд и осмысленнее:
+  // она показывает, куда ведёт серия.
+  (function chain() {
+    const CN = 16;
+    const cg = new THREE.BufferGeometry();
+    cg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(CN * 3), 3));
+    cg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(CN * 3), 3));
+    cg.setDrawRange(0, 0);
+    const cm = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9,
+      blending: THREE.AdditiveBlending, depthWrite: false });
+    const cl = new THREE.Line(cg, cm);
+    cl.frustumCulled = false;
+    GAME.chainLine = cl;
+    GAME.group.add(cl);
+  })();
   GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1;
   GAME.shipP.set(0, 16, 0);
   // кольцо в небе (как в референсах): гигантская дуга из точек
@@ -3580,6 +3639,11 @@ function exitGame() {
   GAME.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
   GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null; GAME.trail = null;
   GAME.diam = null; GAME.shipEdges = null; GAME.shipFill = null; GAME.shipGlow = null; GAME.shipLights = null; GAME.shipNozz = null;
+  GAME.streaks = null; GAME.chainLine = null;
+  // инерционный сдвиг HUD не должен пережить выход (панели вернутся на свои места)
+  _hudVX = _hudVY = _hudPX = _hudPY = 0;
+  if (gameHud) gameHud.style.transform = '';
+  if (gameMetr) gameMetr.style.transform = '';
   _dngN = 0; _dngAttr.fill(null); // ссылки на атрибуты утилизированных чанков не держим
   _ringOp = 0; if (gameRing) gameRing.style.opacity = '0';
   gameOnboard.classList.remove('show');
@@ -3704,6 +3768,7 @@ function updateGame(dt, time) {
   GAME.ship.position.copy(GAME.shipP);
   GAME.ship.rotation.z = clamp((tx - GAME.shipP.x) * -0.02, -0.6, 0.6); // крен в поворот
   GAME.ship.rotation.x = clamp((ty - GAME.shipP.y) * 0.02, -0.4, 0.4);
+  gHudInertia(dt, GAME.shipP.x, GAME.shipP.y); // панели отстают от маневра
   // полёт: мир едет на нас, скорость растёт (быстрый разгон)
   if (GAME.exit < 0) GAME.speed = Math.min(315, GAME.speed + dt * 3.2 * Math.max(0.12, 1 - GAME.speed / 315)); // асимптотический разгон
   if (GAME.speed > (GAME.maxSpeed || 0)) GAME.maxSpeed = GAME.speed;
@@ -3717,8 +3782,31 @@ function updateGame(dt, time) {
     c.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
   }
   gSpawnAhead();
+  // стрики скорости: головы едут с миром (z += dz), хвост дорисовывается назад по скорости —
+  // чем быстрее, тем длиннее штрих и ярче линия; ниже ~110 скорости стрики невидимы вовсе
+  if (GAME.streaks) {
+    const su = GAME.streaks.userData.pts, sp2 = GAME.streaks.geometry.attributes.position.array;
+    const slen = 2 + GAME.speed * 0.055;
+    for (let k = 0; k < 90; k++) {
+      let sz = su[k * 3 + 2] + dz;
+      if (sz > 24) {                            // улетел за камеру — рождаемся впереди заново
+        sz -= 175;
+        su[k * 3]     = (gHash(k, GAME.z) - 0.5) * 130;
+        su[k * 3 + 1] = 4 + gHash(GAME.z, k) * 46;
+      }
+      su[k * 3 + 2] = sz;
+      const o6 = k * 6;
+      sp2[o6] = su[k * 3];     sp2[o6 + 1] = su[k * 3 + 1]; sp2[o6 + 2] = sz;
+      sp2[o6 + 3] = su[k * 3]; sp2[o6 + 4] = su[k * 3 + 1]; sp2[o6 + 5] = sz - slen;
+    }
+    GAME.streaks.geometry.attributes.position.needsUpdate = true;
+    // яркость: от скорости, гаснет на входе/выходе из игры вместе с миром
+    const env = (GAME.exit >= 0 ? 1 - Math.min(1, GAME.exit) : 1) * clamp01((GAME.enter - 0.42) / 0.55);
+    GAME.streaks.material.opacity = clamp01((GAME.speed - 110) / 205) * 0.5 * env;
+  }
   // сбор энергии и кольца: объекты живут — вращаются и покачиваются; близость к кораблю = сбор.
   // Серия подряд собранных даёт комбо-множитель (приём аркад: строчка ведёт — комбо мотивирует)
+  const _routeAhead = []; // ядра впереди по трассе — из них строится нить маршрута (ниже)
   for (const c of GAME.chunks) for (const o of c.children) {
     if (o.userData.isRing && !o.userData.got) {
       o.rotation.z += dt * o.userData.spin;
@@ -3741,8 +3829,15 @@ function updateGame(dt, time) {
     o.rotation.y += dt * o.userData.spin;
     o.rotation.x = Math.sin(time * 0.7 + o.userData.ph) * 0.22;
     o.position.y = o.userData.baseY + Math.sin(time * 1.4 + o.userData.ph) * 0.8;
-    o.scale.setScalar(1 + 0.07 * Math.sin(time * 3 + o.userData.ph)); // живая пульсация
+    // мягкий пульс цели: масштаб и размер точек дышат (у редкой — заметно сильнее)
+    const bs = o.userData.baseScale || 1;
+    const pk = o.userData.rare ? 0.14 : 0.07;
+    o.scale.setScalar(bs * (1 + pk * Math.sin(time * 3 + o.userData.ph)));
+    o.material.size = 0.3 * bs + 0.05 * Math.sin(time * 3 + o.userData.ph);
     const wz = o.position.z + c.position.z;
+    // кандидат в нить маршрута: ядро впереди корабля и в пределах видимости камеры
+    if (wz < GAME.shipP.z + 2 && wz > GAME.shipP.z - 135)
+      _routeAhead.push({ x: o.position.x, y: o.position.y, z: wz });
     if (Math.abs(wz - GAME.shipP.z) < 4 &&
         Math.abs(o.position.x - GAME.shipP.x) < 4.5 &&
         Math.abs(o.position.y - GAME.shipP.y) < 4.5) {
@@ -3750,11 +3845,36 @@ function updateGame(dt, time) {
       GAME.combo = (time - GAME.lastGet < 2.4) ? GAME.combo + 1 : 1;
       if (GAME.combo > (GAME.maxCombo || 1)) GAME.maxCombo = GAME.combo;
       GAME.lastGet = time;
-      GAME.score += GAME.combo; gameScore.textContent = GAME.score; gScorePulse();
-      GAME.anims.push({ o, t: 0 });
+      const gain = GAME.combo + (o.userData.rare ? 5 : 0);
+      GAME.score += gain; gameScore.textContent = GAME.score; gScorePulse();
+      GAME.anims.push({ o, t: 0, k: o.userData.rare ? 8 : 4 }); // редкая — вспышка вдвое шире
       Sound.sfx('collect', GAME.combo);
-      gLabel(GAME.combo > 1 ? 'СЕРИЯ ×' + GAME.combo : 'ЭНЕРГИЯ СОБРАНА');
+      if (o.userData.rare) Sound.sfx('ring');
+      gLabel(o.userData.rare ? 'РЕДКАЯ ЭНЕРГИЯ · +' + gain
+           : GAME.combo > 1 ? 'СЕРИЯ ×' + GAME.combo : 'ЭНЕРГИЯ СОБРАНА');
     }
+  }
+  // НИТЬ МАРШРУТА: пока серия жива, ядра впереди связаны светящейся линией — «раскрытие»
+  // пространства по мере сбора. Яркость от свежести последнего сбора и длины серии, поэтому
+  // нить сама затухает через ~2.4с после срыва серии (тот же порог, что у комбо).
+  if (GAME.chainLine) {
+    const fresh = clamp01(1 - (time - (GAME.lastGet || -9)) / 2.4);
+    const glow = fresh * clamp01((GAME.combo || 0) / 3) * (GAME.over ? 0 : 1);
+    if (glow > 0.02 && _routeAhead.length >= 2) {
+      _routeAhead.sort((p, q) => q.z - p.z);            // от ближнего к дальнему
+      const cp = GAME.chainLine.geometry.attributes.position.array;
+      const cc = GAME.chainLine.geometry.attributes.color.array;
+      const n = Math.min(16, _routeAhead.length);
+      for (let i = 0; i < n; i++) {
+        const p = _routeAhead[i];
+        cp[i * 3] = p.x; cp[i * 3 + 1] = p.y; cp[i * 3 + 2] = p.z;
+        const a = glow * (1 - i / n) * 0.7;              // дальний конец нити слабее
+        cc[i * 3] = 0.38 * a; cc[i * 3 + 1] = a; cc[i * 3 + 2] = 0.92 * a;
+      }
+      GAME.chainLine.geometry.setDrawRange(0, n);
+      GAME.chainLine.geometry.attributes.position.needsUpdate = true;
+      GAME.chainLine.geometry.attributes.color.needsUpdate = true;
+    } else GAME.chainLine.geometry.setDrawRange(0, 0);
   }
   // бреющий полёт: держаться у самой земли рискованно — и за это капают очки (риск/награда)
   if (GAME.enter >= 1 && !GAME.over && GAME.grace === 0) {
@@ -3839,11 +3959,11 @@ function updateGame(dt, time) {
       dp.needsUpdate = true; dc.needsUpdate = true;
     }
   }
-  // анимация собранных сфер: раздуваются и тают
+  // анимация собранных сфер: раздуваются и тают (редкая энергия — вспышка вдвое шире, a.k)
   for (let i = GAME.anims.length - 1; i >= 0; i--) {
     const a = GAME.anims[i];
     a.t += dt * 3;
-    a.o.scale.setScalar(1 + a.t * 4);
+    a.o.scale.setScalar(1 + a.t * (a.k || 4));
     a.o.material.opacity = Math.max(0, 0.95 * (1 - a.t));
     if (a.t >= 1) { a.o.visible = false; GAME.anims.splice(i, 1); }
   }
@@ -4070,6 +4190,23 @@ const gameScore = document.getElementById('game-score');
 const gameDanger = document.getElementById('game-danger');
 const gameLabel = document.getElementById('game-label');
 const gameOnboard = document.getElementById('game-onboard');
+const gameHud = document.getElementById('game-hud');
+const gameMetr = document.getElementById('game-metrics');
+// ИНЕРЦИЯ HUD (28.07): панели чуть отстают от маневра — интерфейс «висит» в кабине, а не
+// приклеен к экрану. Сдвиг считается из СГЛАЖЕННОЙ скорости корабля (пружина на пружине),
+// поэтому на резком вираже панель уезжает заметно, а в спокойном полёте стоит ровно.
+// Двигаем контейнеры, а не #game-score: у него свой transform под анимацию пульса.
+let _hudVX = 0, _hudVY = 0, _hudPX = 0, _hudPY = 0;
+function gHudInertia(dt, sx, sy) {
+  const kk = 1 - Math.exp(-dt * 3.2);
+  _hudVX += ((sx - _hudPX) / Math.max(dt, 0.001) - _hudVX) * kk;
+  _hudVY += ((sy - _hudPY) / Math.max(dt, 0.001) - _hudVY) * kk;
+  _hudPX = sx; _hudPY = sy;
+  const ox = clamp(-_hudVX * 0.18, -16, 16), oy = clamp(-_hudVY * 0.14, -12, 12);
+  const tf = 'translate(' + ox.toFixed(2) + 'px,' + oy.toFixed(2) + 'px)';
+  if (gameHud) gameHud.style.transform = tf;
+  if (gameMetr) gameMetr.style.transform = tf;
+}
 // сбор — событие: счёт вспыхивает и подпрыгивает
 function gScorePulse() {
   gameScore.classList.remove('pop');
