@@ -1,21 +1,17 @@
+# Архив прошлых поколений сайта и рабочих материалов — см. _ARCHIVE/README.md.
+# Лежит рядом «на всякий случай», в репозиторий не попадает.
+_ARCHIVE/
+
+# Системное и служебное
 .DS_Store
 node_modules/
-dist.zip
+
+# Мастера видео и 3D-исходники: тяжёлые, ломают push (лимит GitHub 100 МБ).
+# На сайте раздаются сжатые копии из site/videos/ — они отслеживаются.
+videos/
 *.blend
 *.fbx
 *.aep
-videos/raw_videos/
 
-# исходные мастера роликов — только локально (на Pages раздаются сжатые копии в site/videos)
-videos/
-
-# ---- крупные локальные материалы: НЕ коммитить (лимит GitHub 100МБ, ломает push) ----
-site.zip
-dist.zip
-videos/old portfolios/
-concepts raw/
-remade/
-pdf_images_VMF*/
-pdf_images_VMF.zip
-proto 3d/
-.DS_Store
+# Архивы-слепки: сайт собирается из site/, а не из zip
+*.zip
