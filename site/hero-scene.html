@@ -122,10 +122,12 @@
     flex-direction: column; align-items: center; justify-content: center; gap: 10px;
     background: rgba(8,4,10,.42); backdrop-filter: blur(3px); pointer-events: none; }
   #game-over.show { display: flex; }
-  #game-over .go-title { font-size: 14px; letter-spacing: .56em; color: #ff5a3d; text-shadow: 0 0 26px rgba(255,90,61,0.5); }
+  body.game.over #game-over { pointer-events: auto; cursor: auto; }
+  body.game.over, body.game.over #stage { cursor: auto !important; } /* после крушения курсор возвращается */
+  #game-over .go-title { font-size: 17px; letter-spacing: .56em; color: #ff5a3d; text-shadow: 0 0 26px rgba(255,90,61,0.5); }
   /* карточки результатов: техно-чипы со срезанным углом, каскадное появление */
   #game-over .go-cards { display: flex; gap: 14px; margin-top: 34px; }
-  #game-over .go-card { min-width: 168px; padding: 22px 24px 18px; text-align: left;
+  #game-over .go-card { min-width: 200px; padding: 26px 28px 22px; text-align: left;
     background: rgba(10,20,26,0.78); border: 1px solid rgba(43,224,198,0.22);
     clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
     opacity: 0; transform: translateY(18px); }
@@ -134,17 +136,24 @@
   #game-over.show .go-card:nth-child(3) { animation-delay: .2s; }
   #game-over.show .go-card:nth-child(4) { animation-delay: .3s; }
   @keyframes goIn { to { opacity: 1; transform: none; } }
-  #game-over .gc-v { font-size: 44px; font-weight: 800; letter-spacing: -.02em; line-height: 1; color: #F1FBFC;
-    display: flex; align-items: baseline; gap: 8px; }
-  #game-over .gc-bolt { width: 15px; height: 25px; color: #2be0c6; align-self: center; }
-  #game-over .gc-l { margin-top: 10px; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: rgba(220,238,240,0.55); }
+  #game-over .gc-v { font-size: 54px; font-weight: 800; letter-spacing: -.02em; line-height: 1; color: #F1FBFC;
+    display: flex; align-items: baseline; gap: 9px; }
+  #game-over .gc-bolt { width: 18px; height: 30px; color: #2be0c6; align-self: center; }
+  #game-over .gc-l { margin-top: 12px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(220,238,240,0.7); }
   /* как играть: одна строка-шпаргалка */
   #game-over .go-how { display: flex; gap: 26px; margin-top: 30px; opacity: 0; }
   #game-over.show .go-how { animation: goIn .55s ease .45s forwards; }
-  #game-over .gh { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(220,238,240,0.6);
-    display: flex; flex-direction: column; gap: 5px; text-align: left; }
-  #game-over .gh b { color: #2be0c6; font-size: 10px; letter-spacing: .24em; }
-  #game-over .go-hint { font-size: 10px; letter-spacing: .26em; opacity: 0; margin-top: 34px; }
+  #game-over .gh { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: rgba(220,238,240,0.72);
+    display: flex; flex-direction: column; gap: 6px; text-align: left; }
+  #game-over .gh b { color: #2be0c6; font-size: 12px; letter-spacing: .2em; }
+  #game-over .go-hint { font-size: 12px; letter-spacing: .24em; opacity: 0; margin-top: 30px; }
+  /* кнопка возврата на сайт — крупная, кликабельная, поверх оверлея */
+  #game-over .go-back { margin-top: 26px; opacity: 0; pointer-events: auto; cursor: pointer;
+    font: 600 13px 'Roboto Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
+    color: #04121a; background: #2be0c6; border: none; border-radius: 2px; padding: 15px 30px;
+    transition: transform .2s, box-shadow .2s; }
+  #game-over.show .go-back { animation: goIn .5s ease .6s forwards; }
+  #game-over .go-back:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(43,224,198,0.35); }
   #game-over.show .go-hint { animation: goPulse 2s ease .8s infinite; }
   @keyframes goPulse { 0%,100% { opacity: .45; } 50% { opacity: .9; } }
   /* в игре весь галерейный UI прячется */
@@ -432,6 +441,7 @@
     <div class="gh"><b>Бреющий</b>у земли капает бонус</div>
   </div>
   <div class="go-hint">КЛИК — ЕЩЁ РАЗ · ESC — В ПОРТФОЛИО</div>
+  <button class="go-back" id="go-back">← Вернуться на сайт PlayDisplay</button>
 </div>
 
 <div id="arc-hud">
@@ -586,9 +596,9 @@
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
 <script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-<script src="textures.js?v=b2707-game13"></script>
-<script src="odk_frame.js?v=b2707-game13"></script>
-<script src="model.js?v=b2707-game13"></script>
+<script src="textures.js?v=b2707-game14"></script>
+<script src="odk_frame.js?v=b2707-game14"></script>
+<script src="model.js?v=b2707-game14"></script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -632,12 +642,12 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2707-game13'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2707-game14'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
 // авто-качество само снизит нагрузку на слабом железе.
-const SETTINGS_DEFAULTS = { height: 0, viewy: 0, fov: 50, dist: 55.1, sizemin: 0.5, sizemax: 7, count: 1, spread: 0, edge: -0.6, sizevar: 1, projscale: 1.5, objscale: 1, envscale: 1, morph: 4.6, vortspeed: 0, vortamp: 0, vortpct: 0, rubber: 0.24, envon: true, sound: true, autoq: true, projfit: true, model: 'original' };
+const SETTINGS_DEFAULTS = { height: 26, viewy: 0, fov: 41, dist: 46, sizemin: 0.5, sizemax: 8, count: 1, spread: 0, edge: -0.7, sizevar: 1, projscale: 1.5, objscale: 2.15, envscale: 1, morph: 1.7, vortspeed: 0.08, vortamp: 0.14, vortpct: 0.01, rubber: 0.06, envon: true, sound: true, autoq: true, projfit: true, model: 'original' }; // подобрано вручную (экспорт панели 27.07)
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -3228,7 +3238,8 @@ function enterGame() {
 // рестарт после столкновения: безопасная высота над РЕАЛЬНЫМ рельефом + период
 // неуязвимости (грейс) — чтобы не было петли мгновенных повторных смертей
 function restartGame() {
-  GAME.over = false; GAME.score = 0; GAME.speed = 60; GAME.hurtT = 0;
+  GAME.over = false; GAME.overT = 0; GAME.score = 0; GAME.speed = 60; GAME.hurtT = 0;
+  document.body.classList.remove('over');
   GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1; GAME.z0 = GAME.z;
   GAME.grace = 3; // 3 секунды неуязвимости, корабль мигает
   GAME.shipP.set(0, gTerrainH(0, GAME.z) + 30, 0);
@@ -3251,6 +3262,7 @@ function exitGame() {
   if (!GAME.on) return;
   GAME.on = false;
   document.body.classList.remove('game');
+  document.body.classList.remove('over');
   scene.remove(GAME.group);
   GAME.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
   GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null; GAME.trail = null;
@@ -3316,11 +3328,27 @@ function updateGame(dt, time) {
   }
   // гейм-овер: мир доезжает по инерции, обломки корабля летят по физике; ждём клик/Esc
   if (GAME.over && GAME.exit < 0) {
-    GAME.speed *= Math.pow(0.05, dt);          // торможение мира — инерция удара
+    // мир не замирает: скорость падает до спокойного дрейфа и камера продолжает мягко ехать вперёд
+    const CRUISE = 16;
+    GAME.speed += (CRUISE - GAME.speed) * (1 - Math.exp(-dt * 1.1));
     const dzc = GAME.speed * dt;
     GAME.z += dzc;
     for (const cc of GAME.chunks) cc.position.z += dzc;
+    while (GAME.chunks.length && GAME.chunks[0].position.z > G_DEPTH * 0.8) {
+      const c0 = GAME.chunks.shift();
+      GAME.group.remove(c0);
+      c0.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+    }
+    gSpawnAhead();                              // мир продолжает достраиваться впереди
     gUpdateDebris(dt);
+    // камера плавно поднимается и отъезжает — «пролёт над местом падения»
+    GAME.overT = (GAME.overT || 0) + dt;
+    const ov = Math.min(1, GAME.overT / 3.2), ove = ov * ov * (3 - 2 * ov);
+    const cxo = GAME.shipP.x * 0.5, cyo = GAME.shipP.y * 0.6 + 7 + ove * 12;
+    camera.position.set(cxo, cyo, 17 + ove * 10);
+    camera.lookAt(GAME.shipP.x * 0.7, GAME.shipP.y * 0.8 - ove * 6, -60);
+    camera.fov += ((S.fov + 4) - camera.fov) * (1 - Math.exp(-dt * 1.5));
+    camera.updateProjectionMatrix();
     return;
   }
   // динамическое небо: инопланетная аврора — цвет горизонта медленно дышит
@@ -3514,6 +3542,8 @@ function updateGame(dt, time) {
   } else if ((GAME._shipOp || 1) < 1 && !GAME.over) gShipOpacity(1);
   if (alt < 1.3 && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over && GAME.grace === 0) {
     GAME.over = true; // столкновение — гейм-овер
+    GAME.overT = 0;
+    document.body.classList.add('over'); // возвращаем системный курсор и клики по кнопкам
     GAME.ship.rotation.set(0, 0, 0); // локальные оси = мировые: физика обломков без искажения креном
     gShipCrash();     // корабль разлетается на точки с инерцией по курсу
     Sound.sfx('crash');
@@ -3665,6 +3695,17 @@ function gDangerRing(dt, time, alt) {
   g.fillStyle = 'rgba(241,251,252,0.9)';
   g.fill();
 }
+
+// кнопка «Вернуться на сайт»: плавный выход из полёта + сигнал лендингу
+(function(){
+  var gb = document.getElementById('go-back');
+  if (!gb) return;
+  gb.addEventListener('click', function(e){
+    e.stopPropagation();          // не считать это кликом «играть заново»
+    startExitGame();
+    try { parent.postMessage({ pdGoSite: true }, '*'); } catch (err) {}
+  });
+})();
 
 const gameScore = document.getElementById('game-score');
 const gameDanger = document.getElementById('game-danger');
