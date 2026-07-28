@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game27';</script>
+<script>window.PD_V = 'b2807-game28';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -2549,8 +2549,11 @@ const Sound = (() => {
 // В игре потолок DPR ниже: точек в кадре сотни тысяч, все с additive-блендингом,
 // и стоимость кадра здесь определяет не геометрия, а закраска пикселей. Снижение
 // с 1.5 до 1.25 убирает треть работы по пикселям почти без потери резкости точек.
-const _dprFull = () => Math.min(devicePixelRatio || 1, isMobile ? 1.25 : (GAME.on ? 1.25 : 1.5));
-let qFps = 60, qScale = 1, qDpr = _dprFull(), qWait = 0, qWarm = 0;
+// GAME объявляется дальше по файлу (const, TDZ) — _dprFull не может звать GAME.on до
+// первого фактического использования, иначе сразу ReferenceError и весь скрипт падает
+// ещё на загрузке (что и произошло: карусель/игра/скролл не работали именно из-за этого).
+const _dprFull = () => Math.min(devicePixelRatio || 1, isMobile ? 1.25 : ((typeof GAME !== 'undefined' && GAME.on) ? 1.25 : 1.5));
+let qFps = 60, qScale = 1, qDpr = Math.min(devicePixelRatio || 1, isMobile ? 1.25 : 1.5), qWait = 0, qWarm = 0;
 let qGood = 0, qLastRaise = -1e9, qRaiseLock = 0; // защита от «качелей»
 function autoQuality(dt) {
   qWarm += dt;
