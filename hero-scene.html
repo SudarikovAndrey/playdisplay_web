@@ -664,7 +664,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2807-game20'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2807-game21'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2767,24 +2767,54 @@ function gMakeChunk(zNoise) {
             + hgrid[b1] * (1 - ux) * uz + hgrid[b1 + 1] * ux * uz;
       h += (j1 - 0.5) * 0.5;
       pts[o] = px; pts[o + 1] = h; pts[o + 2] = pz;
-      // почти белый монохром, тени по низинам, лёгкий тон проекта, мягкая разнояркость
-      const g = 0.40 + 0.5 * clamp01((h + 8) / 40);
-      const vb = 0.78 + 0.22 * j2;
-      colA[o]     = (g + (tR - g) * 0.14) * vb;
-      colA[o + 1] = (g + (tG - g) * 0.14) * vb;
-      colA[o + 2] = (g + (tB - g) * 0.14) * vb;
+      // сочнее (28.07, «карта разрежена / хочу сочную графику»): ярче базовый тон,
+      // больше доля цвета биома — рельеф перестаёт быть блёклой пылью
+      const g = 0.46 + 0.54 * clamp01((h + 8) / 40);
+      const vb = 0.74 + 0.26 * j2;
+      colA[o]     = (g + (tR - g) * 0.26) * vb;
+      colA[o + 1] = (g + (tG - g) * 0.26) * vb;
+      colA[o + 2] = (g + (tB - g) * 0.26) * vb;
       o += 3;
     }
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pts, 3));
   g.setAttribute('color', new THREE.BufferAttribute(colA, 3));
-  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.22, transparent: true, opacity: 0.95, depthWrite: false });
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.26, transparent: true, opacity: 0.95, depthWrite: false });
   const cloud = new THREE.Points(g, m);
   cloud.userData.grid = { cols: cols, rows: rows, step: step, W: W }; // раскладка сетки — для перекраски точек под кораблём
   const grp = new THREE.Group();
   grp.add(cloud);
   grp.userData = { zNoise };
+  // СТЕНЫ-ОБРЫВОВ (28.07, «местами карта очень разрежена»): heightmap-сетка кладёт точки
+  // равномерно по (x,z), поэтому на крутой стене между соседними ячейками зияет вертикальная
+  // дыра — в кадре это выглядело пустотой. Второй проход: где перепад высот между соседями
+  // велик, достраиваем точки ВДОЛЬ стены — обрывы и каньоны становятся плотными и читаемыми.
+  {
+    const wall = [], wallC = [];
+    for (let r2 = 0; r2 < hr - 1; r2++) for (let c2 = 0; c2 < hc - 1; c2++) {
+      const h0 = hgrid[r2 * hc + c2];
+      const hx = hgrid[r2 * hc + c2 + 1], hz = hgrid[(r2 + 1) * hc + c2];
+      const dm = Math.max(Math.abs(hx - h0), Math.abs(hz - h0));
+      if (dm < 3) continue;
+      const wx = -W + c2 * HS, wzL = r2 * HS;
+      const hTo = Math.abs(hx - h0) > Math.abs(hz - h0) ? hx : hz;
+      const nW = Math.min(26, Math.floor(dm / 0.7));
+      for (let k = 0; k < nW; k++) {
+        const t = (k + gHash(k, wx + wzL)) / nW;
+        const py2 = h0 + (hTo - h0) * t;
+        wall.push(wx + gHash(k * 3, wzL + zNoise) * HS, py2, wzL + gHash(wx, k * 5 + zNoise) * HS);
+        const gg = (0.4 + 0.42 * clamp01((py2 + 8) / 40)) * (0.72 + 0.28 * gHash(k, wx));
+        wallC.push(gg + (tR - gg) * 0.26, gg + (tG - gg) * 0.26, gg + (tB - gg) * 0.26);
+      }
+    }
+    if (wall.length) {
+      const wg = new THREE.BufferGeometry();
+      wg.setAttribute('position', new THREE.Float32BufferAttribute(wall, 3));
+      wg.setAttribute('color', new THREE.Float32BufferAttribute(wallC, 3));
+      grp.add(new THREE.Points(wg, m.clone())); // после cloud: children[0] остаётся сеткой для перекраски
+    }
+  }
   // парящие острова — изредка (чанки короче прежних, вероятность пересчитана)
   if (gHash(zNoise, 91) > 0.84) {
     const ix = (gHash(zNoise, 41) - 0.5) * 180, iy = 58 + gHash(zNoise, 43) * 30, iz = gHash(zNoise, 47) * G_DEPTH;
@@ -2860,51 +2890,95 @@ function gMakeChunk(zNoise) {
   // Коллизия хранится в локальных координатах чанка (как orb/ring выше), мировой z достраивается
   // прибавлением c.position.z в gHazardHit — тем же приёмом, что и подсветка опасности.
   const hazards = [];
-  // СЛАЛОМ ИЗ ЗАВАЛИВШИХСЯ КОЛОНН (силуэт 2): 4 наклонные колонны поперёк коридора, между
-  // ними 3 разрыва — средний ВСЕГДА накрывает gPathX (гарантированный пролёт по прямой),
-  // боковые — для рискового виляния. Наклон в паре встречных сторон — как на эскизе.
+  // СЛАЛОМ ИЗ ЗАВАЛЕННЫХ КОЛОНН (эскиз «параллельные штрихи», 28.07-v2): ВСЕ колонны кластера
+  // завалены В ОДНУ сторону под ~30° — как на рисунке, где три лезвия падают параллельно.
+  // Величина завала ОДНА на кластер: наклонные разрывы между колоннами сохраняют ширину на
+  // любой высоте, средний разрыв всегда накрывает gPathX (гарантированный пролёт).
   const wBladeHere = gStage(zNoise, G_ONSET.blade, 350);
   if (wBladeHere > 0.5 && gHash(zNoise, 131) > 0.7) {
     const bz = 6 + gHash(zNoise, 132) * (G_DEPTH - 12);
     const wz = zNoise + G_DEPTH - bz;
     const px = gPathX(wz);
-    const offs = [-28, -9.3, 9.3, 28]; // разрыв 2↔3 (18.6 минус 2×радиус) центрован на px
+    const dir = gHash(zNoise, 133) > 0.5 ? 1 : -1;                 // сторона завала — общая
+    // завал в x ограничен шириной центрального разрыва (вертикаль над px обязана остаться
+    // свободной на любой высоте — симуляция ловила пересечение), поэтому добираем наклон
+    // ВТОРОЙ осью: общий завал в глубину z — суммарный крен читается сильным, как на эскизе
+    const lean = dir * (6.5 + gHash(zNoise, 134) * 2);             // x-компонента завала
+    const leanZ = (gHash(zNoise, 135) - 0.5) * 16;                 // z-компонента, общая
+    const offs = [-31, -12.5, 12.5, 31]; // разрыв 2↔3 центрован на px, шире прежнего под наклон
     for (let ci = 0; ci < offs.length; ci++) {
       const ox = px + offs[ci];
       const by = gTerrainH(ox, wz);
-      const lean = (ci % 2 === 0 ? 1 : -1) * (7 + gHash(zNoise, 140 + ci) * 5); // «завал» в сторону
-      const ht = 18 + gHash(zNoise, 150 + ci) * 7;
-      const base = [ox, by, bz];
-      const tip = [ox + lean, by + ht, bz + (gHash(zNoise, 160 + ci) - 0.5) * 6];
+      const ht = 20 + gHash(zNoise, 150 + ci) * 8;
+      const base = [ox, by - 2, bz];                               // чуть врыта в грунт
+      const tip = [ox + lean, by + ht, bz + leanZ];
       grp.add(gMakeBeam(new THREE.Vector3(base[0], base[1], base[2]),
-                         new THREE.Vector3(tip[0], tip[1], tip[2]), 1.7, zNoise + ci * 13));
-      hazards.push({ a: base, b: tip, r: 1.7 });
+                         new THREE.Vector3(tip[0], tip[1], tip[2]), 2.2, zNoise + ci * 13, zTint));
+      hazards.push({ a: base, b: tip, r: 2.2 });
     }
   }
-  // МОСТ-АРКА (по эскизу — «пролёты под мостами, влёты в дырки»): две ноги заваливаются
-  // друг к другу и смыкаются перекладиной наверху — настоящая дыра со свободным местом
-  // и сверху, и снизу; пролетать нужно между ног и ниже перекладины (см. gHazardHit).
+  // ЗАВАЛЕННЫЕ ВОРОТА (эскиз с крупными наклонными арками): обе ноги наклонены в ОДНУ
+  // сторону + ригель сверху — наклонный дверной проём, а не симметричная арка. Пролетать
+  // между ног ниже ригеля; вертикаль над px свободна на всю высоту проёма (проверено симуляцией).
   const wChasmHere = gStage(zNoise, G_ONSET.chasm, 400);
   if (wChasmHere > 0.5 && gHash(zNoise, 171) > 0.78) {
     const bz = 6 + gHash(zNoise, 172) * (G_DEPTH - 12);
     const wz = zNoise + G_DEPTH - bz;
     const px = gPathX(wz);
-    const half = 18, lean = 5, topH = 26; // запас: пролёт ~30 в ширину, ~22 в высоту у оси
-    // ноги стоят у своих (x±half) точек рельефа, НО именно в зоне пропасти (силуэт 3) там
-    // рядом бывают независимые от коридора глубокие провалы — без привязки к центру нога
-    // могла провалиться в чужой каньон и утащить перекладину НИЖЕ безопасного пути, ломая
-    // саму дыру моста. Зажимаем базу ног в разумных ±8 от высоты пути ровно под кораблём.
+    const half = 18, topH = 26;
+    const leanG = (gHash(zNoise, 173) > 0.5 ? 1 : -1) * 8;         // общий завал ворот
+    // ноги привязаны высотой к центру пути (±8): в зоне пропастей чужой каньон не должен
+    // утаскивать ригель ниже безопасной высоты (см. историю фикса в коммите game20)
     const groundY = gTerrainH(px, wz);
-    const legL = [px - half, clamp(gTerrainH(px - half, wz), groundY - 8, groundY + 8), bz];
-    const legR = [px + half, clamp(gTerrainH(px + half, wz), groundY - 8, groundY + 8), bz];
-    const tipL = [legL[0] + lean, legL[1] + topH, legL[2]];
-    const tipR = [legR[0] - lean, legR[1] + topH, legR[2]];
+    const legL = [px - half, clamp(gTerrainH(px - half, wz), groundY - 8, groundY + 8) - 2, bz];
+    const legR = [px + half, clamp(gTerrainH(px + half, wz), groundY - 8, groundY + 8) - 2, bz];
+    const tipL = [legL[0] + leanG, legL[1] + topH + 2, legL[2]];
+    const tipR = [legR[0] + leanG, legR[1] + topH + 2, legR[2]];
     const segs = [[legL, tipL], [legR, tipR], [tipL, tipR]];
     for (let si = 0; si < segs.length; si++) {
       const [pA, pB] = segs[si];
       grp.add(gMakeBeam(new THREE.Vector3(pA[0], pA[1], pA[2]),
-                         new THREE.Vector3(pB[0], pB[1], pB[2]), 1.8, zNoise + si * 31));
-      hazards.push({ a: pA, b: pB, r: 1.8 });
+                         new THREE.Vector3(pB[0], pB[1], pB[2]), 2.0, zNoise + si * 31, zTint));
+      hazards.push({ a: pA, b: pB, r: 2.0 });
+    }
+  }
+  // ГОРА С ДЫРОЙ (эскизы с петлёй на склоне): плотный каменный тор, нижняя кромка утоплена
+  // в рельеф — читается как гора со сквозной дырой, влетать нужно в проём. Дыра всегда
+  // центрована на коридоре. Коллизия — цепочка сегментов по кольцу (переиспользуем gHazardHit).
+  const wFeatureHere = gStage(zNoise, G_ONSET.feature, 300);
+  if (wFeatureHere > 0.5 && gHash(zNoise, 191) > 0.8) {
+    const bz = 6 + gHash(zNoise, 192) * (G_DEPTH - 12);
+    const wz = zNoise + G_DEPTH - bz;
+    const px = gPathX(wz);
+    const R = 13, rt = 2.6;                          // проём ~R-rt ≈ 10 в радиусе — влёт читается
+    // низ кольца чуть врыт в склон, но центр дыры зажат в досягаемый диапазон высот корабля
+    // (3..52): в каньонах рельеф уходит до -30 и дыра оказывалась ПОД полом полёта — кольцо
+    // там просто парит над провалом (в мире и так есть парящие острова, стилистически своё)
+    const yc = clamp(gTerrainH(px, wz) + R - 3, 12, 44);
+    const yaw = (gHash(zNoise, 193) - 0.5) * 0.5;    // лёгкий разворот — виден объём кольца
+    const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+    const NT = 2100, tp2 = new Float32Array(NT * 3), tc2 = new Float32Array(NT * 3);
+    for (let k = 0; k < NT; k++) {
+      const th = gHash(k, zNoise) * Math.PI * 2, phi = gHash(zNoise, k) * Math.PI * 2;
+      const rr = R + rt * (0.55 + 0.45 * gHash(k * 3, zNoise)) * Math.cos(phi);
+      const lx = Math.cos(th) * rr, ly = Math.sin(th) * rr, lz = rt * Math.sin(phi);
+      tp2[k * 3] = px + lx * cosY + lz * sinY;
+      tp2[k * 3 + 1] = yc + ly;
+      tp2[k * 3 + 2] = bz - lx * sinY + lz * cosY;
+      const gg = (0.5 + 0.4 * gHash(k, zNoise + 7)) * (0.8 + 0.2 * Math.sin(th * 3));
+      tc2[k * 3] = gg + (tR - gg) * 0.3; tc2[k * 3 + 1] = gg + (tG - gg) * 0.3; tc2[k * 3 + 2] = gg + (tB - gg) * 0.3;
+    }
+    const tg2 = new THREE.BufferGeometry();
+    tg2.setAttribute('position', new THREE.BufferAttribute(tp2, 3));
+    tg2.setAttribute('color', new THREE.BufferAttribute(tc2, 3));
+    grp.add(new THREE.Points(tg2, new THREE.PointsMaterial({ vertexColors: true, size: 0.28,
+      transparent: true, opacity: 0.95, depthWrite: false })));
+    const NSEG = 14;
+    for (let k = 0; k < NSEG; k++) {
+      const a0 = k / NSEG * Math.PI * 2, a1 = (k + 1) / NSEG * Math.PI * 2;
+      const p0 = [px + Math.cos(a0) * R * cosY, yc + Math.sin(a0) * R, bz - Math.cos(a0) * R * sinY];
+      const p1 = [px + Math.cos(a1) * R * cosY, yc + Math.sin(a1) * R, bz - Math.cos(a1) * R * sinY];
+      hazards.push({ a: p0, b: p1, r: rt + 0.6 });
     }
   }
   if (hazards.length) grp.userData.hazards = hazards;
@@ -2977,28 +3051,35 @@ function gMakeRing(seed) {
 // вдоль отрезка a→b — цилиндрическая «палка» любого наклона. Это НАСТОЯЩАЯ 3D-геометрия,
 // а не рельеф: колонна может заваливаться в сторону (heightmap даёт только строго
 // вертикальные формы). Столкновение считается отдельно, по этому же отрезку — см. gHazardHit.
-function gMakeBeam(a, b, rad, seed) {
+function gMakeBeam(a, b, rad, seed, tint) {
   const len = Math.max(0.6, a.distanceTo(b));
-  const N = Math.max(26, Math.round(len * 5));
+  // плотность по ПЛОЩАДИ поверхности цилиндра (28.07-v2: балки из ~сотни точек были почти
+  // невидимы — «мосты не как на эскизах»): толстая колонна теперь читается сплошным камнем
+  const N = Math.min(2400, Math.max(80, Math.round(len * rad * 26)));
   const dir = new THREE.Vector3().subVectors(b, a).normalize();
   const upRef = Math.abs(dir.y) > 0.92 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
   const t1 = new THREE.Vector3().crossVectors(dir, upRef).normalize();
   const t2 = new THREE.Vector3().crossVectors(dir, t1).normalize();
   const p = [], c = [];
+  const tR = tint ? tint.r : 0.85, tG = tint ? tint.g : 0.85, tB = tint ? tint.b : 0.88;
   for (let k = 0; k < N; k++) {
-    const t = k / (N - 1);
-    const ang = gHash(k, seed) * Math.PI * 2, rr = rad * (0.68 + 0.32 * gHash(seed, k));
-    const ox = (t1.x * Math.cos(ang) + t2.x * Math.sin(ang)) * rr;
-    const oy = (t1.y * Math.cos(ang) + t2.y * Math.sin(ang)) * rr;
-    const oz = (t1.z * Math.cos(ang) + t2.z * Math.sin(ang)) * rr;
+    const t = (k + gHash(k, seed + 3)) / N;                     // равномерно + джиттер вдоль оси
+    const ang = gHash(k, seed) * Math.PI * 2;
+    const rr = rad * (0.82 + 0.18 * gHash(seed, k));            // почти оболочка — objёмный борт
+    const rjit = 1 + (gHash(k * 7, seed) - 0.5) * 0.14;         // каменная неровность
+    const ox = (t1.x * Math.cos(ang) + t2.x * Math.sin(ang)) * rr * rjit;
+    const oy = (t1.y * Math.cos(ang) + t2.y * Math.sin(ang)) * rr * rjit;
+    const oz = (t1.z * Math.cos(ang) + t2.z * Math.sin(ang)) * rr * rjit;
     p.push(a.x + (b.x - a.x) * t + ox, a.y + (b.y - a.y) * t + oy, a.z + (b.z - a.z) * t + oz);
-    const g = 0.5 + 0.34 * gHash(k * 3, seed + 1);
-    c.push(g, g * 0.99, g * 1.04);
+    // свет сверху: верхняя половина борта ярче — колонна читается объёмом, а не силуэтом
+    const litK = 0.72 + 0.28 * clamp01(oy / rad + 0.5);
+    const g = (0.52 + 0.36 * gHash(k * 3, seed + 1)) * litK;
+    c.push(g + (tR - g) * 0.24, g + (tG - g) * 0.24, g + (tB - g) * 0.24);
   }
   const g2 = new THREE.BufferGeometry();
   g2.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
   g2.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-  const m2 = new THREE.PointsMaterial({ vertexColors: true, size: 0.24, transparent: true, opacity: 0.95, depthWrite: false });
+  const m2 = new THREE.PointsMaterial({ vertexColors: true, size: 0.3, transparent: true, opacity: 0.95, depthWrite: false });
   const pts = new THREE.Points(g2, m2);
   pts.userData.isHazard = true;
   return pts;

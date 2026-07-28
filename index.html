@@ -1016,7 +1016,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game20" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game21" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1761,33 +1761,38 @@
     // Лента едет своим циклом: скорость плавно гаснет при наведении и так же
     // плавно возвращается. Полшага ленты — ровно один проход списка, поэтому
     // достаточно вернуть смещение назад на половину, и шва не видно.
-    var x = 0, speed = 0, want = 0, half = 0, raf = 0, live = true;
+    var x = 0, speed = 0, want = 0, half = 0, raf = 0, live = true, rolling = false;
     var SPEED = 0.55;                     // пикселей за кадр, около 33 px/с
+    var SLOW = SPEED * 0.14;              // под курсором лента не встаёт, а еле ползёт
     function roll(){
       if (reduce) return;
-      want = SPEED;
-      strip.addEventListener('pointerenter', function(){ want = 0; });
-      strip.addEventListener('pointerleave', function(){ want = SPEED; });
-      // на тач-экранах наведения нет: касание тормозит ленту на время жеста
-      strip.addEventListener('pointerdown', function(e){ if (e.pointerType === 'touch') want = 0; });
-      strip.addEventListener('pointerup', function(e){ if (e.pointerType === 'touch') want = SPEED; });
+      rolling = true; want = SPEED;
+      strip.addEventListener('pointerenter', function(){ want = SLOW; kick(); });
+      strip.addEventListener('pointerleave', function(){ want = SPEED; kick(); });
+      // на тач-экранах наведения нет: касание замедляет ленту на время жеста
+      strip.addEventListener('pointerdown', function(e){ if (e.pointerType === 'touch') { want = SLOW; kick(); } });
+      strip.addEventListener('pointerup', function(e){ if (e.pointerType === 'touch') { want = SPEED; kick(); } });
+      // клик по логотипу не должен оставлять ленту стоять: на всякий случай
+      // возвращаем ход, даже если уход курсора почему-то не пришёл
+      strip.addEventListener('click', function(){ setTimeout(function(){ want = SPEED; kick(); }, 900); });
       kick();
     }
     function step(){
       raf = 0;
       half = track.scrollWidth / 2;
       speed += (want - speed) * 0.045;               // мягкий разгон и торможение
-      if (speed < 0.004 && want === 0) speed = 0;    // окончательно встали
       x -= speed;
       if (half > 0 && -x >= half) x += half;
       track.style.transform = 'translateX(' + x.toFixed(2) + 'px)';
-      if (live && !document.hidden && (speed > 0 || want > 0)) raf = requestAnimationFrame(step);
+      // цикл живёт, пока лента в кадре: раньше он выключался на нулевой скорости,
+      // и уход курсора уже не мог его разбудить — лента вставала навсегда
+      if (rolling && live && !document.hidden) raf = requestAnimationFrame(step);
     }
     function kick(){ if (!raf) raf = requestAnimationFrame(step); }
-    document.addEventListener('visibilitychange', function(){ if (!document.hidden && live) kick(); });
+    document.addEventListener('visibilitychange', function(){ if (!document.hidden && live && rolling) kick(); });
     if (window.IntersectionObserver) {
       new IntersectionObserver(function(es){
-        es.forEach(function(e){ live = e.isIntersecting; if (live) kick(); });
+        es.forEach(function(e){ live = e.isIntersecting; if (live && rolling) kick(); });
       }, { threshold: 0 }).observe(strip);
     }
 
