@@ -324,34 +324,44 @@
   /* display:flex перебивал служебный [hidden]: когда прокручивать нечего,
      панель со стрелками оставалась висеть с мёртвой полосой прогресса */
   .c-strip-nav[hidden] { display: none; }
+  /* пока тащим ленту — курсор-хват и никаких случайных открытий карточек */
+  .a-grid.pd-drag, .c-grid.pd-drag { cursor: grabbing; }
+  .a-grid.pd-drag *, .c-grid.pd-drag * { pointer-events: none; }
   .csn-btn { width: 42px; height: 42px; flex: 0 0 auto; border-radius: 50%; cursor: pointer;
     border: 1px solid var(--space-line); background: rgba(16,30,37,0.5); color: #F1FBFC; font-size: 20px;
     display: flex; align-items: center; justify-content: center; transition: border-color .25s, background .25s, color .25s, opacity .25s; }
   .csn-btn:hover { border-color: var(--signal-teal); color: var(--signal-teal); background: rgba(43,224,198,0.1); }
   .csn-btn:disabled { opacity: 0.3; cursor: default; }
-  .csn-bar { flex: 1; height: 2px; background: rgba(159,180,200,0.16); position: relative; overflow: hidden; }
-  .csn-bar span { position: absolute; left: 0; top: 0; height: 100%; width: 20%;
-    background: linear-gradient(90deg, var(--signal-teal), var(--signal-amber)); transition: left .3s ease, width .3s ease; }
+  /* полосу можно тащить, поэтому она заметно выше и с курсором-хватом;
+     сама линия рисуется псевдоэлементом, а высота нужна как площадь для пальца и мыши */
+  .csn-bar { flex: 1; height: 18px; position: relative; cursor: grab; touch-action: none; }
+  .csn-bar::before { content: ""; position: absolute; left: 0; right: 0; top: 8px; height: 2px;
+    background: rgba(159,180,200,0.16); }
+  .csn-bar.dragging { cursor: grabbing; }
+  .csn-bar:hover span, .csn-bar.dragging span { height: 4px; top: 7px; }
+  .csn-bar span { position: absolute; left: 0; top: 8px; height: 2px; width: 20%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--signal-teal), var(--signal-amber));
+    transition: left .3s ease, width .3s ease, height .2s ease, top .2s ease; }
+  /* пока тащим — никаких доводок, ползунок должен идти точно за курсором */
+  .csn-bar.dragging span { transition: height .2s ease, top .2s ease; }
   /* сетка концепций: сознательно НЕ как у проектов — компактные плитки-«шевроны» в два ряда,
      секция умещается на один экран; лента прокручивается ВБОК внутри контейнера (готова к 100+ карточкам) */
   /* ВАЖНО: у плиток явные width/height (не aspect-ratio) — при column-flow с auto-рядами
      и auto-колонками aspect-ratio даёт циклическую зависимость размеров, и колонки схлопываются */
   /* padding сверху — запас под ховер-подъём плитки: без него контейнер с overflow-y:hidden
      срезал верхнюю кромку карточки, и она уезжала «под» панель поиска */
-  .c-grid { margin: 18px calc(50% - 50vw) 0; padding: 10px 40px 16px; display: grid; gap: 10px;
+  .c-grid { margin: 18px calc(50% - 50vw) 0; padding: 10px 40px 16px; display: grid; gap: 10px; cursor: grab;
     grid-auto-flow: column; grid-template-rows: repeat(4, 1fr);
     grid-template-columns: none; grid-auto-columns: clamp(215px, 17.5vw, 300px); /* сброс repeat(3,1fr) от .cards — иначе неравные «дыры» между колонками */
     height: min(74vh, 740px); perspective: 1400px;
     overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: rgba(43,224,198,0.4) transparent;
+    scrollbar-width: none; -ms-overflow-style: none;
     /* края ленты уходят в дымку — сразу видно, что по сторонам есть ещё карточки */
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 34px, #000 calc(100% - 110px), transparent 100%);
     mask-image: linear-gradient(90deg, transparent 0, #000 34px, #000 calc(100% - 110px), transparent 100%); }
-  .c-grid::-webkit-scrollbar { height: 6px; }
-  .c-grid::-webkit-scrollbar-track { background: rgba(159,180,200,0.07); }
-  .c-grid::-webkit-scrollbar-thumb { background: rgba(43,224,198,0.35); }
-  .c-grid::-webkit-scrollbar-thumb:hover { background: rgba(43,224,198,0.6); }
-  .c-tile { scroll-snap-align: start; }
+  /* нативную полосу убираем: прокруткой управляет своя, иначе их видно две */
+  .c-grid::-webkit-scrollbar { height: 0; width: 0; }
+  .c-tile { }
   /* «вываливание» плиток при входе на страницу: падают из глубины с наклоном, каскадом */
   .c-tile.tile-in { opacity: 0; transform: translateY(46px) scale(0.86) rotateX(-16deg);
     transform-origin: 50% 120%;
@@ -481,17 +491,15 @@
      чтобы шесть десятков карточек не разгоняли страницу вниз на несколько экранов.
      padding сверху обязателен: контейнер с overflow-y:hidden срезал бы карточку,
      приподнятую по ховеру. */
-  .a-grid { display: flex; gap: 14px; margin: 40px calc(50% - 50vw) 0; padding: 16px 40px 18px;
+  .a-grid { display: flex; gap: 14px; cursor: grab; margin: 40px calc(50% - 50vw) 0; padding: 16px 40px 18px;
     overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: rgba(43,224,198,0.4) transparent;
+    scrollbar-width: none; -ms-overflow-style: none;
     /* края уходят в дымку — сразу видно, что лента продолжается */
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 90px), transparent 100%);
     mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 90px), transparent 100%); }
-  .a-grid::-webkit-scrollbar { height: 6px; }
-  .a-grid::-webkit-scrollbar-track { background: rgba(159,180,200,0.07); }
-  .a-grid::-webkit-scrollbar-thumb { background: rgba(43,224,198,0.35); }
-  .a-grid::-webkit-scrollbar-thumb:hover { background: rgba(43,224,198,0.6); }
-  .a-card { scroll-snap-align: start; flex: 0 0 auto;
+  /* нативную полосу убираем: прокруткой управляет своя, иначе их видно две */
+  .a-grid::-webkit-scrollbar { height: 0; width: 0; }
+  .a-card { flex: 0 0 auto;
     width: clamp(198px, 15.5vw, 246px); height: clamp(290px, 23vw, 346px);
     background: var(--space-panel); border: 1px solid var(--space-line); padding: 20px 18px 18px;
     display: flex; flex-direction: column; gap: 9px; position: relative; overflow: hidden;
@@ -690,7 +698,7 @@
 
   /* ---------- география: карта мира из точек (маска — стилизованные силуэты материков) ---------- */
   /* ---------- клиенты: лента логотипов ---------- */
-  .cl-block { margin-top: 72px; border-top: 1px solid var(--space-line); padding-top: 44px; }
+  .cl-block { margin-top: 40px; }
   .cl-block .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
   .cl-block h4 { font: 700 24px var(--font-display); color: #F1FBFC; margin-bottom: 6px; }
   .cl-block .cl-sub { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
@@ -701,18 +709,18 @@
   /* отступ живёт в самом логотипе, а не в gap: только тогда сдвиг на -50% совпадает
      ровно с одним проходом списка и шов ленты не виден */
   .cl-track { display: flex; align-items: center; width: max-content; padding: 10px 0; }
-  /* движение включается только после того, как логотипы проявились по очереди */
-  .cl-strip.rolling .cl-track { animation: clRoll 52s linear infinite; }
-  .cl-strip:hover .cl-track { animation-play-state: paused; }
-  @keyframes clRoll { to { transform: translateX(-50%); } }
+  /* Движением ленты управляет скрипт, а не CSS-анимация: у animation-play-state
+     нет плавности — лента вставала бы за один кадр. Скрипт гасит скорость мягко. */
+  .cl-track { will-change: transform; }
+  /* по умолчанию логотипы ВИДНЫ: скрывает их только скрипт, добавив ленте класс cl-anim.
+     Если скрипт не выполнится или наблюдатель не сработает, стена клиентов всё равно на месте */
   .cl-logo { flex: 0 0 auto; display: block; height: auto; margin-right: clamp(34px, 3.6vw, 72px);
-    opacity: 0; transform: translateY(12px) scale(0.95);
+    opacity: 0.6; filter: saturate(0) contrast(0.92);
     transition: opacity .55s ease, transform .65s cubic-bezier(.16,1,.3,1), filter .3s ease; }
-  .cl-logo.on { opacity: 0.6; transform: none; filter: saturate(0) contrast(0.92); }
+  .cl-strip.cl-anim .cl-logo:not(.on) { opacity: 0; transform: translateY(12px) scale(0.95); }
   /* при наведении на ленту соседи приглушаются, а нужный знак выходит в полную силу */
   .cl-track:hover .cl-logo.on { opacity: 0.3; }
   .cl-track .cl-logo.on:hover { opacity: 1; filter: none; }
-  @media (prefers-reduced-motion: reduce) { .cl-strip.rolling .cl-track { animation: none; } }
   @media (max-width: 700px) { .cl-logo { margin-right: 26px; } }
 
   /* ---------- география: глобус из точек ---------- */
@@ -722,7 +730,7 @@
   .wm-block .wm-sub { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 52ch; }
   /* сцена на всю ширину окна: глобус — главный объект блока, а не иллюстрация в углу */
   .wm-stage { position: relative; margin: 10px calc(50% - 50vw) 0;
-    height: clamp(430px, 64vh, 780px); overflow: hidden; cursor: crosshair; }
+    height: clamp(560px, 86vh, 1000px); overflow: hidden; cursor: crosshair; }
   .wm-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .wm-pins { position: absolute; inset: 0; pointer-events: none; }
   .wm-pin { position: absolute; transform: translate(-50%,-50%); display: flex; align-items: center; gap: 10px;
@@ -739,7 +747,7 @@
   .wm-pin .wm-label { font: 600 13px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;
     white-space: nowrap; color: #F1FBFC; text-shadow: 0 1px 10px rgba(3,12,16,0.95); }
   @media (max-width: 700px) {
-    .wm-stage { height: min(72vw, 420px); cursor: default; }
+    .wm-stage { height: min(96vw, 480px); cursor: default; }
     .wm-pin .wm-label { font-size: 10.5px; letter-spacing: 0.06em; }
   }
 
@@ -1008,7 +1016,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game19" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game20" title="PlayDisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1094,7 +1102,44 @@
 <section class="trust sec-pad">
   <div class="wrap">
     <div class="kicker eyebrow">Доверие</div>
-    <p>Наши работы показывал канал <b>Discovery</b>. Среди клиентов — <b>BMW</b>, аэропорты, национальные музеи и промышленные корпорации.</p>
+    <p>Наши работы показывал канал <b>Discovery</b>. Среди клиентов — <b>автопроизводители</b>, международные аэропорты, национальные музеи и промышленные корпорации.</p>
+    <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
+    <!-- без reveal-up: этот класс держит opacity:0 до появления класса in,
+         а логотипы проявляются своим каскадом -->
+    <div class="cl-block" id="clBlock">
+      <div class="cl-strip" id="clStrip">
+        <div class="cl-track" id="clTrack">
+          <img class="cl-logo" src="assets/logos/clients/mars.png" width="102" height="33" alt="MARS" title="MARS" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/s7.png" width="114" height="39" alt="S7 Airlines" title="S7 Airlines" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/changi.png" width="106" height="63" alt="Changi Airport Singapore" title="Changi Airport Singapore" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/coalco.png" width="76" height="69" alt="COALCO Development" title="COALCO Development" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/sap.png" width="74" height="39" alt="SAP" title="SAP" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/zaha-hadid.png" width="200" height="33" alt="Zaha Hadid" title="Zaha Hadid" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/stm.png" width="95" height="33" alt="Синара — Транспортные Машины" title="Синара — Транспортные Машины" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/ptk.png" width="100" height="74" alt="Группа ПТК" title="Группа ПТК" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/mos-gov.png" width="103" height="41" alt="Правительство Москвы" title="Правительство Москвы" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/intel.png" width="80" height="54" alt="Intel" title="Intel" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/garage.png" width="95" height="34" alt="Музей «Гараж»" title="Музей «Гараж»" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/aeroporty-regionov.png" width="51" height="57" alt="Аэропорты Регионов" title="Аэропорты Регионов" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/renault.png" width="78" height="79" alt="Renault" title="Renault" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/bmw.png" width="47" height="48" alt="BMW" title="BMW" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/gorky-park.png" width="99" height="46" alt="Парк Горького" title="Парк Горького" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/kr-properties.png" width="110" height="50" alt="KR Properties" title="KR Properties" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/audi.png" width="89" height="56" alt="Audi" title="Audi" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/lanit.png" width="53" height="61" alt="ЛАНИТ" title="ЛАНИТ" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/coca-cola.png" width="110" height="38" alt="Coca-Cola" title="Coca-Cola" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/rostec.png" width="61" height="73" alt="Ростех" title="Ростех" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/hasbro.png" width="50" height="53" alt="Hasbro" title="Hasbro" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/capital-group.png" width="302" height="33" alt="Capital Group" title="Capital Group" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/vdnh.png" width="72" height="77" alt="ВДНХ" title="ВДНХ" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/roscosmos.png" width="104" height="66" alt="Роскосмос" title="Роскосмос" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/transneft.png" width="96" height="56" alt="Транснефть" title="Транснефть" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/gazprom.png" width="97" height="48" alt="Газпром" title="Газпром" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/rosatom.png" width="45" height="57" alt="Росатом" title="Росатом" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -1187,49 +1232,10 @@
       </div>
     </div>
 
-    <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
-    <div class="cl-block reveal-up" id="clBlock">
-      <div class="ptitle">Клиенты</div>
-      <h4>С кем мы это делали</h4>
-      <p class="cl-sub">Музеи и корпорации, аэропорты и автомобильные бренды, городские парки и промышленные холдинги.</p>
-      <div class="cl-strip" id="clStrip">
-        <div class="cl-track" id="clTrack">
-          <img class="cl-logo" src="assets/logos/clients/mars.png" width="99" height="32" alt="MARS" title="MARS" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/s7.png" width="109" height="37" alt="S7 Airlines" title="S7 Airlines" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/changi.png" width="62" height="37" alt="Changi Airport Singapore" title="Changi Airport Singapore" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/coalco.png" width="48" height="43" alt="COALCO Development" title="COALCO Development" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/sap.png" width="70" height="37" alt="SAP" title="SAP" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/zaha-hadid.png" width="167" height="28" alt="Zaha Hadid" title="Zaha Hadid" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/stm.png" width="107" height="37" alt="Синара — Транспортные Машины" title="Синара — Транспортные Машины" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/ptk.png" width="58" height="43" alt="Группа ПТК" title="Группа ПТК" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/mos-gov.png" width="93" height="37" alt="Правительство Москвы" title="Правительство Москвы" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/intel.png" width="63" height="43" alt="Intel" title="Intel" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/garage.png" width="102" height="37" alt="Музей «Гараж»" title="Музей «Гараж»" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/aeroporty-regionov.png" width="38" height="43" alt="Аэропорты Регионов" title="Аэропорты Регионов" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/renault.png" width="42" height="43" alt="Renault" title="Renault" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/bmw.png" width="42" height="43" alt="BMW" title="BMW" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/gorky-park.png" width="80" height="37" alt="Парк Горького" title="Парк Горького" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/kr-properties.png" width="81" height="37" alt="KR Properties" title="KR Properties" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/audi.png" width="68" height="43" alt="Audi" title="Audi" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/lanit.png" width="37" height="43" alt="ЛАНИТ" title="ЛАНИТ" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/coca-cola.png" width="108" height="37" alt="Coca-Cola" title="Coca-Cola" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/rostec.png" width="36" height="43" alt="Ростех" title="Ростех" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/hasbro.png" width="41" height="43" alt="Hasbro" title="Hasbro" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/capital-group.png" width="252" height="28" alt="Capital Group" title="Capital Group" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/vdnh.png" width="40" height="43" alt="ВДНХ" title="ВДНХ" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/roscosmos.png" width="67" height="43" alt="Роскосмос" title="Роскосмос" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/transneft.png" width="63" height="37" alt="Транснефть" title="Транснефть" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/gazprom.png" width="74" height="37" alt="Газпром" title="Газпром" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/rosatom.png" width="34" height="43" alt="Росатом" title="Росатом" loading="lazy" decoding="async">
-        </div>
-      </div>
-    </div>
-
     <!-- ===== ГЕОГРАФИЯ: глобус из точек. Подписи — страны, точки стоят по городам ===== -->
     <div class="wm-block reveal-up" id="wmBlock">
       <div class="ptitle">География</div>
       <h4>Работаем по всему миру</h4>
-      <p class="wm-sub">Три центра, из которых ведём проекты: точки стоят там, где мы физически находимся.</p>
       <div class="wm-stage" id="wmStage">
         <canvas id="wmCanvas"></canvas>
         <div class="wm-pins" id="wmPins">
@@ -1563,11 +1569,181 @@
     io.observe(wm);
   })();
 
+  // ===== ленты с прокруткой вбок: перетаскивание с инерцией =====
+  // Прокрутка не выставляется мгновенно: держим цель и подтягиваем к ней текущее
+  // положение каждый кадр — отсюда мягкость и хвост инерции после отпускания.
+  // Один движок на все ленты: и Атлас, и библиотека концепций.
+  window.pdStrip = function(grid, bar, fill, onUpdate){
+    if (!grid) return null;
+    var target = grid.scrollLeft, cur = target, raf = 0;
+    var drag = null;                      // {x, t, vel, moved, kind}
+    var EASE = 0.17, FRICTION = 0.93, FLING = 14;
+
+    function maxScroll(){ return Math.max(0, grid.scrollWidth - grid.clientWidth); }
+    function clamp(v){ var m = maxScroll(); return v < 0 ? 0 : (v > m ? m : v); }
+
+    // Позиции, в которых левый край карточки совпадает с левым краем ленты.
+    // Считаем по реальным смещениям детей — так учитываются и отступы контейнера,
+    // и разная ширина карточек, и колоночная раскладка концепций.
+    function stops(){
+      var kids = grid.children, out = [], base = null;
+      for (var i = 0; i < kids.length; i++) {
+        var o = kids[i].offsetLeft;
+        if (base === null) base = o;
+        var v = o - base;
+        if (!out.length || v - out[out.length - 1] > 4) out.push(v);
+      }
+      return out;
+    }
+    function nearestStop(v){
+      var st = stops(); if (st.length < 2) return v;
+      var best = st[0], d = Math.abs(v - best);
+      for (var i = 1; i < st.length; i++) { var dd = Math.abs(v - st[i]); if (dd < d) { d = dd; best = st[i]; } }
+      return clamp(best);
+    }
+    // Шаг листания: целое число карточек, укладывающихся в видимую часть.
+    // Пролистывать «на 80% ширины» неудобно — карточки после каждого нажатия
+    // оказываются обрезанными в разных местах.
+    function page(){
+      var st = stops(); if (st.length < 2) return grid.clientWidth * 0.8;
+      var step = st[1] - st[0];
+      var n = Math.max(1, Math.floor((grid.clientWidth + 4) / step));
+      return n * step;
+    }
+
+    function tick(){
+      raf = 0;
+      if (!drag) {
+        // инерция: после отпускания цель продолжает уезжать и затухает
+        if (Math.abs(vel0) > 0.08) { target = clamp(target + vel0); vel0 *= FRICTION; }
+        else vel0 = 0;
+      }
+      cur += (target - cur) * EASE;
+      if (!drag && Math.abs(target - cur) < 0.4 && !vel0) {
+        // остановились: подтягиваем к ближайшей карточке, чтобы лента не замирала
+        // с обрезанным краем. Один раз за остановку, иначе цикл не кончится
+        if (!settled) {
+          settled = true;
+          var sn = nearestStop(target);
+          if (Math.abs(sn - target) > 1.5 && Math.abs(sn - target) < grid.clientWidth * 0.5) {
+            target = sn; raf = requestAnimationFrame(tick);
+            if (onUpdate) onUpdate();
+            return;
+          }
+        }
+        cur = target;
+      }
+      grid.scrollLeft = cur;
+      if (onUpdate) onUpdate();
+      if (drag || Math.abs(target - cur) > 0.4 || vel0) raf = requestAnimationFrame(tick);
+    }
+    var vel0 = 0, settled = false;
+    function kick(){ if (!raf) raf = requestAnimationFrame(tick); }
+    function go(v){ target = clamp(v); settled = false; kick(); }
+    function by(d){ go(target + d); }
+
+    // --- перетаскивание самих карточек ---
+    grid.addEventListener('pointerdown', function(e){
+      // на тач-экранах прокруткой занимается сам браузер: если добавить свою,
+      // палец будет двигать ленту вдвое быстрее
+      if (e.pointerType === 'touch') return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      drag = { x: e.clientX, t: e.timeStamp || performance.now(), moved: 0 };
+      vel0 = 0; target = cur = grid.scrollLeft;
+      kick();
+    });
+    grid.addEventListener('pointermove', function(e){
+      if (!drag) return;
+      var dx = e.clientX - drag.x, now = e.timeStamp || performance.now();
+      var dt = Math.max(8, now - drag.t);
+      drag.moved += Math.abs(dx);
+      // порог 5 px: короткий клик по карточке не должен превращаться в перетаскивание
+      if (drag.moved > 5) {
+        grid.classList.add('pd-drag');
+        if (grid.setPointerCapture) { try { grid.setPointerCapture(e.pointerId); } catch (err) {} }
+        target = clamp(target - dx);
+        settled = false;                  // после перетаскивания снова нужна доводка к карточке
+        vel0 = -dx / dt * 16;             // пикселей за кадр
+      }
+      drag.x = e.clientX; drag.t = now;
+    });
+    function endDrag(){
+      if (!drag) return;
+      var was = drag.moved;
+      drag = null;
+      grid.classList.remove('pd-drag');
+      if (was > 5) { target = clamp(target + vel0 * FLING); grid._pdJustDragged = Date.now(); }
+      settled = false; kick();
+    }
+    grid.addEventListener('pointerup', endDrag);
+    grid.addEventListener('pointercancel', endDrag);
+    grid.addEventListener('pointerleave', function(){ if (drag && drag.moved <= 5) drag = null; });
+    // клик, родившийся из перетаскивания, гасим — иначе после броска открывается карточка
+    grid.addEventListener('click', function(e){
+      if (grid._pdJustDragged && Date.now() - grid._pdJustDragged < 250) { e.stopPropagation(); e.preventDefault(); }
+    }, true);
+    // Горизонтальный жест трекпада и shift+колесо ведём сами — с той же плавностью.
+    // Вертикальное колесо НЕ перехватываем: на ленте из шести десятков карточек
+    // это заперло бы прокрутку страницы.
+    grid.addEventListener('wheel', function(e){
+      var ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
+      var horiz = ax > ay, shift = e.shiftKey && ay > 0;
+      if (!horiz && !shift) return;
+      var m = maxScroll(); if (m < 8) return;
+      var d = horiz ? e.deltaX : e.deltaY;
+      if ((d < 0 && target <= 0.5) || (d > 0 && target >= m - 0.5)) return;   // на краях отдаём странице
+      e.preventDefault();
+      go(target + d * 1.15);
+    }, { passive: false });
+    // нативная прокрутка — синхронизируем цель, чтобы не дёргало
+    grid.addEventListener('scroll', function(){
+      if (!raf && !drag) { target = cur = grid.scrollLeft; if (onUpdate) onUpdate(); }
+    }, { passive: true });
+
+    // --- перетаскивание полосы ---
+    if (bar) {
+      var bDrag = false;
+      function fromBar(clientX){
+        var b = bar.getBoundingClientRect();
+        var vis = Math.max(0.08, grid.clientWidth / grid.scrollWidth);
+        var track = b.width * (1 - vis);
+        if (track <= 0) return;
+        var f = (clientX - b.left - b.width * vis / 2) / track;
+        go(Math.max(0, Math.min(1, f)) * maxScroll());
+      }
+      bar.addEventListener('pointerdown', function(e){
+        bDrag = true; bar.classList.add('dragging');
+        if (bar.setPointerCapture) { try { bar.setPointerCapture(e.pointerId); } catch (err) {} }
+        fromBar(e.clientX); e.preventDefault();
+      });
+      bar.addEventListener('pointermove', function(e){ if (bDrag) fromBar(e.clientX); });
+      function bStop(){ bDrag = false; bar.classList.remove('dragging'); }
+      bar.addEventListener('pointerup', bStop);
+      bar.addEventListener('pointercancel', bStop);
+      bar.setAttribute('tabindex', '0');
+      bar.setAttribute('role', 'scrollbar');
+      bar.setAttribute('aria-label', 'Прокрутка ленты');
+      bar.addEventListener('keydown', function(e){
+        var k = e.key;
+        if (k === 'ArrowRight' || k === 'PageDown') { e.preventDefault(); by(page()); }
+        else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); by(-page()); }
+        else if (k === 'Home') { e.preventDefault(); go(0); }
+        else if (k === 'End') { e.preventDefault(); go(maxScroll()); }
+      });
+    }
+
+    var api = { go: go, by: by, page: page, sync: function(){ target = cur = grid.scrollLeft; if (onUpdate) onUpdate(); } };
+    grid._pdStrip = api;
+    return api;
+  };
+
   // ===== клиенты: логотипы проявляются по очереди, потом лента едет =====
   (function(){
     var strip = document.getElementById('clStrip'), track = document.getElementById('clTrack');
     if (!strip || !track) return;
     var logos = [].slice.call(track.children);
+    // прячем только сейчас, из скрипта: до этого логотипы видны и без JS
+    strip.classList.add('cl-anim');
     // список дублируется в рантайме, а не в разметке: половина ленты = один проход,
     // поэтому клавиатурный поиск и SEO видят каждый логотип один раз
     logos.forEach(function(el){
@@ -1576,17 +1752,54 @@
     var all = [].slice.call(track.children);
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     function run(){
-      if (reduce) { all.forEach(function(el){ el.classList.add('on'); }); strip.classList.add('rolling'); return; }
+      if (reduce) { all.forEach(function(el){ el.classList.add('on'); }); return; }
       logos.forEach(function(el, i){ setTimeout(function(){ el.classList.add('on'); }, 60 + i * 55); });
       // копии проявляем сразу — они за кадром
       all.slice(logos.length).forEach(function(el){ el.classList.add('on'); });
-      setTimeout(function(){ strip.classList.add('rolling'); }, 60 + logos.length * 55 + 500);
+      setTimeout(roll, 60 + logos.length * 55 + 500);
     }
+    // Лента едет своим циклом: скорость плавно гаснет при наведении и так же
+    // плавно возвращается. Полшага ленты — ровно один проход списка, поэтому
+    // достаточно вернуть смещение назад на половину, и шва не видно.
+    var x = 0, speed = 0, want = 0, half = 0, raf = 0, live = true;
+    var SPEED = 0.55;                     // пикселей за кадр, около 33 px/с
+    function roll(){
+      if (reduce) return;
+      want = SPEED;
+      strip.addEventListener('pointerenter', function(){ want = 0; });
+      strip.addEventListener('pointerleave', function(){ want = SPEED; });
+      // на тач-экранах наведения нет: касание тормозит ленту на время жеста
+      strip.addEventListener('pointerdown', function(e){ if (e.pointerType === 'touch') want = 0; });
+      strip.addEventListener('pointerup', function(e){ if (e.pointerType === 'touch') want = SPEED; });
+      kick();
+    }
+    function step(){
+      raf = 0;
+      half = track.scrollWidth / 2;
+      speed += (want - speed) * 0.045;               // мягкий разгон и торможение
+      if (speed < 0.004 && want === 0) speed = 0;    // окончательно встали
+      x -= speed;
+      if (half > 0 && -x >= half) x += half;
+      track.style.transform = 'translateX(' + x.toFixed(2) + 'px)';
+      if (live && !document.hidden && (speed > 0 || want > 0)) raf = requestAnimationFrame(step);
+    }
+    function kick(){ if (!raf) raf = requestAnimationFrame(step); }
+    document.addEventListener('visibilitychange', function(){ if (!document.hidden && live) kick(); });
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function(es){
+        es.forEach(function(e){ live = e.isIntersecting; if (live) kick(); });
+      }, { threshold: 0 }).observe(strip);
+    }
+
     if (!window.IntersectionObserver) { run(); return; }
     var io = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if (e.isIntersecting) { run(); io.disconnect(); } });
+      es.forEach(function(e){ if (e.isIntersecting) { run(); io.disconnect(); done = true; } });
     }, { threshold: 0.2 });
     io.observe(strip);
+    var done = false;
+    // страховка от не сработавшего наблюдателя: стена клиентов слишком важна,
+    // чтобы зависеть от одного механизма
+    setTimeout(function(){ if (!done) { io.disconnect(); run(); } }, 4000);
   })();
 
   // ===== география: глобус из точек =====
@@ -1602,26 +1815,35 @@
                dot: el.querySelector('.wm-dot') };
     });
 
-    // Материки — объединение эллипсов в координатах долгота/широта:
-    // [центр долготы, центр широты, радиус по долготе, радиус по широте, поворот]
-    var LAND = [
-      [-100,60,46,15,0],[-98,40,26,9,0],[-152,64,13,6,0],[-104,24,10,7,-35],[-86,14,8,3,-20],
-      [-42,72,15,9,0],[-75,46,8,4,0],[-125,52,6,8,0],
-      [-70,5,12,7,0],[-58,-6,16,9,0],[-44,-14,11,10,0],[-70,-13,7,11,0],[-64,-33,9,12,0],
-      [-71,-36,3,14,0],[-69,-48,4,6,0],
-      [5,47,12,8,0],[-4,40,5,4,0],[16,63,9,7,-10],[-3,54,3.5,4,0],[13,43,2.6,4.5,20],
-      [21,43,5,4,0],[31,52,11,7,0],
-      [70,60,24,11,0],[120,62,26,10,0],[159,56,3,6,0],[65,45,16,6,0],[45,31,10,8,0],
-      [46,22,8,7,0],[35,39,9,3,0],[78,22,8,9,0],[105,33,16,9,0],[103,16,7,8,0],[108,8,5,5,0],
-      [138,37,3,6,-30],[128,37,2,3,0],[112,-3,14,4,0],[114,0,5,4,0],[140,-5,8,3,-10],
-      [122,12,3,5,0],[90,24,4,4,0],
-      [10,25,23,10,0],[-5,12,14,7,0],[40,8,8,8,0],[20,0,12,8,0],[25,-22,10,10,0],[47,-20,2.6,6,-20],
-      [134,-25,18,10,0],[147,-42,2,2,0],[172,-42,3,5,-25]
+    // Материки — грубые, но настоящие контуры берегов: массив вершин [долгота, широта].
+    // Проверка «точка внутри» даёт узнаваемые силуэты, чего эллипсы не давали.
+    var POLY = [
+      /* eurasia */ [[-9.5,38],[-9,43],[-1.5,43.5],[-1,46],[-4,48],[0,49.5],[4,51],[7,53.5],[8,57],[10,57.5],[13,55],[19,54.5],[21,56],[24,60],[26,60.5],[22,63],[25,65.5],[30,66],[32,70],[41,66],[44,68],[52,70],[60,70],[69,73],[74,73],[80,74],[92,76],[105,77],[113,74],[125,73],[137,72],[150,72],[160,70],[170,68],[180,66],[180,62],[172,61],[163,58],[158,53],[152,59],[143,53],[135,48],[131,43],[128,38],[122,39],[121,32],[117,24],[110,21],[108,11],[104,9],[100,13],[97,16],[94,18],[89,22],[87,21],[80,15],[77,8],[73,18],[70,24],[67,24],[62,25],[57,26],[50,29],[48,30],[52,25],[55,23],[57,22],[52,16],[45,13],[43,12],[39,18],[36,24],[34,28],[33,31],[35,36],[27,37],[23,40],[19,42],[13,45],[8,44],[3,42],[-3,36],[-6,36]],
+      /* africa */ [[-17,15],[-17,21],[-13,28],[-10,31],[-6,36],[10,37],[11,34],[20,32],[25,32],[32,31],[35,28],[38,18],[43,12],[51,12],[48,5],[41,-1],[40,-10],[35,-18],[32,-26],[27,-33],[20,-34],[18,-29],[14,-22],[12,-16],[9,-1],[9,4],[3,6],[-4,5],[-8,4],[-13,9]],
+      /* greenland */ [[-45,60],[-50,64],[-53,68],[-58,72],[-55,76],[-45,80],[-30,82],[-20,78],[-22,72],[-30,68],[-38,64]],
+      /* north_america */ [[-168,65],[-165,60],[-158,57],[-153,58],[-148,60],[-140,60],[-135,57],[-130,53],[-124,48],[-124,40],[-120,34],[-117,32],[-110,23],[-105,20],[-97,16],[-92,15],[-88,16],[-87,21],[-91,19],[-95,19],[-97,25],[-93,29],[-89,29],[-84,29],[-80,25],[-81,31],[-76,35],[-70,42],[-67,45],[-60,47],[-56,52],[-64,60],[-70,62],[-78,62],[-80,68],[-85,73],[-95,72],[-100,68],[-115,69],[-128,70],[-141,69],[-155,71],[-160,70]],
+      /* south_america */ [[-81,-5],[-79,0],[-77,8],[-72,12],[-64,11],[-60,8],[-52,5],[-50,0],[-44,-2],[-38,-5],[-35,-8],[-39,-14],[-41,-22],[-48,-25],[-53,-34],[-57,-38],[-62,-40],[-65,-45],[-69,-52],[-75,-52],[-73,-45],[-73,-37],[-71,-30],[-70,-23],[-71,-18],[-75,-14],[-79,-8]],
+      /* australia */ [[113,-22],[114,-26],[116,-32],[119,-34],[126,-32],[131,-31],[135,-35],[138,-35],[141,-38],[147,-38],[150,-37],[153,-28],[153,-25],[149,-21],[146,-19],[142,-11],[137,-12],[132,-11],[129,-15],[125,-14],[122,-18],[116,-20]],
+      /* india_lanka */ [[80,9],[81,7],[82,8],[81,10]],
+      /* antarctica */ [[-180,-72],[-150,-76],[-120,-74],[-90,-73],[-60,-70],[-30,-70],[0,-70],[30,-69],[60,-68],[90,-66],[120,-66],[150,-72],[180,-72],[180,-88],[-180,-88]]
     ];
+    // Острова и мелкие земли — эллипсами: контур для них избыточен
+    // [центр долготы, центр широты, радиус по долготе, радиус по широте, поворот]
+    var ELL = [[-4.5,53.5,2.8,4.2,-10],[-8,53,1.6,1.8,0],[-19,65,3.2,1.6,0],[140,38,2.2,5,-32],[133,33.5,2.6,1.4,-15],[142,43.5,2,1.8,0],[47,-19,2.4,6,-18],[101,0,3.6,5.4,-38],[110,-7.3,4,1.1,-5],[114,0.5,4.6,3.8,0],[121,-2,2.2,3,-20],[138,-5,8,2.6,-8],[122,13,2,4.4,0],[124,9,1.6,1.6,0],[172,-41,2.2,3.2,-28],[174,-38,1.8,2.2,-20],[147,-42,1.8,1.4,0],[-78,21.5,4.6,1.1,-10],[-71,19,2.6,1,0],[143,50,1.3,4.2,-8],[58,73,5,2.2,-30],[18,79,4,2,0],[-60,-51.5,1.6,1,0],[159,56,3.2,6.5,-8]];
     var RAD = Math.PI / 180;
+    function inPoly(lon, lat, p){
+      var c = false, n = p.length, j = n - 1;
+      for (var i = 0; i < n; i++) {
+        var xi = p[i][0], yi = p[i][1], xj = p[j][0], yj = p[j][1];
+        if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / ((yj - yi) || 1e-12) + xi) c = !c;
+        j = i;
+      }
+      return c;
+    }
     function isLand(lon, lat){
-      for (var i = 0; i < LAND.length; i++) {
-        var e = LAND[i], dx = lon - e[0], dy = lat - e[1];
+      for (var k = 0; k < POLY.length; k++) if (inPoly(lon, lat, POLY[k])) return true;
+      for (var i = 0; i < ELL.length; i++) {
+        var e = ELL[i], dx = lon - e[0], dy = lat - e[1];
         if (dx > 180) dx -= 360; if (dx < -180) dx += 360;
         if (e[4]) { var t = e[4] * RAD, c = Math.cos(t), sn = Math.sin(t), nx = dx * c + dy * sn; dy = -dx * sn + dy * c; dx = nx; }
         dx /= e[2]; dy /= e[3];
@@ -1633,7 +1855,7 @@
     var PTS = [];
     function buildPoints(step){
       PTS = [];
-      for (var lat = -84; lat <= 84; lat += step) {
+      for (var lat = -87; lat <= 85; lat += step) {
         var cl = Math.cos(lat * RAD), sl = step / Math.max(0.2, cl);
         for (var lon = -180; lon < 180; lon += sl) {
           if (isLand(lon, lat)) {
@@ -1655,7 +1877,9 @@
       dpr = Math.min(2, window.devicePixelRatio || 1);
       W = Math.round(b.width); H = Math.round(b.height);
       cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-      R = Math.min(W, H) * 0.44;
+      // радиус от меньшей стороны с запасом: свечение по лимбу уходит за 1.18R,
+      // при 0.44 оно упиралось в верх и низ сцены и выглядело срезанным
+      R = Math.min(W * 0.34, H * 0.43);
       // плотность по площади: на мобиле точек меньше, иначе телефон греется зря
       buildPoints(W < 700 ? 3.0 : (W < 1200 ? 2.5 : 2.2));
     }
@@ -1685,11 +1909,11 @@
       ctx.clearRect(0, 0, W, H);
 
       // атмосфера: мягкое свечение по лимбу
-      var g = ctx.createRadialGradient(W / 2, H / 2, R * 0.82, W / 2, H / 2, R * 1.22);
+      var g = ctx.createRadialGradient(W / 2, H / 2, R * 0.86, W / 2, H / 2, R * 1.08);
       g.addColorStop(0, 'rgba(43,224,198,0.055)');
       g.addColorStop(0.55, 'rgba(43,224,198,0.018)');
       g.addColorStop(1, 'rgba(43,224,198,0)');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(W / 2, H / 2, R * 1.22, 0, 6.284); ctx.fill();
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(W / 2, H / 2, R * 1.08, 0, 6.284); ctx.fill();
       ctx.strokeStyle = 'rgba(159,180,200,0.14)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.arc(W / 2, H / 2, R, 0, 6.284); ctx.stroke();
 
@@ -3625,8 +3849,9 @@
       stripNext.disabled = grid.scrollLeft >= max - 4;
     }
     if (grid) grid.addEventListener('scroll', function(){ requestAnimationFrame(updateStripNav); }, { passive: true });
-    if (stripPrev) stripPrev.addEventListener('click', function(){ grid.scrollBy({ left: -grid.clientWidth * 0.8, behavior: 'smooth' }); });
-    if (stripNext) stripNext.addEventListener('click', function(){ grid.scrollBy({ left: grid.clientWidth * 0.8, behavior: 'smooth' }); });
+    var cStrip = pdStrip(grid, stripNav && stripNav.querySelector('.csn-bar'), stripFill, updateStripNav);
+    if (stripPrev) stripPrev.addEventListener('click', function(){ cStrip.by(-cStrip.page()); });
+    if (stripNext) stripNext.addEventListener('click', function(){ cStrip.by(cStrip.page()); });
     addEventListener('resize', function(){ requestAnimationFrame(updateStripNav); });
 
     // разметка внутренней листалки — тот же компонент .v-gal, что и у проектов (поддерживает
@@ -4255,8 +4480,9 @@
       });
       search.addEventListener('input', function(){ q = search.value.trim().toLowerCase(); render(); });
       grid.addEventListener('scroll', function(){ requestAnimationFrame(updateStripNav); }, { passive: true });
-      if (stripPrev) stripPrev.addEventListener('click', function(){ grid.scrollBy({ left: -grid.clientWidth * 0.8, behavior: 'smooth' }); });
-      if (stripNext) stripNext.addEventListener('click', function(){ grid.scrollBy({ left: grid.clientWidth * 0.8, behavior: 'smooth' }); });
+      var strip = pdStrip(grid, document.querySelector('#aStripNav .csn-bar'), stripFill, updateStripNav);
+      if (stripPrev) stripPrev.addEventListener('click', function(){ strip.by(-strip.page()); });
+      if (stripNext) stripNext.addEventListener('click', function(){ strip.by(strip.page()); });
       addEventListener('resize', function(){ requestAnimationFrame(updateStripNav); });
       render();
     });

@@ -664,7 +664,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2807-game19'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = 'b2807-game20'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2653,7 +2653,9 @@ const G_ONSET = { feature: 500, mesa: 1300, blade: 2300, chasm: 3300 };
 function gTerrainH(x, z) {
   const wFeature = gStage(z, G_ONSET.feature, 300);   // шпили/каньоны/ворота — появляются первыми
   const wMesa    = gStage(z, G_ONSET.mesa, 350);      // ритмичные столовые плато
-  const wBlade   = gStage(z, G_ONSET.blade, 350);     // узкий частый слалом-хребты
+  // силуэт 2 (слалом) с 28.07 — НЕ рельеф: настоящие наклонные 3D-колонны/балки,
+  // спавнятся в gMakeChunk (см. gMakeBeam/gHazardHit) — heightmap не может дать «завал» в
+  // сторону, он всегда строго вертикален. Порог G_ONSET.blade сохранён — им гейтится спавн.
   const wChasm   = gStage(z, G_ONSET.chasm, 400);     // финал: глубже каньоны + зубчатые ступени
   let h = (gNoise(x * 0.008, z * 0.008) - 0.5) * 30;            // крупные волны местности
   h += (gNoise(x * 0.02 + 13, z * 0.02 + 7) - 0.5) * 14;        // средние холмы
@@ -2674,11 +2676,6 @@ function gTerrainH(x, z) {
   if (wMesa > 0.001) {
     const mesaShape = clamp(Math.sin(z * 0.0011 + 4.2) * 2.4, -1, 1);
     h += mesaShape * 16 * wMesa;
-  }
-  // СЛАЛОМ-ЛЕЗВИЯ (силуэт 2): узкие крутые стены — чаще и тоньше обычных хребтов, нужно вилять
-  if (wBlade > 0.001) {
-    const br = 1 - Math.abs(gNoise(x * 0.018 + 91, z * 0.006 + 33) * 2 - 1);
-    h += Math.pow(br, 7) * 40 * wBlade;
   }
   // ЗУБЧАТЫЙ ПИК (силуэт 3): ступенчатый рельеф рядом с углублёнными каньонами — финальный приём
   if (wChasm > 0.001) {
@@ -2859,6 +2856,70 @@ function gMakeChunk(zNoise) {
       falls++;
     }
   }
+  // ПРЕПЯТСТВИЯ-БАЛКИ (28.07, по эскизам): настоящие 3D-объекты, не рельеф — см. gMakeBeam.
+  // Коллизия хранится в локальных координатах чанка (как orb/ring выше), мировой z достраивается
+  // прибавлением c.position.z в gHazardHit — тем же приёмом, что и подсветка опасности.
+  const hazards = [];
+  // СЛАЛОМ ИЗ ЗАВАЛИВШИХСЯ КОЛОНН (силуэт 2): 4 наклонные колонны поперёк коридора, между
+  // ними 3 разрыва — средний ВСЕГДА накрывает gPathX (гарантированный пролёт по прямой),
+  // боковые — для рискового виляния. Наклон в паре встречных сторон — как на эскизе.
+  const wBladeHere = gStage(zNoise, G_ONSET.blade, 350);
+  if (wBladeHere > 0.5 && gHash(zNoise, 131) > 0.7) {
+    const bz = 6 + gHash(zNoise, 132) * (G_DEPTH - 12);
+    const wz = zNoise + G_DEPTH - bz;
+    const px = gPathX(wz);
+    const offs = [-28, -9.3, 9.3, 28]; // разрыв 2↔3 (18.6 минус 2×радиус) центрован на px
+    for (let ci = 0; ci < offs.length; ci++) {
+      const ox = px + offs[ci];
+      const by = gTerrainH(ox, wz);
+      const lean = (ci % 2 === 0 ? 1 : -1) * (7 + gHash(zNoise, 140 + ci) * 5); // «завал» в сторону
+      const ht = 18 + gHash(zNoise, 150 + ci) * 7;
+      const base = [ox, by, bz];
+      const tip = [ox + lean, by + ht, bz + (gHash(zNoise, 160 + ci) - 0.5) * 6];
+      grp.add(gMakeBeam(new THREE.Vector3(base[0], base[1], base[2]),
+                         new THREE.Vector3(tip[0], tip[1], tip[2]), 1.7, zNoise + ci * 13));
+      hazards.push({ a: base, b: tip, r: 1.7 });
+    }
+  }
+  // МОСТ-АРКА (по эскизу — «пролёты под мостами, влёты в дырки»): две ноги заваливаются
+  // друг к другу и смыкаются перекладиной наверху — настоящая дыра со свободным местом
+  // и сверху, и снизу; пролетать нужно между ног и ниже перекладины (см. gHazardHit).
+  const wChasmHere = gStage(zNoise, G_ONSET.chasm, 400);
+  if (wChasmHere > 0.5 && gHash(zNoise, 171) > 0.78) {
+    const bz = 6 + gHash(zNoise, 172) * (G_DEPTH - 12);
+    const wz = zNoise + G_DEPTH - bz;
+    const px = gPathX(wz);
+    const half = 18, lean = 5, topH = 26; // запас: пролёт ~30 в ширину, ~22 в высоту у оси
+    // ноги стоят у своих (x±half) точек рельефа, НО именно в зоне пропасти (силуэт 3) там
+    // рядом бывают независимые от коридора глубокие провалы — без привязки к центру нога
+    // могла провалиться в чужой каньон и утащить перекладину НИЖЕ безопасного пути, ломая
+    // саму дыру моста. Зажимаем базу ног в разумных ±8 от высоты пути ровно под кораблём.
+    const groundY = gTerrainH(px, wz);
+    const legL = [px - half, clamp(gTerrainH(px - half, wz), groundY - 8, groundY + 8), bz];
+    const legR = [px + half, clamp(gTerrainH(px + half, wz), groundY - 8, groundY + 8), bz];
+    const tipL = [legL[0] + lean, legL[1] + topH, legL[2]];
+    const tipR = [legR[0] - lean, legR[1] + topH, legR[2]];
+    const segs = [[legL, tipL], [legR, tipR], [tipL, tipR]];
+    for (let si = 0; si < segs.length; si++) {
+      const [pA, pB] = segs[si];
+      grp.add(gMakeBeam(new THREE.Vector3(pA[0], pA[1], pA[2]),
+                         new THREE.Vector3(pB[0], pB[1], pB[2]), 1.8, zNoise + si * 31));
+      hazards.push({ a: pA, b: pB, r: 1.8 });
+    }
+  }
+  if (hazards.length) grp.userData.hazards = hazards;
+  // МЯГКОЕ ПРОЯВЛЕНИЕ (28.07): на скорости чанк подгружается впереди по нескольку раз в
+  // секунду — без этого рельеф «выскакивает» на горизонте вспышкой. Гасим все точки чанка
+  // (включая новые балки выше) в 0 и доводим до штатной яркости за ~0.7с в updateGame —
+  // общий фейд входа/выхода в игру (enter/exit) эту стадию просто перекрывает поверх, без
+  // конфликта (там свой multiplier по всему GAME.group, см. условие GAME.enter>=1&&GAME.exit<0).
+  grp.userData.spawnTime = clock.getElapsedTime();
+  grp.traverse(o => {
+    if (o.isPoints && o.material && o.material !== gFallMat && o.material.opacity !== undefined) {
+      o.userData.baseOp = o.material.opacity;
+      o.material.opacity = 0;
+    }
+  });
   return grp;
 }
 
@@ -2910,6 +2971,58 @@ function gMakeRing(seed) {
   const om = new THREE.PointsMaterial({ vertexColors: true, size: 0.22, transparent: true, opacity: 0.95,
     map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
   return new THREE.Points(og, om);
+}
+
+// БАЛКА-ПРЕПЯТСТВИЕ (28.07, по эскизам «завалившихся колонн» и мостов-арок): облако точек
+// вдоль отрезка a→b — цилиндрическая «палка» любого наклона. Это НАСТОЯЩАЯ 3D-геометрия,
+// а не рельеф: колонна может заваливаться в сторону (heightmap даёт только строго
+// вертикальные формы). Столкновение считается отдельно, по этому же отрезку — см. gHazardHit.
+function gMakeBeam(a, b, rad, seed) {
+  const len = Math.max(0.6, a.distanceTo(b));
+  const N = Math.max(26, Math.round(len * 5));
+  const dir = new THREE.Vector3().subVectors(b, a).normalize();
+  const upRef = Math.abs(dir.y) > 0.92 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
+  const t1 = new THREE.Vector3().crossVectors(dir, upRef).normalize();
+  const t2 = new THREE.Vector3().crossVectors(dir, t1).normalize();
+  const p = [], c = [];
+  for (let k = 0; k < N; k++) {
+    const t = k / (N - 1);
+    const ang = gHash(k, seed) * Math.PI * 2, rr = rad * (0.68 + 0.32 * gHash(seed, k));
+    const ox = (t1.x * Math.cos(ang) + t2.x * Math.sin(ang)) * rr;
+    const oy = (t1.y * Math.cos(ang) + t2.y * Math.sin(ang)) * rr;
+    const oz = (t1.z * Math.cos(ang) + t2.z * Math.sin(ang)) * rr;
+    p.push(a.x + (b.x - a.x) * t + ox, a.y + (b.y - a.y) * t + oy, a.z + (b.z - a.z) * t + oz);
+    const g = 0.5 + 0.34 * gHash(k * 3, seed + 1);
+    c.push(g, g * 0.99, g * 1.04);
+  }
+  const g2 = new THREE.BufferGeometry();
+  g2.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+  g2.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+  const m2 = new THREE.PointsMaterial({ vertexColors: true, size: 0.24, transparent: true, opacity: 0.95, depthWrite: false });
+  const pts = new THREE.Points(g2, m2);
+  pts.userData.isHazard = true;
+  return pts;
+}
+// столкновение с балкой: ближайшая точка на отрезке a-b (мировые координаты) к кораблю —
+// если ближе радиуса, это гейм-овер (см. вызов в updateGame, рядом с проверкой рельефа)
+function gHazardHit() {
+  for (const c of GAME.chunks) {
+    const hz = c.userData.hazards;
+    if (!hz) continue;
+    for (let i = 0; i < hz.length; i++) {
+      const h = hz[i];
+      const az = h.a[2] + c.position.z, bz = h.b[2] + c.position.z; // локальный z → мировой
+      const abx = h.b[0] - h.a[0], aby = h.b[1] - h.a[1], abz = bz - az;
+      const apx = GAME.shipP.x - h.a[0], apy = GAME.shipP.y - h.a[1], apz = GAME.shipP.z - az;
+      const ab2 = abx * abx + aby * aby + abz * abz;
+      let t = ab2 > 1e-6 ? (apx * abx + apy * aby + apz * abz) / ab2 : 0;
+      t = t < 0 ? 0 : t > 1 ? 1 : t;
+      const cx = h.a[0] + abx * t, cy = h.a[1] + aby * t, cz = az + abz * t;
+      const dx = GAME.shipP.x - cx, dy = GAME.shipP.y - cy, dz = GAME.shipP.z - cz;
+      if (dx * dx + dy * dy + dz * dz < h.r * h.r) return true;
+    }
+  }
+  return false;
 }
 
 // выхлоп: плазменные СТРУИ — плотный спавн частиц вдоль оси каждого сопла со скоростью назад
@@ -3487,6 +3600,19 @@ function updateGame(dt, time) {
     camera.fov += (S.fov - camera.fov) * (1 - Math.exp(-dt * 3)); // линза возвращается
     if (GAME.exit >= 1) { exitGame(); return; }
   }
+  // мягкое проявление свежих чанков впереди (см. финал gMakeChunk) — вне влёта/выхода из
+  // игры, те гасят/зажигают весь мир своим общим множителем и сюда бы просто не дали дойти
+  if (GAME.enter >= 1 && GAME.exit < 0) {
+    for (const c of GAME.chunks) {
+      if (c.userData.faded) continue;
+      const kf = smoothstep(0, 0.7, time - (c.userData.spawnTime || 0));
+      c.traverse(o => {
+        if (o.isPoints && o.material && o.material !== gFallMat && o.userData.baseOp !== undefined)
+          o.material.opacity = o.userData.baseOp * kf;
+      });
+      if (kf >= 1) c.userData.faded = true;
+    }
+  }
   // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной;
   // на мобиле вместо курсора мыши — палец на экране (touchPX/Y), комп это ветвление не задействует
   const aimX = isMobile ? touchPX : mousePX, aimY = isMobile ? touchPY : mousePY;
@@ -3661,7 +3787,9 @@ function updateGame(dt, time) {
     // если рельеф под нами вырос — мягко выталкиваем корабль вверх, давая шанс
     if (alt < 6) GAME.shipP.y = groundH + 6;
   } else if ((GAME._shipOp || 1) < 1 && !GAME.over) gShipOpacity(1);
-  if (alt < 1.3 && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over && GAME.grace === 0) {
+  // столкновение либо с самим рельефом (по высоте), либо с балкой-препятствием (по отрезку,
+  // см. gHazardHit — наклонные колонны и мост-арка из gMakeChunk)
+  if ((alt < 1.3 || gHazardHit()) && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over && GAME.grace === 0) {
     GAME.over = true; // столкновение — гейм-овер
     GAME.overT = 0;
     document.body.classList.add('over'); // возвращаем системный курсор и клики по кнопкам
