@@ -594,8 +594,33 @@
                 box-shadow 1.05s ease; }
   .a-card.tile-in.on { opacity: 1; transform: none; box-shadow: 0 0 0 rgba(0,0,0,0); }
   @media (max-width: 700px) {
-    .a-grid { padding: 14px 14px 14px; gap: 10px; }
-    .a-card { width: 66vw; height: 300px; }
+    /* На телефоне горизонтальная лента из пяти десятков карточек неудобна:
+       вместо неё группы по типу, свёрнутые до заголовка. Всё это живёт только
+       внутри медиа-запроса — компьютерная версия не меняется. */
+    .a-grid { display: block; margin: 16px 0 0; padding: 0; overflow: visible;
+      cursor: auto; perspective: none;
+      -webkit-mask-image: none; mask-image: none; }
+    .a-group { border-top: 1px solid var(--space-line); }
+    .a-group:last-child { border-bottom: 1px solid var(--space-line); }
+    .ag-head { width: 100%; display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 17px 2px; background: none; border: 0; cursor: pointer;
+      font: 600 12.5px var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+      color: #F1FBFC; -webkit-tap-highlight-color: transparent; }
+    .ag-head .ag-n { margin-left: auto; font-weight: 500; color: var(--scan-white-faint); letter-spacing: 0.08em; }
+    /* знак раскрытия: плюс превращается в минус поворотом, без подмены символа */
+    .ag-head .ag-i { position: relative; width: 13px; height: 13px; flex: 0 0 auto; }
+    .ag-head .ag-i::before, .ag-head .ag-i::after { content: ""; position: absolute; inset: 6px 0 auto 0;
+      height: 1.5px; background: var(--signal-teal); transition: transform .3s ease; }
+    .ag-head .ag-i::after { transform: rotate(90deg); }
+    .a-group.open .ag-head .ag-i::after { transform: rotate(0deg); }
+    .ag-body { display: none; padding: 0 0 14px; }
+    .a-group.open .ag-body { display: grid; gap: 10px; }
+    /* внутри группы карточка тянется по ширине и показывает текст целиком */
+    .a-card { width: auto; height: auto; min-height: 0; padding: 16px 16px 18px; }
+    .a-card h3 { -webkit-line-clamp: 5; font-size: 16px; }
+    .a-card p { -webkit-line-clamp: unset; display: block; font-size: 13.5px; }
+    .a-card:hover { transform: none; }        /* ховера на телефоне нет, подъём только мешал бы */
+    #aStripNav { display: none; }             /* полоса и стрелки не нужны: ленты больше нет */
   }
   /* ---------- урок атласа: разбор одного мультимедийного решения ---------- */
   .a-view { position: fixed; inset: 0; z-index: 100; background: #040c10; opacity: 0; pointer-events: none;
@@ -3989,6 +4014,7 @@
     var stripFill = document.getElementById('cStripFill');
     function updateStripNav(){
       if (!stripNav) return;
+      if (isMob()) { stripNav.hidden = true; return; }
       var max = grid.scrollWidth - grid.clientWidth;
       if (max < 8) { stripNav.hidden = true; return; }
       stripNav.hidden = false;
@@ -4516,8 +4542,50 @@
       });
     }
 
+    // на телефоне карточки собираются в раскрывающиеся группы по типу
+    function isMob(){ return !!(window.matchMedia && matchMedia('(max-width: 700px)').matches); }
+
+    function card(a){
+      // Карточка с principle — вход в разбор; без него это тезис, который дочитывается прямо в сетке
+      var lesson = !!a.principle;
+      var el = document.createElement('article');
+      el.className = 'a-card' + (lesson ? '' : ' thesis');
+      el.innerHTML = '<div class="ac-cat">' + esc(a.cat) + '</div><h3>' + esc(a.title) + '</h3>' +
+        '<p>' + esc(a.desc) + '</p>' + (lesson ? '<div class="ac-open">Открыть разбор →</div>' : '');
+      if (lesson) el.addEventListener('click', function(){ openLesson(a); });
+      return el;
+    }
+
+    function renderMobile(list){
+      grid.innerHTML = '';
+      var open = q ? true : false;      // при поиске раскрываем всё: иначе не видно, где нашлось
+      data.cats.forEach(function(ct, gi){
+        var items = list.filter(function(a){ return a.cat === ct; });
+        if (!items.length) return;
+        var g = document.createElement('div');
+        g.className = 'a-group' + (open || (!q && gi === 0) ? ' open' : '');
+        var head = document.createElement('button');
+        head.type = 'button';
+        head.className = 'ag-head';
+        head.innerHTML = '<span class="ag-i"></span><span>' + esc((data.catLabels || {})[ct] || ct) +
+                         '</span><span class="ag-n">' + items.length + '</span>';
+        head.setAttribute('aria-expanded', g.classList.contains('open') ? 'true' : 'false');
+        var body = document.createElement('div');
+        body.className = 'ag-body';
+        items.forEach(function(a){ body.appendChild(card(a)); });
+        head.addEventListener('click', function(){
+          var now = !g.classList.contains('open');
+          g.classList.toggle('open', now);
+          head.setAttribute('aria-expanded', now ? 'true' : 'false');
+        });
+        g.appendChild(head); g.appendChild(body); grid.appendChild(g);
+      });
+      if (!list.length) grid.innerHTML = '<div class="c-empty">Ничего не нашлось — попробуйте другой запрос.</div>';
+    }
+
     function render(){
       var list = filtered();
+      if (isMob()) { renderMobile(list); updateStripNav(); return; }
       grid.innerHTML = '';
       list.forEach(function(a){
         // Карточка с principle — вход в разбор; без него это тезис, который дочитывается прямо в сетке
@@ -4539,6 +4607,7 @@
     // Стрелки и полоса прогресса: с мышью горизонтальную ленту иначе не прокрутить
     function updateStripNav(){
       if (!stripNav) return;
+      if (isMob()) { stripNav.hidden = true; return; }
       var max = grid.scrollWidth - grid.clientWidth;
       if (max < 8) { stripNav.hidden = true; return; }
       stripNav.hidden = false;
@@ -4553,6 +4622,7 @@
     // Появление: карточки выкатываются из глубины друг за другом. Классы после каскада
     // снимаются — иначе .tile-in.on перебивает ховер-трансформ по специфичности.
     function dropInCards(){
+      if (isMob()) return;      // на телефоне влёт не играем: тяжёлый, а карточки в группах
       var cards = [].slice.call(grid.querySelectorAll('.a-card'));
       cards.forEach(function(el){ el.classList.add('tile-in'); });
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -4633,10 +4703,16 @@
       });
       search.addEventListener('input', function(){ q = search.value.trim().toLowerCase(); render(); });
       grid.addEventListener('scroll', function(){ requestAnimationFrame(updateStripNav); }, { passive: true });
-      var strip = pdStrip(grid, document.querySelector('#aStripNav .csn-bar'), stripFill, updateStripNav);
+      var strip = isMob() ? { by: function(){}, page: function(){ return 0; } }
+                          : pdStrip(grid, document.querySelector('#aStripNav .csn-bar'), stripFill, updateStripNav);
       if (stripPrev) stripPrev.addEventListener('click', function(){ strip.by(-strip.page()); });
       if (stripNext) stripNext.addEventListener('click', function(){ strip.by(strip.page()); });
       addEventListener('resize', function(){ requestAnimationFrame(updateStripNav); });
+      // пересечение мобильной границы меняет саму раскладку — перерисовываем
+      if (window.matchMedia && matchMedia('(max-width: 700px)').addEventListener) {
+        var mqm = matchMedia('(max-width: 700px)'); var wasMob = mqm.matches;
+        mqm.addEventListener('change', function(){ if (mqm.matches !== wasMob) { wasMob = mqm.matches; render(); } });
+      }
       render();
     });
   })();
