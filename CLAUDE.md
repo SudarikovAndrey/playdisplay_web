@@ -15,12 +15,20 @@ _ARCHIVE/             ← вне git: прошлые поколения сайт
 
 Прошлые поколения (бренд-платформа 2026 в корне, 3D-прототип в `dist/` и `proto 3d/`) выведены из отслеживания 27.07.2026 и лежат в `_ARCHIVE/`. Точка возврата — тег `archive/before-cleanup`.
 
-## Деплой
-- Рабочая ветка: **hybrid-v8**. Все коммиты `proto-3d` в неё входят, сама `proto-3d` отстала и не используется.
-- GitHub Pages фактически раздаёт ветку **gh-pages** (root) — проверено по живой странице. После правок в site/ пересобрать:
-  содержимое = `git archive hybrid-v8 site | tar -x --strip-components=1` + `.nojekyll`, новый коммит поверх текущей gh-pages (fast-forward, без force).
-- Пуш делает Андрей сам: `git push origin hybrid-v8 gh-pages` (у песочницы нет git-кредов).
-- Превью: https://sudarikovandrey.github.io/playdisplay_web/  Боевой домен (в SEO/canonical): https://playdisplay.com
+## Деплой — цепочка из трёх звеньев
+Ветка `gh-pages` — не только для GitHub Pages: с неё же тянет боевой хостинг. Одна ветка, две площадки.
+
+1. **Рабочая ветка `hybrid-v8`** — здесь правится `site/`. Все коммиты `proto-3d` в неё входят, сама `proto-3d` отстала и не используется.
+2. **Ветка `gh-pages`** — содержимое = `site/` без верхней папки. Пересборка:
+   `git archive hybrid-v8 site | tar -x --strip-components=1` + `.nojekyll`, новый коммит поверх текущей gh-pages (fast-forward, без force).
+   Пуш делает Андрей: `git push origin hybrid-v8 gh-pages` (у песочницы нет git-кредов).
+3. **Хостинг timeweb** — папка `~/wordpress_2/public_html/new` это git-клон репозитория на ветке `gh-pages`. Обновление одной командой в SSH-консоли панели (Дашборд → SSH-консоль):
+   `cd ~/wordpress_2/public_html/new && git pull --ff-only origin gh-pages`
+   Незакоммиченный `.htaccess` там лежит поверх репозитория (его в git нет) и задаёт `X-Robots-Tag: noindex, nofollow`, mime для mp4 и кэш-заголовки. Пулл его не трогает.
+
+Адреса: превью https://sudarikovandrey.github.io/playdisplay_web/ · боевое превью https://playdisplay.com/new/ · корень https://playdisplay.com — **пока чужой**, там WordPress 2021 года (папка `wordpress_2/public_html`, тот же аккаунт `pdisplay`, PHP 7.1). Canonical в `site/` указывает на корень домена, то есть формально на старый сайт; для `/new/` это нейтрализовано заголовком noindex. Пока домен не переехал, менять canonical не нужно.
+
+Сборку пакетов для ручной загрузки (был скрипт `build_upload.py` и папка `deploy/`) убрал 27.07.2026: доставка идёт через `git pull`, второй способ только создавал расхождение между сервером и репозиторием.
 - **Открытый вопрос:** `.github/workflows/deploy-pages.yml` триггерится на пуш в `proto-3d` и требует `Settings → Pages → Source: GitHub Actions`. Сейчас это не совпадает ни с рабочей веткой, ни с реальным каналом раздачи, поэтому автодеплой не срабатывает и gh-pages собирается руками. Решение — либо перевести workflow на рабочую ветку, либо удалить workflow. Пока не решено, воркфлоу не трогать.
 - `origin/HEAD` смотрит на `main`, где лежит один «Initial commit» — поэтому GitHub по умолчанию открывает пустую ветку. Ветки `master`, `gh-pages-new`, `gh-pages-ready` — старьё, к работе отношения не имеют.
 - Локальный тест: сервер в песочнице умирает между вызовами bash; тестировать на живом gh-pages или через file-инструменты.

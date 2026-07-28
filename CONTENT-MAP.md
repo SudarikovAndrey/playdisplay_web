@@ -72,13 +72,26 @@ Web_Playdisplay/
 
 Предложение: закрыть `master`, `proto-3d`, `gh-pages-new`, `gh-pages-ready` тегами `archive/*` и удалить ветки; рабочую ветку сделать веткой по умолчанию на GitHub. Ничего не теряется.
 
-### 2. Два деплоя, и ни один не работает автоматически
+### 2. Деплой: цепочка выяснена, автоматизации нет
 
-- `.github/workflows/deploy-pages.yml` ждёт пуша в **`proto-3d`** и требует `Settings → Pages → Source: GitHub Actions`
-- Pages фактически раздаёт ветку **`gh-pages`** (проверено: живая страница совпадает с `gh-pages:index.html`)
-- работа идёт в **`hybrid-v8`**
+Как есть на самом деле (проверено 27.07.2026 в панели хостинга):
 
-Итого пуш рабочей ветки не деплоит ничего, `gh-pages` собирается руками. Варианты: перевести workflow на рабочую ветку и переключить Source на Actions (тогда пуш = деплой), либо удалить workflow и оставить ручную схему, добавив `deploy.sh`.
+```
+site/ в hybrid-v8
+   │  git archive → пересборка руками
+   ▼
+gh-pages ──────► GitHub Pages: sudarikovandrey.github.io/playdisplay_web/
+   │
+   │  git pull в SSH-консоли Timeweb
+   ▼
+~/wordpress_2/public_html/new  ──────► playdisplay.com/new/
+```
+
+Папка `/new/` на хостинге — git-клон репозитория на ветке `gh-pages`. Это хорошая новость: заливать архивы не нужно, обновление = одна команда. Поверх клона лежит незакоммиченный `.htaccess` с `X-Robots-Tag: noindex, nofollow`, mime для mp4 и кэш-заголовками — пулл его не трогает.
+
+Что мешает: **`.github/workflows/deploy-pages.yml` ждёт пуша в `proto-3d`** и требует `Settings → Pages → Source: GitHub Actions`. Ни то, ни другое не совпадает с реальностью, поэтому автодеплой не срабатывает, а `gh-pages` собирается руками. Варианты: перевести workflow на рабочую ветку и переключить Source, либо удалить workflow. Отдельно можно автоматизировать и третье звено — cron на хостинге с `git pull` (в панели есть Crontab).
+
+Каноникалы в `site/` указывают на корень `playdisplay.com`, где пока стоит старый WordPress. Для `/new/` это нейтрализовано заголовком noindex, так что до переезда домена трогать их не нужно.
 
 ### 3. `.git` весит 833 МБ
 
