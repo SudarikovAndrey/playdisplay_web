@@ -324,6 +324,9 @@
   /* display:flex перебивал служебный [hidden]: когда прокручивать нечего,
      панель со стрелками оставалась висеть с мёртвой полосой прогресса */
   .c-strip-nav[hidden] { display: none; }
+  /* пока тащим ленту — курсор-хват и никаких случайных открытий карточек */
+  .a-grid.pd-drag, .c-grid.pd-drag { cursor: grabbing; }
+  .a-grid.pd-drag *, .c-grid.pd-drag * { pointer-events: none; }
   .csn-btn { width: 42px; height: 42px; flex: 0 0 auto; border-radius: 50%; cursor: pointer;
     border: 1px solid var(--space-line); background: rgba(16,30,37,0.5); color: #F1FBFC; font-size: 20px;
     display: flex; align-items: center; justify-content: center; transition: border-color .25s, background .25s, color .25s, opacity .25s; }
@@ -347,20 +350,18 @@
      и auto-колонками aspect-ratio даёт циклическую зависимость размеров, и колонки схлопываются */
   /* padding сверху — запас под ховер-подъём плитки: без него контейнер с overflow-y:hidden
      срезал верхнюю кромку карточки, и она уезжала «под» панель поиска */
-  .c-grid { margin: 18px calc(50% - 50vw) 0; padding: 10px 40px 16px; display: grid; gap: 10px;
+  .c-grid { margin: 18px calc(50% - 50vw) 0; padding: 10px 40px 16px; display: grid; gap: 10px; cursor: grab;
     grid-auto-flow: column; grid-template-rows: repeat(4, 1fr);
     grid-template-columns: none; grid-auto-columns: clamp(215px, 17.5vw, 300px); /* сброс repeat(3,1fr) от .cards — иначе неравные «дыры» между колонками */
     height: min(74vh, 740px); perspective: 1400px;
     overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: rgba(43,224,198,0.4) transparent;
+    scrollbar-width: none; -ms-overflow-style: none;
     /* края ленты уходят в дымку — сразу видно, что по сторонам есть ещё карточки */
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 34px, #000 calc(100% - 110px), transparent 100%);
     mask-image: linear-gradient(90deg, transparent 0, #000 34px, #000 calc(100% - 110px), transparent 100%); }
-  .c-grid::-webkit-scrollbar { height: 6px; }
-  .c-grid::-webkit-scrollbar-track { background: rgba(159,180,200,0.07); }
-  .c-grid::-webkit-scrollbar-thumb { background: rgba(43,224,198,0.35); }
-  .c-grid::-webkit-scrollbar-thumb:hover { background: rgba(43,224,198,0.6); }
-  .c-tile { scroll-snap-align: start; }
+  /* нативную полосу убираем: прокруткой управляет своя, иначе их видно две */
+  .c-grid::-webkit-scrollbar { height: 0; width: 0; }
+  .c-tile { }
   /* «вываливание» плиток при входе на страницу: падают из глубины с наклоном, каскадом */
   .c-tile.tile-in { opacity: 0; transform: translateY(46px) scale(0.86) rotateX(-16deg);
     transform-origin: 50% 120%;
@@ -490,17 +491,15 @@
      чтобы шесть десятков карточек не разгоняли страницу вниз на несколько экранов.
      padding сверху обязателен: контейнер с overflow-y:hidden срезал бы карточку,
      приподнятую по ховеру. */
-  .a-grid { display: flex; gap: 14px; margin: 40px calc(50% - 50vw) 0; padding: 16px 40px 18px;
+  .a-grid { display: flex; gap: 14px; cursor: grab; margin: 40px calc(50% - 50vw) 0; padding: 16px 40px 18px;
     overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: rgba(43,224,198,0.4) transparent;
+    scrollbar-width: none; -ms-overflow-style: none;
     /* края уходят в дымку — сразу видно, что лента продолжается */
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 90px), transparent 100%);
     mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 90px), transparent 100%); }
-  .a-grid::-webkit-scrollbar { height: 6px; }
-  .a-grid::-webkit-scrollbar-track { background: rgba(159,180,200,0.07); }
-  .a-grid::-webkit-scrollbar-thumb { background: rgba(43,224,198,0.35); }
-  .a-grid::-webkit-scrollbar-thumb:hover { background: rgba(43,224,198,0.6); }
-  .a-card { scroll-snap-align: start; flex: 0 0 auto;
+  /* нативную полосу убираем: прокруткой управляет своя, иначе их видно две */
+  .a-grid::-webkit-scrollbar { height: 0; width: 0; }
+  .a-card { flex: 0 0 auto;
     width: clamp(198px, 15.5vw, 246px); height: clamp(290px, 23vw, 346px);
     background: var(--space-panel); border: 1px solid var(--space-line); padding: 20px 18px 18px;
     display: flex; flex-direction: column; gap: 9px; position: relative; overflow: hidden;
@@ -714,10 +713,12 @@
   .cl-strip.rolling .cl-track { animation: clRoll 52s linear infinite; }
   .cl-strip:hover .cl-track { animation-play-state: paused; }
   @keyframes clRoll { to { transform: translateX(-50%); } }
+  /* по умолчанию логотипы ВИДНЫ: скрывает их только скрипт, добавив ленте класс cl-anim.
+     Если скрипт не выполнится или наблюдатель не сработает, стена клиентов всё равно на месте */
   .cl-logo { flex: 0 0 auto; display: block; height: auto; margin-right: clamp(34px, 3.6vw, 72px);
-    opacity: 0; transform: translateY(12px) scale(0.95);
+    opacity: 0.6; filter: saturate(0) contrast(0.92);
     transition: opacity .55s ease, transform .65s cubic-bezier(.16,1,.3,1), filter .3s ease; }
-  .cl-logo.on { opacity: 0.6; transform: none; filter: saturate(0) contrast(0.92); }
+  .cl-strip.cl-anim .cl-logo:not(.on) { opacity: 0; transform: translateY(12px) scale(0.95); }
   /* при наведении на ленту соседи приглушаются, а нужный знак выходит в полную силу */
   .cl-track:hover .cl-logo.on { opacity: 0.3; }
   .cl-track .cl-logo.on:hover { opacity: 1; filter: none; }
@@ -1105,7 +1106,9 @@
     <div class="kicker eyebrow">Доверие</div>
     <p>Наши работы показывал канал <b>Discovery</b>. Среди клиентов — <b>BMW</b>, аэропорты, национальные музеи и промышленные корпорации.</p>
     <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
-    <div class="cl-block reveal-up" id="clBlock">
+    <!-- без reveal-up: этот класс держит opacity:0 до появления класса in,
+         а логотипы проявляются своим каскадом -->
+    <div class="cl-block" id="clBlock">
       <div class="cl-strip" id="clStrip">
         <div class="cl-track" id="clTrack">
           <img class="cl-logo" src="assets/logos/clients/mars.png" width="99" height="32" alt="MARS" title="MARS" loading="lazy" decoding="async">
@@ -1569,43 +1572,113 @@
     io.observe(wm);
   })();
 
-  // ===== перетаскивание полосы прокрутки лент (Атлас и концепции) =====
-  // Полоса — не индикатор, а орган управления: тянем ползунок, лента едет за ним.
-  window.pdStripDrag = function(bar, fill, grid){
-    if (!bar || !fill || !grid) return;
-    var dragging = false;
-    function apply(clientX){
-      var b = bar.getBoundingClientRect();
-      var vis = Math.max(0.08, grid.clientWidth / grid.scrollWidth);   // доля видимого = ширина ползунка
-      var track = b.width * (1 - vis);                                  // ход ползунка
-      if (track <= 0) return;
-      var x = clientX - b.left - b.width * vis / 2;                     // тянем за середину ползунка
-      var f = Math.max(0, Math.min(1, x / track));
-      grid.scrollLeft = f * (grid.scrollWidth - grid.clientWidth);
+  // ===== ленты с прокруткой вбок: перетаскивание с инерцией =====
+  // Прокрутка не выставляется мгновенно: держим цель и подтягиваем к ней текущее
+  // положение каждый кадр — отсюда мягкость и хвост инерции после отпускания.
+  // Один движок на все ленты: и Атлас, и библиотека концепций.
+  window.pdStrip = function(grid, bar, fill, onUpdate){
+    if (!grid) return null;
+    var target = grid.scrollLeft, cur = target, raf = 0;
+    var drag = null;                      // {x, t, vel, moved, kind}
+    var EASE = 0.17, FRICTION = 0.93, FLING = 14;
+
+    function maxScroll(){ return Math.max(0, grid.scrollWidth - grid.clientWidth); }
+    function clamp(v){ var m = maxScroll(); return v < 0 ? 0 : (v > m ? m : v); }
+
+    function tick(){
+      raf = 0;
+      if (!drag) {
+        // инерция: после отпускания цель продолжает уезжать и затухает
+        if (Math.abs(vel0) > 0.08) { target = clamp(target + vel0); vel0 *= FRICTION; }
+        else vel0 = 0;
+      }
+      cur += (target - cur) * EASE;
+      if (!drag && Math.abs(target - cur) < 0.4 && !vel0) cur = target;
+      grid.scrollLeft = cur;
+      if (onUpdate) onUpdate();
+      if (drag || Math.abs(target - cur) > 0.4 || vel0) raf = requestAnimationFrame(tick);
     }
-    bar.addEventListener('pointerdown', function(e){
-      dragging = true; bar.classList.add('dragging');
-      if (bar.setPointerCapture) bar.setPointerCapture(e.pointerId);
-      apply(e.clientX); e.preventDefault();
+    var vel0 = 0;
+    function kick(){ if (!raf) raf = requestAnimationFrame(tick); }
+    function go(v){ target = clamp(v); kick(); }
+    function by(d){ go(target + d); }
+
+    // --- перетаскивание самих карточек ---
+    grid.addEventListener('pointerdown', function(e){
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      drag = { x: e.clientX, t: e.timeStamp || performance.now(), moved: 0 };
+      vel0 = 0; target = cur = grid.scrollLeft;
+      kick();
     });
-    bar.addEventListener('pointermove', function(e){ if (dragging) apply(e.clientX); });
-    function stop(){ dragging = false; bar.classList.remove('dragging'); }
-    bar.addEventListener('pointerup', stop);
-    bar.addEventListener('pointercancel', stop);
-    // клавиатура: полоса доступна с табуляции, стрелки листают
-    bar.setAttribute('tabindex', '0');
-    bar.setAttribute('role', 'scrollbar');
-    bar.setAttribute('aria-label', 'Прокрутка ленты');
-    bar.addEventListener('keydown', function(e){
-      var k = e.key, d = 0;
-      if (k === 'ArrowRight' || k === 'PageDown') d = 1;
-      else if (k === 'ArrowLeft' || k === 'PageUp') d = -1;
-      else if (k === 'Home') { grid.scrollLeft = 0; return; }
-      else if (k === 'End') { grid.scrollLeft = grid.scrollWidth; return; }
-      if (!d) return;
-      e.preventDefault();
-      grid.scrollBy({ left: d * grid.clientWidth * 0.8, behavior: 'smooth' });
+    grid.addEventListener('pointermove', function(e){
+      if (!drag) return;
+      var dx = e.clientX - drag.x, now = e.timeStamp || performance.now();
+      var dt = Math.max(8, now - drag.t);
+      drag.moved += Math.abs(dx);
+      // порог 5 px: короткий клик по карточке не должен превращаться в перетаскивание
+      if (drag.moved > 5) {
+        grid.classList.add('pd-drag');
+        if (grid.setPointerCapture) { try { grid.setPointerCapture(e.pointerId); } catch (err) {} }
+        target = clamp(target - dx);
+        vel0 = -dx / dt * 16;             // пикселей за кадр
+      }
+      drag.x = e.clientX; drag.t = now;
     });
+    function endDrag(){
+      if (!drag) return;
+      var was = drag.moved;
+      drag = null;
+      grid.classList.remove('pd-drag');
+      if (was > 5) { target = clamp(target + vel0 * FLING); grid._pdJustDragged = Date.now(); }
+      vel0 = 0; kick();
+    }
+    grid.addEventListener('pointerup', endDrag);
+    grid.addEventListener('pointercancel', endDrag);
+    grid.addEventListener('pointerleave', function(){ if (drag && drag.moved <= 5) drag = null; });
+    // клик, родившийся из перетаскивания, гасим — иначе после броска открывается карточка
+    grid.addEventListener('click', function(e){
+      if (grid._pdJustDragged && Date.now() - grid._pdJustDragged < 250) { e.stopPropagation(); e.preventDefault(); }
+    }, true);
+    // нативная прокрутка (трекпад, shift+колесо) — синхронизируем цель, чтобы не дёргало
+    grid.addEventListener('scroll', function(){
+      if (!raf && !drag) { target = cur = grid.scrollLeft; if (onUpdate) onUpdate(); }
+    }, { passive: true });
+
+    // --- перетаскивание полосы ---
+    if (bar) {
+      var bDrag = false;
+      function fromBar(clientX){
+        var b = bar.getBoundingClientRect();
+        var vis = Math.max(0.08, grid.clientWidth / grid.scrollWidth);
+        var track = b.width * (1 - vis);
+        if (track <= 0) return;
+        var f = (clientX - b.left - b.width * vis / 2) / track;
+        go(Math.max(0, Math.min(1, f)) * maxScroll());
+      }
+      bar.addEventListener('pointerdown', function(e){
+        bDrag = true; bar.classList.add('dragging');
+        if (bar.setPointerCapture) { try { bar.setPointerCapture(e.pointerId); } catch (err) {} }
+        fromBar(e.clientX); e.preventDefault();
+      });
+      bar.addEventListener('pointermove', function(e){ if (bDrag) fromBar(e.clientX); });
+      function bStop(){ bDrag = false; bar.classList.remove('dragging'); }
+      bar.addEventListener('pointerup', bStop);
+      bar.addEventListener('pointercancel', bStop);
+      bar.setAttribute('tabindex', '0');
+      bar.setAttribute('role', 'scrollbar');
+      bar.setAttribute('aria-label', 'Прокрутка ленты');
+      bar.addEventListener('keydown', function(e){
+        var k = e.key;
+        if (k === 'ArrowRight' || k === 'PageDown') { e.preventDefault(); by(grid.clientWidth * 0.8); }
+        else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); by(-grid.clientWidth * 0.8); }
+        else if (k === 'Home') { e.preventDefault(); go(0); }
+        else if (k === 'End') { e.preventDefault(); go(maxScroll()); }
+      });
+    }
+
+    var api = { go: go, by: by, sync: function(){ target = cur = grid.scrollLeft; if (onUpdate) onUpdate(); } };
+    grid._pdStrip = api;
+    return api;
   };
 
   // ===== клиенты: логотипы проявляются по очереди, потом лента едет =====
@@ -1613,6 +1686,8 @@
     var strip = document.getElementById('clStrip'), track = document.getElementById('clTrack');
     if (!strip || !track) return;
     var logos = [].slice.call(track.children);
+    // прячем только сейчас, из скрипта: до этого логотипы видны и без JS
+    strip.classList.add('cl-anim');
     // список дублируется в рантайме, а не в разметке: половина ленты = один проход,
     // поэтому клавиатурный поиск и SEO видят каждый логотип один раз
     logos.forEach(function(el){
@@ -1629,9 +1704,13 @@
     }
     if (!window.IntersectionObserver) { run(); return; }
     var io = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if (e.isIntersecting) { run(); io.disconnect(); } });
+      es.forEach(function(e){ if (e.isIntersecting) { run(); io.disconnect(); done = true; } });
     }, { threshold: 0.2 });
     io.observe(strip);
+    var done = false;
+    // страховка от не сработавшего наблюдателя: стена клиентов слишком важна,
+    // чтобы зависеть от одного механизма
+    setTimeout(function(){ if (!done) { io.disconnect(); run(); } }, 4000);
   })();
 
   // ===== география: глобус из точек =====
@@ -3681,10 +3760,10 @@
       stripNext.disabled = grid.scrollLeft >= max - 4;
     }
     if (grid) grid.addEventListener('scroll', function(){ requestAnimationFrame(updateStripNav); }, { passive: true });
-    if (stripPrev) stripPrev.addEventListener('click', function(){ grid.scrollBy({ left: -grid.clientWidth * 0.8, behavior: 'smooth' }); });
-    if (stripNext) stripNext.addEventListener('click', function(){ grid.scrollBy({ left: grid.clientWidth * 0.8, behavior: 'smooth' }); });
+    var cStrip = pdStrip(grid, stripNav && stripNav.querySelector('.csn-bar'), stripFill, updateStripNav);
+    if (stripPrev) stripPrev.addEventListener('click', function(){ cStrip.by(-grid.clientWidth * 0.8); });
+    if (stripNext) stripNext.addEventListener('click', function(){ cStrip.by(grid.clientWidth * 0.8); });
     addEventListener('resize', function(){ requestAnimationFrame(updateStripNav); });
-    if (window.pdStripDrag) pdStripDrag(document.querySelector('#cStripNav .csn-bar'), stripFill, grid);
 
     // разметка внутренней листалки — тот же компонент .v-gal, что и у проектов (поддерживает
     // фото и видео вперемешку, стрелки/точки/свайп/лайтбокс работают без единой строчки новой логики)
@@ -4312,10 +4391,10 @@
       });
       search.addEventListener('input', function(){ q = search.value.trim().toLowerCase(); render(); });
       grid.addEventListener('scroll', function(){ requestAnimationFrame(updateStripNav); }, { passive: true });
-      if (stripPrev) stripPrev.addEventListener('click', function(){ grid.scrollBy({ left: -grid.clientWidth * 0.8, behavior: 'smooth' }); });
-      if (stripNext) stripNext.addEventListener('click', function(){ grid.scrollBy({ left: grid.clientWidth * 0.8, behavior: 'smooth' }); });
+      var strip = pdStrip(grid, document.querySelector('#aStripNav .csn-bar'), stripFill, updateStripNav);
+      if (stripPrev) stripPrev.addEventListener('click', function(){ strip.by(-grid.clientWidth * 0.8); });
+      if (stripNext) stripNext.addEventListener('click', function(){ strip.by(grid.clientWidth * 0.8); });
       addEventListener('resize', function(){ requestAnimationFrame(updateStripNav); });
-      if (window.pdStripDrag) pdStripDrag(document.querySelector('#aStripNav .csn-bar'), stripFill, grid);
       render();
     });
   })();
