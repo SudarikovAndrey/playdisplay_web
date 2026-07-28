@@ -329,9 +329,18 @@
     display: flex; align-items: center; justify-content: center; transition: border-color .25s, background .25s, color .25s, opacity .25s; }
   .csn-btn:hover { border-color: var(--signal-teal); color: var(--signal-teal); background: rgba(43,224,198,0.1); }
   .csn-btn:disabled { opacity: 0.3; cursor: default; }
-  .csn-bar { flex: 1; height: 2px; background: rgba(159,180,200,0.16); position: relative; overflow: hidden; }
-  .csn-bar span { position: absolute; left: 0; top: 0; height: 100%; width: 20%;
-    background: linear-gradient(90deg, var(--signal-teal), var(--signal-amber)); transition: left .3s ease, width .3s ease; }
+  /* полосу можно тащить, поэтому она заметно выше и с курсором-хватом;
+     сама линия рисуется псевдоэлементом, а высота нужна как площадь для пальца и мыши */
+  .csn-bar { flex: 1; height: 18px; position: relative; cursor: grab; touch-action: none; }
+  .csn-bar::before { content: ""; position: absolute; left: 0; right: 0; top: 8px; height: 2px;
+    background: rgba(159,180,200,0.16); }
+  .csn-bar.dragging { cursor: grabbing; }
+  .csn-bar:hover span, .csn-bar.dragging span { height: 4px; top: 7px; }
+  .csn-bar span { position: absolute; left: 0; top: 8px; height: 2px; width: 20%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--signal-teal), var(--signal-amber));
+    transition: left .3s ease, width .3s ease, height .2s ease, top .2s ease; }
+  /* пока тащим — никаких доводок, ползунок должен идти точно за курсором */
+  .csn-bar.dragging span { transition: height .2s ease, top .2s ease; }
   /* сетка концепций: сознательно НЕ как у проектов — компактные плитки-«шевроны» в два ряда,
      секция умещается на один экран; лента прокручивается ВБОК внутри контейнера (готова к 100+ карточкам) */
   /* ВАЖНО: у плиток явные width/height (не aspect-ratio) — при column-flow с auto-рядами
@@ -690,7 +699,7 @@
 
   /* ---------- география: карта мира из точек (маска — стилизованные силуэты материков) ---------- */
   /* ---------- клиенты: лента логотипов ---------- */
-  .cl-block { margin-top: 72px; border-top: 1px solid var(--space-line); padding-top: 44px; }
+  .cl-block { margin-top: 40px; }
   .cl-block .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
   .cl-block h4 { font: 700 24px var(--font-display); color: #F1FBFC; margin-bottom: 6px; }
   .cl-block .cl-sub { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
@@ -722,7 +731,7 @@
   .wm-block .wm-sub { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 52ch; }
   /* сцена на всю ширину окна: глобус — главный объект блока, а не иллюстрация в углу */
   .wm-stage { position: relative; margin: 10px calc(50% - 50vw) 0;
-    height: clamp(430px, 64vh, 780px); overflow: hidden; cursor: crosshair; }
+    height: clamp(560px, 86vh, 1000px); overflow: hidden; cursor: crosshair; }
   .wm-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .wm-pins { position: absolute; inset: 0; pointer-events: none; }
   .wm-pin { position: absolute; transform: translate(-50%,-50%); display: flex; align-items: center; gap: 10px;
@@ -739,7 +748,7 @@
   .wm-pin .wm-label { font: 600 13px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;
     white-space: nowrap; color: #F1FBFC; text-shadow: 0 1px 10px rgba(3,12,16,0.95); }
   @media (max-width: 700px) {
-    .wm-stage { height: min(72vw, 420px); cursor: default; }
+    .wm-stage { height: min(96vw, 480px); cursor: default; }
     .wm-pin .wm-label { font-size: 10.5px; letter-spacing: 0.06em; }
   }
 
@@ -1095,6 +1104,41 @@
   <div class="wrap">
     <div class="kicker eyebrow">Доверие</div>
     <p>Наши работы показывал канал <b>Discovery</b>. Среди клиентов — <b>BMW</b>, аэропорты, национальные музеи и промышленные корпорации.</p>
+    <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
+    <div class="cl-block reveal-up" id="clBlock">
+      <div class="cl-strip" id="clStrip">
+        <div class="cl-track" id="clTrack">
+          <img class="cl-logo" src="assets/logos/clients/mars.png" width="99" height="32" alt="MARS" title="MARS" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/s7.png" width="109" height="37" alt="S7 Airlines" title="S7 Airlines" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/changi.png" width="62" height="37" alt="Changi Airport Singapore" title="Changi Airport Singapore" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/coalco.png" width="48" height="43" alt="COALCO Development" title="COALCO Development" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/sap.png" width="70" height="37" alt="SAP" title="SAP" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/zaha-hadid.png" width="167" height="28" alt="Zaha Hadid" title="Zaha Hadid" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/stm.png" width="107" height="37" alt="Синара — Транспортные Машины" title="Синара — Транспортные Машины" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/ptk.png" width="58" height="43" alt="Группа ПТК" title="Группа ПТК" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/mos-gov.png" width="93" height="37" alt="Правительство Москвы" title="Правительство Москвы" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/intel.png" width="63" height="43" alt="Intel" title="Intel" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/garage.png" width="102" height="37" alt="Музей «Гараж»" title="Музей «Гараж»" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/aeroporty-regionov.png" width="38" height="43" alt="Аэропорты Регионов" title="Аэропорты Регионов" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/renault.png" width="42" height="43" alt="Renault" title="Renault" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/bmw.png" width="42" height="43" alt="BMW" title="BMW" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/gorky-park.png" width="80" height="37" alt="Парк Горького" title="Парк Горького" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/kr-properties.png" width="81" height="37" alt="KR Properties" title="KR Properties" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/audi.png" width="68" height="43" alt="Audi" title="Audi" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/lanit.png" width="37" height="43" alt="ЛАНИТ" title="ЛАНИТ" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/coca-cola.png" width="108" height="37" alt="Coca-Cola" title="Coca-Cola" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/rostec.png" width="36" height="43" alt="Ростех" title="Ростех" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/hasbro.png" width="41" height="43" alt="Hasbro" title="Hasbro" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/capital-group.png" width="252" height="28" alt="Capital Group" title="Capital Group" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/vdnh.png" width="40" height="43" alt="ВДНХ" title="ВДНХ" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/roscosmos.png" width="67" height="43" alt="Роскосмос" title="Роскосмос" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/transneft.png" width="63" height="37" alt="Транснефть" title="Транснефть" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/gazprom.png" width="74" height="37" alt="Газпром" title="Газпром" loading="lazy" decoding="async">
+          <img class="cl-logo" src="assets/logos/clients/rosatom.png" width="34" height="43" alt="Росатом" title="Росатом" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -1184,44 +1228,6 @@
         <div class="ptitle">Пресса и признание</div>
         <h4>Discovery Channel и не только</h4>
         <p>О студии рассказывали Discovery Channel и международные технологические программы. Проекты отмечены отраслевыми дипломами и наградами.</p>
-      </div>
-    </div>
-
-    <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
-    <div class="cl-block reveal-up" id="clBlock">
-      <div class="ptitle">Клиенты</div>
-      <h4>С кем мы это делали</h4>
-      <p class="cl-sub">Музеи и корпорации, аэропорты и автомобильные бренды, городские парки и промышленные холдинги.</p>
-      <div class="cl-strip" id="clStrip">
-        <div class="cl-track" id="clTrack">
-          <img class="cl-logo" src="assets/logos/clients/mars.png" width="99" height="32" alt="MARS" title="MARS" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/s7.png" width="109" height="37" alt="S7 Airlines" title="S7 Airlines" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/changi.png" width="62" height="37" alt="Changi Airport Singapore" title="Changi Airport Singapore" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/coalco.png" width="48" height="43" alt="COALCO Development" title="COALCO Development" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/sap.png" width="70" height="37" alt="SAP" title="SAP" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/zaha-hadid.png" width="167" height="28" alt="Zaha Hadid" title="Zaha Hadid" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/stm.png" width="107" height="37" alt="Синара — Транспортные Машины" title="Синара — Транспортные Машины" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/ptk.png" width="58" height="43" alt="Группа ПТК" title="Группа ПТК" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/mos-gov.png" width="93" height="37" alt="Правительство Москвы" title="Правительство Москвы" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/intel.png" width="63" height="43" alt="Intel" title="Intel" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/garage.png" width="102" height="37" alt="Музей «Гараж»" title="Музей «Гараж»" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/aeroporty-regionov.png" width="38" height="43" alt="Аэропорты Регионов" title="Аэропорты Регионов" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/renault.png" width="42" height="43" alt="Renault" title="Renault" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/bmw.png" width="42" height="43" alt="BMW" title="BMW" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/gorky-park.png" width="80" height="37" alt="Парк Горького" title="Парк Горького" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/kr-properties.png" width="81" height="37" alt="KR Properties" title="KR Properties" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/audi.png" width="68" height="43" alt="Audi" title="Audi" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/lanit.png" width="37" height="43" alt="ЛАНИТ" title="ЛАНИТ" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/coca-cola.png" width="108" height="37" alt="Coca-Cola" title="Coca-Cola" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/rostec.png" width="36" height="43" alt="Ростех" title="Ростех" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/hasbro.png" width="41" height="43" alt="Hasbro" title="Hasbro" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/capital-group.png" width="252" height="28" alt="Capital Group" title="Capital Group" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/vdnh.png" width="40" height="43" alt="ВДНХ" title="ВДНХ" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/roscosmos.png" width="67" height="43" alt="Роскосмос" title="Роскосмос" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/transneft.png" width="63" height="37" alt="Транснефть" title="Транснефть" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/gazprom.png" width="74" height="37" alt="Газпром" title="Газпром" loading="lazy" decoding="async">
-          <img class="cl-logo" src="assets/logos/clients/rosatom.png" width="34" height="43" alt="Росатом" title="Росатом" loading="lazy" decoding="async">
-        </div>
       </div>
     </div>
 
@@ -1563,6 +1569,45 @@
     io.observe(wm);
   })();
 
+  // ===== перетаскивание полосы прокрутки лент (Атлас и концепции) =====
+  // Полоса — не индикатор, а орган управления: тянем ползунок, лента едет за ним.
+  window.pdStripDrag = function(bar, fill, grid){
+    if (!bar || !fill || !grid) return;
+    var dragging = false;
+    function apply(clientX){
+      var b = bar.getBoundingClientRect();
+      var vis = Math.max(0.08, grid.clientWidth / grid.scrollWidth);   // доля видимого = ширина ползунка
+      var track = b.width * (1 - vis);                                  // ход ползунка
+      if (track <= 0) return;
+      var x = clientX - b.left - b.width * vis / 2;                     // тянем за середину ползунка
+      var f = Math.max(0, Math.min(1, x / track));
+      grid.scrollLeft = f * (grid.scrollWidth - grid.clientWidth);
+    }
+    bar.addEventListener('pointerdown', function(e){
+      dragging = true; bar.classList.add('dragging');
+      if (bar.setPointerCapture) bar.setPointerCapture(e.pointerId);
+      apply(e.clientX); e.preventDefault();
+    });
+    bar.addEventListener('pointermove', function(e){ if (dragging) apply(e.clientX); });
+    function stop(){ dragging = false; bar.classList.remove('dragging'); }
+    bar.addEventListener('pointerup', stop);
+    bar.addEventListener('pointercancel', stop);
+    // клавиатура: полоса доступна с табуляции, стрелки листают
+    bar.setAttribute('tabindex', '0');
+    bar.setAttribute('role', 'scrollbar');
+    bar.setAttribute('aria-label', 'Прокрутка ленты');
+    bar.addEventListener('keydown', function(e){
+      var k = e.key, d = 0;
+      if (k === 'ArrowRight' || k === 'PageDown') d = 1;
+      else if (k === 'ArrowLeft' || k === 'PageUp') d = -1;
+      else if (k === 'Home') { grid.scrollLeft = 0; return; }
+      else if (k === 'End') { grid.scrollLeft = grid.scrollWidth; return; }
+      if (!d) return;
+      e.preventDefault();
+      grid.scrollBy({ left: d * grid.clientWidth * 0.8, behavior: 'smooth' });
+    });
+  };
+
   // ===== клиенты: логотипы проявляются по очереди, потом лента едет =====
   (function(){
     var strip = document.getElementById('clStrip'), track = document.getElementById('clTrack');
@@ -1602,26 +1647,35 @@
                dot: el.querySelector('.wm-dot') };
     });
 
-    // Материки — объединение эллипсов в координатах долгота/широта:
-    // [центр долготы, центр широты, радиус по долготе, радиус по широте, поворот]
-    var LAND = [
-      [-100,60,46,15,0],[-98,40,26,9,0],[-152,64,13,6,0],[-104,24,10,7,-35],[-86,14,8,3,-20],
-      [-42,72,15,9,0],[-75,46,8,4,0],[-125,52,6,8,0],
-      [-70,5,12,7,0],[-58,-6,16,9,0],[-44,-14,11,10,0],[-70,-13,7,11,0],[-64,-33,9,12,0],
-      [-71,-36,3,14,0],[-69,-48,4,6,0],
-      [5,47,12,8,0],[-4,40,5,4,0],[16,63,9,7,-10],[-3,54,3.5,4,0],[13,43,2.6,4.5,20],
-      [21,43,5,4,0],[31,52,11,7,0],
-      [70,60,24,11,0],[120,62,26,10,0],[159,56,3,6,0],[65,45,16,6,0],[45,31,10,8,0],
-      [46,22,8,7,0],[35,39,9,3,0],[78,22,8,9,0],[105,33,16,9,0],[103,16,7,8,0],[108,8,5,5,0],
-      [138,37,3,6,-30],[128,37,2,3,0],[112,-3,14,4,0],[114,0,5,4,0],[140,-5,8,3,-10],
-      [122,12,3,5,0],[90,24,4,4,0],
-      [10,25,23,10,0],[-5,12,14,7,0],[40,8,8,8,0],[20,0,12,8,0],[25,-22,10,10,0],[47,-20,2.6,6,-20],
-      [134,-25,18,10,0],[147,-42,2,2,0],[172,-42,3,5,-25]
+    // Материки — грубые, но настоящие контуры берегов: массив вершин [долгота, широта].
+    // Проверка «точка внутри» даёт узнаваемые силуэты, чего эллипсы не давали.
+    var POLY = [
+      /* eurasia */ [[-9.5,38],[-9,43],[-1.5,43.5],[-1,46],[-4,48],[0,49.5],[4,51],[7,53.5],[8,57],[10,57.5],[13,55],[19,54.5],[21,56],[24,60],[26,60.5],[22,63],[25,65.5],[30,66],[32,70],[41,66],[44,68],[52,70],[60,70],[69,73],[74,73],[80,74],[92,76],[105,77],[113,74],[125,73],[137,72],[150,72],[160,70],[170,68],[180,66],[180,62],[172,61],[163,58],[158,53],[152,59],[143,53],[135,48],[131,43],[128,38],[122,39],[121,32],[117,24],[110,21],[108,11],[104,9],[100,13],[97,16],[94,18],[89,22],[87,21],[80,15],[77,8],[73,18],[70,24],[67,24],[62,25],[57,26],[50,29],[48,30],[52,25],[55,23],[57,22],[52,16],[45,13],[43,12],[39,18],[36,24],[34,28],[33,31],[35,36],[27,37],[23,40],[19,42],[13,45],[8,44],[3,42],[-3,36],[-6,36]],
+      /* africa */ [[-17,15],[-17,21],[-13,28],[-10,31],[-6,36],[10,37],[11,34],[20,32],[25,32],[32,31],[35,28],[38,18],[43,12],[51,12],[48,5],[41,-1],[40,-10],[35,-18],[32,-26],[27,-33],[20,-34],[18,-29],[14,-22],[12,-16],[9,-1],[9,4],[3,6],[-4,5],[-8,4],[-13,9]],
+      /* greenland */ [[-45,60],[-50,64],[-53,68],[-58,72],[-55,76],[-45,80],[-30,82],[-20,78],[-22,72],[-30,68],[-38,64]],
+      /* north_america */ [[-168,65],[-165,60],[-158,57],[-153,58],[-148,60],[-140,60],[-135,57],[-130,53],[-124,48],[-124,40],[-120,34],[-117,32],[-110,23],[-105,20],[-97,16],[-92,15],[-88,16],[-87,21],[-91,19],[-95,19],[-97,25],[-93,29],[-89,29],[-84,29],[-80,25],[-81,31],[-76,35],[-70,42],[-67,45],[-60,47],[-56,52],[-64,60],[-70,62],[-78,62],[-80,68],[-85,73],[-95,72],[-100,68],[-115,69],[-128,70],[-141,69],[-155,71],[-160,70]],
+      /* south_america */ [[-81,-5],[-79,0],[-77,8],[-72,12],[-64,11],[-60,8],[-52,5],[-50,0],[-44,-2],[-38,-5],[-35,-8],[-39,-14],[-41,-22],[-48,-25],[-53,-34],[-57,-38],[-62,-40],[-65,-45],[-69,-52],[-75,-52],[-73,-45],[-73,-37],[-71,-30],[-70,-23],[-71,-18],[-75,-14],[-79,-8]],
+      /* australia */ [[113,-22],[114,-26],[116,-32],[119,-34],[126,-32],[131,-31],[135,-35],[138,-35],[141,-38],[147,-38],[150,-37],[153,-28],[153,-25],[149,-21],[146,-19],[142,-11],[137,-12],[132,-11],[129,-15],[125,-14],[122,-18],[116,-20]],
+      /* india_lanka */ [[80,9],[81,7],[82,8],[81,10]],
+      /* antarctica */ [[-180,-72],[-150,-76],[-120,-74],[-90,-73],[-60,-70],[-30,-70],[0,-70],[30,-69],[60,-68],[90,-66],[120,-66],[150,-72],[180,-72],[180,-88],[-180,-88]]
     ];
+    // Острова и мелкие земли — эллипсами: контур для них избыточен
+    // [центр долготы, центр широты, радиус по долготе, радиус по широте, поворот]
+    var ELL = [[-4.5,53.5,2.8,4.2,-10],[-8,53,1.6,1.8,0],[-19,65,3.2,1.6,0],[140,38,2.2,5,-32],[133,33.5,2.6,1.4,-15],[142,43.5,2,1.8,0],[47,-19,2.4,6,-18],[101,0,3.6,5.4,-38],[110,-7.3,4,1.1,-5],[114,0.5,4.6,3.8,0],[121,-2,2.2,3,-20],[138,-5,8,2.6,-8],[122,13,2,4.4,0],[124,9,1.6,1.6,0],[172,-41,2.2,3.2,-28],[174,-38,1.8,2.2,-20],[147,-42,1.8,1.4,0],[-78,21.5,4.6,1.1,-10],[-71,19,2.6,1,0],[143,50,1.3,4.2,-8],[58,73,5,2.2,-30],[18,79,4,2,0],[-60,-51.5,1.6,1,0],[159,56,3.2,6.5,-8]];
     var RAD = Math.PI / 180;
+    function inPoly(lon, lat, p){
+      var c = false, n = p.length, j = n - 1;
+      for (var i = 0; i < n; i++) {
+        var xi = p[i][0], yi = p[i][1], xj = p[j][0], yj = p[j][1];
+        if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / ((yj - yi) || 1e-12) + xi) c = !c;
+        j = i;
+      }
+      return c;
+    }
     function isLand(lon, lat){
-      for (var i = 0; i < LAND.length; i++) {
-        var e = LAND[i], dx = lon - e[0], dy = lat - e[1];
+      for (var k = 0; k < POLY.length; k++) if (inPoly(lon, lat, POLY[k])) return true;
+      for (var i = 0; i < ELL.length; i++) {
+        var e = ELL[i], dx = lon - e[0], dy = lat - e[1];
         if (dx > 180) dx -= 360; if (dx < -180) dx += 360;
         if (e[4]) { var t = e[4] * RAD, c = Math.cos(t), sn = Math.sin(t), nx = dx * c + dy * sn; dy = -dx * sn + dy * c; dx = nx; }
         dx /= e[2]; dy /= e[3];
@@ -1633,7 +1687,7 @@
     var PTS = [];
     function buildPoints(step){
       PTS = [];
-      for (var lat = -84; lat <= 84; lat += step) {
+      for (var lat = -87; lat <= 85; lat += step) {
         var cl = Math.cos(lat * RAD), sl = step / Math.max(0.2, cl);
         for (var lon = -180; lon < 180; lon += sl) {
           if (isLand(lon, lat)) {
@@ -1655,7 +1709,9 @@
       dpr = Math.min(2, window.devicePixelRatio || 1);
       W = Math.round(b.width); H = Math.round(b.height);
       cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-      R = Math.min(W, H) * 0.44;
+      // радиус от меньшей стороны с запасом: свечение по лимбу уходит за 1.18R,
+      // при 0.44 оно упиралось в верх и низ сцены и выглядело срезанным
+      R = Math.min(W * 0.34, H * 0.43);
       // плотность по площади: на мобиле точек меньше, иначе телефон греется зря
       buildPoints(W < 700 ? 3.0 : (W < 1200 ? 2.5 : 2.2));
     }
@@ -1685,11 +1741,11 @@
       ctx.clearRect(0, 0, W, H);
 
       // атмосфера: мягкое свечение по лимбу
-      var g = ctx.createRadialGradient(W / 2, H / 2, R * 0.82, W / 2, H / 2, R * 1.22);
+      var g = ctx.createRadialGradient(W / 2, H / 2, R * 0.86, W / 2, H / 2, R * 1.08);
       g.addColorStop(0, 'rgba(43,224,198,0.055)');
       g.addColorStop(0.55, 'rgba(43,224,198,0.018)');
       g.addColorStop(1, 'rgba(43,224,198,0)');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(W / 2, H / 2, R * 1.22, 0, 6.284); ctx.fill();
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(W / 2, H / 2, R * 1.08, 0, 6.284); ctx.fill();
       ctx.strokeStyle = 'rgba(159,180,200,0.14)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.arc(W / 2, H / 2, R, 0, 6.284); ctx.stroke();
 
@@ -3628,6 +3684,7 @@
     if (stripPrev) stripPrev.addEventListener('click', function(){ grid.scrollBy({ left: -grid.clientWidth * 0.8, behavior: 'smooth' }); });
     if (stripNext) stripNext.addEventListener('click', function(){ grid.scrollBy({ left: grid.clientWidth * 0.8, behavior: 'smooth' }); });
     addEventListener('resize', function(){ requestAnimationFrame(updateStripNav); });
+    if (window.pdStripDrag) pdStripDrag(document.querySelector('#cStripNav .csn-bar'), stripFill, grid);
 
     // разметка внутренней листалки — тот же компонент .v-gal, что и у проектов (поддерживает
     // фото и видео вперемешку, стрелки/точки/свайп/лайтбокс работают без единой строчки новой логики)
@@ -4258,6 +4315,7 @@
       if (stripPrev) stripPrev.addEventListener('click', function(){ grid.scrollBy({ left: -grid.clientWidth * 0.8, behavior: 'smooth' }); });
       if (stripNext) stripNext.addEventListener('click', function(){ grid.scrollBy({ left: grid.clientWidth * 0.8, behavior: 'smooth' }); });
       addEventListener('resize', function(){ requestAnimationFrame(updateStripNav); });
+      if (window.pdStripDrag) pdStripDrag(document.querySelector('#aStripNav .csn-bar'), stripFill, grid);
       render();
     });
   })();
