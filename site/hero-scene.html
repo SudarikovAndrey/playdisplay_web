@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game38';</script>
+<script>window.PD_V = 'b2807-game39';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3091,18 +3091,40 @@ function gBeaconMat(size, maxPx) {
 }
 
 function gMakeOrb(seed) {
+  // СГУСТОК ЭНЕРГИИ (29.07, по запросу владельца): плотное почти белое ядро,
+  // тёплая внутренняя оболочка, два наклонных тиловых кольца в противофазе и
+  // редкие орбитальные искры. Яркость ядра > 1 — аддитив даёт горячее свечение.
   const p = [], c = [];
   function push(x, y, z, r, g, b, k) { p.push(x, y, z); c.push(r * k, g * k, b * k); }
-  // плотное ядро — почти белый центр с янтарной короной
-  for (let k = 0; k < 14; k++) {
-    const a = gHash(k, seed) * Math.PI * 2, b2 = gHash(seed, k) * Math.PI, rr = Math.pow(gHash(k * 3, seed), 0.6) * 0.55;
+  // ядро: плотный клубок, к центру белее и жарче
+  for (let k = 0; k < 34; k++) {
+    const a = gHash(k, seed) * Math.PI * 2, b2 = Math.acos(2 * gHash(seed, k) - 1);
+    const rr = Math.pow(gHash(k * 3, seed), 1.7) * 0.6;
     push(Math.sin(b2) * Math.cos(a) * rr, Math.cos(b2) * rr, Math.sin(b2) * Math.sin(a) * rr,
-         1.0, 0.9 - rr * 0.4, 0.55 - rr * 0.2, 1.25);
+         1.4, 1.2 - rr * 0.6, 0.8 - rr * 0.4, 1.35);
   }
-  // тонкое наклонное кольцо-оправа
-  for (let k = 0; k < 40; k++) {
-    const a = k / 40 * Math.PI * 2;
-    push(Math.cos(a) * 1.5, Math.sin(a) * 0.42, Math.sin(a) * 1.5, 0.62, 0.96, 0.91, 0.55 + 0.35 * gHash(k, seed + 5));
+  // внутренняя оболочка: янтарная сфера — «плазменная кожа» сгустка
+  for (let k = 0; k < 44; k++) {
+    const a = gHash(k + 51, seed) * Math.PI * 2, b2 = Math.acos(2 * gHash(seed, k + 51) - 1);
+    const rr = 0.92 + gHash(k * 7, seed) * 0.22;
+    push(Math.sin(b2) * Math.cos(a) * rr, Math.cos(b2) * rr, Math.sin(b2) * Math.sin(a) * rr,
+         1.05, 0.78, 0.4, 0.6 + 0.35 * gHash(k, seed + 3));
+  }
+  // два наклонных кольца в противофазе — читаются как вращение поля
+  for (let ring = 0; ring < 2; ring++) {
+    const R = 1.5 + ring * 0.38, tilt = ring ? 0.52 : -0.34, sgn = ring ? -1 : 1;
+    for (let k = 0; k < 34; k++) {
+      const a = k / 34 * Math.PI * 2;
+      push(Math.cos(a) * R, Math.sin(a) * R * tilt, Math.sin(a) * R * 0.8 * sgn,
+           0.55, 1.0, 0.95, 0.5 + 0.4 * gHash(k, seed + 5 + ring));
+    }
+  }
+  // редкие орбитальные искры — объём вокруг сгустка
+  for (let k = 0; k < 18; k++) {
+    const a = gHash(k + 90, seed) * Math.PI * 2, b2 = Math.acos(2 * gHash(seed, k + 90) - 1);
+    const rr = 1.9 + gHash(k * 11, seed) * 0.7;
+    push(Math.sin(b2) * Math.cos(a) * rr, Math.cos(b2) * rr, Math.sin(b2) * Math.sin(a) * rr,
+         0.6, 0.95, 0.9, 0.3 + 0.3 * gHash(k, seed + 7));
   }
   // световой столб вниз — маяк: редкие гаснущие точки к земле
   for (let k = 0; k < 16; k++) {
@@ -3113,23 +3135,29 @@ function gMakeOrb(seed) {
   const og = new THREE.BufferGeometry();
   og.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
   og.setAttribute('aCol', new THREE.Float32BufferAttribute(c, 3));
-  const om = gBeaconMat(0.3, 9);   // потолок 9px: вблизи не раздувается в пятно
+  const om = gBeaconMat(0.3, 11);   // потолок 11px: ярче вблизи, но всё ещё не клякса
   const pts = new THREE.Points(og, om);
   pts.onBeforeRender = function () { om.uniforms.uOp.value = om.opacity; };
   return pts;
 }
 
-// кольцо-ускоритель: обруч из мелких точек с янтарными маяками по ободу
+// кольцо-ускоритель: двойной обод с яркими янтарными маяками — портал, а не пунктир
 function gMakeRing(seed) {
   const p = [], c = [];
   const R = 7;
-  for (let k = 0; k < 96; k++) {
+  for (let k = 0; k < 96; k++) {          // внешний обод
     const a = k / 96 * Math.PI * 2;
-    const jit = (gHash(k, seed) - 0.5) * 0.5;
-    p.push(Math.cos(a) * (R + jit), Math.sin(a) * (R + jit), (gHash(seed, k) - 0.5) * 0.7);
+    const jit = (gHash(k, seed) - 0.5) * 0.4;
+    p.push(Math.cos(a) * (R + jit), Math.sin(a) * (R + jit), (gHash(seed, k) - 0.5) * 0.5);
     const beacon = k % 12 === 0;
-    if (beacon) c.push(1.0, 0.72, 0.4);
-    else { const b = 0.55 + 0.45 * gHash(k, seed + 3); c.push(0.62 * b, 0.96 * b, 0.91 * b); }
+    if (beacon) c.push(1.5, 1.0, 0.55);   // маяки жарче (>1 — аддитив)
+    else { const b = 0.7 + 0.5 * gHash(k, seed + 3); c.push(0.62 * b, 0.96 * b, 0.91 * b); }
+  }
+  for (let k = 0; k < 56; k++) {          // внутренний обод — тусклее, даёт толщину
+    const a = (k + 0.5) / 56 * Math.PI * 2;
+    p.push(Math.cos(a) * (R - 0.7), Math.sin(a) * (R - 0.7), (gHash(seed + 7, k) - 0.5) * 0.5);
+    const b = 0.35 + 0.3 * gHash(k, seed + 11);
+    c.push(0.62 * b, 0.96 * b, 0.91 * b);
   }
   const og = new THREE.BufferGeometry();
   og.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
@@ -4320,7 +4348,11 @@ function updateGame(dt, time) {
   for (const c of GAME.chunks) for (const o of c.children) {
     if (o.userData.isRing && !o.userData.got) {
       o.rotation.z += dt * o.userData.spin;
-      const wzr = o.position.z + c.position.z;
+      // ЭКРАННЫЙ z НАГРАДЫ. В новом мире группа чанка перевёрнута (scale.z = −1,
+      // position.z = GAME.z), поэтому z_экр = GAME.z − z_мир. Старая формула
+      // (сложение) давала «позицию» в тысячах юнитов от корабля — сбор и кольца
+      // не срабатывали НИКОГДА, весь счёт стоял на нуле.
+      const wzr = (NEW_WORLD && WORLD) ? c.position.z - o.position.z : o.position.z + c.position.z;
       if (Math.abs(wzr - GAME.shipP.z) < 3.2) {
         const ddx = o.position.x - GAME.shipP.x, ddy = o.position.y - GAME.shipP.y;
         if (ddx * ddx + ddy * ddy < 30) {          // прошли сквозь обруч
@@ -4346,7 +4378,8 @@ function updateGame(dt, time) {
     // размер точек дышит через юниформу: у наград теперь ShaderMaterial с потолком
     // экранного размера (см. gBeaconMat), material.size у него нет
     if (o.material.uniforms) o.material.uniforms.uSize.value = 0.3 * bs + 0.05 * Math.sin(time * 3 + o.userData.ph);
-    const wz = o.position.z + c.position.z;
+    // z_экр = GAME.z − z_мир (см. комментарий у колец) — иначе сбор не срабатывает
+    const wz = (NEW_WORLD && WORLD) ? c.position.z - o.position.z : o.position.z + c.position.z;
     // кандидат в нить маршрута: ядро впереди корабля и в пределах видимости камеры
     if (wz < GAME.shipP.z + 2 && wz > GAME.shipP.z - 135)
       _routeAhead.push({ x: o.position.x, y: o.position.y, z: wz });

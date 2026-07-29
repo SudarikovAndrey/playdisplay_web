@@ -166,7 +166,7 @@ const CONFIG = {
 const T = {
   TRANSITION: 'TRANSITION', CANYON: 'CANYON', GORGE: 'GORGE', TUNNEL: 'TUNNEL',
   ARCH: 'ARCH', SPIRES: 'SPIRES', CLIFF: 'CLIFF', BRIDGE: 'BRIDGE',
-  CAVERN: 'CAVERN', FORK: 'FORK'
+  CAVERN: 'CAVERN', FORK: 'FORK', WALL: 'WALL'
 };
 
 // ============================================================================
@@ -262,7 +262,7 @@ function planLevel(seed, count) {
       if (phase !== 'LEARN') pool = pool.concat([T.ARCH, T.BRIDGE]);
       if (phase === 'CHOICE' || phase === 'COMBINATION' || phase === 'CLIMAX') pool.push(T.FORK);
       if (phase === 'PRESSURE' || phase === 'COMBINATION' || phase === 'CLIMAX')
-        pool = pool.concat([T.GORGE, T.TUNNEL, T.CLIFF, T.CAVERN]);
+        pool = pool.concat([T.GORGE, T.TUNNEL, T.CLIFF, T.CAVERN, T.WALL]);
       type = pool[Math.floor(r() * pool.length) % pool.length];
       // §7 два узких подряд запрещены
       const narrow = (type === T.TUNNEL || type === T.GORGE);
@@ -321,7 +321,7 @@ function makeChunkDef(o) {
       def.corridorW = lerp(26, 17, d); def.sway = 12; def.curve = 2.2;
       def.vertical = 0.9; def.yBase = 15; def.risk = true;
       def.params = { wallH: lerp(64, 96, d), ledges: 2 + Math.floor(r() * 3),
-        roughness: lerp(0.5, 1, r()) };
+        roughness: lerp(0.5, 1, r()), overhang: r() < 0.55 };
       break;
     case T.TUNNEL:
       def.corridorW = lerp(24, 16, d); def.sway = 14; def.curve = 1.8;
@@ -367,6 +367,15 @@ function makeChunkDef(o) {
       def.vertical = 0.6; def.yBase = 20;
       def.params = { spread: CONFIG.fork.spread, safeW: lerp(34, 26, d),
         riskW: lerp(20, 14, d), riskDrop: lerp(10, 20, d), dividerH: lerp(34, 52, d) };
+      break;
+    case T.WALL:
+      // ГИГАНТСКАЯ СТЕНА СО ЩЕЛЬЮ (манифест: «почти вертикальная стена во весь
+      // экран, с небольшой щелью»). Читается издалека и становится целью: надо
+      // прицелиться в проход. Подлёт прямой (sway мал) — стена стоит фронтально.
+      def.corridorW = lerp(40, 30, d); def.sway = 6; def.curve = 0.5;
+      def.vertical = 0.3; def.yBase = 20; def.risk = true;
+      def.params = { wallH: lerp(68, 108, d), slitW: lerp(30, 16, d),
+        at: 0.5 + (r() - 0.5) * 0.12, thickT: 0.07 };
       break;
   }
   def.yPref = def.yBase;
@@ -456,11 +465,16 @@ function chunkField(def) {
           break;
         }
         case T.TUNNEL: {
-          // пол тоннеля — нижняя половина трубы
-          const rr = P.radius * (1 + Math.sin(t * Math.PI * 3) * P.radiusVar);
+          // пол тоннеля — нижняя половина трубы. ЖИВОЙ ТОННЕЛЬ (манифест): в
+          // середине труба раздувается в зал, на одном участке стена с одной
+          // стороны снята — окно наружу. Труба перестаёт быть идеальным цилиндром.
+          const hall = smoothstep(0.42, 0.5, t) * (1 - smoothstep(0.58, 0.68, t));
+          const rr = P.radius * (1 + Math.sin(t * Math.PI * 3) * P.radiusVar) * (1 + hall * 0.9);
           const q = clamp01(Math.abs(dx) / rr);
           h -= Math.sqrt(Math.max(0, 1 - q * q)) * rr * 0.55;
-          h += wallProfile(dx, 70, rr * 1.05);    // за трубой — глухая порода
+          const win = P.sideOpenings ? smoothstep(0.2, 0.26, t) * (1 - smoothstep(0.34, 0.4, t)) : 0;
+          const wallK = (dx > 0 && win > 0.5) ? 0.12 : 1;   // окно справа по ходу
+          h += wallProfile(dx, 70, rr * 1.05) * wallK;      // за трубой — глухая порода
           break;
         }
         case T.ARCH:
@@ -500,6 +514,17 @@ function chunkField(def) {
           if (s > 0.01 && Math.abs(dx) < sp * 0.55) h += P.dividerH * s;  // разделитель
           break;
         }
+        case T.WALL: {
+          // ГИГАНТСКАЯ СТЕНА: плита поперёк трассы (профиль по t), в ней щель
+          // вокруг ИСТИННОЙ оси (dxTrue — дисторсия не смеет сдвинуть проход).
+          // Верх стены выше потолка хода корабля — перелететь нельзя, только щель.
+          const face = smoothstep(P.at - P.thickT, P.at, t)
+                     * (1 - smoothstep(P.at + P.thickT * 0.4, P.at + P.thickT * 1.4, t));
+          const slit = 1 - smoothstep(P.slitW * 0.5, P.slitW * 1.1, Math.abs(dxTrue));
+          h += P.wallH * face * (1 - slit);
+          h += wallProfile(dx, 26, w * 1.7) * 0.5;   // невысокие борта до и после
+          break;
+        }
       }
       // ── ОБЩИЙ РЕЛЬЕФ ПО ВСЕЙ ШИРИНЕ ──────────────────────────────────────
       // Раньше пол у трассы был ПЛОСКИЙ, а «горы» начинались только за коридором —
@@ -533,7 +558,9 @@ function chunkField(def) {
       const a = C(t), dx = x - a[0];
       switch (def.type) {
         case T.TUNNEL: {
-          const rr = P.radius * (1 + Math.sin(t * Math.PI * 3) * P.radiusVar);
+          // та же формула rr, что у пола (зал в середине) — иначе свод разъедется с полом
+          const hall = smoothstep(0.42, 0.5, t) * (1 - smoothstep(0.58, 0.68, t));
+          const rr = P.radius * (1 + Math.sin(t * Math.PI * 3) * P.radiusVar) * (1 + hall * 0.9);
           const q = clamp01(Math.abs(dx) / rr);
           let c = a[1] - 12 + Math.sqrt(Math.max(0, 1 - q * q)) * rr * 1.15;
           // РАЗЛОМЫ В СВОДЕ (§6.4 ceilingBreaks): дыры, через которые видно небо —
@@ -544,6 +571,17 @@ function chunkField(def) {
           }
           c += (fbm(x * 0.06, t * 40, 2, 0.5) - 0.5) * 4 * P.irregularity;
           return c;
+        }
+        case T.GORGE: {
+          // НАВИСАЮЩАЯ МАССА (манифест: «сверху тоже нависает массив, возникает
+          // ощущение давления, потом пространство резко открывается»): на среднем
+          // участке ущелья над трассой появляется потолок-плита, к краям выше.
+          if (!P.overhang) return Infinity;
+          const k = smoothstep(0.28, 0.42, t) * (1 - smoothstep(0.58, 0.72, t));
+          if (k < 0.03) return Infinity;
+          const q = clamp01(Math.abs(dx) / (def.corridorW * 1.7));
+          return a[1] + lerp(36, 21, k) + q * 24
+               + (fbm(x * 0.05 + 9, t * 30, 2, 0.5) - 0.5) * 6;
         }
         case T.CAVERN: {
           // КАВЕРНА: высокий свод; дыра в потолке — вертикальный выход наружу
