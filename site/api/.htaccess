@@ -1,0 +1,21 @@
+# Наружу из api/ отдаётся только ai.php. Конфиг с ключами, библиотеки,
+# стенограммы и папка писем закрыты — даже если кто-то угадает имя файла.
+
+RedirectMatch 404 ^/api/config.*\.php$
+RedirectMatch 404 ^/api/lib(/.*)?$
+RedirectMatch 404 ^/api/sessions(/.*)?$
+RedirectMatch 404 ^/api/outbox(/.*)?$
+
+# selftest.php — служебная страница проверки настроек. На боевом сервере закрыта:
+# чтобы открыть, временно закомментируйте строку ниже.
+RedirectMatch 404 ^/api/selftest\.php$
+
+# Каталог не листается.
+Options -Indexes
+
+# Ответы ассистента не кэшируются ни браузером, ни прокси.
+<IfModule mod_headers.c>
+  <FilesMatch "\.php$">
+    Header set Cache-Control "no-store"
+  </FilesMatch>
+</IfModule>

@@ -204,9 +204,6 @@
   /* моношрифт в наборе капителью — тот же язык, что у надписей HUD в этой же сцене;
      дисплейное начертание в 33 px спорило с заголовком */
   .hero-kinds { display: flex; align-items: center; gap: 12px; }
-  .hero-kinds .hk-btn { background: none; border: none; font: inherit; opacity: 0.6;
-    cursor: pointer; padding: 2px 6px; transition: opacity .2s; }
-  .hero-kinds .hk-btn:hover { opacity: 1; }
   .hero-kinds .hk-line { display: inline-block; min-height: 1.2em; flex: 1; min-width: 120px;
     font: 500 clamp(13.5px, 1.2vw, 17px)/1.2 var(--font-mono);
     letter-spacing: 0.2em; text-transform: uppercase;
@@ -214,6 +211,22 @@
   /* полный список — только для разметки, из потока убран */
   .hero-kinds .hk-all { position: absolute; width: 1px; height: 1px; overflow: hidden;
     clip-path: inset(50%); white-space: nowrap; }
+
+  /* микрострелочки по бокам: визуальный хинт о боковом скролле/контенте.
+     Маленькие, не кликабельные, как курсор-area indicator но без окантовок */
+  .scroll-hints { position: fixed; inset: 0; pointer-events: none; z-index: 3;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 18px;
+    font-size: 14px; font-weight: 300; color: rgba(241,251,252,0.35);
+    letter-spacing: 0.15em; }
+  .hint-arrow { display: inline-block; opacity: 0; animation: hintPulse 2.4s ease-in-out infinite; }
+  .hint-left { text-align: left; animation-delay: 0s; }
+  .hint-right { text-align: right; animation-delay: 0.3s; }
+  @keyframes hintPulse {
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 0.55; }
+  }
+  @media (max-width: 800px) { .scroll-hints { display: none; } }
+
   @media (max-width: 700px) {
     .hero-top { top: 84px; }
     .hero-kinds .hk-line { font-size: 12px; letter-spacing: 0.16em; }
@@ -1179,11 +1192,14 @@
        чтобы слова остались в разметке для поиска. -->
   <div class="wrap hero-top">
     <div class="hero-kinds" id="heroKinds">
-      <button class="hk-btn" id="hkPrev" aria-label="Предыдущий тип">‹</button>
       <span class="hk-line" id="hkLine">Музеи</span>
-      <button class="hk-btn" id="hkNext" aria-label="Следующий тип">›</button>
       <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Иммерсивные аттракционы · Дополненная и виртуальная реальность · Веб-пространства · Бренд-пространства · Общественные пространства · Корпоративные пространства</span>
     </div>
+  </div>
+  <!-- микрострелочки по бокам: хинт что есть контент слева/справа -->
+  <div class="scroll-hints">
+    <span class="hint-arrow hint-left" aria-hidden="true">‹</span>
+    <span class="hint-arrow hint-right" aria-hidden="true">›</span>
   </div>
 
   <!-- единый инфоблок внизу слева: слоган студии ↔ карточка проекта (при просмотре видео) -->
@@ -1798,15 +1814,9 @@
     document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : sync(); });
     // ПРИЧИНА ПОДВИСАНИЯ: observer может затираться при изменении класса hero. Отключим автозапуск
     // если пользователь кликал кнопку — дайте ему паузу прежде чем ленты снова крутятся.
-    var hero = document.querySelector('.hero'), inView = true, userInteracted = false;
+    var hero = document.querySelector('.hero'), inView = true;
     function sync(){
-      if (userInteracted) { userInteracted = false; return; }
       (inView && hero && !hero.classList.contains('video-on')) ? start() : stop();
-    }
-    var btnPrev = document.getElementById('hkPrev'), btnNext = document.getElementById('hkNext');
-    if (btnPrev && btnNext) {
-      btnPrev.addEventListener('click', function(){ userInteracted = true; prev(); });
-      btnNext.addEventListener('click', function(){ userInteracted = true; next(); });
     }
     if (hero && window.MutationObserver) {
       new MutationObserver(sync).observe(hero, { attributes: true, attributeFilter: ['class'] });
