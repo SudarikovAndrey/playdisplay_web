@@ -1,0 +1,13 @@
+# Локальные настройки деплоя. Скопировать в deploy.conf и поправить под себя.
+# deploy.conf в .gitignore — в репозиторий не уезжает.
+#
+#   cp deploy.conf.sample deploy.conf
+
+SSH_USER="pdisplay"
+SSH_HOST="vh432.timeweb.ru"
+
+# Путь к корню сайта относительно домашней папки на сервере.
+REMOTE_PATH="wordpress_2/public_html"
+
+WORK_BRANCH="hybrid-v8"
+SITE_URL="https://playdisplay.com"

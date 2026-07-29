@@ -4,10 +4,13 @@
 # Требование (один раз): Settings → Pages → Source: «GitHub Actions».
 name: Deploy site to Pages
 
+# ОТКЛЮЧЁН 29.07.2026. Доставка на боевой хостинг идёт напрямую с Мака
+# через ./deploy.sh (rsync), GitHub в ней не участвует. Автотриггер на пуш
+# в proto-3d снят: он висел на неиспользуемой ветке и всё равно не срабатывал.
+# Оставлен как заготовка — если превью на GitHub Pages понадобится снова,
+# запускать кнопкой Run workflow.
 on:
-  push:
-    branches: [proto-3d]
-  workflow_dispatch: {}   # ручной запуск кнопкой Run workflow
+  workflow_dispatch: {}
 
 permissions:
   contents: read
