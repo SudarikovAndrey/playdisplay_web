@@ -104,6 +104,7 @@ const CONFIG = {
     // Поднял яркость и усилил контраст света (litPow<1 растягивает верх диапазона).
     brSurface: 0.5, brSilh: 1.5, brEdge: 1.9, brSolid: 1.05, litPow: 0.5, litFloor: 0.05,
     edgeLo: 0.55, edgeHi: 1.9,   // §переход по градиенту непрерывный, не бинарный порог
+    faceShade: 0.42,       // затенение заливки крутых граней (кромку рисует контур)
     tintRoute: 0.3         // насколько ближе к цвету биома точки у маршрута
   },
   fork: { splitAt: 0.28, mergeAt: 0.84, spread: 52, riskNarrow: 0.55 },
@@ -127,7 +128,9 @@ const CONFIG = {
 // prob — доля крутых точек,которых стекает колонна. Без неё стекания давали
   // 109k точек на чанк из 157k: стена превращалась в монолит и съедала весь бюджет.
   // На референсе обрывы «текут» ПРЕРЫВИСТО, отдельными струями — так и честнее, и дешевле.
-  stripes: { slope: 1.5, step: 1.6, maxLen: 32, jitter: 0.6, prob: 0.6, maxN: 14 },
+  // prob 0.6 → 0.3 (29.07): вместе со сплошным акцентом по уклону стекания доливали
+  // крутые грани до сплошного белого сугроба — теперь струи реже, стена дышит
+  stripes: { slope: 1.5, step: 1.6, maxLen: 32, jitter: 0.6, prob: 0.3, maxN: 14 },
   // КОНТУРНЫЕ ЛИНИИ — главный приём референса. Форму там рисуют квази-непрерывные
   // ЦЕПОЧКИ ярких точек вдоль гребней и кромок обрывов (как штрих в скетче), а заливка
   // склонов тёмная и редкая. Статистическая перекраска отдельных точек сетки (edgeK)
@@ -790,6 +793,10 @@ function generateChunk(def, opts) {
       const hz = baseAt(jx, clamp(zLoc + e, 0, L)) - baseAt(jx, clamp(zLoc - e, 0, L));
       const slope = Math.hypot(hx, hz) / (2 * e) * 2.2;   // ×2.2 — приведение к прежней шкале
       if (!visible(jx, y, zLoc, hx, hz)) { culled++; x += stepX; continue; }
+      // прореживание крутых граней: сетка по (x,z) на стене, повёрнутой к камере,
+      // даёт много точек на единицу ПЛОЩАДИ ЭКРАНА — вместе с аддитивным блендингом
+      // это и была «сплошная белая стена». До 45% точек очень крутых граней снимаем.
+      if (slope > 1.8 && hash(jx * 9, jz * 3) < Math.min(0.45, (slope - 1.8) * 0.22)) { x += stepX; continue; }
       pushPoint(pos, col, siz, msk, jx, y, jz, slope, hx, hz, dx, far, tint, lod, edgeK, false);
       // ВЕРТИКАЛЬНЫЕ СТЕКАНИЯ: на крутой грани сетка по (x,z) вырождается — между
       // соседними столбцами зияет вертикальная дыра. Доливаем точки ВНИЗ по стене,
@@ -1008,7 +1015,14 @@ function pushPoint(pos, col, siz, msk, x, y, z, slope, hx, hz, dx, far, tint, lo
   if (sparkle) role = CONFIG.layer.SILHOUETTE;
   const accentSz = role === CONFIG.layer.EDGE ? LK.sizeEdge : LK.sizeSilh;
   const accentBr = role === CONFIG.layer.EDGE ? LK.brEdge : LK.brSilh;
-  const accentT = sparkle ? 1 : edgeT;
+  // АКЦЕНТ — РЕДКИЙ, А НЕ СПЛОШНОЙ ПО ГРАНИ. Когда буст шёл непрерывно по уклону,
+  // ВСЯ крутая стена получала максимальные размер и яркость и в кадре превращалась
+  // в сплошной белый сугроб (аддитивный блендинг складывает). На референсе грань
+  // тёмная и редкая, светятся только КРОМКИ (их рисует контурный проход) и редкие
+  // искры на самой грани — поэтому полный буст оставляем ~18% точек грани,
+  // остальным лишь четверть.
+  const gate = hash(x * 5, z * 13) < 0.18 ? 1 : 0.25;
+  const accentT = sparkle ? 1 : edgeT * gate;
   const sz = lerp(LK.sizeSurface, accentSz, accentT);
   const br = lerp(LK.brSurface, accentBr, accentT);
   // свет по нормали склона — то, что превращает облако в форму
@@ -1016,6 +1030,9 @@ function pushPoint(pos, col, siz, msk, x, y, z, slope, hx, hz, dx, far, tint, lo
   const nl = Math.hypot(nx, ny, nz) || 1;
   const lit = clamp01((nx * -0.45 + ny * 0.82 + nz * -0.36) / nl);
   let g = br * (CONFIG.look.litFloor + (1 - CONFIG.look.litFloor) * Math.pow(lit, CONFIG.look.litPow));
+  // ЗАТЕНЕНИЕ ГРАНИ: чем круче стена, тем темнее её заливка — стена читается тёмной
+  // массой с яркой кромкой сверху (как на референсе), а не светящейся простынёй
+  g *= lerp(1, LK.faceShade, clamp01(slope / 2.5));
   if (isCeil) g *= 0.66;                       // потолок в тени — читается как свод
   g *= lerp(1.12, 0.6, far);                   // §12/§15 периферия тусклее
   const vb = 0.84 + 0.16 * hash(x * 7, z * 7);
