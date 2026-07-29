@@ -630,7 +630,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game42';</script>
+<script>window.PD_V = 'b2807-game43';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3150,27 +3150,89 @@ function gMakeOrb(seed) {
   return pts;
 }
 
+// Материал спайса: как gBeaconMat, но с ИНДИВИДУАЛЬНЫМ размером точки (aSize) —
+// облако из крупных и мелких частиц читается фактурой, а не однородной пылью.
+function gSpiceMat(maxPx) {
+  const m = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uPx: { value: innerHeight }, uMax: { value: maxPx }, uOp: { value: 0.9 } },
+    vertexShader: [
+      'attribute vec3 aCol; attribute float aSize; varying vec3 vCol;',
+      'uniform float uPx, uMax;',
+      'void main() {',
+      '  vCol = aCol;',
+      '  vec4 mv = modelViewMatrix * vec4(position, 1.0);',
+      '  gl_Position = projectionMatrix * mv;',
+      '  gl_PointSize = clamp(aSize * uPx * 0.5 / max(-mv.z, 1.0), 1.0, uMax);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying vec3 vCol; uniform float uOp;',
+      'void main() {',
+      '  float d = length(gl_PointCoord - vec2(0.5));',
+      '  float a = smoothstep(0.5, 0.24, d) * uOp;',
+      '  if (a < 0.02) discard;',
+      '  gl_FragColor = vec4(vCol, a);',
+      '}'
+    ].join('\n')
+  });
+  m.opacity = 0.9;
+  return m;
+}
+
 // СПАЙС: облако оранжевых частиц, парящих в воздухе. Собирается «пылесосом» —
-// частицы затягиваются к кораблю с дистанции (см. gSpiceUpdate). Форма — гауссов
-// сгусток со спиральной закруткой и жаром к центру: живая взвесь, не шар.
+// частицы затягиваются к кораблю с дистанции (см. gSpiceUpdate). ЧЕТЫРЕ ФОРМЫ
+// (по запросу «не только сферы»): сгусток, кольцо-вихрь, лента, вуаль-диск.
 function gMakeSpice(seed, n) {
-  const p = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  const p = new Float32Array(n * 3), col = new Float32Array(n * 3), sz = new Float32Array(n);
+  const shape = Math.floor(gHash(seed, 999) * 4);
+  const ph = gHash(999, seed) * 6.2832;
   for (let k = 0; k < n; k++) {
-    const a = gHash(k, seed) * 6.2832, b = Math.acos(2 * gHash(seed, k) - 1);
-    const rr = Math.pow(gHash(k * 3, seed), 0.55) * (5.5 + gHash(seed, k * 7) * 4);
-    const x = Math.sin(b) * Math.cos(a) * rr * 1.5, y = Math.cos(b) * rr * 0.7,
-          z = Math.sin(b) * Math.sin(a) * rr;
-    const tw = y * 0.4, cw = Math.cos(tw), sw = Math.sin(tw);   // спиральная закрутка
-    p[k * 3] = x * cw - z * sw; p[k * 3 + 1] = y; p[k * 3 + 2] = x * sw + z * cw;
-    const heat = Math.pow(1 - Math.min(1, rr / 9.6), 1.5);      // к центру жарче
+    const h1 = gHash(k, seed), h2 = gHash(seed, k), h3 = gHash(k * 3, seed), h4 = gHash(seed, k * 7);
+    let x, y, z, q;                       // q 0..1 — «расстояние от сердцевины» для жара
+    if (shape === 0) {                    // сгусток со спиральной закруткой
+      const a = h1 * 6.2832, b = Math.acos(2 * h2 - 1);
+      const rr = Math.pow(h3, 0.55) * (5.5 + h4 * 4);
+      x = Math.sin(b) * Math.cos(a) * rr * 1.5; y = Math.cos(b) * rr * 0.7; z = Math.sin(b) * Math.sin(a) * rr;
+      const tw = y * 0.4, cw = Math.cos(tw), sw = Math.sin(tw);
+      const x2 = x * cw - z * sw; z = x * sw + z * cw; x = x2;
+      q = Math.min(1, rr / 9.6);
+    } else if (shape === 1) {             // кольцо-вихрь
+      const a = h1 * 6.2832, R = 7.5 + h4 * 4;
+      const tr = Math.pow(h3, 0.6) * 2.6, p2 = h2 * 6.2832;
+      x = Math.cos(a) * (R + tr * Math.cos(p2));
+      y = tr * Math.sin(p2) * 0.9 + Math.sin(a * 3 + ph) * 1.4;   // волна по ободу
+      z = Math.sin(a) * (R + tr * Math.cos(p2)) * 0.85;
+      q = tr / 2.6;
+    } else if (shape === 2) {             // лента-змея вдоль кривой
+      const u = h1;
+      x = (u - 0.5) * 30 + Math.sin(u * 6.2832 + ph) * 4;
+      y = Math.sin(u * 4.1 + ph * 0.7) * 5;
+      z = Math.cos(u * 5.3 + ph) * 6;
+      const spr = Math.pow(h3, 0.7) * 2.2;
+      const a2 = h2 * 6.2832;
+      x += Math.cos(a2) * spr; y += Math.sin(a2) * spr * 0.8; z += Math.sin(a2 + 1.7) * spr;
+      q = spr / 2.2;
+    } else {                              // вуаль: наклонный плоский диск
+      const a = h1 * 6.2832, rr = Math.sqrt(h3) * 10;
+      x = Math.cos(a) * rr;
+      z = Math.sin(a) * rr * 0.65;
+      y = (h2 - 0.5) * 1.8 + rr * 0.3 * Math.sin(a * 2 + ph) + x * 0.22;  // наклон и волна
+      q = rr / 10;
+    }
+    p[k * 3] = x; p[k * 3 + 1] = y; p[k * 3 + 2] = z;
+    const heat = Math.pow(1 - Math.min(1, q), 1.5);
     const br = 0.5 + 0.8 * heat + 0.25 * gHash(k, seed + 9);
     col[k * 3] = 1.2 * br; col[k * 3 + 1] = (0.48 + 0.34 * heat) * br; col[k * 3 + 2] = 0.14 * br;
+    // РАЗНОКАЛИБЕРНОСТЬ: 70% мелочь, 25% средние, 5% крупные искры
+    const s = gHash(k * 13, seed + 4);
+    sz[k] = s < 0.7 ? 0.09 + s * 0.1 : s < 0.95 ? 0.2 + (s - 0.7) * 0.4 : 0.38 + (s - 0.95) * 3;
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(p, 3));
   g.setAttribute('aCol', new THREE.BufferAttribute(col, 3));
-  const m = gBeaconMat(0.17, 5);   // точки мельче: облако плотное, но не выгорает в пятно
-  m.opacity = 0.9;
+  g.setAttribute('aSize', new THREE.BufferAttribute(sz, 1));
+  const m = gSpiceMat(6);
   const pts = new THREE.Points(g, m);
   pts.onBeforeRender = function () { m.uniforms.uOp.value = m.opacity; };
   pts.userData = { isSpice: true, home: p.slice(), state: new Uint8Array(n), n: n, alive: n, baseOp: 0.9 };
@@ -3181,8 +3243,13 @@ function gMakeSpice(seed, n) {
 // у корпуса исчезают и капают в счётчик. Дальние облака не обсчитываются вовсе.
 const SPICE_SUCK = 18, SPICE_EAT = 2.6;
 function gSpiceUpdate(o, chunkGrp, dt, time) {
-  o.material.opacity = 0.72 + 0.18 * Math.sin(time * 2.2 + o.position.x); // мерцание взвеси
   const wzC = chunkGrp.position.z - o.position.z;      // экранный z центра облака
+  // ПРОЯВЛЕНИЕ ПО ДИСТАНЦИИ: вдали тысячи частиц схлопываются аддитивом в одну
+  // точку экрана — дальнее облако выглядело ЖИРНЕЕ ближнего. Теперь оно почти
+  // прозрачно и плавно набирает плотность на подлёте (с ~210 до ~120 юнитов).
+  const D = -wzC;                                       // впереди wzC отрицательный
+  const vis = 1 - clamp01((D - 120) / 90);
+  o.material.opacity = (0.72 + 0.18 * Math.sin(time * 2.2 + o.position.x)) * vis;
   if (wzC > 14 || wzC < -90 || !o.userData.alive) return;
   const pa = o.geometry.attributes.position, arr = pa.array;
   const st = o.userData.state, home = o.userData.home, n = o.userData.n;
@@ -3219,6 +3286,7 @@ function gSpiceUpdate(o, chunkGrp, dt, time) {
       gameSpiceNum.classList.remove('pop'); void gameSpiceNum.offsetWidth; gameSpiceNum.classList.add('pop');
     }
     if (time - (GAME._spiceSndT || 0) > 0.15) { Sound.sfx('collect', 1); GAME._spiceSndT = time; }
+    GAME._spiceGlowT = time;   // двигатели вспыхивают, «проглатывая» спайс (см. updateGame)
   }
 }
 
@@ -4390,24 +4458,44 @@ function updateGame(dt, time) {
     if (_mFps < 45 && G_LOD < 2) { _lodT += dt; if (_lodT > 2) { G_LOD++; _lodT = 0; } }
     else _lodT = Math.max(0, _lodT - dt);
   }
-  // гейм-овер: мир доезжает по инерции, обломки корабля летят по физике; ждём клик/Esc
+  // ГЕЙМ-ОВЕР — КИНЕМАТОГРАФИЧНО (по запросу): первые ~2.8с само столкновение,
+  // ЗАМЕДЛЕННОЕ (×0.3) и с камерой ¾ сверху, медленно облетающей место удара.
+  // Оверлей результатов появляется только после этого показа. Клик — рестарт сразу.
   if (GAME.over && GAME.exit < 0) {
-    // мир не замирает: скорость падает до спокойного дрейфа и камера продолжает мягко ехать вперёд
+    GAME.overT = (GAME.overT || 0) + dt;        // таймер — в реальном времени
+    const cine = GAME.overT < 2.8;
+    const dts = cine ? dt * 0.3 : dt;           // слоу-мо: физика обломков и дрейф мира
     const CRUISE = 16;
-    GAME.speed += (CRUISE - GAME.speed) * (1 - Math.exp(-dt * 1.1));
-    const dzc = GAME.speed * dt;
+    GAME.speed += (CRUISE - GAME.speed) * (1 - Math.exp(-dts * 1.1));
+    const dzc = GAME.speed * dts;
     GAME.z += dzc;
     gMoveChunks(dzc);
     gRecycle();
     gSpawnAhead();                              // мир продолжает достраиваться впереди
-    gUpdateDebris(dt);
-    // камера плавно поднимается и отъезжает — «пролёт над местом падения»
-    GAME.overT = (GAME.overT || 0) + dt;
-    const ov = Math.min(1, GAME.overT / 3.2), ove = ov * ov * (3 - 2 * ov);
-    const cxo = GAME.shipP.x * 0.5, cyo = GAME.shipP.y * 0.6 + 7 + ove * 12;
-    camera.position.set(cxo, cyo, 17 + ove * 10);
-    camera.lookAt(GAME.shipP.x * 0.7, GAME.shipP.y * 0.8 - ove * 6, -60);
-    camera.fov += ((S.fov + 4) - camera.fov) * (1 - Math.exp(-dt * 1.5));
+    gUpdateDebris(dts);
+    if (!GAME.goShown && !cine) { GAME.goShown = true; gameOverEl.classList.add('show'); }
+    if (cine) {
+      // ¾ сверху: подъём и заход вбок с медленным орбитальным дрейфом вокруг обломков
+      const ov = Math.min(1, GAME.overT / 1.1), ove = ov * ov * (3 - 2 * ov);
+      const ang = 0.85 + GAME.overT * 0.16;
+      const cxo = GAME.shipP.x + Math.sin(ang) * 17 * ove;
+      const cyo = GAME.shipP.y + 5 + 21 * ove;
+      const czo = 17 - 6 * ove + Math.cos(ang) * 5 * ove;
+      camera.position.x += (cxo - camera.position.x) * (1 - Math.exp(-dt * 4));
+      camera.position.y += (cyo - camera.position.y) * (1 - Math.exp(-dt * 4));
+      camera.position.z += (czo - camera.position.z) * (1 - Math.exp(-dt * 4));
+      camera.lookAt(GAME.shipP.x, GAME.shipP.y - 2, -6);
+      camera.fov += ((S.fov - 6) - camera.fov) * (1 - Math.exp(-dt * 2));  // лёгкий наезд
+    } else {
+      // после показа — прежний мягкий отъезд над местом падения
+      const ov = Math.min(1, (GAME.overT - 2.8) / 3.2), ove = ov * ov * (3 - 2 * ov);
+      const cxo = GAME.shipP.x * 0.5, cyo = GAME.shipP.y * 0.6 + 7 + ove * 12;
+      camera.position.x += (cxo - camera.position.x) * (1 - Math.exp(-dt * 2.5));
+      camera.position.y += (cyo - camera.position.y) * (1 - Math.exp(-dt * 2.5));
+      camera.position.z += ((17 + ove * 10) - camera.position.z) * (1 - Math.exp(-dt * 2.5));
+      camera.lookAt(GAME.shipP.x * 0.7, GAME.shipP.y * 0.8 - ove * 6, -60);
+      camera.fov += ((S.fov + 4) - camera.fov) * (1 - Math.exp(-dt * 1.5));
+    }
     camera.updateProjectionMatrix();
     return;
   }
@@ -4691,6 +4779,11 @@ function updateGame(dt, time) {
       dp.needsUpdate = true; dc.needsUpdate = true;
     }
   }
+  // вспышка сопел при всасывании спайса: свечение двигателей коротко раздувается
+  if (GAME.shipGlow && GAME._spiceGlowT) {
+    const kG = Math.max(0, 1 - (time - GAME._spiceGlowT) / 0.35);
+    GAME.shipGlow.material.size = 0.72 * (1 + kG * 0.9);
+  }
   // анимация собранных сфер: раздуваются и тают (редкая энергия — вспышка вдвое шире, a.k)
   for (let i = GAME.anims.length - 1; i >= 0; i--) {
     const a = GAME.anims[i];
@@ -4736,7 +4829,9 @@ function updateGame(dt, time) {
     document.getElementById('go-dist').textContent = ((GAME.z - (GAME.z0 || 0)) * 2.4 / 1000).toFixed(1);
     document.getElementById('go-speed').textContent = Math.round((GAME.maxSpeed || GAME.speed) * 2.4);
     document.getElementById('go-combo').textContent = '×' + (GAME.maxCombo || 1);
-    gameOverEl.classList.add('show');
+    // оверлей НЕ сразу: сначала кинематографичный показ самого столкновения —
+    // замедленное время и камера ¾ сверху (см. ветку GAME.over в updateGame)
+    GAME.goShown = false;
   }
   if (GAME.boom != null && GAME.boom >= 0) { GAME.boom += dt; if (GAME.boom > 1.15) GAME.boom = -1; }
   const shake = dangerK > 0.6 ? (dangerK - 0.6) * 1.6 : 0; // лёгкая дрожь у земли
