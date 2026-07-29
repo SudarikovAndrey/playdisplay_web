@@ -203,7 +203,11 @@
   .hero.video-on .hero-top { opacity: 0; transform: translateY(-10px); }
   /* моношрифт в наборе капителью — тот же язык, что у надписей HUD в этой же сцене;
      дисплейное начертание в 33 px спорило с заголовком */
-  .hero-kinds .hk-line { display: inline-block; min-height: 1.2em;
+  .hero-kinds { display: flex; align-items: center; gap: 12px; }
+  .hero-kinds .hk-btn { background: none; border: none; font: inherit; opacity: 0.6;
+    cursor: pointer; padding: 2px 6px; transition: opacity .2s; }
+  .hero-kinds .hk-btn:hover { opacity: 1; }
+  .hero-kinds .hk-line { display: inline-block; min-height: 1.2em; flex: 1; min-width: 120px;
     font: 500 clamp(13.5px, 1.2vw, 17px)/1.2 var(--font-mono);
     letter-spacing: 0.2em; text-transform: uppercase;
     color: rgba(241,251,252,0.82); }
@@ -749,7 +753,53 @@
     opacity: 0; transform: scale(0.5); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
   .ai-word.show { opacity: 1; transform: scale(var(--w-scale, 1)); }
   .ai-word.key { border-color: rgba(43,224,198,0.6); color: #F1FBFC; }
-  #aiCapture .ai-rec { position: absolute; left: 50%; bottom: 6vh; margin: 0; transform: translateX(-50%); }
+  /* нижняя панель режима записи: что услышано → ввод текстом → микрофон → сборка брифа.
+     Собрана в одну колонку, чтобы на любом экране порядок чтения был сверху вниз. */
+  .ai-bottom { position: absolute; left: 5%; right: 5%; bottom: 3.5vh; z-index: 3;
+    display: grid; justify-items: center; gap: 12px; }
+  #aiCapture .ai-rec { position: static; margin: 0; transform: none; }
+  /* «услышано»: не чат, а бегущая строка распознавания — доказательство, что тебя слышат */
+  .ai-heard { max-width: 74ch; min-height: 21px; text-align: center;
+    font: 400 12.5px/1.65 var(--font-mono); letter-spacing: 0.02em; color: var(--scan-white-faint);
+    transition: color .35s ease; }
+  .ai-heard.hot { color: var(--scan-white-dim); }
+  .ai-heard i { font-style: normal; opacity: 0.45; }   /* ещё не закреплённый распознаванием хвост */
+  .ai-err { min-height: 0; text-align: center; max-width: 60ch;
+    font: 400 11.5px/1.6 var(--font-mono); letter-spacing: 0.06em; color: #ff8a5c; }
+  /* ввод текстом — равноправный путь, а не костыль: в Firefox распознавания нет вовсе */
+  .ai-say { display: none; width: min(560px, 90vw); grid-template-columns: 1fr auto; }
+  .ai-say.on { display: grid; }
+  #aiSayIn { font: 400 15px var(--font-body); color: var(--scan-white); background: rgba(16,30,37,0.72);
+    border: 1px solid var(--space-line); border-right: 0; padding: 13px 16px; outline: none; }
+  #aiSayIn:focus { border-color: var(--signal-teal); }
+  .ai-say-go { border: 1px solid var(--space-line); border-left: 0; background: rgba(16,30,37,0.72);
+    color: var(--signal-teal); padding: 0 20px; cursor: pointer; font: 400 13px var(--font-mono);
+    transition: background var(--duration-fast); }
+  .ai-say-go:hover { background: rgba(43,224,198,0.12); }
+  /* состояния микрофона: слышит / ждёт модель / выключен */
+  /* !important — потому что у .ai-rec.live анимация погашена таким же способом,
+     иначе пульс «слышу» никогда не запустится */
+  .ai-rec.hear { box-shadow: 0 0 0 16px rgba(43,224,198,0.07), 0 0 70px rgba(43,224,198,0.3);
+    animation: aiHear 1.9s ease-in-out infinite !important; }
+  @keyframes aiHear { 50% { box-shadow: 0 0 0 26px rgba(43,224,198,0.03), 0 0 90px rgba(43,224,198,0.4); } }
+  .ai-rec.mute { border-color: rgba(159,180,200,0.3); box-shadow: none; animation: none; }
+  .ai-rec.mute .mic-i { opacity: 0.35; }
+  /* пока думает модель — по контуру бежит дуга, кнопка не мигает как «слышу» */
+  .ai-rec.think { animation: none; box-shadow: none; }
+  .ai-rec.think::after { content: ""; position: absolute; inset: -5px; border-radius: 50%;
+    border: 1px solid transparent; border-top-color: var(--signal-teal); animation: aiThink .9s linear infinite; }
+  @keyframes aiThink { to { transform: rotate(360deg); } }
+  .ai-rec { position: relative; }
+  /* «собрать бриф»: появляется, когда есть что собирать, и подсвечивается, когда модель сказала «хватит» */
+  .ai-done { opacity: 0; pointer-events: none; transition: opacity .5s ease, color .3s, border-color .3s; }
+  .ai-done.on { opacity: 1; pointer-events: auto; }
+  .ai-done.hot { color: var(--signal-teal); border-color: rgba(43,224,198,0.55); }
+  /* мелкая ссылка «или напишите текстом» на первом экране */
+  .ai-alt { margin-top: 22px; background: none; border: 0; cursor: pointer;
+    font: 400 11px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--scan-white-faint); border-bottom: 1px solid rgba(159,180,200,0.25); padding-bottom: 2px;
+    transition: color var(--duration-fast), border-color var(--duration-fast); }
+  .ai-alt:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
   /* карточка концепции */
   .ai-tags { display: flex; justify-content: center; flex-wrap: wrap; gap: 9px; margin-top: 30px; }
   .ai-tags span { font: 500 12px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase;
@@ -769,8 +819,14 @@
   .ai-agree { display: flex; align-items: center; gap: 10px; font: 400 13px var(--font-body); color: var(--scan-white-dim); cursor: pointer; }
   @media (max-width: 900px) {
     .ai-duo { grid-template-columns: 1fr; }
-    .ai-field { inset: 27% 3% 20%; }
+    /* поле смыслов сжимается: снизу теперь панель ввода, накладываться им нельзя */
+    .ai-field { inset: 24% 3% 34%; }
     .ai-word { font-size: 12.5px; padding: 9px 13px; }
+    .ai-bottom { left: 3%; right: 3%; bottom: 2.5vh; gap: 10px; }
+    .ai-heard { font-size: 11.5px; max-height: 3.4em; overflow: hidden; }
+    #aiCapture .ai-rec { width: 76px; height: 76px; }
+    .ai-prompt { padding-top: 9vh; }
+    #aiCapture h2 { font-size: clamp(21px, 6vw, 30px); }
   }
 
   /* ---------- география: карта мира из точек (маска — стилизованные силуэты материков) ---------- */
@@ -1123,7 +1179,9 @@
        чтобы слова остались в разметке для поиска. -->
   <div class="wrap hero-top">
     <div class="hero-kinds" id="heroKinds">
+      <button class="hk-btn" id="hkPrev" aria-label="Предыдущий тип">‹</button>
       <span class="hk-line" id="hkLine">Музеи</span>
+      <button class="hk-btn" id="hkNext" aria-label="Следующий тип">›</button>
       <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Иммерсивные аттракционы · Дополненная и виртуальная реальность · Веб-пространства · Бренд-пространства · Общественные пространства · Корпоративные пространства</span>
     </div>
   </div>
@@ -1400,13 +1458,23 @@
       <h2>Расскажите, какое пространство вы хотите создать.</h2>
       <p>Мы выделим основные смыслы и соберём их в понятное описание проекта.</p>
       <button class="ai-rec" id="aiRec" aria-label="Включить микрофон"><span class="mic-i big"></span></button>
-      <div class="ai-note">Демо-режим: распознавание речи подключается позже, сценарий уже рабочий.</div>
+      <div><button class="ai-alt" id="aiAlt">Или написать текстом</button></div>
+      <div class="ai-note" id="aiNote">Говорите свободно — ассистент слушает и задаёт вопросы.</div>
     </div>
     <div class="ai-stage" id="aiCapture">
-      <h2 class="ai-prompt">Расскажите про вашу идею.</h2>
-      <p class="ai-prompt-sub">Мы будем собирать основные смыслы.</p>
+      <h2 class="ai-prompt" id="aiPrompt">Расскажите про вашу идею.</h2>
+      <p class="ai-prompt-sub" id="aiPromptSub">Мы будем собирать основные смыслы.</p>
       <div class="ai-field" id="aiField"></div>
-      <button class="ai-rec live" id="aiStop" aria-label="Завершить рассказ"><span class="mic-i big"></span></button>
+      <div class="ai-bottom">
+        <div class="ai-heard" id="aiHeard"></div>
+        <div class="ai-err" id="aiErr"></div>
+        <div class="ai-say" id="aiSay">
+          <input type="text" id="aiSayIn" placeholder="Написать ответ" autocomplete="off" enterkeyhint="send">
+          <button class="ai-say-go" id="aiSayGo" aria-label="Отправить ответ">▶︎</button>
+        </div>
+        <button class="ai-rec live" id="aiStop" aria-label="Микрофон: пауза и продолжение"><span class="mic-i big"></span></button>
+        <button class="btn-line ai-done" id="aiDone"><span class="tri">▶︎</span> Собрать бриф</button>
+      </div>
     </div>
     <div class="ai-stage" id="aiSummary">
       <div class="kicker teal">Краткое описание</div>
@@ -1430,6 +1498,7 @@
         <input type="text" id="aiContact" placeholder="Email или телефон" required>
         <input type="text" id="aiCompany" placeholder="Компания (необязательно)">
         <label class="ai-agree"><input type="checkbox" id="aiAgree" required> Согласен на отправку описания идеи в playdisplay</label>
+        <div class="ai-err" id="aiFormErr"></div>
         <div class="ai-actions"><button class="wa" type="submit">▶︎ Отправить</button></div>
       </form>
     </div>
@@ -1720,19 +1789,32 @@
       });
     }
     function tick(){ var from = line.textContent; i = (i + 1) % WORDS.length; morph(from, WORDS[i]); }
+    function prev(){ var from = line.textContent; i = (i - 1 + WORDS.length) % WORDS.length; stop(); timer = 0; morph(from, WORDS[i]); }
+    function next(){ var from = line.textContent; i = (i + 1) % WORDS.length; stop(); timer = 0; morph(from, WORDS[i]); }
     function start(){ if (!timer) timer = setInterval(tick, HOLD); }
     function stop(){ if (timer) { clearInterval(timer); timer = 0; } cancelAnimationFrame(raf); raf = 0; }
+    // БАГИ ПОДВИСАНИЯ: MutationObserver + IntersectionObserver иногда конфликтуют; sync() может
+    // не отрабатывать после скролла. Добавляем явный restart при видимости окна + каждые 10с.
     document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : sync(); });
-    // пока идёт видео проекта, строка скрыта — незачем крутить перебор впустую
-    var hero = document.querySelector('.hero'), inView = true;
-    function sync(){ (inView && hero && !hero.classList.contains('video-on')) ? start() : stop(); }
+    // ПРИЧИНА ПОДВИСАНИЯ: observer может затираться при изменении класса hero. Отключим автозапуск
+    // если пользователь кликал кнопку — дайте ему паузу прежде чем ленты снова крутятся.
+    var hero = document.querySelector('.hero'), inView = true, userInteracted = false;
+    function sync(){
+      if (userInteracted) { userInteracted = false; return; }
+      (inView && hero && !hero.classList.contains('video-on')) ? start() : stop();
+    }
+    var btnPrev = document.getElementById('hkPrev'), btnNext = document.getElementById('hkNext');
+    if (btnPrev && btnNext) {
+      btnPrev.addEventListener('click', function(){ userInteracted = true; prev(); });
+      btnNext.addEventListener('click', function(){ userInteracted = true; next(); });
+    }
     if (hero && window.MutationObserver) {
       new MutationObserver(sync).observe(hero, { attributes: true, attributeFilter: ['class'] });
     }
     if (window.IntersectionObserver) {
       new IntersectionObserver(function(es){
         es.forEach(function(e){ inView = e.isIntersecting; });
-        sync();
+        if (!userInteracted) sync();
       }, { threshold: 0 }).observe(line);
     } else start();
   })();
@@ -4718,42 +4800,210 @@
   })();
 </script>
 <script>
-  // ===== AI-сессия формулирования идеи (демо-режим) =====
-  // API-слой отделён от UI: когда подключится реальное распознавание речи и LLM,
-  // заменить методы pdIdea.* — интерфейс останется прежним. Ключей API в клиенте нет.
+  // ===== AI-ассистент: транспорт и распознавание речи =====
+  // Клиент не знает ни про модель, ни про почту — только про свой бэкенд api/ai.php.
+  // Ключей здесь нет и быть не может: всё платное живёт на сервере (см. site/api/README.md).
+  // Если бэкенда нет (превью на GitHub Pages, PHP выключен) — ассистент честно уходит
+  // в демо-режим: сценарий прошит в клиенте, письмо не отправляется.
   window.pdIdea = (function(){
-    // демо-набор смысловых объектов: рождаются по мере «рассказа», важные — крупнее
-    var POOL = [
+    var API = 'api/ai.php';        // относительный путь: работает и в корне домена, и в подпапке
+    var sid = null;
+    var mode = 'unknown';          // unknown | live | demo
+    var demoRound = 0, demoSaid = [];
+
+    // ---- транспорт: XHR, а не fetch — весь лендинг на ES5, полифилы не нужны ----
+    function post(action, data, ok, bad){
+      var body = { action: action }, k;
+      for (k in data) if (Object.prototype.hasOwnProperty.call(data, k)) body[k] = data[k];
+      if (sid && !body.sid) body.sid = sid;
+      var x = new XMLHttpRequest();
+      try { x.open('POST', API, true); } catch (e) { bad('no-backend'); return; }
+      x.setRequestHeader('Content-Type', 'application/json');
+      x.timeout = 40000;
+      x.onload = function(){
+        var d = null;
+        try { d = JSON.parse(x.responseText); } catch (e) {}
+        // не JSON при любом коде = бэкенда нет: GitHub Pages отдаёт .php как текст,
+        // а не выполняет его, поэтому проверять только status было бы недостаточно
+        if (!d) { bad('no-backend'); return; }
+        if (!d.ok) { bad(d.error || 'Что-то не сошлось.', d); return; }
+        ok(d);
+      };
+      x.onerror = function(){ bad('no-backend'); };
+      x.ontimeout = function(){ bad('Ассистент долго не отвечает — попробуйте ещё раз.'); };
+      try { x.send(JSON.stringify(body)); } catch (e) { bad('no-backend'); }
+    }
+
+    // ---- демо-сценарий: чтобы превью и оффлайн-показ не выглядели сломанными ----
+    var DEMO_Q = [
+      ['Что должно случиться с человеком внутри?', 'смысл, а не оборудование'],
+      ['Кто ваш посетитель — кого вы видите первым?', 'аудитория'],
+      ['Где это будет? Площадка уже есть?', 'место и площадь'],
+      ['К какой дате нужно открыться?', 'сроки'],
+      ['Что ещё важно знать про проект?', '']
+    ];
+    var DEMO_W = [
       ['музей', 1.25, true], ['история региона', 1, false], ['дети и семьи', 1.15, true],
       ['интерактив', 1, false], ['игра', 1.1, true], ['энергия', 1.3, true],
       ['исследование', 1, false], ['наследие', 0.9, false], ['эмоция', 0.95, false],
       ['маршрут', 0.9, false], ['коллективное участие', 1.05, false], ['реальные истории', 1, false]
     ];
-    var timer = null, given = 0;
-    return {
-      startRecording: function(onWord){
-        timer = setInterval(function(){
-          if (given >= POOL.length) { clearInterval(timer); timer = null; return; }
-          var w = POOL[given++];
-          onWord(w[0], w[1], w[2]);
-        }, 850);
-      },
-      stopRecording: function(){ if (timer) { clearInterval(timer); timer = null; } },
-      buildConceptSummary: function(round){
-        var card = {
-          title: 'Интерактивный музей энергии для семейной аудитории',
-          idea: 'Пространство, где посетители через движение, игру и реальные истории исследуют энергию как живую силу — и видят последствия собственных решений.',
-          who: 'Семьи с детьми, школьные группы, молодёжь региона.',
-          feel: 'Энергия — не абстракция, а живая сила, на которую влияют мои собственные решения.',
-          tags: ['Семьи и школьники', 'Интерактивное участие', 'Истории людей', 'Исследование и выбор']
-        };
-        if (round > 1) card.tags = card.tags.concat(['Коллективная игра', 'История региона']);
-        return card;
-      },
-      submitConcept: function(card, contact, done){
-        // демо: реальную отправку (почта/бэкенд) подключить здесь, карточка прикладывается автоматически
-        done();
+    function demoWords(){
+      var out = [], n = 2 + Math.round(Math.random());
+      for (var i = 0; i < n && DEMO_W.length; i++) {
+        var w = DEMO_W.shift();
+        out.push({ t: w[0], w: w[1], key: w[2] });
       }
+      return out;
+    }
+    function demoTurn(text, ok){
+      demoSaid.push(text);
+      var q = DEMO_Q[Math.min(demoRound, DEMO_Q.length - 1)];
+      demoRound++;
+      // небольшая задержка — иначе ответ появляется быстрее, чем человек успевает заметить
+      setTimeout(function(){
+        ok({ words: demoWords(), reply: q[0], sub: q[1], ready: demoRound >= 3 });
+      }, 500 + Math.random() * 400);
+    }
+
+    return {
+      mode: function(){ return mode; },
+
+      // Проверка при открытии панели: есть ли живой бэкенд и подключена ли модель.
+      probe: function(done){
+        post('ping', {}, function(d){
+          mode = d.demo ? 'demo' : 'live';
+          done(mode, d.demo ? 'Модель не подключена — ассистент отвечает по прошитому сценарию.' : '');
+        }, function(){
+          mode = 'demo';
+          done('demo', 'Бэкенд недоступен — идёт демонстрация сценария, письмо не отправится.');
+        });
+      },
+
+      begin: function(ok, bad){
+        sid = null; demoRound = 0; demoSaid = [];
+        if (mode === 'demo') { ok({ reply: 'Расскажите про вашу идею.', sub: 'Мы будем собирать основные смыслы.' }); return; }
+        post('start', {}, function(d){ sid = d.sid; ok(d); }, function(e){
+          if (e === 'no-backend') { mode = 'demo'; ok({ reply: 'Расскажите про вашу идею.', sub: 'Мы будем собирать основные смыслы.', demo: true }); return; }
+          bad(e);
+        });
+      },
+
+      say: function(text, how, ok, bad){
+        if (mode === 'demo') { demoTurn(text, ok); return; }
+        post('turn', { text: text, input: how }, ok, bad);
+      },
+
+      brief: function(ok, bad){
+        if (mode === 'demo') {
+          setTimeout(function(){
+            ok({ card: {
+              title: 'Интерактивный музей энергии для семейной аудитории',
+              idea: 'Пространство, где посетители через движение, игру и реальные истории исследуют энергию как живую силу — и видят последствия собственных решений.',
+              who: 'Семьи с детьми, школьные группы, молодёжь региона.',
+              feel: 'Энергия — не абстракция, а живая сила, на которую влияют мои собственные решения.',
+              tags: ['Семьи и школьники', 'Интерактивное участие', 'Истории людей', 'Исследование и выбор']
+            } });
+          }, 900);
+          return;
+        }
+        post('brief', {}, ok, bad);
+      },
+
+      send: function(contact, ok, bad){
+        if (mode === 'demo') { setTimeout(function(){ ok({ demo: true }); }, 700); return; }
+        post('send', {
+          name: contact.name, contact: contact.contact, company: contact.company, agree: true
+        }, ok, bad);
+      }
+    };
+  })();
+
+  // ===== распознавание речи =====
+  // Web Speech API есть в Chrome, Edge и Safari; в Firefox его нет вовсе — поэтому
+  // ввод текстом не «фолбэк», а второй равноправный путь (см. кнопку «Или написать текстом»).
+  window.pdSpeech = (function(){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var rec = null, live = false, want = false;
+    var finalBuf = '', interim = '', flushT = null, h = {};
+    var PAUSE = 1500;   // столько тишины считаем концом мысли и отправляем реплику
+
+    function fire(name, a, b){ if (h[name]) try { h[name](a, b); } catch (e) { console.warn('speech ' + name, e); } }
+
+    function flush(){
+      if (flushT) { clearTimeout(flushT); flushT = null; }
+      var t = finalBuf.replace(/\s+/g, ' ').trim();
+      finalBuf = ''; interim = '';
+      // Слишком короткий обрывок («да», «ага») отправлять модели незачем — она на него
+      // ответит вопросом ни о чём. Ждём, пока человек скажет что-то содержательное.
+      if (t.length < 6) { fire('heard', '', ''); return; }
+      fire('utterance', t);
+    }
+
+    function build(){
+      rec = new SR();
+      rec.lang = 'ru-RU';
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.maxAlternatives = 1;
+
+      rec.onresult = function(e){
+        var newFinal = '', inter = '';
+        for (var i = e.resultIndex; i < e.results.length; i++) {
+          var r = e.results[i];
+          if (r.isFinal) newFinal += r[0].transcript + ' ';
+          else inter += r[0].transcript + ' ';
+        }
+        if (newFinal) finalBuf += newFinal;
+        interim = inter;
+        fire('heard', finalBuf.replace(/\s+/g, ' ').trim(), interim.replace(/\s+/g, ' ').trim());
+        // Пауза отсчитывается от последнего звука, а не от последней закреплённой фразы:
+        // иначе длинный рассказ уезжает на сервер кусками по одному предложению.
+        if (flushT) clearTimeout(flushT);
+        if (finalBuf.replace(/\s+/g, '').length) flushT = setTimeout(flush, PAUSE);
+      };
+
+      rec.onerror = function(e){
+        var code = e && e.error ? e.error : 'unknown';
+        if (code === 'no-speech' || code === 'aborted') return;   // штатное: тишина или наша же остановка
+        want = false;
+        if (code === 'not-allowed' || code === 'service-not-allowed') fire('fail', 'denied');
+        else if (code === 'audio-capture') fire('fail', 'nomic');
+        else fire('fail', 'other');
+      };
+
+      // Chrome обрывает сессию сам на каждой длинной паузе — поднимаем заново,
+      // пока микрофон не выключил человек. Иначе распознавание «умирает» молча.
+      rec.onend = function(){
+        live = false;
+        if (!want) { fire('state', 'off'); return; }
+        try { rec.start(); live = true; }
+        catch (e) { setTimeout(function(){ if (want) try { rec.start(); live = true; } catch (e2) { fire('fail', 'other'); } }, 350); }
+      };
+      rec.onstart = function(){ live = true; fire('state', 'on'); };
+    }
+
+    return {
+      supported: !!SR,
+      listening: function(){ return want; },
+      start: function(handlers){
+        if (!SR) { return false; }
+        h = handlers || {};
+        if (!rec) build();
+        want = true;
+        if (!live) { try { rec.start(); } catch (e) {} }
+        return true;
+      },
+      stop: function(keep){
+        want = false;
+        if (flushT) { clearTimeout(flushT); flushT = null; }
+        // keep=true — «отправь то, что успел услышать» (нажали «Собрать бриф» на полуслове)
+        if (keep) flush(); else { finalBuf = ''; interim = ''; }
+        if (rec && live) try { rec.abort(); } catch (e) {}
+        live = false;
+      },
+      // Принудительная отправка накопленного: человек нажал «дальше», не дожидаясь паузы.
+      flush: flush
     };
   })();
 
@@ -4762,7 +5012,30 @@
     if (!ai) return;
     var stages = { intro: 'aiIntro', capture: 'aiCapture', summary: 'aiSummary', form: 'aiForm', sent: 'aiSent' };
     var field = document.getElementById('aiField');
-    var round = 0, card = null;
+    var card = null, probed = false;
+    // Элементы разговора собираем один раз: во время сессии getElementById в каждом кадре не нужен.
+    var elPrompt = document.getElementById('aiPrompt'),
+        elPromptSub = document.getElementById('aiPromptSub'),
+        elHeard = document.getElementById('aiHeard'),
+        elErr = document.getElementById('aiErr'),
+        elSay = document.getElementById('aiSay'),
+        elSayIn = document.getElementById('aiSayIn'),
+        elSayGo = document.getElementById('aiSayGo'),
+        elStop = document.getElementById('aiStop'),
+        elDone = document.getElementById('aiDone'),
+        elAlt = document.getElementById('aiAlt'),
+        elRec = document.getElementById('aiRec'),
+        elNote = document.getElementById('aiNote');
+
+    // Отправка набранного текстом. Пока ждём ответа, поле не блокируем —
+    // человек может продолжать печатать следующую мысль.
+    function sendTyped(){
+      if (!elSayIn) return;
+      var t = elSayIn.value.replace(/\s+/g, ' ').trim();
+      if (t.length < 2) return;
+      elSayIn.value = '';
+      say(t, 'text');
+    }
 
     function stage(name){
       Object.keys(stages).forEach(function(k){
@@ -5004,9 +5277,27 @@
       document.body.style.overflow = 'hidden';
       if (window.pdHeroLive) window.pdHeroLive(false);
       stage('intro');
+      // Спрашиваем бэкенд, есть ли он и подключена ли модель. Отвечать честно важнее,
+      // чем красиво: человек должен знать, уйдёт ли письмо. Пока ответ «нет», спрашиваем
+      // при каждом открытии — сеть могла просто мигнуть.
+      if (!probed || window.pdIdea.mode() !== 'live') {
+        probed = true;
+        window.pdIdea.probe(function(m, note){
+          if (!elNote) return;
+          if (note) elNote.textContent = note;
+          else elNote.textContent = pdSpeech.supported
+            ? 'Говорите свободно — ассистент слушает и задаёт вопросы.'
+            : 'В этом браузере нет распознавания речи — можно написать текстом.';
+        });
+      }
+      if (!pdSpeech.supported && elRec) {
+        // Нет распознавания — большая кнопка микрофона обманывает. Прячем её.
+        elRec.style.display = 'none';
+        if (elAlt) elAlt.textContent = 'Начать и написать текстом';
+      }
     }
     function closeAI(){
-      window.pdIdea.stopRecording();
+      pdSpeech.stop();
       ai.classList.remove('open');
       document.body.classList.remove('ai-session-open');
       document.body.style.overflow = '';
@@ -5033,27 +5324,171 @@
       setTimeout(function(){ el.classList.add('show'); }, 30);
     }
 
-    function startCapture(){
-      round++;
-      if (round === 1) { field.innerHTML = ''; resetSlots(); }
-      stage('capture');
-      window.pdIdea.startRecording(addWord);
-    }
-    function stopCapture(){
-      window.pdIdea.stopRecording();
-      card = window.pdIdea.buildConceptSummary(round);
-      document.getElementById('aiTitle').textContent = card.title;
-      document.getElementById('aiIdea').textContent = card.idea;
-      document.getElementById('aiWho').textContent = card.who;
-      document.getElementById('aiFeel').textContent = card.feel;
-      var tags = document.getElementById('aiTags');
-      tags.innerHTML = '';
-      card.tags.forEach(function(t){
-        var sp = document.createElement('span');
-        sp.textContent = t;
-        tags.appendChild(sp);
+    // ================= разговор =================
+    // Один шаг разговора: реплика человека уходит на сервер, оттуда возвращаются
+    // смысловые объекты для поля и следующий вопрос. Пока ждём — микрофон думает.
+    var busy = false, turns = 0, ready = false, lastHow = 'voice', pending = '';
+
+    function say(text, how){
+      if (!text) return;
+      // Человек не замолкает, пока модель думает. Сказанное в это время не выбрасываем,
+      // а склеиваем и отправляем следующей репликой — иначе теряется середина рассказа.
+      if (busy) { pending = (pending + ' ' + text).replace(/\s+/g, ' ').trim(); return; }
+      busy = true; lastHow = how || 'voice';
+      setThink(true);
+      showErr('');
+      var afterTurn = function(){
+        if (!pending) return;
+        var next = pending; pending = '';
+        setTimeout(function(){ say(next, lastHow); }, 60);
+      };
+      window.pdIdea.say(text, lastHow, function(d){
+        busy = false; setThink(false);
+        turns++;
+        (d.words || []).forEach(function(w){ addWord(w.t, w.w || 1, !!w.key); });
+        ask(d.reply, d.sub);
+        if (elHeard) { elHeard.innerHTML = ''; elHeard.className = 'ai-heard'; }
+        if (elDone) elDone.classList.add('on');
+        if (d.ready && !ready) {
+          ready = true;
+          if (elDone) elDone.classList.add('hot');
+        }
+        afterTurn();
+      }, function(err, d){
+        busy = false; setThink(false);
+        // Даже если реплика не прошла, кнопка сборки должна быть доступна:
+        // тупик страшнее неполного брифа.
+        if (err === 'no-backend') {
+          showErr('Связь с ассистентом потеряна. Можно собрать бриф из того, что уже сказано.');
+          if (elDone) { elDone.classList.add('on'); elDone.classList.add('hot'); }
+          pending = '';
+          return;
+        }
+        showErr(err);
+        if (d && d.ready && elDone) { elDone.classList.add('on'); elDone.classList.add('hot'); }
+        afterTurn();
       });
-      stage('summary');
+    }
+
+    // Вопрос ассистента подменяется с короткой перерисовкой, а не мгновенно —
+    // иначе на экране «дёргается» заголовок и непонятно, что он изменился.
+    function ask(reply, sub){
+      if (!reply || !elPrompt) return;
+      elPrompt.style.opacity = '0';
+      setTimeout(function(){
+        elPrompt.textContent = reply;
+        if (elPromptSub) elPromptSub.textContent = sub || '';
+        elPrompt.style.opacity = '';
+      }, 220);
+    }
+
+    function setThink(on){
+      if (!elStop) return;
+      if (on) elStop.classList.add('think');
+      else elStop.classList.remove('think');
+    }
+    function showErr(msg){ if (elErr) elErr.textContent = msg || ''; }
+
+    function micState(){
+      if (!elStop) return;
+      elStop.classList.remove('hear', 'mute');
+      if (!pdSpeech.supported) { elStop.style.display = 'none'; return; }
+      elStop.classList.add(pdSpeech.listening() ? 'hear' : 'mute');
+      elStop.setAttribute('aria-label', pdSpeech.listening() ? 'Микрофон включён — нажмите, чтобы поставить на паузу' : 'Микрофон на паузе — нажмите, чтобы продолжить');
+    }
+
+    // Обработчики распознавания: живая строка «услышано» и отправка по паузе в речи.
+    var SPEECH = {
+      heard: function(fin, inter){
+        if (!elHeard) return;
+        elHeard.className = 'ai-heard' + (fin || inter ? ' hot' : '');
+        elHeard.innerHTML = pdEsc(fin) + (inter ? ' <i>' + pdEsc(inter) + '</i>' : '');
+      },
+      utterance: function(text){ say(text, 'voice'); },
+      state: function(){ micState(); },
+      fail: function(code){
+        micState();
+        if (code === 'denied') showErr('Микрофон запрещён в настройках браузера — напишите текстом.');
+        else if (code === 'nomic') showErr('Микрофон не найден — напишите текстом.');
+        else showErr('Распознавание речи прервалось — напишите текстом.');
+        openSay(true);
+      }
+    };
+    function pdEsc(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    function openSay(focus){
+      if (!elSay) return;
+      elSay.classList.add('on');
+      if (focus && elSayIn) setTimeout(function(){ try { elSayIn.focus(); } catch (e) {} }, 120);
+    }
+
+    // Вход в разговор: voice — сразу слушаем, text — сразу поле ввода.
+    function startCapture(how){
+      var fresh = turns === 0;
+      if (fresh) { field.innerHTML = ''; resetSlots(); }
+      stage('capture');
+      showErr('');
+      if (elDone) { if (turns > 0) elDone.classList.add('on'); else elDone.classList.remove('on'); }
+      openSay(how === 'text');
+      if (!pdSpeech.supported) openSay(false);
+
+      var go = function(){
+        if (how === 'text') { if (elSayIn) try { elSayIn.focus(); } catch (e) {} return; }
+        if (pdSpeech.supported) { pdSpeech.start(SPEECH); micState(); }
+        else openSay(true);
+      };
+
+      if (!fresh) { go(); return; }         // «Рассказать ещё» — сессия уже есть
+      setThink(true);
+      window.pdIdea.begin(function(d){
+        setThink(false);
+        ask(d.reply, d.sub);
+        go();
+      }, function(err){
+        setThink(false);
+        showErr(err === 'no-backend' ? 'Ассистент недоступен. Напишите нам через раздел «Контакты».' : err);
+        openSay(true);
+      });
+    }
+
+    // ================= сборка брифа =================
+    function stopCapture(){
+      // Человек нажал «собрать» на полуслове — досказанное не выбрасываем, а отправляем
+      // последней репликой; бриф собираем только после того, как она дошла.
+      if (pdSpeech.listening()) pdSpeech.stop(true);
+      // Недописанная строка в поле — тоже часть рассказа, отправляем её тем же ходом.
+      if (elSayIn && elSayIn.value.replace(/\s+/g, ' ').trim().length > 1) sendTyped();
+      micState();
+      var build = function(){
+        setThink(true);
+        showErr('');
+        window.pdIdea.brief(function(d){
+          setThink(false);
+          card = d.card || {};
+          document.getElementById('aiTitle').textContent = card.title || '';
+          document.getElementById('aiIdea').textContent = card.idea || '';
+          document.getElementById('aiWho').textContent = card.who || '';
+          document.getElementById('aiFeel').textContent = card.feel || '';
+          var tags = document.getElementById('aiTags');
+          tags.innerHTML = '';
+          (card.tags || []).forEach(function(t){
+            var sp = document.createElement('span');
+            sp.textContent = t;
+            tags.appendChild(sp);
+          });
+          stage('summary');
+        }, function(err){
+          setThink(false);
+          showErr(err === 'no-backend' ? 'Ассистент недоступен — бриф собрать не получилось.' : err);
+        });
+      };
+      // Ждём, пока долетит последняя реплика: бриф должен видеть всё сказанное.
+      // Ждём не бесконечно — если сервер молчит, собираем по тому, что уже есть.
+      var t0 = Date.now();
+      (function wait(){
+        if (!busy || Date.now() - t0 > 12000) { build(); return; }
+        setTimeout(wait, 200);
+      })();
     }
 
     [document.getElementById('aiWidget')].concat([].slice.call(document.querySelectorAll('[data-ai-open]'))).forEach(function(el){
@@ -5106,17 +5541,48 @@
       raf2 = requestAnimationFrame(tick2);
     })();
     document.getElementById('aiClose').addEventListener('click', flyOutOfAI);
-    document.getElementById('aiRec').addEventListener('click', startCapture);
-    document.getElementById('aiStop').addEventListener('click', stopCapture);
-    document.getElementById('aiMore').addEventListener('click', startCapture); // смыслы не стираются — дополняются
+    // Большая кнопка на первом экране — начать голосом; ссылка рядом — начать текстом.
+    document.getElementById('aiRec').addEventListener('click', function(){ startCapture('voice'); });
+    if (elAlt) elAlt.addEventListener('click', function(){ startCapture('text'); });
+    // Микрофон в разговоре — пауза и продолжение, а не «завершить»: завершение теперь отдельной кнопкой.
+    document.getElementById('aiStop').addEventListener('click', function(){
+      if (pdSpeech.listening()) { pdSpeech.stop(true); micState(); }
+      else { pdSpeech.start(SPEECH); micState(); }
+    });
+    if (elDone) elDone.addEventListener('click', stopCapture);
+    if (elSayGo) elSayGo.addEventListener('click', sendTyped);
+    if (elSayIn) elSayIn.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); sendTyped(); }
+    });
+    document.getElementById('aiMore').addEventListener('click', function(){ startCapture(lastHow); }); // смыслы не стираются — дополняются
     document.getElementById('aiSend').addEventListener('click', function(){ stage('form'); });
     document.getElementById('aiFormEl').addEventListener('submit', function(e){
       e.preventDefault();
-      window.pdIdea.submitConcept(card, {
+      var btn = this.querySelector('button[type="submit"]');
+      if (btn) { btn.disabled = true; btn.textContent = 'Отправляем…'; }
+      var restore = function(){ if (btn) { btn.disabled = false; btn.innerHTML = '▶︎ Отправить'; } };
+      window.pdIdea.send({
         name: document.getElementById('aiName').value,
         contact: document.getElementById('aiContact').value,
         company: document.getElementById('aiCompany').value
-      }, function(){ stage('sent'); });
+      }, function(d){
+        restore();
+        // Демо-режим: не врём, что письмо ушло. Формулировки переписываем в обе стороны —
+        // иначе после демо-сессии живая отправка отчитается чужим текстом.
+        var h2 = document.querySelector('#aiSent h2'), p = document.querySelector('#aiSent p');
+        if (d && d.demo) {
+          h2.textContent = 'Демо-режим: письмо не отправлено.';
+          p.textContent = 'Бриф собран, но ассистент не подключён к почте — напишите нам через раздел «Контакты».';
+        } else {
+          h2.textContent = 'Спасибо. Мы получили описание проекта.';
+          p.textContent = 'Следующий шаг — персональная креативная сессия с Андреем Судариковым.';
+        }
+        stage('sent');
+      }, function(err){
+        restore();
+        var box = document.getElementById('aiFormErr');
+        if (box) box.textContent = err === 'no-backend' ? 'Отправка недоступна. Напишите нам через раздел «Контакты».' : err;
+      });
     });
     document.getElementById('aiBook').addEventListener('click', function(){
       closeAI();
