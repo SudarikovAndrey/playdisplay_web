@@ -169,7 +169,11 @@ step "Заливаю site/ на $SSH_HOST"
 #   .well-known — подтверждение SSL-сертификата
 #   api/config.php, api/sessions/, api/outbox/ — ключи и рабочие данные ассистента
 EXCLUDES=(
-  --exclude='.DS_Store'
+  # «-s» = правило только для отправляющей стороны: мусор macOS с Мака не уезжает,
+  # но на сервере рука не связана. Обычный --exclude тут был ошибкой: он защищает
+  # .DS_Store и на сервере тоже, а папка с ним внутри считается непустой и не
+  # удаляется. Проверено: так на сервере навсегда остались бы огрызки _ARCHIVE.
+  --filter='-s .DS_Store'
   --exclude='/old/'
   --exclude='/.git/'
   --exclude='/.well-known/'
@@ -200,8 +204,22 @@ RSYNC=(rsync -rltzc --omit-dir-times --chmod=D755,F644 --delete --itemize-change
 PLAN=$("${RSYNC[@]}" --dry-run 2>&1) || die "rsync не смог посмотреть сервер:
 $PLAN"
 
-CHANGED=$(printf '%s\n' "$PLAN" | grep -c '^[<>ch]' || true)
+# Разбор вывода --itemize-changes. Код изменения — ровно 11 символов, где первый
+# символ это операция, а второй — тип объекта (f файл, d папка, L ссылка).
+# Раньше здесь стоял грубый '^[<>ch]', и в список «отправлено» попадали
+# предупреждения вида «cannot delete non-empty directory» — они тоже с «c».
+ITEM='^[<>ch.][fdLDS]'
+CHANGED=$(printf '%s\n' "$PLAN" | grep -cE "$ITEM" || true)
 DELETED=$(printf '%s\n' "$PLAN" | grep -c '^\*deleting' || true)
+
+# Всё, что не код изменения и не удаление — это жалобы rsync. Их надо видеть.
+GRIPES=$(printf '%s\n' "$PLAN" | grep -vE "$ITEM" | grep -v '^\*deleting' \
+         | grep -vE '^(sending|sent|total|$)' || true)
+if [ -n "$GRIPES" ]; then
+  printf "\n"
+  warn "rsync жалуется:"
+  printf '%s\n' "$GRIPES" | head -10 | sed 's/^/    /'
+fi
 printf "  к отправке: %s%s%s, к удалению на сервере: %s%s%s\n" \
   "$bold" "$CHANGED" "$off" "$bold" "$DELETED" "$off"
 
@@ -217,7 +235,7 @@ if [ "$CHANGED" = 0 ] && [ "$DELETED" = 0 ]; then
   SENT_LIST=""
 elif [ "$DRY" = 1 ]; then
   warn "холостой прогон — ничего не отправлено"
-  SENT_LIST=$(printf '%s\n' "$PLAN" | grep '^[<>ch]' | awk '{print $2}')
+  SENT_LIST=$(printf '%s\n' "$PLAN" | grep -E "$ITEM" | cut -c13-)
 else
   if [ "$DELETED" -gt 0 ] && [ "$YES" = 0 ]; then
     if [ -t 0 ]; then
@@ -231,7 +249,10 @@ else
   fi
   OUT=$("${RSYNC[@]}" 2>&1) || die "rsync упал:
 $OUT"
-  SENT_LIST=$(printf '%s\n' "$OUT" | grep '^[<>ch]' | awk '{print $2}')
+  SENT_LIST=$(printf '%s\n' "$OUT" | grep -E "$ITEM" | cut -c13-)
+  LEFT=$(printf '%s\n' "$OUT" | grep -c 'cannot delete' || true)
+  [ "$LEFT" -gt 0 ] && warn "папок не удалось убрать: $LEFT — внутри осталось что-то,
+    чего rsync не трогает. Посмотри список выше."
   ok "залито, сайт обновлён: $SITE_URL"
 fi
 
@@ -247,6 +268,16 @@ else
   fi
   [ -z "$COMMITS" ] && COMMITS="(новых коммитов нет — залито текущее состояние)"
 
+  # Список файлов в журнале подрезаем: одна поставка бывает и на 364 файла,
+  # а при чистке сервера — на тысячу. Полный перечень такой длины журнал топит.
+  SENT_SHOWN=""
+  if [ -n "$SENT_LIST" ]; then
+    N_SENT=$(printf '%s\n' "$SENT_LIST" | wc -l | tr -d ' ')
+    SENT_SHOWN=$(printf '%s\n' "$SENT_LIST" | head -40)
+    [ "$N_SENT" -gt 40 ] && SENT_SHOWN="$SENT_SHOWN
+…и ещё $((N_SENT-40))"
+  fi
+
   ENTRY="## $(date '+%Y-%m-%d %H:%M') — $WORK_BRANCH @ $HEAD_SHA
 
 **Коммиты в этой поставке**
@@ -255,7 +286,7 @@ $COMMITS
 \`\`\`
 
 **На сервер отправлено файлов:** $CHANGED, удалено: $DELETED
-$( [ -n "$SENT_LIST" ] && printf '```\n%s\n```' "$SENT_LIST" )
+$( [ -n "$SENT_SHOWN" ] && printf '```\n%s\n```' "$SENT_SHOWN" )
 "
   # Новая запись встаёт сразу под маркером, то есть выше всех предыдущих.
   MARK="<!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->"
