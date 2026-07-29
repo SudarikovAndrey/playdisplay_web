@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game37';</script>
+<script>window.PD_V = 'b2807-game38';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3457,7 +3457,10 @@ function gSpawnAhead() {
     for (let i = Math.max(0, cur - C.behind); i <= to; i++) {
       if (WORLD.pending[i]) continue;
       const d = i - cur;
-      const lod = d <= 1 ? 0 : d === 2 ? 1 : d === 3 ? 2 : 3;
+      // при устойчиво низком FPS ближние чанки не поднимаем до LOD0 — экономим
+      // и генерацию, и точки (адаптивное качество, дополняет G_LOD по земле)
+      const lodMin = G_LOD >= 2 ? 1 : 0;
+      const lod = Math.max(lodMin, d <= 1 ? 0 : d === 2 ? 1 : d === 3 ? 2 : 3);
       // АПГРЕЙД ПО ПРИБЛИЖЕНИЮ: чанк с этим индексом впервые появляется на дальнем
       // краю окна (d=ahead=4 → LOD3, самая редкая сетка) и раньше на этом навсегда
       // и оставался — «жидкий» рельеф в игре был именно этим: то, что видно сейчас
@@ -3465,6 +3468,10 @@ function gSpawnAhead() {
       // чанк уже не хуже нужного LOD — пропускаем, иначе пересобираем плотнее.
       const ex = have[i];
       if (ex && ex.userData.lod <= lod) continue;
+      // БЕЗ WORKER (file://) АПГРЕЙДЫ ВЫКЛЮЧЕНЫ: каждый стоил бы 60-110 мс фриза
+      // в кадре, и на подлёте они шли бы каждые 260 мс — постоянные рывки и FPS 30.
+      // Недостающие чанки строим один раз сразу в среднем качестве (LOD1).
+      if (!WORLD.wk && ex) continue;
       // ГЕНЕРАЦИЯ В WORKER (ТЗ §20, §36.8 «не блокирует основной поток»). Чанк
       // считается 40–90 мс — в кадре это видимый рывок примерно раз в секунду.
       // Асинхронность безопасна: впереди держим 4 чанка (около 800 юнитов), на полной
@@ -3477,12 +3484,12 @@ function gSpawnAhead() {
         WORLD.wk.postMessage({ cmd: 'chunk', index: i, lod: lod });
       } else {
         // Без Worker (file:// его блокирует) чанк считается прямо в кадре — это
-        // 60-110 мс фриза. Не чаще четырёх раз в секунду: между рывками кадры
-        // успевают пройти плавно, окно всё равно заполняется за пару секунд.
+        // 60-110 мс фриза. Не чаще двух раз в секунду и сразу в LOD1: реже рывки
+        // на старте, а апгрейдов в этом режиме нет вовсе (см. выше).
         const nowMs = performance.now();
-        if (nowMs - (WORLD.lastSync || 0) < 260) return;
+        if (nowMs - (WORLD.lastSync || 0) < 500) return;
         WORLD.lastSync = nowMs;
-        gAddWorldChunk(gMakeWorldChunk(i, lod));
+        gAddWorldChunk(gMakeWorldChunk(i, Math.max(lod, 1)));
       }
       return;                       // не больше одной заявки за кадр
     }
@@ -4147,7 +4154,8 @@ function gMetrics(dt) {
     'FPS <b class="' + (f < 45 ? 'bad' : '') + '">' + f + '</b>  ' + (dt * 1000).toFixed(1) + ' MS\n' +
     'POINTS <b>' + (inf.points / 1000).toFixed(0) + 'K</b>  CALLS <b>' + inf.calls + '</b>\n' +
     'DPR <b>' + renderer.getPixelRatio().toFixed(2) + '</b>  CHUNKS <b>' + (GAME.chunks ? GAME.chunks.length : 0) + '</b>  LOD <b>' + G_LOD + '</b>' +
-    (NEW_WORLD && WORLD ? '\nTERR <b>' + (gTerrPoints() / 1000).toFixed(0) + 'K</b>  WAIT <b>' + WORLD.inflight + '</b>' : '');
+    (NEW_WORLD && WORLD ? '\nTERR <b>' + (gTerrPoints() / 1000).toFixed(0) + 'K</b>  WAIT <b>' + WORLD.inflight + '</b>' +
+      (WORLD.wk ? '' : '  <b style="color:#ff8a5c">SYNC</b>') : '');   // SYNC = Worker недоступен (file://), генерация в кадре
 }
 
 function updateGame(dt, time) {
