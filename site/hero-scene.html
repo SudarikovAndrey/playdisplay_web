@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game32';</script>
+<script>window.PD_V = 'b2807-game33';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3276,9 +3276,11 @@ function gWorldMat() {
     ].join('\n'),
     fragmentShader: [
       'varying vec3 vCol; varying float vA;',
+      // спрайт жёстче (0.26 → 0.34): у референса точки — чёткие зёрна, а не боке;
+      // широкий мягкий ореол размывал рельеф в туман
       'void main() {',
       '  float d = length(gl_PointCoord - vec2(0.5));',
-      '  float a = smoothstep(0.5, 0.26, d) * vA;',
+      '  float a = smoothstep(0.48, 0.34, d) * vA;',
       '  if (a < 0.02) discard;',
       '  gl_FragColor = vec4(vCol, a);',
       '}'
@@ -4175,8 +4177,9 @@ function updateGame(dt, time) {
   // уводила фон в синий и лиловый, из-за чего белые точки рельефа теряли контраст
   // и картинка читалась вяло. Постоянный холодный фон держит силуэт.
   if (NEW_WORLD && WORLD) {
-    skyMat.uniforms.uHorizon.value.setRGB(0.075, 0.245, 0.285);
-    skyMat.uniforms.uZenith.value.setRGB(0.017, 0.031, 0.052);
+    // горизонт чуть темнее (29.07): светлая бирюза съедала контраст белых точек
+    skyMat.uniforms.uHorizon.value.setRGB(0.058, 0.195, 0.23);
+    skyMat.uniforms.uZenith.value.setRGB(0.014, 0.027, 0.048);
   } else {
     const skyK = 0.5 + 0.5 * Math.sin(time * 0.09);
     skyMat.uniforms.uHorizon.value.setHSL(0.46 + 0.22 * skyK, 0.52, 0.30 + 0.06 * skyK);
@@ -4383,7 +4386,13 @@ function updateGame(dt, time) {
       if (tud.ages[iT] > LIFE) continue;
       tud.ages[iT] += dt;
       tud.bz[iT] += tud.vz[iT] * dt + dz;
-      const aT = Math.max(0, 1 - tud.ages[iT] / LIFE);
+      // ЧАСТИЦА У КАМЕРЫ = ГИГАНТСКАЯ КЛЯКСА. Выхлоп получает +dz (компенсацию
+      // скорости мира) и на 300 км/ч пролетает СКВОЗЬ камеру (z≈17): PointsMaterial
+      // с аттенюацией раздувает точку у объектива в пятно на полэкрана — это и были
+      // мягкие круги по всему кадру. Гасим заранее и убиваем не долетев.
+      if (tud.bz[iT] > 8) { tud.ages[iT] = LIFE + 1; tp.setXYZ(iT, 0, -9999, 0); tc.setXYZ(iT, 0, 0, 0); continue; }
+      const nearK = 1 - clamp01((tud.bz[iT] - 4) / 4);   // плавное затухание с z=4 до z=8
+      const aT = Math.max(0, 1 - tud.ages[iT] / LIFE) * nearK;
       const vor = tud.rad[iT] < 0;                     // вихрь с крыла
       const rr = Math.abs(tud.rad[iT]) * (1 + tud.ages[iT] * (vor ? 9 : 4)); // спираль раскрывается конусом
       const aH = tud.ph[iT] + (vor ? spinT * 0.35 : spinT);

@@ -148,7 +148,7 @@ const CONFIG = {
     band: 9,          // шаг горизонталей террас по высоте
     bandEps: 0.42,    // толщина горизонтали
     jitter: 0.5,      // джиттер точек цепочки — не лазерный пунктир
-    size: 2.4,        // размер точки контура (близко к sizeEdge)
+    size: 2.8,        // размер точки контура (заметно крупнее заливки)
     brBase: 1.15, brVar: 0.75,   // яркость: почти белая на выраженных гребнях
     budget: 11000,    // потолок точек контура на чанк
     streamProb: 0.3, streamN: 18 // струи вниз от кромок обрывов
@@ -389,9 +389,12 @@ function chunkField(def) {
          + (fbm(x * Wp.smallFreq + 97 + wSeed, zw * Wp.smallFreq + 61, 2, 0.5) - 0.5) * 2 * Wp.smallAmp;
   }
 
-  // база стен: чем дальше от оси, тем выше — это и есть «каньон»
+  // база стен: чем дальше от оси, тем выше — это и есть «каньон».
+  // Подъём w*0.9 → w*0.62 (29.07, композиция): стены начинались слишком полого и
+  // при ширине кадра ±70 юнитов оставались на краях экрана — центр читался
+  // равниной. Теперь склон круче и стены входят в кадр.
   function wallProfile(dx, wallH, w) {
-    const t = clamp01((Math.abs(dx) - w) / Math.max(1, w * 0.9));
+    const t = clamp01((Math.abs(dx) - w) / Math.max(1, w * 0.62));
     return smoothstep(0, 1, t) * wallH;
   }
 
@@ -424,6 +427,12 @@ function chunkField(def) {
         case T.GORGE: {
           // дно ровное, стены круто вверх; ЛЕДЖИ в ущелье — боковые выступы
           h += wallProfile(dx, P.wallH, w) + meso(x, zw) * 6 * rough;
+          // РАЗЛОМ ПОД ТРАССОЙ (29.07, композиция): у каньона полёт идёт по верхней
+          // кромке, дно уходит на P.depth*1.6 вниз — глубина ПОД кораблём, как на
+          // референсе («ущелья и обрывы»). Коридор за провалом не ныряет: он
+          // привязан к осевой высоте в buildCorridor.
+          if (def.type === T.CANYON)
+            h -= P.depth * 1.6 * Math.exp(-(dx * dx) / (2 * (w * 0.62) * (w * 0.62)));
           if (def.type === T.GORGE && P.ledges) {
             const lg = Math.sin(t * Math.PI * P.ledges * 2) * 0.5 + 0.5;
             if (Math.abs(dx) > w * 0.8 && Math.abs(dx) < w * 1.35)
@@ -489,7 +498,7 @@ function chunkField(def) {
       const relFar = (0.28 + 0.72 * smoothstep(w * 0.7, w * 2.4, Math.abs(dxTrue))) * sky;
       h += ridged(x * 0.0075, zw * 0.0075, 5, 2.4) * 48 * relFar;
       h += ridged(x * 0.021 + 37, zw * 0.021 + 11, 3, 3.2) * 15 * relFar;
-      h += smoothstep(w * 2.0, CONFIG.world.halfWidth, Math.abs(dxTrue)) * 40 * sky
+      h += smoothstep(w * 2.0, CONFIG.world.halfWidth, Math.abs(dxTrue)) * 58 * sky
            * (0.35 + 0.65 * fbm(x * 0.004 + 61, zw * 0.004 + 29, 3, 0.55));
       // ── ГАРАНТИРОВАННЫЙ ПРОХОД ───────────────────────────────────────────
       // Рельеф добавлен и над трассой тоже, поэтому ложбину вдоль ИСТИННОЙ оси
@@ -607,6 +616,9 @@ function buildCorridor(def, F) {
     // желаемая высота: над полом с запасом, но не выше потолка минус запас
     let y = fy + CONFIG.ship.floorClear + 4;
     if (isFinite(cy)) y = Math.min(y, cy - CONFIG.ship.ceilClear);
+    // над провалами (разлом каньона, пропасть моста) трасса НЕ ныряет вслед за
+    // полом: держится не ниже своей осевой высоты — полёт по кромке, глубина внизу
+    y = Math.max(y, a[1] - 2);
     y = clamp(y, CONFIG.ship.yMin + 2, CONFIG.ship.yMax - 2);
     pts.push({ t: t, z: def.zStart + t * def.length, x: a[0], y: y, yWant: y,
                floor: fy, ceil: cy, r: Math.max(6, def.corridorW * 0.42) });
@@ -1190,6 +1202,7 @@ function makeHeightProbe(plan) {
       const fy = F.floor(a[0], t), cy = F.ceil(a[0], t);
       let y = fy + CONFIG.ship.floorClear + 4;
       if (isFinite(cy)) y = Math.min(y, cy - CONFIG.ship.ceilClear);
+      y = Math.max(y, a[1] - 2);   // как в buildCorridor: над провалом не ныряем
       return { x: a[0], y: clamp(y, CONFIG.ship.yMin + 2, CONFIG.ship.yMax - 2),
                chunk: i, type: def.type, w: def.corridorW };
     }
