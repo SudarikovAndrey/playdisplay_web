@@ -80,6 +80,14 @@
   #game-score { font-size: 46px; font-weight: 800; letter-spacing: -.02em; line-height: 1;
     font-variant-numeric: tabular-nums; text-shadow: 0 2px 24px rgba(0,0,0,.5); }
   #game-label { font-size: 9px; letter-spacing: .3em; opacity: .55; margin-top: 6px; text-transform: uppercase; transition: opacity .3s; }
+  /* СПАЙС: оранжевый круглый значок + счёт тем же моноширинным шрифтом, под энергией */
+  #game-spice { margin-top: 10px; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+  #game-spice i { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto;
+    background: radial-gradient(circle at 38% 34%, #ffd9a0 0%, #ff9a3d 45%, #c65a10 100%);
+    box-shadow: 0 0 10px rgba(255, 154, 61, 0.75); }
+  #game-spice b { font-size: 22px; font-weight: 800; letter-spacing: -.01em; line-height: 1;
+    color: #ffa14e; font-family: inherit; }
+  #game-spice b.pop { animation: gScorePop .4s cubic-bezier(.2,1.6,.4,1); }
   #game-score { transform-origin: right top; } /* пульс растёт влево-вниз, не за край экрана */
   #game-score.pop { animation: gScorePop .5s cubic-bezier(.2,1.6,.4,1); }
   @keyframes gScorePop {
@@ -431,6 +439,7 @@
 <div id="game-hud">
   <div id="game-score">0</div>
   <div id="game-label">ЭНЕРГИЯ СОБРАНА</div>
+  <div id="game-spice"><i></i><b id="game-spice-num">0</b></div>
   <div id="game-exit">КЛИК ИЛИ ESC — ВЕРНУТЬСЯ В ПОРТФОЛИО</div>
 </div>
 <!-- МОБИЛА: на тач-экране палец занят рулём корабля, кликом-по-сцене (как на компе) выйти
@@ -621,6 +630,15 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
+<script>window.PD_V = 'b2807-game43';</script>
+<script>
+// Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
+// выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
+// в проекте нет. Раньше версии стояли руками в каждом теге и разъезжались —
+// браузер месяцами держал старый world.js, и правки просто не доезжали.
+document.write('<scr' + 'ipt src="ship-points.js?v=' + PD_V + '"><\/scr' + 'ipt>');
+document.write('<scr' + 'ipt src="world.js?v=' + PD_V + '"><\/scr' + 'ipt>');
+</script>
 <script>
 /* ============================================================
    PLAYDISPLAY — воксельное выставочное пространство будущего.
@@ -664,7 +682,7 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 })();
 const N = WORKS.length;
 // ---------- Настройки (сохраняются в браузере через «Сохранить») ----------
-window.PD_BUILD = 'b2807-game21'; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
+window.PD_BUILD = PD_V; // номер сборки — виден на кнопке DEV и в консоли (для проверки версии на сайте)
 console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
@@ -2468,8 +2486,10 @@ const Sound = (() => {
     k(master.gain, M ? 0.09 : 0.0001, 0.25);
     k(padG.gain, 0.3 * m * M, 0.3);
     k(padF.frequency, 170 + 360 * m, 0.35);
-    k(noiseG.gain, (0.08 * m + 0.13 * roll) * M, 0.14);   // вираж = шум набегающего потока
-    k(noiseF.frequency, 260 + 480 * m + 900 * roll, 0.18);
+    // плотность звука растёт со скоростью НЕЛИНЕЙНО (28.07): на верхах поток набегающего
+    // воздуха выходит на первый план — слышно, что летишь быстро, а не просто громче гудит
+    k(noiseG.gain, (0.08 * m + 0.16 * m * m * m + 0.13 * roll) * M, 0.14);
+    k(noiseF.frequency, 260 + 480 * m + 620 * m * m + 900 * roll, 0.18);
     k(riseG.gain, 0, 0.2);
   }
   // цифровые one-shot'ы игры: мягкие, синтез на месте, всё через мастер (уважают выключатель)
@@ -2535,8 +2555,14 @@ const Sound = (() => {
 // По сглаженному FPS: если проседает — сперва снижаем pixel ratio (невидимо, самый большой
 // выигрыш), затем плотность точек; появился запас — плавно возвращаем. Не воюет с ползунком:
 // эффективная плотность = «Кол-во точек» × qScale.
-const _dprFull = () => Math.min(devicePixelRatio || 1, isMobile ? 1.25 : 1.5);
-let qFps = 60, qScale = 1, qDpr = _dprFull(), qWait = 0, qWarm = 0;
+// В игре потолок DPR ниже: точек в кадре сотни тысяч, все с additive-блендингом,
+// и стоимость кадра здесь определяет не геометрия, а закраска пикселей. Снижение
+// с 1.5 до 1.25 убирает треть работы по пикселям почти без потери резкости точек.
+// GAME объявляется дальше по файлу (const, TDZ) — _dprFull не может звать GAME.on до
+// первого фактического использования, иначе сразу ReferenceError и весь скрипт падает
+// ещё на загрузке (что и произошло: карусель/игра/скролл не работали именно из-за этого).
+const _dprFull = () => Math.min(devicePixelRatio || 1, isMobile ? 1.25 : ((typeof GAME !== 'undefined' && GAME.on) ? 1.25 : 1.5));
+let qFps = 60, qScale = 1, qDpr = Math.min(devicePixelRatio || 1, isMobile ? 1.25 : 1.5), qWait = 0, qWarm = 0;
 let qGood = 0, qLastRaise = -1e9, qRaiseLock = 0; // защита от «качелей»
 function autoQuality(dt) {
   qWarm += dt;
@@ -2604,6 +2630,20 @@ const GAME = { on: false, z: 0, speed: 90, score: 0, hurtT: 0, exit: -1, enter: 
 // чанки мельче, но их больше: короткий чанк строится за миллисекунды — без фризов.
 // Бюджет GPU: 16 чанков × ~40k точек ≈ 0.6М — вентилятор молчит, картинка та же
 // (дальние/боковые точки на экране субпиксельные, их отсутствие не видно)
+// ── НОВЫЙ МИР (28.07). Генератор трассы вынесен в world.js: граф маршрута, 10 типов
+// чанков-ситуаций, дисторсия формы, отсечение невидимых точек. Старый путь оставлен
+// целиком и включается ?oldworld=1 — страховка на случай, если в новом что-то не так
+// на реальном железе: я не могу проверить игру глазами из песочницы.
+const NEW_WORLD = !/[?&]oldworld=1/.test(location.search) && typeof PDWorld !== 'undefined';
+let WORLD = null;   // { mgr, probe, seed } — живёт от enterGame до exitGame
+// Плотность мира крутится из адреса: ?dens=2 вдвое плотнее, ?dens=0.5 вдвое реже.
+// Нужен именно регулятор, а не «сделать в 10 раз»: 10× от текущих 337k это 3.4 млн
+// точек, столько не выдержит ни один ноутбук. Так можно найти предел своей машины.
+const DENS_MUL = (function () {
+  const m = /[?&]dens=([\d.]+)/.exec(location.search);
+  return m ? Math.max(0.2, Math.min(4, parseFloat(m[1]) || 1)) : 1;
+})();
+let worldEnvFade = 1;   // общий множитель яркости мира: влёт в игру и выход из неё
 const G_DEPTH = 24, G_AHEAD = 16;
 const G_STEP = (window.matchMedia && matchMedia('(pointer: coarse)').matches) ? 0.62 : 0.36; // шаг сетки точек
 // адаптивный LOD для слабых машин: если FPS держится ниже 45 — новые чанки строятся реже
@@ -2650,7 +2690,15 @@ const G_ONSET = { feature: 500, mesa: 1300, blade: 2300, chasm: 3300 };
 // естественный рельеф: fBm-холмы + острые хребты + каньоны-провалы. Никаких плоских плит
 // и вертикальных стен, параллельных экрану. Уровень ПРОХОДИМ: рельеф вдавлен вдоль коридора,
 // горы ограничены мягким потолком (корабль достаёт до 50 при потолке рельефа ~40)
+// ПЕРЕХОДНИК ВЫСОТЫ. Снаружи имя gTerrainH сохранено намеренно: от него зависят
+// коллизия корабля, подсветка опасности, спавн ядер, камера и бонус за бреющий полёт —
+// переписывать все эти места было бы лишним риском. В новом мире высоту отдаёт
+// world.js (поле нужного чанка), в старом — прежняя функция, теперь gTerrainHOld.
 function gTerrainH(x, z) {
+  if (NEW_WORLD && WORLD) return WORLD.probe.floor(x, z);
+  return gTerrainHOld(x, z);
+}
+function gTerrainHOld(x, z) {
   const wFeature = gStage(z, G_ONSET.feature, 300);   // шпили/каньоны/ворота — появляются первыми
   const wMesa    = gStage(z, G_ONSET.mesa, 350);      // ритмичные столовые плато
   // силуэт 2 (слалом) с 28.07 — НЕ рельеф: настоящие наклонные 3D-колонны/балки,
@@ -2771,9 +2819,19 @@ function gMakeChunk(zNoise) {
       // больше доля цвета биома — рельеф перестаёт быть блёклой пылью
       const g = 0.46 + 0.54 * clamp01((h + 8) / 40);
       const vb = 0.74 + 0.26 * j2;
-      colA[o]     = (g + (tR - g) * 0.26) * vb;
-      colA[o + 1] = (g + (tG - g) * 0.26) * vb;
-      colA[o + 2] = (g + (tB - g) * 0.26) * vb;
+      // ИЕРАРХИЯ ТОЧЕК (28.07): дальняя периферия — фон (тусклее, уходит в дымку), полоса
+      // вдоль коридора — «просканированное» пространство (контрастнее, ближе к цвету биома),
+      // и один процент точек — искры-акценты. Число частиц то же, роли разные: кадр перестаёт
+      // быть однородным шумом и читается как раскрытая, а не просто заполненная сцена.
+      const dPath = Math.abs(px - gPathX(zNoise + G_DEPTH - pz));
+      const near = 1 - smoothstep(26, 86, dPath);            // 1 у трассы → 0 на периферии
+      const role = 0.62 + 0.5 * near;                        // фон тусклее, коридор ярче
+      const tint = 0.16 + 0.24 * near;                       // и цветнее у трассы
+      let gr2 = g * role;
+      if (j2 > 0.99) gr2 *= 1.9;                             // редкие искры-акценты
+      colA[o]     = (gr2 + (tR - gr2) * tint) * vb;
+      colA[o + 1] = (gr2 + (tG - gr2) * tint) * vb;
+      colA[o + 2] = (gr2 + (tB - gr2) * tint) * vb;
       o += 3;
     }
   }
@@ -2850,6 +2908,12 @@ function gMakeChunk(zNoise) {
       orb.userData.baseY = oy;
       orb.userData.ph = gHash(zNoise, 77 + ci) * 6.28;
       orb.userData.spin = 0.7 + gHash(zNoise, 79 + ci) * 1.1;
+      // РЕДКАЯ ЭНЕРГИЯ (28.07, иерархия точек): ~каждый восьмой орб — крупнее, дышит сильнее,
+      // даёт бонус и мощную вспышку при сборе. Особый отклик без роста числа частиц.
+      if (gHash(zNoise, 210 + ci) > 0.88) {
+        orb.userData.rare = true;
+        orb.userData.baseScale = 1.5;
+      }
       grp.add(orb);
     }
   }
@@ -2999,19 +3063,77 @@ function gMakeChunk(zNoise) {
 
 // коллектибл: ЕДИНЫЙ узнаваемый образ — «энергоядро»: яркое янтарное ядро в тонком тиловом
 // кольце + световой столб к земле (маяк виден издалека, объект читается как ценный предмет)
+// Материал наград с ПОТОЛКОМ экранного размера. У PointsMaterial с sizeAttenuation
+// точка возле камеры раздувается в гигантское размытое пятно на весь кадр — те самые
+// «кляксы». На референсе кольца и маяки — маленькие аккуратные окружности на любой
+// дистанции. Свой атрибут aCol, не color: инъекция color в сырой ShaderMaterial —
+// недокументированное поведение THREE (уже обжигались). uOp копируется из
+// material.opacity в onBeforeRender — все существующие фейды (сбор, выход из игры)
+// продолжают работать как писали: через material.opacity.
+function gBeaconMat(size, maxPx) {
+  const m = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uSize: { value: size }, uPx: { value: innerHeight },
+                uMax: { value: maxPx }, uOp: { value: 0.95 } },
+    vertexShader: [
+      'attribute vec3 aCol; varying vec3 vCol;',
+      'uniform float uSize, uPx, uMax;',
+      'void main() {',
+      '  vCol = aCol;',
+      '  vec4 mv = modelViewMatrix * vec4(position, 1.0);',
+      '  gl_Position = projectionMatrix * mv;',
+      '  gl_PointSize = clamp(uSize * uPx * 0.5 / max(-mv.z, 1.0), 1.0, uMax);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying vec3 vCol; uniform float uOp;',
+      'void main() {',
+      '  float d = length(gl_PointCoord - vec2(0.5));',
+      '  float a = smoothstep(0.5, 0.24, d) * uOp;',
+      '  if (a < 0.02) discard;',
+      '  gl_FragColor = vec4(vCol, a);',
+      '}'
+    ].join('\n')
+  });
+  m.opacity = 0.95;
+  return m;
+}
+
 function gMakeOrb(seed) {
+  // СГУСТОК ЭНЕРГИИ (29.07, по запросу владельца): плотное почти белое ядро,
+  // тёплая внутренняя оболочка, два наклонных тиловых кольца в противофазе и
+  // редкие орбитальные искры. Яркость ядра > 1 — аддитив даёт горячее свечение.
   const p = [], c = [];
   function push(x, y, z, r, g, b, k) { p.push(x, y, z); c.push(r * k, g * k, b * k); }
-  // плотное ядро — почти белый центр с янтарной короной
-  for (let k = 0; k < 14; k++) {
-    const a = gHash(k, seed) * Math.PI * 2, b2 = gHash(seed, k) * Math.PI, rr = Math.pow(gHash(k * 3, seed), 0.6) * 0.55;
+  // ядро: плотный клубок, к центру белее и жарче
+  for (let k = 0; k < 34; k++) {
+    const a = gHash(k, seed) * Math.PI * 2, b2 = Math.acos(2 * gHash(seed, k) - 1);
+    const rr = Math.pow(gHash(k * 3, seed), 1.7) * 0.6;
     push(Math.sin(b2) * Math.cos(a) * rr, Math.cos(b2) * rr, Math.sin(b2) * Math.sin(a) * rr,
-         1.0, 0.9 - rr * 0.4, 0.55 - rr * 0.2, 1.25);
+         1.4, 1.2 - rr * 0.6, 0.8 - rr * 0.4, 1.35);
   }
-  // тонкое наклонное кольцо-оправа
-  for (let k = 0; k < 40; k++) {
-    const a = k / 40 * Math.PI * 2;
-    push(Math.cos(a) * 1.5, Math.sin(a) * 0.42, Math.sin(a) * 1.5, 0.62, 0.96, 0.91, 0.55 + 0.35 * gHash(k, seed + 5));
+  // внутренняя оболочка: янтарная сфера — «плазменная кожа» сгустка
+  for (let k = 0; k < 44; k++) {
+    const a = gHash(k + 51, seed) * Math.PI * 2, b2 = Math.acos(2 * gHash(seed, k + 51) - 1);
+    const rr = 0.92 + gHash(k * 7, seed) * 0.22;
+    push(Math.sin(b2) * Math.cos(a) * rr, Math.cos(b2) * rr, Math.sin(b2) * Math.sin(a) * rr,
+         1.05, 0.78, 0.4, 0.6 + 0.35 * gHash(k, seed + 3));
+  }
+  // два наклонных кольца в противофазе — читаются как вращение поля
+  for (let ring = 0; ring < 2; ring++) {
+    const R = 1.5 + ring * 0.38, tilt = ring ? 0.52 : -0.34, sgn = ring ? -1 : 1;
+    for (let k = 0; k < 34; k++) {
+      const a = k / 34 * Math.PI * 2;
+      push(Math.cos(a) * R, Math.sin(a) * R * tilt, Math.sin(a) * R * 0.8 * sgn,
+           0.55, 1.0, 0.95, 0.5 + 0.4 * gHash(k, seed + 5 + ring));
+    }
+  }
+  // редкие орбитальные искры — объём вокруг сгустка
+  for (let k = 0; k < 18; k++) {
+    const a = gHash(k + 90, seed) * Math.PI * 2, b2 = Math.acos(2 * gHash(seed, k + 90) - 1);
+    const rr = 1.9 + gHash(k * 11, seed) * 0.7;
+    push(Math.sin(b2) * Math.cos(a) * rr, Math.cos(b2) * rr, Math.sin(b2) * Math.sin(a) * rr,
+         0.6, 0.95, 0.9, 0.3 + 0.3 * gHash(k, seed + 7));
   }
   // световой столб вниз — маяк: редкие гаснущие точки к земле
   for (let k = 0; k < 16; k++) {
@@ -3021,30 +3143,178 @@ function gMakeOrb(seed) {
   }
   const og = new THREE.BufferGeometry();
   og.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
-  og.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-  const om = new THREE.PointsMaterial({ vertexColors: true, size: 0.3, transparent: true, opacity: 0.95,
-    map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
-  return new THREE.Points(og, om);
+  og.setAttribute('aCol', new THREE.Float32BufferAttribute(c, 3));
+  const om = gBeaconMat(0.3, 11);   // потолок 11px: ярче вблизи, но всё ещё не клякса
+  const pts = new THREE.Points(og, om);
+  pts.onBeforeRender = function () { om.uniforms.uOp.value = om.opacity; };
+  return pts;
 }
 
-// кольцо-ускоритель: обруч из мелких точек с янтарными маяками по ободу
+// Материал спайса: как gBeaconMat, но с ИНДИВИДУАЛЬНЫМ размером точки (aSize) —
+// облако из крупных и мелких частиц читается фактурой, а не однородной пылью.
+function gSpiceMat(maxPx) {
+  const m = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uPx: { value: innerHeight }, uMax: { value: maxPx }, uOp: { value: 0.9 } },
+    vertexShader: [
+      'attribute vec3 aCol; attribute float aSize; varying vec3 vCol;',
+      'uniform float uPx, uMax;',
+      'void main() {',
+      '  vCol = aCol;',
+      '  vec4 mv = modelViewMatrix * vec4(position, 1.0);',
+      '  gl_Position = projectionMatrix * mv;',
+      '  gl_PointSize = clamp(aSize * uPx * 0.5 / max(-mv.z, 1.0), 1.0, uMax);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying vec3 vCol; uniform float uOp;',
+      'void main() {',
+      '  float d = length(gl_PointCoord - vec2(0.5));',
+      '  float a = smoothstep(0.5, 0.24, d) * uOp;',
+      '  if (a < 0.02) discard;',
+      '  gl_FragColor = vec4(vCol, a);',
+      '}'
+    ].join('\n')
+  });
+  m.opacity = 0.9;
+  return m;
+}
+
+// СПАЙС: облако оранжевых частиц, парящих в воздухе. Собирается «пылесосом» —
+// частицы затягиваются к кораблю с дистанции (см. gSpiceUpdate). ЧЕТЫРЕ ФОРМЫ
+// (по запросу «не только сферы»): сгусток, кольцо-вихрь, лента, вуаль-диск.
+function gMakeSpice(seed, n) {
+  const p = new Float32Array(n * 3), col = new Float32Array(n * 3), sz = new Float32Array(n);
+  const shape = Math.floor(gHash(seed, 999) * 4);
+  const ph = gHash(999, seed) * 6.2832;
+  for (let k = 0; k < n; k++) {
+    const h1 = gHash(k, seed), h2 = gHash(seed, k), h3 = gHash(k * 3, seed), h4 = gHash(seed, k * 7);
+    let x, y, z, q;                       // q 0..1 — «расстояние от сердцевины» для жара
+    if (shape === 0) {                    // сгусток со спиральной закруткой
+      const a = h1 * 6.2832, b = Math.acos(2 * h2 - 1);
+      const rr = Math.pow(h3, 0.55) * (5.5 + h4 * 4);
+      x = Math.sin(b) * Math.cos(a) * rr * 1.5; y = Math.cos(b) * rr * 0.7; z = Math.sin(b) * Math.sin(a) * rr;
+      const tw = y * 0.4, cw = Math.cos(tw), sw = Math.sin(tw);
+      const x2 = x * cw - z * sw; z = x * sw + z * cw; x = x2;
+      q = Math.min(1, rr / 9.6);
+    } else if (shape === 1) {             // кольцо-вихрь
+      const a = h1 * 6.2832, R = 7.5 + h4 * 4;
+      const tr = Math.pow(h3, 0.6) * 2.6, p2 = h2 * 6.2832;
+      x = Math.cos(a) * (R + tr * Math.cos(p2));
+      y = tr * Math.sin(p2) * 0.9 + Math.sin(a * 3 + ph) * 1.4;   // волна по ободу
+      z = Math.sin(a) * (R + tr * Math.cos(p2)) * 0.85;
+      q = tr / 2.6;
+    } else if (shape === 2) {             // лента-змея вдоль кривой
+      const u = h1;
+      x = (u - 0.5) * 30 + Math.sin(u * 6.2832 + ph) * 4;
+      y = Math.sin(u * 4.1 + ph * 0.7) * 5;
+      z = Math.cos(u * 5.3 + ph) * 6;
+      const spr = Math.pow(h3, 0.7) * 2.2;
+      const a2 = h2 * 6.2832;
+      x += Math.cos(a2) * spr; y += Math.sin(a2) * spr * 0.8; z += Math.sin(a2 + 1.7) * spr;
+      q = spr / 2.2;
+    } else {                              // вуаль: наклонный плоский диск
+      const a = h1 * 6.2832, rr = Math.sqrt(h3) * 10;
+      x = Math.cos(a) * rr;
+      z = Math.sin(a) * rr * 0.65;
+      y = (h2 - 0.5) * 1.8 + rr * 0.3 * Math.sin(a * 2 + ph) + x * 0.22;  // наклон и волна
+      q = rr / 10;
+    }
+    p[k * 3] = x; p[k * 3 + 1] = y; p[k * 3 + 2] = z;
+    const heat = Math.pow(1 - Math.min(1, q), 1.5);
+    const br = 0.5 + 0.8 * heat + 0.25 * gHash(k, seed + 9);
+    col[k * 3] = 1.2 * br; col[k * 3 + 1] = (0.48 + 0.34 * heat) * br; col[k * 3 + 2] = 0.14 * br;
+    // РАЗНОКАЛИБЕРНОСТЬ: 70% мелочь, 25% средние, 5% крупные искры
+    const s = gHash(k * 13, seed + 4);
+    sz[k] = s < 0.7 ? 0.09 + s * 0.1 : s < 0.95 ? 0.2 + (s - 0.7) * 0.4 : 0.38 + (s - 0.95) * 3;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(p, 3));
+  g.setAttribute('aCol', new THREE.BufferAttribute(col, 3));
+  g.setAttribute('aSize', new THREE.BufferAttribute(sz, 1));
+  const m = gSpiceMat(6);
+  const pts = new THREE.Points(g, m);
+  pts.onBeforeRender = function () { m.uniforms.uOp.value = m.opacity; };
+  pts.userData = { isSpice: true, home: p.slice(), state: new Uint8Array(n), n: n, alive: n, baseOp: 0.9 };
+  return pts;
+}
+
+// СПАЙС-ПЫЛЕСОС: частицы в радиусе затягиваются к кораблю (ближе — резко быстрее),
+// у корпуса исчезают и капают в счётчик. Дальние облака не обсчитываются вовсе.
+const SPICE_SUCK = 18, SPICE_EAT = 2.6;
+function gSpiceUpdate(o, chunkGrp, dt, time) {
+  const wzC = chunkGrp.position.z - o.position.z;      // экранный z центра облака
+  // ПРОЯВЛЕНИЕ ПО ДИСТАНЦИИ: вдали тысячи частиц схлопываются аддитивом в одну
+  // точку экрана — дальнее облако выглядело ЖИРНЕЕ ближнего. Теперь оно почти
+  // прозрачно и плавно набирает плотность на подлёте (с ~210 до ~120 юнитов).
+  const D = -wzC;                                       // впереди wzC отрицательный
+  const vis = 1 - clamp01((D - 120) / 90);
+  o.material.opacity = (0.72 + 0.18 * Math.sin(time * 2.2 + o.position.x)) * vis;
+  if (wzC > 14 || wzC < -90 || !o.userData.alive) return;
+  const pa = o.geometry.attributes.position, arr = pa.array;
+  const st = o.userData.state, home = o.userData.home, n = o.userData.n;
+  // корабль в ЛОКАЛЬНЫХ координатах облака (мировые оси, сдвиг на позицию облака)
+  const sx = GAME.shipP.x - o.position.x, sy = GAME.shipP.y - o.position.y, szl = GAME.z - o.position.z;
+  let moved = false, got = 0;
+  for (let k = 0; k < n; k++) {
+    if (st[k]) continue;
+    const i3 = k * 3;
+    const dx = sx - arr[i3], dy = sy - arr[i3 + 1], dzp = szl - arr[i3 + 2];
+    const d2 = dx * dx + dy * dy + dzp * dzp;
+    if (d2 > SPICE_SUCK * SPICE_SUCK) {
+      // корабль ушёл — частица дрейфует обратно к своему месту в облаке
+      const hx = home[i3] - arr[i3], hy = home[i3 + 1] - arr[i3 + 1], hz = home[i3 + 2] - arr[i3 + 2];
+      if (hx * hx + hy * hy + hz * hz > 0.01) {
+        arr[i3] += hx * dt * 1.6; arr[i3 + 1] += hy * dt * 1.6; arr[i3 + 2] += hz * dt * 1.6;
+        moved = true;
+      }
+      continue;
+    }
+    const d = Math.sqrt(d2) || 1;
+    if (d < SPICE_EAT) { st[k] = 1; arr[i3 + 1] = -99999; got++; moved = true; continue; }
+    const pull = 1 - d / SPICE_SUCK;
+    const v = (24 + 150 * pull * pull) * dt / d;   // пылесос: у корпуса всасывает резко
+    arr[i3] += dx * v; arr[i3 + 1] += dy * v; arr[i3 + 2] += dzp * v;
+    moved = true;
+  }
+  if (moved) pa.needsUpdate = true;
+  if (got) {
+    o.userData.alive -= got;
+    GAME.spice = (GAME.spice || 0) + got;          // частица = 1: облако ×30 само даёт тысячи
+    if (gameSpiceNum) {
+      gameSpiceNum.textContent = GAME.spice;
+      gameSpiceNum.classList.remove('pop'); void gameSpiceNum.offsetWidth; gameSpiceNum.classList.add('pop');
+    }
+    if (time - (GAME._spiceSndT || 0) > 0.15) { Sound.sfx('collect', 1); GAME._spiceSndT = time; }
+    GAME._spiceGlowT = time;   // двигатели вспыхивают, «проглатывая» спайс (см. updateGame)
+  }
+}
+
+// кольцо-ускоритель: двойной обод с яркими янтарными маяками — портал, а не пунктир
 function gMakeRing(seed) {
   const p = [], c = [];
   const R = 7;
-  for (let k = 0; k < 96; k++) {
+  for (let k = 0; k < 96; k++) {          // внешний обод
     const a = k / 96 * Math.PI * 2;
-    const jit = (gHash(k, seed) - 0.5) * 0.5;
-    p.push(Math.cos(a) * (R + jit), Math.sin(a) * (R + jit), (gHash(seed, k) - 0.5) * 0.7);
+    const jit = (gHash(k, seed) - 0.5) * 0.4;
+    p.push(Math.cos(a) * (R + jit), Math.sin(a) * (R + jit), (gHash(seed, k) - 0.5) * 0.5);
     const beacon = k % 12 === 0;
-    if (beacon) c.push(1.0, 0.72, 0.4);
-    else { const b = 0.55 + 0.45 * gHash(k, seed + 3); c.push(0.62 * b, 0.96 * b, 0.91 * b); }
+    if (beacon) c.push(1.5, 1.0, 0.55);   // маяки жарче (>1 — аддитив)
+    else { const b = 0.7 + 0.5 * gHash(k, seed + 3); c.push(0.62 * b, 0.96 * b, 0.91 * b); }
+  }
+  for (let k = 0; k < 56; k++) {          // внутренний обод — тусклее, даёт толщину
+    const a = (k + 0.5) / 56 * Math.PI * 2;
+    p.push(Math.cos(a) * (R - 0.7), Math.sin(a) * (R - 0.7), (gHash(seed + 7, k) - 0.5) * 0.5);
+    const b = 0.35 + 0.3 * gHash(k, seed + 11);
+    c.push(0.62 * b, 0.96 * b, 0.91 * b);
   }
   const og = new THREE.BufferGeometry();
   og.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
-  og.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-  const om = new THREE.PointsMaterial({ vertexColors: true, size: 0.22, transparent: true, opacity: 0.95,
-    map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
-  return new THREE.Points(og, om);
+  og.setAttribute('aCol', new THREE.Float32BufferAttribute(c, 3));
+  const om = gBeaconMat(0.22, 6);  // кольцо — чёткая тонкая окружность, не гирлянда пятен
+  const pts = new THREE.Points(og, om);
+  pts.onBeforeRender = function () { om.uniforms.uOp.value = om.opacity; };
+  return pts;
 }
 
 // БАЛКА-ПРЕПЯТСТВИЕ (28.07, по эскизам «завалившихся колонн» и мостов-арок): облако точек
@@ -3087,6 +3357,18 @@ function gMakeBeam(a, b, rad, seed, tint) {
 // столкновение с балкой: ближайшая точка на отрезке a-b (мировые координаты) к кораблю —
 // если ближе радиуса, это гейм-овер (см. вызов в updateGame, рядом с проверкой рельефа)
 function gHazardHit() {
+  if (NEW_WORLD && WORLD) {
+    // коллизия по примитивам из world.js (ТЗ §18: точки в коллизии не участвуют).
+    // Корабль и коллайдеры оба в МИРОВЫХ координатах, поэтому z берём как GAME.z.
+    const P = [GAME.shipP.x, GAME.shipP.y, GAME.z];
+    const R = PDWorld.CONFIG.ship.radius;
+    for (let ci = 0; ci < GAME.chunks.length; ci++) {
+      const cl = GAME.chunks[ci].userData.colliders;
+      if (!cl) continue;
+      for (let i = 0; i < cl.length; i++) if (PDWorld.solidDist(P, cl[i]) < R) return true;
+    }
+    return false;
+  }
   for (const c of GAME.chunks) {
     const hz = c.userData.hazards;
     if (!hz) continue;
@@ -3113,7 +3395,7 @@ function gMakeTrail() {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
   g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
-  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.16, transparent: true, opacity: 0.9,
+  const m = new THREE.PointsMaterial({ vertexColors: true, size: 0.1, transparent: true, opacity: 0.9,
     map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
   const pts = new THREE.Points(g, m);
   pts.frustumCulled = false;
@@ -3138,7 +3420,290 @@ function gMakeDiamonds() {
   return pts;
 }
 
+// ═══ НОВЫЙ МИР: материал и сборка чанка ════════════════════════════════════
+// ОДИН материал на весь мир и ОДИН буфер на чанк (ТЗ §10). Роль и размер точки —
+// атрибуты, а не отдельные объекты: раньше каждая форма была своим THREE.Points со
+// своим материалом, отсюда и было 51 draw call при трёх типах форм.
+let wMat = null;
+function gWorldMat() {
+  if (wMat) return wMat;
+  wMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: true, depthTest: true,
+    uniforms: { uPx: { value: innerHeight }, uFogN: { value: 110 }, uFogF: { value: 660 },
+                uFade: { value: 1 } },
+    vertexShader: [
+      // Свой атрибут цвета, а НЕ встроенный color: инъекция color для сырого
+      // ShaderMaterial — поведение недокументированное и разное по версиям THREE,
+      // а цена ошибки здесь — молча не скомпилированный шейдер и мир без рельефа.
+      'attribute vec3 aCol; attribute float aSize; attribute float aMask;',
+      'uniform float uPx, uFogN, uFogF, uFade;',
+      'varying vec3 vCol; varying float vA;',
+      'void main() {',
+      '  vec4 mv = modelViewMatrix * vec4(position, 1.0);',
+      '  float d = -mv.z;',
+      '  vCol = aCol;',
+      // §25: дальние точки очень мелкие, иначе fill rate съедает всё
+      '  float sz = aSize * clamp(78.0 / max(d, 7.0), 0.22, 2.6);',
+      '  float f = 1.0 - smoothstep(uFogN, uFogF, d);',
+      // КРОМКИ (aMask=2) меньше тают в дымке и чуть крупнее: на референсе именно
+      // ДАЛЬНИЕ гребни светятся цепочками — слоистые силуэты. Обычная заливка
+      // гаснет с дистанцией как раньше, контур остаётся читаемым.
+      '  float edge = step(1.5, aMask) * (1.0 - step(2.5, aMask));',
+      '  sz *= 1.0 + edge * 0.4;',
+      '  vCol *= mix(0.34 + 0.66 * f * f, 0.6 + 0.4 * f, edge);',
+      // МАТЕРИАЛИЗАЦИЯ: чанк проявляется этапами — СНАЧАЛА контур (первые ~60%
+      // фейда), ПОТОМ заливка (после 30%). Пространство «возникает» перед игроком:
+      // далёкий силуэт → линии → поверхность, а не выскакивает целиком.
+      '  float aStage = mix(clamp((uFade - 0.3) / 0.7, 0.0, 1.0), clamp(uFade * 1.7, 0.0, 1.0), edge);',
+      '  vA = f * aStage;',
+      '  gl_Position = projectionMatrix * mv;',
+      '  gl_PointSize = clamp(sz * uPx * 0.0022, 0.5, 7.0);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying vec3 vCol; varying float vA;',
+      // спрайт жёстче (0.26 → 0.34): у референса точки — чёткие зёрна, а не боке;
+      // широкий мягкий ореол размывал рельеф в туман
+      'void main() {',
+      '  float d = length(gl_PointCoord - vec2(0.5));',
+      '  float a = smoothstep(0.48, 0.34, d) * vA;',
+      '  if (a < 0.02) discard;',
+      '  gl_FragColor = vec4(vCol, a);',
+      '}'
+    ].join('\n')
+  });
+  return wMat;
+}
+
+// ── ЗАДНИК: дальние хребты-силуэты («слойность»: несколько слоёв точек создают
+// параллакс). За fog-дистанцией мира (660) раньше была пустота — голый горизонт.
+// Три слоя цепочек точек в ЭКРАННЫХ координатах (прямые дети GAME.group, без
+// scale.z=−1): они не едут с рельефом, как настоящие горы на горизонте, а
+// параллакс от манёвров корабля получается сам собой из перспективы — камера
+// смещается, дальние слои сдвигаются меньше ближних. sizeAttenuation:false —
+// у задника постоянный пиксельный размер, ему не положено «приближаться».
+function gMakeBackdrop() {
+  const grp = new THREE.Group();
+  for (let k = 0; k < 3; k++) {
+    const p = [], c = [];
+    const zP = -(430 + k * 170);
+    const N = 1100 - k * 220;
+    const amp = 44 - k * 8, base = 24 + k * 16;
+    for (let i = 0; i < N; i++) {
+      const x = -780 + 1560 * (i + gHash(i, k) * 0.6) / N;
+      // профиль хребта: крупная волна + мелкая изрезанность (те же шумы, что у мира)
+      const yR = base + (gNoise(x * 0.006 + k * 37, k * 11) * 0.75
+                       + gNoise(x * 0.021 + k * 53, k * 7) * 0.25) * amp;
+      // сама линия хребта — ярче
+      p.push(x, yR + (gHash(i, k) - 0.5) * 1.4, zP + (gHash(k, i) - 0.5) * 30);
+      const b = (0.34 - k * 0.08) * (0.7 + 0.6 * gHash(i * 3, k));
+      c.push(b * 0.72, b * 1.0, b * 1.02);
+      // редкая заливка под линией — тусклее, глубже
+      if (gHash(i, k + 9) < 0.55) {
+        const yF = yR - 1.5 - Math.pow(gHash(i * 7, k), 2) * 28;
+        p.push(x + (gHash(i, k + 4) - 0.5) * 7, yF, zP + (gHash(k + 4, i) - 0.5) * 30);
+        const f = b * 0.4;
+        c.push(f * 0.72, f * 1.0, f * 1.02);
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+    const m = new THREE.PointsMaterial({ vertexColors: true, size: 2.4 - k * 0.55,
+      sizeAttenuation: false, transparent: true, opacity: 0.55 - k * 0.13,
+      map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
+    const pts = new THREE.Points(g, m);
+    pts.userData.baseOp = m.opacity;   // фейды входа/выхода читают baseOp
+    pts.frustumCulled = false;
+    grp.add(pts);
+  }
+  return grp;
+}
+
+// Сборка чанка нового мира.
+// СИСТЕМЫ КООРДИНАТ. world.js живёт в мировых: z растёт ВПЕРЁД по трассе. Игра живёт
+// в экранных: корабль на z≈0, рельеф набегает из минуса. Связь: z_экр = GAME.z − z_мир.
+// Поэтому группе ставим scale.z = −1 и position.z = GAME.z. Это важнее, чем кажется:
+// так буфер остаётся в МИРОВЫХ координатах и совпадает 1-в-1 с пространственным
+// индексом точек, по которому каждый кадр ищется окрестность корабля для подсветки.
+// Если бы координаты пересчитывались при заливке, индекс пришлось бы либо
+// перестраивать, либо держать вторую копию позиций (6 МБ на окно).
+function gMakeWorldChunk(index, lod) {
+  return gBuildWorldMesh(WORLD.mgr.build(index, lod), index, lod);
+}
+// Сборка меша из ГОТОВЫХ массивов. Отделена от генерации, потому что массивы могут
+// приехать из Worker — тогда считать нечего, надо только залить в GPU.
+function gBuildWorldMesh(ch, index, lod) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(ch.positions, 3));
+  g.setAttribute('aCol', new THREE.BufferAttribute(ch.colors, 3));
+  g.setAttribute('aSize', new THREE.BufferAttribute(ch.sizes, 1));
+  const mask = new Float32Array(ch.featureMask.length);
+  for (let i = 0; i < mask.length; i++) mask[i] = ch.featureMask[i];
+  g.setAttribute('aMask', new THREE.BufferAttribute(mask, 1));
+  // СВОЙ ЭКЗЕМПЛЯР МАТЕРИАЛА НА ЧАНК (шейдер и программа общие — клон делит GLSL).
+  // Раньше материал был один на всех, а uFade подставлялся в onBeforeRender —
+  // это НЕ РАБОТАЛО: three r128 заливает юниформы в GPU один раз на МАТЕРИАЛ за
+  // кадр, а не на объект. Все чанки рисовались с одним последним значением, фейд
+  // и материализация молча не действовали — чанк «появлялся сразу полностью».
+  const mat = gWorldMat().clone();
+  const pts = new THREE.Points(g, mat);
+  pts.frustumCulled = false;
+  const grp = new THREE.Group();
+  pts.onBeforeRender = function () {
+    mat.uniforms.uFade.value = (grp.userData.fade === undefined ? 1 : grp.userData.fade) * worldEnvFade;
+  };
+  grp.scale.z = -1;
+  grp.add(pts);
+  const def = ch.def || WORLD.mgr.plan[index];
+  grp.userData = {
+    spawnTime: clock.getElapsedTime(), fade: 0,   // проявляется плавно, см. updateGame
+    wIndex: index, def: def, zStart: def.zStart, zEnd: def.zEnd,
+    idx: ch.index || ch.pointIndex, colliders: ch.colliders, corridor: ch.corridor,
+    cloud: pts, baseOp: 1, lod: lod    // LOD, с которым СОБРАН чанк — см. gSpawnAhead (апгрейд по приближению)
+  };
+  // награды по коридору: ядра цепочкой и кольцо-ускоритель. Ставим их в ЭКРАННЫХ
+  // координатах внутри перевёрнутой группы — то есть в мировых, как и точки рельефа.
+  gWorldRewards(grp, ch, def);
+  return grp;
+}
+// ядра и кольца по коридору: маршрут сам ведёт игрока (§16 «навигация без стрелок»)
+function gWorldRewards(grp, ch, def) {
+  const cor = ch.corridor;
+  const r = PDWorld.makeRng(def.seed ^ 0x2b1d);
+  const nOrb = 3 + Math.floor(r() * 4);
+  for (let k = 0; k < nOrb; k++) {
+    const t = 0.18 + 0.64 * ((k + 0.5) / nOrb);
+    const ci = Math.min(cor.length - 1, Math.round(t * (cor.length - 1)));
+    const c = cor[ci];
+    const orb = gMakeOrb(def.seed + k * 7);
+    // Ядра стоят В СТОРОНЕ от линии полёта, а не на ней. Когда они лежали точно на
+    // трассе, корабль пролетал сквозь них в упор — на экране это были огромные размытые
+    // пятна во весь кадр. Со сдвигом за ними надо тянуться: и читается чище, и играть
+    // осмысленнее (§16: награда за отклонение от безопасной линии).
+    const side = (k % 2 ? 1 : -1);
+    // ВЫСОТА — ТРИ ЭТАЖА (29.07): все награды жались к линии полёта, и в глубокие
+    // провалы не было смысла спускаться. Треть ядер — низко над дном (нырок в
+    // разлом), четверть — высоко над трассой, остальные у линии полёта.
+    const fl = (c.floor != null && isFinite(c.floor)) ? c.floor : null;
+    const ce = (c.ceil != null && isFinite(c.ceil)) ? c.ceil : null;
+    const mode = r();
+    let oy;
+    if (mode < 0.33 && fl != null && c.y - fl > 18) oy = fl + 7 + r() * 5;
+    else if (mode < 0.58) oy = c.y + 13 + r() * 13;
+    else oy = c.y + (r() - 0.5) * 10;
+    if (ce != null) oy = Math.min(oy, ce - 5);
+    orb.position.set(c.x + side * (9 + r() * 10), oy, c.z);
+    orb.userData.isOrb = true;
+    orb.userData.baseY = orb.position.y;
+    orb.userData.ph = r() * 6.28;
+    orb.userData.spin = 0.7 + r() * 1.1;
+    if (r() > 0.88) { orb.userData.rare = true; orb.userData.baseScale = 1.5; }
+    grp.add(orb);
+  }
+  // СПАЙС: 1-2 облака на чанк, тоже по этажам — половина прячется в провалах и
+  // на высоте: пылесосом собирать выгодно того, кто меняет эшелон
+  const nSp = 1 + (r() < 0.5 ? 1 : 0);
+  for (let k = 0; k < nSp; k++) {
+    const t = 0.15 + 0.7 * r();
+    const ci = Math.min(cor.length - 1, Math.round(t * (cor.length - 1)));
+    const c = cor[ci];
+    const fl = (c.floor != null && isFinite(c.floor)) ? c.floor : null;
+    const ce = (c.ceil != null && isFinite(c.ceil)) ? c.ceil : null;
+    const mode = r();
+    let sy;
+    if (mode < 0.35 && fl != null && c.y - fl > 20) sy = fl + 8 + r() * 6;
+    else if (mode < 0.6) sy = c.y + 15 + r() * 14;
+    else sy = c.y + (r() - 0.5) * 10;
+    if (ce != null) sy = Math.min(sy, ce - 6);
+    // ×30 (по запросу): облако — тысячи частиц, на медленной скорости видно, как
+    // струя втягивается в корабль. Обсчитываются только ближние облака.
+    const sp = gMakeSpice((def.seed ^ 0x5b1c) + k * 131, 2400 + Math.floor(r() * 1800));
+    sp.position.set(c.x + (r() - 0.5) * 30, sy, c.z);
+    grp.add(sp);
+  }
+  if (r() > 0.55) {
+    const ci = Math.round((0.42 + r() * 0.3) * (cor.length - 1));
+    const c = cor[Math.min(cor.length - 1, ci)];
+    const ring = gMakeRing(def.seed);
+    ring.position.set(c.x, c.y, c.z);
+    ring.userData.isRing = true;
+    ring.userData.spin = 0.9 + r() * 0.8;
+    grp.add(ring);
+  }
+}
+
+function gAddWorldChunk(grp) {
+  if (!GAME.on || !GAME.group) return;         // успели выйти из игры — чанк уже не нужен
+  // АПГРЕЙД LOD: чанк с этим индексом уже мог стоять — он был собран на дальнем краю
+  // окна (LOD похуже) и теперь заменяется свежим, более плотным. КРОССФЕЙД: раньше
+  // старая геометрия сносилась мгновенно, а новая начинала проявляться с нуля —
+  // на подлёте это выглядело рывком («на стене прям появляется группа точек»).
+  // Теперь старая помечается dying и гаснет, пока новая проявляется; сносим её,
+  // когда фейд дошёл до нуля (см. цикл фейдов в updateGame).
+  const idx = grp.userData.wIndex;
+  for (let i = GAME.chunks.length - 1; i >= 0; i--) {
+    const c = GAME.chunks[i];
+    if (c.userData.wIndex === idx && !c.userData.dying) {
+      c.userData.dying = true;
+      c.userData.faded = false;   // возвращаем в цикл фейдов — теперь на затухание
+    }
+  }
+  GAME.group.add(grp);
+  GAME.chunks.push(grp);
+  GAME.chunks.sort((a, b) => a.userData.wIndex - b.userData.wIndex);
+}
 function gSpawnAhead() {
+  if (NEW_WORLD && WORLD) {
+    // окно стриминга по ИНДЕКСАМ чанков (§19): чанки теперь 140–260 юнитов, их мало,
+    // и «сколько штук впереди» считается от положения корабля, а не по длине.
+    const C = PDWorld.CONFIG.world;
+    const cur = WORLD.probe.chunkAt(GAME.z);
+    const have = {};
+    for (let i = 0; i < GAME.chunks.length; i++)
+      if (!GAME.chunks[i].userData.dying) have[GAME.chunks[i].userData.wIndex] = GAME.chunks[i];
+    const to = Math.min(WORLD.mgr.plan.length - 1, cur + C.ahead);
+    for (let i = Math.max(0, cur - C.behind); i <= to; i++) {
+      if (WORLD.pending[i]) continue;
+      const d = i - cur;
+      // при устойчиво низком FPS ближние чанки не поднимаем до LOD0 — экономим
+      // и генерацию, и точки (адаптивное качество, дополняет G_LOD по земле)
+      const lodMin = G_LOD >= 2 ? 1 : 0;
+      const lod = Math.max(lodMin, d <= 1 ? 0 : d === 2 ? 1 : d === 3 ? 2 : 3);
+      // АПГРЕЙД ПО ПРИБЛИЖЕНИЮ: чанк с этим индексом впервые появляется на дальнем
+      // краю окна (d=ahead=4 → LOD3, самая редкая сетка) и раньше на этом навсегда
+      // и оставался — «жидкий» рельеф в игре был именно этим: то, что видно сейчас
+      // рядом с кораблём, было собрано давно, пока было ещё далеко. Раз построенный
+      // чанк уже не хуже нужного LOD — пропускаем, иначе пересобираем плотнее.
+      const ex = have[i];
+      if (ex && ex.userData.lod <= lod) continue;
+      // БЕЗ WORKER (file://) АПГРЕЙДЫ ВЫКЛЮЧЕНЫ: каждый стоил бы 60-110 мс фриза
+      // в кадре, и на подлёте они шли бы каждые 260 мс — постоянные рывки и FPS 30.
+      // Недостающие чанки строим один раз сразу в среднем качестве (LOD1).
+      if (!WORLD.wk && ex) continue;
+      // ГЕНЕРАЦИЯ В WORKER (ТЗ §20, §36.8 «не блокирует основной поток»). Чанк
+      // считается 40–90 мс — в кадре это видимый рывок примерно раз в секунду.
+      // Асинхронность безопасна: впереди держим 4 чанка (около 800 юнитов), на полной
+      // скорости это 2.5 секунды запаса. Если Worker недоступен (file://, CSP) —
+      // считаем на месте: лучше рывок, чем пустой мир впереди.
+      if (WORLD.wk) {
+        if (WORLD.inflight >= 2) return;      // очередь не копим — см. комментарий выше
+        WORLD.pending[i] = true;
+        WORLD.inflight++;
+        WORLD.wk.postMessage({ cmd: 'chunk', index: i, lod: lod });
+      } else {
+        // Без Worker (file:// его блокирует) чанк считается прямо в кадре — это
+        // 60-110 мс фриза. Не чаще двух раз в секунду и сразу в LOD1: реже рывки
+        // на старте, а апгрейдов в этом режиме нет вовсе (см. выше).
+        const nowMs = performance.now();
+        if (nowMs - (WORLD.lastSync || 0) < 500) return;
+        WORLD.lastSync = nowMs;
+        gAddWorldChunk(gMakeWorldChunk(i, Math.max(lod, 1)));
+      }
+      return;                       // не больше одной заявки за кадр
+    }
+    return;
+  }
   // держим G_AHEAD чанков впереди корабля; не больше одного нового за кадр (без фризов)
   if (GAME.chunks.length < gLodAhead()) {
     const last = GAME.chunks[GAME.chunks.length - 1];
@@ -3149,19 +3714,46 @@ function gSpawnAhead() {
     GAME.chunks.push(c);
   }
 }
+// Движение мира. В старом пути чанк ехал приращением position.z. В новом группа
+// перевёрнута (scale.z=−1) и её позиция — это просто текущее GAME.z: точки лежат в
+// мировых координатах, а сдвиг делает сама позиция группы. Приращение тут дало бы
+// накопление ошибки, а так связь z_экр = GAME.z − z_мир соблюдается точно.
+function gMoveChunks(dz) {
+  if (NEW_WORLD && WORLD) {
+    for (let i = 0; i < GAME.chunks.length; i++) GAME.chunks[i].position.z = GAME.z;
+    return;
+  }
+  for (const c of GAME.chunks) c.position.z += dz;
+}
+// утилизация позади: в новом мире граница — конец чанка, а не фиксированная длина
+function gRecycle() {
+  while (GAME.chunks.length) {
+    const c = GAME.chunks[0];
+    const behind = NEW_WORLD && WORLD
+      ? (c.userData.wIndex < WORLD.probe.chunkAt(GAME.z) - PDWorld.CONFIG.world.behind)
+      : (c.position.z > G_DEPTH * 0.8);
+    if (!behind) break;
+    GAME.chunks.shift();
+    GAME.group.remove(c);
+    c.traverse(o => { if (o.geometry) o.geometry.dispose();
+                      if (o.material && o.material !== wMat && o.material !== gFallMat) o.material.dispose(); });
+  }
+}
 
 // корабль: облако точек 3D-модели Crystalline Dreadnought. Точки стянуты к РЁБРАМ модели
 // (двугранный угол > 35°): первые SHIP_EDGE_N — контур, остальные — редкая заливка поверхности.
 // Контур ярче — силуэт читается как чертёж, а не равномерная пыль
-const SHIP_EDGE_N = 3484;
-const SHIP_ENGINES = [[-1.72, 0.01, 2.8], [-0.08, -0.06, 2.88], [1.46, 0.0, 2.74]]; // сопла (найдены кластеризацией кормы)
-const SHIP_LIGHTS = [[0.0, 0.0, -2.97], [-2.61, -0.02, 1.07], [2.61, -0.14, 1.73], [0.0, 0.9, 0.86]]; // маяки: нос, левое крыло, правое крыло, киль
-const SHIP_SCALE = 3.01835;
-const SHIP_B64 = 'k/pMlPpPlfpSkv8tk/8qk/8mlP8jlP8glf8clv8ZkwVJkwVGkwZDlAY/lAY8lQY4lQY1lQYylgYulgcrkvpIk/pFk/pBlPo+lPo6lPo3lfkzlfkwlvkslvkplvkllwcolwcklwYhmAYdmAYamAYWmQYTl/kil/kemPobmPoYmfoUmfsRmvsNmvsKkwVMlAVPlQVSmQYQmgUMmgUJmwUFl/pVmfpYm/pbnfpen/phoQhEoQhHoAdKoAdNm/sHm/wDnPwAnf38nv35n/71nAQCnQT+ngT6ngP2lwVVmQVYmwVbnQVdngVgoQhAoQg9oQg5oQg2oQgzoQgvoQgsoQgonv9kngFkof1doPphoPpeoPpaoPpWoPpTofpPoPphoPpeoPpaofpXofpToPphoPpdoftZoQNYoAVVoAVSoPphoPpdoPlZoPlWoflSoflOoflKoflHofkwofk0ofk3ofk7ofk/oflDoflHoflLovlOovpSofksofooofskofwkof4mof0loQIkoQAnoQIjoQQmoQZOoQZKoQZGoQZCovxwovtsovpoo/plo/lho/heo/dao/dWov54ov97ogB+oQgooQcsoQcwogc0o/97o/54o/10o/xxo/tuo/prowB+owF7owMmpAQjowJ4owN1owNyowRvowVrogVqowZnowZjowdfpAhcpApKpAlOpAlRpAlVpAhYowVoowZlowdiowdfpAhcpPZTpPZPpfZLpfVHpvVEovxwovtso/ppo/pmo/lipPhfpPhcpPdZpPZVo/wmo/0lpAMxowMupAIwpQQlpAUjpAhYpAlVpQlSpQlOpQpLpPokpfokpfslpvgrpfktpgMvpfswpfozpQU0pgg2p/gopvoxpfowpvo0pvo1pvkuqfgupwMipwIepgpIpwtEqAtAqQw9p/RAqfM8p/g3pvk2pgUmqQs6qQg6q/gwqvg0qvk4qAUkqAI/qQM+qQI/qQY4qgY1qwcyrAcvrAQ8qgU6rgUur/w6sP86rwQksQIksfspsvsssv0usv0ks/0jswMlswEkswEjsQMwswIxswQpswMttAIwtAImtAIptAIttAIwtAgjswgfswgcswgZsggVsggSsggPsQgLs/0ms/0ps/0sswAztAA3svgOsvgSsvgWs/gZs/gdtPghtPgktPgotfgst/0lt/0ot/0rtgAduf8b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';
+// Данные модели вынесены в ship-points.js: тот же файл читает лаборатория корабля
+// (ship-lab.html). Держать вторую копию 12 КБ в инструменте было нельзя — копии
+// разъезжаются, и лаборатория начинает показывать не тот корабль, что в игре.
+const SHIP_EDGE_N = PD_SHIP.EDGE_N;
+const SHIP_ENGINES = PD_SHIP.ENGINES; // сопла (найдены кластеризацией кормы)
+const SHIP_LIGHTS = PD_SHIP.LIGHTS;   // маяки: нос, левое крыло, правое крыло, киль
+const SHIP_SCALE = PD_SHIP.SCALE;
 let SHIP_PTS = null;
 function gShipPoints() {
   if (SHIP_PTS) return SHIP_PTS;
-  const raw = atob(SHIP_B64), n = raw.length;
+  const raw = atob(PD_SHIP.B64), n = raw.length;
   const a = new Float32Array(n);
   for (let i = 0; i < n; i++) { let v = raw.charCodeAt(i); if (v > 127) v -= 256; a[i] = v / 127 * SHIP_SCALE; }
   SHIP_PTS = a;
@@ -3185,7 +3777,7 @@ function gMakeShip() {
   const ge = new THREE.BufferGeometry();
   ge.setAttribute('position', new THREE.BufferAttribute(posE, 3));
   ge.setAttribute('color', new THREE.BufferAttribute(colE, 3));
-  GAME.shipEdges = new THREE.Points(ge, new THREE.PointsMaterial({ vertexColors: true, size: 0.115,
+  GAME.shipEdges = new THREE.Points(ge, new THREE.PointsMaterial({ vertexColors: true, size: 0.072,
     transparent: true, opacity: 1, map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false }));
   GAME.shipEdges.userData.baseOp = 1;
   grp.add(GAME.shipEdges);
@@ -3201,7 +3793,7 @@ function gMakeShip() {
   const gf = new THREE.BufferGeometry();
   gf.setAttribute('position', new THREE.BufferAttribute(posF, 3));
   gf.setAttribute('color', new THREE.BufferAttribute(colF, 3));
-  GAME.shipFill = new THREE.Points(gf, new THREE.PointsMaterial({ vertexColors: true, size: 0.07,
+  GAME.shipFill = new THREE.Points(gf, new THREE.PointsMaterial({ vertexColors: true, size: 0.045,
     transparent: true, opacity: 1, map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false }));
   GAME.shipFill.userData.baseOp = 1;
   grp.add(GAME.shipFill);
@@ -3212,7 +3804,7 @@ function gMakeShip() {
   const gg2 = new THREE.BufferGeometry();
   gg2.setAttribute('position', new THREE.Float32BufferAttribute(pg, 3));
   gg2.setAttribute('color', new THREE.Float32BufferAttribute(cg, 3));
-  GAME.shipGlow = new THREE.Points(gg2, new THREE.PointsMaterial({ vertexColors: true, size: 1.15,
+  GAME.shipGlow = new THREE.Points(gg2, new THREE.PointsMaterial({ vertexColors: true, size: 0.72,
     transparent: true, opacity: 0.95, map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false }));
   GAME.shipGlow.userData.baseOp = 0.95;
   grp.add(GAME.shipGlow);
@@ -3223,7 +3815,7 @@ function gMakeShip() {
   const gl = new THREE.BufferGeometry();
   gl.setAttribute('position', new THREE.Float32BufferAttribute(pl, 3));
   gl.setAttribute('color', new THREE.Float32BufferAttribute(cl, 3));
-  GAME.shipLights = new THREE.Points(gl, new THREE.PointsMaterial({ vertexColors: true, size: 0.42,
+  GAME.shipLights = new THREE.Points(gl, new THREE.PointsMaterial({ vertexColors: true, size: 0.26,
     transparent: true, opacity: 1, map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false }));
   GAME.shipLights.userData.baseOp = 1;
   grp.add(GAME.shipLights);
@@ -3249,6 +3841,7 @@ function gShipOpacity(v) {
   if (GAME.shipFill) GAME.shipFill.material.opacity = v * 0.9;
   if (GAME.shipLights) GAME.shipLights.material.opacity = v;
   if (GAME.shipGlow) GAME.shipGlow.material.opacity = v * 0.95;
+  if (GAME.crashSparks) GAME.crashSparks.material.opacity = v;   // искры гаснут с обломками
 }
 // живой корабль: скан-волна по контуру, авиастробы, пульс сопел от тяги
 function gShipFx(time) {
@@ -3312,22 +3905,72 @@ function gShipFx(time) {
 // плюс конус разлёта от оси, подброс вверх; дальше гравитация, отскоки от рельефа, затухание
 function gShipCrash() {
   GAME.debris = { t: 0, parts: [] };
+  // МОЩЬ ВЗРЫВА от собранного спайса: заряженный корабль рвёт заметно сильнее
+  const boost = 1 + Math.min(2.5, (GAME.spice || 0) / 800);
+  // КУСКИ, А НЕ ПЫЛЬ: точки корабля группируются по ближайшему из ~14 центров;
+  // у каждого куска ОБЩАЯ скорость + закрутка (Ω × r) — обломки летят связными
+  // вращающимися фрагментами корпуса, как при ударе по геометрии.
   [GAME.shipEdges, GAME.shipFill].forEach(pc => {
     if (!pc) return;
     const pos = pc.geometry.attributes.position;
     const n = pos.count, vel = new Float32Array(n * 3);
     const fwd = -(8 + GAME.speed * 0.16);
-    for (let i = 0; i < n; i++) {
-      const az = gHash(i, 5) * Math.PI * 2;
-      const el2 = (gHash(i, 6) - 0.3) * 1.9;
-      const sp = (10 + gHash(i, 3) * 34) * (0.6 + gHash(i, 8));
+    const NC = 14;
+    const cx = [], cy = [], cz = [], cvx = [], cvy = [], cvz = [], wx = [], wy = [], wz = [];
+    for (let cI = 0; cI < NC; cI++) {
+      const src = Math.floor(gHash(cI, 77) * n);
+      cx.push(pos.getX(src)); cy.push(pos.getY(src)); cz.push(pos.getZ(src));
+      const az = gHash(cI, 5) * Math.PI * 2, el2 = (gHash(cI, 6) - 0.25) * 1.8;
+      const sp = (14 + gHash(cI, 3) * 40) * boost;
       const ce = Math.cos(el2);
-      vel[i * 3]     = Math.cos(az) * ce * sp * 1.35 + pos.getX(i) * (3 + gHash(i, 1) * 6);
-      vel[i * 3 + 1] = Math.sin(el2) * sp * 0.9 + 7 + pos.getY(i) * 4;
-      vel[i * 3 + 2] = Math.sin(az) * ce * sp + fwd * (0.35 + gHash(i, 2) * 0.65);
+      cvx.push(Math.cos(az) * ce * sp + cx[cI] * 6);
+      cvy.push(Math.sin(el2) * sp * 0.9 + 9 * boost + cy[cI] * 4);
+      cvz.push(Math.sin(az) * ce * sp * 0.7 + fwd * (0.4 + gHash(cI, 2) * 0.6));
+      wx.push((gHash(cI, 11) - 0.5) * 15 * boost);   // кувырок куска
+      wy.push((gHash(cI, 12) - 0.5) * 15 * boost);
+      wz.push((gHash(cI, 13) - 0.5) * 15 * boost);
+    }
+    for (let i = 0; i < n; i++) {
+      const px = pos.getX(i), py = pos.getY(i), pz = pos.getZ(i);
+      let best = 0, bd = 1e9;
+      for (let cI = 0; cI < NC; cI++) {
+        const ddx = px - cx[cI], ddy = py - cy[cI], ddz = pz - cz[cI];
+        const dd = ddx * ddx + ddy * ddy + ddz * ddz;
+        if (dd < bd) { bd = dd; best = cI; }
+      }
+      const rx = px - cx[best], ry = py - cy[best], rz = pz - cz[best];
+      // v = V куска + Ω×r + лёгкий личный разброс: кромки кусков «дышат»
+      vel[i * 3]     = cvx[best] + (wy[best] * rz - wz[best] * ry) + (gHash(i, 21) - 0.5) * 3;
+      vel[i * 3 + 1] = cvy[best] + (wz[best] * rx - wx[best] * rz) + (gHash(i, 22) - 0.5) * 3;
+      vel[i * 3 + 2] = cvz[best] + (wx[best] * ry - wy[best] * rx) + (gHash(i, 23) - 0.5) * 3;
     }
     GAME.debris.parts.push({ pc: pc, vel: vel });
   });
+  // ИСКРОВОЙ ВЕЕР из точки удара: горячее ядро вспышки, количество растёт со спайсом
+  (function sparks() {
+    const nS = Math.min(700, 160 + Math.floor((GAME.spice || 0) * 0.25));
+    const sp2 = new Float32Array(nS * 3), sc = new Float32Array(nS * 3), sv = new Float32Array(nS * 3);
+    for (let i = 0; i < nS; i++) {
+      sp2[i * 3] = (gHash(i, 31) - 0.5) * 0.8; sp2[i * 3 + 1] = (gHash(i, 32) - 0.5) * 0.8; sp2[i * 3 + 2] = (gHash(i, 33) - 0.5) * 0.8;
+      const az = gHash(i, 34) * Math.PI * 2, el2 = (gHash(i, 35) - 0.35) * 2.4;
+      const spd = (26 + gHash(i, 36) * 60) * boost;
+      sv[i * 3] = Math.cos(az) * Math.cos(el2) * spd;
+      sv[i * 3 + 1] = Math.sin(el2) * spd * 0.85 + 10;
+      sv[i * 3 + 2] = Math.sin(az) * Math.cos(el2) * spd * 0.8 - GAME.speed * 0.1;
+      const hot = gHash(i, 37);   // от белого жара к спайсовому оранжевому
+      sc[i * 3] = 1.3; sc[i * 3 + 1] = 0.6 + 0.55 * hot; sc[i * 3 + 2] = 0.25 + 0.6 * hot * hot;
+    }
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute('position', new THREE.BufferAttribute(sp2, 3));
+    sg.setAttribute('color', new THREE.BufferAttribute(sc, 3));
+    const sm = new THREE.PointsMaterial({ vertexColors: true, size: 0.3, transparent: true, opacity: 1,
+      map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
+    const pts = new THREE.Points(sg, sm);
+    pts.frustumCulled = false;
+    GAME.crashSparks = pts;
+    GAME.ship.add(pts);
+    GAME.debris.parts.push({ pc: pts, vel: sv });   // летят и гаснут общим циклом обломков
+  })();
   // свет и струи гаснут мгновенно — обломки не «работают двигателями»
   if (GAME.shipGlow) GAME.shipGlow.visible = false;
   if (GAME.shipLights) GAME.shipLights.visible = false;
@@ -3389,6 +4032,74 @@ function _dngFlush() {
   });
   _dngRanges.clear();
 }
+// ── ПОДСВЕТКА ОПАСНОСТИ В НОВОМ МИРЕ ──────────────────────────────────────
+// Старая версия индексировала РЕГУЛЯРНУЮ сетку точек: знала cols/rows/step и по ним
+// вычисляла нужные индексы напрямую. В новом мире плотность НЕРАВНОМЕРНАЯ (§12: густо
+// у трассы, редко на периферии) — регулярной сетки больше нет, и та арифметика
+// неприменима в принципе. Поэтому здесь поиск идёт через пространственный индекс из
+// world.js: точки разложены по ячейкам при генерации, обход берёт только нужные.
+// Замер: 600 запросов радиуса 5 — 4 мс против 62 мс перебором.
+function gPaintDangerNew(k, time) {
+  const pul = 0.55 + 0.45 * Math.sin(time * 14);
+  const sx = GAME.shipP.x, sy = GAME.shipP.y, sz = GAME.z;   // корабль в МИРОВЫХ координатах
+  for (let ci = 0; ci < GAME.chunks.length; ci++) {
+    const u = GAME.chunks[ci].userData;
+    if (!u.idx || !u.cloud) continue;
+    const colA = u.cloud.geometry.attributes.aCol;
+    const posA = u.cloud.geometry.attributes.position.array;
+    // 1) диск под кораблём — близость к земле
+    if (k > 0.02) {
+      const R = 4.4 + 1.1 * k * Math.sin(time * 12);
+      PDWorld.forPointsNear(u.idx, sx, sz, R, i => {
+        const i3 = i * 3;
+        const ddx = posA[i3] - sx, ddz = posA[i3 + 2] - sz;
+        const d2 = ddx * ddx + ddz * ddz;
+        if (d2 > R * R) return;
+        if (!_dngSave(colA, i3)) return;
+        const kk = k * pul * (0.35 + 0.65 * (1 - Math.sqrt(d2) / R));
+        colA.array[i3]     += (1.0  - colA.array[i3])     * kk;
+        colA.array[i3 + 1] += (0.26 - colA.array[i3 + 1]) * kk;
+        colA.array[i3 + 2] += (0.16 - colA.array[i3 + 2]) * kk;
+        _dngTouch(colA, i3);
+      });
+    }
+    // 2) алая подсветка рельефа ПО КУРСУ: что выше траектории — то и опасно.
+    // Впереди по миру это БОЛЬШИЙ z (в экранных координатах было бы меньший).
+    const AH = 95;
+    PDWorld.forPointsInBox(u.idx, sx - 8, sx + 8, sz + 12, sz + AH, i => {
+      const i3 = i * 3;
+      if (Math.abs(posA[i3] - sx) > 8) return;
+      if (posA[i3 + 1] < sy - 2.2) return;                  // ниже траектории — не опасно
+      const ahead = posA[i3 + 2] - sz;
+      if (ahead < 12 || ahead > AH) return;
+      const kk = Math.max(0, 1 - (ahead - 12) / (AH - 12)) * (0.5 + 0.5 * pul);
+      if (kk < 0.05) return;
+      if (!_dngSave(colA, i3)) return;
+      colA.array[i3]     += (1.05 - colA.array[i3])     * kk;
+      colA.array[i3 + 1] += (0.16 - colA.array[i3 + 1]) * kk;
+      colA.array[i3 + 2] += (0.12 - colA.array[i3 + 2]) * kk;
+      _dngTouch(colA, i3);
+    });
+    // 3) сверхзвуковая волна: тил-белое кольцо расходится от корабля
+    if (GAME.boom != null && GAME.boom >= 0 && GAME.boom < 1.1) {
+      const bt = GAME.boom / 1.1, br = 8 + bt * 115, bw = 4 + bt * 6;
+      const amp = (1 - bt) * (1 - bt) * 0.95;
+      PDWorld.forPointsNear(u.idx, sx, sz, br + bw, i => {   // ← через одну ячейку ниже
+        const i3 = i * 3;
+        const ddx = posA[i3] - sx, ddz = posA[i3 + 2] - sz;
+        const dd = Math.sqrt(ddx * ddx + ddz * ddz) - br;
+        if (Math.abs(dd) > bw) return;
+        if (!_dngSave(colA, i3)) return;
+        const kk = amp * (1 - Math.abs(dd) / bw);
+        colA.array[i3]     += (0.75 - colA.array[i3])     * kk;
+        colA.array[i3 + 1] += (1.05 - colA.array[i3 + 1]) * kk;
+        colA.array[i3 + 2] += (1.0  - colA.array[i3 + 2]) * kk;
+        _dngTouch(colA, i3);
+      }, 2);
+    }
+  }
+  _dngFlush();
+}
 function gPaintDanger(k, time) {
   for (let i = 0; i < _dngN; i++) {
     const a = _dngAttr[i], i3 = _dngIdx[i];
@@ -3398,6 +4109,7 @@ function gPaintDanger(k, time) {
   }
   _dngN = 0;
   if (!GAME.chunks) return;
+  if (NEW_WORLD && WORLD) { gPaintDangerNew(k, time); return; }
   const pul = 0.55 + 0.45 * Math.sin(time * 14);      // тревожный пульс
   const yRef = GAME.shipP.y;
   // 1) диск под кораблём — близость к земле
@@ -3502,6 +4214,43 @@ function enterGame() {
   GAME.on = true; GAME.z = 0; GAME.z0 = 0; GAME.score = 0; GAME.speed = 90; GAME.exit = -1;
   GAME.enter = 0; GAME.over = false; GAME.grace = 2; // короткая неуязвимость на старте
   GAME.tint.copy(curAccent); // колорит мира = акцент текущего слайда
+  // НОВЫЙ МИР: план уровня и переходник высоты создаём ДО первого спавна — от
+  // probe.floor зависит и стартовая высота корабля, и коллизия с первого кадра.
+  if (NEW_WORLD) {
+    const seed = (Date.now() ^ (Math.random() * 1e6)) | 0;
+    // шаг сетки делим на корень из множителя: точек становится ровно в DENS_MUL раз
+    // больше. База — ДЕФОЛТ МОДУЛЯ, а не число здесь: захардкоженный 0.53 однажды
+    // молча перетёр обновлённую плотность world.js при каждом входе в игру.
+    if (window.__densBase0 === undefined) {
+      window.__densBase0 = PDWorld.CONFIG.density.base;
+      window.__densBudget0 = PDWorld.CONFIG.density.budget;
+    }
+    PDWorld.CONFIG.density.base = __densBase0 / Math.sqrt(DENS_MUL);
+    PDWorld.CONFIG.density.budget = Math.round(__densBudget0 * DENS_MUL);
+    // 240 чанков ≈ 48 тыс. юнитов ≈ 4-6 минут полёта: уровень практически не
+    // кончается (владелец долетал до конца шестидесяти). Генерация ленивая —
+    // план на 240 это просто описания, геометрия строится по мере полёта.
+    const mgr = PDWorld.makeManager(seed, 240);
+    WORLD = { seed: seed, mgr: mgr, probe: PDWorld.makeHeightProbe(mgr.plan),
+              wk: null, pending: {}, inflight: 0 };
+    // Worker считает геометрию, главный поток только заливает в GPU. План уровня
+    // детерминирован по seed, поэтому у потока и у главного треда он ОДИН И ТОТ ЖЕ —
+    // высота под кораблём (probe тут, в главном) совпадает с точками (там, в потоке).
+    try {
+      const wk = new Worker('world-worker.js?v=' + PD_V);
+      wk.onmessage = function (e) {
+        const m = e.data;
+        if (m.cmd !== 'chunkReady' || !WORLD) return;
+        WORLD.pending[m.index] = false;
+        WORLD.inflight = Math.max(0, WORLD.inflight - 1);
+        if (!GAME.on) return;
+        gAddWorldChunk(gBuildWorldMesh(m, m.index, m.lod));
+      };
+      wk.onerror = function () { if (WORLD) { WORLD.wk = null; } };  // молча на главный поток
+      wk.postMessage({ cmd: 'init', seed: seed, count: 240, dens: DENS_MUL });
+      WORLD.wk = wk;
+    } catch (err) { /* Worker недоступен — считаем в главном потоке */ }
+  }
   gFallMat.uniforms.uOp.value = 1;
   document.body.classList.add('game');
   stopPlay();
@@ -3512,13 +4261,57 @@ function enterGame() {
   _galleryVis = scene.children.map(o => [o, o.visible]);
   GAME.group = new THREE.Group();
   scene.add(GAME.group);
+  // задник дальних хребтов — только в новом мире (палитра и горизонт под него)
+  if (NEW_WORLD && WORLD) { GAME.backdrop = gMakeBackdrop(); GAME.group.add(GAME.backdrop); }
   GAME.ship = gMakeShip();
   GAME.group.add(GAME.ship);
   GAME.trail = gMakeTrail();
   GAME.group.add(GAME.trail);
   GAME.diam = gMakeDiamonds();
   GAME.group.add(GAME.diam);
+  // СТРИКИ СКОРОСТИ (28.07): редкие прозрачные линии, пролетающие у камеры, — дешёвая
+  // имитация motion blur (сами точки Points растягивать нельзя без шейдера, а 90 отрезков
+  // почти бесплатны). Длина сегмента и яркость растут со скоростью — см. updateGame.
+  (function streaks() {
+    const N = 90;
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 6), 3));
+    const sm = new THREE.LineBasicMaterial({ color: 0x9fe8e0, transparent: true, opacity: 0,
+      blending: THREE.AdditiveBlending, depthWrite: false });
+    const st = new THREE.LineSegments(sg, sm);
+    st.frustumCulled = false;
+    st.userData.baseOp = 0;                       // фейды входа/выхода его не зажигают
+    st.userData.pts = new Float32Array(N * 3);    // головы стриков (хвост дорисовывается по скорости)
+    for (let k = 0; k < N; k++) {
+      st.userData.pts[k * 3]     = (gHash(k, 1) - 0.5) * 130;
+      st.userData.pts[k * 3 + 1] = 4 + gHash(k, 2) * 46;
+      st.userData.pts[k * 3 + 2] = -150 + gHash(k, 3) * 175;
+    }
+    GAME.streaks = st;
+    GAME.group.add(st);
+  })();
+  // НИТЬ МАРШРУТА (28.07, «собранные формируют линии», сборка/раскрытие пространства):
+  // как только серия пошла, ядра ВПЕРЁД по трассе связываются светящейся нитью — маршрут
+  // проявляется по мере сбора и гаснет, когда серия прервалась.
+  // Почему вперёд, а не «след из собранных»: камера стоит на z≈17 и смотрит в −z, поэтому
+  // всё собранное (ядра стоят у z корабля ≈0) уже через доли секунды оказывается ЗА камерой
+  // и физически невидимо — проверено симуляцией, след жил 0.15с. Нить вперёд и осмысленнее:
+  // она показывает, куда ведёт серия.
+  (function chain() {
+    const CN = 16;
+    const cg = new THREE.BufferGeometry();
+    cg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(CN * 3), 3));
+    cg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(CN * 3), 3));
+    cg.setDrawRange(0, 0);
+    const cm = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9,
+      blending: THREE.AdditiveBlending, depthWrite: false });
+    const cl = new THREE.Line(cg, cm);
+    cl.frustumCulled = false;
+    GAME.chainLine = cl;
+    GAME.group.add(cl);
+  })();
   GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1;
+  GAME.spice = 0; if (gameSpiceNum) gameSpiceNum.textContent = '0';
   GAME.shipP.set(0, 16, 0);
   // кольцо в небе (как в референсах): гигантская дуга из точек
   (function ring() {
@@ -3554,6 +4347,13 @@ function restartGame() {
   GAME.over = false; GAME.overT = 0; GAME.score = 0; GAME.speed = 60; GAME.hurtT = 0;
   document.body.classList.remove('over');
   GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1; GAME.z0 = GAME.z;
+  GAME.spice = 0; if (gameSpiceNum) gameSpiceNum.textContent = '0';
+  // искровой веер прошлого краша: снять и освободить (корабль пересобирается целым)
+  if (GAME.crashSparks) {
+    GAME.ship.remove(GAME.crashSparks);
+    GAME.crashSparks.geometry.dispose(); GAME.crashSparks.material.dispose();
+    GAME.crashSparks = null;
+  }
   GAME.grace = 3; // 3 секунды неуязвимости, корабль мигает
   GAME.shipP.set(0, gTerrainH(0, GAME.z) + 30, 0);
   GAME.ship.visible = true; GAME.ship.scale.setScalar(1); gShipOpacity(1);
@@ -3580,6 +4380,13 @@ function exitGame() {
   GAME.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
   GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null; GAME.trail = null;
   GAME.diam = null; GAME.shipEdges = null; GAME.shipFill = null; GAME.shipGlow = null; GAME.shipLights = null; GAME.shipNozz = null;
+  GAME.streaks = null; GAME.chainLine = null; GAME.backdrop = null; GAME.crashSparks = null;
+  if (WORLD && WORLD.wk) { try { WORLD.wk.terminate(); } catch (e) {} }
+  WORLD = null;   // план уровня, кэш полей и Worker живут только внутри полёта
+  // инерционный сдвиг HUD не должен пережить выход (панели вернутся на свои места)
+  _hudVX = _hudVY = _hudPX = _hudPY = 0;
+  if (gameHud) gameHud.style.transform = '';
+  if (gameMetr) gameMetr.style.transform = '';
   _dngN = 0; _dngAttr.fill(null); // ссылки на атрибуты утилизированных чанков не держим
   _ringOp = 0; if (gameRing) gameRing.style.opacity = '0';
   gameOnboard.classList.remove('show');
@@ -3596,6 +4403,15 @@ let gamePuff = 0; // разлёт точек галереи после возв�
 // текущий DPR авто-качества и число живых чанков — чтобы видеть, ЧТО именно тормозит
 const gameMetricsEl = document.getElementById('game-metrics');
 let _mFps = 60, _mAcc = 0;
+// сколько точек лежит в геометрии чанков (не путать с отрисованными)
+function gTerrPoints() {
+  let n = 0;
+  if (GAME.chunks) for (let i = 0; i < GAME.chunks.length; i++) {
+    const c = GAME.chunks[i].userData.cloud;
+    if (c && c.geometry && c.geometry.attributes.position) n += c.geometry.attributes.position.count;
+  }
+  return n;
+}
 function gMetrics(dt) {
   if (!gameMetricsEl) return;
   const fps = dt > 0 ? 1 / dt : 60;
@@ -3608,7 +4424,9 @@ function gMetrics(dt) {
   gameMetricsEl.innerHTML =
     'FPS <b class="' + (f < 45 ? 'bad' : '') + '">' + f + '</b>  ' + (dt * 1000).toFixed(1) + ' MS\n' +
     'POINTS <b>' + (inf.points / 1000).toFixed(0) + 'K</b>  CALLS <b>' + inf.calls + '</b>\n' +
-    'DPR <b>' + renderer.getPixelRatio().toFixed(2) + '</b>  CHUNKS <b>' + (GAME.chunks ? GAME.chunks.length : 0) + '</b>  LOD <b>' + G_LOD + '</b>';
+    'DPR <b>' + renderer.getPixelRatio().toFixed(2) + '</b>  CHUNKS <b>' + (GAME.chunks ? GAME.chunks.length : 0) + '</b>  LOD <b>' + G_LOD + '</b>' +
+    (NEW_WORLD && WORLD ? '\nTERR <b>' + (gTerrPoints() / 1000).toFixed(0) + 'K</b>  WAIT <b>' + WORLD.inflight + '</b>' +
+      (WORLD.wk ? '' : '  <b style="color:#ff8a5c">SYNC</b>') : '');   // SYNC = Worker недоступен (file://), генерация в кадре
 }
 
 function updateGame(dt, time) {
@@ -3627,6 +4445,7 @@ function updateGame(dt, time) {
       scene.children.forEach(o => { if (o !== skyMesh && o !== GAME.group) o.visible = false; });
     }
     const wOp = clamp01((k - 0.42) / 0.55);                 // мир проявляется
+    worldEnvFade = wOp;   // новый мир гасится юниформой: у его шейдера нет material.opacity
     GAME.group.traverse(o => {
       if (o.material && o.material.opacity !== undefined)
         o.material.opacity = (o.userData.baseOp !== undefined ? o.userData.baseOp : 0.95) * wOp;
@@ -3639,39 +4458,65 @@ function updateGame(dt, time) {
     if (_mFps < 45 && G_LOD < 2) { _lodT += dt; if (_lodT > 2) { G_LOD++; _lodT = 0; } }
     else _lodT = Math.max(0, _lodT - dt);
   }
-  // гейм-овер: мир доезжает по инерции, обломки корабля летят по физике; ждём клик/Esc
+  // ГЕЙМ-ОВЕР — КИНЕМАТОГРАФИЧНО (по запросу): первые ~2.8с само столкновение,
+  // ЗАМЕДЛЕННОЕ (×0.3) и с камерой ¾ сверху, медленно облетающей место удара.
+  // Оверлей результатов появляется только после этого показа. Клик — рестарт сразу.
   if (GAME.over && GAME.exit < 0) {
-    // мир не замирает: скорость падает до спокойного дрейфа и камера продолжает мягко ехать вперёд
+    GAME.overT = (GAME.overT || 0) + dt;        // таймер — в реальном времени
+    const cine = GAME.overT < 2.8;
+    const dts = cine ? dt * 0.3 : dt;           // слоу-мо: физика обломков и дрейф мира
     const CRUISE = 16;
-    GAME.speed += (CRUISE - GAME.speed) * (1 - Math.exp(-dt * 1.1));
-    const dzc = GAME.speed * dt;
+    GAME.speed += (CRUISE - GAME.speed) * (1 - Math.exp(-dts * 1.1));
+    const dzc = GAME.speed * dts;
     GAME.z += dzc;
-    for (const cc of GAME.chunks) cc.position.z += dzc;
-    while (GAME.chunks.length && GAME.chunks[0].position.z > G_DEPTH * 0.8) {
-      const c0 = GAME.chunks.shift();
-      GAME.group.remove(c0);
-      c0.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
-    }
+    gMoveChunks(dzc);
+    gRecycle();
     gSpawnAhead();                              // мир продолжает достраиваться впереди
-    gUpdateDebris(dt);
-    // камера плавно поднимается и отъезжает — «пролёт над местом падения»
-    GAME.overT = (GAME.overT || 0) + dt;
-    const ov = Math.min(1, GAME.overT / 3.2), ove = ov * ov * (3 - 2 * ov);
-    const cxo = GAME.shipP.x * 0.5, cyo = GAME.shipP.y * 0.6 + 7 + ove * 12;
-    camera.position.set(cxo, cyo, 17 + ove * 10);
-    camera.lookAt(GAME.shipP.x * 0.7, GAME.shipP.y * 0.8 - ove * 6, -60);
-    camera.fov += ((S.fov + 4) - camera.fov) * (1 - Math.exp(-dt * 1.5));
+    gUpdateDebris(dts);
+    if (!GAME.goShown && !cine) { GAME.goShown = true; gameOverEl.classList.add('show'); }
+    if (cine) {
+      // ¾ сверху: подъём и заход вбок с медленным орбитальным дрейфом вокруг обломков
+      const ov = Math.min(1, GAME.overT / 1.1), ove = ov * ov * (3 - 2 * ov);
+      const ang = 0.85 + GAME.overT * 0.16;
+      const cxo = GAME.shipP.x + Math.sin(ang) * 17 * ove;
+      const cyo = GAME.shipP.y + 5 + 21 * ove;
+      const czo = 17 - 6 * ove + Math.cos(ang) * 5 * ove;
+      camera.position.x += (cxo - camera.position.x) * (1 - Math.exp(-dt * 4));
+      camera.position.y += (cyo - camera.position.y) * (1 - Math.exp(-dt * 4));
+      camera.position.z += (czo - camera.position.z) * (1 - Math.exp(-dt * 4));
+      camera.lookAt(GAME.shipP.x, GAME.shipP.y - 2, -6);
+      camera.fov += ((S.fov - 6) - camera.fov) * (1 - Math.exp(-dt * 2));  // лёгкий наезд
+    } else {
+      // после показа — прежний мягкий отъезд над местом падения
+      const ov = Math.min(1, (GAME.overT - 2.8) / 3.2), ove = ov * ov * (3 - 2 * ov);
+      const cxo = GAME.shipP.x * 0.5, cyo = GAME.shipP.y * 0.6 + 7 + ove * 12;
+      camera.position.x += (cxo - camera.position.x) * (1 - Math.exp(-dt * 2.5));
+      camera.position.y += (cyo - camera.position.y) * (1 - Math.exp(-dt * 2.5));
+      camera.position.z += ((17 + ove * 10) - camera.position.z) * (1 - Math.exp(-dt * 2.5));
+      camera.lookAt(GAME.shipP.x * 0.7, GAME.shipP.y * 0.8 - ove * 6, -60);
+      camera.fov += ((S.fov + 4) - camera.fov) * (1 - Math.exp(-dt * 1.5));
+    }
     camera.updateProjectionMatrix();
     return;
   }
-  // динамическое небо: инопланетная аврора — цвет горизонта медленно дышит
-  const skyK = 0.5 + 0.5 * Math.sin(time * 0.09);
-  skyMat.uniforms.uHorizon.value.setHSL(0.46 + 0.22 * skyK, 0.52, 0.30 + 0.06 * skyK);
-  skyMat.uniforms.uZenith.value.setHSL(0.7, 0.5, 0.09 + 0.05 * (1 - skyK));
+  // Небо. В новом мире палитра снята с референса: плотная тёмная бирюза у горизонта,
+  // почти чёрно-синий в зените. Анимацию оттенка убрал намеренно — «дышащая аврора»
+  // уводила фон в синий и лиловый, из-за чего белые точки рельефа теряли контраст
+  // и картинка читалась вяло. Постоянный холодный фон держит силуэт.
+  if (NEW_WORLD && WORLD) {
+    // горизонт чуть темнее (29.07): светлая бирюза съедала контраст белых точек
+    skyMat.uniforms.uHorizon.value.setRGB(0.058, 0.195, 0.23);
+    skyMat.uniforms.uZenith.value.setRGB(0.014, 0.027, 0.048);
+  } else {
+    const skyK = 0.5 + 0.5 * Math.sin(time * 0.09);
+    skyMat.uniforms.uHorizon.value.setHSL(0.46 + 0.22 * skyK, 0.52, 0.30 + 0.06 * skyK);
+    skyMat.uniforms.uZenith.value.setHSL(0.7, 0.5, 0.09 + 0.05 * (1 - skyK));
+  }
   // плавный выход: мир тает, скорость падает → возврат в портфолио
   if (GAME.exit >= 0) {
     GAME.exit += dt / 1.1;
     const k = 1 - Math.min(1, GAME.exit);
+    worldEnvFade = k;
     GAME.group.traverse(o => {
       if (o.material && o.material.opacity !== undefined && o.material !== gFallMat)
         o.material.opacity = (o.userData.baseOp !== undefined ? o.userData.baseOp : 0.95) * k;
@@ -3684,14 +4529,39 @@ function updateGame(dt, time) {
   // мягкое проявление свежих чанков впереди (см. финал gMakeChunk) — вне влёта/выхода из
   // игры, те гасят/зажигают весь мир своим общим множителем и сюда бы просто не дали дойти
   if (GAME.enter >= 1 && GAME.exit < 0) {
-    for (const c of GAME.chunks) {
-      if (c.userData.faded) continue;
-      const kf = smoothstep(0, 0.7, time - (c.userData.spawnTime || 0));
-      c.traverse(o => {
-        if (o.isPoints && o.material && o.material !== gFallMat && o.userData.baseOp !== undefined)
-          o.material.opacity = o.userData.baseOp * kf;
-      });
-      if (kf >= 1) c.userData.faded = true;
+    worldEnvFade = 1;
+    if (NEW_WORLD && WORLD) {
+      // новый мир: фейд через юниформу. Проявление длиннее (1.4с) — вместе с этапной
+      // материализацией в шейдере (сначала контуры, потом заливка) даёт «пространство
+      // возникает перед игроком», а не выскакивает. Умирающие (заменённые апгрейдом
+      // LOD) гаснут параллельно и сносятся, когда фейд дошёл до нуля — кроссфейд.
+      for (let ci = GAME.chunks.length - 1; ci >= 0; ci--) {
+        const c = GAME.chunks[ci];
+        if (c.userData.dying) {
+          c.userData.fade = (c.userData.fade === undefined ? 1 : c.userData.fade) - dt / 0.6;
+          if (c.userData.fade <= 0) {
+            GAME.chunks.splice(ci, 1);
+            GAME.group.remove(c);
+            c.traverse(o => { if (o.geometry) o.geometry.dispose();
+                              if (o.material && o.material !== wMat && o.material !== gFallMat) o.material.dispose(); });
+          }
+          continue;
+        }
+        if (c.userData.faded) continue;
+        const kf = smoothstep(0, 1.4, time - (c.userData.spawnTime || 0));
+        c.userData.fade = kf;
+        if (kf >= 1) c.userData.faded = true;
+      }
+    } else {
+      for (const c of GAME.chunks) {
+        if (c.userData.faded) continue;
+        const kf = smoothstep(0, 0.7, time - (c.userData.spawnTime || 0));
+        c.traverse(o => {
+          if (o.isPoints && o.material && o.material !== gFallMat && o.userData.baseOp !== undefined)
+            o.material.opacity = o.userData.baseOp * kf;
+        });
+        if (kf >= 1) c.userData.faded = true;
+      }
     }
   }
   // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной;
@@ -3704,25 +4574,49 @@ function updateGame(dt, time) {
   GAME.ship.position.copy(GAME.shipP);
   GAME.ship.rotation.z = clamp((tx - GAME.shipP.x) * -0.02, -0.6, 0.6); // крен в поворот
   GAME.ship.rotation.x = clamp((ty - GAME.shipP.y) * 0.02, -0.4, 0.4);
+  gHudInertia(dt, GAME.shipP.x, GAME.shipP.y); // панели отстают от маневра
   // полёт: мир едет на нас, скорость растёт (быстрый разгон)
   if (GAME.exit < 0) GAME.speed = Math.min(315, GAME.speed + dt * 3.2 * Math.max(0.12, 1 - GAME.speed / 315)); // асимптотический разгон
   if (GAME.speed > (GAME.maxSpeed || 0)) GAME.maxSpeed = GAME.speed;
   const dz = GAME.speed * dt;
   GAME.z += dz;
-  for (const c of GAME.chunks) c.position.z += dz;
-  // утилизация позади, генерация впереди
-  while (GAME.chunks.length && GAME.chunks[0].position.z > G_DEPTH * 0.8) {
-    const c = GAME.chunks.shift();
-    GAME.group.remove(c);
-    c.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
-  }
+  gMoveChunks(dz);
+  gRecycle();   // утилизация позади, генерация впереди
   gSpawnAhead();
+  // стрики скорости: головы едут с миром (z += dz), хвост дорисовывается назад по скорости —
+  // чем быстрее, тем длиннее штрих и ярче линия; ниже ~110 скорости стрики невидимы вовсе
+  if (GAME.streaks) {
+    const su = GAME.streaks.userData.pts, sp2 = GAME.streaks.geometry.attributes.position.array;
+    const slen = 2 + GAME.speed * 0.055;
+    for (let k = 0; k < 90; k++) {
+      let sz = su[k * 3 + 2] + dz;
+      if (sz > 24) {                            // улетел за камеру — рождаемся впереди заново
+        sz -= 175;
+        su[k * 3]     = (gHash(k, GAME.z) - 0.5) * 130;
+        su[k * 3 + 1] = 4 + gHash(GAME.z, k) * 46;
+      }
+      su[k * 3 + 2] = sz;
+      const o6 = k * 6;
+      sp2[o6] = su[k * 3];     sp2[o6 + 1] = su[k * 3 + 1]; sp2[o6 + 2] = sz;
+      sp2[o6 + 3] = su[k * 3]; sp2[o6 + 4] = su[k * 3 + 1]; sp2[o6 + 5] = sz - slen;
+    }
+    GAME.streaks.geometry.attributes.position.needsUpdate = true;
+    // яркость: от скорости, гаснет на входе/выходе из игры вместе с миром
+    const env = (GAME.exit >= 0 ? 1 - Math.min(1, GAME.exit) : 1) * clamp01((GAME.enter - 0.42) / 0.55);
+    GAME.streaks.material.opacity = clamp01((GAME.speed - 110) / 205) * 0.5 * env;
+  }
   // сбор энергии и кольца: объекты живут — вращаются и покачиваются; близость к кораблю = сбор.
   // Серия подряд собранных даёт комбо-множитель (приём аркад: строчка ведёт — комбо мотивирует)
+  const _routeAhead = []; // ядра впереди по трассе — из них строится нить маршрута (ниже)
   for (const c of GAME.chunks) for (const o of c.children) {
+    if (o.userData.isSpice) { gSpiceUpdate(o, c, dt, time); continue; }
     if (o.userData.isRing && !o.userData.got) {
       o.rotation.z += dt * o.userData.spin;
-      const wzr = o.position.z + c.position.z;
+      // ЭКРАННЫЙ z НАГРАДЫ. В новом мире группа чанка перевёрнута (scale.z = −1,
+      // position.z = GAME.z), поэтому z_экр = GAME.z − z_мир. Старая формула
+      // (сложение) давала «позицию» в тысячах юнитов от корабля — сбор и кольца
+      // не срабатывали НИКОГДА, весь счёт стоял на нуле.
+      const wzr = (NEW_WORLD && WORLD) ? c.position.z - o.position.z : o.position.z + c.position.z;
       if (Math.abs(wzr - GAME.shipP.z) < 3.2) {
         const ddx = o.position.x - GAME.shipP.x, ddy = o.position.y - GAME.shipP.y;
         if (ddx * ddx + ddy * ddy < 30) {          // прошли сквозь обруч
@@ -3741,8 +4635,18 @@ function updateGame(dt, time) {
     o.rotation.y += dt * o.userData.spin;
     o.rotation.x = Math.sin(time * 0.7 + o.userData.ph) * 0.22;
     o.position.y = o.userData.baseY + Math.sin(time * 1.4 + o.userData.ph) * 0.8;
-    o.scale.setScalar(1 + 0.07 * Math.sin(time * 3 + o.userData.ph)); // живая пульсация
-    const wz = o.position.z + c.position.z;
+    // мягкий пульс цели: масштаб и размер точек дышат (у редкой — заметно сильнее)
+    const bs = o.userData.baseScale || 1;
+    const pk = o.userData.rare ? 0.14 : 0.07;
+    o.scale.setScalar(bs * (1 + pk * Math.sin(time * 3 + o.userData.ph)));
+    // размер точек дышит через юниформу: у наград теперь ShaderMaterial с потолком
+    // экранного размера (см. gBeaconMat), material.size у него нет
+    if (o.material.uniforms) o.material.uniforms.uSize.value = 0.3 * bs + 0.05 * Math.sin(time * 3 + o.userData.ph);
+    // z_экр = GAME.z − z_мир (см. комментарий у колец) — иначе сбор не срабатывает
+    const wz = (NEW_WORLD && WORLD) ? c.position.z - o.position.z : o.position.z + c.position.z;
+    // кандидат в нить маршрута: ядро впереди корабля и в пределах видимости камеры
+    if (wz < GAME.shipP.z + 2 && wz > GAME.shipP.z - 135)
+      _routeAhead.push({ x: o.position.x, y: o.position.y, z: wz });
     if (Math.abs(wz - GAME.shipP.z) < 4 &&
         Math.abs(o.position.x - GAME.shipP.x) < 4.5 &&
         Math.abs(o.position.y - GAME.shipP.y) < 4.5) {
@@ -3750,11 +4654,36 @@ function updateGame(dt, time) {
       GAME.combo = (time - GAME.lastGet < 2.4) ? GAME.combo + 1 : 1;
       if (GAME.combo > (GAME.maxCombo || 1)) GAME.maxCombo = GAME.combo;
       GAME.lastGet = time;
-      GAME.score += GAME.combo; gameScore.textContent = GAME.score; gScorePulse();
-      GAME.anims.push({ o, t: 0 });
+      const gain = GAME.combo + (o.userData.rare ? 5 : 0);
+      GAME.score += gain; gameScore.textContent = GAME.score; gScorePulse();
+      GAME.anims.push({ o, t: 0, k: o.userData.rare ? 8 : 4 }); // редкая — вспышка вдвое шире
       Sound.sfx('collect', GAME.combo);
-      gLabel(GAME.combo > 1 ? 'СЕРИЯ ×' + GAME.combo : 'ЭНЕРГИЯ СОБРАНА');
+      if (o.userData.rare) Sound.sfx('ring');
+      gLabel(o.userData.rare ? 'РЕДКАЯ ЭНЕРГИЯ · +' + gain
+           : GAME.combo > 1 ? 'СЕРИЯ ×' + GAME.combo : 'ЭНЕРГИЯ СОБРАНА');
     }
+  }
+  // НИТЬ МАРШРУТА: пока серия жива, ядра впереди связаны светящейся линией — «раскрытие»
+  // пространства по мере сбора. Яркость от свежести последнего сбора и длины серии, поэтому
+  // нить сама затухает через ~2.4с после срыва серии (тот же порог, что у комбо).
+  if (GAME.chainLine) {
+    const fresh = clamp01(1 - (time - (GAME.lastGet || -9)) / 2.4);
+    const glow = fresh * clamp01((GAME.combo || 0) / 3) * (GAME.over ? 0 : 1);
+    if (glow > 0.02 && _routeAhead.length >= 2) {
+      _routeAhead.sort((p, q) => q.z - p.z);            // от ближнего к дальнему
+      const cp = GAME.chainLine.geometry.attributes.position.array;
+      const cc = GAME.chainLine.geometry.attributes.color.array;
+      const n = Math.min(16, _routeAhead.length);
+      for (let i = 0; i < n; i++) {
+        const p = _routeAhead[i];
+        cp[i * 3] = p.x; cp[i * 3 + 1] = p.y; cp[i * 3 + 2] = p.z;
+        const a = glow * (1 - i / n) * 0.7;              // дальний конец нити слабее
+        cc[i * 3] = 0.38 * a; cc[i * 3 + 1] = a; cc[i * 3 + 2] = 0.92 * a;
+      }
+      GAME.chainLine.geometry.setDrawRange(0, n);
+      GAME.chainLine.geometry.attributes.position.needsUpdate = true;
+      GAME.chainLine.geometry.attributes.color.needsUpdate = true;
+    } else GAME.chainLine.geometry.setDrawRange(0, 0);
   }
   // бреющий полёт: держаться у самой земли рискованно — и за это капают очки (риск/награда)
   if (GAME.enter >= 1 && !GAME.over && GAME.grace === 0) {
@@ -3771,11 +4700,15 @@ function updateGame(dt, time) {
     const tud = GAME.trail.userData, tp = GAME.trail.geometry.attributes.position, tc = GAME.trail.geometry.attributes.color;
     const th = Math.min(1, GAME.speed / 190);
     const rzS = GAME.ship.rotation.z, cosR = Math.cos(rzS), sinR = Math.sin(rzS);
-    const LIFE = 0.42;
+    // ФАКЕЛ ОЧЕНЬ КОРОТКИЙ (29.07, по запросу: «пикселов 15»). Струя живёт в системе
+    // КОРАБЛЯ (без +dz — раньше компенсация скорости мира растягивала её в длинный
+    // шлейф до самой камеры), скорость крошечная: вылет ~0.3 юнита ≈ 15px у сопла.
+    // Вихри с крыльев остаются мировыми следами (им +dz положен) и живут дольше.
+    const LIFE_JET = 0.15, LIFE_VOR = 0.3;
     if (!GAME.over) {
-      // спиральная плазма: 6 частиц на сопло за кадр вдоль пути кадра, каждая со своей
-      // фазой и радиусом закрутки — струя выглядит вращающимся жгутом, а не пунктиром
-      const jetV = 26 + th * 36;
+      // спиральная плазма: 6 частиц на сопло за кадр, каждая со своей фазой и
+      // радиусом закрутки — плотный вращающийся факел у самого сопла
+      const jetV = 1.8 + th * 1.6;
       const stepZ = jetV * dt / 6;
       for (let eI = 0; eI < SHIP_ENGINES.length; eI++) {
         const e = SHIP_ENGINES[eI];
@@ -3806,11 +4739,17 @@ function updateGame(dt, time) {
     }
     const spinT = time * 21;
     for (let iT = 0; iT < tud.N; iT++) {
-      if (tud.ages[iT] > LIFE) continue;
-      tud.ages[iT] += dt;
-      tud.bz[iT] += tud.vz[iT] * dt + dz;
-      const aT = Math.max(0, 1 - tud.ages[iT] / LIFE);
       const vor = tud.rad[iT] < 0;                     // вихрь с крыла
+      const life = vor ? LIFE_VOR : LIFE_JET;
+      if (tud.ages[iT] > life) continue;
+      tud.ages[iT] += dt;
+      // струя — в системе корабля (короткий факел), вихри — мировые следы (+dz)
+      tud.bz[iT] += tud.vz[iT] * dt + (vor ? dz : 0);
+      // ЧАСТИЦА У КАМЕРЫ = ГИГАНТСКАЯ КЛЯКСА: вихри с +dz пролетают сквозь камеру
+      // (z≈17), PointsMaterial с аттенюацией раздувает их у объектива. Гасим заранее.
+      if (tud.bz[iT] > 8) { tud.ages[iT] = life + 1; tp.setXYZ(iT, 0, -9999, 0); tc.setXYZ(iT, 0, 0, 0); continue; }
+      const nearK = 1 - clamp01((tud.bz[iT] - 4) / 4);   // плавное затухание с z=4 до z=8
+      const aT = Math.max(0, 1 - tud.ages[iT] / life) * nearK;
       const rr = Math.abs(tud.rad[iT]) * (1 + tud.ages[iT] * (vor ? 9 : 4)); // спираль раскрывается конусом
       const aH = tud.ph[iT] + (vor ? spinT * 0.35 : spinT);
       tp.setXYZ(iT, tud.bx[iT] + Math.cos(aH) * rr,
@@ -3829,7 +4768,8 @@ function updateGame(dt, time) {
         const e = SHIP_ENGINES[eI];
         const ex = e[0] * cosR - e[1] * sinR, ey = e[0] * sinR + e[1] * cosR;
         for (let k2 = 0; k2 < 3; k2++) {
-          const off = (1.5 + k2 * 1.4) * (0.55 + th * 0.75);
+          // диски прижаты к соплу — факел теперь очень короткий (~0.3 юнита)
+          const off = (0.28 + k2 * 0.3) * (0.5 + th * 0.55);
           dp.setXYZ(di, GAME.shipP.x + ex, GAME.shipP.y + ey, GAME.shipP.z + e[2] + off);
           const fD = (GAME.over ? 0 : th) * (0.6 + 0.4 * Math.sin(time * 26 + di * 2.2)) * (1 - k2 * 0.27);
           dc.setXYZ(di, 1.15 * fD, 0.82 * fD, 0.5 * fD);
@@ -3839,11 +4779,16 @@ function updateGame(dt, time) {
       dp.needsUpdate = true; dc.needsUpdate = true;
     }
   }
-  // анимация собранных сфер: раздуваются и тают
+  // вспышка сопел при всасывании спайса: свечение двигателей коротко раздувается
+  if (GAME.shipGlow && GAME._spiceGlowT) {
+    const kG = Math.max(0, 1 - (time - GAME._spiceGlowT) / 0.35);
+    GAME.shipGlow.material.size = 0.72 * (1 + kG * 0.9);
+  }
+  // анимация собранных сфер: раздуваются и тают (редкая энергия — вспышка вдвое шире, a.k)
   for (let i = GAME.anims.length - 1; i >= 0; i--) {
     const a = GAME.anims[i];
     a.t += dt * 3;
-    a.o.scale.setScalar(1 + a.t * 4);
+    a.o.scale.setScalar(1 + a.t * (a.k || 4));
     a.o.material.opacity = Math.max(0, 0.95 * (1 - a.t));
     if (a.t >= 1) { a.o.visible = false; GAME.anims.splice(i, 1); }
   }
@@ -3884,7 +4829,9 @@ function updateGame(dt, time) {
     document.getElementById('go-dist').textContent = ((GAME.z - (GAME.z0 || 0)) * 2.4 / 1000).toFixed(1);
     document.getElementById('go-speed').textContent = Math.round((GAME.maxSpeed || GAME.speed) * 2.4);
     document.getElementById('go-combo').textContent = '×' + (GAME.maxCombo || 1);
-    gameOverEl.classList.add('show');
+    // оверлей НЕ сразу: сначала кинематографичный показ самого столкновения —
+    // замедленное время и камера ¾ сверху (см. ветку GAME.over в updateGame)
+    GAME.goShown = false;
   }
   if (GAME.boom != null && GAME.boom >= 0) { GAME.boom += dt; if (GAME.boom > 1.15) GAME.boom = -1; }
   const shake = dangerK > 0.6 ? (dangerK - 0.6) * 1.6 : 0; // лёгкая дрожь у земли
@@ -3963,7 +4910,7 @@ function gDangerRing(dt, time, alt) {
   _ringY += (ty - _ringY) * (1 - Math.exp(-dt * 7));
   gameRing.style.transform = 'translate(' + _ringX.toFixed(1) + 'px,' + _ringY.toFixed(1) + 'px)';
   // отрисовка (канвас 1.5x для чёткости на ретине)
-  const g = _ringCtx, SS = 1.5, C_X = 620 * SS, C_Y = 330 * SS, R = 208 * SS;
+  const g = _ringCtx, SS = 1.5, C_X = 620 * SS, C_Y = 330 * SS, R = 146 * SS;   // −30% радиус: приборы прижаты к кораблю
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.clearRect(0, 0, gameRing.width, gameRing.height);
   const pul = 0.72 + 0.28 * Math.sin(time * 11);
@@ -4006,19 +4953,19 @@ function gDangerRing(dt, time, alt) {
   g.save();
   g.translate(C_X, C_Y); g.rotate(bank);
   g.strokeStyle = 'rgba(220,238,240,0.5)'; g.lineWidth = 1.8 * SS;
-  g.beginPath(); g.moveTo(-R - 300 * SS, 0); g.lineTo(-R - 26 * SS, 0); g.stroke();
-  g.beginPath(); g.moveTo(R + 26 * SS, 0); g.lineTo(R + 300 * SS, 0); g.stroke();
+  g.beginPath(); g.moveTo(-R - 210 * SS, 0); g.lineTo(-R - 18 * SS, 0); g.stroke();
+  g.beginPath(); g.moveTo(R + 18 * SS, 0); g.lineTo(R + 210 * SS, 0); g.stroke();
   g.restore();
   // скорость слева, энергия справа (числа не крутятся — как в приборах)
   g.textBaseline = 'alphabetic';
   g.fillStyle = 'rgba(241,251,252,0.95)';
-  g.font = '600 ' + (54 * SS) + 'px ui-monospace, "SF Mono", Menlo, monospace';
+  g.font = '600 ' + (38 * SS) + 'px ui-monospace, "SF Mono", Menlo, monospace';
   g.textAlign = 'right';
-  g.fillText(String(Math.round(GAME.speed * 2.4)), C_X - R - 66 * SS, C_Y - 22 * SS);
-  g.font = '600 ' + (15 * SS) + 'px ui-monospace, monospace';
+  g.fillText(String(Math.round(GAME.speed * 2.4)), C_X - R - 40 * SS, C_Y - 16 * SS);
+  g.font = '600 ' + (11 * SS) + 'px ui-monospace, monospace';
   g.fillStyle = 'rgba(220,238,240,0.6)';
-  g.fillText('КМ/Ч', C_X - R - 66 * SS, C_Y + 4 * SS);
-  g.font = '600 ' + (54 * SS) + 'px ui-monospace, "SF Mono", Menlo, monospace';
+  g.fillText('КМ/Ч', C_X - R - 40 * SS, C_Y + 3 * SS);
+  g.font = '600 ' + (38 * SS) + 'px ui-monospace, "SF Mono", Menlo, monospace';
   g.fillStyle = 'rgba(241,251,252,0.95)';
   g.textAlign = 'left';
   const scoreS = String(GAME.score);
@@ -4031,6 +4978,19 @@ function gDangerRing(dt, time, alt) {
   g.lineTo(bx + 20 * SS, by); g.closePath();
   g.fillStyle = 'rgba(241,251,252,0.9)';
   g.fill();
+  // СПАЙС у центрального курсора (по запросу): круглый оранжевый значок + счёт
+  // тем же моноширинным шрифтом, под кораблём внутри кольца
+  const spS = String(GAME.spice || 0);
+  g.font = '600 ' + (26 * SS) + 'px ui-monospace, "SF Mono", Menlo, monospace';
+  const spW = g.measureText(spS).width;
+  const spX = C_X - (spW - 20 * SS) / 2, spY = C_Y + 86 * SS;
+  const gr = g.createRadialGradient(spX - 16 * SS, spY - 11 * SS, 1, spX - 16 * SS, spY - 9 * SS, 8 * SS);
+  gr.addColorStop(0, '#ffd9a0'); gr.addColorStop(0.5, '#ff9a3d'); gr.addColorStop(1, 'rgba(198,90,16,0.85)');
+  g.beginPath(); g.arc(spX - 16 * SS, spY - 9 * SS, 7 * SS, 0, 6.2832);
+  g.fillStyle = gr; g.fill();
+  g.fillStyle = 'rgba(255,161,78,0.95)';
+  g.textAlign = 'left';
+  g.fillText(spS, spX, spY);
 }
 
 // кнопка «Вернуться на сайт»: плавный выход из полёта (postMessage теперь шлёт сам startExitGame)
@@ -4067,9 +5027,27 @@ if (isMobile) (function(){
 })();
 
 const gameScore = document.getElementById('game-score');
+const gameSpiceNum = document.getElementById('game-spice-num');
 const gameDanger = document.getElementById('game-danger');
 const gameLabel = document.getElementById('game-label');
 const gameOnboard = document.getElementById('game-onboard');
+const gameHud = document.getElementById('game-hud');
+const gameMetr = document.getElementById('game-metrics');
+// ИНЕРЦИЯ HUD (28.07): панели чуть отстают от маневра — интерфейс «висит» в кабине, а не
+// приклеен к экрану. Сдвиг считается из СГЛАЖЕННОЙ скорости корабля (пружина на пружине),
+// поэтому на резком вираже панель уезжает заметно, а в спокойном полёте стоит ровно.
+// Двигаем контейнеры, а не #game-score: у него свой transform под анимацию пульса.
+let _hudVX = 0, _hudVY = 0, _hudPX = 0, _hudPY = 0;
+function gHudInertia(dt, sx, sy) {
+  const kk = 1 - Math.exp(-dt * 3.2);
+  _hudVX += ((sx - _hudPX) / Math.max(dt, 0.001) - _hudVX) * kk;
+  _hudVY += ((sy - _hudPY) / Math.max(dt, 0.001) - _hudVY) * kk;
+  _hudPX = sx; _hudPY = sy;
+  const ox = clamp(-_hudVX * 0.18, -16, 16), oy = clamp(-_hudVY * 0.14, -12, 12);
+  const tf = 'translate(' + ox.toFixed(2) + 'px,' + oy.toFixed(2) + 'px)';
+  if (gameHud) gameHud.style.transform = tf;
+  if (gameMetr) gameMetr.style.transform = tf;
+}
 // сбор — событие: счёт вспыхивает и подпрыгивает
 function gScorePulse() {
   gameScore.classList.remove('pop');

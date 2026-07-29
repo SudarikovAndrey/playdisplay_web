@@ -5,21 +5,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayDisplay — пространства, которые люди запоминают: музеи, выставки, интерактивные экспозиции</title>
-<meta name="description" content="PlayDisplay проектирует пространства и впечатления, которые люди запоминают: современные музеи, интерактивные экспозиции, visitor centre, шоурумы и иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.">
-<meta name="keywords" content="разработка концепции музея, дизайн интерактивной экспозиции, мультимедийная экспозиция под ключ, концепция visitor centre, иммерсивная выставка, интерактивный шоурум, мультимедиа инсталляция, проекционный маппинг, музейная экспозиция, PlayDisplay, Андрей Судариков">
-<meta name="author" content="PlayDisplay">
+<title>playdisplay — пространства, которые люди запоминают: музеи, выставки, интерактивные экспозиции</title>
+<meta name="description" content="playdisplay проектирует пространства и впечатления, которые люди запоминают: современные музеи, интерактивные экспозиции, visitor centre, шоурумы и иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.">
+<meta name="keywords" content="разработка концепции музея, дизайн интерактивной экспозиции, мультимедийная экспозиция под ключ, концепция visitor centre, иммерсивная выставка, интерактивный шоурум, мультимедиа инсталляция, проекционный маппинг, музейная экспозиция, playdisplay, Андрей Судариков">
+<meta name="author" content="playdisplay">
 <link rel="canonical" href="https://playdisplay.com/">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="PlayDisplay">
+<meta property="og:site_name" content="playdisplay">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:title" content="PlayDisplay — пространства, которые люди запоминают">
+<meta property="og:title" content="playdisplay — пространства, которые люди запоминают">
 <meta property="og:description" content="Мы превращаем идею, историю, пространство или бренд в опыт, который хочется пережить: музеи, экспозиции, visitor centre, шоурумы и иммерсивные выставки.">
 <meta property="og:url" content="https://playdisplay.com/">
 <meta property="og:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="PlayDisplay — пространства, которые люди запоминают">
+<meta name="twitter:title" content="playdisplay — пространства, которые люди запоминают">
 <meta name="twitter:description" content="Музеи, интерактивные экспозиции, visitor centre и иммерсивные выставки: превращаем идею в опыт, который хочется пережить.">
 <meta name="twitter:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
 <link rel="stylesheet" href="styles.css">
@@ -57,12 +57,33 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 44px;
     transition: opacity .65s ease; cursor: default; }
   #boot.out { opacity: 0; pointer-events: none; }
-  #boot .bl { position: relative; width: min(58vw, 340px); }
+  #boot .bl { position: relative; width: min(58vw, 340px); --p: 0%; }
   #boot .bl img { width: 100%; display: block; -webkit-user-drag: none; user-select: none; }
-  #boot .bl .dim { opacity: .14; }
-  /* яркая копия открывается слева направо по мере загрузки + тиловое свечение у фронта */
-  #boot .bl .lit { position: absolute; inset: 0; clip-path: inset(0 100% 0 0);
-    filter: brightness(1.25) drop-shadow(0 0 16px rgba(43,224,198,0.55)) drop-shadow(0 0 44px rgba(43,224,198,0.22)); }
+  #boot .bl .dim { opacity: .12; }
+  /* Заливка идёт слева направо по одной переменной --p, её ведёт скрипт.
+     ВАЖНО: отступы в clip-path отрицательные. С нулевыми свечение срезалось ровно
+     по рамке картинки, и вокруг надписи был виден светлый прямоугольник — именно
+     это и бросалось в глаза. Отрицательные дают свету выйти за буквы. */
+  #boot .bl .tint, #boot .bl .b1, #boot .bl .lit { position: absolute; inset: 0; }
+  /* широкий тиловый ореол по форме букв: цветная подложка в маске самой надписи */
+  #boot .bl .tint { background: #2be0c6;
+    -webkit-mask: url("assets/logos/playdisplay-logo-white.png") center / 100% 100% no-repeat;
+    mask: url("assets/logos/playdisplay-logo-white.png") center / 100% 100% no-repeat;
+    filter: blur(20px); opacity: .62; mix-blend-mode: screen;
+    clip-path: inset(-260% calc(100% - var(--p)) -260% -60%); }
+  /* плотный белый ореол — ближний свет у самих букв */
+  #boot .bl .b1 { filter: blur(7px) brightness(1.4); opacity: .8; mix-blend-mode: screen;
+    clip-path: inset(-120% calc(100% - var(--p)) -120% -24%); }
+  /* резкая копия сверху: она и читается как надпись */
+  #boot .bl .lit { filter: brightness(1.2) drop-shadow(0 0 9px rgba(180,255,246,0.45));
+    clip-path: inset(-70% calc(100% - var(--p)) -70% -10%); }
+  /* блик на фронте: место, где свет прямо сейчас проходит сквозь прорезь */
+  #boot .bl .flare { position: absolute; top: -150%; bottom: -150%; width: 72px; margin-left: -36px;
+    left: var(--p); pointer-events: none; mix-blend-mode: screen;
+    background: radial-gradient(closest-side, rgba(190,255,247,0.5), rgba(43,224,198,0.16) 46%, transparent 72%);
+    filter: blur(7px); opacity: 0; transition: opacity .5s ease; }
+  #boot .bl.lighting .flare { opacity: .6; }
+  @media (prefers-reduced-motion: reduce) { #boot .bl .flare { display: none; } }
   #boot #bootPlay { opacity: 0; transform: translateY(10px); pointer-events: none;
     font: 600 13px 'Roboto Mono', monospace; letter-spacing: .22em; text-transform: uppercase;
     color: #04121a; background: #2be0c6; border: none; border-radius: 2px; padding: 16px 34px;
@@ -137,9 +158,13 @@
   .hero .session, .hero .readout, .hero .ruler-top, .hero .ruler-left { transition: opacity .4s; }
   .hero.video-on .session, .hero.video-on .readout,
   .hero.video-on .ruler-top, .hero.video-on .ruler-left { opacity: 0; }
-  /* режим мини-игры: экран полностью отдан полёту */
+  /* режим мини-игры: экран полностью отдан полёту.
+     .hero-top с типами пространств лежит ОТДЕЛЬНО от .hero-inner, поэтому под общее
+     правило не попадал и надпись висела поверх полёта в левом верхнем углу. */
   .hero.game-on .hero-inner, .hero.game-on .session, .hero.game-on .readout,
-  .hero.game-on .ruler-top, .hero.game-on .ruler-left, .hero.game-on .hero-grade { opacity: 0; transition: opacity .5s; }
+  .hero.game-on .ruler-top, .hero.game-on .ruler-left, .hero.game-on .hero-grade,
+  .hero.game-on .hero-top { opacity: 0; transition: opacity .5s; }
+  .hero.game-on .hero-top { pointer-events: none; }
   /* .hero-btns сама включает себе pointer-events:auto (нужно для обычного клика по кнопкам),
      и этот auto НЕ перебивается pointer-events:none у родителя .hero-inner — pointer-events
      не каскадируется, как opacity. Поэтому во время игры кнопки «Сыграть» и «Проекты →»
@@ -169,6 +194,26 @@
   body.arc-on .work .wrap { opacity: 0; transition: opacity .6s; }
   .hero h1 { font: 600 clamp(24px, 2.6vw, 42px)/1.08 var(--font-display); letter-spacing: var(--tracking-display); color: rgba(241,251,252,0.94); max-width: 17ch; text-shadow: 0 4px 40px rgba(3,12,16,0.9); }
   .hero h1 em { font-style: normal; color: var(--signal-teal); }
+  /* типы пространств в левом верхнем углу: ниже шапки и угловой скобки, по сетке .wrap */
+  .hero-top { position: absolute; left: 0; right: 0; top: clamp(104px, 15vh, 172px);
+    z-index: 4; pointer-events: none;
+    transition: opacity .45s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
+  /* при просмотре видео проекта в кадре остаётся только карточка проекта:
+     список типов пространств уходит вместе со слоганом */
+  .hero.video-on .hero-top { opacity: 0; transform: translateY(-10px); }
+  /* моношрифт в наборе капителью — тот же язык, что у надписей HUD в этой же сцене;
+     дисплейное начертание в 33 px спорило с заголовком */
+  .hero-kinds .hk-line { display: inline-block; min-height: 1.2em;
+    font: 500 clamp(13.5px, 1.2vw, 17px)/1.2 var(--font-mono);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(241,251,252,0.82); }
+  /* полный список — только для разметки, из потока убран */
+  .hero-kinds .hk-all { position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip-path: inset(50%); white-space: nowrap; }
+  @media (max-width: 700px) {
+    .hero-top { top: 84px; }
+    .hero-kinds .hk-line { font-size: 12px; letter-spacing: 0.16em; }
+  }
   .hero-btns { display: flex; gap: 16px; margin-top: 30px; align-items: center; pointer-events: auto; }
   .btn-line {
     display: inline-flex; align-items: center; gap: 12px;
@@ -536,14 +581,46 @@
     text-transform: uppercase; color: var(--scan-white-dim); background: transparent;
     border: 1px solid var(--space-line); padding: 13px 24px; cursor: pointer; transition: all var(--duration-fast); }
   .a-more:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
-  /* появление: карточки выкатываются из глубины друг за другом */
-  .a-card.tile-in { opacity: 0; transform: translateY(34px) scale(0.9) rotateX(-12deg);
-    transform-origin: 50% 120%;
-    transition: opacity .55s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1); }
-  .a-card.tile-in.on { opacity: 1; transform: none; }
+  /* Появление: карточки прилетают из глубины, развернувшись боком, и доворачиваются
+     в плоскость экрана. Перспектива задана контейнеру — без неё поворот выглядел бы
+     плоским сжатием. Тень на время влёта усиливает ощущение объёма. */
+  .a-grid { perspective: 1500px; perspective-origin: 30% 40%; }
+  .a-card.tile-in { opacity: 0;
+    transform: translate3d(90px, 26px, -560px) rotateY(-42deg) rotateX(8deg);
+    transform-origin: 0% 50%;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.55);
+    transition: opacity .5s ease,
+                transform 1.05s cubic-bezier(.18,.9,.22,1),
+                box-shadow 1.05s ease; }
+  .a-card.tile-in.on { opacity: 1; transform: none; box-shadow: 0 0 0 rgba(0,0,0,0); }
   @media (max-width: 700px) {
-    .a-grid { padding: 14px 14px 14px; gap: 10px; }
-    .a-card { width: 66vw; height: 300px; }
+    /* На телефоне горизонтальная лента из пяти десятков карточек неудобна:
+       вместо неё группы по типу, свёрнутые до заголовка. Всё это живёт только
+       внутри медиа-запроса — компьютерная версия не меняется. */
+    .a-grid { display: block; margin: 16px 0 0; padding: 0; overflow: visible;
+      cursor: auto; perspective: none;
+      -webkit-mask-image: none; mask-image: none; }
+    .a-group { border-top: 1px solid var(--space-line); }
+    .a-group:last-child { border-bottom: 1px solid var(--space-line); }
+    .ag-head { width: 100%; display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 17px 2px; background: none; border: 0; cursor: pointer;
+      font: 600 12.5px var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+      color: #F1FBFC; -webkit-tap-highlight-color: transparent; }
+    .ag-head .ag-n { margin-left: auto; font-weight: 500; color: var(--scan-white-faint); letter-spacing: 0.08em; }
+    /* знак раскрытия: плюс превращается в минус поворотом, без подмены символа */
+    .ag-head .ag-i { position: relative; width: 13px; height: 13px; flex: 0 0 auto; }
+    .ag-head .ag-i::before, .ag-head .ag-i::after { content: ""; position: absolute; inset: 6px 0 auto 0;
+      height: 1.5px; background: var(--signal-teal); transition: transform .3s ease; }
+    .ag-head .ag-i::after { transform: rotate(90deg); }
+    .a-group.open .ag-head .ag-i::after { transform: rotate(0deg); }
+    .ag-body { display: none; padding: 0 0 14px; }
+    .a-group.open .ag-body { display: grid; gap: 10px; }
+    /* внутри группы карточка тянется по ширине и показывает текст целиком */
+    .a-card { width: auto; height: auto; min-height: 0; padding: 16px 16px 18px; }
+    .a-card h3 { -webkit-line-clamp: 5; font-size: 16px; }
+    .a-card p { -webkit-line-clamp: unset; display: block; font-size: 13.5px; }
+    .a-card:hover { transform: none; }        /* ховера на телефоне нет, подъём только мешал бы */
+    #aStripNav { display: none; }             /* полоса и стрелки не нужны: ленты больше нет */
   }
   /* ---------- урок атласа: разбор одного мультимедийного решения ---------- */
   .a-view { position: fixed; inset: 0; z-index: 100; background: #040c10; opacity: 0; pointer-events: none;
@@ -787,6 +864,11 @@
   footer { background: var(--space-void); border-top: 1px solid var(--space-line); }
   .foot-inner { display: flex; justify-content: space-between; align-items: center; padding: 40px 64px; font: 400 13px var(--font-body); color: var(--scan-white-faint); }
   .foot-inner .mono { font-size: 12px; letter-spacing: 0.05em; }
+  /* подпись авторства: тем же весом, что и остальной подвал, акцент только на имени */
+  .foot-made b { color: var(--signal-teal); font-weight: 600; }
+  @media (max-width: 900px) {
+    .foot-inner { flex-direction: column; align-items: flex-start; gap: 14px; padding: 34px 24px; }
+  }
 
   /* ---------- case viewer ---------- */
   /* фон непрозрачный: мы влетели ВГЛУБЬ проекта, галерея осталась позади камеры.
@@ -994,9 +1076,14 @@
      Первой грузится игра — когда она готова, появляется кнопка «Сыграть в пространство».
      Если кнопку не нажали — по полной загрузке оверлей растворяется и открывается сайт. -->
 <div id="boot" aria-hidden="true">
-  <div class="bl">
+  <div class="bl" id="bootBl">
     <img class="dim" src="assets/logos/playdisplay-logo-white.png" alt="">
-    <img class="lit" src="assets/logos/playdisplay-logo-white.png" alt="PlayDisplay">
+    <!-- свет как бы проходит сквозь прорезь в панели: широкий тиловый ореол по форме
+         букв, плотный белый ореол, резкая копия и блик на фронте заливки -->
+    <div class="tint" aria-hidden="true"></div>
+    <img class="b1" src="assets/logos/playdisplay-logo-white.png" alt="" aria-hidden="true">
+    <img class="lit" src="assets/logos/playdisplay-logo-white.png" alt="playdisplay">
+    <div class="flare" aria-hidden="true"></div>
   </div>
   <button id="bootPlay" type="button">▶︎ Сыграть в пространство</button>
 </div>
@@ -1004,11 +1091,12 @@
 
 <header id="hdr">
   <div class="nav-inner">
-    <a href="#start" class="logo-home" aria-label="PlayDisplay — на главную"><img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="PlayDisplay"></a>
+    <a href="#start" class="logo-home" aria-label="playdisplay — на главную"><img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="playdisplay"></a>
     <nav class="links">
       <a href="#work">Проекты</a>
-      <a href="#concepts">Концепции</a>
+      <a href="#concepts">Библиотека</a>
       <a href="#atlas">Атлас</a>
+      <a href="#studio">Студия</a>
     </nav>
     <button class="cta-play" onclick="location.href='#contact'">▶︎ Обсудить идею</button>
   </div>
@@ -1016,7 +1104,7 @@
 
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game21" title="PlayDisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game30" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1029,11 +1117,21 @@
     <div><div class="k">Point count</div><div class="v accent" id="hud-pts">— pts</div></div>
     <div><div class="k">Status</div><div class="v" id="hud-status">· полёт</div></div>
   </div>
+  <!-- Типы пространств: сменяются «расшифровкой» символов. Стоят в левом верхнем углу
+       по той же модульной сетке, что заголовок — оба внутри .wrap, левый край совпадает.
+       Видимая строка одна, её перебирает скрипт; полный список лежит рядом скрытым,
+       чтобы слова остались в разметке для поиска. -->
+  <div class="wrap hero-top">
+    <div class="hero-kinds" id="heroKinds">
+      <span class="hk-line" id="hkLine">Музеи</span>
+      <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Иммерсивные аттракционы · Дополненная и виртуальная реальность · Веб-пространства · Бренд-пространства · Общественные пространства · Корпоративные пространства</span>
+    </div>
+  </div>
+
   <!-- единый инфоблок внизу слева: слоган студии ↔ карточка проекта (при просмотре видео) -->
   <div class="wrap hero-inner">
     <div class="hero-swap">
       <div class="swap-block" id="slogan-block">
-        <div class="kicker" style="margin-bottom:20px">Музеи · выставки · бренды · общественные пространства</div>
         <h1>Пространства, которые люди <em>запоминают</em>.</h1>
         <div class="hero-btns">
           <button class="btn-line" id="btn-game"><span class="tri">▶︎</span> Сыграть в пространство</button>
@@ -1102,7 +1200,7 @@
 <section class="trust sec-pad">
   <div class="wrap">
     <div class="kicker eyebrow">Доверие</div>
-    <p>Наши работы показывал канал <b>Discovery</b>. Среди клиентов — <b>автопроизводители</b>, международные аэропорты, национальные музеи и промышленные корпорации.</p>
+    <p>Наши работы показывал канал <b>Discovery</b>. <b>Среди клиентов</b> — автопроизводители, международные аэропорты, национальные музеи и промышленные корпорации.</p>
     <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
     <!-- без reveal-up: этот класс держит opacity:0 до появления класса in,
          а логотипы проявляются своим каскадом -->
@@ -1253,13 +1351,10 @@
   <div class="wrap">
     <div class="kicker eyebrow">Следующий шаг</div>
     <h2>Креативная сессия</h2>
-    <div class="cs-founder"><b>Андрей Судариков</b><span>Основатель PlayDisplay</span></div>
+    <div class="cs-founder"><b>Андрей Судариков</b><span>Основатель playdisplay</span></div>
     <p class="csub">Если кажется, что проекту нужен нестандартный подход — давайте обсудим его вместе.</p>
     <div class="channels">
       <button class="wa">▶︎ Забронировать креативную сессию</button>
-      <a href="#" class="chan-link">e-mail</a>
-      <a href="#" class="chan-link">Instagram</a>
-      <a href="#" class="chan-link">Vimeo</a>
     </div>
     <div class="langs">Говорим по-русски, по-английски и по-португальски.</div>
   </div>
@@ -1267,8 +1362,8 @@
 
 <footer>
   <div class="foot-inner">
-    <span>PlayDisplay — пространства, которые люди запоминают. Работаем по всему миру с 2011&nbsp;года.</span>
-    <span class="mono">© 2026 PLAYDISPLAY</span>
+    <span>Пространства, которые люди запоминают. Работаем по всему миру с 2011&nbsp;года.</span>
+    <span class="foot-made">Сайт создан в <b>playdisplay</b> · <span class="mono">© 2026</span></span>
   </div>
 </footer>
 
@@ -1324,7 +1419,7 @@
       </div>
       <div class="ai-actions">
         <button class="btn-line" id="aiMore"><span class="tri">▶︎</span> Рассказать ещё</button>
-        <button class="wa" id="aiSend">▶︎ Отправить в PlayDisplay</button>
+        <button class="wa" id="aiSend">▶︎ Отправить в playdisplay</button>
       </div>
     </div>
     <div class="ai-stage" id="aiForm">
@@ -1334,7 +1429,7 @@
         <input type="text" id="aiName" placeholder="Имя" required>
         <input type="text" id="aiContact" placeholder="Email или телефон" required>
         <input type="text" id="aiCompany" placeholder="Компания (необязательно)">
-        <label class="ai-agree"><input type="checkbox" id="aiAgree" required> Согласен на отправку описания идеи в PlayDisplay</label>
+        <label class="ai-agree"><input type="checkbox" id="aiAgree" required> Согласен на отправку описания идеи в playdisplay</label>
         <div class="ai-actions"><button class="wa" type="submit">▶︎ Отправить</button></div>
       </form>
     </div>
@@ -1366,7 +1461,7 @@
   (function(){
     var boot = document.getElementById('boot');
     if (!boot) return;
-    var lit = boot.querySelector('.lit'), btn = document.getElementById('bootPlay');
+    var bl = document.getElementById('bootBl'), btn = document.getElementById('bootPlay');
     var frame = document.querySelector('iframe.hero-scene');
     var tgt = 0.06, cur = 0, sceneReady = false, pageLoaded = false, gone = false;
     if (frame) frame.addEventListener('load', function(){ tgt = Math.max(tgt, 0.5); }); // html сцены получен
@@ -1401,7 +1496,10 @@
       if (!boot.parentNode) return;
       if (!sceneReady && tgt < 0.9) tgt += 0.0007;
       cur += (tgt - cur) * 0.07;
-      lit.style.clipPath = 'inset(0 ' + Math.max(0, (1 - cur) * 100).toFixed(2) + '% 0 0)';
+      // одна переменная ведёт все слои свечения сразу
+      bl.style.setProperty('--p', (Math.min(1, Math.max(0, cur)) * 100).toFixed(2) + '%');
+      // блик показываем, пока заливка реально идёт, и гасим в самом конце
+      bl.classList.toggle('lighting', cur > 0.02 && cur < 0.985);
       requestAnimationFrame(anim);
     })();
   })();
@@ -1498,10 +1596,29 @@
       // иначе над их зонами всплывал системный курсор — «мигание курсора»
       document.body.classList.toggle('game-live', e.data.pdGameOn);
     }
+    // Сцена может сообщать координаты курсора: над iframe родительский документ
+    // событий мыши не получает, и сияние под курсором там «залипало»
+    if (e.data.pdMouse && window.pdGlowAt) pdGlowAt(e.data.pdMouse.x, e.data.pdMouse.y);
     // 3D-архив: сцена подтверждает вход/выход — держим iframe поверх страницы
     if (typeof e.data.pdArchiveOn === 'boolean')
       document.body.classList.toggle('arc-on', e.data.pdArchiveOn);
   });
+
+  // Страховка от залипшего game-live: он гасит хедер, виджет и сияние под курсором
+  // с !important, и если сцена не пришлёт pdGameOn:false (сбой, уход по скроллу),
+  // страница остаётся «обесточенной» до перезагрузки. Ушёл hero из кадра — снимаем.
+  (function(){
+    var hero = document.getElementById('start');
+    if (!hero || !window.IntersectionObserver) return;
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (!e.isIntersecting && document.body.classList.contains('game-live')) {
+          document.body.classList.remove('game-live');
+          hero.classList.remove('game-on');
+        }
+      });
+    }, { threshold: 0 }).observe(hero);
+  })();
 
   // 3D-архив спрятан с сайта (доработаем позже); вход остался в прототипе (клавиша A)
 
@@ -1567,6 +1684,57 @@
       es.forEach(function(e){ if (e.isIntersecting) { wm.classList.add('in'); io.disconnect(); } });
     }, { threshold: 0.2 });
     io.observe(wm);
+  })();
+
+  // ===== типы пространств: смена «расшифровкой» символов =====
+  // Буквы сначала сыплются случайным набором, затем фиксируются слева направо —
+  // тот же язык, что у HUD-надписей сцены. Плавное затухание тут выглядело вяло.
+  (function(){
+    var line = document.getElementById('hkLine');
+    if (!line) return;
+    var WORDS = ['Музеи', 'Выставки', 'Визит-центры', 'Шоурумы', 'Иммерсивные комнаты',
+                 'Иммерсивные аттракционы', 'Дополненная и виртуальная реальность',
+                 'Веб-пространства', 'Бренд-пространства', 'Общественные пространства',
+                 'Корпоративные пространства'];
+    var GLYPHS = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯ0123456789/\\|<>#*+=·';
+    var i = 0, timer = 0, raf = 0;
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var HOLD = 2800, DUR = 768, LOCK = 0.5;   // LOCK — доля времени, за которую фронт фиксации проходит строку
+
+    function rnd(){ return GLYPHS[(Math.random() * GLYPHS.length) | 0]; }
+    function morph(from, to){
+      if (reduce) { line.textContent = to; return; }
+      var len = Math.max(from.length, to.length), t0 = performance.now();
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(function step(now){
+        var p = Math.min(1, (now - t0) / DUR), out = '';
+        for (var k = 0; k < len; k++) {
+          var ch = to.charAt(k);
+          if (ch === ' ' || ch === '-') { out += ch; continue; }   // пробелы и дефисы не шифруем
+          var lockAt = LOCK * (k / len);
+          var q = (p - lockAt) / (1 - LOCK);
+          out += q >= 1 ? ch : rnd();
+        }
+        line.textContent = out;
+        if (p < 1) raf = requestAnimationFrame(step); else line.textContent = to;
+      });
+    }
+    function tick(){ var from = line.textContent; i = (i + 1) % WORDS.length; morph(from, WORDS[i]); }
+    function start(){ if (!timer) timer = setInterval(tick, HOLD); }
+    function stop(){ if (timer) { clearInterval(timer); timer = 0; } cancelAnimationFrame(raf); raf = 0; }
+    document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : sync(); });
+    // пока идёт видео проекта, строка скрыта — незачем крутить перебор впустую
+    var hero = document.querySelector('.hero'), inView = true;
+    function sync(){ (inView && hero && !hero.classList.contains('video-on')) ? start() : stop(); }
+    if (hero && window.MutationObserver) {
+      new MutationObserver(sync).observe(hero, { attributes: true, attributeFilter: ['class'] });
+    }
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function(es){
+        es.forEach(function(e){ inView = e.isIntersecting; });
+        sync();
+      }, { threshold: 0 }).observe(line);
+    } else start();
   })();
 
   // ===== ленты с прокруткой вбок: перетаскивание с инерцией =====
@@ -2065,11 +2233,14 @@
         glow.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px)';
         graf = (Math.abs(gx - cx) > 0.4 || Math.abs(gy - cy) > 0.4) ? requestAnimationFrame(gloop) : null;
       }
-      addEventListener('mousemove', function(e){
-        gx = e.clientX; gy = e.clientY;
+      function moveTo(x, y){
+        gx = x; gy = y;
         if (!shown) { shown = true; glow.style.opacity = '1'; }
         if (!graf) graf = requestAnimationFrame(gloop);
-      }, { passive: true });
+      }
+      addEventListener('mousemove', function(e){ moveTo(e.clientX, e.clientY); }, { passive: true });
+      // сцена в iframe может присылать координаты — тогда сияние работает и над ней
+      window.pdGlowAt = moveTo;
       document.addEventListener('mouseleave', function(){ glow.style.opacity = '0'; });
     }
 
@@ -3843,6 +4014,7 @@
     var stripFill = document.getElementById('cStripFill');
     function updateStripNav(){
       if (!stripNav) return;
+      if (isMob()) { stripNav.hidden = true; return; }
       var max = grid.scrollWidth - grid.clientWidth;
       if (max < 8) { stripNav.hidden = true; return; }
       stripNav.hidden = false;
@@ -4307,7 +4479,7 @@
       if (e.key === 'Escape' && view.classList.contains('open')) requestCloseConcept();
     });
 
-    fetch('data/concepts.json?v=2').then(function(r){ return r.json(); }).then(function(json){
+    fetch('data/concepts.json', { cache: 'no-cache' }).then(function(r){ return r.json(); }).then(function(json){
       data = json;
       // сообщаем hero-сцене редакцию контента — её показывает плашка по клику на DEV
       (function tellScene(tries){
@@ -4370,8 +4542,50 @@
       });
     }
 
+    // на телефоне карточки собираются в раскрывающиеся группы по типу
+    function isMob(){ return !!(window.matchMedia && matchMedia('(max-width: 700px)').matches); }
+
+    function card(a){
+      // Карточка с principle — вход в разбор; без него это тезис, который дочитывается прямо в сетке
+      var lesson = !!a.principle;
+      var el = document.createElement('article');
+      el.className = 'a-card' + (lesson ? '' : ' thesis');
+      el.innerHTML = '<div class="ac-cat">' + esc(a.cat) + '</div><h3>' + esc(a.title) + '</h3>' +
+        '<p>' + esc(a.desc) + '</p>' + (lesson ? '<div class="ac-open">Открыть разбор →</div>' : '');
+      if (lesson) el.addEventListener('click', function(){ openLesson(a); });
+      return el;
+    }
+
+    function renderMobile(list){
+      grid.innerHTML = '';
+      var open = q ? true : false;      // при поиске раскрываем всё: иначе не видно, где нашлось
+      data.cats.forEach(function(ct, gi){
+        var items = list.filter(function(a){ return a.cat === ct; });
+        if (!items.length) return;
+        var g = document.createElement('div');
+        g.className = 'a-group' + (open || (!q && gi === 0) ? ' open' : '');
+        var head = document.createElement('button');
+        head.type = 'button';
+        head.className = 'ag-head';
+        head.innerHTML = '<span class="ag-i"></span><span>' + esc((data.catLabels || {})[ct] || ct) +
+                         '</span><span class="ag-n">' + items.length + '</span>';
+        head.setAttribute('aria-expanded', g.classList.contains('open') ? 'true' : 'false');
+        var body = document.createElement('div');
+        body.className = 'ag-body';
+        items.forEach(function(a){ body.appendChild(card(a)); });
+        head.addEventListener('click', function(){
+          var now = !g.classList.contains('open');
+          g.classList.toggle('open', now);
+          head.setAttribute('aria-expanded', now ? 'true' : 'false');
+        });
+        g.appendChild(head); g.appendChild(body); grid.appendChild(g);
+      });
+      if (!list.length) grid.innerHTML = '<div class="c-empty">Ничего не нашлось — попробуйте другой запрос.</div>';
+    }
+
     function render(){
       var list = filtered();
+      if (isMob()) { renderMobile(list); updateStripNav(); return; }
       grid.innerHTML = '';
       list.forEach(function(a){
         // Карточка с principle — вход в разбор; без него это тезис, который дочитывается прямо в сетке
@@ -4393,6 +4607,7 @@
     // Стрелки и полоса прогресса: с мышью горизонтальную ленту иначе не прокрутить
     function updateStripNav(){
       if (!stripNav) return;
+      if (isMob()) { stripNav.hidden = true; return; }
       var max = grid.scrollWidth - grid.clientWidth;
       if (max < 8) { stripNav.hidden = true; return; }
       stripNav.hidden = false;
@@ -4407,14 +4622,17 @@
     // Появление: карточки выкатываются из глубины друг за другом. Классы после каскада
     // снимаются — иначе .tile-in.on перебивает ховер-трансформ по специфичности.
     function dropInCards(){
+      if (isMob()) return;      // на телефоне влёт не играем: тяжёлый, а карточки в группах
       var cards = [].slice.call(grid.querySelectorAll('.a-card'));
       cards.forEach(function(el){ el.classList.add('tile-in'); });
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce) { cards.forEach(function(el){ el.classList.remove('tile-in'); }); return; }
       function run(){
-        cards.forEach(function(el, i){ setTimeout(function(){ el.classList.add('on'); }, 40 + Math.min(i, 14) * 45); });
+        cards.forEach(function(el, i){ setTimeout(function(){ el.classList.add('on'); }, 40 + Math.min(i, 16) * 70); });
+        // классы снимаем после влёта: иначе .tile-in.on перебивает ховер-трансформ,
+        // а перспектива продолжает искажать карточку под курсором
         setTimeout(function(){ cards.forEach(function(el){ el.classList.remove('tile-in', 'on'); }); },
-          40 + Math.min(cards.length, 14) * 45 + 800);
+          40 + Math.min(cards.length, 16) * 70 + 1200);
       }
       if (grid._seen || !window.IntersectionObserver) { requestAnimationFrame(run); grid._seen = true; return; }
       var io = new IntersectionObserver(function(es){
@@ -4466,7 +4684,7 @@
     document.getElementById('aViewClose').addEventListener('click', closeLesson);
     addEventListener('keydown', function(e){ if (e.key === 'Escape' && view.classList.contains('open')) closeLesson(); });
 
-    fetch('data/atlas.json?v=3').then(function(r){ return r.json(); }).then(function(json){
+    fetch('data/atlas.json', { cache: 'no-cache' }).then(function(r){ return r.json(); }).then(function(json){
       data = json;
       // В фильтре тип во множественном числе («Концепты»), на карточке — в единственном («КОНЦЕПТ»)
       var labels = data.catLabels || {};
@@ -4485,10 +4703,16 @@
       });
       search.addEventListener('input', function(){ q = search.value.trim().toLowerCase(); render(); });
       grid.addEventListener('scroll', function(){ requestAnimationFrame(updateStripNav); }, { passive: true });
-      var strip = pdStrip(grid, document.querySelector('#aStripNav .csn-bar'), stripFill, updateStripNav);
+      var strip = isMob() ? { by: function(){}, page: function(){ return 0; } }
+                          : pdStrip(grid, document.querySelector('#aStripNav .csn-bar'), stripFill, updateStripNav);
       if (stripPrev) stripPrev.addEventListener('click', function(){ strip.by(-strip.page()); });
       if (stripNext) stripNext.addEventListener('click', function(){ strip.by(strip.page()); });
       addEventListener('resize', function(){ requestAnimationFrame(updateStripNav); });
+      // пересечение мобильной границы меняет саму раскладку — перерисовываем
+      if (window.matchMedia && matchMedia('(max-width: 700px)').addEventListener) {
+        var mqm = matchMedia('(max-width: 700px)'); var wasMob = mqm.matches;
+        mqm.addEventListener('change', function(){ if (mqm.matches !== wasMob) { wasMob = mqm.matches; render(); } });
+      }
       render();
     });
   })();
@@ -4907,10 +5131,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#05141a"/><g fill="#2be0c6"><circle cx="34" cy="42" r="2"/><circle cx="44" cy="36" r="2"/><circle cx="54" cy="44" r="2"/><circle cx="64" cy="38" r="2"/><circle cx="40" cy="52" r="2"/><circle cx="52" cy="56" r="2"/><circle cx="62" cy="52" r="2"/></g><circle cx="50" cy="50" r="16" fill="none" stroke="#ff6a3d" stroke-width="1.5"/><path d="M46 44l10 6-10 6z" fill="#f1fbfc"/></svg>
 </template>
 <!--SEO-->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "PlayDisplay", "url": "https://playdisplay.com/", "description": "PlayDisplay проектирует пространства и впечатления, которые люди запоминают: современные музеи, интерактивные экспозиции, visitor centre, шоурумы и иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "founder": {"@type": "Person", "name": "Андрей Судариков"}}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "PlayDisplay", "url": "https://playdisplay.com/", "inLanguage": "ru"}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "Проекты PlayDisplay", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://playdisplay.com/work/industry-rf/", "name": "Промышленность РФ"}, {"@type": "ListItem", "position": 2, "url": "https://playdisplay.com/work/airports/", "name": "Аэропорты России"}, {"@type": "ListItem", "position": 3, "url": "https://playdisplay.com/work/odk-oak/", "name": "ОДК ОАК"}, {"@type": "ListItem", "position": 4, "url": "https://playdisplay.com/work/proryv/", "name": "Прорыв"}, {"@type": "ListItem", "position": 5, "url": "https://playdisplay.com/work/rostec/", "name": "Ростех-Экспо"}, {"@type": "ListItem", "position": 6, "url": "https://playdisplay.com/work/ptk-group/", "name": "PTK Group"}, {"@type": "ListItem", "position": 7, "url": "https://playdisplay.com/work/mig2019/", "name": "Стенд МИГ-35"}, {"@type": "ListItem", "position": 8, "url": "https://playdisplay.com/work/bmwx5/", "name": "BMW X5"}, {"@type": "ListItem", "position": 9, "url": "https://playdisplay.com/work/pano360/", "name": "Панорама 360"}, {"@type": "ListItem", "position": 10, "url": "https://playdisplay.com/work/urban-forum-2018/", "name": "Urban Forum 2018"}, {"@type": "ListItem", "position": 11, "url": "https://playdisplay.com/work/stalingrad/", "name": "Пароль победы «Сталинград»"}, {"@type": "ListItem", "position": 12, "url": "https://playdisplay.com/work/coalco/", "name": "Сухой порт COALCO"}, {"@type": "ListItem", "position": 13, "url": "https://playdisplay.com/work/sinara/", "name": "Синара Транспортные Машины"}, {"@type": "ListItem", "position": 14, "url": "https://playdisplay.com/work/vdnh-space/", "name": "ВДНХ Космос"}, {"@type": "ListItem", "position": 15, "url": "https://playdisplay.com/work/vdnh-space-center/", "name": "Центр «Космонавтика и авиация»"}]}</script>
-<noscript><section><h2>Проекты PlayDisplay</h2><ul><li><a href="work/industry-rf/">Промышленность РФ</a> — Отрасль, которую можно рассмотреть вблизи. У государства — масштабные планы по развитию судостроения: новейшие гражданские суда, прорывные инженерные решения…</li><li><a href="work/airports/">Аэропорты России</a> — Пространство, которое ведёт за руку. Показать три международных аэропорта России на Форуме «Россия» так, чтобы каждый раскрыл свою уникальную архитектуру и х…</li><li><a href="work/odk-oak/">ОДК ОАК</a> — Сложный продукт продаёт тот, кто дал его потрогать. МАКС — Международный авиационно-космический салон, одно из главных авиационных событий мира. На нём Объед…</li><li><a href="work/proryv/">Прорыв</a> — О технологии будущего — на языке впечатления. Создание инсталляции, в наглядном виде демонстрирующей принцип работы технологической платформы атомной энергет…</li><li><a href="work/rostec/">Ростех-Экспо</a> — Масштаб корпорации — в одном пространстве. Создать центральный экспонат у входа в павильон «Ростех Экспо» и объединить продукцию всех предприятий холдинга Ро…</li><li><a href="work/ptk-group/">PTK Group</a> — Презентация, в которую вовлекаются. Группа ПТК выпускает современную путевую технику — машины для строительства, ремонта и обслуживания железных дорог. Почти…</li><li><a href="work/mig2019/">Стенд МИГ-35</a> — Самолёт и так звезда — мы построили ему сцену. Выделить МИГ-35 среди представленной продукции других производителей, реализовать демонстрационный инструмент …</li><li><a href="work/bmwx5/">BMW X5</a> — Машину, которую собрал сам, хочется купить. Оснастить офис продаж интерактивным решением для выбора и кастомизации автомобиля.</li><li><a href="work/pano360/">Панорама 360</a> — Не окно в историю, а вход в неё. Дать гостям одной из самых высоких смотровых площадок Европы — «Панорама 360» на 89-м этаже башни «Федерация» в Москва-Сити …</li><li><a href="work/urban-forum-2018/">Urban Forum 2018</a> — Очередь к инсталляции — лучшая метрика. Стенд для Правительства Москвы, которое говорит с горожанами на одном языке — наглядно показывая, что меняется в горо…</li><li><a href="work/stalingrad/">Пароль победы «Сталинград»</a> — Игра умеет говорить и о серьёзном. Популяризация объекта культурного наследия федерального значения и достоверный рассказ о Сталинградской битве 1942–1943 гг…</li><li><a href="work/coalco/">Сухой порт COALCO</a> — Логистику видно, а не читаешь в буклете. Масштаб проекта сухого порта столь велик, что показать его нужно целиком: как устроен новый транспортно-логистически…</li><li><a href="work/sinara/">Синара Транспортные Машины</a> — Тяжёлую технику показываем в ладони. Холдинг «Синара — Транспортные Машины» строит новейшие локомотивы. Показать нужно было не только сами машины, но и совре…</li><li><a href="work/vdnh-space/">ВДНХ Космос</a> — Посетитель не читает экспозицию — он исследует её. Вся история космонавтики — в единой играбельной системе: 115 инсталляций, интерактивные 3D-модели кораблей…</li><li><a href="work/vdnh-space-center/">Центр «Космонавтика и авиация»</a> — Музей, который отвечает движением. Рассказать историю космонавтики и ракетостроения благодаря высокотехнологичным решениям.</li></ul></section></noscript>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay", "url": "https://playdisplay.com/", "description": "playdisplay проектирует пространства и впечатления, которые люди запоминают: современные музеи, интерактивные экспозиции, visitor centre, шоурумы и иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "founder": {"@type": "Person", "name": "Андрей Судариков"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "playdisplay", "url": "https://playdisplay.com/", "inLanguage": "ru"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "Проекты playdisplay", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://playdisplay.com/work/industry-rf/", "name": "Промышленность РФ"}, {"@type": "ListItem", "position": 2, "url": "https://playdisplay.com/work/airports/", "name": "Аэропорты России"}, {"@type": "ListItem", "position": 3, "url": "https://playdisplay.com/work/odk-oak/", "name": "ОДК ОАК"}, {"@type": "ListItem", "position": 4, "url": "https://playdisplay.com/work/proryv/", "name": "Прорыв"}, {"@type": "ListItem", "position": 5, "url": "https://playdisplay.com/work/rostec/", "name": "Ростех-Экспо"}, {"@type": "ListItem", "position": 6, "url": "https://playdisplay.com/work/ptk-group/", "name": "PTK Group"}, {"@type": "ListItem", "position": 7, "url": "https://playdisplay.com/work/mig2019/", "name": "Стенд МИГ-35"}, {"@type": "ListItem", "position": 8, "url": "https://playdisplay.com/work/bmwx5/", "name": "BMW X5"}, {"@type": "ListItem", "position": 9, "url": "https://playdisplay.com/work/pano360/", "name": "Панорама 360"}, {"@type": "ListItem", "position": 10, "url": "https://playdisplay.com/work/urban-forum-2018/", "name": "Urban Forum 2018"}, {"@type": "ListItem", "position": 11, "url": "https://playdisplay.com/work/stalingrad/", "name": "Пароль победы «Сталинград»"}, {"@type": "ListItem", "position": 12, "url": "https://playdisplay.com/work/coalco/", "name": "Сухой порт COALCO"}, {"@type": "ListItem", "position": 13, "url": "https://playdisplay.com/work/sinara/", "name": "Синара Транспортные Машины"}, {"@type": "ListItem", "position": 14, "url": "https://playdisplay.com/work/vdnh-space/", "name": "ВДНХ Космос"}, {"@type": "ListItem", "position": 15, "url": "https://playdisplay.com/work/vdnh-space-center/", "name": "Центр «Космонавтика и авиация»"}]}</script>
+<noscript><section><h2>Проекты playdisplay</h2><ul><li><a href="work/industry-rf/">Промышленность РФ</a> — Отрасль, которую можно рассмотреть вблизи. У государства — масштабные планы по развитию судостроения: новейшие гражданские суда, прорывные инженерные решения…</li><li><a href="work/airports/">Аэропорты России</a> — Пространство, которое ведёт за руку. Показать три международных аэропорта России на Форуме «Россия» так, чтобы каждый раскрыл свою уникальную архитектуру и х…</li><li><a href="work/odk-oak/">ОДК ОАК</a> — Сложный продукт продаёт тот, кто дал его потрогать. МАКС — Международный авиационно-космический салон, одно из главных авиационных событий мира. На нём Объед…</li><li><a href="work/proryv/">Прорыв</a> — О технологии будущего — на языке впечатления. Создание инсталляции, в наглядном виде демонстрирующей принцип работы технологической платформы атомной энергет…</li><li><a href="work/rostec/">Ростех-Экспо</a> — Масштаб корпорации — в одном пространстве. Создать центральный экспонат у входа в павильон «Ростех Экспо» и объединить продукцию всех предприятий холдинга Ро…</li><li><a href="work/ptk-group/">PTK Group</a> — Презентация, в которую вовлекаются. Группа ПТК выпускает современную путевую технику — машины для строительства, ремонта и обслуживания железных дорог. Почти…</li><li><a href="work/mig2019/">Стенд МИГ-35</a> — Самолёт и так звезда — мы построили ему сцену. Выделить МИГ-35 среди представленной продукции других производителей, реализовать демонстрационный инструмент …</li><li><a href="work/bmwx5/">BMW X5</a> — Машину, которую собрал сам, хочется купить. Оснастить офис продаж интерактивным решением для выбора и кастомизации автомобиля.</li><li><a href="work/pano360/">Панорама 360</a> — Не окно в историю, а вход в неё. Дать гостям одной из самых высоких смотровых площадок Европы — «Панорама 360» на 89-м этаже башни «Федерация» в Москва-Сити …</li><li><a href="work/urban-forum-2018/">Urban Forum 2018</a> — Очередь к инсталляции — лучшая метрика. Стенд для Правительства Москвы, которое говорит с горожанами на одном языке — наглядно показывая, что меняется в горо…</li><li><a href="work/stalingrad/">Пароль победы «Сталинград»</a> — Игра умеет говорить и о серьёзном. Популяризация объекта культурного наследия федерального значения и достоверный рассказ о Сталинградской битве 1942–1943 гг…</li><li><a href="work/coalco/">Сухой порт COALCO</a> — Логистику видно, а не читаешь в буклете. Масштаб проекта сухого порта столь велик, что показать его нужно целиком: как устроен новый транспортно-логистически…</li><li><a href="work/sinara/">Синара Транспортные Машины</a> — Тяжёлую технику показываем в ладони. Холдинг «Синара — Транспортные Машины» строит новейшие локомотивы. Показать нужно было не только сами машины, но и совре…</li><li><a href="work/vdnh-space/">ВДНХ Космос</a> — Посетитель не читает экспозицию — он исследует её. Вся история космонавтики — в единой играбельной системе: 115 инсталляций, интерактивные 3D-модели кораблей…</li><li><a href="work/vdnh-space-center/">Центр «Космонавтика и авиация»</a> — Музей, который отвечает движением. Рассказать историю космонавтики и ракетостроения благодаря высокотехнологичным решениям.</li></ul></section></noscript>
 <!--/SEO-->
 </body>
 </html>
