@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game33';</script>
+<script>window.PD_V = 'b2807-game34';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3269,7 +3269,12 @@ function gWorldMat() {
       '  float sz = aSize * clamp(78.0 / max(d, 7.0), 0.22, 2.6);',
       '  float f = 1.0 - smoothstep(uFogN, uFogF, d);',
       '  vA = f * uFade;',   // мягкое проявление чанка + общий фейд входа/выхода
-      '  vCol *= 0.34 + 0.66 * f * f;',   // дальний план уходит в дымку — это даёт масштаб
+      // КРОМКИ (aMask=2) меньше тают в дымке и чуть крупнее: на референсе именно
+      // ДАЛЬНИЕ гребни светятся цепочками — слоистые силуэты. Обычная заливка
+      // гаснет с дистанцией как раньше, контур остаётся читаемым.
+      '  float edge = step(1.5, aMask) * (1.0 - step(2.5, aMask));',
+      '  sz *= 1.0 + edge * 0.4;',
+      '  vCol *= mix(0.34 + 0.66 * f * f, 0.6 + 0.4 * f, edge);',
       '  gl_Position = projectionMatrix * mv;',
       '  gl_PointSize = clamp(sz * uPx * 0.0022, 0.5, 7.0);',
       '}'

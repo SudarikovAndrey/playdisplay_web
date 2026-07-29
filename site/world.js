@@ -102,9 +102,12 @@ const CONFIG = {
     sizeSurface: 0.78, sizeSilh: 2.1, sizeEdge: 2.7, sizeSolid: 1.3,
     // На референсе освещённые склоны почти белые, а теневые уходят в тёмную бирюзу.
     // Поднял яркость и усилил контраст света (litPow<1 растягивает верх диапазона).
-    brSurface: 0.5, brSilh: 1.5, brEdge: 1.9, brSolid: 1.05, litPow: 0.5, litFloor: 0.05,
+    // 29.07-v2: brSurface 0.5→0.6, faceShade 0.42→0.52 — прошлый заход пере-затемнил,
+    // сцена стала выглядеть пустой; brSolid 1.05→1.3 — арки и шпили читались тёмными
+    // тенями против пыли, у солидов ведь нет контурного прохода
+    brSurface: 0.6, brSilh: 1.5, brEdge: 1.9, brSolid: 1.3, litPow: 0.5, litFloor: 0.05,
     edgeLo: 0.55, edgeHi: 1.9,   // §переход по градиенту непрерывный, не бинарный порог
-    faceShade: 0.42,       // затенение заливки крутых граней (кромку рисует контур)
+    faceShade: 0.52,       // затенение заливки крутых граней (кромку рисует контур)
     tintRoute: 0.3         // насколько ближе к цвету биома точки у маршрута
   },
   fork: { splitAt: 0.28, mergeAt: 0.84, spread: 52, riskNarrow: 0.55 },
@@ -151,7 +154,7 @@ const CONFIG = {
     size: 2.8,        // размер точки контура (заметно крупнее заливки)
     brBase: 1.15, brVar: 0.75,   // яркость: почти белая на выраженных гребнях
     budget: 11000,    // потолок точек контура на чанк
-    streamProb: 0.3, streamN: 18 // струи вниз от кромок обрывов
+    streamProb: 0.22, streamN: 18 // струи вниз от кромок обрывов
   },
   // §7 фазы сложности и правила сборки
   phases: ['INTRO', 'LEARN', 'CHOICE', 'PRESSURE', 'RELEASE', 'COMBINATION', 'CLIMAX']
@@ -808,7 +811,7 @@ function generateChunk(def, opts) {
       // прореживание крутых граней: сетка по (x,z) на стене, повёрнутой к камере,
       // даёт много точек на единицу ПЛОЩАДИ ЭКРАНА — вместе с аддитивным блендингом
       // это и была «сплошная белая стена». До 45% точек очень крутых граней снимаем.
-      if (slope > 1.8 && hash(jx * 9, jz * 3) < Math.min(0.45, (slope - 1.8) * 0.22)) { x += stepX; continue; }
+      if (slope > 1.8 && hash(jx * 9, jz * 3) < Math.min(0.35, (slope - 1.8) * 0.22)) { x += stepX; continue; }
       pushPoint(pos, col, siz, msk, jx, y, jz, slope, hx, hz, dx, far, tint, lod, edgeK, false);
       // ВЕРТИКАЛЬНЫЕ СТЕКАНИЯ: на крутой грани сетка по (x,z) вырождается — между
       // соседними столбцами зияет вертикальная дыра. Доливаем точки ВНИЗ по стене,
@@ -917,12 +920,17 @@ function generateChunk(def, opts) {
           if (visible(x, y, z, 0, hz2)) {
             pushContour(x + (hash(x, z) - 0.5) * RG.jitter, y,
                         zw2 + (hash(z, x) - 0.5) * RG.jitter, k);
-            // струя вниз от кромки/силуэта — прерывисто, как стекания на референсе
+            // струя вниз от кромки/силуэта — прерывисто, как стекания на референсе.
+            // Джиттер растёт с глубиной, длина случайная: одинаковые ровные
+            // «пунктирные столбы» на скриншотах выглядели искусственно.
             if (k >= 0.7 && lod < 2 && Math.abs(sR) > 1.2 && hash(x * 17, z * 5) < RG.streamProb) {
-              const n = Math.min(RG.streamN, Math.floor(Math.min(CONFIG.stripes.maxLen, Math.abs(sR) * 8) / CONFIG.stripes.step));
-              for (let q = 1; q < n && added < RG.budget; q++)
-                pushContour(x + (hash(q, x) - 0.5) * 0.7, y - q * CONFIG.stripes.step,
-                            zw2 + (hash(x, q) - 0.5) * 0.7, 0.5 * (1 - q / n));
+              const nMax = Math.min(RG.streamN, Math.floor(Math.min(CONFIG.stripes.maxLen, Math.abs(sR) * 8) / CONFIG.stripes.step));
+              const n = 2 + Math.floor(hash(x * 3, z * 11) * Math.max(1, nMax - 2));
+              for (let q = 1; q < n && added < RG.budget; q++) {
+                const jW = 0.5 + q * 0.18;   // струя расплывается книзу
+                pushContour(x + (hash(q, x) - 0.5) * jW, y - q * CONFIG.stripes.step * (0.85 + hash(q * 3, x) * 0.3),
+                            zw2 + (hash(x, q) - 0.5) * jW, 0.45 * (1 - q / n));
+              }
             }
           }
         }
