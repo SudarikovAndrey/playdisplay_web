@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PlayDisplay — лаборатория корабля из точек</title>
+<!--
+  ЛАБОРАТОРИЯ КОРАБЛЯ (28.07). Инструмент, не часть сайта.
+  Десять принципов из схемы Андрея — отдельными тумблерами, каждый можно ВЫКЛЮЧИТЬ.
+  Смысл именно в выключении: видно, что конкретно даёт каждый приём, а что шумит.
+
+  Точки берём из ship-points.js — того же файла, что подключает игра. Один источник,
+  без дублирования и без риска расхождения.
+
+  ДВЕ ВЕЩИ, КОТОРЫХ В ИСХОДНЫХ ДАННЫХ НЕТ и которые считаются здесь:
+  1. НОРМАЛИ. Модель — просто облако координат, без нормалей. Без них нельзя
+     понять, отвёрнута точка от камеры или нет, то есть нельзя убрать «просвечивание»
+     насквозь. Считаем нормали один раз по соседям (PCA), знак разворачиваем наружу.
+  2. ПЛОТНОСТЬ. В модели 4184 точки — это её физический предел. Больше берём
+     интерполяцией к соседям: новая точка садится на отрезок между реальными и
+     наследует их нормаль. Это честное уплотнение ПОВЕРХНОСТИ, а не случайный шум
+     вокруг модели.
+-->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #070d18;
+    font-family: 'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace; color: #dfeef2; }
+  #stage { position: fixed; inset: 0; }
+  #ui { position: fixed; left: 0; top: 0; bottom: 0; width: 312px; z-index: 10;
+    background: rgba(7,13,24,.92); backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(120,190,220,.18);
+    padding: 15px 15px 22px; overflow-y: auto; }
+  #ui h1 { font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+    color: #7fb4ff; margin: 0 0 2px; font-weight: 700; }
+  #ui .sub { font-size: 8.5px; letter-spacing: .13em; opacity: .42; margin-bottom: 14px; line-height: 1.55; }
+  .grp { margin-bottom: 13px; }
+  .grp > .lbl { font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+    opacity: .5; margin-bottom: 6px; }
+  .pr { display: flex; gap: 7px; align-items: flex-start; padding: 5px 6px; margin-bottom: 3px;
+    border: 1px solid rgba(140,200,230,.14); border-radius: 3px; cursor: pointer;
+    background: rgba(255,255,255,.03); transition: background .15s, border-color .15s; }
+  .pr:hover { border-color: rgba(127,180,255,.42); background: rgba(127,180,255,.07); }
+  .pr.on { border-color: rgba(127,180,255,.5); background: rgba(127,180,255,.11); }
+  .pr input { accent-color: #7fb4ff; margin: 1px 0 0; cursor: pointer; flex: 0 0 auto; }
+  .pr .tx { flex: 1; }
+  .pr .nm { font-size: 9px; letter-spacing: .06em; font-weight: 600; color: #cfe4f5; display: block; }
+  .pr.on .nm { color: #eaf4ff; }
+  .pr .ds { font-size: 7.5px; letter-spacing: .03em; opacity: .4; margin-top: 2px; line-height: 1.4; display: block; }
+  .row { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
+  .row label { flex: 0 0 108px; font-size: 8.5px; letter-spacing: .04em; opacity: .68; }
+  .row input[type=range] { flex: 1; height: 3px; -webkit-appearance: none; appearance: none;
+    background: rgba(160,200,230,.22); border-radius: 2px; outline: none; }
+  .row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px;
+    border-radius: 50%; background: #7fb4ff; cursor: pointer; }
+  .row .val { flex: 0 0 40px; text-align: right; font-size: 8.5px; color: #7fb4ff;
+    font-variant-numeric: tabular-nums; }
+  .chk { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 8.5px;
+    letter-spacing: .05em; opacity: .82; cursor: pointer; }
+  .chk input { accent-color: #7fb4ff; margin: 0; cursor: pointer; }
+  .seg { display: flex; gap: 4px; margin-bottom: 6px; }
+  .seg button { flex: 1; font: 600 8.5px inherit; letter-spacing: .06em; color: #9fb8cc;
+    background: rgba(255,255,255,.04); border: 1px solid rgba(140,200,230,.18);
+    border-radius: 3px; padding: 6px 4px; cursor: pointer; }
+  .seg button.on { background: rgba(127,180,255,.18); border-color: #7fb4ff; color: #eaf4ff; }
+  .btns { display: flex; gap: 5px; flex-wrap: wrap; }
+  .btns button { flex: 1 1 auto; font: 600 9px inherit; letter-spacing: .1em; text-transform: uppercase;
+    color: #7fb4ff; background: transparent; border: 1px solid rgba(127,180,255,.5);
+    border-radius: 2px; padding: 8px; cursor: pointer; }
+  .btns button:hover { background: rgba(127,180,255,.13); }
+  .btns button.alt { color: #9fb0c0; border-color: rgba(160,180,200,.35); }
+  #note { font-size: 8px; line-height: 1.6; opacity: .36; margin-top: 12px;
+    border-top: 1px solid rgba(120,190,220,.14); padding-top: 10px; }
+  #hud { position: fixed; right: 16px; top: 14px; z-index: 10; text-align: right;
+    font-size: 9px; letter-spacing: .16em; line-height: 1.9; opacity: .55; pointer-events: none; }
+  #hud b { color: #7fb4ff; font-weight: 700; }
+  #keys { position: fixed; left: 330px; bottom: 14px; z-index: 10; font-size: 8.5px;
+    letter-spacing: .12em; opacity: .32; pointer-events: none; }
+  #keys b { color: #7fb4ff; font-weight: 700; }
+  #err { position: fixed; inset: 0; display: none; z-index: 30; align-items: center; justify-content: center;
+    background: rgba(7,13,24,.96); text-align: center; padding: 30px; }
+  #err div { max-width: 420px; font-size: 11px; line-height: 1.8; }
+  #err b { color: #ff8a5a; }
+  #toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(14px);
+    z-index: 20; background: rgba(127,180,255,.16); border: 1px solid #7fb4ff; color: #eaf4ff;
+    font-size: 9px; letter-spacing: .16em; text-transform: uppercase; padding: 9px 16px;
+    border-radius: 2px; opacity: 0; transition: opacity .3s, transform .3s; pointer-events: none; }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 820px) { #ui { width: 100%; height: 54%; bottom: auto; border-right: 0; } #keys { display: none; } }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<div id="hud">
+  <div>FPS <b id="mFps">—</b></div>
+  <div>ТОЧЕК <b id="mPts">—</b></div>
+  <div>СКРЫТО <b id="mCull">—</b></div>
+  <div>РАКУРС <b id="mView">3/4</b></div>
+</div>
+
+<div id="keys">
+  <b>1–0</b> принципы · <b>V</b> ракурс · <b>ПРОБЕЛ</b> вращение · <b>МЫШЬ</b> крен · <b>H</b> панель
+</div>
+
+<div id="ui">
+  <h1>Лаборатория корабля</h1>
+  <div class="sub">Десять принципов по схеме. Выключай по одному —<br>видно, что каждый реально даёт форме.</div>
+
+  <div class="grp"><div class="lbl">Принципы</div><div id="prList"></div></div>
+
+  <div class="grp">
+    <div class="lbl">Плотность облака</div>
+    <div id="densBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Размеры точек</div>
+    <div id="sizeBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Свет и глубина</div>
+    <div id="lightBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Линии каркаса</div>
+    <div id="lineBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="btns">
+      <button id="bAll">Все вкл.</button>
+      <button id="bNone" class="alt">Все выкл.</button>
+      <button id="bCopy">Копировать</button>
+    </div>
+  </div>
+
+  <div id="note">
+    «Все выкл.» — сырое облако модели, как оно есть.<br>
+    Настройки копируются как JSON.
+  </div>
+</div>
+
+<div id="err"><div>Не загрузились точки корабля.<br><br>
+  Рядом должен лежать файл <b>ship-points.js</b> — те же данные, что у игры.</div></div>
+
+<div id="toast">Скопировано</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="ship-points.js"></script>
+<script>
+'use strict';
+const hash = (x, z) => { const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return s - Math.floor(s); };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const clamp01 = v => clamp(v, 0, 1);
+
+// ── принципы ────────────────────────────────────────────────────────────────
+const PR = {
+  sym:    { n: 1,  name: 'Читаемая симметрия',  ds: 'Правый борт зеркалится на левый — чистая ось', v: true },
+  dens:   { n: 2,  name: 'Иерархия плотности',  ds: 'Ядро / корпус / крылья / корма — свой размер и яркость', v: true },
+  outline:{ n: 3,  name: 'Силуэт и контур',     ds: 'Точки на рёбрах ярче и крупнее', v: true },
+  focus:  { n: 4,  name: 'Центр фокуса',        ds: 'Тёплое ядро в районе турбин', v: true },
+  motion: { n: 5,  name: 'Движение и след',     ds: 'Направленные штрихи назад', v: true },
+  ribs:   { n: 6,  name: 'Структура конструкции',ds: 'Внутренние линии-рёбра между узлами', v: true },
+  depth:  { n: 7,  name: 'Глубина и объём',     ds: 'Ближние точки крупнее и ярче', v: true },
+  accent: { n: 8,  name: 'Цветовой акцент',     ds: 'Тёплый акцент на соплах и законцовках', v: true },
+  react:  { n: 9,  name: 'Реакция на управление',ds: 'Крен и тангаж за мышью', v: true },
+  trail:  { n: 10, name: 'Чистый шлейф',        ds: 'Узкая струя, сужается и гаснет назад', v: true }
+};
+const PR_KEYS = Object.keys(PR);
+
+// ── настройки, сгруппированные по смыслу ────────────────────────────────────
+const S = {
+  // плотность: множитель к 4184 базовым точкам
+  mult:      { box: 'densBox', label: 'Точек ×', min: 1, max: 10, step: 0.5, v: 3, rebuild: true },
+  jitter:    { box: 'densBox', label: 'Разброс новых', min: 0, max: 0.5, step: 0.01, v: 0.1, rebuild: true },
+  // РАЗДЕЛЬНЫЕ размеры: ядро / заливка / контур
+  sizeCore:  { box: 'sizeBox', label: 'Размер ядра', min: 0.2, max: 6, step: 0.05, v: 2.4 },
+  sizeFill:  { box: 'sizeBox', label: 'Размер заливки', min: 0.1, max: 5, step: 0.05, v: 1.1 },
+  sizeEdge:  { box: 'sizeBox', label: 'Размер контура', min: 0.2, max: 6, step: 0.05, v: 1.8 },
+  sizeWing:  { box: 'sizeBox', label: 'Размер крыльев', min: 0.1, max: 5, step: 0.05, v: 1.2 },
+  // свет
+  edgeBoost: { box: 'lightBox', label: 'Контур ярче', min: 1, max: 4, step: 0.05, v: 2.1 },
+  fillDim:   { box: 'lightBox', label: 'Заливка тусклее', min: 0.02, max: 1, step: 0.02, v: 0.24 },
+  depthK:    { box: 'lightBox', label: 'Сила глубины', min: 0, max: 1, step: 0.02, v: 0.6 },
+  focusK:    { box: 'lightBox', label: 'Яркость ядра', min: 0, max: 3, step: 0.05, v: 1.4 },
+  accentK:   { box: 'lightBox', label: 'Сила акцента', min: 0, max: 1, step: 0.02, v: 0.7 },
+  cullSoft:  { box: 'lightBox', label: 'Мягкость отсечения', min: 0, max: 0.6, step: 0.02, v: 0.16 },
+  // линии
+  lineOp:    { box: 'lineBox', label: 'Яркость линий', min: 0, max: 0.6, step: 0.01, v: 0.12 },
+  lineW:     { box: 'lineBox', label: 'Толщина линий', min: 1, max: 3, step: 1, v: 1, rebuild: true },
+  lineN:     { box: 'lineBox', label: 'Сколько линий', min: 40, max: 1400, step: 20, v: 420, rebuild: true },
+  lineLen:   { box: 'lineBox', label: 'Длина связи', min: 0.2, max: 2.4, step: 0.05, v: 0.95, rebuild: true },
+  spin:      { box: 'lightBox', label: 'Вращение', min: 0, max: 1, step: 0.02, v: 0.3 }
+};
+// тумблеры-переключатели, не ползунки
+const TG = {
+  cull:  { box: 'lightBox', label: 'Не рисовать отвёрнутые точки', v: true },
+  lines: { box: 'lineBox', label: 'Показывать линии', v: true, rebuild: true }
+};
+let lineMode = 'edges';   // 'edges' — только контур, 'all' — вся модель
+
+// ── сцена ───────────────────────────────────────────────────────────────────
+const cv = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 200);
+
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(150, 24, 16), new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false,
+  uniforms: { uTop: { value: new THREE.Color(0x050a14) }, uBot: { value: new THREE.Color(0x101f3a) } },
+  vertexShader: 'varying float vY; void main(){ vY=normalize(position).y; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);} ',
+  fragmentShader: 'varying float vY; uniform vec3 uTop,uBot; void main(){ gl_FragColor=vec4(mix(uBot,uTop,smoothstep(-0.3,0.7,vY)),1.0);} '
+})));
+
+function softTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d');
+  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,255,255,1)');
+  gr.addColorStop(0.35, 'rgba(255,255,255,0.9)');
+  gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+}
+const TEX = softTex();
+
+// ── шейдер точек ────────────────────────────────────────────────────────────
+// Отсечение отвёрнутых точек живёт ЗДЕСЬ, а не в геометрии: модель вращается, и
+// какие точки «сзади» — зависит от текущего ракурса. Один dot() на вершину.
+const uni = {
+  uTex: { value: TEX }, uPx: { value: innerHeight },
+  uSzCore: { value: 0 }, uSzFill: { value: 0 }, uSzEdge: { value: 0 }, uSzWing: { value: 0 },
+  uEdge: { value: 0 }, uFill: { value: 0 }, uDepthK: { value: 0 }, uAccentK: { value: 0 },
+  uCull: { value: 1 }, uCullSoft: { value: 0.16 }, uT: { value: 0 },
+  fDens: { value: 1 }, fOutline: { value: 1 }, fDepth: { value: 1 }, fAccent: { value: 1 }
+};
+const pointMat = new THREE.ShaderMaterial({
+  uniforms: uni, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `
+    attribute float aRole;   // 0 заливка, 1 ребро/контур, 2 сопло, 3 маяк
+    attribute float aZone;   // 0 ядро, 1 корпус, 2 крыло, 3 корма
+    attribute float aRand;
+    attribute vec3 aNormal;  // посчитана по соседям (в модели нормалей нет)
+    uniform float uPx, uSzCore, uSzFill, uSzEdge, uSzWing;
+    uniform float uEdge, uFill, uDepthK, uAccentK, uCull, uCullSoft, uT;
+    uniform float fDens, fOutline, fDepth, fAccent;
+    varying vec3 vCol; varying float vA;
+    void main() {
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      float dist = -mv.z;
+      vec3 col = vec3(0.62, 0.82, 1.0);
+      float br = 1.0;
+
+      // РАЗМЕР ПО РОЛИ И ЗОНЕ — три независимых регулятора, как просили.
+      // База — заливка; ядро, контур и крылья задаются отдельно.
+      float sz = uSzFill;
+      if (fDens > 0.5) {
+        if (aZone < 0.5)      sz = uSzCore;
+        else if (aZone > 1.5 && aZone < 2.5) sz = uSzWing;
+      }
+      if (aRole > 0.5 && aRole < 1.5) {
+        sz = mix(sz, uSzEdge, fOutline);
+        br *= mix(1.0, uEdge, fOutline);
+      } else if (aRole < 0.5) {
+        br *= mix(0.55, uFill, fOutline);
+      }
+      if (fDens > 0.5) {
+        if (aZone < 0.5) br *= 1.25;
+        else if (aZone > 2.5) br *= 0.78;
+      }
+      // цветовой акцент
+      if (aRole > 1.5 && aRole < 2.5) {
+        col = mix(col, vec3(1.0, 0.66, 0.32), uAccentK * fAccent);
+        sz *= 2.4; br *= 1.5;
+      } else if (aRole > 2.5) {
+        col = mix(col, vec3(1.0, 0.98, 0.92), uAccentK * fAccent);
+        sz *= 1.6;
+        br *= 1.2 + 0.8 * step(0.5, fract(uT * 1.1 + aRand));
+      } else if (fAccent > 0.5) {
+        float tip = smoothstep(1.7, 2.7, abs(position.x));
+        col = mix(col, vec3(1.0, 0.74, 0.45), tip * uAccentK * 0.8);
+      }
+      // ОТСЕЧЕНИЕ ОТВЁРНУТЫХ: нормаль против направления на камеру. Модель больше
+      // не просвечивает насквозь — видно только обращённые к нам поверхности.
+      // Мягкая граница (uCullSoft) вместо жёсткой: иначе край рвётся ступенькой.
+      float vis = 1.0;
+      if (uCull > 0.5) {
+        vec3 nw = normalize(mat3(modelViewMatrix) * aNormal);
+        vec3 toEye = normalize(-mv.xyz);
+        vis = smoothstep(-uCullSoft, uCullSoft + 0.08, dot(nw, toEye));
+      }
+      if (fDepth > 0.5) {
+        float dn = clamp((dist - 7.0) / 16.0, 0.0, 1.0);
+        sz *= mix(1.0, 1.0 - dn * 0.55, uDepthK);
+        br *= mix(1.0, 1.0 - dn * 0.62, uDepthK);
+      }
+      br *= 0.82 + 0.36 * aRand;
+      vCol = col * br;
+      vA = clamp(br, 0.0, 1.6) * vis;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(sz * uPx * 0.0016 / max(dist * 0.08, 0.25), 0.5, 26.0) * step(0.004, vA);
+    }`,
+  fragmentShader: `
+    uniform sampler2D uTex;
+    varying vec3 vCol; varying float vA;
+    void main() {
+      float a = texture2D(uTex, gl_PointCoord).a * vA;
+      if (a < 0.01) discard;
+      gl_FragColor = vec4(vCol, a);
+    }`
+});
+
+const shipGrp = new THREE.Group();
+scene.add(shipGrp);
+let pts = null, lines = null, axis = null, core = null, trail = null, streaks = null;
+let RAW = null, BASE = null;   // BASE — базовое облако с ролями, зонами и нормалями
+
+function decodeShip() {
+  const S2 = (typeof PD_SHIP !== 'undefined') ? PD_SHIP : null;
+  if (!S2) return null;
+  const raw = atob(S2.B64), n = raw.length;
+  const a = new Float32Array(n);
+  for (let i = 0; i < n; i++) { let v = raw.charCodeAt(i); if (v > 127) v -= 256; a[i] = v / 127 * S2.SCALE; }
+  return { pos: a, edgeN: S2.EDGE_N, engines: S2.ENGINES, lights: S2.LIGHTS };
+}
+
+// ── НОРМАЛИ ПО СОСЕДЯМ ──────────────────────────────────────────────────────
+// В облаке точек нормалей нет, а без них нельзя отличить «эта поверхность смотрит
+// на меня» от «эта с обратной стороны». Считаем один раз: берём соседей в радиусе,
+// подгоняем плоскость (PCA), нормаль — направление наименьшей дисперсии.
+// Две главные оси ищем степенными итерациями, третья — их векторное произведение:
+// это устойчивее и короче, чем полное собственное разложение 3×3.
+function computeNormals(pos, N) {
+  const nor = new Float32Array(N * 3);
+  // равномерная сетка для быстрого поиска соседей
+  const R = 0.62, CELL = R;
+  const grid = new Map();
+  const key = (a, b, c) => a + ',' + b + ',' + c;
+  for (let i = 0; i < N; i++) {
+    const k = key(Math.floor(pos[i * 3] / CELL), Math.floor(pos[i * 3 + 1] / CELL), Math.floor(pos[i * 3 + 2] / CELL));
+    let arr = grid.get(k); if (!arr) { arr = []; grid.set(k, arr); }
+    arr.push(i);
+  }
+  // центр масс — по нему разворачиваем нормали наружу
+  let cx = 0, cy = 0, cz = 0;
+  for (let i = 0; i < N; i++) { cx += pos[i * 3]; cy += pos[i * 3 + 1]; cz += pos[i * 3 + 2]; }
+  cx /= N; cy /= N; cz /= N;
+
+  const nb = [];
+  for (let i = 0; i < N; i++) {
+    const px = pos[i * 3], py = pos[i * 3 + 1], pz = pos[i * 3 + 2];
+    const gx = Math.floor(px / CELL), gy = Math.floor(py / CELL), gz = Math.floor(pz / CELL);
+    nb.length = 0;
+    for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
+      const arr = grid.get(key(gx + a, gy + b, gz + c));
+      if (!arr) continue;
+      for (let q = 0; q < arr.length; q++) {
+        const j = arr[q]; if (j === i) continue;
+        const dx = pos[j * 3] - px, dy = pos[j * 3 + 1] - py, dz = pos[j * 3 + 2] - pz;
+        if (dx * dx + dy * dy + dz * dz < R * R) nb.push(dx, dy, dz);
+      }
+    }
+    let nx, ny, nz;
+    if (nb.length < 9) {                       // соседей мало — берём радиальную
+      nx = px - cx; ny = py - cy; nz = pz - cz;
+    } else {
+      // ковариация смещений
+      let xx = 0, xy = 0, xz = 0, yy = 0, yz = 0, zz = 0;
+      for (let q = 0; q < nb.length; q += 3) {
+        const dx = nb[q], dy = nb[q + 1], dz = nb[q + 2];
+        xx += dx * dx; xy += dx * dy; xz += dx * dz; yy += dy * dy; yz += dy * dz; zz += dz * dz;
+      }
+      const mul = (v) => [xx * v[0] + xy * v[1] + xz * v[2],
+                          xy * v[0] + yy * v[1] + yz * v[2],
+                          xz * v[0] + yz * v[1] + zz * v[2]];
+      const norm = v => { const l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; };
+      let e1 = norm([1, 0.3, 0.7]);
+      for (let it = 0; it < 12; it++) e1 = norm(mul(e1));
+      // дефляция: убираем первую ось и ищем вторую
+      const l1 = (() => { const m = mul(e1); return m[0] * e1[0] + m[1] * e1[1] + m[2] * e1[2]; })();
+      const mul2 = v => { const m = mul(v); const d = v[0] * e1[0] + v[1] * e1[1] + v[2] * e1[2];
+                          return [m[0] - l1 * d * e1[0], m[1] - l1 * d * e1[1], m[2] - l1 * d * e1[2]]; };
+      let e2 = norm([0.2, 0.9, -0.4]);
+      for (let it = 0; it < 12; it++) e2 = norm(mul2(e2));
+      nx = e1[1] * e2[2] - e1[2] * e2[1];
+      ny = e1[2] * e2[0] - e1[0] * e2[2];
+      nz = e1[0] * e2[1] - e1[1] * e2[0];
+    }
+    // знак наружу
+    const ox = px - cx, oy = py - cy, oz = pz - cz;
+    if (nx * ox + ny * oy + nz * oz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+    const l = Math.hypot(nx, ny, nz) || 1;
+    nor[i * 3] = nx / l; nor[i * 3 + 1] = ny / l; nor[i * 3 + 2] = nz / l;
+  }
+  return nor;
+}
+
+// ── базовое облако: роли, зоны, нормали ─────────────────────────────────────
+function buildBase() {
+  const edgeN = RAW.edgeN, total = RAW.pos.length / 3, src = RAW.pos;
+  const P = [], role = [], zone = [];
+  const doSym = PR.sym.v;
+  for (let i = 0; i < total; i++) {
+    const x = src[i * 3], y = src[i * 3 + 1], z = src[i * 3 + 2];
+    const r = i < edgeN ? 1 : 0;
+    const ax = Math.abs(x);
+    let zn;
+    if (z > 1.9) zn = 3; else if (ax > 1.75) zn = 2;
+    else if (ax < 0.55 && Math.abs(z) < 1.5) zn = 0; else zn = 1;
+    if (doSym) {
+      if (ax < 0.12) { P.push(x, y, z); role.push(r); zone.push(zn); }
+      else if (x > 0) { P.push(x, y, z); role.push(r); zone.push(zn);
+                        P.push(-x, y, z); role.push(r); zone.push(zn); }
+    } else { P.push(x, y, z); role.push(r); zone.push(zn); }
+  }
+  const pos = new Float32Array(P);
+  const N = pos.length / 3;
+  return { pos: pos, role: role, zone: zone, n: N, nor: computeNormals(pos, N) };
+}
+
+// ── УПЛОТНЕНИЕ: новые точки садятся на отрезки между реальными ──────────────
+// В модели 4184 точки — физический предел данных. Чтобы получить в разы больше,
+// интерполируем к соседям: точка ложится НА ПОВЕРХНОСТЬ между двумя настоящими и
+// наследует их роль, зону и нормаль. Случайный шум вокруг модели тут не годится —
+// он бы размыл силуэт, ради которого всё и делается.
+function densify(B, mult, jit) {
+  const extra = Math.max(0, Math.round(B.n * (mult - 1)));
+  const total = B.n + extra;
+  const pos = new Float32Array(total * 3), nor = new Float32Array(total * 3);
+  const role = new Float32Array(total), zone = new Float32Array(total), rnd = new Float32Array(total);
+  pos.set(B.pos); nor.set(B.nor);
+  for (let i = 0; i < B.n; i++) { role[i] = B.role[i]; zone[i] = B.zone[i]; rnd[i] = hash(i, 3); }
+  // сетка соседей
+  const CELL = 0.5, grid = new Map();
+  const key = (a, b, c) => a + ',' + b + ',' + c;
+  for (let i = 0; i < B.n; i++) {
+    const k = key(Math.floor(B.pos[i * 3] / CELL), Math.floor(B.pos[i * 3 + 1] / CELL), Math.floor(B.pos[i * 3 + 2] / CELL));
+    let arr = grid.get(k); if (!arr) { arr = []; grid.set(k, arr); }
+    arr.push(i);
+  }
+  let w = B.n;
+  for (let e = 0; e < extra; e++) {
+    const i = (hash(e, 11) * B.n) | 0;
+    const px = B.pos[i * 3], py = B.pos[i * 3 + 1], pz = B.pos[i * 3 + 2];
+    const gx = Math.floor(px / CELL), gy = Math.floor(py / CELL), gz = Math.floor(pz / CELL);
+    // ищем соседа того же типа поблизости
+    let best = -1, bestD = 1e9;
+    const want = hash(e, 17);
+    for (let a = -1; a <= 1 && best < 0; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
+      const arr = grid.get(key(gx + a, gy + b, gz + c));
+      if (!arr) continue;
+      for (let q = 0; q < arr.length; q++) {
+        const j = arr[q]; if (j === i) continue;
+        if (B.role[j] !== B.role[i]) continue;      // контур смешивать с заливкой нельзя
+        const dx = B.pos[j * 3] - px, dy = B.pos[j * 3 + 1] - py, dz = B.pos[j * 3 + 2] - pz;
+        const d = dx * dx + dy * dy + dz * dz;
+        if (d < bestD && d > 1e-6 && hash(j, e) < want + 0.5) { bestD = d; best = j; }
+      }
+    }
+    const t = 0.2 + 0.6 * hash(e, 23);
+    let nx2, ny2, nz2, x2, y2, z2;
+    if (best >= 0) {
+      x2 = px + (B.pos[best * 3] - px) * t;
+      y2 = py + (B.pos[best * 3 + 1] - py) * t;
+      z2 = pz + (B.pos[best * 3 + 2] - pz) * t;
+      nx2 = B.nor[i * 3] + (B.nor[best * 3] - B.nor[i * 3]) * t;
+      ny2 = B.nor[i * 3 + 1] + (B.nor[best * 3 + 1] - B.nor[i * 3 + 1]) * t;
+      nz2 = B.nor[i * 3 + 2] + (B.nor[best * 3 + 2] - B.nor[i * 3 + 2]) * t;
+    } else {
+      x2 = px; y2 = py; z2 = pz;
+      nx2 = B.nor[i * 3]; ny2 = B.nor[i * 3 + 1]; nz2 = B.nor[i * 3 + 2];
+    }
+    // разброс СТРОГО в плоскости поверхности (вдоль нормали не смещаем — иначе
+    // облако раздувается и силуэт перестаёт быть острым)
+    if (jit > 0) {
+      const nl = Math.hypot(nx2, ny2, nz2) || 1;
+      const ux = nx2 / nl, uy = ny2 / nl, uz = nz2 / nl;
+      let rx = hash(e, 31) - 0.5, ry = hash(e, 37) - 0.5, rz = hash(e, 41) - 0.5;
+      const d = rx * ux + ry * uy + rz * uz;      // убираем составляющую вдоль нормали
+      rx -= d * ux; ry -= d * uy; rz -= d * uz;
+      x2 += rx * jit; y2 += ry * jit; z2 += rz * jit;
+    }
+    pos[w * 3] = x2; pos[w * 3 + 1] = y2; pos[w * 3 + 2] = z2;
+    const nl2 = Math.hypot(nx2, ny2, nz2) || 1;
+    nor[w * 3] = nx2 / nl2; nor[w * 3 + 1] = ny2 / nl2; nor[w * 3 + 2] = nz2 / nl2;
+    role[w] = B.role[i]; zone[w] = B.zone[i]; rnd[w] = hash(w, 7);
+    w++;
+  }
+  return { pos: pos, nor: nor, role: role, zone: zone, rnd: rnd, n: total };
+}
+
+// ── сборка облака в геометрию ───────────────────────────────────────────────
+function buildShip() {
+  const D = densify(BASE, S.mult.v, S.jitter.v);
+  // сопла и маяки — отдельные роли, нормаль радиальная (они точечные)
+  const exN = RAW.engines.length + RAW.lights.length;
+  const total = D.n + exN;
+  const pos = new Float32Array(total * 3), nor = new Float32Array(total * 3);
+  const role = new Float32Array(total), zone = new Float32Array(total), rnd = new Float32Array(total);
+  pos.set(D.pos); nor.set(D.nor); role.set(D.role); zone.set(D.zone); rnd.set(D.rnd);
+  let w = D.n;
+  const addPt = (p, r, zn, k) => {
+    pos[w * 3] = p[0]; pos[w * 3 + 1] = p[1]; pos[w * 3 + 2] = p[2];
+    const l = Math.hypot(p[0], p[1], p[2]) || 1;
+    nor[w * 3] = p[0] / l; nor[w * 3 + 1] = p[1] / l; nor[w * 3 + 2] = p[2] / l;
+    role[w] = r; zone[w] = zn; rnd[w] = hash(k, 9); w++;
+  };
+  RAW.engines.forEach((e, k) => addPt(e, 2, 3, k));
+  RAW.lights.forEach((l, k) => addPt(l, 3, 1, k + 50));
+
+  if (pts) { pts.geometry.dispose(); shipGrp.remove(pts); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aNormal', new THREE.BufferAttribute(nor, 3));
+  g.setAttribute('aRole', new THREE.BufferAttribute(role, 1));
+  g.setAttribute('aZone', new THREE.BufferAttribute(zone, 1));
+  g.setAttribute('aRand', new THREE.BufferAttribute(rnd, 1));
+  pts = new THREE.Points(g, pointMat);
+  pts.frustumCulled = false;
+  shipGrp.add(pts);
+  document.getElementById('mPts').textContent = (total / 1000).toFixed(1) + 'k';
+  buildLines(D);
+}
+
+// ── ЛИНИИ КАРКАСА ──────────────────────────────────────────────────────────
+// Честно про толщину: WebGL игнорирует linewidth (почти все браузеры рисуют 1px).
+// Поэтому «толщина» здесь — это число параллельных копий с микро-сдвигом. Работает,
+// и для «едва заметных» линий главный регулятор всё равно яркость.
+function buildLines(D) {
+  if (lines) { lines.geometry.dispose(); shipGrp.remove(lines); lines = null; }
+  if (!TG.lines.v || !PR.ribs.v) return;
+  const want = S.lineN.v | 0, maxLen = S.lineLen.v;
+  // пул кандидатов: только контур или всё облако
+  const pool = [];
+  for (let i = 0; i < D.n; i++) {
+    if (lineMode === 'edges' && D.role[i] !== 1) continue;
+    if (hash(i, 19) > 0.5) continue;                   // прореживаем, иначе перебор
+    pool.push(i);
+    if (pool.length > 1600) break;
+  }
+  const seg = [];
+  const layers = S.lineW.v | 0;
+  for (let a = 0; a < pool.length && seg.length / 6 < want * layers; a++) {
+    const ia = pool[a];
+    const ax = D.pos[ia * 3], ay = D.pos[ia * 3 + 1], az = D.pos[ia * 3 + 2];
+    let best = -1, bestD = 1e9;
+    for (let b = 0; b < pool.length; b++) {
+      if (b === a) continue;
+      const ib = pool[b];
+      const dx = D.pos[ib * 3] - ax, dy = D.pos[ib * 3 + 1] - ay, dz = D.pos[ib * 3 + 2] - az;
+      const d = dx * dx + dy * dy + dz * dz;
+      if (d < bestD && d > 0.004) { bestD = d; best = ib; }
+    }
+    if (best < 0 || bestD > maxLen * maxLen) continue;
+    const bx = D.pos[best * 3], by = D.pos[best * 3 + 1], bz = D.pos[best * 3 + 2];
+    for (let L = 0; L < layers; L++) {
+      const o = L === 0 ? 0 : (L === 1 ? 0.012 : -0.012);
+      seg.push(ax, ay + o, az, bx, by + o, bz);
+    }
+  }
+  if (!seg.length) return;
+  const lg = new THREE.BufferGeometry();
+  lg.setAttribute('position', new THREE.Float32BufferAttribute(seg, 3));
+  lines = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({
+    color: 0x8fc4ff, transparent: true, opacity: S.lineOp.v,
+    blending: THREE.AdditiveBlending, depthWrite: false }));
+  lines.frustumCulled = false;
+  shipGrp.add(lines);
+}
+
+// ── доп. элементы ──────────────────────────────────────────────────────────
+// Центр масс сопел: свечение должно жить в районе турбин, а не в геометрическом
+// нуле модели — там оно висело в пустоте перед корпусом.
+function enginesCenter() {
+  const E = RAW.engines;
+  let x = 0, y = 0, z = 0;
+  E.forEach(e => { x += e[0]; y += e[1]; z += e[2]; });
+  return [x / E.length, y / E.length, z / E.length];
+}
+function buildExtras() {
+  if (axis) { axis.geometry.dispose(); shipGrp.remove(axis); axis = null; }
+  if (PR.sym.v) {
+    const ag = new THREE.BufferGeometry();
+    ag.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, -3.4, 0, 0, 3.2], 3));
+    axis = new THREE.Line(ag, new THREE.LineBasicMaterial({ color: 0x7fb4ff, transparent: true,
+      opacity: 0.14, blending: THREE.AdditiveBlending, depthWrite: false }));
+    shipGrp.add(axis);
+  }
+  if (core) { core.geometry.dispose(); shipGrp.remove(core); core = null; }
+  if (PR.focus.v) {
+    const c = enginesCenter();
+    const cg = new THREE.BufferGeometry();
+    // три пятна: центральное ядро у турбин плюс по одному на крайние сопла —
+    // читается как раскалённая группа двигателей, а не одна лампочка
+    const p = [c[0], c[1], c[2] - 0.25];
+    RAW.engines.forEach(e => p.push(e[0], e[1], e[2]));
+    cg.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+    core = new THREE.Points(cg, new THREE.PointsMaterial({ color: 0xffe2b0, size: 1.35,
+      map: TEX, transparent: true, opacity: clamp01(S.focusK.v / 3) * 0.95,
+      blending: THREE.AdditiveBlending, depthWrite: false }));
+    core.frustumCulled = false;
+    shipGrp.add(core);
+  }
+  if (trail) { trail.geometry.dispose(); shipGrp.remove(trail); trail = null; }
+  if (PR.trail.v && RAW.engines.length) {
+    const tp = [], tc = [], L = 13, N = 34;
+    RAW.engines.forEach((e, ei) => {
+      for (let k = 0; k < N; k++) {
+        const t = k / N, w2 = (1 - t) * 0.26;
+        const a = hash(k, ei * 13) * Math.PI * 2, rr = w2 * (0.4 + 0.6 * hash(k * 3, ei));
+        tp.push(e[0] + Math.cos(a) * rr, e[1] + Math.sin(a) * rr * 0.7, e[2] + t * L);
+        const f = Math.pow(1 - t, 1.7);
+        tc.push(1.0 * f, (0.72 + 0.2 * (1 - f)) * f, (0.45 + 0.4 * (1 - f)) * f);
+      }
+    });
+    const tg = new THREE.BufferGeometry();
+    tg.setAttribute('position', new THREE.Float32BufferAttribute(tp, 3));
+    tg.setAttribute('color', new THREE.Float32BufferAttribute(tc, 3));
+    trail = new THREE.Points(tg, new THREE.PointsMaterial({ vertexColors: true, size: 0.42,
+      map: TEX, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+    trail.frustumCulled = false;
+    shipGrp.add(trail);
+  }
+  if (streaks) { streaks.geometry.dispose(); scene.remove(streaks); streaks = null; }
+  if (PR.motion.v) {
+    const N = 70;
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 6), 3));
+    streaks = new THREE.LineSegments(sg, new THREE.LineBasicMaterial({ color: 0x9fd4ff,
+      transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false }));
+    streaks.frustumCulled = false;
+    streaks.userData.p = new Float32Array(N * 3);
+    for (let k = 0; k < N; k++) {
+      streaks.userData.p[k * 3] = (hash(k, 1) - 0.5) * 16;
+      streaks.userData.p[k * 3 + 1] = (hash(k, 2) - 0.5) * 10;
+      streaks.userData.p[k * 3 + 2] = -18 + hash(k, 3) * 40;
+    }
+    scene.add(streaks);
+  }
+}
+
+function syncUniforms() {
+  uni.uSzCore.value = S.sizeCore.v; uni.uSzFill.value = S.sizeFill.v;
+  uni.uSzEdge.value = S.sizeEdge.v; uni.uSzWing.value = S.sizeWing.v;
+  uni.uEdge.value = S.edgeBoost.v; uni.uFill.value = S.fillDim.v;
+  uni.uDepthK.value = S.depthK.v; uni.uAccentK.value = S.accentK.v;
+  uni.uCull.value = TG.cull.v ? 1 : 0; uni.uCullSoft.value = S.cullSoft.v;
+  uni.fDens.value = PR.dens.v ? 1 : 0; uni.fOutline.value = PR.outline.v ? 1 : 0;
+  uni.fDepth.value = PR.depth.v ? 1 : 0; uni.fAccent.value = PR.accent.v ? 1 : 0;
+  if (lines) lines.material.opacity = S.lineOp.v;
+  if (core) core.material.opacity = clamp01(S.focusK.v / 3) * 0.95;
+}
+function rebuild() { syncUniforms(); buildShip(); buildExtras(); }
+
+// ── интерфейс ──────────────────────────────────────────────────────────────
+const prList = document.getElementById('prList');
+PR_KEYS.forEach(k => {
+  const d = PR[k];
+  const el = document.createElement('label');
+  el.className = 'pr' + (d.v ? ' on' : '');
+  el.innerHTML = '<input type="checkbox"' + (d.v ? ' checked' : '') + '>' +
+    '<span class="tx"><span class="nm">' + d.n + '. ' + d.name + '</span>' +
+    '<span class="ds">' + d.ds + '</span></span>';
+  el.querySelector('input').onchange = e => {
+    d.v = e.target.checked; el.classList.toggle('on', d.v);
+    if (k === 'sym') { BASE = buildBase(); }     // симметрия меняет само облако
+    rebuild();
+  };
+  d.el = el; prList.appendChild(el);
+});
+
+function addSlider(k) {
+  const d = S[k];
+  const box = document.getElementById(d.box);
+  const row = document.createElement('div'); row.className = 'row';
+  const lab = document.createElement('label'); lab.textContent = d.label;
+  const inp = document.createElement('input');
+  inp.type = 'range'; inp.min = d.min; inp.max = d.max; inp.step = d.step; inp.value = d.v;
+  const val = document.createElement('div'); val.className = 'val';
+  const fmt = v => d.step >= 1 ? String(v | 0) : (+v).toFixed(2);
+  val.textContent = fmt(d.v);
+  inp.oninput = () => {
+    d.v = +inp.value; val.textContent = fmt(inp.value);
+    if (d.rebuild) rebuild(); else syncUniforms();
+  };
+  row.append(lab, inp, val); box.appendChild(row);
+}
+function addToggle(k) {
+  const d = TG[k];
+  const box = document.getElementById(d.box);
+  const l = document.createElement('label'); l.className = 'chk';
+  const i = document.createElement('input'); i.type = 'checkbox'; i.checked = d.v;
+  i.onchange = () => { d.v = i.checked; if (d.rebuild) rebuild(); else syncUniforms(); };
+  const s = document.createElement('span'); s.textContent = d.label;
+  l.append(i, s); box.appendChild(l);
+}
+['mult', 'jitter'].forEach(addSlider);
+['sizeCore', 'sizeFill', 'sizeEdge', 'sizeWing'].forEach(addSlider);
+addToggle('cull');
+['edgeBoost', 'fillDim', 'depthK', 'focusK', 'accentK', 'cullSoft', 'spin'].forEach(addSlider);
+addToggle('lines');
+// переключатель охвата линий
+(function () {
+  const box = document.getElementById('lineBox');
+  const seg = document.createElement('div'); seg.className = 'seg';
+  [['edges', 'Только контур'], ['all', 'Вся модель']].forEach(([k, t]) => {
+    const b = document.createElement('button');
+    b.textContent = t; b.dataset.k = k;
+    b.className = lineMode === k ? 'on' : '';
+    b.onclick = () => { lineMode = k; [...seg.children].forEach(c => c.classList.toggle('on', c.dataset.k === k)); rebuild(); };
+    seg.appendChild(b);
+  });
+  box.appendChild(seg);
+})();
+['lineOp', 'lineW', 'lineN', 'lineLen'].forEach(addSlider);
+
+function setAll(on) {
+  PR_KEYS.forEach(k => { PR[k].v = on; PR[k].el.classList.toggle('on', on);
+    PR[k].el.querySelector('input').checked = on; });
+  BASE = buildBase(); rebuild();
+}
+document.getElementById('bAll').onclick = () => setAll(true);
+document.getElementById('bNone').onclick = () => setAll(false);
+document.getElementById('bCopy').onclick = () => {
+  const p = {}; PR_KEYS.forEach(k => p[PR[k].n + '_' + k] = PR[k].v);
+  const s = {}; for (const k in S) s[k] = S[k].v;
+  const t = {}; for (const k in TG) t[k] = TG[k].v;
+  const out = JSON.stringify({ principles: p, settings: s, toggles: t, lineMode: lineMode }, null, 2);
+  const done = () => { const el = document.getElementById('toast'); el.classList.add('on'); setTimeout(() => el.classList.remove('on'), 1500); };
+  if (navigator.clipboard) navigator.clipboard.writeText(out).then(done, () => { console.log(out); done(); });
+  else { console.log(out); done(); }
+};
+
+let viewMode = 0, spinOn = true, mx = 0, my = 0;
+const VIEWS = ['3/4', 'СПЕРЕДИ', 'СБОКУ', 'СВЕРХУ'];
+addEventListener('keydown', e => {
+  const n = e.key === '0' ? 10 : parseInt(e.key, 10);
+  if (n >= 1 && n <= 10) {
+    const k = PR_KEYS[n - 1]; PR[k].v = !PR[k].v;
+    PR[k].el.classList.toggle('on', PR[k].v);
+    PR[k].el.querySelector('input').checked = PR[k].v;
+    if (k === 'sym') BASE = buildBase();
+    rebuild(); return;
+  }
+  if (e.code === 'Space') { spinOn = !spinOn; e.preventDefault(); return; }
+  if (e.key === 'v' || e.key === 'V' || e.key === 'м') {
+    viewMode = (viewMode + 1) % 4;
+    document.getElementById('mView').textContent = VIEWS[viewMode]; return;
+  }
+  if (e.key === 'h' || e.key === 'H' || e.key === 'р') {
+    const u = document.getElementById('ui'); u.style.display = u.style.display === 'none' ? '' : 'none';
+  }
+});
+addEventListener('mousemove', e => { mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5; }, { passive: true });
+addEventListener('resize', () => {
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  uni.uPx.value = innerHeight;
+});
+
+const clock = new THREE.Clock();
+let fps = 60, acc = 0, yaw = 0;
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, clock.getDelta());
+  const t = clock.getElapsedTime();
+  uni.uT.value = t;
+  if (spinOn) yaw += dt * S.spin.v * 0.55;
+  const rk = PR.react.v ? 1 : 0;
+  shipGrp.rotation.y = yaw + (PR.react.v ? mx * 0.5 : 0);
+  shipGrp.rotation.z = rk * (-mx * 0.55 + Math.sin(t * 0.7) * 0.03);
+  shipGrp.rotation.x = rk * (my * 0.35 + Math.sin(t * 0.53) * 0.02);
+  shipGrp.position.y = rk * Math.sin(t * 0.9) * 0.06;
+
+  if (streaks) {
+    const p = streaks.userData.p, arr = streaks.geometry.attributes.position.array;
+    for (let k = 0; k < 70; k++) {
+      p[k * 3 + 2] += dt * 26;
+      if (p[k * 3 + 2] > 22) { p[k * 3 + 2] = -18; p[k * 3] = (hash(k, t) - 0.5) * 16; p[k * 3 + 1] = (hash(t, k) - 0.5) * 10; }
+      const o = k * 6;
+      arr[o] = p[k * 3]; arr[o + 1] = p[k * 3 + 1]; arr[o + 2] = p[k * 3 + 2];
+      arr[o + 3] = p[k * 3]; arr[o + 4] = p[k * 3 + 1]; arr[o + 5] = p[k * 3 + 2] - 3.4;
+    }
+    streaks.geometry.attributes.position.needsUpdate = true;
+  }
+  if (core) core.material.opacity = clamp01(S.focusK.v / 3) * (0.72 + 0.28 * Math.sin(t * 2.1));
+
+  const R = 11;
+  if (viewMode === 0)      camera.position.set(R * 0.72, R * 0.42, R * 0.8);
+  else if (viewMode === 1) camera.position.set(0, 0.6, -R * 1.05);
+  else if (viewMode === 2) camera.position.set(R * 1.05, 0.4, 0);
+  else                     camera.position.set(0, R * 1.05, 0.001);
+  camera.lookAt(0, 0, 0);
+
+  renderer.render(scene, camera);
+  const f = dt > 0 ? 1 / dt : 60;
+  fps += (f - fps) * 0.08; acc += dt;
+  if (acc > 0.25) { acc = 0; document.getElementById('mFps').textContent = Math.round(fps);
+    document.getElementById('mCull').textContent = TG.cull.v ? 'вкл' : '—'; }
+}
+
+RAW = decodeShip();
+if (RAW) { BASE = buildBase(); rebuild(); loop(); }
+else document.getElementById('err').style.display = 'flex';
+</script>
+</body>
+</html>

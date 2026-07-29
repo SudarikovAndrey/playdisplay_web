@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PlayDisplay — редактор чанков трассы</title>
+<!--
+  РЕДАКТОР ЧАНКОВ (ТЗ §28). Инструмент, не часть сайта.
+  Здесь проверяется ГЕОМЕТРИЯ мира отдельно от игры: типы чанков, сборка уровня
+  по правилам, коридор, коллизия, LOD, бюджет точек. Корабля и счёта нет намеренно.
+
+  Почему отдельно от игры: замена генератора в hero-scene.html тянет за собой
+  gTerrainH (от неё зависят коллизия корабля, подсветка опасности, спавн ядер) и
+  cloud.userData.grid — а последняя вообще несовместима с неравномерной плотностью
+  из §12. Сначала доводим геометрию тут, потом вживляем.
+
+  Работает и по http (чанки считает Web Worker), и файлом с диска
+  (тогда генерация идёт в главном потоке, по чанку на кадр).
+-->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #04070c;
+    font-family: 'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace; color: #dfeef2; }
+  #stage { position: fixed; inset: 0; }
+  #ui { position: fixed; left: 0; top: 0; bottom: 0; width: 306px; z-index: 10;
+    background: rgba(5,9,14,.92); backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(120,190,200,.18); padding: 15px 15px 20px; overflow-y: auto; }
+  h1 { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #2be0c6; margin: 0 0 2px; }
+  .sub { font-size: 8.5px; letter-spacing: .13em; opacity: .42; margin-bottom: 14px; line-height: 1.55; }
+  .lbl { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; opacity: .5; margin: 0 0 6px; }
+  .grp { margin-bottom: 13px; }
+  .types { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .types button { font: 600 9px inherit; letter-spacing: .05em; color: #b9d4d9;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(140,200,210,.2);
+    border-radius: 3px; padding: 7px 5px; cursor: pointer; }
+  .types button:hover { background: rgba(43,224,198,.1); border-color: rgba(43,224,198,.45); }
+  .types button.on { background: rgba(43,224,198,.18); border-color: #2be0c6; color: #eafffb; }
+  .row { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
+  .row label { flex: 0 0 96px; font-size: 9px; opacity: .68; }
+  .row input[type=range] { flex: 1; height: 3px; -webkit-appearance: none; appearance: none;
+    background: rgba(160,200,210,.22); border-radius: 2px; outline: none; }
+  .row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px;
+    border-radius: 50%; background: #2be0c6; cursor: pointer; }
+  .row .val { flex: 0 0 42px; text-align: right; font-size: 9px; color: #2be0c6; font-variant-numeric: tabular-nums; }
+  .chk { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 9px;
+    letter-spacing: .06em; opacity: .82; cursor: pointer; }
+  .chk input { accent-color: #2be0c6; margin: 0; cursor: pointer; }
+  .btns { display: flex; gap: 4px; flex-wrap: wrap; }
+  .btns button { flex: 1 1 auto; font: 600 9px inherit; letter-spacing: .1em; text-transform: uppercase;
+    color: #2be0c6; background: transparent; border: 1px solid rgba(43,224,198,.5);
+    border-radius: 2px; padding: 7px 8px; cursor: pointer; }
+  .btns button:hover { background: rgba(43,224,198,.13); }
+  .btns button.alt { color: #9fb0c0; border-color: rgba(160,180,200,.35); }
+  #plan { font-size: 8px; line-height: 1.5; max-height: 148px; overflow-y: auto;
+    border: 1px solid rgba(120,190,200,.14); border-radius: 3px; padding: 6px; }
+  #plan div { padding: 1px 3px; border-radius: 2px; cursor: pointer; white-space: nowrap; }
+  #plan div:hover { background: rgba(43,224,198,.12); }
+  #plan div.cur { background: rgba(43,224,198,.2); color: #eafffb; }
+  #plan div.bad { color: #ff8a5a; }
+  #hud { position: fixed; right: 14px; top: 12px; z-index: 10; text-align: right;
+    font-size: 9px; letter-spacing: .15em; line-height: 1.85; opacity: .55; pointer-events: none; }
+  #hud b { color: #2be0c6; font-weight: 700; }
+  #hud .warn b { color: #ff8a5a; }
+  #title { position: fixed; left: 322px; top: 12px; z-index: 10; pointer-events: none; }
+  #title .t { font-size: 19px; font-weight: 700; }
+  #title .d { font-size: 9px; letter-spacing: .13em; opacity: .5; margin-top: 3px; max-width: 520px; line-height: 1.6; }
+  #keys { position: fixed; left: 322px; bottom: 12px; z-index: 10; font-size: 8.5px;
+    letter-spacing: .12em; opacity: .32; pointer-events: none; }
+  #keys b { color: #2be0c6; }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<div id="title"><div class="t" id="tTitle">—</div><div class="d" id="tDesc"></div></div>
+
+<div id="hud">
+  <div>FPS <b id="mFps">—</b></div>
+  <div>ТОЧЕК <b id="mPts">—</b></div>
+  <div>DRAW CALLS <b id="mCalls">—</b></div>
+  <div>ГЕНЕРАЦИЯ <b id="mMs">—</b></div>
+  <div class="warn">НЕВАЛИДНЫХ <b id="mBad">0</b></div>
+  <div>РЕЖИМ <b id="mMode">—</b></div>
+</div>
+
+<div id="keys"><b>C</b> камера: пролёт / облёт / сверху · <b>ПРОБЕЛ</b> пауза ·
+  <b>←→</b> чанк · <b>R</b> новый seed · <b>H</b> панель</div>
+
+<div id="ui">
+  <h1>Редактор чанков</h1>
+  <div class="sub">Геометрия мира без игры: типы, сборка по правилам,<br>коридор, коллизия, LOD, бюджет точек.</div>
+
+  <div class="grp">
+    <div class="lbl">Режим</div>
+    <div class="btns">
+      <button id="bLevel">Уровень целиком</button>
+      <button id="bSingle" class="alt">Один чанк</button>
+    </div>
+  </div>
+
+  <div class="grp" id="typeBox">
+    <div class="lbl">Тип чанка</div>
+    <div class="types" id="typeBtns"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Параметры</div>
+    <div id="sliders"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Отладка</div>
+    <div id="dbgBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">План уровня</div>
+    <div id="plan"></div>
+  </div>
+
+  <div class="grp">
+    <div class="btns">
+      <button id="bCopy">Копировать пресет</button>
+      <button id="bReseed" class="alt">Новый seed</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="world.js"></script>
+<script>
+'use strict';
+const W = window.PDWorld, TY = W.TYPES;
+
+const DESC = {
+  TRANSITION: 'Передышка: широко, спокойно, выравнивает направление и показывает ориентир вдали.',
+  CANYON:     'Высокие стены, два уровня прохождения: сверху безопаснее и длиннее, внутри быстрее и уже.',
+  GORGE:      'Узкое ущелье: близкие стены, боковые полки для подныривания, короткий сложный маршрут.',
+  TUNNEL:     'Естественная полость, а не труба: переменный радиус, неровности, разломы в своде.',
+  ARCH:       'Арка: центральное отверстие — влёт в дыру, либо облёт сверху.',
+  SPIRES:     'Группа скальных игл: слалом, вертикальные ориентиры, середина всегда свободна.',
+  CLIFF:      'Обрыв: резкий нырок вниз и открытие дальнего пространства.',
+  BRIDGE:     'Каменная перемычка над пропастью: пролёт под мостом, опоры уходят в провал.',
+  CAVERN:     'Большая внутренняя зона: свод, центральная колонна, дыра в потолке как выход.',
+  FORK:       'Развилка: простой путь шире и длиннее, сложный уже, ниже и с перемычкой.'
+};
+
+// ── сцена ──────────────────────────────────────────────────────────────────
+const cv = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: false });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+renderer.setSize(innerWidth, innerHeight);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.5, 3000);
+// Палитра снята с референса: у горизонта плотный тёмно-бирюзовый, кверху уходит
+// почти в чёрно-синий. Туман ТОГО ЖЕ цвета, что горизонт — иначе дальние гребни
+// растворяются в чужой цвет и глубина читается фальшиво.
+const FOG_COL = 0x123b46, SKY_TOP = 0x05090f, SKY_HORIZON = 0x14424e;
+scene.fog = new THREE.Fog(FOG_COL, 120, 700);
+
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(2400, 24, 16), new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false, fog: false,
+  uniforms: { uT: { value: new THREE.Color(SKY_TOP) }, uB: { value: new THREE.Color(SKY_HORIZON) } },
+  // Градиент сжат к горизонту (smoothstep -0.02..0.42): на референсе светлая полоса
+  // узкая и лежит прямо на линии рельефа, а не размазана на полнеба.
+  vertexShader: 'varying float vY; void main(){ vY=normalize(position).y; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);} ',
+  fragmentShader: 'varying float vY; uniform vec3 uT,uB; void main(){ gl_FragColor=vec4(mix(uB,uT,smoothstep(-0.02,0.42,vY)),1.0);} '
+})));
+
+// один материал на весь мир (ТЗ §10). Размер точки — атрибутом, роль — маской.
+const uni = { uPx: { value: innerHeight }, uFogN: { value: 160 }, uFogF: { value: 620 },
+  uFogC: { value: new THREE.Color(0x0b1d26) }, uEdges: { value: 1 } };
+const pointMat = new THREE.ShaderMaterial({
+  uniforms: uni, transparent: true, depthWrite: true, depthTest: true,
+  vertexShader: `
+    // Свой атрибут цвета, а не встроенный color: инъекция color для сырого
+    // ShaderMaterial зависит от версии THREE, а ошибка стоит невидимого мира.
+    attribute vec3 aCol; attribute float aSize; attribute float aMask;
+    uniform float uPx, uFogN, uFogF, uEdges;
+    varying vec3 vCol; varying float vA;
+    void main() {
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      float d = -mv.z;
+      vCol = aCol;
+      // §25: дальние точки очень мелкие — иначе fill rate съедает всё
+      float sz = aSize * clamp(78.0 / max(d, 7.0), 0.22, 2.6);
+      // акценты можно погасить тумблером, чтобы увидеть их вклад
+      if (aMask > 1.5 && aMask < 2.5) { sz *= mix(0.7, 1.0, uEdges); vCol *= mix(0.55, 1.0, uEdges); }
+      // Дальние точки не только мельче, но и ТУСКЛЕЕ по кубу — на референсе дальний
+      // план уходит в дымку почти полностью, и именно это даёт ощущение масштаба.
+      float f = 1.0 - smoothstep(uFogN, uFogF, d);
+      vA = f;
+      vCol *= 0.34 + 0.66 * f * f;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(sz * uPx * 0.0022, 0.5, 7.0);
+    }`,
+  fragmentShader: `
+    varying vec3 vCol; varying float vA;
+    void main() {
+      float d = length(gl_PointCoord - vec2(0.5));
+      float a = smoothstep(0.5, 0.26, d) * vA;
+      if (a < 0.02) discard;
+      gl_FragColor = vec4(vCol, a);
+    }`,
+});
+
+// ── АТМОСФЕРА (слой D по ТЗ §11) ───────────────────────────────────────────
+// Крупинки, висящие над рельефом. На референсе они хорошо видны в верхней части
+// кадра и дают воздух между камерой и горизонтом. Держим ОТДЕЛЬНО от геометрии:
+// §11 прямо требует не смешивать — у пыли своя логика движения и свой размер.
+const DUST_N = 900;
+const dustGeo = new THREE.BufferGeometry();
+const dustPos = new Float32Array(DUST_N * 3);
+const dustPh = new Float32Array(DUST_N);
+for (let i = 0; i < DUST_N; i++) {
+  dustPos[i * 3] = (Math.random() - 0.5) * 460;
+  dustPos[i * 3 + 1] = 20 + Math.random() * 150;
+  dustPos[i * 3 + 2] = -Math.random() * 900;
+  dustPh[i] = Math.random() * 6.28;
+}
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+const dustMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { uPx: uni.uPx, uT: { value: 0 } },
+  vertexShader: `uniform float uPx, uT; varying float vA;
+    void main(){
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      float d = -mv.z;
+      vA = (1.0 - smoothstep(180.0, 900.0, d)) * 0.5;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(1.5 * uPx * 0.0022 * (60.0 / max(d, 30.0)), 0.6, 3.0);
+    }`,
+  fragmentShader: `varying float vA;
+    void main(){
+      float r = length(gl_PointCoord - vec2(0.5));
+      float a = smoothstep(0.5, 0.1, r) * vA;
+      if (a < 0.02) discard;
+      gl_FragColor = vec4(0.78, 0.94, 1.0, a);
+    }`
+});
+const dust = new THREE.Points(dustGeo, dustMat);
+dust.frustumCulled = false;
+scene.add(dust);
+
+// ── состояние ──────────────────────────────────────────────────────────────
+let seed = 4242, mode = 'level', singleType = TY.CANYON;
+let params = {};                       // правки параметров одиночного чанка
+let live = new Map();                  // index → { obj, helpers }
+let plan = [], curIdx = 0, camMode = 0, paused = false, flyT = 0, tsec = 0;
+let totalPts = 0, totalMs = 0, badCount = 0;
+const DBG = { corridor: false, colliders: false, cull: true, edges: true, dust: true };
+
+// ── ГЕНЕРАТОР: Worker если можно, иначе главный поток ──────────────────────
+// Worker обязателен для ИГРЫ (там 40 мс в кадре недопустимы), но для редактора —
+// нет: тут никто не летит на 300 юнитах в секунду. Поэтому если Worker недоступен
+// (страница открыта файлом с диска — на file:// воркеры запрещены), считаем на месте
+// и раскладываем по кадрам, чтобы интерфейс не подвисал. Раньше я на этом месте
+// показывал экран с ошибкой — это было лишнее требование к инструменту.
+let worker = null, localMgr = null, queue = [], draining = false;
+
+function initGen() {
+  try {
+    worker = new Worker('world-worker.js');
+    worker.onmessage = e => {
+      const m = e.data;
+      if (m.cmd === 'plan') { plan = m.plan; renderPlan(); requestWindow(true); }
+      else if (m.cmd === 'chunkReady') addChunk(m);
+    };
+    // Ошибка приходит асинхронно (например, воркер не смог загрузить world.js) —
+    // тогда молча переходим на главный поток, а не показываем тупик пользователю.
+    worker.onerror = () => { worker = null; document.getElementById('mMode').textContent = 'ГЛ. ПОТОК'; genInit(); };
+  } catch (e) { worker = null; }
+  document.getElementById('mMode').textContent = worker ? 'WORKER' : 'ГЛ. ПОТОК';
+  genInit();
+}
+function genInit() {
+  if (worker) { worker.postMessage({ cmd: 'init', seed: seed, count: 40 }); return; }
+  localMgr = W.makeManager(seed, 40);
+  plan = localMgr.plan.map(c => ({ id: c.id, index: c.index, type: c.type, seed: c.seed,
+    phase: c.phase, length: c.length, zStart: c.zStart, zEnd: c.zEnd,
+    difficulty: c.difficulty, risk: c.risk, corridorW: c.corridorW }));
+  renderPlan(); requestWindow(true);
+}
+function genChunk(index, lod) {
+  if (worker) { worker.postMessage({ cmd: 'chunk', index: index, lod: lod }); return; }
+  queue.push({ index: index, lod: lod });
+  if (!draining) drain();
+}
+// по одному чанку на кадр: 40 мс заметны, но интерфейс остаётся живым
+function drain() {
+  draining = true;
+  const job = queue.shift();
+  if (!job) { draining = false; return; }
+  const ch = localMgr.build(job.index, job.lod);
+  addChunk({ index: job.index, lod: job.lod, positions: ch.positions, colors: ch.colors,
+    sizes: ch.sizes, featureMask: ch.featureMask, colliders: ch.colliders,
+    corridor: ch.corridor.map(p => ({ t: p.t, x: p.x, y: p.y, z: p.z, r: p.r })),
+    valid: ch.valid.ok, fallback: !!ch.fallback, stats: ch.stats });
+  requestAnimationFrame(drain);
+}
+
+// ── сборка меша чанка из готовых массивов ──────────────────────────────────
+function addChunk(m) {
+  dropChunk(m.index);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(m.positions, 3));
+  g.setAttribute('aCol', new THREE.BufferAttribute(m.colors, 3));
+  g.setAttribute('aSize', new THREE.BufferAttribute(m.sizes, 1));
+  g.setAttribute('aMask', new THREE.BufferAttribute(Float32Array.from(m.featureMask), 1));
+  const pts = new THREE.Points(g, pointMat);
+  pts.frustumCulled = false;
+  scene.add(pts);
+  const helpers = new THREE.Group();
+  scene.add(helpers);
+  // коридор (§28 «показать collision corridor»)
+  if (m.corridor && m.corridor.length) {
+    const cp = [];
+    m.corridor.forEach(p => cp.push(p.x, p.y, p.z));
+    const cg = new THREE.BufferGeometry();
+    cg.setAttribute('position', new THREE.Float32BufferAttribute(cp, 3));
+    const line = new THREE.Line(cg, new THREE.LineBasicMaterial({ color: m.valid ? 0x2be0c6 : 0xff5a3d, fog: false }));
+    line.name = 'corridor'; helpers.add(line);
+    // трубка коридора кольцами — видно ширину
+    m.corridor.forEach((p, i) => {
+      if (i % 3) return;
+      const rg = new THREE.BufferGeometry();
+      const rp = [];
+      for (let k = 0; k <= 18; k++) { const a = k / 18 * 6.2832;
+        rp.push(p.x + Math.cos(a) * p.r, p.y + Math.sin(a) * p.r, p.z); }
+      rg.setAttribute('position', new THREE.Float32BufferAttribute(rp, 3));
+      const rl = new THREE.Line(rg, new THREE.LineBasicMaterial({ color: 0x2be0c6, transparent: true, opacity: 0.2, fog: false }));
+      rl.name = 'corridor'; helpers.add(rl);
+    });
+  }
+  // коллайдеры (§18: отдельные примитивы, точки в коллизии не участвуют)
+  if (m.colliders) m.colliders.forEach(s => {
+    const mat = new THREE.LineBasicMaterial({ color: 0xffa23d, transparent: true, opacity: 0.5, fog: false });
+    if (s.k === 'cap') {
+      const gg = new THREE.BufferGeometry();
+      gg.setAttribute('position', new THREE.Float32BufferAttribute([s.a[0], s.a[1], s.a[2], s.b[0], s.b[1], s.b[2]], 3));
+      const l = new THREE.Line(gg, mat); l.name = 'collider'; helpers.add(l);
+    } else {
+      const rp = [];
+      const cy = Math.cos(s.yaw), sy = Math.sin(s.yaw);
+      for (let k = 0; k <= 24; k++) { const a = k / 24 * 6.2832;
+        const lx = Math.cos(a) * s.R, ly = Math.sin(a) * s.R;
+        rp.push(s.c[0] + lx * cy, s.c[1] + ly, s.c[2] - lx * sy); }
+      const gg = new THREE.BufferGeometry();
+      gg.setAttribute('position', new THREE.Float32BufferAttribute(rp, 3));
+      const l = new THREE.Line(gg, mat); l.name = 'collider'; helpers.add(l);
+    }
+  });
+  live.set(m.index, { pts: pts, helpers: helpers, stats: m.stats, valid: m.valid,
+    fallback: m.fallback, cor: m.corridor });
+  recount();
+  syncDebug();
+}
+function dropChunk(i) {
+  const e = live.get(i);
+  if (!e) return;
+  scene.remove(e.pts); e.pts.geometry.dispose();
+  e.helpers.traverse(o => { if (o.geometry) o.geometry.dispose(); });
+  scene.remove(e.helpers);
+  live.delete(i);
+}
+function recount() {
+  totalPts = 0; totalMs = 0; badCount = 0;
+  live.forEach(e => { totalPts += e.stats.points; totalMs += e.stats.ms; if (!e.valid || e.fallback) badCount++; });
+  document.getElementById('mPts').textContent = (totalPts / 1000).toFixed(0) + 'k';
+  document.getElementById('mCalls').textContent = live.size;
+  document.getElementById('mMs').textContent = totalMs.toFixed(0) + ' мс';
+  document.getElementById('mBad').textContent = badCount;
+}
+function rebuildAll() {
+  [...live.keys()].forEach(dropChunk);
+  wanted.clear(); queue.length = 0;
+  if (mode === 'single') showSingle(); else requestWindow(true);
+}
+function syncDebug() {
+  live.forEach(e => e.helpers.traverse(o => {
+    if (o.name === 'corridor') o.visible = DBG.corridor;
+    if (o.name === 'collider') o.visible = DBG.colliders;
+  }));
+  uni.uEdges.value = DBG.edges ? 1 : 0;
+  dust.visible = DBG.dust;
+}
+
+// ── окно стриминга (§19) ───────────────────────────────────────────────────
+let wanted = new Set();
+function requestWindow(force) {
+  if (!plan.length) return;
+  const C = W.CONFIG.world;
+  const from = Math.max(0, curIdx - C.behind), to = Math.min(plan.length - 1, curIdx + C.ahead);
+  const next = new Set();
+  for (let i = from; i <= to; i++) next.add(i);
+  // выгружаем лишнее
+  [...live.keys()].forEach(i => { if (!next.has(i)) dropChunk(i); });
+  next.forEach(i => {
+    const d = i - curIdx;
+    const lod = d <= 1 ? 0 : d === 2 ? 1 : d === 3 ? 2 : 3;
+    const key = i + ':' + lod;
+    if (!force && wanted.has(key) && live.has(i)) return;
+    if (live.has(i) && wanted.has(key)) return;
+    wanted.add(key);
+    genChunk(i, lod);
+  });
+  const p = plan[curIdx];
+  document.getElementById('tTitle').textContent = p.type + '  ·  ' + p.phase;
+  document.getElementById('tDesc').textContent = DESC[p.type] || '';
+  renderPlan();
+}
+
+function renderPlan() {
+  const box = document.getElementById('plan');
+  box.innerHTML = '';
+  plan.forEach((c, i) => {
+    const d = document.createElement('div');
+    d.textContent = String(i).padStart(2, '0') + ' ' + c.type + ' ' + c.length + (c.risk ? ' risk' : '');
+    if (i === curIdx) d.className = 'cur';
+    const e = live.get(i);
+    if (e && (!e.valid || e.fallback)) d.className += ' bad';
+    d.onclick = () => { curIdx = i; flyT = 0; requestWindow(true); };
+    box.appendChild(d);
+  });
+}
+
+// ── одиночный чанк: рисуем локально, без Worker (мгновенный отклик слайдеров) ─
+function showSingle() {
+  [...live.keys()].forEach(dropChunk);
+  const def = W.makeChunkDef({ index: 0, seed: seed, type: singleType,
+    phase: 'PRESSURE', progress: 0.6, firstTime: false, rng: W.makeRng(seed) });
+  Object.keys(params).forEach(k => { if (def.params[k] !== undefined) def.params[k] = params[k]; });
+  def.zStart = 0; def.zEnd = def.length;
+  def.axis = W.axisFor(def);
+  const ch = W.generateChunk(def, { lod: 0 });
+  addChunk({ index: 0, lod: 0, positions: ch.positions, colors: ch.colors, sizes: ch.sizes,
+    featureMask: ch.featureMask, colliders: ch.colliders,
+    corridor: ch.corridor.map(p => ({ t: p.t, x: p.x, y: p.y, z: p.z, r: p.r })),
+    valid: ch.valid.ok, fallback: false, stats: ch.stats });
+  plan = [{ id: def.id, index: 0, type: def.type, phase: def.phase, length: def.length,
+            zStart: 0, zEnd: def.length, risk: def.risk, corridorW: def.corridorW }];
+  curIdx = 0; flyT = 0;
+  document.getElementById('tTitle').textContent = def.type + (ch.valid.ok ? '' : '  ·  НЕВАЛИДЕН');
+  document.getElementById('tDesc').textContent = ch.valid.ok ? (DESC[def.type] || '')
+    : ch.valid.reasons.slice(0, 3).join(' · ');
+  renderPlan(); renderSliders(def);
+}
+
+// ── интерфейс ──────────────────────────────────────────────────────────────
+const typeBtns = document.getElementById('typeBtns');
+Object.keys(TY).forEach(k => {
+  const b = document.createElement('button');
+  b.textContent = k; b.dataset.k = k;
+  b.onclick = () => { singleType = TY[k]; params = {}; mode = 'single'; setMode(); };
+  typeBtns.appendChild(b);
+});
+function renderSliders(def) {
+  const box = document.getElementById('sliders');
+  box.innerHTML = '';
+  if (mode !== 'single' || !def) {
+    const r = document.createElement('div');
+    r.style.cssText = 'font-size:8.5px;opacity:.4;line-height:1.6';
+    r.textContent = 'Параметры правятся в режиме одного чанка — там видно, что меняет каждая цифра.';
+    box.appendChild(r); return;
+  }
+  Object.keys(def.params).forEach(k => {
+    const v = def.params[k];
+    if (typeof v !== 'number') return;
+    const row = document.createElement('div'); row.className = 'row';
+    const lab = document.createElement('label'); lab.textContent = k;
+    const inp = document.createElement('input');
+    inp.type = 'range'; inp.min = Math.max(0, v * 0.3); inp.max = v * 2.2 + 1; inp.step = (v > 4 ? 1 : 0.02); inp.value = v;
+    const val = document.createElement('div'); val.className = 'val';
+    val.textContent = (v > 4 ? v.toFixed(0) : v.toFixed(2));
+    inp.oninput = () => { params[k] = +inp.value; val.textContent = (+inp.value > 4 ? (+inp.value).toFixed(0) : (+inp.value).toFixed(2)); showSingle(); };
+    row.append(lab, inp, val); box.appendChild(row);
+  });
+}
+const dbgBox = document.getElementById('dbgBox');
+const DBG_LBL = { corridor: 'Коридор полёта', colliders: 'Коллайдеры',
+                  cull: 'Не рисовать невидимые точки', edges: 'Акцентные точки',
+                  dust: 'Атмосфера (пыль)' };
+Object.keys(DBG).forEach(k => {
+  const l = document.createElement('label'); l.className = 'chk';
+  const i = document.createElement('input'); i.type = 'checkbox'; i.checked = DBG[k];
+  i.onchange = () => {
+    DBG[k] = i.checked;
+    // отсечение меняет саму геометрию — чанки надо пересобрать
+    if (k === 'cull') { W.CONFIG.cull.enabled = i.checked; rebuildAll(); }
+    syncDebug();
+  };
+  const s = document.createElement('span'); s.textContent = DBG_LBL[k];
+  l.append(i, s); dbgBox.appendChild(l);
+});
+function setMode() {
+  document.getElementById('bLevel').classList.toggle('alt', mode !== 'level');
+  document.getElementById('bSingle').classList.toggle('alt', mode !== 'single');
+  [...typeBtns.children].forEach(b => b.classList.toggle('on', mode === 'single' && TY[b.dataset.k] === singleType));
+  if (mode === 'single') showSingle();
+  else { [...live.keys()].forEach(dropChunk); wanted.clear(); queue.length = 0; renderSliders(null);
+         genInit(); }
+}
+document.getElementById('bLevel').onclick = () => { mode = 'level'; setMode(); };
+document.getElementById('bSingle').onclick = () => { mode = 'single'; setMode(); };
+document.getElementById('bReseed').onclick = () => { seed = (Math.random() * 1e6) | 0; params = {}; setMode(); };
+document.getElementById('bCopy').onclick = () => {
+  const p = plan[curIdx] || {};
+  const out = JSON.stringify({ id: p.id || (singleType.toLowerCase() + '_0'), type: p.type || singleType,
+    length: p.length, difficulty: p.difficulty, seed: seed, params: params }, null, 2);
+  if (navigator.clipboard) navigator.clipboard.writeText(out); else console.log(out);
+};
+
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { paused = !paused; e.preventDefault(); return; }
+  if (e.key === 'c' || e.key === 'C' || e.key === 'с') { camMode = (camMode + 1) % 3; return; }
+  if (e.key === 'r' || e.key === 'R' || e.key === 'к') { document.getElementById('bReseed').click(); return; }
+  if (e.key === 'h' || e.key === 'H' || e.key === 'р') {
+    const u = document.getElementById('ui'); u.style.display = u.style.display === 'none' ? '' : 'none'; return;
+  }
+  if (e.key === 'ArrowRight') { curIdx = Math.min(plan.length - 1, curIdx + 1); flyT = 0; if (mode === 'level') requestWindow(true); }
+  if (e.key === 'ArrowLeft') { curIdx = Math.max(0, curIdx - 1); flyT = 0; if (mode === 'level') requestWindow(true); }
+});
+addEventListener('resize', () => {
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  uni.uPx.value = innerHeight;
+});
+
+// ── цикл: камера идёт по коридору текущего чанка ───────────────────────────
+const clock = new THREE.Clock();
+let fps = 60, acc = 0;
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, clock.getDelta());
+  tsec += dt;
+  const e = live.get(curIdx);
+  const cor = e && e.corridorPts;
+  if (!paused) flyT += dt * 0.075;
+  if (flyT > 1) {
+    flyT = 0;
+    if (mode === 'level' && curIdx < plan.length - 1) { curIdx++; requestWindow(); }
+  }
+  const p = plan[curIdx];
+  if (p) {
+    const zc = p.zStart + (p.zEnd - p.zStart) * flyT;
+    if (camMode === 0) {
+      // ПРОЛЁТ ПО КОРИДОРУ: главный режим — ровно то, что увидит игрок.
+      // Высоту берём из самого коридора, а не константой: иначе на обрыве и в
+      // каверне камера уезжает в породу. И это же допущение использует отсечение
+      // невидимых точек (глаз над трассой) — иначе вырезалось бы не то, что не видно.
+      const e = live.get(curIdx);
+      let cx = 0, cy = 26;
+      if (e && e.cor && e.cor.length) {
+        const i = Math.min(e.cor.length - 1, Math.max(0, Math.round(flyT * (e.cor.length - 1))));
+        cx = e.cor[i].x; cy = e.cor[i].y + W.CONFIG.cull.eyeUp * 0.55;
+      }
+      camera.position.set(cx + Math.sin(tsec * 0.13) * 5, cy, zc + 30);
+      camera.lookAt(cx, cy - 12, zc - 150);
+    } else if (camMode === 1) {
+      const a = tsec * 0.12, R = 190;
+      camera.position.set(Math.cos(a) * R, 96, zc + Math.sin(a) * R);
+      camera.lookAt(0, 16, zc);
+    } else {
+      camera.position.set(0, 330, zc + 60);
+      camera.lookAt(0, 0, zc - 40);
+    }
+  }
+  // пыль следует за камерой: иначе она кончается через один чанк
+  dust.position.z = camera.position.z - 300;
+  dustMat.uniforms.uT.value = tsec;
+  renderer.render(scene, camera);
+  const f = dt > 0 ? 1 / dt : 60;
+  fps += (f - fps) * 0.08; acc += dt;
+  if (acc > 0.25) { acc = 0; document.getElementById('mFps').textContent = Math.round(fps); }
+}
+
+initGen();
+setMode();
+loop();
+</script>
+</body>
+</html>
