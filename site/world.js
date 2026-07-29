@@ -75,7 +75,9 @@ const CONFIG = {
   // §12: плотность НЕ равномерная. Вдоль коридора густо, на периферии редко —
   // это и даёт детализацию без роста общего числа точек.
   density: {
-    base: 0.53,            // шаг сетки у самого коридора (юнитов между точками)
+    base: 0.47,            // шаг сетки у самого коридора; 0.53→0.47 (29.07): исправленное
+                           // отсечение снимает ~37% невидимых точек — экономию возвращаем
+                           // в плотность видимых поверхностей
     farMul: 3.4,           // во сколько раз шаг крупнее на периферии
     nearBand: 46,          // полуширина «густой» полосы вокруг маршрута
     farBand: 105,          // где плотность выходит на минимум
@@ -729,14 +731,27 @@ function generateChunk(def, opts) {
   const CS = 2.4;                                    // шаг кэша
   const cx0 = Math.min(def.center(0)[0], def.center(0.5)[0], def.center(1)[0]) - HW - CS * 2;
   const cx1 = Math.max(def.center(0)[0], def.center(0.5)[0], def.center(1)[0]) + HW + CS * 2;
+  // КЭШ ПРОДЛЁН НАЗАД в предыдущий чанк (rowsPrev строк при z<0): луч «точка→глаз»
+  // идёт к камере, то есть НАЗАД по трассе, и раньше обрывался на границе чанка —
+  // сосед не мог заслонить дальний рельеф, отсюда «видно сквозь пространство».
+  const CU = CONFIG.cull;
+  const prevDef = opts && opts.prevDef;
+  const PREV = prevDef ? Math.min(CU.eyeBack + 20, def.zStart - prevDef.zStart) : 0;
+  const rowsPrev = Math.ceil(PREV / CS);
+  const prevF = prevDef ? chunkField(prevDef) : null;
   const CW = Math.ceil((cx1 - cx0) / CS) + 2, CH = Math.ceil(L / CS) + 3;
-  const cache = new Float32Array(CW * CH);
+  const cache = new Float32Array(CW * (CH + rowsPrev));
+  for (let r = 0; r < rowsPrev; r++) {               // хвост предыдущего чанка
+    const zw = def.zStart - PREV + r * CS;
+    const tp = clamp01((zw - prevDef.zStart) / prevDef.length);
+    for (let c2 = 0; c2 < CW; c2++) cache[r * CW + c2] = prevF.floorBase(cx0 + c2 * CS, tp);
+  }
   for (let r = 0; r < CH; r++) {
     const t = clamp01((r * CS) / L);
-    for (let c2 = 0; c2 < CW; c2++) cache[r * CW + c2] = F.floorBase(cx0 + c2 * CS, t);
+    for (let c2 = 0; c2 < CW; c2++) cache[(rowsPrev + r) * CW + c2] = F.floorBase(cx0 + c2 * CS, t);
   }
-  const baseAt = (x, zLoc) => {                      // билинейно из кэша
-    const fx = clamp((x - cx0) / CS, 0, CW - 2), fz = clamp(zLoc / CS, 0, CH - 2);
+  const baseAt = (x, zLoc) => {                      // билинейно из кэша; zLoc ∈ [−PREV, L]
+    const fx = clamp((x - cx0) / CS, 0, CW - 2), fz = clamp((zLoc + PREV) / CS, 0, CH + rowsPrev - 2);
     const ix = fx | 0, iz = fz | 0, ux = fx - ix, uz = fz - iz;
     const i0 = iz * CW + ix, i1 = i0 + CW;
     return cache[i0] * (1 - ux) * (1 - uz) + cache[i0 + 1] * ux * (1 - uz)
@@ -744,24 +759,27 @@ function generateChunk(def, opts) {
   };
 
   // ── ОТСЕЧЕНИЕ НЕВИДИМОГО ────────────────────────────────────────────────
-  // «Глаз» — там, где будет камера: над коридором и чуть позади. Летим на −z,
-  // поэтому камера всегда со стороны БОЛЬШЕГО z относительно точки.
-  const CU = CONFIG.cull;
+  // «Глаз» — там, где будет камера: над коридором и ПОЗАДИ по трассе, то есть на
+  // МЕНЬШЕМ мировом z (корабль движется в +z, камера за ним). Раньше здесь стояло
+  // «камера со стороны большего z» — экранные координаты были перепутаны с
+  // мировыми, и проверка смотрела с обратной стороны: ближние к камере скаты
+  // отсекались, дальние (которых не видно) рисовались. Это и было «видно сквозь
+  // пространство»: ближняя поверхность разрежена, задняя нарисована.
   const eyeYAt = zLoc => {                                  // высота глаза над трассой
     const t = clamp01(zLoc / L);
     const i = Math.min(corridor.length - 1, Math.round(t * (corridor.length - 1)));
     return corridor[i].y + CU.eyeUp;
   };
-  // 1) ЗАДНИЙ СКАТ. Нормаль поля высот ∝ (−dh/dx, 1, −dh/dz). Вектор на глаз
-  //    смотрит в +z. Если скалярное произведение отрицательное, поверхность
-  //    отвёрнута от камеры — этот склон не виден НИКОГДА, и именно его вырезание
-  //    даёт слоистые силуэты гребней, как на референсе.
-  // 2) ГОРИЗОНТ. Шагаем от точки к глазу и смотрим, не поднимается ли рельеф выше
-  //    луча зрения. Поднимается — точка в «тени» ближнего гребня, её не видно.
+  const VZ_EYE = -CU.eyeBack;   // к камере = назад по трассе (меньший z)
+  // 1) ЗАДНИЙ СКАТ. Нормаль поля высот ∝ (−dh/dx, 1, −dh/dz). Если скалярное
+  //    произведение с направлением на глаз отрицательное — склон отвёрнут от
+  //    камеры и не виден НИКОГДА; его вырезание даёт слоистые силуэты гребней.
+  // 2) ГОРИЗОНТ. Шагаем от точки к глазу (назад по трассе, через хвост соседнего
+  //    чанка) и смотрим, не поднимается ли рельеф выше луча — закрыт гребнем.
   function visible(px, py, pzLoc, hx, hz) {
     if (!CU.enabled) return true;
     const eyeY = eyeYAt(pzLoc);
-    const vz = CU.eyeBack, vy = eyeY - py;                   // вектор точка → глаз
+    const vz = VZ_EYE, vy = eyeY - py;                       // вектор точка → глаз
     const nDotV = (-hz / (2 * CS)) * vz + vy;                // N·V без члена по x (глаз над осью)
     if (nDotV < CU.backface * Math.hypot(vy, vz)) return false;
     if (!CU.horizon) return true;
@@ -769,7 +787,7 @@ function generateChunk(def, opts) {
     for (let s = 1; s <= CU.steps; s++) {
       const k = s / CU.steps;
       const sz = pzLoc + vz * k;
-      if (sz > L) break;
+      if (sz < -PREV) break;
       const rayY = py + vy * k;
       if (baseAt(px, sz) > rayY + 1.2) return false;
     }
@@ -904,7 +922,7 @@ function generateChunk(def, opts) {
         const sL = (h - row0[c2 - 1]) / CS, sR = (row0[c2 + 1] - h) / CS;
         const d2 = (row0[c2 - 1] - 2 * h + row0[c2 + 1]) / CS;
         const hz2 = rowN[c2] - rowP[c2];
-        const vy = eyeY - h, vz = CU.eyeBack;
+        const vy = eyeY - h, vz = VZ_EYE;   // к камере = назад по трассе, как в visible()
         const nv = ((-hz2 / (2 * CS)) * vz + vy) / Math.hypot(vy, vz);
         let k = -1;
         // 1) силуэтная полоса: скользящий луч на заметном рельефе (не на плоском дне)
@@ -1144,8 +1162,11 @@ function makeManager(seed, count) {
     // §30: не прошёл валидацию — перегенерируем с другим seed, иначе fallback
     build: function (i, lod) {
       let def = plan[i];
+      // сосед сзади нужен для межчанкового заслонения: луч «точка→глаз» уходит
+      // назад по трассе, и без хвоста соседа дальний рельеф просвечивал сквозь ближний
+      const prevDef = i > 0 ? plan[i - 1] : null;
       for (let attempt = 0; attempt < 4; attempt++) {
-        const ch = generateChunk(def, { lod: lod });
+        const ch = generateChunk(def, { lod: lod, prevDef: prevDef });
         if (ch.valid.ok) return ch;
         def = makeChunkDef({ index: def.index, seed: (def.seed + 7919 * (attempt + 1)) | 0,
           type: def.type, phase: def.phase, progress: def.index / plan.length,
@@ -1158,7 +1179,7 @@ function makeManager(seed, count) {
         phase: plan[i].phase, progress: 0.1, firstTime: false, rng: makeRng(plan[i].seed) });
       fb.zStart = plan[i].zStart; fb.zEnd = plan[i].zEnd; fb.length = plan[i].length;
       fb.axis = axisFor(fb);
-      const ch = generateChunk(fb, { lod: lod });
+      const ch = generateChunk(fb, { lod: lod, prevDef: prevDef });
       ch.fallback = true;
       return ch;
     }

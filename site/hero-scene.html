@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game34';</script>
+<script>window.PD_V = 'b2807-game35';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3934,9 +3934,15 @@ function enterGame() {
   // probe.floor зависит и стартовая высота корабля, и коллизия с первого кадра.
   if (NEW_WORLD) {
     const seed = (Date.now() ^ (Math.random() * 1e6)) | 0;
-    // шаг сетки делим на корень из множителя: точек становится ровно в DENS_MUL раз больше
-    PDWorld.CONFIG.density.base = 0.53 / Math.sqrt(DENS_MUL);
-    PDWorld.CONFIG.density.budget = Math.round(420000 * DENS_MUL);
+    // шаг сетки делим на корень из множителя: точек становится ровно в DENS_MUL раз
+    // больше. База — ДЕФОЛТ МОДУЛЯ, а не число здесь: захардкоженный 0.53 однажды
+    // молча перетёр обновлённую плотность world.js при каждом входе в игру.
+    if (window.__densBase0 === undefined) {
+      window.__densBase0 = PDWorld.CONFIG.density.base;
+      window.__densBudget0 = PDWorld.CONFIG.density.budget;
+    }
+    PDWorld.CONFIG.density.base = __densBase0 / Math.sqrt(DENS_MUL);
+    PDWorld.CONFIG.density.budget = Math.round(__densBudget0 * DENS_MUL);
     const mgr = PDWorld.makeManager(seed, 60);
     WORLD = { seed: seed, mgr: mgr, probe: PDWorld.makeHeightProbe(mgr.plan),
               wk: null, pending: {}, inflight: 0 };
