@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game36';</script>
+<script>window.PD_V = 'b2807-game37';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3364,13 +3364,17 @@ function gBuildWorldMesh(ch, index, lod) {
   const mask = new Float32Array(ch.featureMask.length);
   for (let i = 0; i < mask.length; i++) mask[i] = ch.featureMask[i];
   g.setAttribute('aMask', new THREE.BufferAttribute(mask, 1));
-  const pts = new THREE.Points(g, gWorldMat());
+  // СВОЙ ЭКЗЕМПЛЯР МАТЕРИАЛА НА ЧАНК (шейдер и программа общие — клон делит GLSL).
+  // Раньше материал был один на всех, а uFade подставлялся в onBeforeRender —
+  // это НЕ РАБОТАЛО: three r128 заливает юниформы в GPU один раз на МАТЕРИАЛ за
+  // кадр, а не на объект. Все чанки рисовались с одним последним значением, фейд
+  // и материализация молча не действовали — чанк «появлялся сразу полностью».
+  const mat = gWorldMat().clone();
+  const pts = new THREE.Points(g, mat);
   pts.frustumCulled = false;
   const grp = new THREE.Group();
-  // Материал общий на весь мир, но юниформы заливаются перед КАЖДЫМ draw call —
-  // поэтому «своё» значение фейда для чанка подставляем здесь, не плодя материалы.
   pts.onBeforeRender = function () {
-    wMat.uniforms.uFade.value = (grp.userData.fade === undefined ? 1 : grp.userData.fade) * worldEnvFade;
+    mat.uniforms.uFade.value = (grp.userData.fade === undefined ? 1 : grp.userData.fade) * worldEnvFade;
   };
   grp.scale.z = -1;
   grp.add(pts);
@@ -3472,6 +3476,12 @@ function gSpawnAhead() {
         WORLD.inflight++;
         WORLD.wk.postMessage({ cmd: 'chunk', index: i, lod: lod });
       } else {
+        // Без Worker (file:// его блокирует) чанк считается прямо в кадре — это
+        // 60-110 мс фриза. Не чаще четырёх раз в секунду: между рывками кадры
+        // успевают пройти плавно, окно всё равно заполняется за пару секунд.
+        const nowMs = performance.now();
+        if (nowMs - (WORLD.lastSync || 0) < 260) return;
+        WORLD.lastSync = nowMs;
         gAddWorldChunk(gMakeWorldChunk(i, lod));
       }
       return;                       // не больше одной заявки за кадр
