@@ -246,16 +246,20 @@ function planLevel(seed, count) {
                'COMBINATION', 'PRESSURE', 'CLIMAX'];
   const n = count || 40;
   for (let i = 0; i < n; i++) {
-    const phase = seq[Math.min(seq.length - 1, Math.floor(i / 2))];
-    const prog = i / n;                       // 0..1 — общее усложнение
+    // ФАЗЫ ИДУТ ВОЛНАМИ ПО КРУГУ (29.07): раньше seq обрезалась на CLIMAX и всё
+    // после 16-го чанка было одной бесконечной кульминацией — владелец справедливо
+    // не увидел «описанного разнообразия дальше по уровню». Теперь ритм манифеста
+    // (вход → давление → разгрузка → кульминация) повторяется весь уровень.
+    const phase = seq[Math.floor(i / 2) % seq.length];
+    const prog = clamp01(i / 44);             // сложность выходит на максимум к ~40-му чанку
     let type;
 
     if (i === 0) type = T.TRANSITION;
     else if (phase === 'INTRO') type = r() < 0.5 ? T.TRANSITION : T.CANYON;
-    else if (phase === 'RELEASE' || sinceRest >= 3) type = T.TRANSITION;
+    else if (phase === 'RELEASE' || sinceRest >= 4) type = T.TRANSITION;
     // РИТМ КОНТРАСТА (манифест): после тесноты — распахнутое пространство.
     // Узкий проход, а сразу за ним пустота, читается сильнее любой детализации.
-    else if (lastNarrow && r() < 0.65) type = T.TRANSITION;
+    else if (lastNarrow && r() < 0.5) type = T.TRANSITION;
     else {
       // словарь растёт по фазам: приёмы вводятся по одному
       let pool = [T.CANYON, T.SPIRES];

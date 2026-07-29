@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game39';</script>
+<script>window.PD_V = 'b2807-game40';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3995,7 +3995,10 @@ function enterGame() {
     }
     PDWorld.CONFIG.density.base = __densBase0 / Math.sqrt(DENS_MUL);
     PDWorld.CONFIG.density.budget = Math.round(__densBudget0 * DENS_MUL);
-    const mgr = PDWorld.makeManager(seed, 60);
+    // 240 чанков ≈ 48 тыс. юнитов ≈ 4-6 минут полёта: уровень практически не
+    // кончается (владелец долетал до конца шестидесяти). Генерация ленивая —
+    // план на 240 это просто описания, геометрия строится по мере полёта.
+    const mgr = PDWorld.makeManager(seed, 240);
     WORLD = { seed: seed, mgr: mgr, probe: PDWorld.makeHeightProbe(mgr.plan),
               wk: null, pending: {}, inflight: 0 };
     // Worker считает геометрию, главный поток только заливает в GPU. План уровня
@@ -4012,7 +4015,7 @@ function enterGame() {
         gAddWorldChunk(gBuildWorldMesh(m, m.index, m.lod));
       };
       wk.onerror = function () { if (WORLD) { WORLD.wk = null; } };  // молча на главный поток
-      wk.postMessage({ cmd: 'init', seed: seed, count: 60, dens: DENS_MUL });
+      wk.postMessage({ cmd: 'init', seed: seed, count: 240, dens: DENS_MUL });
       WORLD.wk = wk;
     } catch (err) { /* Worker недоступен — считаем в главном потоке */ }
   }
@@ -4436,11 +4439,15 @@ function updateGame(dt, time) {
     const tud = GAME.trail.userData, tp = GAME.trail.geometry.attributes.position, tc = GAME.trail.geometry.attributes.color;
     const th = Math.min(1, GAME.speed / 190);
     const rzS = GAME.ship.rotation.z, cosR = Math.cos(rzS), sinR = Math.sin(rzS);
-    const LIFE = 0.24;   // струя гаснет близко к соплам, а не тянется шлейфом
+    // ФАКЕЛ ОЧЕНЬ КОРОТКИЙ (29.07, по запросу: «пикселов 15»). Струя живёт в системе
+    // КОРАБЛЯ (без +dz — раньше компенсация скорости мира растягивала её в длинный
+    // шлейф до самой камеры), скорость крошечная: вылет ~0.3 юнита ≈ 15px у сопла.
+    // Вихри с крыльев остаются мировыми следами (им +dz положен) и живут дольше.
+    const LIFE_JET = 0.15, LIFE_VOR = 0.3;
     if (!GAME.over) {
-      // спиральная плазма: 6 частиц на сопло за кадр вдоль пути кадра, каждая со своей
-      // фазой и радиусом закрутки — струя выглядит вращающимся жгутом, а не пунктиром
-      const jetV = 15 + th * 18;   // короче вылет — плотнее и аккуратнее факел
+      // спиральная плазма: 6 частиц на сопло за кадр, каждая со своей фазой и
+      // радиусом закрутки — плотный вращающийся факел у самого сопла
+      const jetV = 1.8 + th * 1.6;
       const stepZ = jetV * dt / 6;
       for (let eI = 0; eI < SHIP_ENGINES.length; eI++) {
         const e = SHIP_ENGINES[eI];
@@ -4471,17 +4478,17 @@ function updateGame(dt, time) {
     }
     const spinT = time * 21;
     for (let iT = 0; iT < tud.N; iT++) {
-      if (tud.ages[iT] > LIFE) continue;
-      tud.ages[iT] += dt;
-      tud.bz[iT] += tud.vz[iT] * dt + dz;
-      // ЧАСТИЦА У КАМЕРЫ = ГИГАНТСКАЯ КЛЯКСА. Выхлоп получает +dz (компенсацию
-      // скорости мира) и на 300 км/ч пролетает СКВОЗЬ камеру (z≈17): PointsMaterial
-      // с аттенюацией раздувает точку у объектива в пятно на полэкрана — это и были
-      // мягкие круги по всему кадру. Гасим заранее и убиваем не долетев.
-      if (tud.bz[iT] > 8) { tud.ages[iT] = LIFE + 1; tp.setXYZ(iT, 0, -9999, 0); tc.setXYZ(iT, 0, 0, 0); continue; }
-      const nearK = 1 - clamp01((tud.bz[iT] - 4) / 4);   // плавное затухание с z=4 до z=8
-      const aT = Math.max(0, 1 - tud.ages[iT] / LIFE) * nearK;
       const vor = tud.rad[iT] < 0;                     // вихрь с крыла
+      const life = vor ? LIFE_VOR : LIFE_JET;
+      if (tud.ages[iT] > life) continue;
+      tud.ages[iT] += dt;
+      // струя — в системе корабля (короткий факел), вихри — мировые следы (+dz)
+      tud.bz[iT] += tud.vz[iT] * dt + (vor ? dz : 0);
+      // ЧАСТИЦА У КАМЕРЫ = ГИГАНТСКАЯ КЛЯКСА: вихри с +dz пролетают сквозь камеру
+      // (z≈17), PointsMaterial с аттенюацией раздувает их у объектива. Гасим заранее.
+      if (tud.bz[iT] > 8) { tud.ages[iT] = life + 1; tp.setXYZ(iT, 0, -9999, 0); tc.setXYZ(iT, 0, 0, 0); continue; }
+      const nearK = 1 - clamp01((tud.bz[iT] - 4) / 4);   // плавное затухание с z=4 до z=8
+      const aT = Math.max(0, 1 - tud.ages[iT] / life) * nearK;
       const rr = Math.abs(tud.rad[iT]) * (1 + tud.ages[iT] * (vor ? 9 : 4)); // спираль раскрывается конусом
       const aH = tud.ph[iT] + (vor ? spinT * 0.35 : spinT);
       tp.setXYZ(iT, tud.bx[iT] + Math.cos(aH) * rr,
@@ -4500,7 +4507,8 @@ function updateGame(dt, time) {
         const e = SHIP_ENGINES[eI];
         const ex = e[0] * cosR - e[1] * sinR, ey = e[0] * sinR + e[1] * cosR;
         for (let k2 = 0; k2 < 3; k2++) {
-          const off = (1.5 + k2 * 1.4) * (0.55 + th * 0.75);
+          // диски прижаты к соплу — факел теперь очень короткий (~0.3 юнита)
+          const off = (0.28 + k2 * 0.3) * (0.5 + th * 0.55);
           dp.setXYZ(di, GAME.shipP.x + ex, GAME.shipP.y + ey, GAME.shipP.z + e[2] + off);
           const fD = (GAME.over ? 0 : th) * (0.6 + 0.4 * Math.sin(time * 26 + di * 2.2)) * (1 - k2 * 0.27);
           dc.setXYZ(di, 1.15 * fD, 0.82 * fD, 0.5 * fD);
