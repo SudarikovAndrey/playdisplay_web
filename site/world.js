@@ -253,6 +253,9 @@ function planLevel(seed, count) {
     if (i === 0) type = T.TRANSITION;
     else if (phase === 'INTRO') type = r() < 0.5 ? T.TRANSITION : T.CANYON;
     else if (phase === 'RELEASE' || sinceRest >= 3) type = T.TRANSITION;
+    // РИТМ КОНТРАСТА (манифест): после тесноты — распахнутое пространство.
+    // Узкий проход, а сразу за ним пустота, читается сильнее любой детализации.
+    else if (lastNarrow && r() < 0.65) type = T.TRANSITION;
     else {
       // словарь растёт по фазам: приёмы вводятся по одному
       let pool = [T.CANYON, T.SPIRES];
@@ -300,9 +303,13 @@ function makeChunkDef(o) {
   // тип задаёт «характер» — вот здесь и живёт разница ситуаций
   switch (o.type) {
     case T.TRANSITION:
+      // ОТРИЦАТЕЛЬНОЕ ПРОСТРАНСТВО (манифест): переход — это передышка и пустота.
+      // Плотность вдвое ниже (densMul), стены низкие, рельеф приглушён (см.
+      // chunkField). Несколько секунд почти над пустотой — чтобы следующая стена
+      // или тоннель ударили масштабом.
       def.corridorW = lerp(52, 40, d); def.sway = 16; def.curve = 1.1;
-      def.vertical = 0.5; def.yBase = 20;
-      def.params = { wallH: lerp(26, 44, d), landmark: r() < 0.7 };
+      def.vertical = 0.5; def.yBase = 20; def.densMul = 0.5;
+      def.params = { wallH: lerp(14, 26, d), landmark: r() < 0.7 };
       break;
     case T.CANYON:
       def.corridorW = lerp(46, 30, d); def.sway = 22; def.curve = 1.6;
@@ -330,10 +337,13 @@ function makeChunkDef(o) {
         holeR: lerp(13, 9, d), count: 1 + (r() < 0.35 ? 1 : 0) };
       break;
     case T.SPIRES:
+      // ОДИН ГЕРОЙ НА КАДР (манифест): вместо 7-16 случайных игл — один гигант
+      // или группа из трёх. Они ориентиры, их игрок запоминает; масштаб важнее
+      // количества. Выше, толще, почти без наклона — монументы, не частокол.
       def.corridorW = lerp(48, 34, d); def.sway = 24; def.curve = 1.7;
       def.vertical = 0.6; def.yBase = 18;
-      def.params = { count: Math.round(lerp(7, 16, d)), hMin: 22, hMax: lerp(52, 78, d),
-        lean: lerp(0.12, 0.34, r()), cap: lerp(0.2, 0.6, r()) };
+      def.params = { count: r() < 0.45 ? 1 : 3, hMin: 46, hMax: lerp(84, 124, d),
+        lean: lerp(0.06, 0.16, r()), cap: lerp(0.2, 0.6, r()) };
       break;
     case T.CLIFF:
       def.corridorW = lerp(50, 38, d); def.sway = 14; def.curve = 1.0;
@@ -500,7 +510,10 @@ function chunkField(def) {
       // пики внутри неё съедали просвет (тест ловил 10 непроходимых чанков из 40).
       // В каверне оставляем немного — как фактуру дна зала, но не как форму.
       const sky = def.type === T.TUNNEL ? 0 : (def.type === T.CAVERN ? 0.25 : 1);
-      const relFar = (0.28 + 0.72 * smoothstep(w * 0.7, w * 2.4, Math.abs(dxTrue))) * sky;
+      // в переходах рельеф приглушён (манифест: пустота, небольшие холмы) —
+      // дальний подъём к горизонту при этом полный: «пара далёких силуэтов»
+      const relType = def.type === T.TRANSITION ? 0.45 : 1;
+      const relFar = (0.28 + 0.72 * smoothstep(w * 0.7, w * 2.4, Math.abs(dxTrue))) * sky * relType;
       h += ridged(x * 0.0075, zw * 0.0075, 5, 2.4) * 48 * relFar;
       h += ridged(x * 0.021 + 37, zw * 0.021 + 11, 3, 3.2) * 15 * relFar;
       h += smoothstep(w * 2.0, CONFIG.world.halfWidth, Math.abs(dxTrue)) * 58 * sky
@@ -568,26 +581,30 @@ function chunkField(def) {
     // ПЕРЕМЫЧКА поперёк пропасти. Палуба идёт ВЫШЕ линии полёта: пролетаем под
     // мостом, как на референсе. Отсчёт от оси, а не от пола — пол в этом месте
     // провален на 70, и от него палуба оказалась бы на уровне трассы.
+    // Палуба продлена в берега (0.5 → 0.62 ширины), а опоры идут ДО ФАКТИЧЕСКОГО
+    // ПОЛА: раньше они обрывались на фиксированных 34 юнитах, дно же провалено на
+    // 70 — мост висел в воздухе без связи с землёй.
     const y = a[1] + P.deckH;
-    addCap([a[0] - P.gapW * 0.5, y, zc], [a[0] + P.gapW * 0.5, y, zc], P.thick, 'deck');
-    // опоры вниз, в пропасть — читается как каменный мост, а не парящая палка
+    addCap([a[0] - P.gapW * 0.62, y, zc], [a[0] + P.gapW * 0.62, y, zc], P.thick, 'deck');
     for (const s of [-1, 1]) {
       const x = a[0] + s * P.gapW * 0.34;
-      addCap([x, y - 1, zc], [x, y - 34, zc + (r() - 0.5) * 8], P.thick * 0.8, 'pier');
+      const ground = F.floor(x, t) - 4;          // чуть В пол — опора «врастает»
+      addCap([x, y - 1, zc], [x, ground, zc + (r() - 0.5) * 8], P.thick * 0.8, 'pier');
     }
   }
   if (def.type === T.SPIRES) {
+    // герой-шпиль: один по центру чанка или тройка кластером; толще и выше,
+    // отступ от коридора больше (радиус вырос — иначе валидация зарубит)
     for (let i = 0; i < P.count; i++) {
-      const t = 0.1 + 0.8 * ((i + 0.5) / P.count);
+      const t = P.count === 1 ? 0.5 : 0.36 + 0.28 * i + (r() - 0.5) * 0.08;
       const a = C(t);
-      // §6.6 слалом: иглы по бокам коридора, середина всегда свободна
       const side = (i % 2 ? 1 : -1);
-      const off = def.corridorW * (0.62 + r() * 0.55) * side;
-      const x = a[0] + off, zc = def.zStart + t * L + (r() - 0.5) * 20;
+      const off = def.corridorW * (0.85 + r() * 0.6) * side;
+      const x = a[0] + off, zc = def.zStart + t * L + (r() - 0.5) * 14;
       const fy = F.floor(x, t);
-      const ht = lerp(P.hMin, P.hMax, r());
+      const ht = lerp(P.hMin, P.hMax, r()) * (P.count === 1 ? 1.15 : 1);
       const lx = (r() - 0.5) * 2 * P.lean * ht, lz = (r() - 0.5) * 2 * P.lean * ht;
-      addCap([x, fy - 3, zc], [x + lx, fy + ht, zc + lz], 2.6 + r() * 2, 'spire');
+      addCap([x, fy - 6, zc], [x + lx, fy + ht, zc + lz], 5 + r() * 3.5, 'spire');
     }
   }
   if (def.type === T.CAVERN && P.pillar) {
@@ -709,7 +726,8 @@ function generateChunk(def, opts) {
   const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
   const lod = (opts && opts.lod) || 0;
   const D = CONFIG.density;
-  const stepMul = D.lodStep[Math.min(3, lod)];
+  // densMul<1 — разреженный тип (переходы-пустоты): шаг сетки крупнее в 1/√densMul
+  const stepMul = D.lodStep[Math.min(3, lod)] / Math.sqrt(def.densMul || 1);
   const edgeK = D.lodEdges[Math.min(3, lod)];
 
   def.axis = def.axis || axisFor(def);

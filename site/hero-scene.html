@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game35';</script>
+<script>window.PD_V = 'b2807-game36';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3268,13 +3268,17 @@ function gWorldMat() {
       // §25: дальние точки очень мелкие, иначе fill rate съедает всё
       '  float sz = aSize * clamp(78.0 / max(d, 7.0), 0.22, 2.6);',
       '  float f = 1.0 - smoothstep(uFogN, uFogF, d);',
-      '  vA = f * uFade;',   // мягкое проявление чанка + общий фейд входа/выхода
       // КРОМКИ (aMask=2) меньше тают в дымке и чуть крупнее: на референсе именно
       // ДАЛЬНИЕ гребни светятся цепочками — слоистые силуэты. Обычная заливка
       // гаснет с дистанцией как раньше, контур остаётся читаемым.
       '  float edge = step(1.5, aMask) * (1.0 - step(2.5, aMask));',
       '  sz *= 1.0 + edge * 0.4;',
       '  vCol *= mix(0.34 + 0.66 * f * f, 0.6 + 0.4 * f, edge);',
+      // МАТЕРИАЛИЗАЦИЯ: чанк проявляется этапами — СНАЧАЛА контур (первые ~60%
+      // фейда), ПОТОМ заливка (после 30%). Пространство «возникает» перед игроком:
+      // далёкий силуэт → линии → поверхность, а не выскакивает целиком.
+      '  float aStage = mix(clamp((uFade - 0.3) / 0.7, 0.0, 1.0), clamp(uFade * 1.7, 0.0, 1.0), edge);',
+      '  vA = f * aStage;',
       '  gl_Position = projectionMatrix * mv;',
       '  gl_PointSize = clamp(sz * uPx * 0.0022, 0.5, 7.0);',
       '}'
@@ -3419,15 +3423,17 @@ function gWorldRewards(grp, ch, def) {
 function gAddWorldChunk(grp) {
   if (!GAME.on || !GAME.group) return;         // успели выйти из игры — чанк уже не нужен
   // АПГРЕЙД LOD: чанк с этим индексом уже мог стоять — он был собран на дальнем краю
-  // окна (LOD похуже) и теперь заменяется свежим, более плотным. Старую геометрию
-  // снимаем и освобождаем явно (материал общий на весь мир — его не трогаем).
+  // окна (LOD похуже) и теперь заменяется свежим, более плотным. КРОССФЕЙД: раньше
+  // старая геометрия сносилась мгновенно, а новая начинала проявляться с нуля —
+  // на подлёте это выглядело рывком («на стене прям появляется группа точек»).
+  // Теперь старая помечается dying и гаснет, пока новая проявляется; сносим её,
+  // когда фейд дошёл до нуля (см. цикл фейдов в updateGame).
   const idx = grp.userData.wIndex;
   for (let i = GAME.chunks.length - 1; i >= 0; i--) {
-    if (GAME.chunks[i].userData.wIndex === idx) {
-      const old = GAME.chunks[i];
-      GAME.group.remove(old);
-      if (old.userData.cloud && old.userData.cloud.geometry) old.userData.cloud.geometry.dispose();
-      GAME.chunks.splice(i, 1);
+    const c = GAME.chunks[i];
+    if (c.userData.wIndex === idx && !c.userData.dying) {
+      c.userData.dying = true;
+      c.userData.faded = false;   // возвращаем в цикл фейдов — теперь на затухание
     }
   }
   GAME.group.add(grp);
@@ -3441,7 +3447,8 @@ function gSpawnAhead() {
     const C = PDWorld.CONFIG.world;
     const cur = WORLD.probe.chunkAt(GAME.z);
     const have = {};
-    for (let i = 0; i < GAME.chunks.length; i++) have[GAME.chunks[i].userData.wIndex] = GAME.chunks[i];
+    for (let i = 0; i < GAME.chunks.length; i++)
+      if (!GAME.chunks[i].userData.dying) have[GAME.chunks[i].userData.wIndex] = GAME.chunks[i];
     const to = Math.min(WORLD.mgr.plan.length - 1, cur + C.ahead);
     for (let i = Math.max(0, cur - C.behind); i <= to; i++) {
       if (WORLD.pending[i]) continue;
@@ -4214,19 +4221,38 @@ function updateGame(dt, time) {
   // игры, те гасят/зажигают весь мир своим общим множителем и сюда бы просто не дали дойти
   if (GAME.enter >= 1 && GAME.exit < 0) {
     worldEnvFade = 1;
-    for (const c of GAME.chunks) {
-      if (c.userData.faded) continue;
-      const kf = smoothstep(0, 0.7, time - (c.userData.spawnTime || 0));
-      if (NEW_WORLD && WORLD) {                 // новый мир: фейд через юниформу
+    if (NEW_WORLD && WORLD) {
+      // новый мир: фейд через юниформу. Проявление длиннее (1.4с) — вместе с этапной
+      // материализацией в шейдере (сначала контуры, потом заливка) даёт «пространство
+      // возникает перед игроком», а не выскакивает. Умирающие (заменённые апгрейдом
+      // LOD) гаснут параллельно и сносятся, когда фейд дошёл до нуля — кроссфейд.
+      for (let ci = GAME.chunks.length - 1; ci >= 0; ci--) {
+        const c = GAME.chunks[ci];
+        if (c.userData.dying) {
+          c.userData.fade = (c.userData.fade === undefined ? 1 : c.userData.fade) - dt / 0.6;
+          if (c.userData.fade <= 0) {
+            GAME.chunks.splice(ci, 1);
+            GAME.group.remove(c);
+            c.traverse(o => { if (o.geometry) o.geometry.dispose();
+                              if (o.material && o.material !== wMat && o.material !== gFallMat) o.material.dispose(); });
+          }
+          continue;
+        }
+        if (c.userData.faded) continue;
+        const kf = smoothstep(0, 1.4, time - (c.userData.spawnTime || 0));
         c.userData.fade = kf;
         if (kf >= 1) c.userData.faded = true;
-        continue;
       }
-      c.traverse(o => {
-        if (o.isPoints && o.material && o.material !== gFallMat && o.userData.baseOp !== undefined)
-          o.material.opacity = o.userData.baseOp * kf;
-      });
-      if (kf >= 1) c.userData.faded = true;
+    } else {
+      for (const c of GAME.chunks) {
+        if (c.userData.faded) continue;
+        const kf = smoothstep(0, 0.7, time - (c.userData.spawnTime || 0));
+        c.traverse(o => {
+          if (o.isPoints && o.material && o.material !== gFallMat && o.userData.baseOp !== undefined)
+            o.material.opacity = o.userData.baseOp * kf;
+        });
+        if (kf >= 1) c.userData.faded = true;
+      }
     }
   }
   // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной;
