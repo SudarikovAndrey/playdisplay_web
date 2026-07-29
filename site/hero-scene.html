@@ -621,7 +621,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game30';</script>
+<script>window.PD_V = 'b2807-game31';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3054,6 +3054,42 @@ function gMakeChunk(zNoise) {
 
 // коллектибл: ЕДИНЫЙ узнаваемый образ — «энергоядро»: яркое янтарное ядро в тонком тиловом
 // кольце + световой столб к земле (маяк виден издалека, объект читается как ценный предмет)
+// Материал наград с ПОТОЛКОМ экранного размера. У PointsMaterial с sizeAttenuation
+// точка возле камеры раздувается в гигантское размытое пятно на весь кадр — те самые
+// «кляксы». На референсе кольца и маяки — маленькие аккуратные окружности на любой
+// дистанции. Свой атрибут aCol, не color: инъекция color в сырой ShaderMaterial —
+// недокументированное поведение THREE (уже обжигались). uOp копируется из
+// material.opacity в onBeforeRender — все существующие фейды (сбор, выход из игры)
+// продолжают работать как писали: через material.opacity.
+function gBeaconMat(size, maxPx) {
+  const m = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uSize: { value: size }, uPx: { value: innerHeight },
+                uMax: { value: maxPx }, uOp: { value: 0.95 } },
+    vertexShader: [
+      'attribute vec3 aCol; varying vec3 vCol;',
+      'uniform float uSize, uPx, uMax;',
+      'void main() {',
+      '  vCol = aCol;',
+      '  vec4 mv = modelViewMatrix * vec4(position, 1.0);',
+      '  gl_Position = projectionMatrix * mv;',
+      '  gl_PointSize = clamp(uSize * uPx * 0.5 / max(-mv.z, 1.0), 1.0, uMax);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying vec3 vCol; uniform float uOp;',
+      'void main() {',
+      '  float d = length(gl_PointCoord - vec2(0.5));',
+      '  float a = smoothstep(0.5, 0.24, d) * uOp;',
+      '  if (a < 0.02) discard;',
+      '  gl_FragColor = vec4(vCol, a);',
+      '}'
+    ].join('\n')
+  });
+  m.opacity = 0.95;
+  return m;
+}
+
 function gMakeOrb(seed) {
   const p = [], c = [];
   function push(x, y, z, r, g, b, k) { p.push(x, y, z); c.push(r * k, g * k, b * k); }
@@ -3076,10 +3112,11 @@ function gMakeOrb(seed) {
   }
   const og = new THREE.BufferGeometry();
   og.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
-  og.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-  const om = new THREE.PointsMaterial({ vertexColors: true, size: 0.3, transparent: true, opacity: 0.95,
-    map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
-  return new THREE.Points(og, om);
+  og.setAttribute('aCol', new THREE.Float32BufferAttribute(c, 3));
+  const om = gBeaconMat(0.3, 9);   // потолок 9px: вблизи не раздувается в пятно
+  const pts = new THREE.Points(og, om);
+  pts.onBeforeRender = function () { om.uniforms.uOp.value = om.opacity; };
+  return pts;
 }
 
 // кольцо-ускоритель: обруч из мелких точек с янтарными маяками по ободу
@@ -3096,10 +3133,11 @@ function gMakeRing(seed) {
   }
   const og = new THREE.BufferGeometry();
   og.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
-  og.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-  const om = new THREE.PointsMaterial({ vertexColors: true, size: 0.22, transparent: true, opacity: 0.95,
-    map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
-  return new THREE.Points(og, om);
+  og.setAttribute('aCol', new THREE.Float32BufferAttribute(c, 3));
+  const om = gBeaconMat(0.22, 6);  // кольцо — чёткая тонкая окружность, не гирлянда пятен
+  const pts = new THREE.Points(og, om);
+  pts.onBeforeRender = function () { om.uniforms.uOp.value = om.opacity; };
+  return pts;
 }
 
 // БАЛКА-ПРЕПЯТСТВИЕ (28.07, по эскизам «завалившихся колонн» и мостов-арок): облако точек
@@ -3247,6 +3285,51 @@ function gWorldMat() {
     ].join('\n')
   });
   return wMat;
+}
+
+// ── ЗАДНИК: дальние хребты-силуэты («слойность»: несколько слоёв точек создают
+// параллакс). За fog-дистанцией мира (660) раньше была пустота — голый горизонт.
+// Три слоя цепочек точек в ЭКРАННЫХ координатах (прямые дети GAME.group, без
+// scale.z=−1): они не едут с рельефом, как настоящие горы на горизонте, а
+// параллакс от манёвров корабля получается сам собой из перспективы — камера
+// смещается, дальние слои сдвигаются меньше ближних. sizeAttenuation:false —
+// у задника постоянный пиксельный размер, ему не положено «приближаться».
+function gMakeBackdrop() {
+  const grp = new THREE.Group();
+  for (let k = 0; k < 3; k++) {
+    const p = [], c = [];
+    const zP = -(430 + k * 170);
+    const N = 1100 - k * 220;
+    const amp = 44 - k * 8, base = 24 + k * 16;
+    for (let i = 0; i < N; i++) {
+      const x = -780 + 1560 * (i + gHash(i, k) * 0.6) / N;
+      // профиль хребта: крупная волна + мелкая изрезанность (те же шумы, что у мира)
+      const yR = base + (gNoise(x * 0.006 + k * 37, k * 11) * 0.75
+                       + gNoise(x * 0.021 + k * 53, k * 7) * 0.25) * amp;
+      // сама линия хребта — ярче
+      p.push(x, yR + (gHash(i, k) - 0.5) * 1.4, zP + (gHash(k, i) - 0.5) * 30);
+      const b = (0.34 - k * 0.08) * (0.7 + 0.6 * gHash(i * 3, k));
+      c.push(b * 0.72, b * 1.0, b * 1.02);
+      // редкая заливка под линией — тусклее, глубже
+      if (gHash(i, k + 9) < 0.55) {
+        const yF = yR - 1.5 - Math.pow(gHash(i * 7, k), 2) * 28;
+        p.push(x + (gHash(i, k + 4) - 0.5) * 7, yF, zP + (gHash(k + 4, i) - 0.5) * 30);
+        const f = b * 0.4;
+        c.push(f * 0.72, f * 1.0, f * 1.02);
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+    const m = new THREE.PointsMaterial({ vertexColors: true, size: 2.4 - k * 0.55,
+      sizeAttenuation: false, transparent: true, opacity: 0.55 - k * 0.13,
+      map: gSoftTex(), blending: THREE.AdditiveBlending, depthWrite: false });
+    const pts = new THREE.Points(g, m);
+    pts.userData.baseOp = m.opacity;   // фейды входа/выхода читают baseOp
+    pts.frustumCulled = false;
+    grp.add(pts);
+  }
+  return grp;
 }
 
 // Сборка чанка нового мира.
@@ -3878,6 +3961,8 @@ function enterGame() {
   _galleryVis = scene.children.map(o => [o, o.visible]);
   GAME.group = new THREE.Group();
   scene.add(GAME.group);
+  // задник дальних хребтов — только в новом мире (палитра и горизонт под него)
+  if (NEW_WORLD && WORLD) { GAME.backdrop = gMakeBackdrop(); GAME.group.add(GAME.backdrop); }
   GAME.ship = gMakeShip();
   GAME.group.add(GAME.ship);
   GAME.trail = gMakeTrail();
@@ -3987,7 +4072,7 @@ function exitGame() {
   GAME.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
   GAME.group = null; GAME.chunks = []; GAME.ship = null; GAME.anims = []; GAME.debris = null; GAME.trail = null;
   GAME.diam = null; GAME.shipEdges = null; GAME.shipFill = null; GAME.shipGlow = null; GAME.shipLights = null; GAME.shipNozz = null;
-  GAME.streaks = null; GAME.chainLine = null;
+  GAME.streaks = null; GAME.chainLine = null; GAME.backdrop = null;
   if (WORLD && WORLD.wk) { try { WORLD.wk.terminate(); } catch (e) {} }
   WORLD = null;   // план уровня, кэш полей и Worker живут только внутри полёта
   // инерционный сдвиг HUD не должен пережить выход (панели вернутся на свои места)
@@ -4200,7 +4285,9 @@ function updateGame(dt, time) {
     const bs = o.userData.baseScale || 1;
     const pk = o.userData.rare ? 0.14 : 0.07;
     o.scale.setScalar(bs * (1 + pk * Math.sin(time * 3 + o.userData.ph)));
-    o.material.size = 0.3 * bs + 0.05 * Math.sin(time * 3 + o.userData.ph);
+    // размер точек дышит через юниформу: у наград теперь ShaderMaterial с потолком
+    // экранного размера (см. gBeaconMat), material.size у него нет
+    if (o.material.uniforms) o.material.uniforms.uSize.value = 0.3 * bs + 0.05 * Math.sin(time * 3 + o.userData.ph);
     const wz = o.position.z + c.position.z;
     // кандидат в нить маршрута: ядро впереди корабля и в пределах видимости камеры
     if (wz < GAME.shipP.z + 2 && wz > GAME.shipP.z - 135)
