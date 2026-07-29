@@ -80,6 +80,14 @@
   #game-score { font-size: 46px; font-weight: 800; letter-spacing: -.02em; line-height: 1;
     font-variant-numeric: tabular-nums; text-shadow: 0 2px 24px rgba(0,0,0,.5); }
   #game-label { font-size: 9px; letter-spacing: .3em; opacity: .55; margin-top: 6px; text-transform: uppercase; transition: opacity .3s; }
+  /* СПАЙС: оранжевый круглый значок + счёт тем же моноширинным шрифтом, под энергией */
+  #game-spice { margin-top: 10px; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+  #game-spice i { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto;
+    background: radial-gradient(circle at 38% 34%, #ffd9a0 0%, #ff9a3d 45%, #c65a10 100%);
+    box-shadow: 0 0 10px rgba(255, 154, 61, 0.75); }
+  #game-spice b { font-size: 22px; font-weight: 800; letter-spacing: -.01em; line-height: 1;
+    color: #ffa14e; font-family: inherit; }
+  #game-spice b.pop { animation: gScorePop .4s cubic-bezier(.2,1.6,.4,1); }
   #game-score { transform-origin: right top; } /* пульс растёт влево-вниз, не за край экрана */
   #game-score.pop { animation: gScorePop .5s cubic-bezier(.2,1.6,.4,1); }
   @keyframes gScorePop {
@@ -431,6 +439,7 @@
 <div id="game-hud">
   <div id="game-score">0</div>
   <div id="game-label">ЭНЕРГИЯ СОБРАНА</div>
+  <div id="game-spice"><i></i><b id="game-spice-num">0</b></div>
   <div id="game-exit">КЛИК ИЛИ ESC — ВЕРНУТЬСЯ В ПОРТФОЛИО</div>
 </div>
 <!-- МОБИЛА: на тач-экране палец занят рулём корабля, кликом-по-сцене (как на компе) выйти
@@ -621,7 +630,7 @@
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game40';</script>
+<script>window.PD_V = 'b2807-game41';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3141,6 +3150,78 @@ function gMakeOrb(seed) {
   return pts;
 }
 
+// СПАЙС: облако оранжевых частиц, парящих в воздухе. Собирается «пылесосом» —
+// частицы затягиваются к кораблю с дистанции (см. gSpiceUpdate). Форма — гауссов
+// сгусток со спиральной закруткой и жаром к центру: живая взвесь, не шар.
+function gMakeSpice(seed, n) {
+  const p = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  for (let k = 0; k < n; k++) {
+    const a = gHash(k, seed) * 6.2832, b = Math.acos(2 * gHash(seed, k) - 1);
+    const rr = Math.pow(gHash(k * 3, seed), 0.55) * (3.4 + gHash(seed, k * 7) * 2.4);
+    const x = Math.sin(b) * Math.cos(a) * rr * 1.5, y = Math.cos(b) * rr * 0.7,
+          z = Math.sin(b) * Math.sin(a) * rr;
+    const tw = y * 0.4, cw = Math.cos(tw), sw = Math.sin(tw);   // спиральная закрутка
+    p[k * 3] = x * cw - z * sw; p[k * 3 + 1] = y; p[k * 3 + 2] = x * sw + z * cw;
+    const heat = Math.pow(1 - Math.min(1, rr / 5.8), 1.5);      // к центру жарче
+    const br = 0.5 + 0.8 * heat + 0.25 * gHash(k, seed + 9);
+    col[k * 3] = 1.2 * br; col[k * 3 + 1] = (0.48 + 0.34 * heat) * br; col[k * 3 + 2] = 0.14 * br;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(p, 3));
+  g.setAttribute('aCol', new THREE.BufferAttribute(col, 3));
+  const m = gBeaconMat(0.22, 6);
+  m.opacity = 0.9;
+  const pts = new THREE.Points(g, m);
+  pts.onBeforeRender = function () { m.uniforms.uOp.value = m.opacity; };
+  pts.userData = { isSpice: true, home: p.slice(), state: new Uint8Array(n), n: n, alive: n, baseOp: 0.9 };
+  return pts;
+}
+
+// СПАЙС-ПЫЛЕСОС: частицы в радиусе затягиваются к кораблю (ближе — резко быстрее),
+// у корпуса исчезают и капают в счётчик. Дальние облака не обсчитываются вовсе.
+const SPICE_SUCK = 15, SPICE_EAT = 2.6;
+function gSpiceUpdate(o, chunkGrp, dt, time) {
+  o.material.opacity = 0.72 + 0.18 * Math.sin(time * 2.2 + o.position.x); // мерцание взвеси
+  const wzC = chunkGrp.position.z - o.position.z;      // экранный z центра облака
+  if (wzC > 14 || wzC < -90 || !o.userData.alive) return;
+  const pa = o.geometry.attributes.position, arr = pa.array;
+  const st = o.userData.state, home = o.userData.home, n = o.userData.n;
+  // корабль в ЛОКАЛЬНЫХ координатах облака (мировые оси, сдвиг на позицию облака)
+  const sx = GAME.shipP.x - o.position.x, sy = GAME.shipP.y - o.position.y, szl = GAME.z - o.position.z;
+  let moved = false, got = 0;
+  for (let k = 0; k < n; k++) {
+    if (st[k]) continue;
+    const i3 = k * 3;
+    const dx = sx - arr[i3], dy = sy - arr[i3 + 1], dzp = szl - arr[i3 + 2];
+    const d2 = dx * dx + dy * dy + dzp * dzp;
+    if (d2 > SPICE_SUCK * SPICE_SUCK) {
+      // корабль ушёл — частица дрейфует обратно к своему месту в облаке
+      const hx = home[i3] - arr[i3], hy = home[i3 + 1] - arr[i3 + 1], hz = home[i3 + 2] - arr[i3 + 2];
+      if (hx * hx + hy * hy + hz * hz > 0.01) {
+        arr[i3] += hx * dt * 1.6; arr[i3 + 1] += hy * dt * 1.6; arr[i3 + 2] += hz * dt * 1.6;
+        moved = true;
+      }
+      continue;
+    }
+    const d = Math.sqrt(d2) || 1;
+    if (d < SPICE_EAT) { st[k] = 1; arr[i3 + 1] = -99999; got++; moved = true; continue; }
+    const pull = 1 - d / SPICE_SUCK;
+    const v = (24 + 150 * pull * pull) * dt / d;   // пылесос: у корпуса всасывает резко
+    arr[i3] += dx * v; arr[i3 + 1] += dy * v; arr[i3 + 2] += dzp * v;
+    moved = true;
+  }
+  if (moved) pa.needsUpdate = true;
+  if (got) {
+    o.userData.alive -= got;
+    GAME.spice = (GAME.spice || 0) + got * 10;     // частица = 10 спайса: счёт сотнями
+    if (gameSpiceNum) {
+      gameSpiceNum.textContent = GAME.spice;
+      gameSpiceNum.classList.remove('pop'); void gameSpiceNum.offsetWidth; gameSpiceNum.classList.add('pop');
+    }
+    if (time - (GAME._spiceSndT || 0) > 0.15) { Sound.sfx('collect', 1); GAME._spiceSndT = time; }
+  }
+}
+
 // кольцо-ускоритель: двойной обод с яркими янтарными маяками — портал, а не пунктир
 function gMakeRing(seed) {
   const p = [], c = [];
@@ -3433,13 +3514,43 @@ function gWorldRewards(grp, ch, def) {
     // пятна во весь кадр. Со сдвигом за ними надо тянуться: и читается чище, и играть
     // осмысленнее (§16: награда за отклонение от безопасной линии).
     const side = (k % 2 ? 1 : -1);
-    orb.position.set(c.x + side * (9 + r() * 10), c.y + (r() - 0.5) * 12, c.z);
+    // ВЫСОТА — ТРИ ЭТАЖА (29.07): все награды жались к линии полёта, и в глубокие
+    // провалы не было смысла спускаться. Треть ядер — низко над дном (нырок в
+    // разлом), четверть — высоко над трассой, остальные у линии полёта.
+    const fl = (c.floor != null && isFinite(c.floor)) ? c.floor : null;
+    const ce = (c.ceil != null && isFinite(c.ceil)) ? c.ceil : null;
+    const mode = r();
+    let oy;
+    if (mode < 0.33 && fl != null && c.y - fl > 18) oy = fl + 7 + r() * 5;
+    else if (mode < 0.58) oy = c.y + 13 + r() * 13;
+    else oy = c.y + (r() - 0.5) * 10;
+    if (ce != null) oy = Math.min(oy, ce - 5);
+    orb.position.set(c.x + side * (9 + r() * 10), oy, c.z);
     orb.userData.isOrb = true;
     orb.userData.baseY = orb.position.y;
     orb.userData.ph = r() * 6.28;
     orb.userData.spin = 0.7 + r() * 1.1;
     if (r() > 0.88) { orb.userData.rare = true; orb.userData.baseScale = 1.5; }
     grp.add(orb);
+  }
+  // СПАЙС: 1-2 облака на чанк, тоже по этажам — половина прячется в провалах и
+  // на высоте: пылесосом собирать выгодно того, кто меняет эшелон
+  const nSp = 1 + (r() < 0.5 ? 1 : 0);
+  for (let k = 0; k < nSp; k++) {
+    const t = 0.15 + 0.7 * r();
+    const ci = Math.min(cor.length - 1, Math.round(t * (cor.length - 1)));
+    const c = cor[ci];
+    const fl = (c.floor != null && isFinite(c.floor)) ? c.floor : null;
+    const ce = (c.ceil != null && isFinite(c.ceil)) ? c.ceil : null;
+    const mode = r();
+    let sy;
+    if (mode < 0.35 && fl != null && c.y - fl > 20) sy = fl + 8 + r() * 6;
+    else if (mode < 0.6) sy = c.y + 15 + r() * 14;
+    else sy = c.y + (r() - 0.5) * 10;
+    if (ce != null) sy = Math.min(sy, ce - 6);
+    const sp = gMakeSpice((def.seed ^ 0x5b1c) + k * 131, 80 + Math.floor(r() * 60));
+    sp.position.set(c.x + (r() - 0.5) * 30, sy, c.z);
+    grp.add(sp);
   }
   if (r() > 0.55) {
     const ci = Math.round((0.42 + r() * 0.3) * (cor.length - 1));
@@ -4079,6 +4190,7 @@ function enterGame() {
     GAME.group.add(cl);
   })();
   GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1;
+  GAME.spice = 0; if (gameSpiceNum) gameSpiceNum.textContent = '0';
   GAME.shipP.set(0, 16, 0);
   // кольцо в небе (как в референсах): гигантская дуга из точек
   (function ring() {
@@ -4114,6 +4226,7 @@ function restartGame() {
   GAME.over = false; GAME.overT = 0; GAME.score = 0; GAME.speed = 60; GAME.hurtT = 0;
   document.body.classList.remove('over');
   GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1; GAME.z0 = GAME.z;
+  GAME.spice = 0; if (gameSpiceNum) gameSpiceNum.textContent = '0';
   GAME.grace = 3; // 3 секунды неуязвимости, корабль мигает
   GAME.shipP.set(0, gTerrainH(0, GAME.z) + 30, 0);
   GAME.ship.visible = true; GAME.ship.scale.setScalar(1); gShipOpacity(1);
@@ -4349,6 +4462,7 @@ function updateGame(dt, time) {
   // Серия подряд собранных даёт комбо-множитель (приём аркад: строчка ведёт — комбо мотивирует)
   const _routeAhead = []; // ядра впереди по трассе — из них строится нить маршрута (ниже)
   for (const c of GAME.chunks) for (const o of c.children) {
+    if (o.userData.isSpice) { gSpiceUpdate(o, c, dt, time); continue; }
     if (o.userData.isRing && !o.userData.got) {
       o.rotation.z += dt * o.userData.spin;
       // ЭКРАННЫЙ z НАГРАДЫ. В новом мире группа чанка перевёрнута (scale.z = −1,
@@ -4746,6 +4860,7 @@ if (isMobile) (function(){
 })();
 
 const gameScore = document.getElementById('game-score');
+const gameSpiceNum = document.getElementById('game-spice-num');
 const gameDanger = document.getElementById('game-danger');
 const gameLabel = document.getElementById('game-label');
 const gameOnboard = document.getElementById('game-onboard');

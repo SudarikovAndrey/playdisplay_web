@@ -43,9 +43,10 @@ self.onmessage = function (e) {
       positions: ch.positions, colors: ch.colors, sizes: ch.sizes, featureMask: ch.featureMask,
       pointIndex: ix ? { cell: ix.cell, minX: ix.minX, z0: ix.z0, cols: ix.cols, rows: ix.rows,
                          start: ix.start, items: ix.items } : null,
-      // коллизия и коридор — обычные объекты, они мелкие
+      // коллизия и коридор — обычные объекты, они мелкие. floor/ceil нужны игре
+      // для наград на разных высотах (низко у дна провала / высоко над трассой)
       colliders: ch.colliders, corridor: ch.corridor.map(function (p) {
-        return { t: p.t, x: p.x, y: p.y, z: p.z, r: p.r };
+        return { t: p.t, x: p.x, y: p.y, z: p.z, r: p.r, floor: p.floor, ceil: isFinite(p.ceil) ? p.ceil : null };
       }),
       valid: ch.valid.ok, fallback: !!ch.fallback, stats: ch.stats
     }, ix ? [ch.positions.buffer, ch.colors.buffer, ch.sizes.buffer, ch.featureMask.buffer,

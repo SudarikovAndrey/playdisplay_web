@@ -834,13 +834,17 @@ function generateChunk(def, opts) {
   // 1) ЗАДНИЙ СКАТ. Нормаль поля высот ∝ (−dh/dx, 1, −dh/dz). Если скалярное
   //    произведение с направлением на глаз отрицательное — склон отвёрнут от
   //    камеры и не виден НИКОГДА; его вырезание даёт слоистые силуэты гребней.
+  //    ЧЛЕН ПО X ОБЯЗАТЕЛЕН (29.07): без него у БОКОВОЙ стены (нормаль вдоль x,
+  //    hz≈0) точки выше глаза давали nDotV = vy < 0 и вырезались целиком — корабль
+  //    разбивался о невидимую стену: коллизия по полной высоте, точек нет.
   // 2) ГОРИЗОНТ. Шагаем от точки к глазу (назад по трассе, через хвост соседнего
   //    чанка) и смотрим, не поднимается ли рельеф выше луча — закрыт гребнем.
-  function visible(px, py, pzLoc, hx, hz) {
+  function visible(px, py, pzLoc, hx, hz, ax) {
     if (!CU.enabled) return true;
     const eyeY = eyeYAt(pzLoc);
     const vz = VZ_EYE, vy = eyeY - py;                       // вектор точка → глаз
-    const nDotV = (-hz / (2 * CS)) * vz + vy;                // N·V без члена по x (глаз над осью)
+    const vx = (ax === undefined ? 0 : ax - px);             // глаз над осью трассы
+    const nDotV = (-hx / (2 * CS)) * vx + (-hz / (2 * CS)) * vz + vy;
     if (nDotV < CU.backface * Math.hypot(vy, vz)) return false;
     if (!CU.horizon) return true;
     // луч до глаза: если рельеф на пути выше луча — закрыт
@@ -885,7 +889,7 @@ function generateChunk(def, opts) {
       const hx = baseAt(jx + e, zLoc) - baseAt(jx - e, zLoc);
       const hz = baseAt(jx, clamp(zLoc + e, 0, L)) - baseAt(jx, clamp(zLoc - e, 0, L));
       const slope = Math.hypot(hx, hz) / (2 * e) * 2.2;   // ×2.2 — приведение к прежней шкале
-      if (!visible(jx, y, zLoc, hx, hz)) { culled++; x += stepX; continue; }
+      if (!visible(jx, y, zLoc, hx, hz, a[0])) { culled++; x += stepX; continue; }
       // прореживание крутых граней: сетка по (x,z) на стене, повёрнутой к камере,
       // даёт много точек на единицу ПЛОЩАДИ ЭКРАНА — вместе с аддитивным блендингом
       // это и была «сплошная белая стена». До 45% точек очень крутых граней снимаем.
@@ -995,7 +999,7 @@ function generateChunk(def, opts) {
         else if (d2 < -RG.curv && Math.max(Math.abs(sL), Math.abs(sR)) > 1.1) k = 0.7;
         if (k >= 0) {
           const y = h + F.micro(x, zw2);
-          if (visible(x, y, z, 0, hz2)) {
+          if (visible(x, y, z, (sL + sR) * CS, hz2, a[0])) {
             pushContour(x + (hash(x, z) - 0.5) * RG.jitter, y,
                         zw2 + (hash(z, x) - 0.5) * RG.jitter, k);
             // струя вниз от кромки/силуэта — прерывисто, как стекания на референсе.
@@ -1016,7 +1020,7 @@ function generateChunk(def, opts) {
         if (lod < 3 && Math.abs(sR) > 1.2) {
           const y2 = h + F.micro(x, zw2);
           const bd = y2 - Math.round(y2 / RG.band) * RG.band;
-          if (Math.abs(bd) < RG.bandEps && visible(x, y2, z, 0, hz2))
+          if (Math.abs(bd) < RG.bandEps && visible(x, y2, z, (sL + sR) * CS, hz2, a[0]))
             pushContour(x + (hash(x, z + 9) - 0.5) * 0.6, y2 - bd,
                         zw2 + (hash(z + 9, x) - 0.5) * 0.6, 0.35);
         }
