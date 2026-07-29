@@ -66,6 +66,24 @@ die()  { printf "\n  %s✗ %s%s\n\n" "$red" "$1" "$off" >&2; exit 1; }
 
 cd "$REPO" || die "не нахожу папку проекта"
 
+# Проверка rsync до всякой работы. На свежих macOS системный rsync заменён на
+# openrsync, который не знает --itemize-changes, --filter и --chmod. Выяснять это
+# посреди заливки на боевой сервер — плохая идея, поэтому пробуем флаги на пустых
+# папках заранее.
+# Путь к rsync можно задать в deploy.conf строкой RSYNC_BIN="/opt/homebrew/bin/rsync"
+RSYNC_BIN="${RSYNC_BIN:-rsync}"
+
+check_rsync() {
+  command -v "$RSYNC_BIN" >/dev/null || return 1
+  a="/tmp/pd-rsync-a-$$"; b="/tmp/pd-rsync-b-$$"
+  mkdir -p "$a" "$b"
+  "$RSYNC_BIN" -rltzc --omit-dir-times --chmod=D755,F644 --delete --itemize-changes \
+        --filter='-s .DS_Store' --dry-run "$a/" "$b/" >/dev/null 2>&1
+  rc=$?
+  rm -rf "$a" "$b"
+  return $rc
+}
+
 printf "%s\n%s  PlayDisplay → %s%s\n%s\n" \
   "════════════════════════════════════════════" "$bold" "$SITE_URL" "$off" \
   "════════════════════════════════════════════"
@@ -79,8 +97,12 @@ for L in .git/index.lock .git/HEAD.lock .git/objects/maintenance.lock \
   if [ -e "$L" ]; then
     # Лок моложе двух минут может принадлежать живому процессу — не трогаем.
     if [ -n "$(find "$L" -mmin +2 2>/dev/null)" ]; then
-      [ "$DRY" = 0 ] && rm -f "$L" && FREED=1
-      warn "снят залипший $L"
+      FREED=1
+      if [ "$DRY" = 0 ]; then
+        rm -f "$L" && warn "снят залипший $L"
+      else
+        warn "залипший $L — будет снят при настоящем запуске"
+      fi
     else
       die "$L создан только что — возможно, работает другой чат. Подожди минуту и повтори."
     fi
@@ -91,7 +113,10 @@ done
 # ══ 2. Ветка ══════════════════════════════════════════════════════════════════
 step "Проверяю ветку"
 BRANCH=$(git rev-parse --abbrev-ref HEAD) || die "это не git-репозиторий"
-[ "$BRANCH" = "$WORK_BRANCH" ] || die "рабочая копия на «$BRANCH», а работа идёт в «$WORK_BRANCH».
+# Фигурные скобки обязательны: bash 3.2 на macOS не разбирает многобайтные символы
+# в именах переменных, и в «$BRANCH» кавычка-ёлочка прилипает к имени — получается
+# несуществующая переменная, а с set -u это падение. В bash 5 работает и так.
+[ "$BRANCH" = "$WORK_BRANCH" ] || die "рабочая копия на «${BRANCH}», а работа идёт в «${WORK_BRANCH}».
      Ветку я не переключаю (правило 1) — сделай это сам и проверь, что ничего не потерялось:
        git status && git switch $WORK_BRANCH"
 ok "$BRANCH"
@@ -163,6 +188,16 @@ LAST=$(cat "$STATE" 2>/dev/null || true)
 step "Заливаю site/ на $SSH_HOST"
 [ -d "$REPO/site" ] || die "нет папки site/ — заливать нечего"
 
+RSYNC_VER=$("$RSYNC_BIN" --version 2>/dev/null | head -1 | tr -s ' ' | cut -d' ' -f1-3)
+[ -n "$RSYNC_VER" ] || RSYNC_VER="не найден ($RSYNC_BIN)"
+check_rsync || die "rsync на этой машине не понимает нужные флаги: $RSYNC_VER
+     Похоже, это openrsync — им на свежих macOS подменили настоящий rsync.
+     Лечится так:
+       brew install rsync
+     и затем добавить в deploy.conf строку с путём к нему, например:
+       RSYNC_BIN=\"/opt/homebrew/bin/rsync\""
+ok "rsync подходящий: $RSYNC_VER"
+
 # Что на сервере обязано выжить и никогда не удаляется:
 #   old/        — статичный слепок старого вордпресса, 244 МБ, живёт только на сервере
 #   .git/       — прежний git-клон; не нужен, но убирать его вручную и осознанно
@@ -197,7 +232,7 @@ ok "соединение есть"
 #       секунды». Быстрая сверка молча пропускает правку, если файл не изменился
 #       в размере и его правили в ту же секунду, что предыдущий деплой. Проверено:
 #       так теряется правка. Лишние секунды на сверку дешевле потерянной правки.
-RSYNC=(rsync -rltzc --omit-dir-times --chmod=D755,F644 --delete --itemize-changes
+RSYNC=("$RSYNC_BIN" -rltzc --omit-dir-times --chmod=D755,F644 --delete --itemize-changes
        "${EXCLUDES[@]}" -e "ssh ${SSH_OPTS[*]}" "$REPO/site/" "$TARGET:$REMOTE_PATH/")
 
 # Сначала всегда холостой прогон: показать, что изменится и что удалится.
