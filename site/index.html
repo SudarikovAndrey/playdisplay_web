@@ -939,6 +939,13 @@
     .foot-inner { flex-direction: column; align-items: flex-start; gap: 14px; padding: 34px 24px; }
   }
 
+  /* блок «на альфе»: клип на чёрном фоне без контейнера — screen убирает чёрный */
+  .v-alpha { display: flex; justify-content: center; align-items: center; padding: 8px 0 4px; }
+  .v-alpha video { width: min(58%, 520px); height: auto; display: block;
+    mix-blend-mode: screen; pointer-events: none; }
+  .v-alpha-cap { margin-top: 4px; text-align: center; font-size: 14px; color: var(--scan-white-dim); }
+  @media (max-width: 700px) { .v-alpha video { width: 78%; } }
+
   /* ---------- case viewer ---------- */
   /* фон непрозрачный: мы влетели ВГЛУБЬ проекта, галерея осталась позади камеры.
      blur убран совсем — он был главным пожирателем кадров при анимации прозрачности */
@@ -2400,7 +2407,7 @@
     { task:"sell", taskLabel:"Продать сложное", title:"Промышленность РФ", slug:"industry-rf", client:"Деп. промышленности", year:2023,
       img:AW+"industry-rf/site_ships_23_2-960x960.jpg", fb:IMG+"2026/01/site_ships_23_2-960x960.png",
       desc:"Интерактивные экспозиции для судостроительной отрасли: продукция и производственные процессы в наглядном цифровом формате.",
-      punch:"Отрасль, которую можно рассмотреть вблизи." },
+      video:["youtube","5_VFgpkQ6ms"], punch:"Отрасль, которую можно рассмотреть вблизи." },
     { task:"sell", taskLabel:"Продать сложное", title:"Аэропорты России", slug:"airports", client:"Форум «Россия»", year:2023, img:AW+"airports/site_airports_23-960x960.jpg", fb:IMG+"2026/01/site_airports_23-960x960.png", local:"videos/VDNH_airports.mp4", wi:11,
       desc:"Мультимедийные инсталляции для аэропортов: навигация, история и сервисы объединены в единую визуальную систему.",
       punch:"Пространство, которое ведёт за руку." },
@@ -2424,7 +2431,7 @@
       stats:[["VR","режим"],["Touch","экран"],["Hologram","витрина"]],
       desc:"Кастомизатор автомобиля для офиса продаж: VR, тачскрин и голограмма. Покупатель собирает свой X5 — диски, цвет, отделку салона — и смотрит его в футуристическом гараже или на пустынном шоссе, глазами водителя.",
       punch:"Машину, которую собрал сам, хочется купить." },
-    { task:"tell", taskLabel:"Рассказать", title:"Панорама 360", slug:"pano360", client:"Москва-Сити", year:2018, img:AW+"pano360/pano_bg-960x536.jpg", fb:IMG+"2020/04/pano_bg-960x536.jpg", video:["vimeo","412364504"], wi:3,
+    { task:"tell", taskLabel:"Рассказать", title:"Панорама 360", slug:"pano360", client:"Москва-Сити", year:2018, img:AW+"pano360/pano_bg-960x536.jpg", fb:IMG+"2020/04/pano_bg-960x536.jpg", video:["youtube","Ukbn_1TEG9U"], wi:3,
       desc:"Дополненная реальность 360°: зритель оказывается внутри сцены и осматривает пространство вокруг себя.",
       punch:"Не окно в историю, а вход в неё." },
     { task:"amaze", taskLabel:"Удивить", title:"Urban Forum 2018", slug:"urban-forum-2018", client:"Правительство Москвы", year:2018, img:AW+"urban-forum-2018/GERB_loop_poster.jpg", fb:IMG+"2020/04/GERB_loop.gif",
@@ -2433,7 +2440,7 @@
     { task:"tell", taskLabel:"Рассказать", title:"Пароль победы «Сталинград»", slug:"stalingrad", client:"Музей-заповедник", year:2018, img:AW+"stalingrad/stalingrad.jpg", fb:IMG+"2020/04/stalingrad.jpg", video:["youtube","IVmCylimRmY"], wi:4,
       desc:"Мультимедийная инсталляция памяти: история, которую посетитель проживает, а не читает. Свет, звук и интерактив создают тихое, сильное пространство.",
       punch:"Игра умеет говорить и о серьёзном." },
-    { task:"sell", taskLabel:"Продать сложное", title:"Сухой порт COALCO", slug:"coalco", client:"Coalco", year:2016, img:AW+"coalco/coalco.jpg", fb:IMG+"2020/04/coalco.jpg", video:["youtube","6ZBMB54713E"], local:"videos/coalco.mp4", wi:6,
+    { task:"sell", taskLabel:"Продать сложное", title:"Сухой порт COALCO", slug:"coalco", client:"Coalco", year:2016, img:AW+"coalco/coalco.jpg", fb:IMG+"2020/04/coalco.jpg", video:["youtube","bhYn2Mk_LqA"], local:"videos/coalco.mp4", wi:6,
       desc:"Интерактивная инсталляция логистического хаба: масштаб и работа сухого порта считываются с одного взгляда на живую 3D-модель.",
       punch:"Логистику видно, а не читаешь в буклете." },
     { task:"sell", taskLabel:"Продать сложное", title:"Синара", slug:"sinara", client:"Холдинг СТМ", year:2018, img:AW+"sinara/stm_cover2.jpg", fb:IMG+"2020/03/stm_cover2.jpg", video:["youtube","lfmqw20YzlY"], wi:5,
@@ -3412,7 +3419,21 @@
     // с playdisplay.com показываем в ленте полностью, ничего не теряем.
     var topEmbedId = (!c.local && c.video) ? c.video[1] : null;
     (p.flow || []).forEach(function(b){
-      if (b.t === 'yt' || b.t === 'vimeo') {
+      if (b.t === 'video') {
+        // локальный клип из site/videos — тот же, что крутится на старте в сцене
+        html += '<div class="vb"><div class="v-media"><video src="' + b.src + '"' +
+                (b.poster ? ' poster="' + b.poster + '"' : '') +
+                ' muted loop playsinline preload="metadata" controls></video></div>' +
+                (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
+      } else if (b.t === 'alpha') {
+        // Клип на чёрном фоне без рамки и подложки: режим наложения screen убирает
+        // чёрный полностью, поэтому объект висит «на альфе». Настоящая альфа в mp4
+        // невозможна, а webm с альфой не играет в Safari — screen работает везде.
+        html += '<div class="vb"><div class="v-alpha"><video src="' + b.src + '"' +
+                (b.poster ? ' poster="' + b.poster + '"' : '') +
+                ' muted loop playsinline autoplay preload="metadata"></video></div>' +
+                (b.caption ? '<p class="v-alpha-cap">' + b.caption + '</p>' : '') + '</div>';
+      } else if (b.t === 'yt' || b.t === 'vimeo') {
         if (!videoSkipped && topEmbedId && b.id === topEmbedId) { videoSkipped = true; return; }
         var src = b.t === 'yt' ? ytEmbed(b.id) : vimeoEmbed(b.id);
         html += '<div class="vb"><div class="v-embed"><iframe data-src="' + src + '" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>' +
