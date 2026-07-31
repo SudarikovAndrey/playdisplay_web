@@ -974,16 +974,28 @@
     font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--scan-white-dim); pointer-events: none; transition: opacity .35s; white-space: nowrap; }
   .v-scrub.touched .sc-hint { opacity: 0; }
-  .v-scrub .sc-track { position: absolute; left: 26px; right: 26px; bottom: 26px; height: 2px;
-    background: rgba(241,251,252,0.16); }
+  /* дорожка — короткая и по центру: это ручка управления, а не полоса прогресса
+     во всю ширину кадра. Высокая, чтобы попадать не целясь */
+  .v-scrub .sc-track { position: absolute; left: 50%; transform: translateX(-50%); bottom: 30px;
+    width: min(360px, 56%); height: 8px; border-radius: 99px;
+    background: rgba(3,12,16,0.55); border: 1px solid rgba(241,251,252,0.22); }
+  .v-scrub .sc-track::before { content: ""; position: absolute; inset: -18px -22px; } /* запас на промах мышью */
   .v-scrub .sc-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0;
-    background: var(--signal-teal); }
-  .v-scrub .sc-knob { position: absolute; top: 1px; left: 0; width: 13px; height: 13px; margin: -7px 0 0 -6.5px;
-    border-radius: 50%; background: #F1FBFC; box-shadow: 0 0 0 4px rgba(43,224,198,0.22); }
+    border-radius: 99px; background: var(--signal-teal); }
+  .v-scrub .sc-knob { position: absolute; top: 50%; left: 0; width: 30px; height: 30px; margin: -15px 0 0 -15px;
+    border-radius: 50%; background: #F1FBFC; cursor: grab;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 0 1px rgba(3,12,16,0.35); }
+  /* насечка на ручке: видно, что её тянут, а не нажимают */
+  .v-scrub .sc-knob::before, .v-scrub .sc-knob::after { content: ""; position: absolute; top: 10px;
+    width: 1.5px; height: 10px; border-radius: 1px; background: rgba(3,12,16,0.5); }
+  .v-scrub .sc-knob::before { left: 12px; } .v-scrub .sc-knob::after { left: 16.5px; }
+  .v-scrub.dragging .sc-knob { cursor: grabbing; transform: scale(1.08); }
   /* до первого касания ручка сама подсказывает жест */
   .v-scrub:not(.touched) .sc-knob { animation: scNudge 2.6s ease-in-out infinite; }
-  @keyframes scNudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(14px); } }
-  @media (max-width: 700px) { .v-scrub .sc-track { left: 14px; right: 14px; bottom: 16px; }
+  @keyframes scNudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(18px); } }
+  @media (max-width: 700px) { .v-scrub .sc-track { width: 72%; bottom: 18px; height: 7px; }
+    .v-scrub .sc-knob { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+    .v-scrub .sc-knob::before { left: 10px; } .v-scrub .sc-knob::after { left: 14.5px; }
     .v-scrub .sc-hint { top: 12px; font-size: 10px; } }
   /* верхнее медиа «на альфе»: ни рамки, ни подложки — объект висит прямо на фоне страницы.
      Настоящей альфы в mp4 нет, чёрный убирает screen (webm с альфой не играет в Safari). */
@@ -3980,27 +3992,47 @@
       var fill = box.querySelector('.sc-fill'), knob = box.querySelector('.sc-knob');
       if (!v || !track) return;
       var P0 = 0.18;            // не с нуля: на нулевом кадре сцена пуста и непонятно, что смотреть
-      var p = P0, raf = null, drag = 0, sx = 0, sp = 0, ready = false;
+      var p = P0, raf = null, drag = 0, sx = 0, sp = 0, pend = -1;
+      // Перемотку нельзя дёргать каждый кадр: пока идёт предыдущий seek, новый запрос
+      // в части браузеров просто теряется — ручка едет, а картинка стоит. Поэтому
+      // держим ОДИН запрос в полёте, следующий копим и отдаём по событию seeked.
+      function seek(t){
+        if (v.seeking) { pend = t; return; }
+        pend = -1;
+        try { v.currentTime = t; } catch (e) {}
+      }
+      v.addEventListener('seeked', function(){
+        // Постер снимаем сразу, как появился настоящий кадр. Это и была причина, по которой
+        // «бегунок едет, а картинка стоит»: пока видео ни разу не играло, браузер держит
+        // постер поверх кадра, и перемотка под ним не видна вовсе.
+        if (v.hasAttribute('poster')) v.removeAttribute('poster');
+        if (pend >= 0) { var t = pend; pend = -1; if (Math.abs(v.currentTime - t) > 0.02) seek(t); }
+      });
       function draw(){
         raf = null;
         fill.style.width = (p * 100) + '%';
         knob.style.left = (p * 100) + '%';
-        if (!ready || !v.duration) return;
-        var t = p * v.duration;
-        if (t > v.duration - 0.04) t = v.duration - 0.04;
+        var d = v.duration;
+        if (!d || d !== d || v.readyState < 1) return;   // метаданных ещё нет — вернёмся по событию
+        var t = p * d;
+        if (t > d - 0.04) t = d - 0.04;
         if (t < 0) t = 0;
-        // перемотку просим только при заметной разнице — иначе браузер захлёбывается seek'ами
-        if (Math.abs(v.currentTime - t) > 0.02) {
-          if (v.fastSeek) { try { v.fastSeek(t); } catch (e) { v.currentTime = t; } }
-          else v.currentTime = t;
-        }
+        if (Math.abs(v.currentTime - t) > 0.02) seek(t);
       }
       function set(np){ p = np < 0 ? 0 : (np > 1 ? 1 : np); if (!raf) raf = requestAnimationFrame(draw); }
-      if (v.readyState >= 1) ready = true;
-      v.addEventListener('loadedmetadata', function(){ ready = true; set(p); });
+      ['loadedmetadata', 'loadeddata', 'canplay'].forEach(function(ev){
+        v.addEventListener(ev, function(){ set(p); });   // как только данные пришли — встаём на своё место
+      });
+      // короткий пуск-стоп: браузер декодирует настоящий кадр (постер уходит) и держит
+      // декодер тёплым — первая перемотка после этого мгновенная
+      try {
+        var pr = v.play();
+        if (pr && pr.then) pr.then(function(){ v.pause(); set(p); }).catch(function(){});
+        else { v.pause(); }
+      } catch (e) {}
       set(P0);
       box.addEventListener('pointerdown', function(e){
-        box.classList.add('touched');
+        box.classList.add('touched'); box.classList.add('dragging');
         var onTrack = !!(e.target.closest && e.target.closest('.sc-track'));
         drag = onTrack ? 2 : 1; sx = e.clientX; sp = p;
         try { box.setPointerCapture(e.pointerId); } catch (err) {}
@@ -4014,7 +4046,7 @@
         e.preventDefault();
       });
       ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){
-        box.addEventListener(t, function(){ drag = 0; });
+        box.addEventListener(t, function(){ drag = 0; box.classList.remove('dragging'); });
       });
     });
   }
