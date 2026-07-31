@@ -991,6 +991,17 @@
     box-shadow: 0 3px 14px rgba(0,0,0,0.45); }
   .v-scrub .sc-knob i { font-style: normal; opacity: 0.5; font-size: 13px; }
   .v-scrub.dragging .sc-knob { cursor: grabbing; }
+  /* вертикальный вариант: рельс справа, ручка идёт сверху вниз. Так удобнее там, где
+     объект в кадре переворачивается через себя — жест повторяет движение модели */
+  .v-scrub.vy .sc-bar { left: auto; right: 26px; top: 50%; bottom: auto;
+    transform: translateY(-50%); width: 96px; height: min(360px, 68%); }
+  .v-scrub.vy .sc-knob { left: 6px; top: 6px; min-width: 0; width: 84px; padding: 0 12px; }
+  .v-scrub.vy:not(.touched) .sc-knob { animation: scNudgeY 2.8s ease-in-out infinite; }
+  @keyframes scNudgeY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(22px); } }
+  .v-scrub.vy .sc-bar { touch-action: none; }   /* рельс забирает вертикальный жест себе */
+  @media (max-width: 700px) {
+    .v-scrub.vy .sc-bar { right: 12px; width: 82px; height: 58%; }
+    .v-scrub.vy .sc-knob { width: 72px; left: 5px; padding: 0 10px; } }
   .v-scrub .sc-hint { position: absolute; left: 0; right: 0; bottom: 44px; text-align: center;
     font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--scan-white-dim); pointer-events: none; transition: opacity .35s; }
@@ -3510,13 +3521,15 @@
                 (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
       } else if (b.t === 'scrub') {
         // ролик под рукой: кнопок нет, кадр выбирает ручка на широкой плашке
-        html += '<div class="vb"><div class="v-media v-scrub' + (b.ratio ? ' v-fit' : '') + '"' +
+        var vy = b.axis === 'y';                       // рельс справа, ход сверху вниз
+        html += '<div class="vb"><div class="v-media v-scrub' + (vy ? ' vy' : '') + (b.ratio ? ' v-fit' : '') + '"' +
                 (b.ratio ? ' style="height:auto;aspect-ratio:' + b.ratio + '"' : '') +
                 '><video src="' + vsrc(b.src) + '"' +
                 (b.poster ? ' poster="' + b.poster + '"' : '') +
                 ' muted playsinline preload="auto"></video>' +
                 '<div class="sc-hint">' + (b.hint || 'потяните ручку') + '</div>' +
-                '<div class="sc-bar"><div class="sc-knob"><i>←</i>' + (b.knob || '') + '<i>→</i></div></div>' +
+                '<div class="sc-bar"><div class="sc-knob"><i>' + (vy ? '↑' : '←') + '</i>' +
+                (b.knob || '') + '<i>' + (vy ? '↓' : '→') + '</i></div></div>' +
                 '</div>' +
                 (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
       } else if (b.t === 'alpha') {
@@ -3999,11 +4012,16 @@
       if (!v || !bar || !knob) return;
       // Ручка ходит ВНУТРИ плашки с отступом: путь короче плашки на свою ширину и на два
       // отступа, иначе на краях она упирается в кант и выглядит зажатой.
+      var vert = box.classList.contains('vy');       // рельс вертикальный: ход сверху вниз
       var INSET = matchMedia('(max-width: 700px)').matches ? 5 : 6;   // столько же в CSS
-      function span(){ return Math.max(1, bar.clientWidth - knob.offsetWidth - INSET * 2); }
-      function pFromX(x){
+      function span(){
+        return Math.max(1, (vert ? bar.clientHeight - knob.offsetHeight
+                                 : bar.clientWidth - knob.offsetWidth) - INSET * 2);
+      }
+      function pFromPt(e){
         var r = bar.getBoundingClientRect();
-        return (x - r.left - INSET - knob.offsetWidth / 2) / span();
+        return vert ? (e.clientY - r.top - INSET - knob.offsetHeight / 2) / span()
+                    : (e.clientX - r.left - INSET - knob.offsetWidth / 2) / span();
       }
       var P0 = 0.18;            // не с нуля: на нулевом кадре сцена пуста и непонятно, что смотреть
       var p = P0, raf = null, drag = 0, sx = 0, sp = 0, pend = -1;
@@ -4024,7 +4042,7 @@
       });
       function draw(){
         raf = null;
-        knob.style.left = (INSET + p * span()) + 'px';
+        knob.style[vert ? 'top' : 'left'] = (INSET + p * span()) + 'px';
         var d = v.duration;
         if (!d || d !== d || v.readyState < 1) return;   // метаданных ещё нет — вернёмся по событию
         var t = p * d;
@@ -4050,17 +4068,21 @@
         // прыгает под палец; взяли кадр — тащим как плёнку, жест относительный
         var onKnob = !!(e.target.closest && e.target.closest('.sc-knob'));
         var onBar = !onKnob && !!(e.target.closest && e.target.closest('.sc-bar'));
-        drag = onKnob ? 3 : (onBar ? 2 : 1); sx = e.clientX; sp = p;
+        // у вертикального рельса кадр пальцем не тянем: этот жест — прокрутка страницы,
+        // и отбирать её у человека нельзя. Мышью тянуть кадр по-прежнему можно
+        if (vert && !onKnob && !onBar && e.pointerType === 'touch') { drag = 0; return; }
+        drag = onKnob ? 3 : (onBar ? 2 : 1);
+        sx = vert ? e.clientY : e.clientX; sp = p;
         try { box.setPointerCapture(e.pointerId); } catch (err) {}
-        if (onBar) set(pFromX(e.clientX));
+        if (onBar) set(pFromPt(e));
         e.preventDefault();
       });
       box.addEventListener('pointermove', function(e){
         if (!drag) return;
-        var dx = e.clientX - sx;
-        if (drag === 2) set(pFromX(e.clientX));              // палец ведёт ручку по плашке
-        else if (drag === 3) set(sp + dx / span());           // ручка идёт ровно за пальцем
-        else set(sp + dx / (box.clientWidth || 1));           // кадр тянется как плёнка
+        var d = (vert ? e.clientY : e.clientX) - sx;
+        if (drag === 2) set(pFromPt(e));                     // палец ведёт ручку по плашке
+        else if (drag === 3) set(sp + d / span());            // ручка идёт ровно за пальцем
+        else set(sp + d / ((vert ? box.clientHeight : box.clientWidth) || 1)); // кадр как плёнка
         e.preventDefault();
       });
       ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){
