@@ -970,9 +970,6 @@
      кадр каждые 0,2 с, поэтому перемотка идёт без рывков. */
   .v-media.v-scrub { cursor: ew-resize; touch-action: pan-y; }
   .v-scrub video { pointer-events: none; }
-  .v-scrub .sc-hint { position: absolute; left: 50%; top: 20px; transform: translateX(-50%);
-    font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--scan-white-dim); pointer-events: none; transition: opacity .35s; white-space: nowrap; }
   .v-scrub.touched .sc-hint { opacity: 0; }
   /* Управление — широкая плашка с крупной ручкой: её видно на любом кадре и в неё
      попадаешь не целясь. Полосы заполнения нет: это не прогресс просмотра, а положение
@@ -3517,16 +3514,20 @@
         html += '<div class="vb"><div class="v-media' + (b.ratio ? ' v-fit' : '') + '"' +
                 (b.ratio ? ' style="height:auto;aspect-ratio:' + b.ratio + '"' : '') + '><video src="' + vsrc(b.src) + '"' +
                 (b.poster ? ' poster="' + b.poster + '"' : '') +
-                ' muted loop playsinline preload="metadata" controls></video></div>' +
+                ' muted loop playsinline preload="none" data-pl="metadata" controls></video></div>' +
                 (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
       } else if (b.t === 'scrub') {
         // ролик под рукой: кнопок нет, кадр выбирает ручка на широкой плашке
         var vy = b.axis === 'y';                       // рельс справа, ход сверху вниз
         html += '<div class="vb"><div class="v-media v-scrub' + (vy ? ' vy' : '') + (b.ratio ? ' v-fit' : '') + '"' +
                 (b.ratio ? ' style="height:auto;aspect-ratio:' + b.ratio + '"' : '') +
+                // preload="none" не случаен: ролик начинает грузиться, только когда до
+                // него доскроллили (см. armFlow). Иначе страница разом тянет все свои
+                // видео, а браузер держит не больше шести соединений на хост — очередь
+                // встаёт целиком, и крутилка, до которой не дошла очередь, не работает
                 '><video src="' + vsrc(b.src) + '"' +
                 (b.poster ? ' poster="' + b.poster + '"' : '') +
-                ' muted playsinline preload="auto"></video>' +
+                ' muted playsinline preload="none" data-pl="auto"></video>' +
                 '<div class="sc-hint">' + (b.hint || 'потяните ручку') + '</div>' +
                 '<div class="sc-bar"><div class="sc-knob"><i>' + (vy ? '↑' : '←') + '</i>' +
                 (b.knob || '') + '<i>' + (vy ? '↓' : '→') + '</i></div></div>' +
@@ -3992,6 +3993,13 @@
         var gal = el.querySelector('.v-gal');
         if (gal) galSync(gal); // галерея грузит текущий + соседний кадр
         else el.querySelectorAll('img[data-lsrc]').forEach(loadImg);
+        // ролик начинает грузиться только теперь, когда до него доскроллили
+        el.querySelectorAll('video[data-pl]').forEach(function(v){
+          v.preload = v.dataset.pl; v.removeAttribute('data-pl');
+          try { v.load(); } catch (e) {}
+        });
+        var sc = el.querySelector('.v-scrub');
+        if (sc && sc._warm) { sc._warm(); sc._warm = null; }   // крутилку прогреваем в кадре
         el.querySelectorAll('iframe[data-src]').forEach(function(fr){
           fitEmbed(fr, fr.dataset.src);
           fr.src = fr.dataset.src; fr.removeAttribute('data-src');
@@ -4054,14 +4062,17 @@
       ['loadedmetadata', 'loadeddata', 'canplay'].forEach(function(ev){
         v.addEventListener(ev, function(){ set(p); });   // как только данные пришли — встаём на своё место
       });
-      // короткий пуск-стоп: браузер декодирует настоящий кадр (постер уходит) и держит
-      // декодер тёплым — первая перемотка после этого мгновенная
-      try {
-        var pr = v.play();
-        if (pr && pr.then) pr.then(function(){ v.pause(); set(p); }).catch(function(){});
-        else { v.pause(); }
-      } catch (e) {}
-      set(P0);
+      // Прогрев (короткий пуск-стоп: браузер декодирует настоящий кадр, постер уходит,
+      // декодер остаётся тёплым) делаем не сразу, а когда до блока доскроллили — иначе
+      // все крутилки страницы качают себя одновременно и мешают друг другу.
+      box._warm = function(){
+        try {
+          var pr = v.play();
+          if (pr && pr.then) pr.then(function(){ v.pause(); set(p); }).catch(function(){ set(p); });
+          else { v.pause(); set(p); }
+        } catch (e) {}
+      };
+      set(P0);   // ручку ставим на место сразу: это только вёрстка, без загрузки
       box.addEventListener('pointerdown', function(e){
         box.classList.add('touched'); box.classList.add('dragging');
         // взяли саму ручку — тянем её от текущего места; ткнули в плашку — ручка
@@ -4072,6 +4083,12 @@
         // и отбирать её у человека нельзя. Мышью тянуть кадр по-прежнему можно
         if (vert && !onKnob && !onBar && e.pointerType === 'touch') { drag = 0; return; }
         drag = onKnob ? 3 : (onBar ? 2 : 1);
+        // взялись раньше, чем блок успел прогреться (или прогрев не случился вовсе) —
+        // поднимаем загрузку здесь же, иначе перематывать будет нечего
+        if (v.readyState < 1) {
+          if (v.dataset.pl) { v.preload = v.dataset.pl; v.removeAttribute('data-pl'); }
+          try { v.load(); } catch (err2) {}
+        }
         sx = vert ? e.clientY : e.clientX; sp = p;
         try { box.setPointerCapture(e.pointerId); } catch (err) {}
         if (onBar) set(pFromPt(e));
