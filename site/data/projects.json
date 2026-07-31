@@ -117,10 +117,11 @@
      ]
     },
     {
-     "t": "video",
+     "t": "scrub",
      "src": "videos/proryv-booth.mp4",
      "poster": "assets/work/proryv/booth-poster.jpg",
-     "caption": "Проектирование стенда"
+     "caption": "Проектирование стенда",
+     "hint": "потяните вправо — стенд соберётся"
     }
    ]
   },

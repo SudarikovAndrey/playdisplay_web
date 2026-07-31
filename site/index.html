@@ -965,6 +965,26 @@
      остаётся дефолтным 300×150 в углу блока */
   .v-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .v-media.v-fit video { object-fit: contain; } /* плашка по пропорциям клипа — кадр целиком */
+  /* Ролик-сборка: его не смотрят, а листают рукой — слева направо стенд собирается.
+     Кнопки воспроизведения нет вовсе, вместо неё дорожка с ручкой. В файле ключевой
+     кадр каждые 0,2 с, поэтому перемотка идёт без рывков. */
+  .v-media.v-scrub { cursor: ew-resize; touch-action: pan-y; }
+  .v-scrub video { pointer-events: none; }
+  .v-scrub .sc-hint { position: absolute; left: 50%; top: 20px; transform: translateX(-50%);
+    font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--scan-white-dim); pointer-events: none; transition: opacity .35s; white-space: nowrap; }
+  .v-scrub.touched .sc-hint { opacity: 0; }
+  .v-scrub .sc-track { position: absolute; left: 26px; right: 26px; bottom: 26px; height: 2px;
+    background: rgba(241,251,252,0.16); }
+  .v-scrub .sc-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+    background: var(--signal-teal); }
+  .v-scrub .sc-knob { position: absolute; top: 1px; left: 0; width: 13px; height: 13px; margin: -7px 0 0 -6.5px;
+    border-radius: 50%; background: #F1FBFC; box-shadow: 0 0 0 4px rgba(43,224,198,0.22); }
+  /* до первого касания ручка сама подсказывает жест */
+  .v-scrub:not(.touched) .sc-knob { animation: scNudge 2.6s ease-in-out infinite; }
+  @keyframes scNudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(14px); } }
+  @media (max-width: 700px) { .v-scrub .sc-track { left: 14px; right: 14px; bottom: 16px; }
+    .v-scrub .sc-hint { top: 12px; font-size: 10px; } }
   /* верхнее медиа «на альфе»: ни рамки, ни подложки — объект висит прямо на фоне страницы.
      Настоящей альфы в mp4 нет, чёрный убирает screen (webm с альфой не играет в Safari). */
   /* фон ровно цвета страницы вьюера: screen смешивает с ним, и чёрный уходит в него без остатка
@@ -3472,6 +3492,15 @@
                 (b.poster ? ' poster="' + b.poster + '"' : '') +
                 ' muted loop playsinline preload="metadata" controls></video></div>' +
                 (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
+      } else if (b.t === 'scrub') {
+        // сборка стенда под рукой: видео без кнопок, кадр выбирает дорожка
+        html += '<div class="vb"><div class="v-media v-scrub"><video src="' + vsrc(b.src) + '"' +
+                (b.poster ? ' poster="' + b.poster + '"' : '') +
+                ' muted playsinline preload="auto"></video>' +
+                '<div class="sc-hint">' + (b.hint || 'потяните вправо — стенд соберётся') + '</div>' +
+                '<div class="sc-track"><div class="sc-fill"></div><div class="sc-knob"></div></div>' +
+                '</div>' +
+                (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
       } else if (b.t === 'alpha') {
         // Клип на чёрном фоне без рамки и подложки: режим наложения screen убирает
         // чёрный полностью, поэтому объект висит «на альфе». Настоящая альфа в mp4
@@ -3942,6 +3971,54 @@
     blocks.forEach(function(b){ io.observe(b); });
     flowIO = io;
   }
+  // Ролик-сборка (t:'scrub'): вместо кнопки «играть» — дорожка. Тянешь слева направо,
+  // и стенд собирается: кадр идёт за рукой. По самой картинке жест ОТНОСИТЕЛЬНЫЙ (тащишь,
+  // как плёнку), по дорожке — абсолютный, как у обычного слайдера: щёлкнул — попал.
+  function armScrub(){
+    vInner.querySelectorAll('.v-scrub').forEach(function(box){
+      var v = box.querySelector('video'), track = box.querySelector('.sc-track');
+      var fill = box.querySelector('.sc-fill'), knob = box.querySelector('.sc-knob');
+      if (!v || !track) return;
+      var P0 = 0.18;            // не с нуля: на нулевом кадре сцена пуста и непонятно, что смотреть
+      var p = P0, raf = null, drag = 0, sx = 0, sp = 0, ready = false;
+      function draw(){
+        raf = null;
+        fill.style.width = (p * 100) + '%';
+        knob.style.left = (p * 100) + '%';
+        if (!ready || !v.duration) return;
+        var t = p * v.duration;
+        if (t > v.duration - 0.04) t = v.duration - 0.04;
+        if (t < 0) t = 0;
+        // перемотку просим только при заметной разнице — иначе браузер захлёбывается seek'ами
+        if (Math.abs(v.currentTime - t) > 0.02) {
+          if (v.fastSeek) { try { v.fastSeek(t); } catch (e) { v.currentTime = t; } }
+          else v.currentTime = t;
+        }
+      }
+      function set(np){ p = np < 0 ? 0 : (np > 1 ? 1 : np); if (!raf) raf = requestAnimationFrame(draw); }
+      if (v.readyState >= 1) ready = true;
+      v.addEventListener('loadedmetadata', function(){ ready = true; set(p); });
+      set(P0);
+      box.addEventListener('pointerdown', function(e){
+        box.classList.add('touched');
+        var onTrack = !!(e.target.closest && e.target.closest('.sc-track'));
+        drag = onTrack ? 2 : 1; sx = e.clientX; sp = p;
+        try { box.setPointerCapture(e.pointerId); } catch (err) {}
+        if (onTrack) { var r = track.getBoundingClientRect(); set((e.clientX - r.left) / (r.width || 1)); }
+        e.preventDefault();
+      });
+      box.addEventListener('pointermove', function(e){
+        if (!drag) return;
+        if (drag === 2) { var r = track.getBoundingClientRect(); set((e.clientX - r.left) / (r.width || 1)); }
+        else set(sp + (e.clientX - sx) / (box.clientWidth || 1));
+        e.preventDefault();
+      });
+      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){
+        box.addEventListener(t, function(){ drag = 0; });
+      });
+    });
+  }
+
   // Ролики лежат в двух весах: полный 1080p и лёгкая копия «-m» (1280, ~1,2 Мбит/с).
   // На телефоне полный файл — это десятки мегабайт на автозапуске, и часто по мобильной
   // сети. Правило одно: всё из videos/ имеет пару «-m», герб и прочее из assets/ — нет.
@@ -3987,6 +4064,7 @@
     var mv = vInner.querySelector('.v-media video');
     if (mv) vidIO.observe(mv);
     armFlow();
+    armScrub();          // ролики-сборки: дорожка вместо кнопки
     dustOff(); dustOn(); // один цикл пыли (без наложения при смене кейса)
     heroScene(false);    // hero-сцена Three.js за непрозрачным вьюером не рендерится — экономия GPU
     // прямое открытие (без полёта) — тексты складываются сразу; в полёте каскад запустит anim
