@@ -284,6 +284,12 @@
    "flow": [
     {
      "t": "video",
+     "src": "videos/mig.mp4",
+     "poster": "assets/work/mig2019/event-poster.jpg",
+     "caption": "Стенд на салоне: работа в дни выставки"
+    },
+    {
+     "t": "video",
      "src": "videos/mig-led.mp4",
      "ratio": "1920/520",
      "poster": "assets/work/mig2019/film-poster.jpg",

@@ -981,12 +981,15 @@
     width: min(560px, 78%); height: 56px; border-radius: 99px;
     background: rgba(3,12,16,0.55); border: 1px solid rgba(241,251,252,0.14);
     backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  .v-scrub .sc-knob { position: absolute; top: 5px; left: 0; width: 80px; height: 44px;
+  /* ручка не распирается текстом и не липнет к краю плашки: ширина по содержимому
+     плюс воздух по бокам, а ход начинается с отступа в 6 px (см. INSET в armScrub) */
+  .v-scrub .sc-knob { position: absolute; top: 6px; left: 6px; height: 44px;
+    min-width: 84px; padding: 0 20px; box-sizing: border-box;
     border-radius: 99px; background: #E9F3F5; color: #06131a; cursor: grab;
-    display: flex; align-items: center; justify-content: center; gap: 5px;
-    font: 600 12px var(--font-mono); letter-spacing: 0.06em;
+    display: flex; align-items: center; justify-content: center; gap: 11px; white-space: nowrap;
+    font: 600 12px var(--font-mono); letter-spacing: 0.08em;
     box-shadow: 0 3px 14px rgba(0,0,0,0.45); }
-  .v-scrub .sc-knob i { font-style: normal; opacity: 0.55; font-size: 13px; }
+  .v-scrub .sc-knob i { font-style: normal; opacity: 0.5; font-size: 13px; }
   .v-scrub.dragging .sc-knob { cursor: grabbing; }
   .v-scrub .sc-hint { position: absolute; left: 0; right: 0; bottom: 44px; text-align: center;
     font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
@@ -996,7 +999,7 @@
   @keyframes scNudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(22px); } }
   @media (max-width: 700px) {
     .v-scrub .sc-bar { width: 88%; height: 48px; bottom: 14px; }
-    .v-scrub .sc-knob { width: 68px; height: 38px; top: 4px; font-size: 11px; }
+    .v-scrub .sc-knob { min-width: 74px; height: 38px; top: 5px; left: 5px; padding: 0 15px; gap: 9px; font-size: 11px; }
     .v-scrub .sc-hint { bottom: 34px; font-size: 10px; } }
   /* верхнее медиа «на альфе»: ни рамки, ни подложки — объект висит прямо на фоне страницы.
      Настоящей альфы в mp4 нет, чёрный убирает screen (webm с альфой не играет в Safari). */
@@ -2472,7 +2475,7 @@
     { task:"sell", taskLabel:"Продать сложное", title:"PTK Group", slug:"ptk-group", client:"Группа ПТК", year:2019, img:AW+"ptk-group/ptk_start_2_poster.jpg", fb:IMG+"2021/02/ptk_start_2.gif", local:"videos/ptk-film.mp4", lposter:AW+"ptk-group/film-poster.jpg", wi:7,
       desc:"Интерактивный корпоративный стенд: продукты и процессы компании собраны в единый цифровой сценарий для переговоров и выставок.",
       punch:"Презентация, в которую вовлекаются." },
-    { task:"amaze", taskLabel:"Удивить", title:"Стенд МИГ-35", slug:"mig2019", client:"РСК «МИГ»", year:2019, img:AW+"mig2019/mig_booth-960x960.jpg", fb:IMG+"2020/03/mig_booth-960x960.jpg", local:"videos/mig.mp4", lposter:AW+"mig2019/event-poster.jpg", wi:2,
+    { task:"amaze", taskLabel:"Удивить", title:"Стенд МИГ-35", slug:"mig2019", client:"РСК «МИГ»", year:2019, img:AW+"mig2019/mig_booth-960x960.jpg", fb:IMG+"2020/03/mig_booth-960x960.jpg", local:"videos/odk-maks-2021.mp4", lposter:AW+"mig2019/maks-poster.jpg", wi:2,
       stats:[["50 м²","LED-экран"],["3D","контент"],["+1","ливрея борта"]],
       desc:"Сцена для истребителя на международном авиасалоне: подиум, 15-метровый LED-экран и 3D-контент, раскрывающий характеристики машины. Бонус-уровень: дизайн ливреи самого самолёта.",
       punch:"Самолёт и так звезда — мы построили ему сцену." },
@@ -3994,9 +3997,14 @@
       var v = box.querySelector('video'), bar = box.querySelector('.sc-bar');
       var knob = box.querySelector('.sc-knob');
       if (!v || !bar || !knob) return;
-      // ручка ходит внутри плашки, поэтому её путь короче плашки на свою ширину
-      function span(){ return Math.max(1, bar.clientWidth - knob.offsetWidth); }
-      function pFromX(x){ var r = bar.getBoundingClientRect(); return (x - r.left - knob.offsetWidth / 2) / span(); }
+      // Ручка ходит ВНУТРИ плашки с отступом: путь короче плашки на свою ширину и на два
+      // отступа, иначе на краях она упирается в кант и выглядит зажатой.
+      var INSET = matchMedia('(max-width: 700px)').matches ? 5 : 6;   // столько же в CSS
+      function span(){ return Math.max(1, bar.clientWidth - knob.offsetWidth - INSET * 2); }
+      function pFromX(x){
+        var r = bar.getBoundingClientRect();
+        return (x - r.left - INSET - knob.offsetWidth / 2) / span();
+      }
       var P0 = 0.18;            // не с нуля: на нулевом кадре сцена пуста и непонятно, что смотреть
       var p = P0, raf = null, drag = 0, sx = 0, sp = 0, pend = -1;
       // Перемотку нельзя дёргать каждый кадр: пока идёт предыдущий seek, новый запрос
@@ -4016,7 +4024,7 @@
       });
       function draw(){
         raf = null;
-        knob.style.left = (p * span()) + 'px';
+        knob.style.left = (INSET + p * span()) + 'px';
         var d = v.duration;
         if (!d || d !== d || v.readyState < 1) return;   // метаданных ещё нет — вернёмся по событию
         var t = p * d;
