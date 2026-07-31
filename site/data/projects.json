@@ -121,7 +121,8 @@
      "src": "videos/proryv-booth.mp4",
      "poster": "assets/work/proryv/booth-poster.jpg",
      "caption": "Проектирование стенда",
-     "hint": "потяните вправо — стенд соберётся"
+     "hint": "потяните вправо — стенд соберётся",
+     "knob": "СБОРКА"
     }
    ]
   },
@@ -283,16 +284,6 @@
    "flow": [
     {
      "t": "yt",
-     "id": "YVteDZL90qc"
-    },
-    {
-     "t": "img",
-     "src": [
-      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth11.jpg"
-     ]
-    },
-    {
-     "t": "yt",
      "id": "KBtdzstDg18"
     },
     {
@@ -327,9 +318,12 @@
      ]
     },
     {
-     "t": "yt",
-     "id": "C6WJ4BGjMMU",
-     "caption": "Демонстрация финального дизайна стенда"
+     "t": "scrub",
+     "src": "videos/mig-booth-360.mp4",
+     "poster": "assets/work/mig2019/booth360-poster.jpg",
+     "knob": "360",
+     "hint": "потяните — стенд повернётся",
+     "caption": "Дизайн стенда: облёт по кругу"
     },
     {
      "t": "img",

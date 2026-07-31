@@ -974,29 +974,30 @@
     font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--scan-white-dim); pointer-events: none; transition: opacity .35s; white-space: nowrap; }
   .v-scrub.touched .sc-hint { opacity: 0; }
-  /* дорожка — короткая и по центру: это ручка управления, а не полоса прогресса
-     во всю ширину кадра. Высокая, чтобы попадать не целясь */
-  .v-scrub .sc-track { position: absolute; left: 50%; transform: translateX(-50%); bottom: 30px;
-    width: min(360px, 56%); height: 8px; border-radius: 99px;
-    background: rgba(3,12,16,0.55); border: 1px solid rgba(241,251,252,0.22); }
-  .v-scrub .sc-track::before { content: ""; position: absolute; inset: -18px -22px; } /* запас на промах мышью */
-  .v-scrub .sc-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0;
-    border-radius: 99px; background: var(--signal-teal); }
-  .v-scrub .sc-knob { position: absolute; top: 50%; left: 0; width: 30px; height: 30px; margin: -15px 0 0 -15px;
-    border-radius: 50%; background: #F1FBFC; cursor: grab;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 0 1px rgba(3,12,16,0.35); }
-  /* насечка на ручке: видно, что её тянут, а не нажимают */
-  .v-scrub .sc-knob::before, .v-scrub .sc-knob::after { content: ""; position: absolute; top: 10px;
-    width: 1.5px; height: 10px; border-radius: 1px; background: rgba(3,12,16,0.5); }
-  .v-scrub .sc-knob::before { left: 12px; } .v-scrub .sc-knob::after { left: 16.5px; }
-  .v-scrub.dragging .sc-knob { cursor: grabbing; transform: scale(1.08); }
+  /* Управление — широкая плашка с крупной ручкой: её видно на любом кадре и в неё
+     попадаешь не целясь. Полосы заполнения нет: это не прогресс просмотра, а положение
+     руки на съёмке — сколько собрано или под каким углом повёрнут стенд. */
+  .v-scrub .sc-bar { position: absolute; left: 50%; transform: translateX(-50%); bottom: 26px;
+    width: min(560px, 78%); height: 56px; border-radius: 99px;
+    background: rgba(3,12,16,0.55); border: 1px solid rgba(241,251,252,0.14);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .v-scrub .sc-knob { position: absolute; top: 5px; left: 0; width: 80px; height: 44px;
+    border-radius: 99px; background: #E9F3F5; color: #06131a; cursor: grab;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    font: 600 12px var(--font-mono); letter-spacing: 0.06em;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.45); }
+  .v-scrub .sc-knob i { font-style: normal; opacity: 0.55; font-size: 13px; }
+  .v-scrub.dragging .sc-knob { cursor: grabbing; }
+  .v-scrub .sc-hint { position: absolute; left: 0; right: 0; bottom: 44px; text-align: center;
+    font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--scan-white-dim); pointer-events: none; transition: opacity .35s; }
   /* до первого касания ручка сама подсказывает жест */
-  .v-scrub:not(.touched) .sc-knob { animation: scNudge 2.6s ease-in-out infinite; }
-  @keyframes scNudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(18px); } }
-  @media (max-width: 700px) { .v-scrub .sc-track { width: 72%; bottom: 18px; height: 7px; }
-    .v-scrub .sc-knob { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
-    .v-scrub .sc-knob::before { left: 10px; } .v-scrub .sc-knob::after { left: 14.5px; }
-    .v-scrub .sc-hint { top: 12px; font-size: 10px; } }
+  .v-scrub:not(.touched) .sc-knob { animation: scNudge 2.8s ease-in-out infinite; }
+  @keyframes scNudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(22px); } }
+  @media (max-width: 700px) {
+    .v-scrub .sc-bar { width: 88%; height: 48px; bottom: 14px; }
+    .v-scrub .sc-knob { width: 68px; height: 38px; top: 4px; font-size: 11px; }
+    .v-scrub .sc-hint { bottom: 34px; font-size: 10px; } }
   /* верхнее медиа «на альфе»: ни рамки, ни подложки — объект висит прямо на фоне страницы.
      Настоящей альфы в mp4 нет, чёрный убирает screen (webm с альфой не играет в Safari). */
   /* фон ровно цвета страницы вьюера: screen смешивает с ним, и чёрный уходит в него без остатка
@@ -2471,7 +2472,7 @@
     { task:"sell", taskLabel:"Продать сложное", title:"PTK Group", slug:"ptk-group", client:"Группа ПТК", year:2019, img:AW+"ptk-group/ptk_start_2_poster.jpg", fb:IMG+"2021/02/ptk_start_2.gif", local:"videos/ptk-film.mp4", lposter:AW+"ptk-group/film-poster.jpg", wi:7,
       desc:"Интерактивный корпоративный стенд: продукты и процессы компании собраны в единый цифровой сценарий для переговоров и выставок.",
       punch:"Презентация, в которую вовлекаются." },
-    { task:"amaze", taskLabel:"Удивить", title:"Стенд МИГ-35", slug:"mig2019", client:"РСК «МИГ»", year:2019, img:AW+"mig2019/mig_booth-960x960.jpg", fb:IMG+"2020/03/mig_booth-960x960.jpg", video:["youtube","YVteDZL90qc"], local:"videos/mig.mp4", wi:2,
+    { task:"amaze", taskLabel:"Удивить", title:"Стенд МИГ-35", slug:"mig2019", client:"РСК «МИГ»", year:2019, img:AW+"mig2019/mig_booth-960x960.jpg", fb:IMG+"2020/03/mig_booth-960x960.jpg", local:"videos/mig-led.mp4", lposter:AW+"mig2019/film-poster.jpg", lratio:"1920/520", wi:2,
       stats:[["50 м²","LED-экран"],["3D","контент"],["+1","ливрея борта"]],
       desc:"Сцена для истребителя на международном авиасалоне: подиум, 15-метровый LED-экран и 3D-контент, раскрывающий характеристики машины. Бонус-уровень: дизайн ливреи самого самолёта.",
       punch:"Самолёт и так звезда — мы построили ему сцену." },
@@ -3505,12 +3506,14 @@
                 ' muted loop playsinline preload="metadata" controls></video></div>' +
                 (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
       } else if (b.t === 'scrub') {
-        // сборка стенда под рукой: видео без кнопок, кадр выбирает дорожка
-        html += '<div class="vb"><div class="v-media v-scrub"><video src="' + vsrc(b.src) + '"' +
+        // ролик под рукой: кнопок нет, кадр выбирает ручка на широкой плашке
+        html += '<div class="vb"><div class="v-media v-scrub' + (b.ratio ? ' v-fit' : '') + '"' +
+                (b.ratio ? ' style="height:auto;aspect-ratio:' + b.ratio + '"' : '') +
+                '><video src="' + vsrc(b.src) + '"' +
                 (b.poster ? ' poster="' + b.poster + '"' : '') +
                 ' muted playsinline preload="auto"></video>' +
-                '<div class="sc-hint">' + (b.hint || 'потяните вправо — стенд соберётся') + '</div>' +
-                '<div class="sc-track"><div class="sc-fill"></div><div class="sc-knob"></div></div>' +
+                '<div class="sc-hint">' + (b.hint || 'потяните ручку') + '</div>' +
+                '<div class="sc-bar"><div class="sc-knob"><i>←</i>' + (b.knob || '') + '<i>→</i></div></div>' +
                 '</div>' +
                 (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
       } else if (b.t === 'alpha') {
@@ -3988,9 +3991,12 @@
   // как плёнку), по дорожке — абсолютный, как у обычного слайдера: щёлкнул — попал.
   function armScrub(){
     vInner.querySelectorAll('.v-scrub').forEach(function(box){
-      var v = box.querySelector('video'), track = box.querySelector('.sc-track');
-      var fill = box.querySelector('.sc-fill'), knob = box.querySelector('.sc-knob');
-      if (!v || !track) return;
+      var v = box.querySelector('video'), bar = box.querySelector('.sc-bar');
+      var knob = box.querySelector('.sc-knob');
+      if (!v || !bar || !knob) return;
+      // ручка ходит внутри плашки, поэтому её путь короче плашки на свою ширину
+      function span(){ return Math.max(1, bar.clientWidth - knob.offsetWidth); }
+      function pFromX(x){ var r = bar.getBoundingClientRect(); return (x - r.left - knob.offsetWidth / 2) / span(); }
       var P0 = 0.18;            // не с нуля: на нулевом кадре сцена пуста и непонятно, что смотреть
       var p = P0, raf = null, drag = 0, sx = 0, sp = 0, pend = -1;
       // Перемотку нельзя дёргать каждый кадр: пока идёт предыдущий seek, новый запрос
@@ -4010,8 +4016,7 @@
       });
       function draw(){
         raf = null;
-        fill.style.width = (p * 100) + '%';
-        knob.style.left = (p * 100) + '%';
+        knob.style.left = (p * span()) + 'px';
         var d = v.duration;
         if (!d || d !== d || v.readyState < 1) return;   // метаданных ещё нет — вернёмся по событию
         var t = p * d;
@@ -4033,21 +4038,62 @@
       set(P0);
       box.addEventListener('pointerdown', function(e){
         box.classList.add('touched'); box.classList.add('dragging');
-        var onTrack = !!(e.target.closest && e.target.closest('.sc-track'));
-        drag = onTrack ? 2 : 1; sx = e.clientX; sp = p;
+        // взяли саму ручку — тянем её от текущего места; ткнули в плашку — ручка
+        // прыгает под палец; взяли кадр — тащим как плёнку, жест относительный
+        var onKnob = !!(e.target.closest && e.target.closest('.sc-knob'));
+        var onBar = !onKnob && !!(e.target.closest && e.target.closest('.sc-bar'));
+        drag = onKnob ? 3 : (onBar ? 2 : 1); sx = e.clientX; sp = p;
         try { box.setPointerCapture(e.pointerId); } catch (err) {}
-        if (onTrack) { var r = track.getBoundingClientRect(); set((e.clientX - r.left) / (r.width || 1)); }
+        if (onBar) set(pFromX(e.clientX));
         e.preventDefault();
       });
       box.addEventListener('pointermove', function(e){
         if (!drag) return;
-        if (drag === 2) { var r = track.getBoundingClientRect(); set((e.clientX - r.left) / (r.width || 1)); }
-        else set(sp + (e.clientX - sx) / (box.clientWidth || 1));
+        var dx = e.clientX - sx;
+        if (drag === 2) set(pFromX(e.clientX));              // палец ведёт ручку по плашке
+        else if (drag === 3) set(sp + dx / span());           // ручка идёт ровно за пальцем
+        else set(sp + dx / (box.clientWidth || 1));           // кадр тянется как плёнка
         e.preventDefault();
       });
       ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){
         box.addEventListener(t, function(){ drag = 0; box.classList.remove('dragging'); });
       });
+    });
+  }
+
+  // ЗВУК. По умолчанию ролики играют со звуком — это фильмы про наши проекты, тишина
+  // им не идёт. Но выбор человека сильнее: выключил звук один раз — дальше все ролики
+  // открываются молча, пока не включит обратно. Помним в localStorage.
+  var SND = 'pd_sound';
+  function soundOn(){ try { return localStorage.getItem(SND) !== 'off'; } catch (e) { return true; } }
+  function soundSave(on){ try { localStorage.setItem(SND, on ? 'on' : 'off'); } catch (e) {} }
+  function armSound(){
+    vInner.querySelectorAll('video').forEach(function(v){
+      var host = v.closest('.v-media');
+      // крутилки и герб звука не имеют вовсе — их не трогаем
+      if (host && (host.classList.contains('v-scrub') || host.classList.contains('v-alpha-top'))) return;
+      var sys = false;                                   // системное переключение, не выбор человека
+      function mute(m){ sys = true; v.muted = m; sys = false; }
+      v.addEventListener('volumechange', function(){ if (!sys) soundSave(!v.muted); });
+      mute(!soundOn());
+      if (!v.autoplay) return;                           // ролики в ленте ждут кнопки — им хватит
+      var pr = v.play(); if (pr && pr.catch) pr.catch(function(){});
+      // Автозапуск СО ЗВУКОМ браузер разрешает не всем и не всегда. Если запуск не удался,
+      // играем молча, а звук включаем на первом же касании страницы — жест человека
+      // снимает запрет. Если звук выключен им самим, ничего не делаем.
+      var tries = 0;
+      var watch = setInterval(function(){
+        if (!v.isConnected || ++tries > 6) { clearInterval(watch); return; }
+        if (!v.paused || v.muted || v.readyState < 2) return;
+        clearInterval(watch);
+        mute(true); v.play().catch(function(){});
+        var un = function(){
+          document.removeEventListener('pointerdown', un, true);
+          if (!v.isConnected || !soundOn()) return;
+          mute(false); v.play().catch(function(){});
+        };
+        document.addEventListener('pointerdown', un, true);
+      }, 350);
     });
   }
 
@@ -4064,7 +4110,12 @@
     var media = c.alpha
       ? '<div class="v-media v-alpha-top"><video src="'+c.alpha+'" autoplay muted loop playsinline></video></div>'
       : c.local
-      ? '<div class="v-media"><video src="'+vsrc(c.local)+'" poster="'+(c.lposter || c.img)+'" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
+      // lratio — плашка принимает пропорции клипа (ленте светодиодного экрана 3,7:1
+      // обрезка по бокам убила бы половину кадра). muted в разметке нет: состояние
+      // звука ставит armSound по памяти о выборе человека
+      ? '<div class="v-media' + (c.lratio ? ' v-fit' : '') + '"' +
+        (c.lratio ? ' style="height:auto;aspect-ratio:' + c.lratio + '"' : '') +
+        '><video src="'+vsrc(c.local)+'" poster="'+(c.lposter || c.img)+'" autoplay loop playsinline controls style="width:100%;height:100%;'+(c.lratio ? 'object-fit:contain;' : 'object-fit:cover;')+'display:block"></video></div>'
       : c.video
       ? '<div class="v-media"><iframe src="'+embedUrl(c.video)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe></div>'
       : '<div class="v-media"><img src="'+c.img+'" alt=""><div class="v-grade"></div></div>';
@@ -4096,7 +4147,8 @@
     var mv = vInner.querySelector('.v-media video');
     if (mv) vidIO.observe(mv);
     armFlow();
-    armScrub();          // ролики-сборки: дорожка вместо кнопки
+    armScrub();          // ролики-сборки и крутилки: ручка вместо кнопки
+    armSound();          // звук по умолчанию включён, если человек его не выключал
     dustOff(); dustOn(); // один цикл пыли (без наложения при смене кейса)
     heroScene(false);    // hero-сцена Three.js за непрозрачным вьюером не рендерится — экономия GPU
     // прямое открытие (без полёта) — тексты складываются сразу; в полёте каскад запустит anim
