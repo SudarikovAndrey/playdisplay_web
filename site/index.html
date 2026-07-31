@@ -958,6 +958,15 @@
   .viewer-close:hover { border-color: var(--signal-amber); }
   .v-media { height: clamp(480px, 72vh, 900px); position: relative; overflow: hidden; border: 1px solid var(--space-line); background: #0a2129; }
   .v-media img { width: 100%; height: 100%; object-fit: cover; }
+  /* верхнее медиа «на альфе»: ни рамки, ни подложки — объект висит прямо на фоне страницы.
+     Настоящей альфы в mp4 нет, чёрный убирает screen (webm с альфой не играет в Safari). */
+  /* фон ровно цвета страницы вьюера: screen смешивает с ним, и чёрный уходит в него без остатка
+     (без фона смешивать не с чем — чёрные пиксели остались бы чёрным квадратом на #040c10) */
+  .v-media.v-alpha-top { height: clamp(320px, 52vh, 620px); border: 0; background: #040c10; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; }
+  .v-media.v-alpha-top video { height: 100%; width: auto; max-width: 100%; display: block;
+    mix-blend-mode: screen; pointer-events: none; }
+  @media (max-width: 700px) { .v-media.v-alpha-top { height: 260px; } }
   .v-media .v-grade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(3,12,16,0.85) 100%); }
   .v-media .v-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 92px; height: 92px; border-radius: 50%; border: 1.5px solid rgba(43,224,198,0.7); display: flex; align-items: center; justify-content: center; background: rgba(3,12,16,0.3); }
   .v-media .v-play .tri { width: 0; height: 0; border-left: 20px solid #F1FBFC; border-top: 12px solid transparent; border-bottom: 12px solid transparent; margin-left: 5px; }
@@ -2407,11 +2416,11 @@
     { task:"sell", taskLabel:"Продать сложное", title:"Промышленность РФ", slug:"industry-rf", client:"Деп. промышленности", year:2023,
       img:AW+"industry-rf/site_ships_23_2-960x960.jpg", fb:IMG+"2026/01/site_ships_23_2-960x960.png",
       desc:"Интерактивные экспозиции для судостроительной отрасли: продукция и производственные процессы в наглядном цифровом формате.",
-      video:["youtube","5_VFgpkQ6ms"], punch:"Отрасль, которую можно рассмотреть вблизи." },
-    { task:"sell", taskLabel:"Продать сложное", title:"Аэропорты России", slug:"airports", client:"Форум «Россия»", year:2023, img:AW+"airports/site_airports_23-960x960.jpg", fb:IMG+"2026/01/site_airports_23-960x960.png", local:"videos/VDNH_airports.mp4", wi:11,
+      local:"videos/industry-rf.mp4", lposter:AW+"industry-rf/film-poster.jpg", punch:"Отрасль, которую можно рассмотреть вблизи." },
+    { task:"sell", taskLabel:"Продать сложное", title:"Аэропорты России", slug:"airports", client:"Форум «Россия»", year:2023, img:AW+"airports/site_airports_23-960x960.jpg", fb:IMG+"2026/01/site_airports_23-960x960.png", local:"videos/airports-rossiya.mp4", lposter:AW+"airports/film-poster.jpg", wi:11,
       desc:"Мультимедийные инсталляции для аэропортов: навигация, история и сервисы объединены в единую визуальную систему.",
       punch:"Пространство, которое ведёт за руку." },
-    { task:"sell", taskLabel:"Продать сложное", title:"ОДК ОАК", slug:"odk-oak", client:"ОДК · МАКС", year:2021, img:AW+"odk-oak/site_odk_21_2-960x960.jpg", fb:IMG+"2026/01/site_odk_21_2-960x960.png", video:["youtube","jgoiEkCIfgQ"], local:"videos/ODK.mp4", wi:9,
+    { task:"sell", taskLabel:"Продать сложное", title:"ОДК ОАК", slug:"odk-oak", client:"ОДК · МАКС", year:2021, img:AW+"odk-oak/site_odk_21_2-960x960.jpg", fb:IMG+"2026/01/site_odk_21_2-960x960.png", local:"videos/odk-maks-2021.mp4", lposter:AW+"odk-oak/film-poster.jpg", wi:9,
       desc:"Экспозиции авиадвигателестроения на МАКС: голограммы двигателей и интерактивные разборы технологий, объясняющие устройство изделий без единой строчки текста.",
       punch:"Сложный продукт продаёт тот, кто дал его потрогать." },
     { task:"amaze", taskLabel:"Удивить", title:"Прорыв", slug:"proryv", client:"Росатом", year:2024, img:AW+"proryv/site_ra_24-1-960x960.jpg", fb:IMG+"2026/01/site_ra_24-1-960x960.png", video:["youtube","bSNki6_F898"], local:"videos/ra.mp4", wi:10,
@@ -2435,6 +2444,7 @@
       desc:"Дополненная реальность 360°: зритель оказывается внутри сцены и осматривает пространство вокруг себя.",
       punch:"Не окно в историю, а вход в неё." },
     { task:"amaze", taskLabel:"Удивить", title:"Urban Forum 2018", slug:"urban-forum-2018", client:"Правительство Москвы", year:2018, img:AW+"urban-forum-2018/GERB_loop_poster.jpg", fb:IMG+"2020/04/GERB_loop.gif",
+      alpha:AW+"urban-forum-2018/GERB_loop.mp4",
       desc:"Интерактивная инсталляция для главного городского форума: живая графика реагирует на посетителей, а городские данные превращаются в образ.",
       punch:"Очередь к инсталляции — лучшая метрика." },
     { task:"tell", taskLabel:"Рассказать", title:"Пароль победы «Сталинград»", slug:"stalingrad", client:"Музей-заповедник", year:2018, img:AW+"stalingrad/stalingrad.jpg", fb:IMG+"2020/04/stalingrad.jpg", video:["youtube","IVmCylimRmY"], wi:4,
@@ -3896,9 +3906,12 @@
     flowIO = io;
   }
   function openCase(c){
-    // локальный ролик (с нашего хостинга) в приоритете — без ютуб-обвязки; иначе ембед; иначе кадр
-    var media = c.local
-      ? '<div class="v-media"><video src="'+c.local+'" poster="'+c.img+'" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
+    // объект «на альфе» (герб) — самый верх без рамки; дальше локальный ролик
+    // с нашего хостинга (в приоритете, без ютуб-обвязки); иначе ембед; иначе кадр
+    var media = c.alpha
+      ? '<div class="v-media v-alpha-top"><video src="'+c.alpha+'" autoplay muted loop playsinline></video></div>'
+      : c.local
+      ? '<div class="v-media"><video src="'+c.local+'" poster="'+(c.lposter || c.img)+'" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
       : c.video
       ? '<div class="v-media"><iframe src="'+embedUrl(c.video)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe></div>'
       : '<div class="v-media"><img src="'+c.img+'" alt=""><div class="v-grade"></div></div>';
