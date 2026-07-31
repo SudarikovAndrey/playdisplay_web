@@ -504,8 +504,10 @@
    "solution": "Мы построили интерактивный павильон на 100 м²: шесть мультимедийных инсталляций рассказывают о нововведениях столицы от лица её жителей. Медиафасад с 3D-графикой, макет Москвы с дополненной реальностью и живая инфографика превращают городские данные в понятный, вовлекающий опыт.",
    "flow": [
     {
-     "t": "vimeo",
-     "id": "408467538"
+     "t": "video",
+     "src": "videos/urban-film.mp4",
+     "poster": "assets/work/urban-forum-2018/film-poster.jpg",
+     "caption": "Фильм о павильоне на Московском урбанистическом форуме"
     },
     {
      "t": "scrub",
@@ -566,17 +568,11 @@
      "text": "На переднем плане стенда располагался макет с дополненной реальностью — собирательный архитектурный образ Москвы: высотки Москва-Сити, парк ВДНХ, технопарки. Пользуясь планшетом, посетители могли увидеть информацию о проектах Правительства Москвы и достигнутых результатах."
     },
     {
-     "t": "yt",
-     "id": "JGzfKECbMEQ"
-    },
-    {
-     "t": "img",
-     "src": [
-      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures2.jpg",
-      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures3.jpg",
-      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures4.jpg",
-      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures.jpg"
-     ]
+     "t": "video",
+     "src": "videos/urban-ar.mp4",
+     "ratio": "1440/1080",
+     "poster": "assets/work/urban-forum-2018/ar-poster.jpg",
+     "caption": "Макет Москвы с дополненной реальностью"
     }
    ]
   },

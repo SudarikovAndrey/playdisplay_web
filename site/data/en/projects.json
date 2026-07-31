@@ -504,8 +504,10 @@
    "solution": "We built a 100 sq m interactive pavilion. Six multimedia installations tell the story of the capital’s new initiatives in the voices of the people who live there. A media facade with 3D graphics, a scale model of Moscow with augmented reality and live infographics turn municipal data into an experience that is clear and worth staying for.",
    "flow": [
     {
-     "t": "vimeo",
-     "id": "408467538"
+     "t": "video",
+     "src": "videos/urban-film.mp4",
+     "poster": "assets/work/urban-forum-2018/film-poster.jpg",
+     "caption": "The pavilion film, Moscow Urban Forum"
     },
     {
      "t": "scrub",
@@ -566,17 +568,11 @@
      "text": "At the front of the booth stood a scale model with augmented reality — a composite architectural image of Moscow: the towers of Moscow City, the VDNH park, the technology parks. With a tablet in hand, visitors could see information about the projects of the Moscow City Government and the results achieved."
     },
     {
-     "t": "yt",
-     "id": "JGzfKECbMEQ"
-    },
-    {
-     "t": "img",
-     "src": [
-      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures2.jpg",
-      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures3.jpg",
-      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures4.jpg",
-      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures.jpg"
-     ]
+     "t": "video",
+     "src": "videos/urban-ar.mp4",
+     "ratio": "1440/1080",
+     "poster": "assets/work/urban-forum-2018/ar-poster.jpg",
+     "caption": "The Moscow city model in augmented reality"
     }
    ]
   },
