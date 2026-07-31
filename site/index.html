@@ -353,7 +353,10 @@
     transform: scale(1.16) translate3d(-1.2vw, -2vh, 0);
   }
   .card:hover .card-media img { animation: cardAlive 2.4s ease-in-out infinite;
-    filter: grayscale(0); opacity: 1; transition-delay: 0s; }
+    filter: grayscale(0); opacity: 1;
+    /* цвет включается тем же кадром, что и наведение: любая плавность здесь читается
+       как задержка. Масштаб при этом остаётся плавным — его ведёт cardAlive */
+    transition: filter 0s, opacity .08s, transform .22s ease; transition-delay: 0s; }
   /* «переливается своими цветами»: мягкая пульсация насыщенности/яркости и дыхание масштаба */
   @keyframes cardAlive {
     0%, 100% { transform: scale(1.05); filter: grayscale(0) saturate(1) brightness(1); }
@@ -2558,6 +2561,7 @@
       lastT = now;
       var cards = cardsEl.querySelectorAll('.card');
       var tgt = hovered ? mediaRect(hovered) : null;
+      var tcx = tgt ? tgt.x + tgt.w / 2 : 0, tcy = tgt ? tgt.y + tgt.h / 2 : 0;
       var anyActive = false;
       buf32.fill(0);
       for (var ci = 0; ci < cards.length; ci++) {
@@ -2566,6 +2570,10 @@
         if (want && !card._cloud) card._cloud = buildCloud(card);
         var cl = card._cloud;
         if (!cl) continue;
+        // ВЫБРАННАЯ карточка возвращает свою картинку мгновенно. Раньше её облако гасло
+        // плавно (полсекунды), и всё это время .gone держал img на opacity 0 — карточка,
+        // на которую только что навели, ещё оставалась серым набором точек
+        if (!want && card === hovered) cl.p = 0;
         if (want) { // распадаются только карточки в кадре — офскрин не трогаем
           var vr = cl.media.getBoundingClientRect();
           if (vr.bottom < -120 || vr.top > innerHeight + 120) want = 0;
@@ -2595,16 +2603,29 @@
             var k = f >= 1 ? 1 : f;
             k = k * k * (3 - 2 * k);                     // магнит: разгон у цели
             var e = k * wgt;
-            // летим в ту же относительную точку выбранной обложки — сосед «переносится» на неё
-            var tx = tgt.x + (hx - cl.rx) / cl.rw * tgt.w;
-            var ty = tgt.y + (hy - cl.ry) / cl.rh * tgt.h;
+            // Летим НЕ внутрь выбранной обложки, а в её край: точка идёт по луче «дом → центр
+            // цели» до пересечения с рамкой и гаснет там. Раньше цель была внутри картинки,
+            // и пыль сыпалась поверх кадра, мешая его смотреть. Теперь она наполняет обложку
+            // с границы — картинка остаётся чистой.
+            var dx = tcx - hx, dy = tcy - hy;
+            var t0x = -1e9, t0y = -1e9;
+            if (dx !== 0) { var ax = (tgt.x - hx) / dx, bx2 = (tgt.x + tgt.w - hx) / dx; t0x = ax < bx2 ? ax : bx2; }
+            if (dy !== 0) { var ay = (tgt.y - hy) / dy, by2 = (tgt.y + tgt.h - hy) / dy; t0y = ay < by2 ? ay : by2; }
+            var tE = t0x > t0y ? t0x : t0y;
+            if (!(tE > 0 && tE < 1)) tE = 1;                 // вырожденный случай — целимся в центр
+            var L = Math.sqrt(dx * dx + dy * dy) || 1;
+            var tx = hx + dx * tE - dx / L * 2;              // 2px наружу: садится на рамку, не под неё
+            var ty = hy + dy * tE - dy / L * 2;
             x = hx + (tx - hx) * e; y = hy + (ty - hy) * e;
-            // видна почти весь перелёт, растворяется у самой цели — «впиталась» в обложку
-            a = (k < 0.72 ? 1 : (1 - k) / 0.28) * aBase;
+            // видна весь перелёт и гаснет у самой рамки — край будто набирает свечение
+            a = (k < 0.88 ? 1 : (1 - k) / 0.12) * aBase;
             if (f >= 1) a = 0;                           // пауза перед возрождением
             else if (f < 0.08) a *= f / 0.08;            // мягкое возрождение дома
           }
           if (a < 0.04) continue;
+          // страховка: ни одна точка не рисуется поверх выбранной обложки, даже если
+          // её сдвинуло дыханием или округлением — картинка под курсором всегда чистая
+          if (tgt && x > tgt.x && x < tgt.x + tgt.w && y > tgt.y && y < tgt.y + tgt.h) continue;
           var bx = (x * FXS) | 0, by = (y * FXS) | 0;
           if (bx < 0 || by < 0 || bx >= BW || by >= BH) continue;
           buf32[by * BW + bx] = (((a * 255) | 0) << 24) | cl.col[i];
@@ -2622,7 +2643,16 @@
     });
     cardsEl.addEventListener('mouseover', function(e){
       var c = e.target.closest ? e.target.closest('.card') : null;
-      if (c) { hovered = c; wake(); }
+      if (c) {
+        hovered = c;
+        // картинку возвращаем в тот же миг, не ожидая кадра цикла: если на карточку навели,
+        // пока её облако ещё догорало, она обязана быть цветной сразу
+        if (c._cloud) {
+          c._cloud.p = 0;
+          if (c._cloud.hidden) { c._cloud.hidden = false; c._cloud.media.classList.remove('gone'); }
+        }
+        wake();
+      }
     });
     cardsEl.addEventListener('mouseout', function(e){
       var c = e.target.closest ? e.target.closest('.card') : null;
