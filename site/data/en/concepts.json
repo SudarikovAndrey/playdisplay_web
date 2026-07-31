@@ -1,0 +1,1141 @@
+{
+ "_comment": "Библиотека решений playdisplay — мастер-документ (русская версия). Поля: need «Когда пригодится», solves «Что решает», essence «Что это», feel «Что чувствует человек», spaces «Где применять», mechanics «Из чего складывается опыт», comment «Почему это работает», adapt «Что можно адаптировать».",
+ "cats": [
+  {
+   "id": "all",
+   "label": "All"
+  },
+  {
+   "id": "museum",
+   "label": "Museums"
+  },
+  {
+   "id": "brand",
+   "label": "Brands"
+  },
+  {
+   "id": "public",
+   "label": "City"
+  },
+  {
+   "id": "future",
+   "label": "Future"
+  }
+ ],
+ "concepts": [
+  {
+   "id": "ar-portal",
+   "title": "Portal Into a Space That Doesn't Exist Yet",
+   "cat": "museum",
+   "catLabel": "Museums",
+   "cover": "assets/concepts/ar-portal/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/ar-portal/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/ar-portal/2.jpg"
+    }
+   ],
+   "line": "When you need to show an unbuilt project, a vanished world or an unreachable space — and let people explore it on their own.",
+   "need": "When you need to show an unbuilt project, a vanished world or an unreachable space — and let people explore it on their own.",
+   "solves": [
+    "Shows ideas and objects before they physically exist.",
+    "Turns a presentation into self-guided exploration.",
+    "Makes the scale, structure and atmosphere of a space easy to grasp."
+   ],
+   "essence": "A digital portal opens on a phone, a tablet or AR glasses. The visitor steps closer, shifts the angle and literally looks through into another world.",
+   "feel": "I'm already inside something that so far exists only as an idea.",
+   "spaces": "Real estate development • museums • exhibitions • education • tourism • corporate showrooms",
+   "mechanics": [
+    "Full-scale AR portal",
+    "Interactive points of interest",
+    "Spatial audio",
+    "Free movement",
+    "AI guide or shared mode — optional"
+   ],
+   "comment": "Video walks the viewer along a route someone else chose. An AR portal hands over the controls. People decide where to look, what to examine and how fast to move — and the digital model starts to feel like a personal discovery. In education the same format opens the door to historical eras, natural environments, the inner workings of the body or objects in deep space.",
+   "adapt": "Residential developments, interiors, lost architecture, historical events, natural environments, machinery, vehicles, scientific models and fictional worlds.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/ar-portal/thumb.jpg"
+  },
+  {
+   "id": "ar-xray",
+   "title": "See What's Hidden Inside",
+   "cat": "museum",
+   "catLabel": "Museums",
+   "cover": "assets/concepts/ar-xray/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/ar-xray/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/ar-xray/2.jpg"
+    }
+   ],
+   "line": "When what's inside an object matters more than its outer shell.",
+   "need": "When what's inside an object matters more than its outer shell.",
+   "solves": [
+    "Explains complex engineering without taking the object apart.",
+    "Links a physical model to the processes running inside it.",
+    "Makes a product's advantages visible at a glance."
+   ],
+   "essence": "The visitor points a tablet at a real object or a scale model. On screen the shell turns transparent: mechanisms, flows, inner layers and the links between processes come into view.",
+   "feel": "I can see how it's built and why it works.",
+   "spaces": "Industry • technology museums • education • medicine • showrooms • exhibitions",
+   "mechanics": [
+    "Object recognition",
+    "Precisely registered 3D graphics",
+    "Animation of internal processes",
+    "Interactive layers",
+    "Handheld or fixed screens"
+   ],
+   "comment": "Complex systems are hard to explain in words and diagrams. When digital graphics lock precisely onto the real object, people see the form and the operating principle at the same time. The path from curiosity to understanding gets much shorter, and the object can be revealed layer by layer.",
+   "adapt": "Aircraft, cars, machine tools, buildings, building systems, the human body, geological strata, historical artifacts.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/ar-xray/thumb.jpg"
+  },
+  {
+   "id": "art-portrait",
+   "title": "Visitor Becomes Part of the Exhibition",
+   "cat": "museum",
+   "catLabel": "Museums",
+   "cover": "assets/concepts/art-portrait/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/art-portrait/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/art-portrait/2.jpg"
+    }
+   ],
+   "line": "When an exhibition needs a personal takeaway that people will want to keep and show to others.",
+   "need": "When an exhibition needs a personal takeaway that people will want to keep and show to others.",
+   "solves": [
+    "Turns a viewer into a participant.",
+    "Creates a natural magnet — and a natural sharing point.",
+    "Extends contact with the exhibition far beyond its walls."
+   ],
+   "essence": "A person looks into a mirror. A few seconds later the reflection becomes a portrait — in the style of an artist, a period or the exhibition's own visual language.",
+   "feel": "This artwork was made out of me, just now.",
+   "spaces": "Museums • art exhibitions • brand zones • festivals • learning spaces",
+   "mechanics": [
+    "Mirror screen",
+    "Camera and generative processing",
+    "Several artistic styles",
+    "QR code or direct delivery of the result",
+    "Queue and repeat-visit scenario"
+   ],
+   "comment": "Personalization grabs attention instantly: people find themselves inside the exhibit. The short wait builds anticipation, and the finished portrait becomes a tangible continuation of the visit — saved, sent to friends, posted.",
+   "adapt": "Styles of specific artists, periods, cultures, scientific themes, brands and events. Portraits can be made for couples, families and whole groups.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/art-portrait/thumb.jpg"
+  },
+  {
+   "id": "media-vitrage",
+   "title": "Facade That Reacts to People",
+   "cat": "public",
+   "catLabel": "City",
+   "cover": "assets/concepts/media-vitrage/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/media-vitrage/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/media-vitrage/2.jpg"
+    }
+   ],
+   "line": "When an architectural surface has to become the main media object of the space.",
+   "need": "When an architectural surface has to become the main media object of the space.",
+   "solves": [
+    "Draws attention from far away.",
+    "Turns a facade or a window display into a living stage.",
+    "Lets the space answer to the people in it."
+   ],
+   "essence": "A screen structure of complex geometry becomes part of the architecture. The image shifts, breaks into three-dimensional fragments, responds to movement and never quite repeats itself.",
+   "feel": "The building noticed me and changed.",
+   "spaces": "Facades • window displays • exhibitions • public spaces • offices • flagship stores",
+   "mechanics": [
+    "Custom-shaped LED modules",
+    "Kinetic elements",
+    "Cameras and sensors",
+    "Generative graphics",
+    "Content driven by the flow of people"
+   ],
+   "comment": "An ordinary screen keeps content inside a fixed rectangle. Art Screen makes the image itself part of the building's form. Reacting to viewers gives it the feel of a living object, and kinetics amplify the effect even without an elaborate storyline.",
+   "adapt": "From a compact window display to a full-size media facade. Behavior can follow the time of day, the weather, events, crowd density or the actions of one particular person.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/media-vitrage/thumb.jpg"
+  },
+  {
+   "id": "cabin-hologram",
+   "title": "Complex Object, One Synchronized Show",
+   "cat": "brand",
+   "catLabel": "Brands",
+   "cover": "assets/concepts/cabin-hologram/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/cabin-hologram/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/cabin-hologram/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/cabin-hologram/3.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/cabin-hologram/4.jpg"
+    }
+   ],
+   "line": "When a large group has to move quickly through a dense product presentation.",
+   "need": "When a large group has to move quickly through a dense product presentation.",
+   "solves": [
+    "Pulls dozens of specifications into one vivid scenario.",
+    "Works under tight time limits and heavy visitor throughput.",
+    "Shows a complex object right inside its real environment."
+   ],
+   "essence": "Several synchronized holographic LED displays build a single graphic canvas in mid-air inside a cockpit, a cabin or a technical space.",
+   "feel": "The graphics appeared inside the real object.",
+   "spaces": "Transportation • industry • exhibitions • technology museums • product launches",
+   "mechanics": [
+    "Synchronized holographic LED displays",
+    "One shared show timeline",
+    "Infographics and 3D animation",
+    "Light and sound",
+    "Continuous-flow scenario for groups"
+   ],
+   "comment": "No walking from one screen to the next. Every message unfolds inside the object itself, tied precisely to the details it describes. Synchronization makes it read as a single show, and the short format keeps a heavy flow of visitors moving.",
+   "adapt": "An aircraft, a train, a car, a ship, a production line, a laboratory, a power facility or a historical interior.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/cabin-hologram/thumb.jpg"
+  },
+  {
+   "id": "cubic-expo",
+   "title": "Exhibition as Spatial Composition",
+   "cat": "museum",
+   "catLabel": "Museums",
+   "cover": "assets/concepts/cubic-expo/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/cubic-expo/1.jpg"
+    }
+   ],
+   "line": "When you want to break out of the usual row of screens and build the space around one visual idea.",
+   "need": "When you want to break out of the usual row of screens and build the space around one visual idea.",
+   "solves": [
+    "Gives the exhibition an architecture of its own.",
+    "Binds several screens into a single narrative.",
+    "Puts all content under one control console."
+   ],
+   "essence": "Screens, pylons and curved surfaces form one continuous composition. Content flows from plane to plane, and the viewer reads the exhibit as a single object.",
+   "feel": "I'm standing inside an interface, not in front of a bank of monitors.",
+   "spaces": "Exhibitions • museums • showrooms • presentation centers • corporate spaces",
+   "mechanics": [
+    "Screens of non-standard geometry",
+    "Synchronized content",
+    "Concave central screen",
+    "Control console",
+    "Lighting scenario"
+   ],
+   "comment": "Scattered displays force people to switch between separate messages. One spatial composition holds attention and lets you build real dramaturgy: from the big picture to the detail, from passive watching to choosing and exploring.",
+   "adapt": "Shape, number of modules, control setup and content all adjust to the subject, the floor area and the expected visitor flow.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/cubic-expo/thumb.jpg"
+  },
+  {
+   "id": "living-model",
+   "title": "Future Building, Right Above the Model",
+   "cat": "brand",
+   "catLabel": "Brands",
+   "cover": "assets/concepts/living-model/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-model/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-model/2.jpg"
+    }
+   ],
+   "line": "When a buyer needs to see a future property in more depth than renders and brochures allow.",
+   "need": "When a buyer needs to see a future property in more depth than renders and brochures allow.",
+   "solves": [
+    "Adds a live layer of information to a physical model.",
+    "Shows the views, floor plans and specifications of one specific unit.",
+    "Makes options comparable right there in the conversation."
+   ],
+   "essence": "A tablet recognizes the architectural model and layers digital information over it. Pick a building, a floor or an apartment and the plan, the view from the window and the key figures appear at once.",
+   "feel": "I can already picture living here — in this exact place.",
+   "spaces": "Sales offices • developer showrooms • real estate fairs • city presentations",
+   "mechanics": [
+    "AR over a physical model",
+    "Interactive markers",
+    "Panoramas and window views",
+    "Floor plans and unit availability",
+    "CRM integration — optional"
+   ],
+   "comment": "A physical model explains the project as a whole but answers personal questions badly. Augmented reality connects the scale of the whole development with the details of one apartment. The buyer stays in the context of the place and gets precise information at the same time.",
+   "adapt": "Residential developments, resorts, office districts, master plans, retail and public spaces.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-model/thumb.jpg"
+  },
+  {
+   "id": "panorama-dive",
+   "title": "Property at the Scale of Being There",
+   "cat": "brand",
+   "catLabel": "Brands",
+   "cover": "assets/concepts/panorama-dive/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/panorama-dive/1.jpg"
+    }
+   ],
+   "line": "When a project has to be shown to a whole group with a sense of full immersion.",
+   "need": "When a project has to be shown to a whole group with a sense of full immersion.",
+   "solves": [
+    "Puts people inside the building before it exists.",
+    "Covers architecture, interiors and surroundings in one scenario.",
+    "Works both for a guided pitch and for self-guided viewing."
+   ],
+   "essence": "A large curved screen fills the field of view and renders the future project in real time. You can move across the site, step into interiors and overlay infographics.",
+   "feel": "I'm standing in the neighborhood before it's built.",
+   "spaces": "Developer sales centers • corporate presentations • exhibitions • urban planning centers",
+   "mechanics": [
+    "Panoramic LED screen",
+    "Real-time 3D",
+    "Tablet or console control",
+    "Infographics",
+    "Companion touchscreens"
+   ],
+   "comment": "A big image changes the scale of perception: people stop reading the project as a picture and start judging distances, surroundings and atmosphere. Real-time control means a client's question gets answered on the spot.",
+   "adapt": "From a compact sales area to a full immersive hall. Day and night lighting, seasons, movement scenarios and personal routes are all possible.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/panorama-dive/thumb.jpg"
+  },
+  {
+   "id": "sales-showroom",
+   "title": "Showroom That Sells a Way of Life",
+   "cat": "brand",
+   "catLabel": "Brands",
+   "cover": "assets/concepts/sales-showroom/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/sales-showroom/1.jpg"
+    }
+   ],
+   "line": "When the sales office has to be part of the project's brand and back up the work of the sales team.",
+   "need": "When the sales office has to be part of the project's brand and back up the work of the sales team.",
+   "solves": [
+    "Creates one coherent presentation environment.",
+    "Lets a large screen be driven mid-conversation.",
+    "Brings architecture, hard data and emotional content together."
+   ],
+   "essence": "Custom-shaped screens, secondary panels and a designed control console turn a property viewing into a directed scenario.",
+   "feel": "The project convinces me before I've seen a single apartment.",
+   "spaces": "Sales offices • premium showrooms • presentation centers • exhibition pavilions",
+   "mechanics": [
+    "Flat and concave screens",
+    "Tablet control",
+    "Presentation scenarios",
+    "Interactive floor plans",
+    "Synchronized light and sound"
+   ],
+   "comment": "The system supports a live conversation instead of replacing it. A sales manager moves in seconds from the big idea to the right apartment, view or amenity. The space keeps its emotional scale while the controls stay simple and invisible to the client.",
+   "adapt": "To different property segments, brand identities, sales scripts and levels of automation.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/sales-showroom/thumb.jpg"
+  },
+  {
+   "id": "living-panorama",
+   "title": "A Big Journey for a Big Audience",
+   "cat": "museum",
+   "catLabel": "Museums",
+   "cover": "assets/concepts/living-panorama/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-panorama/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-panorama/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-panorama/3.jpg"
+    }
+   ],
+   "line": "When dozens or hundreds of viewers have to step inside the same story at the same time.",
+   "need": "When dozens or hundreds of viewers have to step inside the same story at the same time.",
+   "solves": [
+    "Delivers presence at scale.",
+    "Shows places and events at a scale that convinces.",
+    "Works as the climax of a route or as a standalone attraction."
+   ],
+   "essence": "A concave screen wraps the field of view and moves the audience into a virtual environment: a city, a historical era, a natural landscape or a world of technology.",
+   "feel": "The room disappeared and we were there.",
+   "spaces": "Museums • visitor centres • tourist centers • corporate showrooms • learning spaces",
+   "mechanics": [
+    "Large concave LED screen",
+    "Panoramic content",
+    "Spatial audio",
+    "Interactive or linear scenario",
+    "Group viewing"
+   ],
+   "comment": "Peripheral vision is what makes presence feel real. A curved screen fills it and hides the edges of the image. That's why even a large group reads the content as a space rather than a film on a wall.",
+   "adapt": "Historical reconstructions, city journeys, expeditions into nature, industry, science, space, projects still to be built.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-panorama/thumb.jpg"
+  },
+  {
+   "id": "heli-model",
+   "title": "A Physical Object Comes to Life",
+   "cat": "brand",
+   "catLabel": "Brands",
+   "cover": "assets/concepts/heli-model/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/heli-model/1.jpg"
+    },
+    {
+     "type": "video",
+     "src": "assets/concepts/heli-model/clip.mp4",
+     "poster": "assets/concepts/heli-model/clip-poster.jpg"
+    }
+   ],
+   "line": "When a scale model has to show not just a shape, but action, environment and the processes around it.",
+   "need": "When a scale model has to show not just a shape, but action, environment and the processes around it.",
+   "solves": [
+    "Combines the physical credibility of a model with the motion of digital content.",
+    "Shows the object in different modes and situations.",
+    "Creates the illusion of a real 3D world with no headset."
+   ],
+   "essence": "A physical model sits between a projected backdrop and a transparent reflective pane. Virtual objects, infographics and animation appear around it, driven from a console.",
+   "feel": "I'm looking at a real model and, at the same time, at the world that exists around it.",
+   "spaces": "Technology museums • transportation • industry • showrooms • education",
+   "mechanics": [
+    "Physical or motorized model",
+    "Projected backdrop",
+    "Holographic reflection",
+    "Interactive console",
+    "Synchronized animation"
+   ],
+   "comment": "The real model gives volume and materiality; the digital layers show what can't be built physically — movement, flows, surroundings, hidden processes. The eye merges the layers into one scene, so the object reads as a living system.",
+   "adapt": "Helicopters, aircraft, cars, spacecraft, architecture, production equipment and historical machines.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/heli-model/thumb.jpg"
+  },
+  {
+   "id": "team-mission",
+   "title": "Team Quest Around One Table",
+   "cat": "museum",
+   "catLabel": "Museums",
+   "cover": "assets/concepts/team-mission/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/team-mission/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/team-mission/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/team-mission/3.jpg"
+    }
+   ],
+   "line": "When visitors need a shared task — and each of them a role of their own.",
+   "need": "When visitors need a shared task — and each of them a role of their own.",
+   "solves": [
+    "Replaces solo viewing with a shared experience.",
+    "Exercises communication and decision-making.",
+    "Holds a group through a long scenario."
+   ],
+   "essence": "Six players take places around an interactive table. Each has a personal interface, and the outcome depends on how well the group combines its decisions.",
+   "feel": "Nobody gets through this alone — we have to act together.",
+   "spaces": "Museums • science centers • corporate training • entertainment venues • exhibitions",
+   "mechanics": [
+    "Projection or LED table",
+    "Personal control zones",
+    "Touch interaction",
+    "Shared mission narrative",
+    "Room-wide light and sound"
+   ],
+   "comment": "A shared goal turns strangers into a team within seconds. Every individual action affects the common result, so attention is held by social dynamics as much as by content. The scenario blends learning, play and discussion without strain.",
+   "adapt": "Science missions, running a city, ecology, history, space, corporate challenges and pure entertainment quests.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/team-mission/thumb.jpg"
+  },
+  {
+   "id": "floating-object",
+   "title": "An Object That Looks Impossible",
+   "cat": "brand",
+   "catLabel": "Brands",
+   "cover": "assets/concepts/floating-object/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/floating-object/1.jpg"
+    },
+    {
+     "type": "video",
+     "src": "assets/concepts/floating-object/clip.mp4",
+     "poster": "assets/concepts/floating-object/clip-poster.jpg"
+    }
+   ],
+   "line": "When a product or an exhibit has to own the room and be explored in three dimensions.",
+   "need": "When a product or an exhibit has to own the room and be explored in three dimensions.",
+   "solves": [
+    "Creates the illusion of a 3D object floating in air.",
+    "Lets people manipulate the model without a VR headset.",
+    "Combines a showstopper with a working product catalog."
+   ],
+   "essence": "A volumetric image appears inside a darkened prism. The visitor rotates the object, switches modes and opens further layers of information.",
+   "feel": "The object hangs in mid-air and answers to what I do.",
+   "spaces": "Technology showrooms • museums • exhibitions • luxury retail • education centers",
+   "mechanics": [
+    "Reflective holographic pane",
+    "Concealed screens",
+    "Projection onto floor or backdrop",
+    "Interactive console",
+    "3D content"
+   ],
+   "comment": "The contrast between a dark enclosure and a glowing image hides every technical edge. Several synchronized visual layers build real depth, and interaction turns the effect from a display case into a tool for exploration.",
+   "adapt": "Mechanisms, electronics, jewelry, architecture, anatomy, historical objects and digital art.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/floating-object/thumb.jpg"
+  },
+  {
+   "id": "living-interior",
+   "title": "Show How a Space Will Live",
+   "cat": "brand",
+   "catLabel": "Brands",
+   "cover": "assets/concepts/living-interior/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-interior/1.jpg"
+    }
+   ],
+   "line": "When what you're selling is not an interior as a set of finishes, but the life that will happen inside it.",
+   "need": "When what you're selling is not an interior as a set of finishes, but the life that will happen inside it.",
+   "solves": [
+    "Adds human presence to the scenario.",
+    "Shows what the space does, in action.",
+    "Ties a physical model to an emotional story."
+   ],
+   "essence": "A physical interior model gains views beyond its windows and translucent human figures. Short scenes play out inside it: everyday life, work, a historical event.",
+   "feel": "I'm not looking at an empty room — I'm looking at a moment of my future life.",
+   "spaces": "Real estate development • museums • hotels • showrooms • exhibitions",
+   "mechanics": [
+    "Physical interior model",
+    "Holographic characters",
+    "Dynamic views through the windows",
+    "Use-case scenarios",
+    "Lighting timeline"
+   ],
+   "comment": "An empty model asks people to imagine the life inside it for themselves. Characters, movement and the changing time of day do that work for them. The project is understood through familiar situations, not only through dimensions and finishes.",
+   "adapt": "Homes, offices, hotels, historical rooms, laboratories and technology spaces.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-interior/thumb.jpg"
+  },
+  {
+   "id": "threshold",
+   "title": "Immersion Starts at the Door",
+   "cat": "museum",
+   "catLabel": "Museums",
+   "cover": "assets/concepts/threshold/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/threshold/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/threshold/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/threshold/3.jpg"
+    }
+   ],
+   "line": "When the first impression has to set the mood for the whole space, instantly.",
+   "need": "When the first impression has to set the mood for the whole space, instantly.",
+   "solves": [
+    "Turns the entrance into a scene in its own right.",
+    "Delivers the brand's atmosphere before the main route even begins.",
+    "Creates a strong visual landmark."
+   ],
+   "essence": "LED surfaces are built into the frame of doors and passages. Water, light, fire or abstract graphics stream around the opening and change what crossing it feels like.",
+   "feel": "I crossed a line and came out in another world.",
+   "spaces": "Museums • offices • showrooms • exhibitions • shopping centers • public spaces",
+   "mechanics": [
+    "LED screens integrated into the architecture",
+    "Content shaped to the opening",
+    "Light and sound",
+    "Response to approach",
+    "Indoor or outdoor build"
+   ],
+   "comment": "Walking through a doorway is already a natural change of state. When architecture underlines that moment with movement and light, people arrive emotionally prepared for what comes next. The entrance becomes part of the narrative instead of a piece of infrastructure.",
+   "adapt": "From a compact doorway portal to a large facade installation. Content can follow the season, the event, the brand or the story of the place.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/threshold/thumb.jpg"
+  },
+  {
+   "id": "living-lines",
+   "title": "The Space Starts Speaking",
+   "cat": "public",
+   "catLabel": "City",
+   "cover": "assets/concepts/living-lines/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-lines/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-lines/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-lines/3.jpg"
+    }
+   ],
+   "line": "When an interior needs a live information layer built into the architecture itself.",
+   "need": "When an interior needs a live information layer built into the architecture itself.",
+   "solves": [
+    "Delivers information without standalone display boards.",
+    "Ties separate zones together with one visual language.",
+    "Makes the space personalizable."
+   ],
+   "essence": "Narrow LED lines run across walls, ceiling and floor. Text, data, graphics and signals travel along them, setting the digital rhythm of the space.",
+   "feel": "The information moves along with me.",
+   "spaces": "Offices • museums • transport hubs • showrooms • retail and public spaces",
+   "mechanics": [
+    "Narrow LED modules",
+    "Content in motion",
+    "Live data integration",
+    "Recognition or personalization — optional",
+    "Architectural transitions between planes"
+   ],
+   "comment": "A line naturally guides the eye and the feet. Instead of sitting on a separate screen, information becomes part of the route: it travels with people, links zones and can change with the hour, the event or the audience.",
+   "adapt": "Wayfinding, news, company data, artworks, market figures, personal messages and cues inside a scenario.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-lines/thumb.jpg"
+  },
+  {
+   "id": "weightlessness",
+   "title": "One Object Stops the Crowd",
+   "cat": "brand",
+   "catLabel": "Brands",
+   "cover": "assets/concepts/weightlessness/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/weightlessness/1.jpg"
+    }
+   ],
+   "line": "When you need a simple, physically convincing center of attention.",
+   "need": "When you need a simple, physically convincing center of attention.",
+   "solves": [
+    "Poses an instant visual question.",
+    "Lifts a product or an exhibit out of the informational noise.",
+    "Works with no screen and no interface at all."
+   ],
+   "essence": "The object floats in the air, turning slowly. Form, light and material are chosen to make its weight look utterly real.",
+   "feel": "I know what I'm seeing, and I still can't explain how it's possible.",
+   "spaces": "Exhibitions • museums • window displays • showrooms • product launches",
+   "mechanics": [
+    "Magnetic levitation",
+    "Weight-optimized replica",
+    "Concealed structure",
+    "Precise lighting",
+    "Slow rotation"
+   ],
+   "comment": "The brain spots a broken law of physics instantly. The contrast between how heavy the object looks and the fact that it simply hangs there creates a tension that holds the eye and pulls people closer.",
+   "adapt": "A stone, a product, an artifact, a logo, a model of a planet, an engineered component or an art object.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/weightlessness/thumb.jpg"
+  },
+  {
+   "id": "mars",
+   "title": "Museum as a Working Space Base",
+   "cat": "future",
+   "catLabel": "Future",
+   "cover": "assets/concepts/mars/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/mars/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/mars/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/mars/3.jpg"
+    },
+    {
+     "type": "video",
+     "src": "assets/concepts/mars/clip.mp4",
+     "poster": "assets/concepts/mars/clip-poster.jpg"
+    }
+   ],
+   "line": "When an educational subject has to become a sequence of personal missions.",
+   "need": "When an educational subject has to become a sequence of personal missions.",
+   "solves": [
+    "Fuses knowledge, play and the sense of presence.",
+    "Lets a visitor step into the role of an explorer.",
+    "Turns separate exhibits into one coherent route."
+   ],
+   "essence": "Visitors enter a Mars base, look out at the surface of the planet through a hemispherical screen and complete tasks at interactive stations.",
+   "feel": "We're not studying Mars. We live and work here.",
+   "spaces": "Space museums • science centers • education • theme parks • visitor centres",
+   "mechanics": [
+    "Hemispherical screen",
+    "Stations with physical buttons and mechanics",
+    "Mission system",
+    "Solo and group tasks",
+    "Physical set design"
+   ],
+   "comment": "A role and a goal turn a pile of facts into a story. Information arrives at the moment it's needed to solve something: choose a landing site, ration supplies, ride out a storm, analyze a sample. Knowledge becomes a tool for action.",
+   "adapt": "A lunar base, a polar station, an underwater laboratory, an archaeological expedition and other worlds built for learning.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/mars/thumb.jpg"
+  },
+  {
+   "id": "living-monolith",
+   "title": "A Wall That Lives With the Space",
+   "cat": "museum",
+   "catLabel": "Museums",
+   "cover": "assets/concepts/living-monolith/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-monolith/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-monolith/2.jpg"
+    }
+   ],
+   "line": "When a large architectural volume has to hold both a permanent identity and content that keeps changing.",
+   "need": "When a large architectural volume has to hold both a permanent identity and content that keeps changing.",
+   "solves": [
+    "Brings a blank wall to life.",
+    "Connects a commemorative object to the organization's current life.",
+    "Gives the interior a strong center."
+   ],
+   "essence": "A solid monument or display merges with a large screen. The permanent part holds the core of the story; the digital part carries events, people, data and new meaning.",
+   "feel": "The story of this place is continuing right now.",
+   "spaces": "Universities • business schools • museums • corporate centers • public buildings",
+   "mechanics": [
+    "Solid monolith",
+    "Large LED screen",
+    "Updatable content",
+    "Infographics and archive",
+    "Event scenarios"
+   ],
+   "comment": "A fully digital wall loses its sense of weight fast; a fully material one stops developing. Two layers together give both permanence and life: the place keeps its symbol and still shows something new.",
+   "adapt": "A founders' wall, company history, achievements, scientific discoveries, an events calendar and a living community archive.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-monolith/thumb.jpg"
+  },
+  {
+   "id": "mind-canvas",
+   "title": "Artwork Painted by a State of Mind",
+   "cat": "future",
+   "catLabel": "Future",
+   "cover": "assets/concepts/mind-canvas/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/mind-canvas/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/mind-canvas/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/mind-canvas/3.jpg"
+    }
+   ],
+   "line": "When you want to give visitors an unexpected way to see and express what's going on inside them.",
+   "need": "When you want to give visitors an unexpected way to see and express what's going on inside them.",
+   "solves": [
+    "Makes invisible brain activity visible.",
+    "Produces a personal artwork with no artistic skill required.",
+    "Brings together art, science and self-observation."
+   ],
+   "essence": "A neurointerface reads brain activity, and a generative system turns it into color, movement, composition and sound.",
+   "feel": "I saw a visual trace of my own consciousness.",
+   "spaces": "Art and science museums • wellness spaces • exhibitions • education centers • events",
+   "mechanics": [
+    "EEG headset",
+    "Signal analysis",
+    "Generative graphics",
+    "Styling to match the exhibition theme",
+    "Saving the result"
+   ],
+   "comment": "You can't feel your own brain activity directly, and it's hard to picture. Given a visual form, a person's inner state becomes something they can study. Because no two results are alike, the experience carries real personal value.",
+   "adapt": "Abstract art, the styles of specific artists, music visualization, meditative scenarios, before-and-after comparisons of a person's state.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/mind-canvas/thumb.jpg"
+  },
+  {
+   "id": "street-portal",
+   "title": "The Street Gets a Window Into Somewhere Else",
+   "cat": "public",
+   "catLabel": "City",
+   "cover": "assets/concepts/street-portal/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/street-portal/1.jpg"
+    }
+   ],
+   "line": "When passers-by need a reason to care about a place or an event before they've decided to go in.",
+   "need": "When passers-by need a reason to care about a place or an event before they've decided to go in.",
+   "solves": [
+    "Creates a striking teaser out in the city.",
+    "Shows what's happening inside the space.",
+    "Invites photos and spreads on its own."
+   ],
+   "essence": "A glowing street object looks like a portal. Inside it: moving artwork, or a live feed from a museum, a store, a showroom or an event.",
+   "feel": "I just stumbled on a passage to somewhere else.",
+   "spaces": "Urban spaces • museums • festivals • stores • office centers • exhibitions",
+   "mechanics": [
+    "Outdoor screen",
+    "Architectural enclosure",
+    "Artistic or live content",
+    "Camera and interaction — optional",
+    "Photogenic composition"
+   ],
+   "comment": "The portal runs on plain curiosity: you want to look inside the frame and work out where that space actually is. The form makes a clear visual gesture, and live content turns advertising into an experience the city gets to keep.",
+   "adapt": "An exhibition teaser, a window between two cities, a live feed from a venue, an art object, a brand activation or a seasonal installation.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/street-portal/thumb.jpg"
+  },
+  {
+   "id": "form-library",
+   "title": "Screens Become Architecture",
+   "cat": "brand",
+   "catLabel": "Brands",
+   "cover": "assets/concepts/form-library/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/form-library/1.jpg"
+    },
+    {
+     "type": "video",
+     "src": "assets/concepts/form-library/clip.mp4",
+     "poster": "assets/concepts/form-library/clip-poster.jpg"
+    }
+   ],
+   "line": "When a space needs a form of its own and content has to escape the standard rectangle.",
+   "need": "When a space needs a form of its own and content has to escape the standard rectangle.",
+   "solves": [
+    "Creates a recognizable visual language.",
+    "Merges architecture and media.",
+    "Lets you assemble different compositions from the same modules."
+   ],
+   "essence": "Screens of different sizes and geometries fold into faceted objects. From one particular viewpoint the content locks into a single image; as you move, it unfolds into a layered composition.",
+   "feel": "The image exists on the screen and in real space at once.",
+   "spaces": "Exhibitions • showrooms • retail • museums • offices • stages",
+   "mechanics": [
+    "Custom-shaped screens",
+    "Anamorphic content",
+    "Modular structure",
+    "Kinetics — optional",
+    "Synchronized graphics"
+   ],
+   "comment": "An unusual form earns attention before a single frame plays. The anamorphic effect rewards the viewer for finding the right spot and makes moving through the space part of the experience.",
+   "adapt": "Scale, configuration, how much of it moves, the type of content and the number of perfect viewing points.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/form-library/thumb.jpg"
+  },
+  {
+   "id": "living-ship",
+   "title": "A Ship's Story Unfolds Around Its Model",
+   "cat": "museum",
+   "catLabel": "Museums",
+   "cover": "assets/concepts/living-ship/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-ship/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-ship/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-ship/3.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-ship/4.jpg"
+    }
+   ],
+   "line": "When a physical exhibit needs movement, scale and events added to it.",
+   "need": "When a physical exhibit needs movement, scale and events added to it.",
+   "solves": [
+    "Brings static models to life.",
+    "Shows processes that could never fit into the physical build.",
+    "Fits a series of self-contained stories into one hall."
+   ],
+   "essence": "A physical ship model sits inside a holographic display. Virtual graphics show its motion, its interior, its crew and the events around it.",
+   "feel": "It stopped being a model — a real scene is playing out in front of me.",
+   "spaces": "Maritime museums • history exhibitions • education • visitor centres",
+   "mechanics": [
+    "Physical model",
+    "Reflective pane",
+    "Concealed screen",
+    "3D animation",
+    "Synchronized sound and light"
+   ],
+   "comment": "The model gives exact form and genuine depth; the digital layer adds time. Visitors see not just what the object looked like but what happened to it: aircraft landing on deck, the crew at work, a dive, sails filling with wind.",
+   "adapt": "Ships, architecture, battles, cities, industrial processes and natural systems.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-ship/thumb.jpg"
+  },
+  {
+   "id": "safe-training",
+   "title": "Skill Through Action and Full Presence",
+   "cat": "public",
+   "catLabel": "City",
+   "cover": "assets/concepts/safe-training/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/safe-training/1.jpg"
+    }
+   ],
+   "line": "When someone has to train or run missions in a controlled virtual environment.",
+   "need": "When someone has to train or run missions in a controlled virtual environment.",
+   "solves": [
+    "Combines visual, physical and tactile input.",
+    "Makes difficult scenarios repeatable and safe.",
+    "Serves entertainment and professional training alike."
+   ],
+   "essence": "A panoramic screen, force-feedback controllers and a motion platform create the sensation of moving through a virtual world.",
+   "feel": "My body reacts as if this were really happening.",
+   "spaces": "Training centers • museums • theme parks • corporate training • entertainment",
+   "mechanics": [
+    "Panoramic screen",
+    "Physical controllers",
+    "Force feedback and vibration",
+    "Motion platform",
+    "Instructor console"
+   ],
+   "comment": "Skills form faster when a decision comes paired with a physical action and immediate feedback. The system sets the difficulty, replays episodes and analyzes how the trainee responded, all under controlled conditions.",
+   "adapt": "Rescue operations, industrial safety, transportation, sports, historical scenarios and science-fiction missions.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/safe-training/thumb.jpg"
+  },
+  {
+   "id": "motion-game",
+   "title": "Training Turns Into a Game",
+   "cat": "public",
+   "catLabel": "City",
+   "cover": "assets/concepts/motion-game/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-game/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-game/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-game/3.jpg"
+    }
+   ],
+   "line": "When people need a reason to move longer, more often and with more appetite.",
+   "need": "When people need a reason to move longer, more often and with more appetite.",
+   "solves": [
+    "Lowers the mental barrier to physical effort.",
+    "Adapts tasks to each person's level.",
+    "Sets up both solo and team competition."
+   ],
+   "essence": "Light, projection and sensors turn a room into a playing field. The system shows where to move, what to touch, where to throw and when to change pace.",
+   "feel": "I'm playing — and only afterwards do I notice how hard I worked.",
+   "spaces": "Fitness clubs • sports centers • schools • rehabilitation • family entertainment",
+   "mechanics": [
+    "Motion tracking",
+    "Light and projection targets",
+    "Adaptive difficulty",
+    "Scoring system",
+    "Team modes"
+   ],
+   "comment": "A game swaps the abstract goal of \"working out\" for short, concrete tasks and instant feedback. People see progress, make decisions and get an emotional reward, so the effort feels lighter.",
+   "adapt": "Cardio, coordination, reaction time, team games, children's classes, rehabilitation exercises.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/motion-game/thumb.jpg"
+  },
+  {
+   "id": "motion-architecture",
+   "title": "Every Step Becomes Part of the Message",
+   "cat": "public",
+   "catLabel": "City",
+   "cover": "assets/concepts/motion-architecture/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-architecture/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-architecture/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-architecture/3.jpg"
+    }
+   ],
+   "line": "When an everyday route should turn into a visual and narrative event.",
+   "need": "When an everyday route should turn into a visual and narrative event.",
+   "solves": [
+    "Turns a staircase into a full-fledged medium.",
+    "Links a person's movement to the unfolding of content.",
+    "Creates a strong image without taking up extra floor space."
+   ],
+   "essence": "Purpose-built LED screens cover the risers or the entire surface of a staircase. Text, graphics and artworks assemble into one image.",
+   "feel": "I'm climbing through a story, not just up the stairs.",
+   "spaces": "Museums • offices • universities • shopping centers • exhibitions • public buildings",
+   "mechanics": [
+    "Load-rated LED modules",
+    "Content built to the geometry of the steps",
+    "Anamorphic view",
+    "Response to movement — optional",
+    "Wayfinding integration"
+   ],
+   "comment": "A staircase already sets a sequence and a rhythm. Content can reveal itself step by step, guide people and resolve into one big image from a key vantage point. An everyday action becomes part of the narrative.",
+   "adapt": "Wayfinding, the story of an organization, data, art, ad campaigns, game challenges and learning sequences.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/motion-architecture/thumb.jpg"
+  },
+  {
+   "id": "control-center",
+   "title": "A Space Mission for a Real Crew",
+   "cat": "future",
+   "catLabel": "Future",
+   "cover": "assets/concepts/control-center/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/3.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/4.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/5.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/6.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/7.jpg"
+    }
+   ],
+   "line": "When you need a flagship attraction with a long scenario, repeat visits and strong group dynamics.",
+   "need": "When you need a flagship attraction with a long scenario, repeat visits and strong group dynamics.",
+   "solves": [
+    "Builds a full-scale adventure inside a museum or a center.",
+    "Binds participants together with shared responsibility.",
+    "Lets you release new missions and bring the audience back."
+   ],
+   "essence": "A group takes their seats aboard a spacecraft. Each person runs one system, and both the flight and the story depend on the crew's joint decisions.",
+   "feel": "We really are a crew — one person's mistake hits everyone.",
+   "spaces": "Space museums • science centers • theme parks • future-facing visitor centres",
+   "mechanics": [
+    "Spherical panoramic screen",
+    "Individual consoles",
+    "Team puzzles",
+    "Motion platform",
+    "Spatial audio and physical set design"
+   ],
+   "comment": "A long experience holds attention through roles, a shared goal and a constant change in the kind of task at hand. Everyone carries their own responsibility, and the result exists only through coordination. A serial structure lets new missions launch and builds a returning audience.",
+   "adapt": "A spaceflight, a deep-sea expedition, running a city of the future, a research mission or a philosophical interactive performance.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/control-center/thumb.jpg"
+  },
+  {
+   "id": "city-flight",
+   "title": "A Real Jump Lands You in a Digital World",
+   "cat": "public",
+   "catLabel": "City",
+   "cover": "assets/concepts/city-flight/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/city-flight/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/city-flight/2.jpg"
+    }
+   ],
+   "line": "When you need a spectacular attraction that reads at a glance and runs on real physical movement.",
+   "need": "When you need a spectacular attraction that reads at a glance and runs on real physical movement.",
+   "solves": [
+    "Joins physical activity to a virtual journey.",
+    "Creates a strong show for everyone watching.",
+    "Suits short, repeatable sessions."
+   ],
+   "essence": "The visitor jumps on a trampoline and a tracking system carries every jump into a 3D world on a large screen: across rooftops, through forests and mountains, or down an airport terminal.",
+   "feel": "My own movement became part of a video game.",
+   "spaces": "Airports • entertainment centers • museums • brand events • sports venues",
+   "mechanics": [
+    "Trampoline",
+    "Body and jump tracking",
+    "Real-time 3D",
+    "Screen aligned to the player's viewpoint",
+    "Game scenario"
+   ],
+   "comment": "The link between physical effort and the virtual world's instant response gives a rare feeling of control. The mechanic needs no instructions, and watching is nearly as good as taking part, so a crowd gathers around the installation on its own.",
+   "adapt": "City routes, natural worlds, journeys through a brand's own locations, athletic challenges, training and fantasy adventures.*6",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/city-flight/thumb.jpg"
+  }
+ ],
+ "rev": "master-2707",
+ "revDate": "2026-07-27"
+}

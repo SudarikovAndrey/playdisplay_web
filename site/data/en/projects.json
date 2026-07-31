@@ -1,0 +1,918 @@
+{
+ "meta": {
+  "source": "https://playdisplay.com/projects/",
+  "scraped": "2026-07-17",
+  "note": "wi = texture index in the prototype (odk_frame/textures). null = cover only. Local assets: assets/work/<slug>/<basename>, original in url."
+ },
+ "projects": [
+  {
+   "slug": "industry-rf",
+   "url": "https://playdisplay.com/work/судостроение/",
+   "title": "Russian Industry",
+   "subtitle": "Interactive installations · Russia Expo",
+   "tags": [
+    "installation"
+   ],
+   "client": "Vizhu · Department of Industry",
+   "term": "2 months",
+   "year": 2023,
+   "wi": null,
+   "cover": "https://playdisplay.com/wp-content/uploads/2026/01/site_ships_23_2-960x960.png",
+   "goal": "The country has ambitious plans for shipbuilding: a new generation of civilian vessels, breakthrough engineering, the modernization of the industry and the training of its specialists. All of it had to reach the wide audience of Russia Expo — spectacular and easy to follow.",
+   "solution": "We built a fully immersive exhibition. Visitors examine the flagship projects and the new ships in three dimensions, take them apart unit by unit and see where the industry’s innovation actually sits. Complex technology turns into a clear, gripping story — one the visitor lives through firsthand.",
+   "flow": []
+  },
+  {
+   "slug": "airports",
+   "url": "https://playdisplay.com/work/аэропорты-россии/",
+   "title": "Russian Airports",
+   "subtitle": "International airports · Russia Expo",
+   "tags": [
+    "installation"
+   ],
+   "client": "Yelizovo · Gelendzhik · Simferopol international airports",
+   "term": "3 months",
+   "year": 2023,
+   "wi": 11,
+   "cover": "https://playdisplay.com/wp-content/uploads/2026/01/site_airports_23-960x960.png",
+   "goal": "Present three of Russia’s international airports at Russia Expo so that each one reveals its own architecture and character — and turn the encounter into a lively experience that works for visitors of any age.",
+   "solution": "In a single space at Russia Expo we presented three international airports — each with its own architectural signature and its own installation. At Yelizovo, visitors colored a paper plane and launched it over the Kamchatka terminal. At Simferopol, they flew a paper plane through the terminal with a wave of the hand. At Gelendzhik, a gesture repainted the terminal’s living LED ceiling. Three buildings, three ways to feel what makes them different.",
+   "flow": [
+    {
+     "t": "h",
+     "text": "[1] Yelizovo Airport (Kamchatka)"
+    },
+    {
+     "t": "p",
+     "text": "An interactive installation that makes the visitor a co-author. You take a sheet of paper printed with the outline of a plane, color it in and place it on a dedicated table. On the screen a digital model of the plane assembles itself in augmented reality — in exactly the design the visitor has just drawn. The plane takes off and flies over the terminal of Yelizovo Airport. The surroundings are rebuilt from real cartographic data. Rendering runs on Unreal Engine 5; three cameras read the drawing."
+    },
+    {
+     "t": "h",
+     "text": "[2] Simferopol Airport"
+    },
+    {
+     "t": "p",
+     "text": "An interactive game, Paper Plane Flight. The visitor steps up to the booth, reaches out a hand — and a paper plane appears on the screen. Steering the flight with gestures, the player crosses the space of the terminal, collects bonuses and completes in-game tasks. The terminal is rendered in realistic graphics on Unreal Engine 5."
+    },
+    {
+     "t": "h",
+     "text": "[3] Gelendzhik Airport"
+    },
+    {
+     "t": "p",
+     "text": "The interactive zone of Gelendzhik Airport. The visitor steps into a ring of light and sees the airport interiors from a range of angles on the screen ahead. Waving their arms, they drive the visual environment and watch the terminal’s living LED ceiling — an intricate color-lighting system — change in real time."
+    }
+   ]
+  },
+  {
+   "slug": "odk-oak",
+   "url": "https://playdisplay.com/work/одк-оак/",
+   "title": "UEC UAC",
+   "subtitle": "Dynamic exhibition space · MAKS 2021",
+   "tags": [
+    "installation"
+   ],
+   "client": "United Engine Corporation (UEC) · Exposervice GmbH",
+   "term": "3 months",
+   "year": 2021,
+   "wi": 9,
+   "cover": "https://playdisplay.com/wp-content/uploads/2026/01/site_odk_21_2-960x960.png",
+   "goal": "MAKS, the International Aviation and Space Salon, is one of the world’s major aerospace events. United Engine Corporation (UEC), Russia’s leading developer of aircraft engines, was presenting its pavilion there.",
+   "solution": "For the UEC booth we built a multimedia immersion into the world of aircraft engine manufacturing. A complex screen setup, one shared rhythm across every image and a set of interactive experiences turn the pavilion into a single living space where the technology reads at a glance.",
+   "flow": [
+    {
+     "t": "steps",
+     "items": [
+      "Project concept and design",
+      "Engineering the multimedia solution, producing the graphics",
+      "Integrating the graphics into the space: fitting, calibration, polish",
+      "Installing and tuning the exhibits, on-site support"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "proryv",
+   "url": "https://playdisplay.com/work/ростех-экспо/",
+   "title": "Proryv",
+   "subtitle": "Rosatom · the presentation tunnel",
+   "tags": [
+    "installation"
+   ],
+   "client": "Rosatom. Proryv (Breakthrough) project",
+   "term": "2 months",
+   "year": 2024,
+   "wi": 10,
+   "cover": "https://playdisplay.com/wp-content/uploads/2026/01/site_ra_24-1-960x960.png",
+   "goal": "Build an installation that shows in plain visual terms how a nuclear power platform with a closed nuclear fuel cycle based on fast neutrons actually works.",
+   "solution": "An informational multimedia installation about the Proryv technologies. A complex screen setup and the tunnel effect create the sensation of moving through space and pull the viewer bodily into the story. The piece works as a visual ride and becomes the spot everyone photographs and films.",
+   "flow": [
+    {
+     "t": "steps",
+     "items": [
+      "Project concept and design",
+      "Engineering, equipment selection and supply",
+      "Building the tunnel structure and the decorative elements",
+      "Assembly at the venue, dismantling, reuse"
+     ]
+    },
+    {
+     "t": "scrub",
+     "src": "videos/proryv-booth.mp4",
+     "poster": "assets/work/proryv/booth-poster.jpg",
+     "caption": "Designing the booth",
+     "hint": "drag right — the booth assembles",
+     "knob": "ASSEMBLE"
+    }
+   ]
+  },
+  {
+   "slug": "rostec",
+   "url": "https://playdisplay.com/work/rostec/",
+   "title": "Rostec Expo",
+   "subtitle": "Holographic catalog",
+   "tags": [
+    "installation",
+    "hologram"
+   ],
+   "client": "Rostec Expo",
+   "term": "6 months",
+   "year": 2021,
+   "wi": 12,
+   "cover": "https://playdisplay.com/wp-content/uploads/2021/06/01_logo_v03-960x960.jpg",
+   "goal": "Create the centerpiece exhibit at the entrance to the Rostec Expo pavilion and bring the products of every company in the Rostec group together in one holographic space.",
+   "solution": "A holographic installation shaped like the Rostec logo. The transparent screen keeps the hall visible through it, while a control console opens the group’s full product catalog — all inside a single holographic space.",
+   "flow": [
+    {
+     "t": "steps",
+     "items": [
+      "Project concept and design",
+      "Engineering, equipment selection and supply",
+      "Building the cube structure and manufacturing the control console",
+      "Software design and commissioning"
+     ]
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2021/06/04_1_des.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/06/04_2_des_01.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/06/05_1_6_char_bm_v02.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/06/06_0_2_sys_tzm.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/06/07_4_2_sh.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/06/04_1_des_v01.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/06/04_4_des.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/06/06_4_specials_cabine.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/06/06_3_specials_perekos.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/06/08_gallery_v01.jpg"
+     ]
+    },
+    {
+     "t": "h",
+     "text": "The control console"
+    },
+    {
+     "t": "p",
+     "text": "A multifunction device designed in a retrofuturist key. Its working surface carries a set of touch panels for navigating the catalog and driving the interactive content. The base is made of polished galvanized aluminum."
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2021/06/cam_04.png",
+      "https://playdisplay.com/wp-content/uploads/2021/06/cam_03.png",
+      "https://playdisplay.com/wp-content/uploads/2021/06/cam_02.png",
+      "https://playdisplay.com/wp-content/uploads/2021/06/cam_01.png",
+      "https://playdisplay.com/wp-content/uploads/2021/06/cam_05.png",
+      "https://playdisplay.com/wp-content/uploads/2021/06/pult_preview_cam_01_crop.png"
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Control console: functional layout"
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2021/06/RC_instruction.png"
+     ]
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Tactical map window. Activates when the product description includes a matching scenario.",
+      "Text prompt window. Holds a short description of the product in one place.",
+      "Window showing a scaled-down 3D view of the product.",
+      "Navigation bar showing the current path through the catalog.",
+      "Button that steps back one level in the catalog.",
+      "Window with the current date and time.",
+      "Language switch — RU / ENG.",
+      "Window that wakes the installation // returns it to the opening idle mode. The two alternate.",
+      "Navigation block — shows the status of the animation currently playing and whether that element has audio running.",
+      "Volume control for the installation.",
+      "3D joystick for rotating and steering the 3D model. In some scenarios not every axis of rotation is live.",
+      "Touchpad pointer. Press and hold to show a cursor on the main holographic screen.",
+      "Main interface window. Opens the catalog and lets you pick items from the menu of product descriptions."
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "ptk-group",
+   "url": "https://playdisplay.com/work/ptk-group/",
+   "title": "PTK Group",
+   "subtitle": "Exhibition installation",
+   "tags": [
+    "installation"
+   ],
+   "client": "PTK Group",
+   "term": "2 months",
+   "year": 2019,
+   "wi": 7,
+   "cover": "https://playdisplay.com/wp-content/uploads/2021/02/ptk_start_2.gif",
+   "goal": "PTK Group builds modern track machines — equipment for constructing, repairing and maintaining railways. Almost all of it shares one trait: it is long and drawn out.",
+   "solution": "We turned that trait into the format itself. The content was made for an ultra-wide screen on the booth that echoes the proportions of the machines. The display follows the shape of the product: each machine unfolds horizontally at full length, and its structure and specifications read clearly.",
+   "flow": [
+    {
+     "t": "steps",
+     "items": [
+      "Project concept",
+      "Modeling the machines",
+      "Working through the information layer",
+      "Equipment installation and commissioning"
+     ]
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens1.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens2.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens3.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens4.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens5.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens6.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens7.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens8.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens9.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens10.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens11.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens12.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens13.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens14.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens15.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens16.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens17.jpg",
+      "https://playdisplay.com/wp-content/uploads/2021/02/ptk_screens18.jpg"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "mig2019",
+   "url": "https://playdisplay.com/work/mig2019/",
+   "title": "MiG-35 Booth",
+   "subtitle": "Multimedia booth at the MAKS 2019 airshow",
+   "tags": [
+    "exhibitions"
+   ],
+   "client": "RSK MiG",
+   "term": "3 weeks",
+   "year": 2019,
+   "wi": 2,
+   "cover": "https://playdisplay.com/wp-content/uploads/2020/03/mig_booth-960x960.jpg",
+   "goal": "Make the MiG-35 stand out among the other manufacturers’ aircraft, and build a demonstration tool for presenting the jet to customers.",
+   "solution": "We designed a plinth and a load-bearing structure for the aircraft and installed an LED screen. The screen ran purpose-built 3D content laying out the key characteristics of the MiG-35. The plinth, the large structure above it and 50 sq m of screen set the jet apart.",
+   "flow": [
+    {
+     "t": "video",
+     "src": "videos/mig-led.mp4",
+     "ratio": "1920/520",
+     "poster": "assets/work/mig2019/film-poster.jpg",
+     "caption": "LED screen content, 15 meters across the front"
+    },
+    {
+     "t": "h",
+     "text": "Graphics"
+    },
+    {
+     "t": "p",
+     "text": "We had 15 days to produce the content. In that time we developed and pitched several visual directions. Final resolution of the video content: 6000 × 1800 px."
+    },
+    {
+     "t": "h",
+     "text": "How the booth was designed"
+    },
+    {
+     "t": "p",
+     "text": "After a round of sketches we settled on a design with a plinth for the aircraft, a load-bearing structure and an LED screen. Sunlight calculations showed that a canopy was needed to raise the contrast of the image on the screen. The structure is built from Layher truss elements and wrapped in fully printed banner fabric."
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth2.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth3.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth4.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth5.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth6.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth7.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth8.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth1.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth9.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig_des_booth10.jpg"
+     ]
+    },
+    {
+     "t": "scrub",
+     "src": "videos/mig-booth-360.mp4",
+     "poster": "assets/work/mig2019/booth360-poster.jpg",
+     "knob": "360",
+     "hint": "drag — the booth turns",
+     "caption": "Booth design: a turn around the stand"
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig2.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig7.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig8.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig1.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig5.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig3.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig6.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/mig4.jpg"
+     ],
+     "caption": "Photographs from the event and the interior of the booth"
+    },
+    {
+     "t": "h",
+     "text": "Aircraft livery"
+    },
+    {
+     "t": "p",
+     "text": "To get the strongest presentation effect we developed a special livery — the paint design of the aircraft. The painting process set the limits: two colors, light blue and white, applied through stencils."
+    },
+    {
+     "t": "scrub",
+     "src": "videos/mig-livery-360.mp4",
+     "axis": "y",
+     "poster": "assets/work/mig2019/livery360-poster.jpg",
+     "knob": "360",
+     "hint": "drag down — the aircraft turns",
+     "caption": "MiG-35 livery: a turn around the model"
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2020/03/2.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/5.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/7.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/18.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/20.jpg"
+     ],
+     "caption": "Visual search for the livery design"
+    }
+   ]
+  },
+  {
+   "slug": "bmwx5",
+   "url": "https://playdisplay.com/work/bmwx5/",
+   "title": "BMW X5",
+   "subtitle": "Car configurator",
+   "tags": [
+    "exhibitions",
+    "installation"
+   ],
+   "client": "BMW China",
+   "term": "1 month",
+   "year": 2016,
+   "wi": 1,
+   "cover": "https://playdisplay.com/wp-content/uploads/2020/05/bmw_start.jpg",
+   "goal": "Equip the sales office with an interactive tool for choosing and configuring a car.",
+   "solution": "With virtual reality, a touchscreen and a holographic installation, prospective buyers could explore the interior and exterior of the BMW X5, choose wheels, pick a body color and select cabin trim materials. The result could be viewed inside a futuristic garage or out on a road across the desert.",
+   "flow": [
+    {
+     "t": "vimeo",
+     "id": "414266169"
+    },
+    {
+     "t": "h",
+     "text": "What the app does"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Presentation in VR, on a touchscreen and as a hologram",
+      "Choice of wheels, body paint and interior trim",
+      "Viewing the car inside a futuristic showroom or on a road across the desert",
+      "Every light is interactive; doors open; you can see the cabin through the driver’s eyes"
+     ]
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2020/05/bmw_playdisplay5.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/05/bmw_playdisplay1.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/05/col3.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/05/col2.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/05/col1.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/05/bmw_playdisplay3.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/05/bmw_playdisplay2-1.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/05/bmw_playdisplay4.jpg"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "pano360",
+   "url": "https://playdisplay.com/work/pano360/",
+   "title": "Panorama 360",
+   "subtitle": "Mobile guide in augmented reality",
+   "tags": [
+    "augmented reality"
+   ],
+   "client": "Panorama 360 · Moscow City observation deck, Federation Tower",
+   "term": "3 months",
+   "year": 2018,
+   "wi": 3,
+   "cover": "https://playdisplay.com/wp-content/uploads/2020/04/pano_bg-960x536.jpg",
+   "goal": "Give visitors to one of Europe’s highest observation decks — Panorama 360, on the 89th floor of the Federation Tower in Moscow City — a new way to read the city.",
+   "solution": "We built a guide in augmented reality. Point a tablet at the panorama beyond the window and markers appear above the city, pinned to its landmarks. Tap one and its story opens: archive and present-day photographs, panoramas and an audio narration in Russian, English and Chinese. Moscow’s landmark buildings and places, historical and contemporary, unfold right on top of the real view.",
+   "flow": [
+    {
+     "t": "yt",
+     "id": "Ukbn_1TEG9U"
+    },
+    {
+     "t": "h",
+     "text": "The project ran in four stages"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Prototyping the tracking of the city panorama",
+      "Designing the app concept around the intended user experience",
+      "Modeling, animation, interface design, programming, building the app",
+      "Testing and debugging the project, publishing the iOS and Android apps"
+     ]
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2020/04/Panorama_Test3.gif",
+      "https://playdisplay.com/wp-content/uploads/2020/04/Panorama_Test1.gif"
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Two apps run on the deck"
+    },
+    {
+     "t": "p",
+     "text": "[1] The guide in augmented reality reacts to the view beyond the window and shows information about the landmarks of Moscow."
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/04/pano-pict2.jpg"
+     ]
+    },
+    {
+     "t": "p",
+     "text": "[2] Twelve illuminated AR markers are set around the deck: point a device at one and a 3D model of a Moscow City skyscraper grows on the screen, with information about it."
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/04/pano-pict1.jpg"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "urban-forum-2018",
+   "url": "https://playdisplay.com/work/urban-forum-2018/",
+   "title": "Urban Forum 2018",
+   "subtitle": "Multimedia booth for the Moscow City Government",
+   "tags": [
+    "installation"
+   ],
+   "client": "Moscow City Government",
+   "term": "1 month",
+   "year": 2018,
+   "wi": null,
+   "cover": "https://playdisplay.com/wp-content/uploads/2020/04/GERB_loop.gif",
+   "goal": "A booth for a city government that speaks to residents in their own language — by showing plainly what is changing in the city.",
+   "solution": "We built a 100 sq m interactive pavilion. Six multimedia installations tell the story of the capital’s new initiatives in the voices of the people who live there. A media facade with 3D graphics, a scale model of Moscow with augmented reality and live infographics turn municipal data into an experience that is clear and worth staying for.",
+   "flow": [
+    {
+     "t": "vimeo",
+     "id": "408467538"
+    },
+    {
+     "t": "video",
+     "src": "videos/urban-oblet.mp4",
+     "poster": "assets/work/urban-forum-2018/oblet-poster.jpg",
+     "caption": "Pavilion architecture and design"
+    },
+    {
+     "t": "h",
+     "text": "The project ran in four stages"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Project concept",
+      "Developing the installations and producing the visual content",
+      "Building the booth, installing the multimedia equipment",
+      "Commissioning and on-site support during the event"
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Developing the concept for the installations"
+    },
+    {
+     "t": "p",
+     "text": "While the pavilion concept was taking shape we gathered material from five departments of the Moscow City Government. The data was sorted by topic and prioritized, and the Playdisplay creative team then formulated a set of multimedia solutions to carry the messages and the facts."
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/04/urban_map.png"
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Graphics on the media facade"
+    },
+    {
+     "t": "p",
+     "text": "The media facade screened off the interior of the pavilion, which gave the hologram ideal conditions. The screen played a purpose-made 3D film — a composite architectural portrait of contemporary Moscow. Animated infographics and the headline figures ran over it as a separate layer."
+    },
+    {
+     "t": "video",
+     "src": "videos/urban-wall.mp4",
+     "ratio": "1920/710",
+     "poster": "assets/work/urban-forum-2018/wall-poster.jpg",
+     "caption": "3D content for the video wall"
+    },
+    {
+     "t": "h",
+     "text": "Scale model with augmented reality"
+    },
+    {
+     "t": "p",
+     "text": "At the front of the booth stood a scale model with augmented reality — a composite architectural image of Moscow: the towers of Moscow City, the VDNH park, the technology parks. With a tablet in hand, visitors could see information about the projects of the Moscow City Government and the results achieved."
+    },
+    {
+     "t": "yt",
+     "id": "JGzfKECbMEQ"
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures2.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures3.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures4.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/04/urban-pictures.jpg"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "stalingrad",
+   "url": "https://playdisplay.com/work/stallingrad/",
+   "title": "Password to Victory: Stalingrad",
+   "subtitle": "Panoramic projection hall",
+   "tags": [
+    "installation",
+    "museum"
+   ],
+   "client": "Battle of Stalingrad Museum and Memorial Complex",
+   "term": "6 months",
+   "year": 2018,
+   "wi": 4,
+   "cover": "https://playdisplay.com/wp-content/uploads/2020/04/stalingrad.jpg",
+   "goal": "Draw public attention to a heritage site of federal significance and tell the story of the Battle of Stalingrad of 1942–1943 accurately — as an instrument of patriotic education and of keeping historical memory alive.",
+   "solution": "Full immersion built from light, sound and historical reconstruction: projection rebuilds pre-war Stalingrad and carries the viewer into the battle. A quiet but powerful space, where you live the history of your own city instead of reading it. Attendance at the museum doubled after the hall opened.",
+   "flow": [
+    {
+     "t": "p",
+     "text": "The project is devoted to the final phase of the Battle of Stalingrad — the capture of the headquarters of the German 6th Army in the building of the Central City Department Store. It recreates the atmosphere of the events on the Square of Fallen Fighters in Stalingrad in 1942–1943, one of the epicenters of the largest battle on the Volga."
+    },
+    {
+     "t": "h",
+     "text": "The project ran in four stages"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Project concept",
+      "Winning a presidential grant",
+      "Producing the content, procuring the equipment",
+      "Equipment installation and commissioning"
+     ]
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2020/04/stal4.png",
+      "https://playdisplay.com/wp-content/uploads/2020/04/stal2.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/04/stal1.jpg"
+     ]
+    },
+    {
+     "t": "vimeo",
+     "id": "408468580"
+    },
+    {
+     "t": "h",
+     "text": "The projection content in full"
+    },
+    {
+     "t": "vimeo",
+     "id": "408486265"
+    }
+   ]
+  },
+  {
+   "slug": "coalco",
+   "url": "https://playdisplay.com/work/coalco/",
+   "title": "COALCO Dry Port",
+   "subtitle": "Interactive installation and 3D film",
+   "tags": [
+    "installation"
+   ],
+   "client": "Coalco Group",
+   "term": "2 months",
+   "year": 2016,
+   "wi": 6,
+   "cover": "https://playdisplay.com/wp-content/uploads/2020/04/coalco.jpg",
+   "goal": "The dry port is on such a scale that it only makes sense shown whole: how this new transport and logistics hub outside Moscow is put together, how its key systems work, and how it changes freight across the region.",
+   "solution": "This is not a film but a step-by-step installation under the viewer’s control. You drive the presentation yourself, examine the hub’s key points in 3D graphics with a full 360° view, and see the architecture, the traffic and the rhythm of the port at work — along with its geopolitical role on a three-dimensional world map.",
+   "flow": [
+    {
+     "t": "yt",
+     "id": "bhYn2Mk_LqA"
+    },
+    {
+     "t": "h",
+     "text": "The 3D film in full"
+    },
+    {
+     "t": "yt",
+     "id": "N5uyUkbDalQ"
+    },
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2020/04/griffin.jpg"
+     ],
+     "small": true
+    },
+    {
+     "t": "h",
+     "text": "Controlling the installation — a Griffin PowerMate rotary dial"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "[Turn] — rotate the map in 3D",
+      "[Press] — move between the steps of the presentation",
+      "[Press + turn] — scrub through the steps of the presentation"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "sinara",
+   "url": "https://playdisplay.com/work/sinara/",
+   "title": "Sinara Transport Machines",
+   "subtitle": "Holographic cubes · machinery manufacturing",
+   "tags": [
+    "exhibitions",
+    "hologram",
+    "installation",
+    "museum"
+   ],
+   "client": "Sinara Transport Machines (STM) Holding",
+   "term": "3 weeks",
+   "year": 2018,
+   "wi": 5,
+   "cover": "https://playdisplay.com/wp-content/uploads/2020/03/stm_cover2.jpg",
+   "goal": "Sinara Transport Machines builds a new generation of locomotives. The task was to show not only the machines but the way the company works: design, testing on digital twins, production.",
+   "solution": "Three holographic cubes, linked into one narrative, walk the viewer through the entire cycle — from the design office to the shop floor to service. New industrial processes call for a new way of showing them: the hologram lays digital graphics over real scale models, and complex technology becomes tangible.",
+   "flow": [
+    {
+     "t": "yt",
+     "id": "lfmqw20YzlY"
+    },
+    {
+     "t": "h",
+     "text": "About holograms"
+    },
+    {
+     "t": "p",
+     "text": "A hologram is an image of a three-dimensional object that comes remarkably close to the object itself. A true projection onto thin air is not yet possible: a hologram needs a surface for the light to fall on. We reproduce the effect inside a closed volume with a system of mirrors — we call that setup a holocube."
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/cube1-scaled.jpg",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/cube2_1.jpg",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/cube2_2-scaled.jpg",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/cube3-scaled.jpg"
+     ],
+     "caption": "Three holocubes: designing, manufacturing and operating locomotives"
+    },
+    {
+     "t": "vimeo",
+     "id": "398626529"
+    }
+   ]
+  },
+  {
+   "slug": "vdnh-space",
+   "url": "https://playdisplay.com/work/vdnh_space/",
+   "title": "VDNH Space",
+   "subtitle": "The History of Human Spaceflight installation",
+   "tags": [
+    "installation",
+    "museum"
+   ],
+   "client": "VDNH · Cosmonautics and Aviation Center",
+   "term": null,
+   "year": 2018,
+   "wi": 0,
+   "cover": "https://playdisplay.com/wp-content/uploads/2020/03/space_st-960x960.jpg",
+   "goal": null,
+   "solution": "The visual stream of the project: graphics, interfaces and animation for the installations at the Cosmonautics and Aviation Center at VDNH.",
+   "flow": [
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus16-1.png"
+     ]
+    },
+    {
+     "t": "vimeo",
+     "id": "397688406"
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/59d39288591359.5ddb8a275d102.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/bd891888591359.5ddb8a275ca2b.gif",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/2d633f88591359.5ddb8a275de60.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/3ea7ac88591359.5ddb8a275c304.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/9f509888591359.5ddbc3dee465a.gif",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/a2721a88591359.5ddb8a275d7b6-1.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/e9952d88591359.5ddb8a275e560.png"
+     ]
+    },
+    {
+     "t": "vimeo",
+     "id": "398524179"
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/816f0d88591359.5ddb9bacaeb8e.gif",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/bb750e88591359.5ddb919078269.png"
+     ]
+    },
+    {
+     "t": "vimeo",
+     "id": "398524607"
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/cb46aa88591359.5ddb980456b13.gif",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/b3f9c188591359.5ddb9190788c6.png"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "vdnh-space-center",
+   "url": "https://playdisplay.com/work/vdnh_space-2/",
+   "title": "Cosmonautics and Aviation Center",
+   "subtitle": "An exhibition of 115 touchscreens · VDNH",
+   "tags": [
+    "installation"
+   ],
+   "client": "Aviation and Cosmonautics Center",
+   "term": "6 months",
+   "year": 2016,
+   "wi": 8,
+   "cover": "https://playdisplay.com/wp-content/uploads/2020/03/space_sm2-960x960.jpg",
+   "goal": "Tell the history of spaceflight and rocketry through high-technology solutions.",
+   "solution": "We delivered an exhibition of 115 touchscreens and the installation The History of Human Spaceflight for the United Rocket and Space Corporation at the Cosmonautics and Aviation Center.",
+   "flow": [
+    {
+     "t": "img",
+     "src": [
+      "https://playdisplay.com/wp-content/uploads/2020/03/photo7.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/photo5.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/photo2.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/photo6.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/photo1.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/photo3.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/photo4.jpg"
+     ]
+    },
+    {
+     "t": "h",
+     "text": "One information system"
+    },
+    {
+     "t": "p",
+     "text": "A single information system runs alongside every exhibit at the Cosmonautics and Aviation Center at VDNH. Visitors work it through the installation interface, and it gives them almost any fact about space and about what humanity has achieved beyond our planet."
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/map1.jpg",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/map2.jpg",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus2.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus3.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus4.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus5.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus7.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus8.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus9.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus10.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus11.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus12.png",
+      "https://playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus13.png"
+     ]
+    },
+    {
+     "t": "stats",
+     "items": [
+      {
+       "n": "115",
+       "label": "installations"
+      },
+      {
+       "n": "890",
+       "label": "illustrations and diagrams"
+      },
+      {
+       "n": "149",
+       "label": "visual themes"
+      },
+      {
+       "n": "2000+",
+       "label": "pages of source material"
+      },
+      {
+       "n": "20",
+       "label": "developers"
+      },
+      {
+       "n": "46",
+       "label": "interactive 3D models"
+      },
+      {
+       "n": "67",
+       "label": "videos and animations"
+      },
+      {
+       "n": "640",
+       "label": "uniquely laid-out pages"
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "text": "For this task we developed a dedicated visual language and graphic interface."
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/playdisplay_spacemus6.png"
+     ]
+    },
+    {
+     "t": "vimeo",
+     "id": "397679197"
+    },
+    {
+     "t": "img",
+     "src": [
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/d9ca1c78123645.5c9b8d1b9c0ba-1.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/1d0af578123645.5c9b8d1b9c6f8.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/a03dbe78123645.5c9b8d1b9b92d.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/6111ed78123645.5c9b8d1b9c479.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/f6da6678123645.5c9b8d1b9b708.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/56e3e778123645.5c9b8d1b9b2f3.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/271cc078123645.5c9b8d1b9c8fd.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/d9b80b78123645.5c9b8d1b9afd5.png",
+      "http://products.playdisplay.com/wp-content/uploads/2020/03/e4cec078123645.5c9b8d1b9bcfd.png"
+     ]
+    }
+   ]
+  }
+ ]
+}
