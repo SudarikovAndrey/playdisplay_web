@@ -961,6 +961,7 @@
   /* клип в ленте (t:'video') сидит в такой же плашке, как обложка: без этого видео
      остаётся дефолтным 300×150 в углу блока */
   .v-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .v-media.v-fit video { object-fit: contain; } /* плашка по пропорциям клипа — кадр целиком */
   /* верхнее медиа «на альфе»: ни рамки, ни подложки — объект висит прямо на фоне страницы.
      Настоящей альфы в mp4 нет, чёрный убирает screen (webm с альфой не играет в Safari). */
   /* фон ровно цвета страницы вьюера: screen смешивает с ним, и чёрный уходит в него без остатка
@@ -2429,10 +2430,10 @@
     { task:"amaze", taskLabel:"Удивить", title:"Прорыв", slug:"proryv", client:"Росатом", year:2024, img:AW+"proryv/site_ra_24-1-960x960.jpg", fb:IMG+"2026/01/site_ra_24-1-960x960.png", local:"videos/proryv-2024.mp4", lposter:AW+"proryv/film-poster.jpg", wi:10,
       desc:"Инсталляция «Росатома» о замкнутом ядерном топливном цикле: сложная физика превращается в наглядный, зрелищный интерактив.",
       punch:"О технологии будущего — на языке впечатления." },
-    { task:"amaze", taskLabel:"Удивить", title:"Ростех-Экспо", slug:"rostec", client:"Ростех", year:2021, img:AW+"rostec/01_logo_v03-960x960.jpg", fb:IMG+"2021/06/01_logo_v03-960x960.jpg", local:"videos/rostec.mp4", wi:12,
+    { task:"amaze", taskLabel:"Удивить", title:"Ростех-Экспо", slug:"rostec", client:"Ростех", year:2021, img:AW+"rostec/01_logo_v03-960x960.jpg", fb:IMG+"2021/06/01_logo_v03-960x960.jpg", local:"videos/rostec-film.mp4", lposter:AW+"rostec/film-poster.jpg", wi:12,
       desc:"Выставочный комплекс госкорпорации: мультимедийная среда, объединяющая десятки предприятий в один сценарий.",
       punch:"Масштаб корпорации — в одном пространстве." },
-    { task:"sell", taskLabel:"Продать сложное", title:"PTK Group", slug:"ptk-group", client:"Группа ПТК", year:2019, img:AW+"ptk-group/ptk_start_2_poster.jpg", fb:IMG+"2021/02/ptk_start_2.gif", video:["vimeo","522723089"], wi:7,
+    { task:"sell", taskLabel:"Продать сложное", title:"PTK Group", slug:"ptk-group", client:"Группа ПТК", year:2019, img:AW+"ptk-group/ptk_start_2_poster.jpg", fb:IMG+"2021/02/ptk_start_2.gif", local:"videos/ptk-film.mp4", lposter:AW+"ptk-group/film-poster.jpg", wi:7,
       desc:"Интерактивный корпоративный стенд: продукты и процессы компании собраны в единый цифровой сценарий для переговоров и выставок.",
       punch:"Презентация, в которую вовлекаются." },
     { task:"amaze", taskLabel:"Удивить", title:"Стенд МИГ-35", slug:"mig2019", client:"РСК «МИГ»", year:2019, img:AW+"mig2019/mig_booth-960x960.jpg", fb:IMG+"2020/03/mig_booth-960x960.jpg", video:["youtube","YVteDZL90qc"], local:"videos/mig.mp4", wi:2,
@@ -2450,7 +2451,7 @@
       alpha:AW+"urban-forum-2018/GERB_loop.mp4",
       desc:"Интерактивная инсталляция для главного городского форума: живая графика реагирует на посетителей, а городские данные превращаются в образ.",
       punch:"Очередь к инсталляции — лучшая метрика." },
-    { task:"tell", taskLabel:"Рассказать", title:"Пароль победы «Сталинград»", slug:"stalingrad", client:"Музей-заповедник", year:2018, img:AW+"stalingrad/stalingrad.jpg", fb:IMG+"2020/04/stalingrad.jpg", video:["youtube","IVmCylimRmY"], wi:4,
+    { task:"tell", taskLabel:"Рассказать", title:"Пароль победы «Сталинград»", slug:"stalingrad", client:"Музей-заповедник", year:2018, img:AW+"stalingrad/stalingrad.jpg", fb:IMG+"2020/04/stalingrad.jpg", local:"videos/stalingrad-promo.mp4", lposter:AW+"stalingrad/film-poster.jpg", wi:4,
       desc:"Мультимедийная инсталляция памяти: история, которую посетитель проживает, а не читает. Свет, звук и интерактив создают тихое, сильное пространство.",
       punch:"Игра умеет говорить и о серьёзном." },
     { task:"sell", taskLabel:"Продать сложное", title:"Сухой порт COALCO", slug:"coalco", client:"Coalco", year:2016, img:AW+"coalco/coalco.jpg", fb:IMG+"2020/04/coalco.jpg", video:["youtube","bhYn2Mk_LqA"], local:"videos/coalco.mp4", wi:6,
@@ -3433,8 +3434,11 @@
     var topEmbedId = (!c.local && c.video) ? c.video[1] : null;
     (p.flow || []).forEach(function(b){
       if (b.t === 'video') {
-        // локальный клип из site/videos — тот же, что крутится на старте в сцене
-        html += '<div class="vb"><div class="v-media"><video src="' + b.src + '"' +
+        // локальный клип из site/videos. b.ratio задан — плашка принимает пропорции самого
+        // клипа и кадр показывается целиком: контент видеостены 2,7:1 в обычной плашке
+        // обрезался бы по бокам, а обрезать его нельзя, это и есть работа
+        html += '<div class="vb"><div class="v-media' + (b.ratio ? ' v-fit' : '') + '"' +
+                (b.ratio ? ' style="height:auto;aspect-ratio:' + b.ratio + '"' : '') + '><video src="' + b.src + '"' +
                 (b.poster ? ' poster="' + b.poster + '"' : '') +
                 ' muted loop playsinline preload="metadata" controls></video></div>' +
                 (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
