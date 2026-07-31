@@ -958,6 +958,9 @@
   .viewer-close:hover { border-color: var(--signal-amber); }
   .v-media { height: clamp(480px, 72vh, 900px); position: relative; overflow: hidden; border: 1px solid var(--space-line); background: #0a2129; }
   .v-media img { width: 100%; height: 100%; object-fit: cover; }
+  /* клип в ленте (t:'video') сидит в такой же плашке, как обложка: без этого видео
+     остаётся дефолтным 300×150 в углу блока */
+  .v-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
   /* верхнее медиа «на альфе»: ни рамки, ни подложки — объект висит прямо на фоне страницы.
      Настоящей альфы в mp4 нет, чёрный убирает screen (webm с альфой не играет в Safari). */
   /* фон ровно цвета страницы вьюера: screen смешивает с ним, и чёрный уходит в него без остатка
@@ -2423,7 +2426,7 @@
     { task:"sell", taskLabel:"Продать сложное", title:"ОДК ОАК", slug:"odk-oak", client:"ОДК · МАКС", year:2021, img:AW+"odk-oak/site_odk_21_2-960x960.jpg", fb:IMG+"2026/01/site_odk_21_2-960x960.png", local:"videos/odk-maks-2021.mp4", lposter:AW+"odk-oak/film-poster.jpg", wi:9,
       desc:"Экспозиции авиадвигателестроения на МАКС: голограммы двигателей и интерактивные разборы технологий, объясняющие устройство изделий без единой строчки текста.",
       punch:"Сложный продукт продаёт тот, кто дал его потрогать." },
-    { task:"amaze", taskLabel:"Удивить", title:"Прорыв", slug:"proryv", client:"Росатом", year:2024, img:AW+"proryv/site_ra_24-1-960x960.jpg", fb:IMG+"2026/01/site_ra_24-1-960x960.png", video:["youtube","bSNki6_F898"], local:"videos/ra.mp4", wi:10,
+    { task:"amaze", taskLabel:"Удивить", title:"Прорыв", slug:"proryv", client:"Росатом", year:2024, img:AW+"proryv/site_ra_24-1-960x960.jpg", fb:IMG+"2026/01/site_ra_24-1-960x960.png", local:"videos/proryv-2024.mp4", lposter:AW+"proryv/film-poster.jpg", wi:10,
       desc:"Инсталляция «Росатома» о замкнутом ядерном топливном цикле: сложная физика превращается в наглядный, зрелищный интерактив.",
       punch:"О технологии будущего — на языке впечатления." },
     { task:"amaze", taskLabel:"Удивить", title:"Ростех-Экспо", slug:"rostec", client:"Ростех", year:2021, img:AW+"rostec/01_logo_v03-960x960.jpg", fb:IMG+"2021/06/01_logo_v03-960x960.jpg", local:"videos/rostec.mp4", wi:12,
