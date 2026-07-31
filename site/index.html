@@ -3468,7 +3468,7 @@
         // клипа и кадр показывается целиком: контент видеостены 2,7:1 в обычной плашке
         // обрезался бы по бокам, а обрезать его нельзя, это и есть работа
         html += '<div class="vb"><div class="v-media' + (b.ratio ? ' v-fit' : '') + '"' +
-                (b.ratio ? ' style="height:auto;aspect-ratio:' + b.ratio + '"' : '') + '><video src="' + b.src + '"' +
+                (b.ratio ? ' style="height:auto;aspect-ratio:' + b.ratio + '"' : '') + '><video src="' + vsrc(b.src) + '"' +
                 (b.poster ? ' poster="' + b.poster + '"' : '') +
                 ' muted loop playsinline preload="metadata" controls></video></div>' +
                 (b.caption ? '<p style="margin-top:12px;font-size:14px;color:var(--scan-white-dim)">' + b.caption + '</p>' : '') + '</div>';
@@ -3942,13 +3942,20 @@
     blocks.forEach(function(b){ io.observe(b); });
     flowIO = io;
   }
+  // Ролики лежат в двух весах: полный 1080p и лёгкая копия «-m» (1280, ~1,2 Мбит/с).
+  // На телефоне полный файл — это десятки мегабайт на автозапуске, и часто по мобильной
+  // сети. Правило одно: всё из videos/ имеет пару «-m», герб и прочее из assets/ — нет.
+  function vsrc(p){
+    if (!p || p.indexOf('videos/') !== 0) return p;
+    return matchMedia('(max-width: 760px)').matches ? p.replace(/\.mp4$/, '-m.mp4') : p;
+  }
   function openCase(c){
     // объект «на альфе» (герб) — самый верх без рамки; дальше локальный ролик
     // с нашего хостинга (в приоритете, без ютуб-обвязки); иначе ембед; иначе кадр
     var media = c.alpha
       ? '<div class="v-media v-alpha-top"><video src="'+c.alpha+'" autoplay muted loop playsinline></video></div>'
       : c.local
-      ? '<div class="v-media"><video src="'+c.local+'" poster="'+(c.lposter || c.img)+'" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
+      ? '<div class="v-media"><video src="'+vsrc(c.local)+'" poster="'+(c.lposter || c.img)+'" autoplay muted loop playsinline controls style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
       : c.video
       ? '<div class="v-media"><iframe src="'+embedUrl(c.video)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe></div>'
       : '<div class="v-media"><img src="'+c.img+'" alt=""><div class="v-grade"></div></div>';
