@@ -2789,8 +2789,18 @@
     io.observe(container);
   }
   // все <video> вьюера: играют только в кадре — иначе pause (экономия CPU/батареи)
+  // Ролик за кадром не молотит впустую. Но и САМ не начинается: запускает его человек.
+  // Играть в кадре имеют право только два случая — гифки, пережатые в mp4 (у них
+  // autoplay в разметке), и ролик, который человек уже запустил, а мы приостановили,
+  // когда он ушёл из кадра (помечаем его data-ap).
   var vidIO = new IntersectionObserver(function(es){
-    es.forEach(function(e){ try { e.isIntersecting ? e.target.play() : e.target.pause(); } catch (err) {} });
+    es.forEach(function(e){
+      var v = e.target;
+      try {
+        if (e.isIntersecting) { if (v.autoplay || v.dataset.ap) { v.removeAttribute('data-ap'); v.play(); } }
+        else { if (!v.paused && !v.autoplay) v.dataset.ap = '1'; v.pause(); }
+      } catch (err) {}
+    });
   }, { root: document.getElementById('viewer'), threshold: 0.02 });
   var lastFly = null, flyBusy = false, flyBusySince = 0; // контекст влёта + гард от двойных запусков
   function busyLock(){ // watchdog: зависший флаг не должен блокировать клики навсегда
@@ -4123,24 +4133,13 @@
       function mute(m){ sys = true; v.muted = m; sys = false; }
       v.addEventListener('volumechange', function(){ if (!sys) soundSave(!v.muted); });
       mute(!soundOn());
-      if (!v.autoplay) return;                           // ролики в ленте ждут кнопки — им хватит
-      var pr = v.play(); if (pr && pr.catch) pr.catch(function(){});
-      // Автозапуск СО ЗВУКОМ браузер разрешает не всем и не всегда. Если запуск не удался,
-      // играем молча, а звук включаем на первом же касании страницы — жест человека
-      // снимает запрет. Если звук выключен им самим, ничего не делаем.
-      var tries = 0;
-      var watch = setInterval(function(){
-        if (!v.isConnected || ++tries > 6) { clearInterval(watch); return; }
-        if (!v.paused || v.muted || v.readyState < 2) return;
-        clearInterval(watch);
-        mute(true); v.play().catch(function(){});
-        var un = function(){
-          document.removeEventListener('pointerdown', un, true);
-          if (!v.isConnected || !soundOn()) return;
-          mute(false); v.play().catch(function(){});
-        };
-        document.addEventListener('pointerdown', un, true);
-      }, 350);
+      // Ролики никто не запускает автоматически — пуск за человеком. Значит и плясок
+      // вокруг запрета на автозапуск со звуком больше не нужно: жест уже есть, звук
+      // включится сам. Остаётся только страховка — если браузер всё же приглушил
+      // ролик при старте, а человек звук не выключал, возвращаем звук.
+      v.addEventListener('play', function(){
+        if (soundOn() && v.muted) mute(false);
+      });
     });
   }
 
@@ -4158,11 +4157,12 @@
       ? '<div class="v-media v-alpha-top"><video src="'+c.alpha+'" autoplay muted loop playsinline></video></div>'
       : c.local
       // lratio — плашка принимает пропорции клипа (ленте светодиодного экрана 3,7:1
-      // обрезка по бокам убила бы половину кадра). muted в разметке нет: состояние
-      // звука ставит armSound по памяти о выборе человека
+      // обрезка по бокам убила бы половину кадра). Ролик САМ не запускается: стоит
+      // постером и ждёт кнопки — так страница не тянет десятки мегабайт при открытии,
+      // а звук на пуске от руки браузер разрешает без оговорок
       ? '<div class="v-media' + (c.lratio ? ' v-fit' : '') + '"' +
         (c.lratio ? ' style="height:auto;aspect-ratio:' + c.lratio + '"' : '') +
-        '><video src="'+vsrc(c.local)+'" poster="'+(c.lposter || c.img)+'" autoplay loop playsinline controls style="width:100%;height:100%;'+(c.lratio ? 'object-fit:contain;' : 'object-fit:cover;')+'display:block"></video></div>'
+        '><video src="'+vsrc(c.local)+'" poster="'+(c.lposter || c.img)+'" loop playsinline controls preload="metadata" style="width:100%;height:100%;'+(c.lratio ? 'object-fit:contain;' : 'object-fit:cover;')+'display:block"></video></div>'
       : c.video
       ? '<div class="v-media"><iframe src="'+embedUrl(c.video)+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe></div>'
       : '<div class="v-media"><img src="'+c.img+'" alt=""><div class="v-grade"></div></div>';
