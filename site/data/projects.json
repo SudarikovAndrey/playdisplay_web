@@ -508,10 +508,12 @@
      "id": "408467538"
     },
     {
-     "t": "video",
+     "t": "scrub",
      "src": "videos/urban-oblet.mp4",
      "poster": "assets/work/urban-forum-2018/oblet-poster.jpg",
-     "caption": "Архитектура и дизайн павильона"
+     "caption": "Архитектура и дизайн павильона",
+     "knob": "360",
+     "hint": "потяните — павильон повернётся"
     },
     {
      "t": "h",

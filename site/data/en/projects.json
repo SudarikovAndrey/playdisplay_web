@@ -508,10 +508,12 @@
      "id": "408467538"
     },
     {
-     "t": "video",
+     "t": "scrub",
      "src": "videos/urban-oblet.mp4",
      "poster": "assets/work/urban-forum-2018/oblet-poster.jpg",
-     "caption": "Pavilion architecture and design"
+     "caption": "Pavilion architecture and design",
+     "knob": "360",
+     "hint": "drag — the pavilion turns"
     },
     {
      "t": "h",
