@@ -82,7 +82,10 @@ def cover_url(slug, pmap):
     c = cases.get(slug, {})
     img = c.get('img') or ''
     if img.startswith('http'): return img
-    return BASE + '/assets/work/' + img if img else (pmap[slug].get('cover') or '')
+    if not img: return pmap[slug].get('cover') or ''
+    # в CASES путь уже полный («assets/work/...»), второй префикс давал
+    # /assets/work/assets/work/... — картинка соцсетей не открывалась
+    return BASE + '/' + img.lstrip('/')
 
 
 # ---------- статические страницы проектов ----------

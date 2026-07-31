@@ -347,7 +347,13 @@
     transition: transform .2s cubic-bezier(.2,.9,.3,1);   /* реакция без задержки */
     display: flex; flex-direction: column;
   }
-  .card:hover { transform: translateY(-5px) scale(1.02); z-index: 2; }
+  /* z-index 6 — ВЫШЕ слоя точек (#cards-fx, 5): пыль летит к курсору и уходит ПОД
+     обложку выбранной карточки, а не поверх неё. Раньше точки в неё не пускали
+     проверкой попадания, теперь это делает порядок слоёв — и выглядит честнее */
+  .card:hover { transform: translateY(-5px) scale(1.02); z-index: 6; }
+  /* пока карточку выбирают, соседние подписи приглушены: внимание там, где курсор */
+  .card-body { transition: opacity .28s ease; }
+  .cards.picking .card:not(:hover) .card-body { opacity: 0.34; }
   .card-media { height: 250px; position: relative; overflow: hidden; background: #0a1216; }
   .card-body .cmeta { font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--scan-white-dim); }
@@ -2593,7 +2599,7 @@
     { task:"tell", taskLabel:"Рассказать", title:"Панорама 360", slug:"pano360", client:"Москва-Сити", year:2018, img:AW+"pano360/pano_bg-960x536.jpg", fb:IMG+"2020/04/pano_bg-960x536.jpg", video:["youtube","Ukbn_1TEG9U"], wi:3,
       desc:"Дополненная реальность 360°: зритель оказывается внутри сцены и осматривает пространство вокруг себя.",
       punch:"Не окно в историю, а вход в неё." },
-    { task:"amaze", taskLabel:"Удивить", title:"Urban Forum 2018", slug:"urban-forum-2018", client:"Правительство Москвы", year:2018, img:AW+"urban-forum-2018/GERB_loop_poster.jpg", fb:IMG+"2020/04/GERB_loop.gif",
+    { task:"amaze", taskLabel:"Удивить", title:"Urban Forum 2018", slug:"urban-forum-2018", client:"Правительство Москвы", year:2018, img:AW+"urban-forum-2018/urban-cover-1440x960.jpg", fb:IMG+"2020/04/GERB_loop.gif",
       alpha:AW+"urban-forum-2018/GERB_loop.mp4",
       desc:"Интерактивная инсталляция для главного городского форума: живая графика реагирует на посетителей, а городские данные превращаются в образ.",
       punch:"Очередь к инсталляции — лучшая метрика." },
@@ -2647,6 +2653,7 @@
     var ctx = fx.getContext('2d');
     var FXS = 0.85;               // разрешение слоя точек (0.85 экрана — зерно мельче пикселя CSS)
     var hovered = null, raf = null, lastT = 0;
+    var mx = -1, my = -1;    // курсор в координатах сетки — цель для потоков пыли
     var buf = null, buf32 = null, BW = 0, BH = 0, needClear = false;
     function fit(){
       var w = Math.max(2, Math.round(cardsEl.clientWidth * FXS));
@@ -2704,7 +2711,15 @@
       lastT = now;
       var cards = cardsEl.querySelectorAll('.card');
       var tgt = hovered ? mediaRect(hovered) : null;
+      // Цель — КУРСОР, а не центр обложки: потоки идут туда, куда смотрит человек.
+      // Пока мышь ещё не двигалась внутри карточки, целимся в её центр.
       var tcx = tgt ? tgt.x + tgt.w / 2 : 0, tcy = tgt ? tgt.y + tgt.h / 2 : 0;
+      if (tgt && mx >= 0) {
+        tcx = Math.max(tgt.x, Math.min(tgt.x + tgt.w, mx));
+        tcy = Math.max(tgt.y, Math.min(tgt.y + tgt.h, my));
+      }
+      // радиус пятна прилёта: точки садятся не в одну точку, а в круг — поток широкий
+      var tr = tgt ? Math.max(46, Math.min(tgt.w, tgt.h) * 0.42) : 0;
       var anyActive = false;
       buf32.fill(0);
       for (var ci = 0; ci < cards.length; ci++) {
@@ -2735,40 +2750,33 @@
         for (var i = 0; i < cl.n; i++) {
           var hx = cl.home[i * 2], hy = cl.home[i * 2 + 1], x, y, a;
           if (!tgt) { x = hx; y = hy; a = aBase; }
-          else if (i % 3) {
-            // 2/3 точек остаются дома: обложка читается как «точечный призрак» себя и дышит
+          else if (i % 2) {
+            // половина точек остаётся дома: обложка читается как «точечный призрак» себя и дышит
             x = hx + Math.sin(T * 2.1 + cl.ph[i] * 9) * 1.3;
             y = hy + Math.cos(T * 1.7 + cl.spd[i] * 14) * 1.1;
             a = aBase * 0.85;
           } else {
-            // 1/3 точек — непрерывный ручей к выбранной обложке
+            // вторая половина — непрерывный ручей к курсору
             var f = (T * cl.spd[i] + cl.ph[i]) % 1.3;   // 1.0 — полёт, 0.3 — пауза-возрождение
             var k = f >= 1 ? 1 : f;
             k = k * k * (3 - 2 * k);                     // магнит: разгон у цели
             var e = k * wgt;
-            // Летим НЕ внутрь выбранной обложки, а в её край: точка идёт по луче «дом → центр
-            // цели» до пересечения с рамкой и гаснет там. Раньше цель была внутри картинки,
-            // и пыль сыпалась поверх кадра, мешая его смотреть. Теперь она наполняет обложку
-            // с границы — картинка остаётся чистой.
-            var dx = tcx - hx, dy = tcy - hy;
-            var t0x = -1e9, t0y = -1e9;
-            if (dx !== 0) { var ax = (tgt.x - hx) / dx, bx2 = (tgt.x + tgt.w - hx) / dx; t0x = ax < bx2 ? ax : bx2; }
-            if (dy !== 0) { var ay = (tgt.y - hy) / dy, by2 = (tgt.y + tgt.h - hy) / dy; t0y = ay < by2 ? ay : by2; }
-            var tE = t0x > t0y ? t0x : t0y;
-            if (!(tE > 0 && tE < 1)) tE = 1;                 // вырожденный случай — целимся в центр
-            var L = Math.sqrt(dx * dx + dy * dy) || 1;
-            var tx = hx + dx * tE - dx / L * 2;              // 2px наружу: садится на рамку, не под неё
-            var ty = hy + dy * tE - dy / L * 2;
+            // Целимся в КУРСОР, но не в одну точку: у каждой пылинки своё место в круге
+            // радиусом tr вокруг курсора (угол и радиус — из её постоянной фазы, поэтому
+            // траектория стабильная, а не дрожит). Поток от этого широкий, а не в нитку.
+            // Дальше точка уходит ПОД обложку выбранной карточки: та лежит выше слоя
+            // точек, и они честно исчезают за её краем, ничего не пачкая.
+            var ang = cl.ph[i] * 4.833 + cl.spd[i] * 7.1;    // «случайный», но постоянный угол
+            var rad = tr * (0.35 + 0.65 * (cl.spd[i] - 0.55) / 0.6);
+            var tx = tcx + Math.cos(ang) * rad;
+            var ty = tcy + Math.sin(ang) * rad * 0.82;       // чуть сплюснуто по вертикали
             x = hx + (tx - hx) * e; y = hy + (ty - hy) * e;
-            // видна весь перелёт и гаснет у самой рамки — край будто набирает свечение
-            a = (k < 0.88 ? 1 : (1 - k) / 0.12) * aBase;
+            // видна весь перелёт, у самой цели гаснет — на случай, если край обложки рядом
+            a = (k < 0.9 ? 1 : (1 - k) / 0.1) * aBase;
             if (f >= 1) a = 0;                           // пауза перед возрождением
             else if (f < 0.08) a *= f / 0.08;            // мягкое возрождение дома
           }
           if (a < 0.04) continue;
-          // страховка: ни одна точка не рисуется поверх выбранной обложки, даже если
-          // её сдвинуло дыханием или округлением — картинка под курсором всегда чистая
-          if (tgt && x > tgt.x && x < tgt.x + tgt.w && y > tgt.y && y < tgt.y + tgt.h) continue;
           var bx = (x * FXS) | 0, by = (y * FXS) | 0;
           if (bx < 0 || by < 0 || bx >= BW || by >= BH) continue;
           buf32[by * BW + bx] = (((a * 255) | 0) << 24) | cl.col[i];
@@ -2784,10 +2792,15 @@
     addEventListener('resize', function(){ // геометрия сетки изменилась — облака пересоберутся
       cardsEl.querySelectorAll('.card').forEach(function(c){ c._cloud = null; });
     });
+    cardsEl.addEventListener('mousemove', function(e){
+      var cr = cardsEl.getBoundingClientRect();
+      mx = e.clientX - cr.left; my = e.clientY - cr.top;
+    });
     cardsEl.addEventListener('mouseover', function(e){
       var c = e.target.closest ? e.target.closest('.card') : null;
       if (c) {
         hovered = c;
+        cardsEl.classList.add('picking');   // соседние подписи приглушаются
         // картинку возвращаем в тот же миг, не ожидая кадра цикла: если на карточку навели,
         // пока её облако ещё догорало, она обязана быть цветной сразу
         if (c._cloud) {
@@ -2799,7 +2812,10 @@
     });
     cardsEl.addEventListener('mouseout', function(e){
       var c = e.target.closest ? e.target.closest('.card') : null;
-      if (c && hovered === c && !(e.relatedTarget && c.contains(e.relatedTarget))) hovered = null;
+      if (c && hovered === c && !(e.relatedTarget && c.contains(e.relatedTarget))) {
+        hovered = null;
+        if (!(e.relatedTarget && cardsEl.contains(e.relatedTarget))) cardsEl.classList.remove('picking');
+      }
     });
   })();
 
