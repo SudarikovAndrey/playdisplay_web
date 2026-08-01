@@ -150,6 +150,22 @@ function pd_openai_parse($code, $body) {
 
 // ---------------------------------------------------------------- GigaChat
 /** Ключ обменивается на access_token на 30 минут — кешируем в файле. */
+/**
+ * Приводим ключ авторизации в порядок перед отправкой.
+ *
+ * Ключ — это base64 от «client_id:client_secret», то есть 73 байта → ровно 100 символов,
+ * последние два из которых «=». При копировании из личного кабинета хвостовые «=»
+ * теряются на удивление легко, и Сбер отвечает не «неверный ключ», а загадочным
+ * «Can't decode 'Authorization' header» — на поиск причины уходит вечер.
+ * Заодно снимаем пробелы и переводы строк: в заголовке они всё ломают.
+ */
+function pd_gigachat_key($raw) {
+  $k = preg_replace('/\s+/', '', (string)$raw);
+  $pad = strlen($k) % 4;
+  if ($pad) $k .= str_repeat('=', 4 - $pad);
+  return $k;
+}
+
 function pd_gigachat_token($c) {
   $cache = pd_dir('sessions') . '/gigachat-token.json';
   if (is_file($cache)) {
@@ -162,7 +178,7 @@ function pd_gigachat_token($c) {
     'Content-Type: application/x-www-form-urlencoded',
     'Accept: application/json',
     'RqUID: ' . pd_uuid4(),
-    'Authorization: Basic ' . $c['key'],
+    'Authorization: Basic ' . pd_gigachat_key($c['key']),
   );
   // тело не JSON — отправляем как строку, заголовок Content-Type перебивает дефолтный
   list($code, $body, $err) = pd_http_post_json($url, $rq, $hdr, 20, pd_gigachat_ca($c));
