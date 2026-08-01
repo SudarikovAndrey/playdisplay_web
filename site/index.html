@@ -799,8 +799,11 @@
     transition: color .35s ease; }
   .ai-heard.hot { color: var(--scan-white-dim); }
   .ai-heard i { font-style: normal; opacity: 0.45; }   /* ещё не закреплённый распознаванием хвост */
-  .ai-err { min-height: 0; text-align: center; max-width: 60ch;
+  .ai-err { min-height: 0; text-align: center; max-width: 60ch; margin-left: auto; margin-right: auto;
     font: 400 11.5px/1.6 var(--font-mono); letter-spacing: 0.06em; color: #ff8a5c; }
+  #aiSumErr:not(:empty) { margin-top: 28px; }
+  /* плашка режима на первом экране: в демо она предупреждение, а не сноска */
+  .ai-note.warn { color: #ff8a5c; text-transform: none; letter-spacing: 0.02em; font-size: 12px; max-width: 62ch; margin-left: auto; margin-right: auto; }
   /* ввод текстом — равноправный путь, а не костыль: в Firefox распознавания нет вовсе */
   .ai-say { display: none; width: min(560px, 90vw); grid-template-columns: 1fr auto; }
   .ai-say.on { display: grid; }
@@ -852,6 +855,16 @@
     background: rgba(16,30,37,0.6); border: 1px solid var(--space-line); padding: 14px 18px; outline: none; }
   #aiFormEl input[type="text"]:focus { border-color: var(--signal-teal); }
   .ai-agree { display: flex; align-items: center; gap: 10px; font: 400 13px var(--font-body); color: var(--scan-white-dim); cursor: pointer; }
+  /* канал связи: не обязательное поле, а подсказка, что телефоном и мессенджером тоже можно */
+  .ai-chan { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px;
+    width: min(420px, 88vw); margin-top: 2px; }
+  .ai-chan-t { width: 100%; text-align: center; margin-bottom: 2px;
+    font: 400 10.5px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--scan-white-faint); }
+  .ai-chan button { font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--scan-white-dim); background: transparent; border: 1px solid var(--space-line);
+    padding: 8px 12px; cursor: pointer; transition: all var(--duration-fast); }
+  .ai-chan button:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
+  .ai-chan button.on { color: var(--signal-teal); border-color: rgba(43,224,198,0.55); background: rgba(43,224,198,0.07); }
   @media (max-width: 900px) {
     .ai-duo { grid-template-columns: 1fr; }
     /* поле смыслов сжимается: снизу теперь панель ввода, накладываться им нельзя */
@@ -950,6 +963,10 @@
   .wa:hover { transform: translateY(-3px); box-shadow: var(--glow-amber-soft); }
   .chan-link { font: 600 13px var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--scan-white-dim); border-bottom: 1px solid var(--space-line); padding-bottom: 3px; transition: color var(--duration-fast), border-color var(--duration-fast); }
   .chan-link:hover { color: var(--scan-white); border-color: var(--signal-teal); }
+  /* почта под кнопкой: видна сразу, кликабельна, без модальных окон и микрофона */
+  .cmail { margin-top: 18px; font: 400 15px/1.5 var(--font-body); color: var(--scan-white-dim); }
+  .cmail a { color: var(--signal-teal); text-decoration: none; border-bottom: 1px solid rgba(43,224,198,.35); }
+  .cmail a:hover { border-bottom-color: var(--signal-teal); }
   .langs { margin-top: 28px; font: 400 13px var(--font-mono); letter-spacing: 0.06em; color: var(--scan-white-faint); }
 
   footer { background: var(--space-void); border-top: 1px solid var(--space-line); }
@@ -1018,6 +1035,12 @@
   @media (max-width: 700px) {
     .v-scrub.vy .sc-bar { right: 12px; width: 82px; height: 58%; }
     .v-scrub.vy .sc-knob { width: 72px; left: 5px; padding: 0 10px; } }
+  /* пока ролик едет в память, ручка честно показывает, что занята */
+  .v-scrub.loading .sc-knob { opacity: 0.55; animation: none; }
+  .v-scrub.loading .sc-bar::after { content: ""; position: absolute; left: 6px; right: 6px; bottom: -1px;
+    height: 1px; background: linear-gradient(90deg, transparent, var(--signal-teal), transparent);
+    animation: scLoad 1.1s linear infinite; }
+  @keyframes scLoad { 0% { opacity: .25; } 50% { opacity: 1; } 100% { opacity: .25; } }
   .v-scrub .sc-hint { position: absolute; left: 0; right: 0; bottom: 44px; text-align: center;
     font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--scan-white-dim); pointer-events: none; transition: opacity .35s; }
@@ -1515,8 +1538,10 @@
     <div class="cs-founder"><b>Андрей Судариков</b><span>Основатель playdisplay</span></div>
     <p class="csub">Если кажется, что проекту нужен нестандартный подход — давайте обсудим его вместе.</p>
     <div class="channels">
-      <button class="wa">▶︎ Забронировать креативную сессию</button>
+      <a class="wa" id="bookCall" href="#">▶︎ Забронировать креативную сессию</a>
     </div>
+    <!-- почта видна и работает без ассистента: не всем удобно говорить с микрофоном -->
+    <p class="cmail">Или напишите письмом: <a href="mailto:info@playdisplay.com">info@playdisplay.com</a></p>
     <div class="langs">Говорим по-русски, по-английски и по-португальски.</div>
   </div>
 </section>
@@ -1588,6 +1613,7 @@
         <div class="m">Для кого<p id="aiWho"></p></div>
         <div class="m">Что человек должен почувствовать<p id="aiFeel"></p></div>
       </div>
+      <div class="ai-err" id="aiSumErr"></div>
       <div class="ai-actions">
         <button class="btn-line" id="aiMore"><span class="tri">▶︎</span> Рассказать ещё</button>
         <button class="wa" id="aiSend">▶︎ Отправить в playdisplay</button>
@@ -1598,7 +1624,14 @@
       <h2>Куда отправить описание идеи?</h2>
       <form id="aiFormEl">
         <input type="text" id="aiName" placeholder="Имя" required>
-        <input type="text" id="aiContact" placeholder="Email или телефон" required>
+        <input type="text" id="aiContact" placeholder="Email, телефон или @telegram" required>
+        <div class="ai-chan" id="aiChan">
+          <span class="ai-chan-t">Как удобнее ответить?</span>
+          <button type="button" data-ch="Telegram">Telegram</button>
+          <button type="button" data-ch="WhatsApp">WhatsApp</button>
+          <button type="button" data-ch="Звонок">Звонок</button>
+          <button type="button" data-ch="Почта">Почта</button>
+        </div>
         <input type="text" id="aiCompany" placeholder="Компания (необязательно)">
         <label class="ai-agree"><input type="checkbox" id="aiAgree" required> Согласен на отправку описания идеи в playdisplay</label>
         <div class="ai-err" id="aiFormErr"></div>
@@ -1640,6 +1673,11 @@
      Здесь же перевод «прикладывается» к готовой странице одним проходом по дереву,
      и добавить язык — значит положить рядом ещё один файл словаря.
      ====================================================================== */
+  // Общий признак телефона. Раньше такая функция была объявлена ВНУТРИ блока Атласа,
+  // а вызывалась ещё и в блоке библиотеки — там она не видна, и вызов падал с
+  // «isMob is not defined», обрывая настройку ленты. Теперь она одна и общая.
+  function isMob(){ return !!(window.matchMedia && matchMedia('(max-width: 700px)').matches); }
+
   var PD_LANG = window.PD_LANG || 'ru';
   var I18N = window.PD_I18N || null;            // null для русского
   var DATA = PD_LANG === 'ru' ? 'data/' : 'data/' + PD_LANG + '/';
@@ -1662,7 +1700,10 @@
   //      блок молча перестал работать (Атлас и библиотека остались пустыми, без ошибок).
   function i18nNode(n){
     var raw = n.nodeValue;
-    if (!raw || !/[а-яА-ЯёЁ]/.test(raw)) return;
+    // фильтра «только кириллица» здесь нет намеренно: часть подписей латиницей тоже
+    // переводится (например Discovery → Discovery Channel). Замена всё равно происходит
+    // лишь при точном совпадении со словарём, так что лишнего не тронем
+    if (!raw || !raw.trim()) return;
     var p = n.parentNode;
     if (p && I18N_SKIP[p.tagName]) return;
     var hit = I18N[raw.replace(/\s+/g, ' ').trim()];
@@ -1674,10 +1715,15 @@
     if (I18N_SKIP[root.tagName]) return;
     var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
     while ((n = w.nextNode())) i18nNode(n);
-    var els = root.querySelectorAll ? root.querySelectorAll('*') : [];
-    for (var i = 0; i < els.length; i++) for (var a = 0; a < I18N_ATTR.length; a++) {
-      var v = els[i].getAttribute(I18N_ATTR[a]);
-      if (v && /[а-яА-ЯёЁ]/.test(v)) { var tv = T(v); if (tv !== v) els[i].setAttribute(I18N_ATTR[a], tv); }
+    // сам корень тоже проверяем: у динамически добавленного узла переводимый атрибут
+    // может висеть именно на нём, а querySelectorAll('*') его не возвращает
+    var els = root.querySelectorAll ? [root].concat([].slice.call(root.querySelectorAll('*'))) : [root];
+    for (var i = 0; i < els.length; i++) {
+      if (!els[i].getAttribute) continue;
+      for (var a = 0; a < I18N_ATTR.length; a++) {
+        var v = els[i].getAttribute(I18N_ATTR[a]);
+        if (v && /[а-яА-ЯёЁ]/.test(v)) { var tv = T(v); if (tv !== v) els[i].setAttribute(I18N_ATTR[a], tv); }
+      }
     }
   }
   (function langSwitch(){
@@ -1698,6 +1744,33 @@
     });
   })();
   document.documentElement.lang = PD_LANG;
+
+  // ЯКОРИ НЕ ВЫБРАСЫВАЮТ ИЗ ЯЗЫКА. На /en/ стоит <base href="/"> — он нужен, чтобы
+  // assets и data грузились от корня, но из-за него ссылка href="#work" превращается
+  // в «/#work», то есть в русскую главную. Перехватываем такие клики и меняем только
+  // хэш, оставаясь на текущей странице. Работает и для ссылок, созданных кодом.
+  if (PD_LANG !== 'ru') {
+    document.addEventListener('click', function(e){
+      var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+      if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      var h = a.getAttribute('href');
+      if (!h || h === '#') return;
+      e.preventDefault();
+      if (location.hash === h) { location.hash = ''; }   // повторный клик — тот же раздел
+      location.hash = h;
+    }, true);
+  }
+
+  // Кнопка «забронировать» обязана что-то делать до появления календаря: открываем
+  // готовое письмо. Когда появится ссылка на бронирование, меняется только href.
+  var BOOK_MAIL = 'mailto:info@playdisplay.com'
+    + '?subject=' + encodeURIComponent('30-minute call with PlayDisplay')
+    + '&body=' + encodeURIComponent('Hello PlayDisplay,\n\nI’d like to book a 30-minute call.\n\n'
+        + 'Name:\nCompany:\nProject or space:\nTime zone:\nPreferred dates:\n');
+  addEventListener('DOMContentLoaded', function(){
+    var b = document.getElementById('bookCall');
+    if (b) b.setAttribute('href', BOOK_MAIL);
+  });
   if (I18N) {
     // Страница собирается кодом в десятке мест (сетка работ, кейс-вьюер, Атлас,
     // библиотека, панель ассистента). Вместо того чтобы дописывать перевод в каждый
@@ -1987,6 +2060,9 @@
     // ПРИЧИНА ПОДВИСАНИЯ: observer может затираться при изменении класса hero. Отключим автозапуск
     // если пользователь кликал кнопку — дайте ему паузу прежде чем ленты снова крутятся.
     var hero = document.querySelector('.hero'), inView = true;
+    // флаг объявлен здесь же: раньше он существовал только в комментарии, а в коде
+    // ниже уже проверялся — отсюда «userInteracted is not defined» при каждом скролле
+    var userInteracted = false;
     function sync(){
       (inView && hero && !hero.classList.contains('video-on')) ? start() : stop();
     }
@@ -2154,7 +2230,7 @@
       bar.addEventListener('pointercancel', bStop);
       bar.setAttribute('tabindex', '0');
       bar.setAttribute('role', 'scrollbar');
-      bar.setAttribute('aria-label', 'Прокрутка ленты');
+      bar.setAttribute('aria-label', T('Прокрутка ленты'));
       bar.addEventListener('keydown', function(e){
         var k = e.key;
         if (k === 'ArrowRight' || k === 'PageDown') { e.preventDefault(); by(page()); }
@@ -4187,16 +4263,37 @@
       ['loadedmetadata', 'loadeddata', 'canplay'].forEach(function(ev){
         v.addEventListener(ev, function(){ set(p); });   // как только данные пришли — встаём на своё место
       });
-      // Прогрев (короткий пуск-стоп: браузер декодирует настоящий кадр, постер уходит,
-      // декодер остаётся тёплым) делаем не сразу, а когда до блока доскроллили — иначе
-      // все крутилки страницы качают себя одновременно и мешают друг другу.
-      box._warm = function(){
-        try {
-          var pr = v.play();
-          if (pr && pr.then) pr.then(function(){ v.pause(); set(p); }).catch(function(){ set(p); });
-          else { v.pause(); set(p); }
-        } catch (e) {}
-      };
+      // ПОЧЕМУ РОЛИК ГРУЗИТСЯ ЦЕЛИКОМ В ПАМЯТЬ. Крутилку не смотрят, а листают, а перемотка
+      // тега <video> опирается на частичные запросы (HTTP Range). Стоит серверу, прокси или
+      // кэшу их не поддержать — ручка едет, а кадр стоит; именно так эти ползунки «переставали
+      // работать» несколько раз. Одна загрузка файла в Blob снимает вопрос совсем: дальше
+      // видео живёт в памяти, перемотка мгновенная и от сервера уже не зависит.
+      // Клипы для этого специально короткие (10-13 МБ) и грузятся, только когда до них дошли.
+      var loading = false, loaded = false;
+      function ensure(){
+        if (loading || loaded) return;
+        loading = true;
+        box.classList.add('loading');
+        var url = v.getAttribute('src');
+        fetch(url).then(function(r){ if (!r.ok) throw 0; return r.blob(); })
+          .then(function(b){
+            loaded = true; box.classList.remove('loading');
+            v.src = URL.createObjectURL(b);
+            v.load();
+            set(p);
+            // короткий пуск-стоп: браузер декодирует настоящий кадр (постер уходит)
+            // и держит декодер тёплым — первая перемотка после этого мгновенная
+            var pr = v.play();
+            if (pr && pr.then) pr.then(function(){ v.pause(); set(p); }).catch(function(){ set(p); });
+          })
+          .catch(function(){
+            // сеть не дала файл целиком — работаем как обычное видео, с перемоткой по Range
+            loading = false; box.classList.remove('loading');
+            if (v.dataset.pl) { v.preload = v.dataset.pl; v.removeAttribute('data-pl'); }
+            try { v.load(); } catch (e) {}
+          });
+      }
+      box._warm = ensure;        // вызывается, когда блок доскроллили (см. armFlow)
       set(P0);   // ручку ставим на место сразу: это только вёрстка, без загрузки
       box.addEventListener('pointerdown', function(e){
         box.classList.add('touched'); box.classList.add('dragging');
@@ -4208,12 +4305,7 @@
         // и отбирать её у человека нельзя. Мышью тянуть кадр по-прежнему можно
         if (vert && !onKnob && !onBar && e.pointerType === 'touch') { drag = 0; return; }
         drag = onKnob ? 3 : (onBar ? 2 : 1);
-        // взялись раньше, чем блок успел прогреться (или прогрев не случился вовсе) —
-        // поднимаем загрузку здесь же, иначе перематывать будет нечего
-        if (v.readyState < 1) {
-          if (v.dataset.pl) { v.preload = v.dataset.pl; v.removeAttribute('data-pl'); }
-          try { v.load(); } catch (err2) {}
-        }
+        ensure();   // взялись раньше, чем блок прогрелся — грузим здесь же
         sx = vert ? e.clientY : e.clientX; sp = p;
         try { box.setPointerCapture(e.pointerId); } catch (err) {}
         if (onBar) set(pFromPt(e));
@@ -5037,7 +5129,6 @@
     }
 
     // на телефоне карточки собираются в раскрывающиеся группы по типу
-    function isMob(){ return !!(window.matchMedia && matchMedia('(max-width: 700px)').matches); }
 
     function card(a){
       // Карточка с principle — вход в разбор; без него это тезис, который дочитывается прямо в сетке
@@ -5218,16 +5309,29 @@
   // Если бэкенда нет (превью на GitHub Pages, PHP выключен) — ассистент честно уходит
   // в демо-режим: сценарий прошит в клиенте, письмо не отправляется.
   window.pdIdea = (function(){
-    var API = 'api/ai.php';        // относительный путь: работает и в корне домена, и в подпапке
+    // Адрес бэкенда. По умолчанию относительный — работает и в корне домена, и в подпапке.
+    // Под отдельные языки можно указать ДРУГОЙ бэкенд: запрос к модели идёт с сервера,
+    // а не из браузера, поэтому «OpenAI для иностранных посетителей» решается не их
+    // геолокацией, а тем, где стоит сам ai.php. Русский сайт → timeweb + GigaChat,
+    // /en/ и /pt/ → копия ai.php на зарубежном хосте. Пусто = свой сервер.
+    var API_BY_LANG = {
+      // en: 'https://ai.playdisplay.com/api/ai.php',
+      // pt: 'https://ai.playdisplay.com/api/ai.php'
+    };
     var sid = null;
     var mode = 'unknown';          // unknown | live | demo
     var demoRound = 0, demoSaid = [];
+    // Язык берём из <html lang>: у сайта под каждый язык своя папка (/en/, /pt/),
+    // и разговор должен идти на языке страницы, а не всегда по-русски.
+    var LANG = (document.documentElement.getAttribute('lang') || 'ru').slice(0, 2).toLowerCase();
+    var API = API_BY_LANG[LANG] || 'api/ai.php';
 
     // ---- транспорт: XHR, а не fetch — весь лендинг на ES5, полифилы не нужны ----
     function post(action, data, ok, bad){
       var body = { action: action }, k;
       for (k in data) if (Object.prototype.hasOwnProperty.call(data, k)) body[k] = data[k];
       if (sid && !body.sid) body.sid = sid;
+      if (!body.lang) body.lang = LANG;
       var x = new XMLHttpRequest();
       try { x.open('POST', API, true); } catch (e) { bad('no-backend'); return; }
       x.setRequestHeader('Content-Type', 'application/json');
@@ -5285,10 +5389,17 @@
       probe: function(done){
         post('ping', {}, function(d){
           mode = d.demo ? 'demo' : 'live';
-          done(mode, d.demo ? 'Модель не подключена — ассистент отвечает по прошитому сценарию.' : '');
+          // Код распознавания речи говорит сервер: список языков лежит в lib/prompts.php
+          // и не дублируется в клиенте.
+          if (d.speech) window.pdSpeech.setLang(d.speech);
+          // Сервер присылает и причину (нет ключа / выбран mock) — показываем её,
+          // иначе демо-режим не отличить от живого разговора, пока не дойдёшь до брифа.
+          done(mode, d.demo
+            ? 'Демо-режим: ' + (d.why || 'модель не подключена') + '. Ответы идут по прошитому сценарию.'
+            : '');
         }, function(){
           mode = 'demo';
-          done('demo', 'Бэкенд недоступен — идёт демонстрация сценария, письмо не отправится.');
+          done('demo', 'Бэкенд не отвечает: PHP не запущен. Идёт демонстрация сценария, письмо не отправится.');
         });
       },
 
@@ -5325,7 +5436,8 @@
       send: function(contact, ok, bad){
         if (mode === 'demo') { setTimeout(function(){ ok({ demo: true }); }, 700); return; }
         post('send', {
-          name: contact.name, contact: contact.contact, company: contact.company, agree: true
+          name: contact.name, contact: contact.contact, company: contact.company,
+          channels: contact.channels || [], agree: true
         }, ok, bad);
       }
     };
@@ -5338,7 +5450,17 @@
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     var rec = null, live = false, want = false;
     var finalBuf = '', interim = '', flushT = null, h = {};
-    var PAUSE = 1500;   // столько тишины считаем концом мысли и отправляем реплику
+    // Пауза, после которой считаем мысль законченной и отправляем реплику. Между
+    // предложениями человек молчит меньше секунды, поэтому 1,5 с рубили монолог на куски:
+    // на пятиминутном рассказе получалось два десятка запросов и столько же вопросов,
+    // которых никто не читал. 2,2 с — это «я договорил», а не «я перевожу дыхание».
+    var PAUSE = 2200;
+    // Локаль распознавания. Значение по умолчанию берём из языка страницы, а точный код
+    // (ru-RU, en-US, pt-BR) присылает сервер при первой же проверке связи. Ошибиться тут
+    // нельзя: с чужой локалью распознавание не понимает вообще ничего.
+    var HTML_LANG = (document.documentElement.getAttribute('lang') || 'ru').slice(0, 2).toLowerCase();
+    var GUESS = { ru: 'ru-RU', en: 'en-US', pt: 'pt-BR' };
+    var SLANG = GUESS[HTML_LANG] || 'ru-RU';
 
     function fire(name, a, b){ if (h[name]) try { h[name](a, b); } catch (e) { console.warn('speech ' + name, e); } }
 
@@ -5354,7 +5476,7 @@
 
     function build(){
       rec = new SR();
-      rec.lang = 'ru-RU';
+      rec.lang = SLANG;
       rec.continuous = true;
       rec.interimResults = true;
       rec.maxAlternatives = 1;
@@ -5398,6 +5520,17 @@
     return {
       supported: !!SR,
       listening: function(){ return want; },
+      // Человек прямо сейчас говорит: в буфере есть речь, ещё не отправленная.
+      // Нужно, чтобы ассистент не подменял вопрос на экране посреди чужой фразы.
+      talking: function(){ return (finalBuf + interim).replace(/\s+/g, '') !== ''; },
+      lang: function(){ return SLANG; },
+      // Смена языка на живом объекте распознавания не действует — нужен новый.
+      // Поэтому старый выбрасываем, и следующий start() соберёт его с новой локалью.
+      setLang: function(code){
+        if (!code || code === SLANG) return;
+        SLANG = code;
+        if (rec) { try { rec.abort(); } catch (e) {} rec = null; live = false; }
+      },
       start: function(handlers){
         if (!SR) { return false; }
         h = handlers || {};
@@ -5438,6 +5571,24 @@
         elAlt = document.getElementById('aiAlt'),
         elRec = document.getElementById('aiRec'),
         elNote = document.getElementById('aiNote');
+
+    // Каналы связи: можно отметить несколько, можно ни одного — это подсказка Андрею,
+    // а не обязательное поле. Подсказка нужна и затем, чтобы человек увидел:
+    // телефон и мессенджер здесь ждут не меньше, чем почту.
+    (function(){
+      var box = document.getElementById('aiChan');
+      if (!box) return;
+      box.addEventListener('click', function(e){
+        var b = e.target.closest ? e.target.closest('button[data-ch]') : null;
+        if (!b) return;
+        b.classList.toggle('on');
+      });
+    })();
+    function chosenChannels(){
+      var out = [], bs = document.querySelectorAll('#aiChan button.on');
+      for (var i = 0; i < bs.length; i++) out.push(bs[i].getAttribute('data-ch'));
+      return out;
+    }
 
     // Отправка набранного текстом. Пока ждём ответа, поле не блокируем —
     // человек может продолжать печатать следующую мысль.
@@ -5696,6 +5847,7 @@
         probed = true;
         window.pdIdea.probe(function(m, note){
           if (!elNote) return;
+          elNote.className = 'ai-note' + (note ? ' warn' : '');
           if (note) elNote.textContent = note;
           else elNote.textContent = pdSpeech.supported
             ? 'Говорите свободно — ассистент слушает и задаёт вопросы.'
@@ -5765,6 +5917,9 @@
           ready = true;
           if (elDone) elDone.classList.add('hot');
         }
+        // Модель не ответила, вопрос взят из запаса. Молчать нельзя: иначе разговор
+        // выглядит живым, а на выходе человек получает бриф не про свои слова.
+        if (d.degraded) showErr('Модель не отвечает — вопросы идут по резервному списку. Бриф придёт со стенограммой.');
         afterTurn();
       }, function(err, d){
         busy = false; setThink(false);
@@ -5784,8 +5939,17 @@
 
     // Вопрос ассистента подменяется с короткой перерисовкой, а не мгновенно —
     // иначе на экране «дёргается» заголовок и непонятно, что он изменился.
+    var askWaitT = null;
     function ask(reply, sub){
       if (!reply || !elPrompt) return;
+      // Ассистент дожидается своей очереди. Если человек уже начал говорить дальше,
+      // подменять вопрос нельзя: он читает не то, на что отвечает, и сбивается.
+      // Главная задача панели — дать выговориться, а не вести допрос по расписанию.
+      if (askWaitT) { clearTimeout(askWaitT); askWaitT = null; }
+      if (pdSpeech.listening() && pdSpeech.talking()) {
+        askWaitT = setTimeout(function(){ ask(reply, sub); }, 500);
+        return;
+      }
       elPrompt.style.opacity = '0';
       setTimeout(function(){
         elPrompt.textContent = reply;
@@ -5888,6 +6052,12 @@
             sp.textContent = t;
             tags.appendChild(sp);
           });
+          // Разбор не удался — карточка собрана механически. Человек должен это видеть
+          // до того, как нажмёт «Отправить», а не удивляться потом.
+          var warn = document.getElementById('aiSumErr');
+          if (warn) warn.textContent = d.degraded
+            ? 'Модель не разобрала разговор — это черновик. Стенограмма уйдёт в письме целиком.'
+            : '';
           stage('summary');
         }, function(err){
           setThink(false);
@@ -5976,7 +6146,8 @@
       window.pdIdea.send({
         name: document.getElementById('aiName').value,
         contact: document.getElementById('aiContact').value,
-        company: document.getElementById('aiCompany').value
+        company: document.getElementById('aiCompany').value,
+        channels: chosenChannels()
       }, function(d){
         restore();
         // Демо-режим: не врём, что письмо ушло. Формулировки переписываем в обе стороны —

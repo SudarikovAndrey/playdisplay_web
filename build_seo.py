@@ -327,6 +327,7 @@ en = en.replace('<head>', '<head>\n<base href="/">', 1)
 en = re.sub(r'<title>.*?</title>', '<title>%s</title>' % esc(EN_TITLE), en, count=1, flags=re.S)
 en = re.sub(r'<meta name="description" content="[^"]*">', '<meta name="description" content="%s">' % esc(EN_DESC), en, count=1)
 en = re.sub(r'<meta name="keywords" content="[^"]*">', '<meta name="keywords" content="%s">' % esc(EN_KEYS), en, count=1)
+en = re.sub(r'\n?<link rel="alternate" hreflang="[^"]*" href="[^"]*">', '', en)   # чужие/русские — долой
 en = en.replace('<link rel="canonical" href="https://playdisplay.com/">',
                 '<link rel="canonical" href="%s/en/">\n%s' % (BASE, alternates('')), 1)
 en = en.replace('<meta property="og:locale" content="ru_RU">', '<meta property="og:locale" content="en_US">', 1)
@@ -341,8 +342,13 @@ en = re.sub(r'<meta name="twitter:title" content="[^"]*">',
 en = re.sub(r'<meta name="twitter:description" content="[^"]*">',
             '<meta name="twitter:description" content="%s">' % esc(EN_DESC), en, count=1)
 # язык и словарь — до основного скрипта, поэтому в самом конце head
+# к словарю добавляем отпечаток содержимого: браузер держит его в кэше, и без метки
+# правки перевода доезжали бы до посетителя только после сброса кэша
+import hashlib
+dic_path = os.path.join(SITE, 'data/i18n/en.js')
+dic_ver = hashlib.sha1(open(dic_path, 'rb').read()).hexdigest()[:8]
 en = en.replace('</head>', "<script>window.PD_LANG='en';</script>\n"
-                           '<script src="data/i18n/en.js"></script>\n</head>', 1)
+                           '<script src="data/i18n/en.js?v=%s"></script>\n</head>' % dic_ver, 1)
 # SEO-блок русской главной меняем на английский
 en = re.sub(r'<!--SEO-->.*?<!--/SEO-->', lambda m: home_block(EN), en, count=1, flags=re.S)
 en = en.replace('name="Landing — Spatial Capture (RU)"', 'name="Landing — Spatial Capture (EN)"', 1)
