@@ -18,7 +18,7 @@ function pd_config() {
     'llm' => 'mock',
     'anthropic' => array('key' => '', 'model' => 'claude-haiku-4-5-20251001'),
     'openai_compat' => array('key' => '', 'base' => 'https://api.openai.com/v1', 'model' => 'gpt-5.6-luna', 'reasoning' => 'none', 'temperature' => ''),
-    'gigachat' => array('key' => '', 'scope' => 'GIGACHAT_API_PERS', 'model' => 'GigaChat-2', 'ca' => ''),
+    'gigachat' => array('key' => '', 'scope' => 'GIGACHAT_API_PERS', 'model' => 'GigaChat-2', 'ca' => '', 'base' => 'https://api.giga.chat/v1'),
     'llm_by_lang' => array(),
     'mailer' => 'file',
     'smtp' => array('host' => '', 'port' => 465, 'secure' => 'ssl', 'user' => '', 'pass' => ''),

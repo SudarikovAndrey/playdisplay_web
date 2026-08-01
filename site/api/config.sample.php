@@ -53,7 +53,11 @@ return array(
 
   'gigachat' => array(
     'key'   => '',                    // Authorization key (base64 client_id:secret) из личного кабинета
-    'scope' => 'GIGACHAT_API_PERS',   // PERS — физлицо, B2B — ИП, CORP — юрлицо
+    // PERS — физлицо · B2B — ИП и юрлица по платным пакетам · CORP — они же по pay-as-you-go
+    'scope' => 'GIGACHAT_API_PERS',
+    // Адрес API. С 17.07.2026 целевой — api.giga.chat; прежний
+    // https://gigachat.devices.sberbank.ru/api/v1 остался только у старых подключений.
+    'base'  => 'https://api.giga.chat/v1',
     // Цены за 1 млн токенов (одинаковы для физлиц и юрлиц, проверено 31.07.2026):
     //   GigaChat-2      Lite   65 ₽    — для брифа достаточно
     //   GigaChat-2-Pro  Pro   500 ₽

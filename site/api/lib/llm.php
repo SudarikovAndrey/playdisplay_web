@@ -204,7 +204,12 @@ function pd_llm_gigachat($c, $system, $messages, $maxTokens) {
   list($tok, $err) = pd_gigachat_token($c);
   if ($err) return array('text' => '', 'error' => $err, 'usage' => array(0, 0));
   $msgs = array_merge(array(array('role' => 'system', 'content' => $system)), $messages);
-  list($code, $body, $err) = pd_http_post_json('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', array(
+  // Адрес API. С 17.07.2026 целевой — https://api.giga.chat; старый
+  // gigachat.devices.sberbank.ru работает только у тех, кто подключился раньше,
+  // и для НОВЫХ ключей не годится. Поэтому по умолчанию новый, а старый остаётся
+  // строкой в конфиге для тех, кто подключался до этой даты.
+  $base = !empty($c['base']) ? rtrim($c['base'], '/') : 'https://api.giga.chat/v1';
+  list($code, $body, $err) = pd_http_post_json($base . '/chat/completions', array(
     'model' => $c['model'], 'messages' => $msgs, 'max_tokens' => $maxTokens, 'temperature' => 0.6,
   ), array('Authorization: Bearer ' . $tok, 'Accept: application/json'), 45, pd_gigachat_ca($c));
   if ($err) return array('text' => '', 'error' => pd_gigachat_net_error($err), 'usage' => array(0, 0));
