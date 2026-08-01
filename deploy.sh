@@ -33,7 +33,17 @@ SITE_URL="https://playdisplay.com"
 # Локальный конфиг для переопределения любого из значений выше.
 # Файл в .gitignore, в репозиторий не уезжает.
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-[ -f "$REPO/deploy.conf" ] && . "$REPO/deploy.conf"
+# deploy.conf лежит в основной папке проекта и в git не хранится. При запуске из
+# отдельного worktree его там нет — поэтому сначала ищем в основной копии, а потом
+# рядом со скриптом (чтобы worktree мог при желании переопределить). Иначе пришлось бы
+# копировать конфиг в каждый worktree и держать настройки в двух местах.
+MAIN_REPO="$(dirname "$(git -C "$REPO" rev-parse --git-common-dir 2>/dev/null || echo "$REPO/.git")")"
+case "$MAIN_REPO" in /*) ;; *) MAIN_REPO="$REPO/$MAIN_REPO" ;; esac
+# Из самой основной папки git отдаёт «.git», и путь получается вида «…/repo/.» —
+# строка не совпадает с $REPO, и конфиг прочитался бы дважды. Приводим к канону.
+MAIN_REPO="$(cd "$MAIN_REPO" 2>/dev/null && pwd || echo "$REPO")"
+[ -f "$MAIN_REPO/deploy.conf" ] && . "$MAIN_REPO/deploy.conf"
+[ "$MAIN_REPO" != "$REPO" ] && [ -f "$REPO/deploy.conf" ] && . "$REPO/deploy.conf"
 
 TARGET="$SSH_USER@$SSH_HOST"
 LOG="$REPO/DEPLOY-LOG.md"
@@ -76,18 +86,32 @@ cd "$REPO" || die "не нахожу папку проекта"
 # openrsync, который не знает --itemize-changes, --filter и --chmod. Выяснять это
 # посреди заливки на боевой сервер — плохая идея, поэтому пробуем флаги на пустых
 # папках заранее.
-# Путь к rsync можно задать в deploy.conf строкой RSYNC_BIN="/opt/homebrew/bin/rsync"
-RSYNC_BIN="${RSYNC_BIN:-rsync}"
-
+# Путь к rsync можно задать в deploy.conf строкой RSYNC_BIN="/opt/homebrew/bin/rsync",
+# но обычно это не нужно: если системный не подошёл, перебираем места, куда его ставит
+# homebrew — /opt/homebrew на Apple Silicon и /usr/local на Intel. Заставлять человека
+# править конфиг из-за подмены системной утилиты — лишний шаг на пути к деплою.
 check_rsync() {
-  command -v "$RSYNC_BIN" >/dev/null || return 1
+  command -v "$1" >/dev/null || return 1
   a="/tmp/pd-rsync-a-$$"; b="/tmp/pd-rsync-b-$$"
   mkdir -p "$a" "$b"
-  "$RSYNC_BIN" -rltzc --omit-dir-times --chmod=D755,F644 --delete --itemize-changes \
+  "$1" -rltzc --omit-dir-times --chmod=D755,F644 --delete --itemize-changes \
         --filter='-s .DS_Store' --dry-run "$a/" "$b/" >/dev/null 2>&1
   rc=$?
   rm -rf "$a" "$b"
   return $rc
+}
+
+pick_rsync() {
+  # Если путь задан руками — уважаем его и молча не подменяем.
+  if [ -n "${RSYNC_BIN:-}" ]; then return 0; fi
+  for cand in rsync /opt/homebrew/bin/rsync /usr/local/bin/rsync; do
+    if check_rsync "$cand"; then
+      RSYNC_BIN="$cand"
+      return 0
+    fi
+  done
+  RSYNC_BIN="rsync"     # ни один не подошёл — оставим системный, дальше будет внятная ошибка
+  return 1
 }
 
 printf "%s\n%s  PlayDisplay → %s%s\n%s\n" \
@@ -194,15 +218,16 @@ LAST=$(cat "$STATE" 2>/dev/null || true)
 step "Заливаю site/ на $SSH_HOST"
 [ -d "$REPO/site" ] || die "нет папки site/ — заливать нечего"
 
-RSYNC_VER=$("$RSYNC_BIN" --version 2>/dev/null | head -1 | tr -s ' ' | cut -d' ' -f1-3)
-[ -n "$RSYNC_VER" ] || RSYNC_VER="не найден ($RSYNC_BIN)"
-check_rsync || die "rsync на этой машине не понимает нужные флаги: $RSYNC_VER
-     Похоже, это openrsync — им на свежих macOS подменили настоящий rsync.
-     Лечится так:
+pick_rsync || die "ни один rsync на этой машине не понимает нужные флаги.
+     Проверены: rsync из PATH, /opt/homebrew/bin/rsync, /usr/local/bin/rsync.
+     На свежих macOS системный rsync подменён на openrsync, который не знает
+     --itemize-changes, --filter и --chmod. Лечится одной командой:
        brew install rsync
-     и затем добавить в deploy.conf строку с путём к нему, например:
-       RSYNC_BIN=\"/opt/homebrew/bin/rsync\""
-ok "rsync подходящий: $RSYNC_VER"
+     После установки просто запустите деплой снова — путь найдётся сам.
+     Если homebrew ставит в необычное место, добавьте в deploy.conf строку:
+       RSYNC_BIN=\"\$(brew --prefix)/bin/rsync\""
+RSYNC_VER=$("$RSYNC_BIN" --version 2>/dev/null | head -1 | tr -s ' ' | cut -d' ' -f1-3)
+ok "rsync подходящий: $RSYNC_VER${RSYNC_BIN:+ ($RSYNC_BIN)}"
 
 # Что на сервере обязано выжить и никогда не удаляется:
 #   old/        — статичный слепок старого вордпресса, 244 МБ, живёт только на сервере
