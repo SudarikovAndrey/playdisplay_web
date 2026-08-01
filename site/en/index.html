@@ -1269,7 +1269,7 @@
   }
 </style>
 <script>window.PD_LANG='en';</script>
-<script src="data/i18n/en.js?v=c706c36f"></script>
+<script src="data/i18n/en.js?v=669f8398"></script>
 </head>
 <body class="booting">
 
@@ -1326,7 +1326,7 @@
   <div class="wrap hero-top">
     <div class="hero-kinds" id="heroKinds">
       <span class="hk-line" id="hkLine">Музеи</span>
-      <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Иммерсивные аттракционы · Дополненная и виртуальная реальность · Веб-пространства · Бренд-пространства · Общественные пространства · Корпоративные пространства</span>
+      <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Дополненная и виртуальная реальность · Веб-пространства · Бренд-пространства · Общественные пространства</span>
     </div>
   </div>
   <!-- микрострелочки по бокам: хинт что есть контент слева/справа -->
@@ -1531,9 +1531,9 @@
         <p>Основатель и креативный директор. В дизайне с 1999 года: графический, промышленный, мультимедиа. Выпускник Московской школы управления «Сколково». Лично ведёт каждый проект студии.</p>
       </div>
       <div class="panel">
-        <div class="ptitle">Пресса и признание</div>
+        <div class="ptitle">Пресса</div>
         <h4>Discovery Channel и не только</h4>
-        <p>О студии рассказывали Discovery Channel и международные технологические программы. Проекты отмечены отраслевыми дипломами и наградами.</p>
+        <p>О студии рассказывали Discovery Channel и международные технологические программы.</p>
       </div>
     </div>
 
@@ -2063,10 +2063,10 @@
   (function(){
     var line = document.getElementById('hkLine');
     if (!line) return;
+    // девять категорий: строка и так плотная, больше на экран не ложится
     var WORDS = ['Музеи', 'Выставки', 'Визит-центры', 'Шоурумы', 'Иммерсивные комнаты',
-                 'Иммерсивные аттракционы', 'Дополненная и виртуальная реальность',
-                 'Веб-пространства', 'Бренд-пространства', 'Общественные пространства',
-                 'Корпоративные пространства'];
+                 'Дополненная и виртуальная реальность', 'Веб-пространства',
+                 'Бренд-пространства', 'Общественные пространства'];
     var GLYPHS = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯ0123456789/\\|<>#*+=·';
     var i = 0, timer = 0, raf = 0;
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -5531,45 +5531,53 @@
       0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
       0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
 
-    function sha256bytes(bytes){
-      var len = bytes.length, bitLen = len * 8;
-      // дополнение: 0x80, нули, затем длина в битах восемью байтами
-      var withPad = ((len + 9 + 63) >> 6) << 6;
-      var m = new Uint8Array(withPad);
-      m.set(bytes);
-      m[len] = 0x80;
-      // длина сообщения у нас всегда мала — старшие байты остаются нулями
-      m[withPad - 4] = (bitLen >>> 24) & 0xff;
-      m[withPad - 3] = (bitLen >>> 16) & 0xff;
-      m[withPad - 2] = (bitLen >>> 8) & 0xff;
-      m[withPad - 1] = bitLen & 0xff;
+    // Все наши сообщения короче 56 байт (nonce + ':' + число), то есть укладываются
+    // в один 64-байтный блок. Поэтому: никаких аллокаций в цикле — буферы заводятся
+    // один раз и переиспользуются, а результат отдаётся тремя старшими словами.
+    // Это даёт кратное ускорение, а на подборе миллиона хешей разница уже в секундах.
+    var _m = new Uint8Array(64), _w = new Int32Array(64), _H = new Int32Array(8);
+    var _h0 = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
 
-      var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
-      var w = new Int32Array(64), i, j, a, b, c, d, e, f, g, h, t1, t2, s0, s1;
-      for (i = 0; i < withPad; i += 64) {
-        for (j = 0; j < 16; j++)
-          w[j] = (m[i + j * 4] << 24) | (m[i + j * 4 + 1] << 16) | (m[i + j * 4 + 2] << 8) | m[i + j * 4 + 3];
-        for (j = 16; j < 64; j++) {
-          var x = w[j - 15], y = w[j - 2];
-          s0 = ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
-          s1 = ((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10);
-          w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
-        }
-        a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
-        for (j = 0; j < 64; j++) {
-          s1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
-          t1 = (h + s1 + ((e & f) ^ (~e & g)) + K[j] + w[j]) | 0;
-          s0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
-          t2 = (s0 + ((a & b) ^ (a & c) ^ (b & c))) | 0;
-          h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
-        }
-        H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
-        H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    /** Хеширует _m (длина len байт, len < 56). Результат — в _H. */
+    function sha256block(len){
+      var i, j, a, b, c, d, e, f, g, h, t1, t2, s0, s1, x, y;
+      for (i = len; i < 64; i++) _m[i] = 0;
+      _m[len] = 0x80;
+      var bitLen = len * 8;
+      _m[62] = (bitLen >>> 8) & 0xff;
+      _m[63] = bitLen & 0xff;
+      for (j = 0; j < 16; j++)
+        _w[j] = (_m[j * 4] << 24) | (_m[j * 4 + 1] << 16) | (_m[j * 4 + 2] << 8) | _m[j * 4 + 3];
+      for (j = 16; j < 64; j++) {
+        x = _w[j - 15]; y = _w[j - 2];
+        s0 = ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
+        s1 = ((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10);
+        _w[j] = (_w[j - 16] + s0 + _w[j - 7] + s1) | 0;
       }
+      a = _h0[0]; b = _h0[1]; c = _h0[2]; d = _h0[3];
+      e = _h0[4]; f = _h0[5]; g = _h0[6]; h = _h0[7];
+      for (j = 0; j < 64; j++) {
+        s1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+        t1 = (h + s1 + ((e & f) ^ (~e & g)) + K[j] + _w[j]) | 0;
+        s0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+        t2 = (s0 + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+      }
+      _H[0] = (_h0[0] + a) | 0; _H[1] = (_h0[1] + b) | 0;
+      _H[2] = (_h0[2] + c) | 0; _H[3] = (_h0[3] + d) | 0;
+      _H[4] = (_h0[4] + e) | 0; _H[5] = (_h0[5] + f) | 0;
+      _H[6] = (_h0[6] + g) | 0; _H[7] = (_h0[7] + h) | 0;
+    }
+
+    /** Публичный вариант для проверки в тестах: строка → 32 байта. */
+    function sha256str(s){
+      var b = bytesOf(s), i;
+      for (i = 0; i < b.length; i++) _m[i] = b[i];
+      sha256block(b.length);
       var out = new Uint8Array(32);
       for (i = 0; i < 8; i++) {
-        out[i * 4] = (H[i] >>> 24) & 0xff; out[i * 4 + 1] = (H[i] >>> 16) & 0xff;
-        out[i * 4 + 2] = (H[i] >>> 8) & 0xff; out[i * 4 + 3] = H[i] & 0xff;
+        out[i * 4] = (_H[i] >>> 24) & 0xff; out[i * 4 + 1] = (_H[i] >>> 16) & 0xff;
+        out[i * 4 + 2] = (_H[i] >>> 8) & 0xff; out[i * 4 + 3] = _H[i] & 0xff;
       }
       return out;
     }
@@ -5584,11 +5592,11 @@
       }
       return new Uint8Array(out);
     }
-    function leadingZeroBits(h, need){
-      var i = 0;
-      while (need >= 8) { if (h[i] !== 0) return false; need -= 8; i++; }
-      if (need > 0) { if ((h[i] & (0xFF << (8 - need) & 0xFF)) !== 0) return false; }
-      return true;
+    /** Проверка нулевых бит прямо по словам _H — без сборки массива байт. */
+    function zerosOk(bits){
+      // до 32 бит хватает первого слова: сравниваем старшие биты
+      if (bits <= 32) return (_H[0] >>> (32 - bits)) === 0;
+      return false;
     }
 
     // ---- поведенческие признаки ----
@@ -5614,20 +5622,28 @@
 
     function solve(t, progress, done){
       var nonce = t.nonce, bits = t.bits, n = 0;
-      var head = bytesOf(nonce + ':');
-      // Пачку подбираем так, чтобы кадр не проседал: 2000 хешей это единицы миллисекунд.
-      var BATCH = 2000, tried = 0, expect = Math.pow(2, bits);
+      var head = bytesOf(nonce + ':'), hl = head.length, i;
+      for (i = 0; i < hl; i++) _m[i] = head[i];      // неизменная часть пишется один раз
+      // Пачку подбираем так, чтобы кадр не проседал: 20 тысяч хешей это ~30 мс.
+      var BATCH = 20000, tried = 0, expect = Math.pow(2, bits);
       function step(){
-        var i, s, buf;
+        var i, k, len, v;
         for (i = 0; i < BATCH; i++) {
-          s = bytesOf(String(n));
-          buf = new Uint8Array(head.length + s.length);
-          buf.set(head); buf.set(s, head.length);
-          if (leadingZeroBits(sha256bytes(buf), bits)) { done(String(n)); return; }
+          // цифры числа пишем прямо в буфер, без промежуточных строк и массивов
+          v = n; len = hl;
+          if (v === 0) { _m[len++] = 48; }
+          else {
+            var start = len, end;
+            while (v > 0) { _m[len++] = 48 + (v % 10); v = (v - v % 10) / 10; }
+            end = len - 1;
+            while (start < end) { k = _m[start]; _m[start] = _m[end]; _m[end] = k; start++; end--; }
+          }
+          sha256block(len);
+          if (zerosOk(bits)) { done(String(n)); return; }
           n++; tried++;
         }
         // Прогресс честный: доля перебранного от ожидаемого числа попыток.
-        // Больше 0.98 не показываем — иначе полоса «залипает» на единице, если не повезло.
+        // Больше 0.98 не показываем — иначе кольцо «залипает» на единице, если не повезло.
         if (progress) progress(Math.min(0.98, tried / expect));
         requestAnimationFrame(step);
       }
@@ -5649,6 +5665,7 @@
         };
       },
       setPass: function(p){ pass = p; },
+      sha256: sha256str,          // наружу только для проверок в тестах
       // Задача пришла с сервера — решаем. progress(0..1) для кольца вокруг микрофона.
       accept: function(t, progress, done){
         task = t; solution = null; solving = true; onProg = progress;

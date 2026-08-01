@@ -875,6 +875,8 @@
     background: rgba(16,30,37,0.6); border: 1px solid var(--space-line); padding: 14px 18px; outline: none; }
   #aiFormEl input[type="text"]:focus { border-color: var(--signal-teal); }
   .ai-agree { display: flex; align-items: center; gap: 10px; font: 400 13px var(--font-body); color: var(--scan-white-dim); cursor: pointer; }
+  .ai-fine { max-width: min(420px, 88vw); text-align: left; margin-top: -4px;
+    font: 400 11.5px/1.5 var(--font-body); color: var(--scan-white-faint); }
   /* канал связи: не обязательное поле, а подсказка, что телефоном и мессенджером тоже можно */
   .ai-chan { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px;
     width: min(420px, 88vw); margin-top: 2px; }
@@ -1323,7 +1325,7 @@
   <div class="wrap hero-top">
     <div class="hero-kinds" id="heroKinds">
       <span class="hk-line" id="hkLine">Музеи</span>
-      <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Иммерсивные аттракционы · Дополненная и виртуальная реальность · Веб-пространства · Бренд-пространства · Общественные пространства · Корпоративные пространства</span>
+      <span class="hk-all">Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Дополненная и виртуальная реальность · Веб-пространства · Бренд-пространства · Общественные пространства</span>
     </div>
   </div>
   <!-- микрострелочки по бокам: хинт что есть контент слева/справа -->
@@ -1528,9 +1530,9 @@
         <p>Основатель и креативный директор. В дизайне с 1999 года: графический, промышленный, мультимедиа. Выпускник Московской школы управления «Сколково». Лично ведёт каждый проект студии.</p>
       </div>
       <div class="panel">
-        <div class="ptitle">Пресса и признание</div>
+        <div class="ptitle">Пресса</div>
         <h4>Discovery Channel и не только</h4>
-        <p>О студии рассказывали Discovery Channel и международные технологические программы. Проекты отмечены отраслевыми дипломами и наградами.</p>
+        <p>О студии рассказывали Discovery Channel и международные технологические программы.</p>
       </div>
     </div>
 
@@ -1667,7 +1669,11 @@
           <button type="button" data-ch="Почта">Почта</button>
         </div>
         <input type="text" id="aiCompany" placeholder="Компания (необязательно)">
-        <label class="ai-agree"><input type="checkbox" id="aiAgree" required> Согласен на отправку описания идеи в playdisplay</label>
+        <label class="ai-agree"><input type="checkbox" id="aiAgree" required> Согласен на обработку имени, контакта и текста разговора</label>
+        <!-- Для гостей из Европы согласия «галочкой без пояснений» недостаточно: нужно
+             сказать, что именно собирается и что с этим будет. Формулировку показать юристу
+             и связать со страницей политики, когда она появится. -->
+        <div class="ai-fine">Разговор разбирает языковая модель, расшифровка хранится у нас и уходит только в студию. Удалим по первому запросу.</div>
         <div class="ai-err" id="aiFormErr"></div>
         <div class="ai-actions"><button class="wa" type="submit">▶︎ Отправить</button></div>
       </form>
@@ -2060,10 +2066,10 @@
   (function(){
     var line = document.getElementById('hkLine');
     if (!line) return;
+    // девять категорий: строка и так плотная, больше на экран не ложится
     var WORDS = ['Музеи', 'Выставки', 'Визит-центры', 'Шоурумы', 'Иммерсивные комнаты',
-                 'Иммерсивные аттракционы', 'Дополненная и виртуальная реальность',
-                 'Веб-пространства', 'Бренд-пространства', 'Общественные пространства',
-                 'Корпоративные пространства'];
+                 'Дополненная и виртуальная реальность', 'Веб-пространства',
+                 'Бренд-пространства', 'Общественные пространства'];
     var GLYPHS = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯ0123456789/\\|<>#*+=·';
     var i = 0, timer = 0, raf = 0;
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -5362,7 +5368,11 @@
     // Язык берём из <html lang>: у сайта под каждый язык своя папка (/en/, /pt/),
     // и разговор должен идти на языке страницы, а не всегда по-русски.
     var LANG = (document.documentElement.getAttribute('lang') || 'ru').slice(0, 2).toLowerCase();
-    var API = API_BY_LANG[LANG] || 'api/ai.php';
+    // Путь от КОРНЯ домена, а не относительный. Относительный «api/ai.php» ломается
+    // на языковых версиях: со страницы /en/ он превращается в /en/api/ai.php, которого
+    // нет, и ассистент молча уходил в демо-режим. Сайт живёт в корне домена — на это же
+    // рассчитан и site/.htaccess.
+    var API = API_BY_LANG[LANG] || '/api/ai.php';
 
     // ---- транспорт: XHR, а не fetch — весь лендинг на ES5, полифилы не нужны ----
     function post(action, data, ok, bad){
@@ -5693,7 +5703,7 @@
     // (ru-RU, en-US, pt-BR) присылает сервер при первой же проверке связи. Ошибиться тут
     // нельзя: с чужой локалью распознавание не понимает вообще ничего.
     var HTML_LANG = (document.documentElement.getAttribute('lang') || 'ru').slice(0, 2).toLowerCase();
-    var GUESS = { ru: 'ru-RU', en: 'en-US', pt: 'pt-BR' };
+    var GUESS = { ru: 'ru-RU', en: 'en-US', pt: 'pt-PT' };
     var SLANG = GUESS[HTML_LANG] || 'ru-RU';
 
     function fire(name, a, b){ if (h[name]) try { h[name](a, b); } catch (e) { console.warn('speech ' + name, e); } }
