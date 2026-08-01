@@ -32,7 +32,28 @@ function pd_brief_labels() {
   );
 }
 
-function pd_brief_html($card, $contact, $sess) {
+/** Файл логотипа для шапки письма. Белый — потому что шапка тёмная. */
+function pd_logo_path() {
+  $p = dirname(PD_DIR) . '/assets/logos/playdisplay-logo-white.png';   // site/api → site/assets
+  return is_file($p) ? $p : '';
+}
+/**
+ * Картинка в письме: внутри почты это ссылка на вложение (cid), а в файле на диске —
+ * встроенный base64, иначе превью в браузере показывало бы битый значок.
+ */
+function pd_logo_src($inline) {
+  $p = pd_logo_path();
+  if ($p === '') return '';
+  if (!$inline) return 'cid:' . PD_LOGO_CID;
+  return 'data:image/png;base64,' . base64_encode((string)file_get_contents($p));
+}
+define('PD_LOGO_CID', 'pdlogo');
+
+/**
+ * $inline — как вставлять логотип: false для настоящего письма (cid на вложение),
+ * true для файла, который открывают в браузере (base64 прямо в разметке).
+ */
+function pd_brief_html($card, $contact, $sess, $inline = false) {
   $b = isset($card['brief']) && is_array($card['brief']) ? $card['brief'] : array();
   list($heatText, $heatFg, $heatBg) = pd_heat_label(isset($card['heat']) ? $card['heat'] : 'warm');
   $when = date('d.m.Y H:i');
@@ -101,9 +122,11 @@ function pd_brief_html($card, $contact, $sess) {
       . 'Стенограмма</div>' . $talk . '</div>'
     : '';
 
+  $chan = (!empty($contact['channels']) && is_array($contact['channels'])) ? implode(' · ', $contact['channels']) : '';
   $meta = array(
     'Имя' => isset($contact['name']) ? $contact['name'] : '',
     'Связь' => isset($contact['contact']) ? $contact['contact'] : '',
+    'Удобнее' => $chan,
     'Компания' => isset($contact['company']) ? $contact['company'] : '',
   );
   $metaRows = '';
@@ -111,16 +134,41 @@ function pd_brief_html($card, $contact, $sess) {
     $v = trim((string)$v);
     if ($v === '') continue;
     $val = pd_esc($v);
-    // Живая ссылка: по письму или телефону из брифа сразу удобно ответить.
-    if (strpos($v, '@') !== false && strpos($v, ' ') === false) $val = '<a href="mailto:' . $val . '" style="color:#0a7d67;">' . $val . '</a>';
-    elseif (preg_match('/^[\d\s()+\-]{7,}$/', $v)) $val = '<a href="tel:' . preg_replace('/[^\d+]/', '', $v) . '" style="color:#0a7d67;">' . $val . '</a>';
+    // Живая ссылка: по адресу из брифа сразу удобно ответить, не копируя его руками.
+    // Порядок проверок важен: «@ivanov» — это телеграм, а не почта, и mailto для него
+    // был бы битой ссылкой.
+    if (preg_match('/^@[A-Za-z0-9_]{3,}$/', $v)) {
+      $val = '<a href="https://t.me/' . pd_esc(substr($v, 1)) . '" style="color:#0a7d67;">' . $val . '</a>';
+    } elseif (filter_var($v, FILTER_VALIDATE_EMAIL)) {
+      $val = '<a href="mailto:' . $val . '" style="color:#0a7d67;">' . $val . '</a>';
+    } elseif (preg_match('/^[\d\s()+\-]{7,}$/', $v)) {
+      $val = '<a href="tel:' . preg_replace('/[^\d+]/', '', $v) . '" style="color:#0a7d67;">' . $val . '</a>';
+    }
     $metaRows .= '<tr><td style="padding:0 14px 6px 0;font:600 12px/1.4 Arial,sans-serif;color:#7a848a;white-space:nowrap;">'
       . pd_esc($k) . '</td><td style="padding:0 0 6px;font:400 15px/1.4 Arial,sans-serif;color:#16202a;">' . $val . '</td></tr>';
   }
 
+  // Как человек рассказывал. Драйвер модели в письме не упоминаем — это внутренняя
+  // деталь настройки, читателю брифа она ничего не говорит.
   $src = 'сайт playdisplay';
-  if (!empty($sess['input'])) $src .= ', ' . ($sess['input'] === 'voice' ? 'голосом' : 'текстом');
-  if (!empty($sess['llm'])) $src .= ' · модель: ' . $sess['llm'];
+  if (!empty($sess['input'])) {
+    $how = array('voice' => 'голосом', 'text' => 'текстом', 'смешанно' => 'голосом и текстом');
+    $src .= ', ' . (isset($how[$sess['input']]) ? $how[$sess['input']] : $sess['input']);
+  }
+  // Язык разговора важен: отвечать человеку надо на том языке, на котором он говорил,
+  // а бриф всегда приходит по-русски и сам об этом не сигналит.
+  if (!empty($sess['lang']) && $sess['lang'] !== 'ru') {
+    $names = array('en' => 'по-английски', 'pt' => 'по-португальски');
+    $src .= ' · разговор шёл ' . (isset($names[$sess['lang']]) ? $names[$sess['lang']] : $sess['lang']);
+  }
+
+  // Шапка: логотип студии, а если файла нет — прежняя надпись. Письмо не должно
+  // ломаться из-за отсутствующей картинки.
+  $logo = pd_logo_src($inline);
+  $brand = $logo
+    ? '<img src="' . pd_esc($logo) . '" width="163" height="20" alt="playdisplay"'
+      . ' style="display:block;border:0;outline:none;text-decoration:none;height:20px;width:163px;">'
+    : '<div style="font:700 13px/1 Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#2be0c6;">playdisplay</div>';
 
   return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">'
     . '<meta name="viewport" content="width=device-width,initial-scale=1">'
@@ -130,11 +178,13 @@ function pd_brief_html($card, $contact, $sess) {
     . '<tr><td align="center" style="padding:28px 14px;">'
     . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:660px;background:#ffffff;">'
 
-    // шапка
-    . '<tr><td style="background:#0b1418;padding:26px 30px;">'
-    . '<div style="font:700 13px/1 Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#2be0c6;">playdisplay ai</div>'
-    . '<div style="margin-top:8px;font:400 12px/1 Arial,sans-serif;color:#8b979d;">Бриф с сайта · ' . pd_esc($when) . '</div>'
-    . '</td></tr>'
+    // шапка: логотип студии слева, дата справа
+    . '<tr><td style="background:#0b1418;padding:24px 30px;">'
+    . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>'
+    . '<td style="vertical-align:middle;">' . $brand . '</td>'
+    . '<td style="vertical-align:middle;text-align:right;font:400 11px/1.5 Arial,sans-serif;color:#8b979d;white-space:nowrap;">'
+    . 'Бриф с сайта<br>' . pd_esc($when) . '</td>'
+    . '</tr></table></td></tr>'
 
     . '<tr><td style="padding:30px;">'
 
@@ -196,6 +246,7 @@ function pd_brief_text($card, $contact, $sess) {
   $L[] = '--- КТО ОСТАВИЛ ---';
   $L[] = 'Имя: ' . (isset($contact['name']) ? $contact['name'] : '—');
   $L[] = 'Связь: ' . (isset($contact['contact']) ? $contact['contact'] : '—');
+  if (!empty($contact['channels']) && is_array($contact['channels'])) $L[] = 'Удобнее: ' . implode(' · ', $contact['channels']);
   if (!empty($contact['company'])) $L[] = 'Компания: ' . $contact['company'];
   $L[] = '';
   $L[] = '--- ПОДРОБНОСТИ ---';

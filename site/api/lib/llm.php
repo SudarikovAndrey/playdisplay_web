@@ -6,14 +6,46 @@
  * Добавить провайдера = добавить ветку в pd_llm и блок в конфиг. Клиент об этом не знает.
  */
 
-function pd_llm($system, $messages, $maxTokens = 700) {
+/**
+ * Может ли выбранный драйвер вообще работать. Нужно, чтобы ассистент не обещал
+ * посетителю живой разговор, когда ключа нет: ping отдаёт demo=true и человек
+ * видит честную плашку вместо тишины и вопросов из запаса.
+ */
+/**
+ * Какой драйвер обслуживает данный язык. GigaChat — модель русскоязычная, португальский
+ * в её документации не заявлен; поэтому язык → драйвер задаётся в конфиге, и «русский
+ * через GigaChat, остальные через другой сервис» настраивается без правки кода.
+ */
+function pd_llm_driver($lang = 'ru') {
   $cfg = pd_config();
+  $lang = strtolower(substr((string)$lang, 0, 2));
+  if (!empty($cfg['llm_by_lang'][$lang])) return $cfg['llm_by_lang'][$lang];
+  return $cfg['llm'];
+}
+
+function pd_llm_ready($lang = 'ru') {
+  $cfg = pd_config();
+  $cfg['llm'] = pd_llm_driver($lang);
   switch ($cfg['llm']) {
+    case 'anthropic':     return !empty($cfg['anthropic']['key']);
+    case 'openai_compat': return !empty($cfg['openai_compat']['base']) && !empty($cfg['openai_compat']['model'])
+                                 // локальной модели ключ не нужен, внешнему сервису — нужен
+                                 && (!empty($cfg['openai_compat']['key']) || preg_match('#^https?://(127\.0\.0\.1|localhost)#', $cfg['openai_compat']['base']));
+    case 'gigachat':      return !empty($cfg['gigachat']['key']);
+    case 'mock':          return false;
+    default:              return false;
+  }
+}
+
+function pd_llm($system, $messages, $maxTokens = 700, $lang = 'ru') {
+  $cfg = pd_config();
+  $drv = pd_llm_driver($lang);
+  switch ($drv) {
     case 'anthropic':     return pd_llm_anthropic($cfg['anthropic'], $system, $messages, $maxTokens);
     case 'openai_compat': return pd_llm_openai($cfg['openai_compat'], $system, $messages, $maxTokens);
     case 'gigachat':      return pd_llm_gigachat($cfg['gigachat'], $system, $messages, $maxTokens);
     case 'mock':          return pd_llm_mock($system, $messages);
-    default:              return array('text' => '', 'error' => 'неизвестный драйвер llm: ' . $cfg['llm'], 'usage' => array(0, 0));
+    default:              return array('text' => '', 'error' => 'неизвестный драйвер llm: ' . $drv, 'usage' => array(0, 0));
   }
 }
 
@@ -51,23 +83,47 @@ function pd_llm_anthropic($c, $system, $messages, $maxTokens) {
 // ------------------------------------------- OpenAI-совместимые (OpenAI, OpenRouter, Yandex, ollama)
 function pd_llm_openai($c, $system, $messages, $maxTokens) {
   if (empty($c['base'])) return array('text' => '', 'error' => 'не задан base для openai_compat', 'usage' => array(0, 0));
+  if (empty($c['model'])) return array('text' => '', 'error' => 'не задана модель для openai_compat', 'usage' => array(0, 0));
+  $local = preg_match('#^https?://(127\.0\.0\.1|localhost)#', $c['base']);
+  if (empty($c['key']) && !$local) return array('text' => '', 'error' => 'нет ключа: впишите его в api/config.php', 'usage' => array(0, 0));
+
   // У OpenAI-схемы system — обычное сообщение в начале списка.
   $msgs = array_merge(array(array('role' => 'system', 'content' => $system)), $messages);
   $payload = array('model' => $c['model'], 'messages' => $msgs, 'max_completion_tokens' => $maxTokens);
+  // Модели с рассуждением тратят выходные токены на размышление ДО ответа. Для короткого
+  // вопроса и разбора стенограммы это лишние деньги и секунды, а при малом бюджете токенов
+  // ответ вообще приходит пустым: всё съело рассуждение. Поэтому по умолчанию гасим его.
+  if (isset($c['reasoning']) && $c['reasoning'] !== '') $payload['reasoning_effort'] = $c['reasoning'];
+  if (isset($c['temperature']) && $c['temperature'] !== '') $payload['temperature'] = (float)$c['temperature'];
   $hdr = array();
   if (!empty($c['key'])) $hdr[] = 'Authorization: Bearer ' . $c['key'];
+  $url = rtrim($c['base'], '/') . '/chat/completions';
 
-  list($code, $body, $err) = pd_http_post_json(rtrim($c['base'], '/') . '/chat/completions', $payload, $hdr);
-  // Старые шлюзы не знают max_completion_tokens — повторяем с max_tokens.
-  if ($code === 400 && strpos($body, 'max_completion_tokens') !== false) {
-    unset($payload['max_completion_tokens']);
-    $payload['max_tokens'] = $maxTokens;
-    list($code, $body, $err) = pd_http_post_json(rtrim($c['base'], '/') . '/chat/completions', $payload, $hdr);
+  list($code, $body, $err) = pd_http_post_json($url, $payload, $hdr);
+  // Шлюзы расходятся в мелочах: старые не знают max_completion_tokens, часть моделей
+  // не принимает reasoning_effort или temperature. Снимаем спорное поле и пробуем ещё раз,
+  // а не отдаём человеку ошибку про неизвестный ему параметр.
+  $retries = array('max_completion_tokens', 'reasoning_effort', 'temperature');
+  foreach ($retries as $field) {
+    if ($code !== 400 || strpos($body, $field) === false) continue;
+    if ($field === 'max_completion_tokens') { unset($payload['max_completion_tokens']); $payload['max_tokens'] = $maxTokens; }
+    else unset($payload[$field]);
+    list($code, $body, $err) = pd_http_post_json($url, $payload, $hdr);
   }
   if ($err) return array('text' => '', 'error' => 'сеть: ' . $err, 'usage' => array(0, 0));
+  return pd_openai_parse($code, $body);
+}
+
+/** Разбор ответа вынесен отдельно, чтобы его можно было прогнать тестом без сети. */
+function pd_openai_parse($code, $body) {
   $d = json_decode($body, true);
+  $usage = array(
+    isset($d['usage']['prompt_tokens']) ? (int)$d['usage']['prompt_tokens'] : 0,
+    isset($d['usage']['completion_tokens']) ? (int)$d['usage']['completion_tokens'] : 0,
+  );
   if ($code !== 200 || !is_array($d)) {
-    $m = isset($d['error']['message']) ? $d['error']['message'] : substr($body, 0, 300);
+    $m = isset($d['error']['message']) ? $d['error']['message'] : substr((string)$body, 0, 300);
+    if ($m === '') $m = 'пустой ответ сервера';
     return array('text' => '', 'error' => 'llm ' . $code . ': ' . $m, 'usage' => array(0, 0));
   }
   $text = isset($d['choices'][0]['message']['content']) ? $d['choices'][0]['message']['content'] : '';
@@ -76,10 +132,20 @@ function pd_llm_openai($c, $system, $messages, $maxTokens) {
     foreach ($text as $blk) if (isset($blk['text'])) $acc .= $blk['text'];
     $text = $acc;
   }
-  return array('text' => (string)$text, 'error' => '', 'usage' => array(
-    isset($d['usage']['prompt_tokens']) ? (int)$d['usage']['prompt_tokens'] : 0,
-    isset($d['usage']['completion_tokens']) ? (int)$d['usage']['completion_tokens'] : 0,
-  ));
+  $text = (string)$text;
+  if (trim($text) === '') {
+    // Пустой content при finish_reason=length — классика моделей с рассуждением:
+    // бюджет токенов кончился внутри размышления. Сообщаем это прямо, а не «модель молчит».
+    $fin = isset($d['choices'][0]['finish_reason']) ? $d['choices'][0]['finish_reason'] : '';
+    $reason = isset($d['usage']['completion_tokens_details']['reasoning_tokens'])
+      ? (int)$d['usage']['completion_tokens_details']['reasoning_tokens'] : 0;
+    if ($fin === 'length' || $reason > 0) {
+      return array('text' => '', 'error' => 'модель израсходовала токены на рассуждение (finish_reason=' . $fin
+        . ', рассуждение ' . $reason . ' токенов). Поставьте reasoning => none в api/config.php', 'usage' => $usage);
+    }
+    return array('text' => '', 'error' => 'модель вернула пустой ответ (finish_reason=' . $fin . ')', 'usage' => $usage);
+  }
+  return array('text' => $text, 'error' => '', 'usage' => $usage);
 }
 
 // ---------------------------------------------------------------- GigaChat
@@ -99,14 +165,34 @@ function pd_gigachat_token($c) {
     'Authorization: Basic ' . $c['key'],
   );
   // тело не JSON — отправляем как строку, заголовок Content-Type перебивает дефолтный
-  list($code, $body, $err) = pd_http_post_json($url, $rq, $hdr, 20);
-  if ($err) return array('', 'сеть (oauth): ' . $err);
+  list($code, $body, $err) = pd_http_post_json($url, $rq, $hdr, 20, pd_gigachat_ca($c));
+  if ($err) return array('', pd_gigachat_net_error($err));
   $d = json_decode($body, true);
   if ($code !== 200 || empty($d['access_token'])) return array('', 'gigachat oauth ' . $code . ': ' . substr($body, 0, 200));
   $exp = isset($d['expires_at']) ? (int)round($d['expires_at'] / 1000) : time() + 1500;
   @file_put_contents($cache, json_encode(array('token' => $d['access_token'], 'exp' => $exp)), LOCK_EX);
   return array($d['access_token'], '');
 }
+/**
+ * Путь к корневому сертификату НУЦ Минцифры. Если в конфиге не задан, ищем рядом:
+ * api/certs/russian_trusted_root_ca_pem.crt. Пустая строка = довериться системному хранилищу
+ * (сработает только там, где сертификат уже установлен на уровне ОС).
+ */
+function pd_gigachat_ca($c) {
+  if (!empty($c['ca'])) return $c['ca'];
+  $near = PD_DIR . '/certs/russian_trusted_root_ca_pem.crt';
+  return is_file($near) ? $near : '';
+}
+/** Ошибка сертификата — самая частая при первом подключении. Объясняем прямо, а не кодом SSL. */
+function pd_gigachat_net_error($err) {
+  if (preg_match('/certificate|CAfile|SSL|self.signed/i', $err)) {
+    return 'GigaChat требует корневой сертификат НУЦ Минцифры — системному хранилищу он неизвестен. '
+      . 'Скачайте https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt '
+      . 'в site/api/certs/ — драйвер подхватит его сам. Исходная ошибка: ' . $err;
+  }
+  return 'сеть (oauth): ' . $err;
+}
+
 function pd_uuid4() {
   $b = function_exists('random_bytes') ? random_bytes(16) : pack('N4', mt_rand(), mt_rand(), mt_rand(), mt_rand());
   $b[6] = chr((ord($b[6]) & 0x0f) | 0x40);
@@ -120,8 +206,8 @@ function pd_llm_gigachat($c, $system, $messages, $maxTokens) {
   $msgs = array_merge(array(array('role' => 'system', 'content' => $system)), $messages);
   list($code, $body, $err) = pd_http_post_json('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', array(
     'model' => $c['model'], 'messages' => $msgs, 'max_tokens' => $maxTokens, 'temperature' => 0.6,
-  ), array('Authorization: Bearer ' . $tok, 'Accept: application/json'));
-  if ($err) return array('text' => '', 'error' => 'сеть: ' . $err, 'usage' => array(0, 0));
+  ), array('Authorization: Bearer ' . $tok, 'Accept: application/json'), 45, pd_gigachat_ca($c));
+  if ($err) return array('text' => '', 'error' => pd_gigachat_net_error($err), 'usage' => array(0, 0));
   $d = json_decode($body, true);
   if ($code !== 200 || !is_array($d)) return array('text' => '', 'error' => 'gigachat ' . $code . ': ' . substr($body, 0, 300), 'usage' => array(0, 0));
   return array('text' => isset($d['choices'][0]['message']['content']) ? $d['choices'][0]['message']['content'] : '', 'error' => '', 'usage' => array(

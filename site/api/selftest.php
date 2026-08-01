@@ -6,6 +6,7 @@
  */
 
 require __DIR__ . '/lib/util.php';
+require __DIR__ . '/lib/guard.php';
 require __DIR__ . '/lib/llm.php';
 require __DIR__ . '/lib/prompts.php';
 require __DIR__ . '/lib/brief.php';
@@ -42,6 +43,31 @@ foreach (array('sessions', 'outbox') as $d) {
 $ctx = pd_studio_context();
 row($rows, 'кейсы студии в промпте', strpos($ctx, '—') !== false, substr_count($ctx, "\n— ") . ' проектов подтянуто из data/projects.json');
 
+// 3б. страж от ботов
+if (!empty($cfg['guard_off'])) {
+  row($rows, 'страж от ботов', false, 'ВЫКЛЮЧЕН в конфиге (guard_off). Перед боевым запуском включить обратно');
+} else {
+  $ch = pd_guard_issue();
+  $sigOk = pd_guard_eq($ch['sig'], pd_guard_sign(array($ch['nonce'], $ch['bits'], $ch['exp'], pd_guard_ip_tag())));
+  // Проверяем и то, что заведомо неверное решение отвергается: подпись сама себя не проверит.
+  $rejects = !pd_guard_pow_ok($ch['nonce'], '1', 32);
+  row($rows, 'страж от ботов', $sigOk && $rejects,
+    'сложность ' . $ch['bits'] . ' бит (~' . number_format(pow(2, $ch['bits']), 0, ',', ' ') . ' хешей, доли секунды в браузере)');
+}
+
+// 4а. сертификат для GigaChat — без него соединение не поднимется вовсе
+if ($cfg['llm'] === 'gigachat' || in_array('gigachat', (array)(isset($cfg['llm_by_lang']) ? $cfg['llm_by_lang'] : array()), true)) {
+  $ca = pd_gigachat_ca($cfg['gigachat']);
+  row($rows, 'сертификат НУЦ Минцифры', $ca !== '',
+    $ca !== '' ? $ca . ' (' . round(filesize($ca) / 1024, 1) . ' КБ)'
+      : 'не найден. Скачайте один раз: <code>curl -k https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt -o '
+        . pd_esc(PD_DIR) . '/certs/russian_trusted_root_ca_pem.crt</code> — иначе GigaChat вернёт ошибку сертификата');
+}
+
+// 4б. логотип для шапки письма
+$lp = pd_logo_path();
+row($rows, 'логотип в письме', $lp !== '', $lp !== '' ? basename($lp) . ', ' . round(filesize($lp) / 1024, 1) . ' КБ, едет вложением' : 'файл assets/logos/playdisplay-logo-white.png не найден — в шапке будет надпись');
+
 // 5. живой вызов модели
 $t0 = microtime(true);
 $res = pd_llm(pd_prompt_turn(), array(array('role' => 'user', 'content' =>
@@ -69,11 +95,13 @@ if ($card) {
     array('q' => 'Расскажите про вашу идею.', 'a' => 'Проверка настроек ассистента.'),
   ));
   $contact = array('name' => 'Проверка', 'contact' => 'test@example.com', 'company' => 'PlayDisplay');
-  $html = pd_brief_html($card, $contact, $sess);
+  $contact['channels'] = array('Telegram', 'Звонок');
+  $html = pd_brief_html($card, $contact, $sess);            // для письма: логотип вложением
+  $inline = pd_brief_html($card, $contact, $sess, true);    // для файла: логотип в разметке
   $preview = pd_dir('outbox') . '/preview.html';
-  @file_put_contents($preview, $html);
+  @file_put_contents($preview, $inline);
   if ($doSend) {
-    list($mailOk, $mailNote) = pd_send_mail('[проверка] Бриф с сайта: ' . $card['title'], $html, pd_brief_text($card, $contact, $sess));
+    list($mailOk, $mailNote) = pd_send_mail('[проверка] Бриф с сайта: ' . $card['title'], $html, pd_brief_text($card, $contact, $sess), '', $inline);
   } else {
     $mailNote = 'вёрстка письма собрана. Отправить по-настоящему: <a href="?send=1">?send=1</a>';
     $mailOk = true;

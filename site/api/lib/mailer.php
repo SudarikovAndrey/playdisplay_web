@@ -9,37 +9,71 @@
  * mail — mail() хостинга.
  */
 
-function pd_send_mail($subject, $html, $text, $replyTo = '') {
+/**
+ * $html        — вёрстка для письма (логотип ссылкой на вложение, cid)
+ * $htmlPreview — та же вёрстка для файла на диске (логотип встроен в разметку).
+ *                Разные, потому что cid работает только внутри письма.
+ */
+function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '') {
   $cfg = pd_config();
   $to = $cfg['mail_to'];
   $from = $cfg['mail_from'];
   $fromName = $cfg['mail_fromname'];
 
-  $boundary = 'pd-' . bin2hex(function_exists('random_bytes') ? random_bytes(8) : pack('N2', mt_rand(), mt_rand()));
+  $rand = function () { return bin2hex(function_exists('random_bytes') ? random_bytes(8) : pack('N2', mt_rand(), mt_rand())); };
+  $alt = 'pd-alt-' . $rand();
+  $rel = 'pd-rel-' . $rand();
+
+  // Логотип едет вложением внутри письма, а не ссылкой на сайт: почтовики по умолчанию
+  // блокируют внешние картинки, и шапка приезжала бы пустой.
+  $logoFile = function_exists('pd_logo_path') ? pd_logo_path() : '';
+  $logo = $logoFile !== '' ? (string)file_get_contents($logoFile) : '';
+
   $headers = array();
   $headers[] = 'From: ' . pd_mime_name($fromName) . ' <' . $from . '>';
   $headers[] = 'To: <' . $to . '>';
   $headers[] = 'Subject: ' . pd_mime_header($subject);
   $headers[] = 'Date: ' . date('r');
-  $headers[] = 'Message-ID: <' . $boundary . '@playdisplay.com>';
+  $headers[] = 'Message-ID: <' . $alt . '@playdisplay.com>';
   $headers[] = 'MIME-Version: 1.0';
-  $headers[] = 'Content-Type: multipart/alternative; boundary="' . $boundary . '"';
+  // Есть картинка — related (текст+html+картинка), нет — прежний alternative.
+  $headers[] = $logo !== ''
+    ? 'Content-Type: multipart/related; type="multipart/alternative"; boundary="' . $rel . '"'
+    : 'Content-Type: multipart/alternative; boundary="' . $alt . '"';
   if ($replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL)) $headers[] = 'Reply-To: <' . $replyTo . '>';
 
-  $body = "--$boundary\r\n"
+  // Две версии одного письма: текстовая для тех, кто отключил html, и вёрстка.
+  $altPart = "--$alt\r\n"
         . "Content-Type: text/plain; charset=UTF-8\r\n"
         . "Content-Transfer-Encoding: base64\r\n\r\n"
         . chunk_split(base64_encode($text)) . "\r\n"
-        . "--$boundary\r\n"
+        . "--$alt\r\n"
         . "Content-Type: text/html; charset=UTF-8\r\n"
         . "Content-Transfer-Encoding: base64\r\n\r\n"
         . chunk_split(base64_encode($html)) . "\r\n"
-        . "--$boundary--\r\n";
+        . "--$alt--\r\n";
+
+  if ($logo === '') {
+    $body = $altPart;
+  } else {
+    $cid = defined('PD_LOGO_CID') ? PD_LOGO_CID : 'pdlogo';
+    $body = "--$rel\r\n"
+          . "Content-Type: multipart/alternative; boundary=\"$alt\"\r\n\r\n"
+          . $altPart
+          . "--$rel\r\n"
+          . "Content-Type: image/png; name=\"playdisplay.png\"\r\n"
+          . "Content-Transfer-Encoding: base64\r\n"
+          . "Content-ID: <$cid>\r\n"
+          // inline, а не attachment: иначе почтовые клиенты показывают скрепку вложения
+          . "Content-Disposition: inline; filename=\"playdisplay.png\"\r\n\r\n"
+          . chunk_split(base64_encode($logo)) . "\r\n"
+          . "--$rel--\r\n";
+  }
 
   switch ($cfg['mailer']) {
     case 'smtp': return pd_mail_smtp($cfg['smtp'], $from, $to, $headers, $body);
     case 'mail': return pd_mail_native($to, $subject, $headers, $body);
-    default:     return pd_mail_file($subject, $headers, $body, $html);
+    default:     return pd_mail_file($subject, $headers, $body, $htmlPreview !== '' ? $htmlPreview : $html);
   }
 }
 

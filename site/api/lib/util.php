@@ -17,10 +17,17 @@ function pd_config() {
     'mail_fromname' => 'PlayDisplay AI',
     'llm' => 'mock',
     'anthropic' => array('key' => '', 'model' => 'claude-haiku-4-5-20251001'),
-    'openai_compat' => array('key' => '', 'base' => 'https://api.openai.com/v1', 'model' => 'gpt-5-mini'),
-    'gigachat' => array('key' => '', 'scope' => 'GIGACHAT_API_PERS', 'model' => 'GigaChat'),
+    'openai_compat' => array('key' => '', 'base' => 'https://api.openai.com/v1', 'model' => 'gpt-5.6-luna', 'reasoning' => 'none', 'temperature' => ''),
+    'gigachat' => array('key' => '', 'scope' => 'GIGACHAT_API_PERS', 'model' => 'GigaChat-2', 'ca' => ''),
+    'llm_by_lang' => array(),
     'mailer' => 'file',
     'smtp' => array('host' => '', 'port' => 465, 'secure' => 'ssl', 'user' => '', 'pass' => ''),
+    // Домены, которым разрешено обращаться к этому бэкенду с другого адреса.
+    // Нужно только копии ai.php на отдельном хосте; своему сайту CORS не требуется.
+    'cors_origins' => array(),
+    'guard_bits' => 16,
+    'guard_bits_max' => 19,
+    'guard_off' => false,
     'limit_sessions_per_ip_hour' => 8,
     'limit_turns_per_session' => 24,
     'limit_chars_per_turn' => 4000,
@@ -139,7 +146,7 @@ function pd_rate_ok() {
  * POST JSON. Возвращает array(код, тело, ошибка-транспорта).
  * Работает через curl, а если его нет — через потоки.
  */
-function pd_http_post_json($url, $payload, $headers = array(), $timeout = 45) {
+function pd_http_post_json($url, $payload, $headers = array(), $timeout = 45, $ca = '') {
   $body = is_string($payload) ? $payload : json_encode($payload, JSON_UNESCAPED_UNICODE);
   // Content-Type ставим сам, но если вызывающий уже задал свой (form-urlencoded у OAuth) — не дублируем.
   $hasCT = false;
@@ -148,7 +155,7 @@ function pd_http_post_json($url, $payload, $headers = array(), $timeout = 45) {
 
   if (function_exists('curl_init')) {
     $ch = curl_init($url);
-    curl_setopt_array($ch, array(
+    $opts = array(
       CURLOPT_POST => true,
       CURLOPT_POSTFIELDS => $body,
       CURLOPT_HTTPHEADER => $hdr,
@@ -156,7 +163,12 @@ function pd_http_post_json($url, $payload, $headers = array(), $timeout = 45) {
       CURLOPT_TIMEOUT => $timeout,
       CURLOPT_CONNECTTIMEOUT => 12,
       CURLOPT_SSL_VERIFYPEER => true,
-    ));
+    );
+    // Свой корневой сертификат. Нужен GigaChat: его хост подписан НУЦ Минцифры,
+    // которого нет в стандартном хранилище — без этого соединение не поднимается вовсе.
+    // Проверку сертификата НЕ отключаем: подсовываем правильный корень, а не доверяем всему.
+    if ($ca !== '' && is_file($ca)) $opts[CURLOPT_CAINFO] = $ca;
+    curl_setopt_array($ch, $opts);
     $res = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $err = $res === false ? curl_error($ch) : '';
@@ -164,13 +176,15 @@ function pd_http_post_json($url, $payload, $headers = array(), $timeout = 45) {
     return array($code, (string)$res, $err);
   }
 
-  $ctx = stream_context_create(array('http' => array(
+  $ctxOpts = array('http' => array(
     'method' => 'POST',
     'header' => implode("\r\n", $hdr),
     'content' => $body,
     'timeout' => $timeout,
     'ignore_errors' => true,
-  )));
+  ));
+  if ($ca !== '' && is_file($ca)) $ctxOpts['ssl'] = array('cafile' => $ca, 'verify_peer' => true);
+  $ctx = stream_context_create($ctxOpts);
   $res = @file_get_contents($url, false, $ctx);
   $code = 0;
   if (isset($http_response_header[0]) && preg_match('#\s(\d{3})\s#', $http_response_header[0], $m)) $code = (int)$m[1];
