@@ -7,7 +7,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>playdisplay — spaces people remember: museums, exhibitions, interactive exhibits</title>
-<meta name="description" content="playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn an idea, a story or a brand into an experience worth living through.">
+<meta name="description" content="playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of.">
 <meta name="keywords" content="museum concept design, interactive exhibit design, turnkey multimedia exhibition, visitor centre concept, immersive exhibition, interactive showroom, multimedia installation, projection mapping, museum exhibition, playdisplay, Andrey Sudarikov">
 <meta name="author" content="playdisplay">
 <link rel="canonical" href="https://playdisplay.com/en/">
@@ -19,12 +19,12 @@
 <meta property="og:site_name" content="playdisplay">
 <meta property="og:locale" content="en_US">
 <meta property="og:title" content="playdisplay — spaces people remember">
-<meta property="og:description" content="playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn an idea, a story or a brand into an experience worth living through.">
+<meta property="og:description" content="playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of.">
 <meta property="og:url" content="https://playdisplay.com/en/">
 <meta property="og:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="playdisplay — spaces people remember">
-<meta name="twitter:description" content="playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn an idea, a story or a brand into an experience worth living through.">
+<meta name="twitter:description" content="playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of.">
 <meta name="twitter:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -789,6 +789,26 @@
     opacity: 0; transform: scale(0.5); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
   .ai-word.show { opacity: 1; transform: scale(var(--w-scale, 1)); }
   .ai-word.key { border-color: rgba(43,224,198,0.6); color: #F1FBFC; }
+  /* ---------- страж: кольцо вокруг микрофона и циферблат второй ступени ---------- */
+  /* Кольцо показывает НАСТОЯЩИЙ прогресс вычислений, а не декоративную анимацию:
+     точки загораются по мере перебора. Обычно человек его почти не замечает. */
+  .ai-rec-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center;
+    margin-top: 46px; }
+  .ai-rec-wrap .ai-rec { margin-top: 0; }
+  .ai-ring { position: absolute; left: 50%; top: 50%; width: 148px; height: 148px;
+    transform: translate(-50%, -50%); pointer-events: none;
+    opacity: 0; transition: opacity .45s ease; }
+  .ai-ring.on { opacity: 1; }
+  /* пока пропуск не готов, микрофон приглушён — но нажать можно: мы просто подождём */
+  .ai-rec.warming .mic-i { opacity: 0.45; }
+  .ai-rec.warming { border-color: rgba(159,180,200,0.35); box-shadow: none; }
+  /* циферблат второй ступени */
+  .ai-dial-wrap { margin-top: 34px; display: flex; justify-content: center; }
+  .ai-dial { width: min(260px, 68vw); height: min(260px, 68vw); cursor: pointer;
+    border-radius: 50%; outline: none; transition: box-shadow .3s; }
+  .ai-dial:focus-visible { box-shadow: 0 0 0 3px rgba(43,224,198,0.45); }
+  #aiHumanErr:not(:empty) { margin-top: 20px; }
+
   /* нижняя панель режима записи: что услышано → ввод текстом → микрофон → сборка брифа.
      Собрана в одну колонку, чтобы на любом экране порядок чтения был сверху вниз. */
   .ai-bottom { position: absolute; left: 5%; right: 5%; bottom: 3.5vh; z-index: 3;
@@ -1249,7 +1269,7 @@
   }
 </style>
 <script>window.PD_LANG='en';</script>
-<script src="data/i18n/en.js?v=723bbdbd"></script>
+<script src="data/i18n/en.js?v=c706c36f"></script>
 </head>
 <body class="booting">
 
@@ -1279,7 +1299,7 @@
       <a href="#atlas">Атлас</a>
       <a href="#studio">Студия</a>
     </nav>
-    <button class="cta-play" onclick="location.href='#contact'">▶︎ Обсудить идею</button>
+    <button class="cta-play" onclick="location.hash='#contact'">▶︎ Обсудить идею</button>
     <div class="lang" id="lang"></div>
   </div>
 </header>
@@ -1588,9 +1608,23 @@
       <div class="kicker teal">Начните с того, что уже знаете</div>
       <h2>Расскажите, какое пространство вы хотите создать.</h2>
       <p>Мы выделим основные смыслы и соберём их в понятное описание проекта.</p>
-      <button class="ai-rec" id="aiRec" aria-label="Включить микрофон"><span class="mic-i big"></span></button>
+      <div class="ai-rec-wrap">
+        <canvas class="ai-ring" id="aiRing" aria-hidden="true"></canvas>
+        <button class="ai-rec" id="aiRec" aria-label="Включить микрофон"><span class="mic-i big"></span></button>
+      </div>
       <div><button class="ai-alt" id="aiAlt">Или написать текстом</button></div>
       <div class="ai-note" id="aiNote">Говорите свободно — ассистент слушает и задаёт вопросы.</div>
+    </div>
+    <!-- вторая ступень проверки: появляется только если поведение похоже на скрипт -->
+    <div class="ai-stage" id="aiHuman">
+      <div class="kicker teal">Одно касание</div>
+      <h2>Поймайте точку в секторе.</h2>
+      <p>Нажмите, когда бегущая точка окажется в подсвеченном секторе. Клавиша пробел тоже работает.</p>
+      <div class="ai-dial-wrap">
+        <canvas class="ai-dial" id="aiDial" width="520" height="520"
+                role="button" tabindex="0" aria-label="Нажмите, когда точка войдёт в подсвеченный сектор"></canvas>
+      </div>
+      <div class="ai-err" id="aiHumanErr"></div>
     </div>
     <div class="ai-stage" id="aiCapture">
       <h2 class="ai-prompt" id="aiPrompt">Расскажите про вашу идею.</h2>
@@ -1685,6 +1719,10 @@
   var I18N = window.PD_I18N || null;            // null для русского
   var DATA = PD_LANG === 'ru' ? 'data/' : 'data/' + PD_LANG + '/';
   var LANGS = [['ru', 'RU', '/'], ['en', 'ENG', '/en/']];   // сюда же встанет ['pt','PT','/pt/']
+  // Хэш-ссылки нельзя писать «как есть»: и location.href='#x', и history.pushState('#x')
+  // разбираются ОТНОСИТЕЛЬНО <base>, а на /en/ он равен корню — посетителя уносило
+  // на русскую версию. Поэтому всегда пишем полный путь текущей страницы.
+  function hashUrl(h){ return location.pathname + location.search + (h.charAt(0) === '#' ? h : '#' + h); }
   function T(s){
     if (!I18N || typeof s !== 'string') return s;
     var v = I18N[s];
@@ -4443,7 +4481,7 @@
     if (suppressRoute) return;
     var want = slug ? '#/work/' + slug : '#work';
     if (location.hash === want) return;
-    try { history.pushState({ slug: slug || null }, '', want); } catch (e) { location.hash = want; }
+    try { history.pushState({ slug: slug || null }, '', hashUrl(want)); } catch (e) { location.hash = want; }
   }
   function caseBySlug(slug){ for (var i = 0; i < CASES.length; i++) if (CASES[i].slug === slug) return CASES[i]; return null; }
   function routeFromHash(){
@@ -4466,7 +4504,7 @@
   if (logoHome) logoHome.addEventListener('click', function(ev){
     ev.preventDefault();
     if (viewer.classList.contains('open')) closeCase();
-    try { history.pushState(null, '', '#start'); } catch (e) { location.hash = '#start'; }
+    try { history.pushState(null, '', hashUrl('#start')); } catch (e) { location.hash = '#start'; }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   // фоновая пыль страницы проекта: редкие мелкие точки дрейфуют с параллаксом от прокрутки
@@ -4722,7 +4760,7 @@
         });
       });
       var btn = document.getElementById('cDiscuss');
-      if (btn) btn.addEventListener('click', function(){ closeConceptCase(); location.href = '#contact'; });
+      if (btn) btn.addEventListener('click', function(){ closeConceptCase(); location.hash = '#contact'; });
     }
     function closeConceptCase(){
       unloadConceptMedia(); // остановить и выгрузить видео до сноса DOM
@@ -5262,7 +5300,7 @@
         });
       });
       var btn = document.getElementById('avDiscuss');
-      if (btn) btn.addEventListener('click', function(){ closeLesson(); location.href = '#contact'; });
+      if (btn) btn.addEventListener('click', function(){ closeLesson(); location.hash = '#contact'; });
     }
     function closeLesson(){
       view.classList.remove('open');
@@ -5406,13 +5444,39 @@
         });
       },
 
+      // Задача стража: просим её заранее, как только человек открыл панель.
+      challenge: function(ok, bad){
+        post('challenge', {}, function(d){ ok(d.challenge); }, bad || function(){});
+      },
+      // Вторая ступень: без hit — получить задание, с hit — отправить попадание.
+      human: function(payload, ok, bad){
+        post('human', payload || {}, ok, bad || function(){});
+      },
+
       begin: function(ok, bad){
         sid = null; demoRound = 0; demoSaid = [];
         if (mode === 'demo') { ok({ reply: 'Расскажите про вашу идею.', sub: 'Мы будем собирать основные смыслы.' }); return; }
-        post('start', {}, function(d){ sid = d.sid; ok(d); }, function(e){
-          if (e === 'no-backend') { mode = 'demo'; ok({ reply: 'Расскажите про вашу идею.', sub: 'Мы будем собирать основные смыслы.', demo: true }); return; }
-          bad(e);
-        });
+        var tries = 0;
+        function go(){
+          tries++;
+          post('start', window.pdGuard.proof(), function(d){
+            sid = d.sid; ok(d);
+          }, function(e, d){
+            if (e === 'no-backend') { mode = 'demo'; ok({ reply: 'Расскажите про вашу идею.', sub: 'Мы будем собирать основные смыслы.', demo: true }); return; }
+            // Поведение показалось странным — сервер просит живое подтверждение.
+            // Приходит с ok:false, поэтому разбираем здесь, а не в успешной ветке.
+            if (d && d.need_human) { bad('need-human', d); return; }
+            // Задача устарела или уже использована: сервер прислал новую. Решаем и пробуем
+            // ещё раз — один раз, чтобы не устроить бесконечный круг.
+            if (d && d.challenge && tries < 2) {
+              window.pdGuard.reset();
+              window.pdGuard.accept(d.challenge, null, go);
+              return;
+            }
+            bad(e, d);
+          });
+        }
+        go();
       },
 
       say: function(text, how, ok, bad){
@@ -5443,6 +5507,159 @@
           channels: contact.channels || [], agree: true
         }, ok, bad);
       }
+    };
+  })();
+
+  // ===== СТРАЖ: пропуск для живого человека =====
+  // Браузер решает подписанную сервером задачу — ищет число, при котором
+  // sha256(nonce:число) начинается с нужного количества нулевых бит. Человек этого не
+  // видит: работа идёт в те секунды, пока он читает первый экран панели, и к нажатию
+  // микрофона пропуск обычно уже готов.
+  //
+  // Почему свой sha256, а не crypto.subtle: тот требует защищённого контекста и работает
+  // через промисы. Свой — работает везде (в том числе при открытии файла с диска),
+  // считается синхронно и нарезается по кадрам, поэтому интерфейс не подвисает.
+  window.pdGuard = (function(){
+    // ---- sha256, компактная реализация ----
+    var K = [
+      0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+
+    function sha256bytes(bytes){
+      var len = bytes.length, bitLen = len * 8;
+      // дополнение: 0x80, нули, затем длина в битах восемью байтами
+      var withPad = ((len + 9 + 63) >> 6) << 6;
+      var m = new Uint8Array(withPad);
+      m.set(bytes);
+      m[len] = 0x80;
+      // длина сообщения у нас всегда мала — старшие байты остаются нулями
+      m[withPad - 4] = (bitLen >>> 24) & 0xff;
+      m[withPad - 3] = (bitLen >>> 16) & 0xff;
+      m[withPad - 2] = (bitLen >>> 8) & 0xff;
+      m[withPad - 1] = bitLen & 0xff;
+
+      var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+      var w = new Int32Array(64), i, j, a, b, c, d, e, f, g, h, t1, t2, s0, s1;
+      for (i = 0; i < withPad; i += 64) {
+        for (j = 0; j < 16; j++)
+          w[j] = (m[i + j * 4] << 24) | (m[i + j * 4 + 1] << 16) | (m[i + j * 4 + 2] << 8) | m[i + j * 4 + 3];
+        for (j = 16; j < 64; j++) {
+          var x = w[j - 15], y = w[j - 2];
+          s0 = ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
+          s1 = ((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10);
+          w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+        }
+        a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
+        for (j = 0; j < 64; j++) {
+          s1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+          t1 = (h + s1 + ((e & f) ^ (~e & g)) + K[j] + w[j]) | 0;
+          s0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+          t2 = (s0 + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+          h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+        }
+        H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+        H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+      }
+      var out = new Uint8Array(32);
+      for (i = 0; i < 8; i++) {
+        out[i * 4] = (H[i] >>> 24) & 0xff; out[i * 4 + 1] = (H[i] >>> 16) & 0xff;
+        out[i * 4 + 2] = (H[i] >>> 8) & 0xff; out[i * 4 + 3] = H[i] & 0xff;
+      }
+      return out;
+    }
+    // Строка → байты. Наши строки — только латиница и цифры, но utf-8 на всякий случай.
+    function bytesOf(s){
+      var out = [], i, c;
+      for (i = 0; i < s.length; i++) {
+        c = s.charCodeAt(i);
+        if (c < 0x80) out.push(c);
+        else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+        else out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+      }
+      return new Uint8Array(out);
+    }
+    function leadingZeroBits(h, need){
+      var i = 0;
+      while (need >= 8) { if (h[i] !== 0) return false; need -= 8; i++; }
+      if (need > 0) { if ((h[i] & (0xFF << (8 - need) & 0xFF)) !== 0) return false; }
+      return true;
+    }
+
+    // ---- поведенческие признаки ----
+    // Считаем только количества, а не траектории: для решения «показать ли живую
+    // проверку» этого достаточно, а следить за человеком незачем.
+    var t0 = Date.now(), moves = 0, keys = 0, taps = 0;
+    addEventListener('pointermove', function(){ moves++; }, { passive: true });
+    addEventListener('keydown', function(){ keys++; }, { passive: true });
+    addEventListener('pointerdown', function(){ taps++; }, { passive: true });
+    addEventListener('touchstart', function(){ taps++; }, { passive: true });
+    function signals(){
+      return {
+        wd: !!navigator.webdriver,
+        moves: Math.min(moves, 9999), keys: Math.min(keys, 9999), taps: Math.min(taps, 999),
+        age: Date.now() - t0,
+        w: innerWidth || 0, h: innerHeight || 0,
+        tz: new Date().getTimezoneOffset()
+      };
+    }
+
+    // ---- решение задачи нарезкой по кадрам ----
+    var task = null, solution = null, solving = false, onProg = null, pass = null;
+
+    function solve(t, progress, done){
+      var nonce = t.nonce, bits = t.bits, n = 0;
+      var head = bytesOf(nonce + ':');
+      // Пачку подбираем так, чтобы кадр не проседал: 2000 хешей это единицы миллисекунд.
+      var BATCH = 2000, tried = 0, expect = Math.pow(2, bits);
+      function step(){
+        var i, s, buf;
+        for (i = 0; i < BATCH; i++) {
+          s = bytesOf(String(n));
+          buf = new Uint8Array(head.length + s.length);
+          buf.set(head); buf.set(s, head.length);
+          if (leadingZeroBits(sha256bytes(buf), bits)) { done(String(n)); return; }
+          n++; tried++;
+        }
+        // Прогресс честный: доля перебранного от ожидаемого числа попыток.
+        // Больше 0.98 не показываем — иначе полоса «залипает» на единице, если не повезло.
+        if (progress) progress(Math.min(0.98, tried / expect));
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    return {
+      // Готов ли пропуск: либо решённая задача, либо пройденная живая проверка.
+      ready: function(){ return !!(pass || (task && solution)); },
+      busy: function(){ return solving; },
+      signals: signals,
+      // Данные, которые прикладываются к start.
+      proof: function(){
+        if (pass) return { pass_exp: pass.exp, pass_sig: pass.sig, signals: signals() };
+        if (!task || !solution) return { signals: signals() };
+        return {
+          nonce: task.nonce, bits: task.bits, exp: task.exp, sig: task.sig,
+          solution: solution, signals: signals()
+        };
+      },
+      setPass: function(p){ pass = p; },
+      // Задача пришла с сервера — решаем. progress(0..1) для кольца вокруг микрофона.
+      accept: function(t, progress, done){
+        task = t; solution = null; solving = true; onProg = progress;
+        solve(t, progress, function(sol){
+          solution = sol; solving = false;
+          if (progress) progress(1);
+          if (done) done();
+        });
+      },
+      // Задача устарела или использована — сервер прислал новую вместе с отказом.
+      reset: function(){ task = null; solution = null; pass = null; solving = false; }
     };
   })();
 
@@ -5558,7 +5775,7 @@
   (function(){
     var ai = document.getElementById('ai');
     if (!ai) return;
-    var stages = { intro: 'aiIntro', capture: 'aiCapture', summary: 'aiSummary', form: 'aiForm', sent: 'aiSent' };
+    var stages = { intro: 'aiIntro', human: 'aiHuman', capture: 'aiCapture', summary: 'aiSummary', form: 'aiForm', sent: 'aiSent' };
     var field = document.getElementById('aiField');
     var card = null, probed = false;
     // Элементы разговора собираем один раз: во время сессии getElementById в каждом кадре не нужен.
@@ -5574,6 +5791,148 @@
         elAlt = document.getElementById('aiAlt'),
         elRec = document.getElementById('aiRec'),
         elNote = document.getElementById('aiNote');
+
+    // ================= страж: кольцо и вторая ступень =================
+    // Кольцо из точек вокруг микрофона: точки загораются по мере перебора хешей.
+    // Это не декорация — доля загоревшихся равна доле проделанной работы.
+    var ring = (function(){
+      var cv = document.getElementById('aiRing');
+      if (!cv) return { set: function(){}, hide: function(){} };
+      var g = cv.getContext('2d');
+      if (!g) return { set: function(){}, hide: function(){} };
+      var DPR = Math.min(devicePixelRatio || 1, 2), N = 44, p = 0, shown = 0, raf = null;
+      function fit(){
+        var w = cv.clientWidth || 148;
+        if (cv.width !== Math.round(w * DPR)) { cv.width = cv.height = Math.round(w * DPR); }
+      }
+      function draw(){
+        fit();
+        var R = cv.width / 2, rad = R * 0.86;
+        g.clearRect(0, 0, cv.width, cv.height);
+        shown += (p - shown) * 0.12;          // подтягиваем плавно, без рывков
+        for (var i = 0; i < N; i++) {
+          var a = -Math.PI / 2 + (i / N) * Math.PI * 2;
+          var lit = (i / N) < shown;
+          g.globalAlpha = lit ? 0.85 : 0.16;
+          g.fillStyle = lit ? '#2be0c6' : '#9fb4c8';
+          var s = (lit ? 1.9 : 1.2) * DPR;
+          g.beginPath(); g.arc(R + Math.cos(a) * rad, R + Math.sin(a) * rad, s, 0, 6.2832); g.fill();
+        }
+        g.globalAlpha = 1;
+        if (Math.abs(p - shown) > 0.002 || p < 1) raf = requestAnimationFrame(draw);
+        else raf = null;
+      }
+      return {
+        set: function(v){
+          p = Math.max(0, Math.min(1, v));
+          cv.classList.add('on');
+          if (!raf) raf = requestAnimationFrame(draw);
+        },
+        hide: function(){
+          cv.classList.remove('on');
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          p = 0; shown = 0;
+        }
+      };
+    })();
+
+    // Готовим пропуск заранее — в те секунды, пока человек читает первый экран.
+    // Если он нажмёт раньше, чем работа закончится, ждём и показываем кольцо.
+    var guardWaiting = false;
+    function warmGuard(){
+      if (window.pdIdea.mode() === 'demo') return;
+      if (window.pdGuard.ready() || window.pdGuard.busy()) return;
+      window.pdIdea.challenge(function(t){
+        window.pdGuard.accept(t, function(v){
+          // Кольцо показываем только если человек уже ждёт: иначе он и не заметит проверки.
+          if (guardWaiting) ring.set(v);
+        }, function(){
+          if (guardWaiting) { ring.set(1); setTimeout(afterGuard, 260); }
+        });
+      }, function(){ /* нет задачи — начнём без неё, сервер решит сам */ });
+    }
+    function afterGuard(){
+      if (!guardWaiting) return;
+      guardWaiting = false;
+      ring.hide();
+      if (elRec) elRec.classList.remove('warming');
+      startCapture(pendingHow || 'voice');
+    }
+
+    // Циферблат второй ступени: точка бежит по кругу, надо нажать в подсвеченном секторе.
+    // Работает мышью, касанием и с клавиатуры — иначе проверка отсекала бы людей,
+    // которые не пользуются мышью.
+    var dial = (function(){
+      var cv = document.getElementById('aiDial');
+      if (!cv) return { start: function(){}, stop: function(){} };
+      var g = cv.getContext('2d');
+      var task = null, ang = 0, raf = null, onHit = null, DPR = Math.min(devicePixelRatio || 1, 2);
+      function fit(){
+        var w = cv.clientWidth || 260;
+        if (cv.width !== Math.round(w * DPR)) { cv.width = cv.height = Math.round(w * DPR); }
+      }
+      function draw(){
+        raf = requestAnimationFrame(draw);
+        if (!task) return;
+        fit();
+        var R = cv.width / 2, rad = R * 0.78;
+        ang = (ang + 1.5) % 360;             // скорость подобрана так, чтобы попасть было легко
+        g.clearRect(0, 0, cv.width, cv.height);
+        // сектор-цель
+        var a0 = (task.target - task.span) * Math.PI / 180 - Math.PI / 2;
+        var a1 = (task.target + task.span) * Math.PI / 180 - Math.PI / 2;
+        g.beginPath();
+        g.arc(R, R, rad, a0, a1);
+        g.strokeStyle = 'rgba(43,224,198,0.55)';
+        g.lineWidth = 10 * DPR; g.stroke();
+        // кольцо-дорожка точками — тот же язык, что у остальной панели
+        for (var i = 0; i < 60; i++) {
+          var a = -Math.PI / 2 + (i / 60) * Math.PI * 2;
+          g.globalAlpha = 0.18; g.fillStyle = '#9fb4c8';
+          g.beginPath(); g.arc(R + Math.cos(a) * rad, R + Math.sin(a) * rad, 1.2 * DPR, 0, 6.2832); g.fill();
+        }
+        g.globalAlpha = 1;
+        // бегунок
+        var ar = ang * Math.PI / 180 - Math.PI / 2;
+        var x = R + Math.cos(ar) * rad, y = R + Math.sin(ar) * rad;
+        g.fillStyle = '#F1FBFC';
+        g.beginPath(); g.arc(x, y, 5 * DPR, 0, 6.2832); g.fill();
+        g.strokeStyle = 'rgba(43,224,198,0.35)'; g.lineWidth = 1 * DPR;
+        g.beginPath(); g.arc(x, y, 11 * DPR, 0, 6.2832); g.stroke();
+      }
+      function hit(){ if (task && onHit) onHit(ang); }
+      cv.addEventListener('click', hit);
+      cv.addEventListener('keydown', function(e){
+        if (e.key === ' ' || e.key === 'Enter' || e.keyCode === 32 || e.keyCode === 13) { e.preventDefault(); hit(); }
+      });
+      return {
+        start: function(t, cb){
+          task = t; onHit = cb; ang = Math.random() * 360;
+          if (!raf) raf = requestAnimationFrame(draw);
+          setTimeout(function(){ try { cv.focus({ preventScroll: true }); } catch (e) {} }, 120);
+        },
+        stop: function(){ task = null; if (raf) { cancelAnimationFrame(raf); raf = null; } }
+      };
+    })();
+
+    var pendingHow = null;
+    function askHuman(task){
+      stage('human');
+      var box = document.getElementById('aiHumanErr');
+      if (box) box.textContent = '';
+      dial.start(task, function(angle){
+        dial.stop();
+        window.pdIdea.human({ target: task.target, exp: task.exp, sig: task.sig, hit: angle }, function(d){
+          // Попал: сервер выдал пропуск, дальше обычный разговор.
+          window.pdGuard.setPass(d.pass);
+          startCapture(pendingHow || 'voice');
+        }, function(err, d){
+          // Промах приходит с ok:false и новым заданием — показываем его снова.
+          askHuman((d && d.task) || task);
+          if (box) box.textContent = (d && d.error) || 'Мимо. Ещё раз.';
+        });
+      });
+    }
 
     // Каналы связи: можно отметить несколько, можно ни одного — это подсказка Андрею,
     // а не обязательное поле. Подсказка нужна и затем, чтобы человек увидел:
@@ -5862,6 +6221,12 @@
         elRec.style.display = 'none';
         if (elAlt) elAlt.textContent = 'Начать и написать текстом';
       }
+      // Пропуск готовим прямо сейчас: пока человек читает заголовок, браузер успевает
+      // сделать работу, и нажатие микрофона срабатывает без задержки.
+      guardWaiting = false;
+      ring.hide();
+      if (elRec) elRec.classList.remove('warming');
+      warmGuard();
     }
     function closeAI(){
       pdSpeech.stop();
@@ -6023,8 +6388,10 @@
         setThink(false);
         ask(d.reply, d.sub);
         go();
-      }, function(err){
+      }, function(err, d){
         setThink(false);
+        // Сервер не поверил, что за экраном человек — показываем вторую ступень.
+        if (err === 'need-human' && d && d.task) { askHuman(d.task); return; }
         showErr(err === 'no-backend' ? 'Ассистент недоступен. Напишите нам через раздел «Контакты».' : err);
         openSay(true);
       });
@@ -6127,8 +6494,21 @@
     })();
     document.getElementById('aiClose').addEventListener('click', flyOutOfAI);
     // Большая кнопка на первом экране — начать голосом; ссылка рядом — начать текстом.
-    document.getElementById('aiRec').addEventListener('click', function(){ startCapture('voice'); });
-    if (elAlt) elAlt.addEventListener('click', function(){ startCapture('text'); });
+    // Между нажатием и разговором стоит страж: если пропуск ещё не готов, ждём его
+    // и показываем кольцо. Обычно к этому моменту всё уже готово и ждать нечего.
+    function enter(how){
+      pendingHow = how;
+      if (window.pdIdea.mode() === 'demo' || window.pdGuard.ready()) { startCapture(how); return; }
+      guardWaiting = true;
+      if (elRec) elRec.classList.add('warming');
+      ring.set(0.02);
+      warmGuard();                 // если задачу ещё не просили — попросим сейчас
+      // Ждать бесконечно нельзя: если страж молчит, пробуем начать без него —
+      // сервер всё равно проверит и при необходимости попросит подтверждение.
+      setTimeout(function(){ if (guardWaiting) afterGuard(); }, 12000);
+    }
+    document.getElementById('aiRec').addEventListener('click', function(){ enter('voice'); });
+    if (elAlt) elAlt.addEventListener('click', function(){ enter('text'); });
     // Микрофон в разговоре — пауза и продолжение, а не «завершить»: завершение теперь отдельной кнопкой.
     document.getElementById('aiStop').addEventListener('click', function(){
       if (pdSpeech.listening()) { pdSpeech.stop(true); micState(); }
@@ -6172,7 +6552,7 @@
     });
     document.getElementById('aiBook').addEventListener('click', function(){
       closeAI();
-      location.href = '#contact';
+      location.hash = '#contact';
     });
     addEventListener('keydown', function(e){
       if (e.key === 'Escape' && ai.classList.contains('open')) flyOutOfAI();
@@ -6183,7 +6563,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#05141a"/><g fill="#2be0c6"><circle cx="34" cy="42" r="2"/><circle cx="44" cy="36" r="2"/><circle cx="54" cy="44" r="2"/><circle cx="64" cy="38" r="2"/><circle cx="40" cy="52" r="2"/><circle cx="52" cy="56" r="2"/><circle cx="62" cy="52" r="2"/></g><circle cx="50" cy="50" r="16" fill="none" stroke="#ff6a3d" stroke-width="1.5"/><path d="M46 44l10 6-10 6z" fill="#f1fbfc"/></svg>
 </template>
 <!--SEO-->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay", "url": "https://playdisplay.com/", "description": "playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn an idea, a story or a brand into an experience worth living through.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "founder": {"@type": "Person", "name": "Andrey Sudarikov"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay", "url": "https://playdisplay.com/", "description": "playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "founder": {"@type": "Person", "name": "Andrey Sudarikov"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "playdisplay", "url": "https://playdisplay.com/en/", "inLanguage": "en"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "playdisplay projects", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://playdisplay.com/en/work/industry-rf/", "name": "Russian Industry"}, {"@type": "ListItem", "position": 2, "url": "https://playdisplay.com/en/work/airports/", "name": "Russian Airports"}, {"@type": "ListItem", "position": 3, "url": "https://playdisplay.com/en/work/odk-oak/", "name": "UEC UAC"}, {"@type": "ListItem", "position": 4, "url": "https://playdisplay.com/en/work/proryv/", "name": "Proryv"}, {"@type": "ListItem", "position": 5, "url": "https://playdisplay.com/en/work/rostec/", "name": "Rostec Expo"}, {"@type": "ListItem", "position": 6, "url": "https://playdisplay.com/en/work/ptk-group/", "name": "PTK Group"}, {"@type": "ListItem", "position": 7, "url": "https://playdisplay.com/en/work/mig2019/", "name": "MiG-35 Booth"}, {"@type": "ListItem", "position": 8, "url": "https://playdisplay.com/en/work/bmwx5/", "name": "BMW X5"}, {"@type": "ListItem", "position": 9, "url": "https://playdisplay.com/en/work/pano360/", "name": "Panorama 360"}, {"@type": "ListItem", "position": 10, "url": "https://playdisplay.com/en/work/urban-forum-2018/", "name": "Urban Forum 2018"}, {"@type": "ListItem", "position": 11, "url": "https://playdisplay.com/en/work/stalingrad/", "name": "Password to Victory: Stalingrad"}, {"@type": "ListItem", "position": 12, "url": "https://playdisplay.com/en/work/coalco/", "name": "COALCO Dry Port"}, {"@type": "ListItem", "position": 13, "url": "https://playdisplay.com/en/work/sinara/", "name": "Sinara Transport Machines"}, {"@type": "ListItem", "position": 14, "url": "https://playdisplay.com/en/work/vdnh-space/", "name": "VDNH Space"}, {"@type": "ListItem", "position": 15, "url": "https://playdisplay.com/en/work/vdnh-space-center/", "name": "Cosmonautics and Aviation Center"}]}</script>
 <noscript><section><h2>playdisplay projects</h2><ul><li><a href="/en/work/industry-rf/">Russian Industry</a> — An industry you can examine up close. The country has ambitious plans for shipbuilding: a new generation of civilian vessels, breakthrough engineering, the m…</li><li><a href="/en/work/airports/">Russian Airports</a> — A space that takes you by the hand. Present three of Russia’s international airports at Russia Expo so that each one reveals its own architecture and charact…</li><li><a href="/en/work/odk-oak/">UEC UAC</a> — A complex product is sold by whoever lets you touch it. MAKS, the International Aviation and Space Salon, is one of the world’s major aerospace events. Unite…</li><li><a href="/en/work/proryv/">Proryv</a> — Tomorrow’s technology told in the language of experience. Build an installation that shows in plain visual terms how a nuclear power platform with a closed n…</li><li><a href="/en/work/rostec/">Rostec Expo</a> — The scale of a corporation held in one space. Create the centerpiece exhibit at the entrance to the Rostec Expo pavilion and bring the products of every comp…</li><li><a href="/en/work/ptk-group/">PTK Group</a> — A presentation people take part in. PTK Group builds modern track machines — equipment for constructing, repairing and maintaining railways. Almost all of it…</li><li><a href="/en/work/mig2019/">MiG-35 Booth</a> — The jet was already a star — we built it a stage. Make the MiG-35 stand out among the other manufacturers’ aircraft, and build a demonstration tool for prese…</li><li><a href="/en/work/bmwx5/">BMW X5</a> — The car you built yourself is the one you want to buy. Equip the sales office with an interactive tool for choosing and configuring a car.</li><li><a href="/en/work/pano360/">Panorama 360</a> — Not a window into history — a way in. Give visitors to one of Europe’s highest observation decks — Panorama 360, on the 89th floor of the Federation Tower in…</li><li><a href="/en/work/urban-forum-2018/">Urban Forum 2018</a> — A queue at the installation is the best metric there is. A booth for a city government that speaks to residents in their own language — by showing plainly wh…</li><li><a href="/en/work/stalingrad/">Password to Victory: Stalingrad</a> — Play can speak about serious things too. Draw public attention to a heritage site of federal significance and tell the story of the Battle of Stalingrad of 1…</li><li><a href="/en/work/coalco/">COALCO Dry Port</a> — Logistics you can see instead of reading about it in a brochure. The dry port is on such a scale that it only makes sense shown whole: how this new transport…</li><li><a href="/en/work/sinara/">Sinara Transport Machines</a> — Heavy machinery shown in the palm of your hand. Sinara Transport Machines builds a new generation of locomotives. The task was to show not only the machines …</li><li><a href="/en/work/vdnh-space/">VDNH Space</a> — The visitor does not read the exhibition — they explore it. The whole history of spaceflight in one playable system: 115 exhibits, interactive 3D models of s…</li><li><a href="/en/work/vdnh-space-center/">Cosmonautics and Aviation Center</a> — A museum that answers with movement. Tell the history of spaceflight and rocketry through high-technology solutions.</li></ul></section></noscript>

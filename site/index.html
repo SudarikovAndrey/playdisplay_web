@@ -788,6 +788,26 @@
     opacity: 0; transform: scale(0.5); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
   .ai-word.show { opacity: 1; transform: scale(var(--w-scale, 1)); }
   .ai-word.key { border-color: rgba(43,224,198,0.6); color: #F1FBFC; }
+  /* ---------- страж: кольцо вокруг микрофона и циферблат второй ступени ---------- */
+  /* Кольцо показывает НАСТОЯЩИЙ прогресс вычислений, а не декоративную анимацию:
+     точки загораются по мере перебора. Обычно человек его почти не замечает. */
+  .ai-rec-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center;
+    margin-top: 46px; }
+  .ai-rec-wrap .ai-rec { margin-top: 0; }
+  .ai-ring { position: absolute; left: 50%; top: 50%; width: 148px; height: 148px;
+    transform: translate(-50%, -50%); pointer-events: none;
+    opacity: 0; transition: opacity .45s ease; }
+  .ai-ring.on { opacity: 1; }
+  /* пока пропуск не готов, микрофон приглушён — но нажать можно: мы просто подождём */
+  .ai-rec.warming .mic-i { opacity: 0.45; }
+  .ai-rec.warming { border-color: rgba(159,180,200,0.35); box-shadow: none; }
+  /* циферблат второй ступени */
+  .ai-dial-wrap { margin-top: 34px; display: flex; justify-content: center; }
+  .ai-dial { width: min(260px, 68vw); height: min(260px, 68vw); cursor: pointer;
+    border-radius: 50%; outline: none; transition: box-shadow .3s; }
+  .ai-dial:focus-visible { box-shadow: 0 0 0 3px rgba(43,224,198,0.45); }
+  #aiHumanErr:not(:empty) { margin-top: 20px; }
+
   /* нижняя панель режима записи: что услышано → ввод текстом → микрофон → сборка брифа.
      Собрана в одну колонку, чтобы на любом экране порядок чтения был сверху вниз. */
   .ai-bottom { position: absolute; left: 5%; right: 5%; bottom: 3.5vh; z-index: 3;
@@ -1276,7 +1296,7 @@
       <a href="#atlas">Атлас</a>
       <a href="#studio">Студия</a>
     </nav>
-    <button class="cta-play" onclick="location.href='#contact'">▶︎ Обсудить идею</button>
+    <button class="cta-play" onclick="location.hash='#contact'">▶︎ Обсудить идею</button>
     <div class="lang" id="lang"></div>
   </div>
 </header>
@@ -1585,9 +1605,23 @@
       <div class="kicker teal">Начните с того, что уже знаете</div>
       <h2>Расскажите, какое пространство вы хотите создать.</h2>
       <p>Мы выделим основные смыслы и соберём их в понятное описание проекта.</p>
-      <button class="ai-rec" id="aiRec" aria-label="Включить микрофон"><span class="mic-i big"></span></button>
+      <div class="ai-rec-wrap">
+        <canvas class="ai-ring" id="aiRing" aria-hidden="true"></canvas>
+        <button class="ai-rec" id="aiRec" aria-label="Включить микрофон"><span class="mic-i big"></span></button>
+      </div>
       <div><button class="ai-alt" id="aiAlt">Или написать текстом</button></div>
       <div class="ai-note" id="aiNote">Говорите свободно — ассистент слушает и задаёт вопросы.</div>
+    </div>
+    <!-- вторая ступень проверки: появляется только если поведение похоже на скрипт -->
+    <div class="ai-stage" id="aiHuman">
+      <div class="kicker teal">Одно касание</div>
+      <h2>Поймайте точку в секторе.</h2>
+      <p>Нажмите, когда бегущая точка окажется в подсвеченном секторе. Клавиша пробел тоже работает.</p>
+      <div class="ai-dial-wrap">
+        <canvas class="ai-dial" id="aiDial" width="520" height="520"
+                role="button" tabindex="0" aria-label="Нажмите, когда точка войдёт в подсвеченный сектор"></canvas>
+      </div>
+      <div class="ai-err" id="aiHumanErr"></div>
     </div>
     <div class="ai-stage" id="aiCapture">
       <h2 class="ai-prompt" id="aiPrompt">Расскажите про вашу идею.</h2>
@@ -1682,6 +1716,10 @@
   var I18N = window.PD_I18N || null;            // null для русского
   var DATA = PD_LANG === 'ru' ? 'data/' : 'data/' + PD_LANG + '/';
   var LANGS = [['ru', 'RU', '/'], ['en', 'ENG', '/en/']];   // сюда же встанет ['pt','PT','/pt/']
+  // Хэш-ссылки нельзя писать «как есть»: и location.href='#x', и history.pushState('#x')
+  // разбираются ОТНОСИТЕЛЬНО <base>, а на /en/ он равен корню — посетителя уносило
+  // на русскую версию. Поэтому всегда пишем полный путь текущей страницы.
+  function hashUrl(h){ return location.pathname + location.search + (h.charAt(0) === '#' ? h : '#' + h); }
   function T(s){
     if (!I18N || typeof s !== 'string') return s;
     var v = I18N[s];
@@ -4440,7 +4478,7 @@
     if (suppressRoute) return;
     var want = slug ? '#/work/' + slug : '#work';
     if (location.hash === want) return;
-    try { history.pushState({ slug: slug || null }, '', want); } catch (e) { location.hash = want; }
+    try { history.pushState({ slug: slug || null }, '', hashUrl(want)); } catch (e) { location.hash = want; }
   }
   function caseBySlug(slug){ for (var i = 0; i < CASES.length; i++) if (CASES[i].slug === slug) return CASES[i]; return null; }
   function routeFromHash(){
@@ -4463,7 +4501,7 @@
   if (logoHome) logoHome.addEventListener('click', function(ev){
     ev.preventDefault();
     if (viewer.classList.contains('open')) closeCase();
-    try { history.pushState(null, '', '#start'); } catch (e) { location.hash = '#start'; }
+    try { history.pushState(null, '', hashUrl('#start')); } catch (e) { location.hash = '#start'; }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   // фоновая пыль страницы проекта: редкие мелкие точки дрейфуют с параллаксом от прокрутки
@@ -4719,7 +4757,7 @@
         });
       });
       var btn = document.getElementById('cDiscuss');
-      if (btn) btn.addEventListener('click', function(){ closeConceptCase(); location.href = '#contact'; });
+      if (btn) btn.addEventListener('click', function(){ closeConceptCase(); location.hash = '#contact'; });
     }
     function closeConceptCase(){
       unloadConceptMedia(); // остановить и выгрузить видео до сноса DOM
@@ -5259,7 +5297,7 @@
         });
       });
       var btn = document.getElementById('avDiscuss');
-      if (btn) btn.addEventListener('click', function(){ closeLesson(); location.href = '#contact'; });
+      if (btn) btn.addEventListener('click', function(){ closeLesson(); location.hash = '#contact'; });
     }
     function closeLesson(){
       view.classList.remove('open');
@@ -5403,13 +5441,39 @@
         });
       },
 
+      // Задача стража: просим её заранее, как только человек открыл панель.
+      challenge: function(ok, bad){
+        post('challenge', {}, function(d){ ok(d.challenge); }, bad || function(){});
+      },
+      // Вторая ступень: без hit — получить задание, с hit — отправить попадание.
+      human: function(payload, ok, bad){
+        post('human', payload || {}, ok, bad || function(){});
+      },
+
       begin: function(ok, bad){
         sid = null; demoRound = 0; demoSaid = [];
         if (mode === 'demo') { ok({ reply: 'Расскажите про вашу идею.', sub: 'Мы будем собирать основные смыслы.' }); return; }
-        post('start', {}, function(d){ sid = d.sid; ok(d); }, function(e){
-          if (e === 'no-backend') { mode = 'demo'; ok({ reply: 'Расскажите про вашу идею.', sub: 'Мы будем собирать основные смыслы.', demo: true }); return; }
-          bad(e);
-        });
+        var tries = 0;
+        function go(){
+          tries++;
+          post('start', window.pdGuard.proof(), function(d){
+            sid = d.sid; ok(d);
+          }, function(e, d){
+            if (e === 'no-backend') { mode = 'demo'; ok({ reply: 'Расскажите про вашу идею.', sub: 'Мы будем собирать основные смыслы.', demo: true }); return; }
+            // Поведение показалось странным — сервер просит живое подтверждение.
+            // Приходит с ok:false, поэтому разбираем здесь, а не в успешной ветке.
+            if (d && d.need_human) { bad('need-human', d); return; }
+            // Задача устарела или уже использована: сервер прислал новую. Решаем и пробуем
+            // ещё раз — один раз, чтобы не устроить бесконечный круг.
+            if (d && d.challenge && tries < 2) {
+              window.pdGuard.reset();
+              window.pdGuard.accept(d.challenge, null, go);
+              return;
+            }
+            bad(e, d);
+          });
+        }
+        go();
       },
 
       say: function(text, how, ok, bad){
@@ -5440,6 +5504,176 @@
           channels: contact.channels || [], agree: true
         }, ok, bad);
       }
+    };
+  })();
+
+  // ===== СТРАЖ: пропуск для живого человека =====
+  // Браузер решает подписанную сервером задачу — ищет число, при котором
+  // sha256(nonce:число) начинается с нужного количества нулевых бит. Человек этого не
+  // видит: работа идёт в те секунды, пока он читает первый экран панели, и к нажатию
+  // микрофона пропуск обычно уже готов.
+  //
+  // Почему свой sha256, а не crypto.subtle: тот требует защищённого контекста и работает
+  // через промисы. Свой — работает везде (в том числе при открытии файла с диска),
+  // считается синхронно и нарезается по кадрам, поэтому интерфейс не подвисает.
+  window.pdGuard = (function(){
+    // ---- sha256, компактная реализация ----
+    var K = [
+      0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+
+    // Все наши сообщения короче 56 байт (nonce + ':' + число), то есть укладываются
+    // в один 64-байтный блок. Поэтому: никаких аллокаций в цикле — буферы заводятся
+    // один раз и переиспользуются, а результат отдаётся тремя старшими словами.
+    // Это даёт кратное ускорение, а на подборе миллиона хешей разница уже в секундах.
+    var _m = new Uint8Array(64), _w = new Int32Array(64), _H = new Int32Array(8);
+    var _h0 = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+
+    /** Хеширует _m (длина len байт, len < 56). Результат — в _H. */
+    function sha256block(len){
+      var i, j, a, b, c, d, e, f, g, h, t1, t2, s0, s1, x, y;
+      for (i = len; i < 64; i++) _m[i] = 0;
+      _m[len] = 0x80;
+      var bitLen = len * 8;
+      _m[62] = (bitLen >>> 8) & 0xff;
+      _m[63] = bitLen & 0xff;
+      for (j = 0; j < 16; j++)
+        _w[j] = (_m[j * 4] << 24) | (_m[j * 4 + 1] << 16) | (_m[j * 4 + 2] << 8) | _m[j * 4 + 3];
+      for (j = 16; j < 64; j++) {
+        x = _w[j - 15]; y = _w[j - 2];
+        s0 = ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
+        s1 = ((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10);
+        _w[j] = (_w[j - 16] + s0 + _w[j - 7] + s1) | 0;
+      }
+      a = _h0[0]; b = _h0[1]; c = _h0[2]; d = _h0[3];
+      e = _h0[4]; f = _h0[5]; g = _h0[6]; h = _h0[7];
+      for (j = 0; j < 64; j++) {
+        s1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+        t1 = (h + s1 + ((e & f) ^ (~e & g)) + K[j] + _w[j]) | 0;
+        s0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+        t2 = (s0 + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+      }
+      _H[0] = (_h0[0] + a) | 0; _H[1] = (_h0[1] + b) | 0;
+      _H[2] = (_h0[2] + c) | 0; _H[3] = (_h0[3] + d) | 0;
+      _H[4] = (_h0[4] + e) | 0; _H[5] = (_h0[5] + f) | 0;
+      _H[6] = (_h0[6] + g) | 0; _H[7] = (_h0[7] + h) | 0;
+    }
+
+    /** Публичный вариант для проверки в тестах: строка → 32 байта. */
+    function sha256str(s){
+      var b = bytesOf(s), i;
+      for (i = 0; i < b.length; i++) _m[i] = b[i];
+      sha256block(b.length);
+      var out = new Uint8Array(32);
+      for (i = 0; i < 8; i++) {
+        out[i * 4] = (_H[i] >>> 24) & 0xff; out[i * 4 + 1] = (_H[i] >>> 16) & 0xff;
+        out[i * 4 + 2] = (_H[i] >>> 8) & 0xff; out[i * 4 + 3] = _H[i] & 0xff;
+      }
+      return out;
+    }
+    // Строка → байты. Наши строки — только латиница и цифры, но utf-8 на всякий случай.
+    function bytesOf(s){
+      var out = [], i, c;
+      for (i = 0; i < s.length; i++) {
+        c = s.charCodeAt(i);
+        if (c < 0x80) out.push(c);
+        else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+        else out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+      }
+      return new Uint8Array(out);
+    }
+    /** Проверка нулевых бит прямо по словам _H — без сборки массива байт. */
+    function zerosOk(bits){
+      // до 32 бит хватает первого слова: сравниваем старшие биты
+      if (bits <= 32) return (_H[0] >>> (32 - bits)) === 0;
+      return false;
+    }
+
+    // ---- поведенческие признаки ----
+    // Считаем только количества, а не траектории: для решения «показать ли живую
+    // проверку» этого достаточно, а следить за человеком незачем.
+    var t0 = Date.now(), moves = 0, keys = 0, taps = 0;
+    addEventListener('pointermove', function(){ moves++; }, { passive: true });
+    addEventListener('keydown', function(){ keys++; }, { passive: true });
+    addEventListener('pointerdown', function(){ taps++; }, { passive: true });
+    addEventListener('touchstart', function(){ taps++; }, { passive: true });
+    function signals(){
+      return {
+        wd: !!navigator.webdriver,
+        moves: Math.min(moves, 9999), keys: Math.min(keys, 9999), taps: Math.min(taps, 999),
+        age: Date.now() - t0,
+        w: innerWidth || 0, h: innerHeight || 0,
+        tz: new Date().getTimezoneOffset()
+      };
+    }
+
+    // ---- решение задачи нарезкой по кадрам ----
+    var task = null, solution = null, solving = false, onProg = null, pass = null;
+
+    function solve(t, progress, done){
+      var nonce = t.nonce, bits = t.bits, n = 0;
+      var head = bytesOf(nonce + ':'), hl = head.length, i;
+      for (i = 0; i < hl; i++) _m[i] = head[i];      // неизменная часть пишется один раз
+      // Пачку подбираем так, чтобы кадр не проседал: 20 тысяч хешей это ~30 мс.
+      var BATCH = 20000, tried = 0, expect = Math.pow(2, bits);
+      function step(){
+        var i, k, len, v;
+        for (i = 0; i < BATCH; i++) {
+          // цифры числа пишем прямо в буфер, без промежуточных строк и массивов
+          v = n; len = hl;
+          if (v === 0) { _m[len++] = 48; }
+          else {
+            var start = len, end;
+            while (v > 0) { _m[len++] = 48 + (v % 10); v = (v - v % 10) / 10; }
+            end = len - 1;
+            while (start < end) { k = _m[start]; _m[start] = _m[end]; _m[end] = k; start++; end--; }
+          }
+          sha256block(len);
+          if (zerosOk(bits)) { done(String(n)); return; }
+          n++; tried++;
+        }
+        // Прогресс честный: доля перебранного от ожидаемого числа попыток.
+        // Больше 0.98 не показываем — иначе кольцо «залипает» на единице, если не повезло.
+        if (progress) progress(Math.min(0.98, tried / expect));
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    return {
+      // Готов ли пропуск: либо решённая задача, либо пройденная живая проверка.
+      ready: function(){ return !!(pass || (task && solution)); },
+      busy: function(){ return solving; },
+      signals: signals,
+      // Данные, которые прикладываются к start.
+      proof: function(){
+        if (pass) return { pass_exp: pass.exp, pass_sig: pass.sig, signals: signals() };
+        if (!task || !solution) return { signals: signals() };
+        return {
+          nonce: task.nonce, bits: task.bits, exp: task.exp, sig: task.sig,
+          solution: solution, signals: signals()
+        };
+      },
+      setPass: function(p){ pass = p; },
+      sha256: sha256str,          // наружу только для проверок в тестах
+      // Задача пришла с сервера — решаем. progress(0..1) для кольца вокруг микрофона.
+      accept: function(t, progress, done){
+        task = t; solution = null; solving = true; onProg = progress;
+        solve(t, progress, function(sol){
+          solution = sol; solving = false;
+          if (progress) progress(1);
+          if (done) done();
+        });
+      },
+      // Задача устарела или использована — сервер прислал новую вместе с отказом.
+      reset: function(){ task = null; solution = null; pass = null; solving = false; }
     };
   })();
 
@@ -5555,7 +5789,7 @@
   (function(){
     var ai = document.getElementById('ai');
     if (!ai) return;
-    var stages = { intro: 'aiIntro', capture: 'aiCapture', summary: 'aiSummary', form: 'aiForm', sent: 'aiSent' };
+    var stages = { intro: 'aiIntro', human: 'aiHuman', capture: 'aiCapture', summary: 'aiSummary', form: 'aiForm', sent: 'aiSent' };
     var field = document.getElementById('aiField');
     var card = null, probed = false;
     // Элементы разговора собираем один раз: во время сессии getElementById в каждом кадре не нужен.
@@ -5571,6 +5805,148 @@
         elAlt = document.getElementById('aiAlt'),
         elRec = document.getElementById('aiRec'),
         elNote = document.getElementById('aiNote');
+
+    // ================= страж: кольцо и вторая ступень =================
+    // Кольцо из точек вокруг микрофона: точки загораются по мере перебора хешей.
+    // Это не декорация — доля загоревшихся равна доле проделанной работы.
+    var ring = (function(){
+      var cv = document.getElementById('aiRing');
+      if (!cv) return { set: function(){}, hide: function(){} };
+      var g = cv.getContext('2d');
+      if (!g) return { set: function(){}, hide: function(){} };
+      var DPR = Math.min(devicePixelRatio || 1, 2), N = 44, p = 0, shown = 0, raf = null;
+      function fit(){
+        var w = cv.clientWidth || 148;
+        if (cv.width !== Math.round(w * DPR)) { cv.width = cv.height = Math.round(w * DPR); }
+      }
+      function draw(){
+        fit();
+        var R = cv.width / 2, rad = R * 0.86;
+        g.clearRect(0, 0, cv.width, cv.height);
+        shown += (p - shown) * 0.12;          // подтягиваем плавно, без рывков
+        for (var i = 0; i < N; i++) {
+          var a = -Math.PI / 2 + (i / N) * Math.PI * 2;
+          var lit = (i / N) < shown;
+          g.globalAlpha = lit ? 0.85 : 0.16;
+          g.fillStyle = lit ? '#2be0c6' : '#9fb4c8';
+          var s = (lit ? 1.9 : 1.2) * DPR;
+          g.beginPath(); g.arc(R + Math.cos(a) * rad, R + Math.sin(a) * rad, s, 0, 6.2832); g.fill();
+        }
+        g.globalAlpha = 1;
+        if (Math.abs(p - shown) > 0.002 || p < 1) raf = requestAnimationFrame(draw);
+        else raf = null;
+      }
+      return {
+        set: function(v){
+          p = Math.max(0, Math.min(1, v));
+          cv.classList.add('on');
+          if (!raf) raf = requestAnimationFrame(draw);
+        },
+        hide: function(){
+          cv.classList.remove('on');
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          p = 0; shown = 0;
+        }
+      };
+    })();
+
+    // Готовим пропуск заранее — в те секунды, пока человек читает первый экран.
+    // Если он нажмёт раньше, чем работа закончится, ждём и показываем кольцо.
+    var guardWaiting = false;
+    function warmGuard(){
+      if (window.pdIdea.mode() === 'demo') return;
+      if (window.pdGuard.ready() || window.pdGuard.busy()) return;
+      window.pdIdea.challenge(function(t){
+        window.pdGuard.accept(t, function(v){
+          // Кольцо показываем только если человек уже ждёт: иначе он и не заметит проверки.
+          if (guardWaiting) ring.set(v);
+        }, function(){
+          if (guardWaiting) { ring.set(1); setTimeout(afterGuard, 260); }
+        });
+      }, function(){ /* нет задачи — начнём без неё, сервер решит сам */ });
+    }
+    function afterGuard(){
+      if (!guardWaiting) return;
+      guardWaiting = false;
+      ring.hide();
+      if (elRec) elRec.classList.remove('warming');
+      startCapture(pendingHow || 'voice');
+    }
+
+    // Циферблат второй ступени: точка бежит по кругу, надо нажать в подсвеченном секторе.
+    // Работает мышью, касанием и с клавиатуры — иначе проверка отсекала бы людей,
+    // которые не пользуются мышью.
+    var dial = (function(){
+      var cv = document.getElementById('aiDial');
+      if (!cv) return { start: function(){}, stop: function(){} };
+      var g = cv.getContext('2d');
+      var task = null, ang = 0, raf = null, onHit = null, DPR = Math.min(devicePixelRatio || 1, 2);
+      function fit(){
+        var w = cv.clientWidth || 260;
+        if (cv.width !== Math.round(w * DPR)) { cv.width = cv.height = Math.round(w * DPR); }
+      }
+      function draw(){
+        raf = requestAnimationFrame(draw);
+        if (!task) return;
+        fit();
+        var R = cv.width / 2, rad = R * 0.78;
+        ang = (ang + 1.5) % 360;             // скорость подобрана так, чтобы попасть было легко
+        g.clearRect(0, 0, cv.width, cv.height);
+        // сектор-цель
+        var a0 = (task.target - task.span) * Math.PI / 180 - Math.PI / 2;
+        var a1 = (task.target + task.span) * Math.PI / 180 - Math.PI / 2;
+        g.beginPath();
+        g.arc(R, R, rad, a0, a1);
+        g.strokeStyle = 'rgba(43,224,198,0.55)';
+        g.lineWidth = 10 * DPR; g.stroke();
+        // кольцо-дорожка точками — тот же язык, что у остальной панели
+        for (var i = 0; i < 60; i++) {
+          var a = -Math.PI / 2 + (i / 60) * Math.PI * 2;
+          g.globalAlpha = 0.18; g.fillStyle = '#9fb4c8';
+          g.beginPath(); g.arc(R + Math.cos(a) * rad, R + Math.sin(a) * rad, 1.2 * DPR, 0, 6.2832); g.fill();
+        }
+        g.globalAlpha = 1;
+        // бегунок
+        var ar = ang * Math.PI / 180 - Math.PI / 2;
+        var x = R + Math.cos(ar) * rad, y = R + Math.sin(ar) * rad;
+        g.fillStyle = '#F1FBFC';
+        g.beginPath(); g.arc(x, y, 5 * DPR, 0, 6.2832); g.fill();
+        g.strokeStyle = 'rgba(43,224,198,0.35)'; g.lineWidth = 1 * DPR;
+        g.beginPath(); g.arc(x, y, 11 * DPR, 0, 6.2832); g.stroke();
+      }
+      function hit(){ if (task && onHit) onHit(ang); }
+      cv.addEventListener('click', hit);
+      cv.addEventListener('keydown', function(e){
+        if (e.key === ' ' || e.key === 'Enter' || e.keyCode === 32 || e.keyCode === 13) { e.preventDefault(); hit(); }
+      });
+      return {
+        start: function(t, cb){
+          task = t; onHit = cb; ang = Math.random() * 360;
+          if (!raf) raf = requestAnimationFrame(draw);
+          setTimeout(function(){ try { cv.focus({ preventScroll: true }); } catch (e) {} }, 120);
+        },
+        stop: function(){ task = null; if (raf) { cancelAnimationFrame(raf); raf = null; } }
+      };
+    })();
+
+    var pendingHow = null;
+    function askHuman(task){
+      stage('human');
+      var box = document.getElementById('aiHumanErr');
+      if (box) box.textContent = '';
+      dial.start(task, function(angle){
+        dial.stop();
+        window.pdIdea.human({ target: task.target, exp: task.exp, sig: task.sig, hit: angle }, function(d){
+          // Попал: сервер выдал пропуск, дальше обычный разговор.
+          window.pdGuard.setPass(d.pass);
+          startCapture(pendingHow || 'voice');
+        }, function(err, d){
+          // Промах приходит с ok:false и новым заданием — показываем его снова.
+          askHuman((d && d.task) || task);
+          if (box) box.textContent = (d && d.error) || 'Мимо. Ещё раз.';
+        });
+      });
+    }
 
     // Каналы связи: можно отметить несколько, можно ни одного — это подсказка Андрею,
     // а не обязательное поле. Подсказка нужна и затем, чтобы человек увидел:
@@ -5859,6 +6235,12 @@
         elRec.style.display = 'none';
         if (elAlt) elAlt.textContent = 'Начать и написать текстом';
       }
+      // Пропуск готовим прямо сейчас: пока человек читает заголовок, браузер успевает
+      // сделать работу, и нажатие микрофона срабатывает без задержки.
+      guardWaiting = false;
+      ring.hide();
+      if (elRec) elRec.classList.remove('warming');
+      warmGuard();
     }
     function closeAI(){
       pdSpeech.stop();
@@ -6020,8 +6402,10 @@
         setThink(false);
         ask(d.reply, d.sub);
         go();
-      }, function(err){
+      }, function(err, d){
         setThink(false);
+        // Сервер не поверил, что за экраном человек — показываем вторую ступень.
+        if (err === 'need-human' && d && d.task) { askHuman(d.task); return; }
         showErr(err === 'no-backend' ? 'Ассистент недоступен. Напишите нам через раздел «Контакты».' : err);
         openSay(true);
       });
@@ -6124,8 +6508,21 @@
     })();
     document.getElementById('aiClose').addEventListener('click', flyOutOfAI);
     // Большая кнопка на первом экране — начать голосом; ссылка рядом — начать текстом.
-    document.getElementById('aiRec').addEventListener('click', function(){ startCapture('voice'); });
-    if (elAlt) elAlt.addEventListener('click', function(){ startCapture('text'); });
+    // Между нажатием и разговором стоит страж: если пропуск ещё не готов, ждём его
+    // и показываем кольцо. Обычно к этому моменту всё уже готово и ждать нечего.
+    function enter(how){
+      pendingHow = how;
+      if (window.pdIdea.mode() === 'demo' || window.pdGuard.ready()) { startCapture(how); return; }
+      guardWaiting = true;
+      if (elRec) elRec.classList.add('warming');
+      ring.set(0.02);
+      warmGuard();                 // если задачу ещё не просили — попросим сейчас
+      // Ждать бесконечно нельзя: если страж молчит, пробуем начать без него —
+      // сервер всё равно проверит и при необходимости попросит подтверждение.
+      setTimeout(function(){ if (guardWaiting) afterGuard(); }, 12000);
+    }
+    document.getElementById('aiRec').addEventListener('click', function(){ enter('voice'); });
+    if (elAlt) elAlt.addEventListener('click', function(){ enter('text'); });
     // Микрофон в разговоре — пауза и продолжение, а не «завершить»: завершение теперь отдельной кнопкой.
     document.getElementById('aiStop').addEventListener('click', function(){
       if (pdSpeech.listening()) { pdSpeech.stop(true); micState(); }
@@ -6169,7 +6566,7 @@
     });
     document.getElementById('aiBook').addEventListener('click', function(){
       closeAI();
-      location.href = '#contact';
+      location.hash = '#contact';
     });
     addEventListener('keydown', function(e){
       if (e.key === 'Escape' && ai.classList.contains('open')) flyOutOfAI();

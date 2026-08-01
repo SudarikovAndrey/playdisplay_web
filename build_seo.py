@@ -22,7 +22,7 @@ ORG_DESC = ('playdisplay проектирует пространства и вп
             'иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.')
 ORG_DESC_EN = ('playdisplay designs spaces and experiences people remember: contemporary museums, '
                'interactive exhibits, visitor centres, showrooms and immersive exhibitions. '
-               'We turn an idea, a story or a brand into an experience worth living through.')
+               'We turn ideas, stories, spaces and brands into experiences people want to be part of.')
 SOCIALS = [
     'https://www.facebook.com/playdisplay/',
     'https://vimeo.com/playdisplay5',
