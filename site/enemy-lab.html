@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PlayDisplay — конструктор вражеского корабля</title>
+<!--
+  КОНСТРУКТОР ВРАЖЕСКОГО КОРАБЛЯ (29.07). Инструмент, не часть сайта.
+  Третий в семье лабораторий: ship-lab — корабль игрока, shape-lab — ландшафт,
+  world-lab — чанки трассы. Стиль панели и логика «ползунок → живой uniform»
+  повторены сознательно: инструменты должны выглядеть одинаково.
+
+  ЧЕМ ОТЛИЧАЕТСЯ ОТ ship-lab. Там модель фиксированная (ship-points.js) и вопрос
+  был «что даёт каждый приём». Здесь форма приходит СВОЯ — файлом .obj/.glb/.fbx/.stl,
+  и её ещё надо превратить в точки. Поэтому добавлены три вещи, которых в ship-lab нет:
+
+  1. ВОКСЕЛИЗАЦИЯ. Меш сэмплируется по площади треугольников, каждая проба
+     защёлкивается в узел кубической сетки — так одинаковая плотность получается
+     и на мелкой детали, и на большой плоскости. Нормаль берём с треугольника:
+     она честная, PCA по соседям (как в ship-lab) здесь не нужен.
+  2. РЁБРА СЧИТАЮТСЯ, А НЕ ЗАДАНЫ. У корабля игрока контурные точки лежат первыми
+     (EDGE_N). У произвольной модели такого нет: ищем изгиб — максимальный угол
+     между нормалью точки и нормалями соседей. Порог в градусах — ползунком.
+  3. ВЗРЫВ В ЗАКРЫТОЙ ФОРМЕ. В игре обломки интегрируются по кадрам (gShipCrash →
+     gUpdateDebris) — это нормально для игры, но в конструкторе так нельзя: нельзя
+     отмотать назад и рассмотреть фазу. Здесь позиция каждой точки — ЧИСТАЯ ФУНКЦИЯ
+     времени, посчитанная в вершинном шейдере:
+         v(t) = (v0 - g/k)·e^(-kt) + g/k
+         p(t) = p0 + (v0 - g/k)·(1 - e^(-kt))/k + (g/k)·t
+     плюс поворот куска вокруг своей оси на угол |ω|·t (Родриг). Отсюда бесплатно:
+     таймлайн можно таскать в любую сторону, картинка детерминирована, CPU не занят,
+     а в игру уезжают только 9 чисел на кусок.
+-->
+<style>
+  /* Интерфейс сознательно крупнее, чем в ship-lab: там панель смотрели изредка, а
+     здесь в ней сидят подолгу — мелкий кегль и тонкие ползунки быстро выматывают.
+     Каждая группа сворачивается (иначе список настроек не влезает ни в один экран),
+     а у каждого ползунка есть − и +: мышью точное значение не поймать. */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0a0710;
+    font-family: 'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace; color: #e8dfe6; }
+  #stage { position: fixed; inset: 0; }
+  #ui { position: fixed; left: 0; top: 0; bottom: auto; height: 100%; width: 408px; z-index: 10;
+    background: rgba(10,7,16,.94); backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(220,120,150,.2);
+    padding: 18px 16px 30px; overflow-y: auto; overscroll-behavior: contain; }
+  #ui::-webkit-scrollbar { width: 9px; }
+  #ui::-webkit-scrollbar-track { background: rgba(255,255,255,.03); }
+  #ui::-webkit-scrollbar-thumb { background: rgba(255,127,156,.35); border-radius: 5px; }
+  #ui::-webkit-scrollbar-thumb:hover { background: rgba(255,127,156,.6); }
+  .hdr { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .uiz { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+  .uiz button { width: 24px; height: 24px; padding: 0; font: 700 14px/1 inherit; color: #ff9fb4;
+    background: rgba(255,127,156,.1); border: 1px solid rgba(255,127,156,.3);
+    border-radius: 3px; cursor: pointer; }
+  .uiz button:hover { background: rgba(255,127,156,.28); color: #fff; }
+  .uiz span { font-size: 10px; opacity: .55; width: 40px; text-align: center; font-variant-numeric: tabular-nums; }
+  #ui h1 { font-size: 13px; letter-spacing: .2em; text-transform: uppercase;
+    color: #ff7f9c; margin: 0 0 4px; font-weight: 700; }
+  #ui .sub { font-size: 10.5px; letter-spacing: .08em; opacity: .45; margin-bottom: 16px; line-height: 1.6; }
+
+  /* группа настроек: заголовок — кнопка сворачивания */
+  .grp { margin-bottom: 6px; border-top: 1px solid rgba(220,120,150,.1); padding-top: 8px; }
+  .grp > .lbl { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase;
+    opacity: .62; margin-bottom: 9px; cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: 8px; padding: 4px 2px; border-radius: 3px; }
+  .grp > .lbl:hover { opacity: 1; background: rgba(255,127,156,.07); }
+  .grp > .lbl::before { content: '▾'; font-size: 10px; color: #ff7f9c; width: 10px; }
+  .grp.closed > .lbl::before { content: '▸'; }
+  .grp.closed > *:not(.lbl) { display: none !important; }
+  .grp > .lbl .cnt { margin-left: auto; font-size: 9.5px; opacity: .5; letter-spacing: .06em; }
+
+  /* приёмы */
+  .pr { display: flex; gap: 9px; align-items: flex-start; padding: 7px 8px; margin-bottom: 4px;
+    border: 1px solid rgba(230,150,175,.14); border-radius: 4px; cursor: pointer;
+    background: rgba(255,255,255,.03); transition: background .15s, border-color .15s; }
+  .pr:hover { border-color: rgba(255,127,156,.42); background: rgba(255,127,156,.07); }
+  .pr.on { border-color: rgba(255,127,156,.5); background: rgba(255,127,156,.11); }
+  .pr input { accent-color: #ff7f9c; margin: 2px 0 0; cursor: pointer; flex: 0 0 auto;
+    width: 15px; height: 15px; }
+  .pr .tx { flex: 1; }
+  .pr .nm { font-size: 11px; letter-spacing: .04em; font-weight: 600; color: #f0d8e2; display: block; }
+  .pr.on .nm { color: #fff0f5; }
+  .pr .ds { font-size: 9.5px; letter-spacing: .02em; opacity: .45; margin-top: 3px; line-height: 1.45; display: block; }
+
+  /* ползунок: подпись, − ползунок +, значение */
+  .row { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
+  .row > label { flex: 0 0 128px; font-size: 10.5px; letter-spacing: .02em; opacity: .72; line-height: 1.25; }
+  .row input[type=range] { flex: 1; min-width: 40px; height: 5px; -webkit-appearance: none; appearance: none;
+    background: rgba(230,180,200,.24); border-radius: 3px; outline: none; cursor: pointer; }
+  .row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px;
+    border-radius: 50%; background: #ff7f9c; cursor: pointer; box-shadow: 0 0 0 3px rgba(255,127,156,.18); }
+  .row input[type=range]::-moz-range-thumb { width: 15px; height: 15px; border: 0;
+    border-radius: 50%; background: #ff7f9c; cursor: pointer; }
+  .row .pm { flex: 0 0 22px; height: 22px; padding: 0; font: 700 13px/1 inherit; color: #ff9fb4;
+    background: rgba(255,127,156,.1); border: 1px solid rgba(255,127,156,.3);
+    border-radius: 3px; cursor: pointer; }
+  .row .pm:hover { background: rgba(255,127,156,.26); color: #fff; }
+  .row .pm:active { transform: translateY(1px); }
+  .row .val { flex: 0 0 54px; text-align: right; font-size: 10.5px; color: #ff7f9c;
+    font-variant-numeric: tabular-nums; }
+  .row input.tx { flex: 1; font: 600 10.5px inherit; color: #fff0f5; background: rgba(255,255,255,.05);
+    border: 1px solid rgba(230,180,200,.22); border-radius: 3px; padding: 6px 8px; letter-spacing: .04em; }
+
+  .crow { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .crow label { flex: 1; font-size: 10.5px; letter-spacing: .02em; opacity: .72; }
+  .crow input[type=color] { flex: 0 0 46px; height: 24px; padding: 0; border: 1px solid rgba(230,180,200,.3);
+    border-radius: 3px; background: transparent; cursor: pointer; }
+
+  .chk { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 10.5px;
+    letter-spacing: .02em; opacity: .85; cursor: pointer; }
+  .chk input { accent-color: #ff7f9c; margin: 0; cursor: pointer; width: 15px; height: 15px; }
+
+  .seg { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+  .seg button { flex: 1 1 auto; min-width: 42px; font: 600 10.5px inherit; letter-spacing: .04em; color: #c9a8b8;
+    background: rgba(255,255,255,.04); border: 1px solid rgba(230,180,200,.18);
+    border-radius: 4px; padding: 9px 6px; cursor: pointer; }
+  .seg button:hover { border-color: rgba(255,127,156,.5); color: #fff0f5; }
+  .seg button.on { background: rgba(255,127,156,.2); border-color: #ff7f9c; color: #fff0f5; }
+
+  .btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .btns button { flex: 1 1 auto; font: 700 10.5px inherit; letter-spacing: .08em; text-transform: uppercase;
+    color: #ff7f9c; background: transparent; border: 1px solid rgba(255,127,156,.5);
+    border-radius: 3px; padding: 11px 8px; cursor: pointer; }
+  .btns button:hover { background: rgba(255,127,156,.14); }
+  .btns button.alt { color: #b8a4b0; border-color: rgba(200,180,190,.32); }
+  .btns button.hot { color: #ffd7a0; border-color: rgba(255,170,90,.6); }
+  .btns button.hot:hover { background: rgba(255,170,90,.16); }
+
+  .hint { font-size: 9.5px; line-height: 1.55; opacity: .38; margin-top: 8px; }
+  #note { font-size: 9.5px; line-height: 1.65; opacity: .4; margin-top: 14px;
+    border-top: 1px solid rgba(220,120,150,.14); padding-top: 12px; }
+  #hud { position: fixed; right: 18px; top: 16px; z-index: 10; text-align: right;
+    font-size: 11px; letter-spacing: .12em; line-height: 2; opacity: .6; pointer-events: none; }
+  #hud b { color: #ff7f9c; font-weight: 700; }
+  #hud .warn b { color: #ffb060; }
+  #keys { position: fixed; left: 426px; bottom: 16px; z-index: 10; font-size: 10px;
+    letter-spacing: .08em; opacity: .34; pointer-events: none; }
+  #keys b { color: #ff7f9c; font-weight: 700; }
+  #drop { position: fixed; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center;
+    background: rgba(10,7,16,.82); border: 2px dashed rgba(255,127,156,.55); }
+  #drop.on { display: flex; }
+  #drop div { font-size: 14px; letter-spacing: .18em; text-transform: uppercase; color: #ff7f9c; }
+  #busy { position: fixed; inset: 0; z-index: 35; display: none; align-items: center; justify-content: center;
+    background: rgba(10,7,16,.7); }
+  #busy.on { display: flex; }
+  #busy div { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; opacity: .8; }
+  #toast { position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(14px);
+    z-index: 50; background: rgba(255,127,156,.16); border: 1px solid #ff7f9c; color: #fff0f5;
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 11px 20px;
+    border-radius: 3px; opacity: 0; transition: opacity .3s, transform .3s; pointer-events: none;
+    max-width: 70vw; text-align: center; }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #file { display: none; }
+  @media (max-width: 900px) { #ui { width: 100%; height: 58%; bottom: auto; border-right: 0; } #keys { display: none; } }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<div id="hud">
+  <div>FPS <b id="mFps">—</b></div>
+  <div>ТОЧЕК <b id="mPts">—</b></div>
+  <div>РЁБЕР <b id="mEdge">—</b></div>
+  <div>КУСКОВ <b id="mFrag">—</b></div>
+  <div>ГАБАРИТ <b id="mSize">—</b></div>
+  <div>ПОКАЗ <b id="mView2">ЛАБ</b></div>
+  <div class="warn">СОСТОЯНИЕ <b id="mState">ЦЕЛ</b></div>
+  <div>РАКУРС <b id="mView">3/4</b></div>
+</div>
+
+<div id="keys">
+  <b>1–8</b> приёмы · <b>X</b> взорвать · <b>R</b> собрать · <b>V</b> ракурс ·
+  <b>ПРОБЕЛ</b> пауза · <b>ТАЩИ</b> облёт · <b>SHIFT+КЛИК</b> перенести зону ·
+  <b>G</b> как в игре · <b>КОЛЁСИКО</b> зум · <b>[ ]</b> размер панели · <b>H</b> панель
+</div>
+
+<div id="ui">
+  <div class="hdr">
+    <h1>Конструктор врага</h1>
+    <div class="uiz" title="Масштаб панели · клавиши [ и ]">
+      <button id="uiMinus">−</button><span id="uiPct">100%</span><button id="uiPlus">+</button>
+    </div>
+  </div>
+  <div class="sub">Форма из своей модели, палитра, зоны удара и взрыв.<br>
+    Брось файл .obj / .glb / .gltf / .stl прямо на окно.<br>
+    Заголовок группы сворачивает её · <b>−</b> и <b>+</b> у ползунка правят точно,
+    с Shift — шагом в десять раз крупнее.</div>
+
+  <div class="grp">
+    <div class="lbl">Показ</div>
+    <div class="seg" id="viewBtns"></div>
+    <div class="hint">«Как в игре» рисует ровно тем, чем рисует SPICE RUN. Игровой кадр — это четыре
+      вещи: цвет по роли, «контур ярче» и «заливка тусклее», ламберт по нормали,
+      отсечение отвёрнутых. Плюс обычный
+      блендинг вместо аддитивного, размер точки в мировых юнитах и прореженная под
+      бюджет заливка. Жара ядра, затемнения кормы, глубины, сканера, аварийного
+      контура, свечения ядра и линий рёбер в игре нет.
+      Лук подбирай в этом режиме — иначе он снова разойдётся.</div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Форма</div>
+    <div class="seg" id="srcBtns"></div>
+    <div class="btns" style="margin-bottom:7px">
+      <button id="bLoad">Загрузить модель</button>
+    </div>
+    <div id="formBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Ориентация: нос по оси</div>
+    <div class="seg" id="axisBtns"></div>
+    <div id="orientBox"></div>
+  </div>
+
+  <div class="grp"><div class="lbl">Приёмы</div><div id="prList"></div></div>
+
+  <div class="grp">
+    <div class="lbl">Размеры точек</div>
+    <div id="sizeBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Палитра</div>
+    <div class="seg" id="palBtns"></div>
+    <div id="colBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Свет и глубина</div>
+    <div id="lightBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Зоны удара</div>
+    <div class="seg" id="zoneBtns"></div>
+    <div class="row" style="margin-bottom:7px">
+      <label>Название</label>
+      <input type="text" id="zName" class="tx">
+    </div>
+    <div id="zoneSliders"></div>
+    <div id="zoneBox"></div>
+    <div class="btns" style="margin-top:6px">
+      <button id="bZAuto">Расставить по модели</button>
+      <button id="bZAdd" class="alt">Добавить</button>
+      <button id="bZDel" class="alt">Удалить</button>
+    </div>
+    <div class="hint">Shift + клик по корпусу — перенести выбранную зону на это место.
+      Взрыв всегда идёт из выбранной зоны: чем выше множитель, тем сильнее рвёт рядом с ней.</div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Повреждение</div>
+    <div id="dmgBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Взрыв</div>
+    <div class="btns" style="margin-bottom:7px">
+      <button id="bBoom" class="hot">Взорвать</button>
+      <button id="bReset" class="alt">Собрать</button>
+    </div>
+    <div id="boomBox"></div>
+  </div>
+
+  <div class="grp">
+    <div class="lbl">Вывод</div>
+    <div class="btns">
+      <button id="bCopy">Пресет в JSON</button>
+      <button id="bExport">Точки для игры</button>
+      <button id="bDefaults" class="alt">Сбросить всё</button>
+    </div>
+  </div>
+
+  <div id="note">
+    «Точки для игры» скачивают <b>enemy-points.js</b> в том же формате, что
+    <b>ship-points.js</b>: контурные точки первыми, EDGE_N, упакованные байты, плюс
+    зоны удара и палитра. Игра подключает файл одним тегом script.<br><br>
+    Форма не читается — крути <b>Порог ребра</b> и <b>Линии рёбер</b> в группе «Форма»
+    и <b>Свет по граням</b> в «Свете». Нос корабля смотрит по −Z, как у игрока;
+    если модель встала боком, выбери ось длины руками.
+  </div>
+</div>
+
+<div id="drop"><div>Отпусти модель здесь</div></div>
+<div id="busy"><div id="busyTx">Считаю точки…</div></div>
+<div id="toast">Скопировано</div>
+<input type="file" id="file" accept=".obj,.glb,.gltf,.stl,.fbx">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+<script src="https://unpkg.com/fflate@0.6.9/umd/index.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+<script>
+'use strict';
+// ── мелочи ──────────────────────────────────────────────────────────────────
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const clamp01 = v => clamp(v, 0, 1);
+// детерминированный «шум»: одна и та же картинка при одних настройках
+const hash = (x, y) => { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); };
+const g = id => document.getElementById(id);
+function toast(t) { const el = g('toast'); el.textContent = t; el.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove('on'), 1800); }
+function busy(on, tx) { if (tx) g('busyTx').textContent = tx; g('busy').classList.toggle('on', !!on); }
+
+// ── приёмы: восемь тумблеров, каждый можно выключить ────────────────────────
+// Смысл выключения тот же, что в ship-lab: видно, что конкретно даёт приём.
+const PR = {
+  silhou: { n: 1, name: 'Читаемый силуэт',   ds: 'Точки на рёбрах крупнее и ярче заливки', v: true },
+  skew:   { n: 2, name: 'Асимметрия угрозы', ds: 'Намеренный перекос корпуса — враг тревожнее симметричного', v: true },
+  core:   { n: 3, name: 'Уязвимое ядро',     ds: 'Горячая точка внутри: понятно, куда стрелять', v: true },
+  temp:   { n: 4, name: 'Холодный корпус',   ds: 'Обшивка холодная, жар только у ядра — контраст температур', v: true },
+  scan:   { n: 5, name: 'Сканирующий глаз',  ds: 'Волна света бежит по контуру — корабль «смотрит»', v: true },
+  cull:   { n: 6, name: 'Плотная оболочка',  ds: 'Отвёрнутые точки не рисуются — модель не просвечивает', v: true },
+  alarm:  { n: 7, name: 'Аварийный контур',  ds: 'При повреждении контур мигает тревожным цветом', v: true },
+  shake:  { n: 8, name: 'Дрожь корпуса',     ds: 'Битый корабль трясёт: чем больше урона, тем сильнее', v: true }
+};
+const PR_KEYS = Object.keys(PR);
+
+// ── ползунки, сгруппированные по смыслу ────────────────────────────────────
+const S = {
+  // форма
+  span:     { box: 'formBox', label: 'Габарит',        min: 3,  max: 400, step: 0.5, v: 300,  rebuild: 1 },
+  // Шаг сетки задан В ДОЛЯХ ГАБАРИТА (промилле), а не в юнитах. Абсолютный шаг был
+  // ловушкой: на дроне 6 юнитов 0.045 давал 20 тысяч точек, на захватчике 300 юнитов —
+  // сорок миллионов, страховка молча поднимала шаг, и ползунок начинал врать.
+  // Верхняя граница была 40 ‰ — это 25 ячеек на весь корпус, от облака остаётся
+  // горсть точек, и кажется, будто точек нет вовсе. Больше 15 ‰ смысла нет.
+  cell:     { box: 'formBox', label: 'Шаг, ‰ габарита', min: 1, max: 15, step: 0.25, v: 6, rebuild: 2 },
+  edgeAng:  { box: 'formBox', label: 'Порог ребра, °', min: 3,  max: 80, step: 1,    v: 22,   rebuild: 1 },
+  // Было: шаг = cell × edgeDens, то есть «плотность» РАЗРЕЖАЛА цепочку — ползунок
+  // делал ровно обратное своей подписи. Теперь шаг = cell ÷ edgeDens.
+  edgeDens: { box: 'formBox', label: 'Плотность рёбер', min: 0.4, max: 6, step: 0.1, v: 2, rebuild: 1 },
+  lineOp:   { box: 'formBox', label: 'Линии рёбер',    min: 0,  max: 0.9, step: 0.01, v: 0.3 },
+  // ориентация
+  yaw0:     { box: 'orientBox', label: 'Доворот, °',   min: -180, max: 180, step: 1, v: 0,    rebuild: 2 },
+  skewK:    { box: 'orientBox', label: 'Сила перекоса',min: 0,  max: 1,  step: 0.02, v: 0.3,  rebuild: 1 },
+  // размеры
+  szEdge:   { box: 'sizeBox', label: 'Контур',   min: 0.2, max: 6, step: 0.05, v: 2.0 },
+  szFill:   { box: 'sizeBox', label: 'Заливка',  min: 0.1, max: 5, step: 0.05, v: 1.5 },
+  szWing:   { box: 'sizeBox', label: 'Крылья',   min: 0.1, max: 5, step: 0.05, v: 1.3 },
+  szCore:   { box: 'sizeBox', label: 'Ядро',     min: 0.2, max: 9, step: 0.05, v: 3.4 },
+  // свет
+  edgeBoost:{ box: 'lightBox', label: 'Контур ярче',   min: 1, max: 4,  step: 0.05, v: 2.2 },
+  fillDim:  { box: 'lightBox', label: 'Заливка тусклее',min: 0.02, max: 1, step: 0.02, v: 0.5 },
+  depthK:   { box: 'lightBox', label: 'Сила глубины',  min: 0, max: 1,  step: 0.02, v: 0.55 },
+  coreK:    { box: 'lightBox', label: 'Жар ядра',      min: 0, max: 3,  step: 0.05, v: 1.5 },
+  // Положение ядра — в долях полугабарита, как у зон: правка «Габарита» не сбивает
+  // его с корпуса. По умолчанию ядро само садится на зону с наибольшим множителем
+  // (в игре это реактор), но любая правка ползунка переводит его в ручной режим.
+  coreX:    { box: 'lightBox', label: 'Ядро: поперёк',  min: -1.3, max: 1.3, step: 0.01, v: 0 },
+  coreY:    { box: 'lightBox', label: 'Ядро: вверх',    min: -1.3, max: 1.3, step: 0.01, v: 0 },
+  coreZ:    { box: 'lightBox', label: 'Ядро: вдоль',    min: -1.3, max: 1.3, step: 0.01, v: 0 },
+  coreR:    { box: 'lightBox', label: 'Радиус жара',   min: 0.2, max: 4, step: 0.05, v: 1.5 },
+  lightK:   { box: 'lightBox', label: 'Свет по граням',min: 0, max: 1,  step: 0.02, v: 0.8 },
+  lightAz:  { box: 'lightBox', label: 'Свет: азимут',  min: -180, max: 180, step: 2, v: 40 },
+  lightEl:  { box: 'lightBox', label: 'Свет: высота',  min: -80, max: 80, step: 2, v: 34 },
+  scanK:    { box: 'lightBox', label: 'Сила сканера',  min: 0, max: 2,  step: 0.05, v: 0.9 },
+  scanSpd:  { box: 'lightBox', label: 'Скорость волны',min: 0.1, max: 3, step: 0.05, v: 0.7 },
+  // РЕНТГЕН. Отсечение отвёрнутых точек было тумблером: либо видно насквозь, либо
+  // только обращённое к нам. Между этими крайностями и живёт нужная картинка —
+  // слабый просвет даёт объём, не превращая корпус в туман. 0 — глухая оболочка,
+  // 1 — полностью прозрачная модель.
+  xray:     { box: 'lightBox', label: 'Просвет насквозь', min: 0, max: 1, step: 0.02, v: 0.12 },
+  // Плотность заслона: во сколько раз диск, которым точка закрывает то, что за ней,
+  // крупнее самой точки. Меньше единицы — заслон дырявый и дальние рёбра пролезают;
+  // сильно больше — заслон съедает силуэт по краю.
+  occlSz:   { box: 'lightBox', label: 'Плотность заслона', min: 0.4, max: 4, step: 0.05, v: 1.6 },
+  cullSoft: { box: 'lightBox', label: 'Мягкость отсечения', min: 0, max: 0.6, step: 0.02, v: 0.16 },
+  spin:     { box: 'lightBox', label: 'Автовращение',  min: 0, max: 1,  step: 0.02, v: 0 },
+  // повреждение
+  dmg:      { box: 'dmgBox', label: 'Урон',            min: 0, max: 1,  step: 0.01, v: 0 },
+  wounds:   { box: 'dmgBox', label: 'Пробоин',         min: 1, max: 8,  step: 1,    v: 3, rebuild: 1 },
+  rimK:     { box: 'dmgBox', label: 'Жар кромки',      min: 0, max: 3,  step: 0.05, v: 1.6 },
+  burnK:    { box: 'dmgBox', label: 'Гарь вокруг',     min: 0, max: 1,  step: 0.02, v: 0.6 },
+  shakeK:   { box: 'dmgBox', label: 'Амплитуда дрожи', min: 0, max: 1,  step: 0.02, v: 0.35 },
+  // взрыв
+  bTime:    { box: 'boomBox', label: 'Фаза, с',        min: 0, max: 7,  step: 0.01, v: 0 },
+  blastR:   { box: 'boomBox', label: 'Радиус взрыва',  min: 0.03, max: 2, step: 0.01, v: 0.28 },
+  blastSoft:{ box: 'boomBox', label: 'Мягкость края',  min: 0, max: 1,  step: 0.02, v: 0.5 },
+  bFrag:    { box: 'boomBox', label: 'Кусков',         min: 2, max: 40, step: 1,    v: 14, rebuild: 1 },
+  bVel:     { box: 'boomBox', label: 'Разлёт',         min: 1, max: 60, step: 0.5,  v: 16 },
+  bRadial:  { box: 'boomBox', label: 'Отброс от центра',min: 0, max: 3, step: 0.05, v: 1.0 },
+  bSpin:    { box: 'boomBox', label: 'Кувырок',        min: 0, max: 20, step: 0.2,  v: 6 },
+  bDrag:    { box: 'boomBox', label: 'Сопротивление',  min: 0.01, max: 2, step: 0.01, v: 0.5 },
+  bGrav:    { box: 'boomBox', label: 'Тяга вниз',      min: 0, max: 40, step: 0.5,  v: 0 },
+  bScatter: { box: 'boomBox', label: 'Разброс точек',  min: 0, max: 8,  step: 0.1,  v: 2.4 },
+  bSparks:  { box: 'boomBox', label: 'Искр',           min: 0, max: 2500, step: 50, v: 900, rebuild: 1 },
+  bSparkV:  { box: 'boomBox', label: 'Скорость искр',  min: 2, max: 120, step: 1,   v: 46 },
+  bWave:    { box: 'boomBox', label: 'Ударная волна',  min: 0, max: 2,  step: 0.05, v: 1.0 },
+  bWaveV:   { box: 'boomBox', label: 'Скорость волны', min: 2, max: 60, step: 0.5,  v: 22 },
+  bFlash:   { box: 'boomBox', label: 'Вспышка',        min: 0, max: 3,  step: 0.05, v: 1.4 },
+  bLife:    { box: 'boomBox', label: 'Жизнь обломков', min: 0.5, max: 6, step: 0.1, v: 3.0 },
+  bSlow:    { box: 'boomBox', label: 'Замедление',     min: 0.1, max: 2, step: 0.05, v: 1.0 }
+};
+// тумблеры (не ползунки)
+const TG = {
+  loop:   { box: 'boomBox', label: 'Проигрывать по кругу', v: false },
+  keep:   { box: 'boomBox', label: 'Держать урон при взрыве', v: true },
+  whole:  { box: 'boomBox', label: 'Разнести целиком (финал)', v: false },
+  lines:  { box: 'formBox', label: 'Показывать линии рёбер', v: true },
+  grid:   { box: 'orientBox', label: 'Показывать оси и габарит', v: true },
+  marks:  { box: 'zoneBox', label: 'Показывать кольца зон', v: true },
+  // ЗАСЛОН ПО ГЛУБИНЕ. Отсечение отвёрнутых убирает только изнанку ОДНОЙ оболочки.
+  // Дальний пилон, обращённый к нам своей лицевой стороной, оно не тронет — и он
+  // просвечивает через корпус. Тем более линии рёбер: у них нет ни нормалей, ни
+  // глубины. Лечится только буфером глубины: сначала облако рисуется невидимым
+  // проходом, который пишет ТОЛЬКО глубину, а потом всё остальное проверяется по ней.
+  occl:   { box: 'lightBox', label: 'Не просвечивать (заслон по глубине)', v: true },
+  coreAuto: { box: 'lightBox', label: 'Ядро по зоне с максимальным множителем', v: true }
+};
+// палитра: пипетки
+// Начальные цвета — ровно те, что у захватчика в игре (gBuildMother): багровый контур
+// 0.9/0.24/0.28, тёмный корпус 0.11/0.13/0.19, оранжевое жерло 1.0/0.42/0.18. Начинать
+// надо с того, что уже стоит в игре, иначе подобранное здесь там будет выглядеть иначе.
+const C = {
+  edge:  { label: 'Контур',           v: '#e63d47' },
+  // Игровая заливка — #1c2130, почти чёрная. В игре она вытягивается плотностью и
+  // тем, что контурных точек там больше половины. Здесь на аддитивном блендинге она
+  // просто исчезает, и остаются одни линии. По умолчанию берём видимую, а игровую
+  // держим отдельной кнопкой «Как в игре» — для сверки.
+  fill:  { label: 'Заливка (корпус)', v: '#6d4f61' },
+  core:  { label: 'Ядро / жерло',     v: '#ff6b2e' },
+  hot:   { label: 'Жар, кромка раны', v: '#ffa14e' },
+  burn:  { label: 'Гарь',             v: '#140d10' },
+  alarm: { label: 'Аварийный контур', v: '#ff2d55' },
+  spark: { label: 'Искры',            v: '#ffc78a' },
+  wave:  { label: 'Ударная волна',    v: '#ff9ec4' }
+};
+
+// ── ЗОНЫ УДАРА ─────────────────────────────────────────────────────────────
+// В игре они вбиты числами прямо в gBuildMother (play/index.html): РЕАКТОР ×3,
+// два ДВИГАТЕЛЯ ×2, МОСТИК ×2. Здесь они живут как данные и хранятся В ДОЛЯХ
+// ПОЛУГАБАРИТА — тогда правка ползунка «Габарит» не сбивает их с корпуса.
+// Начальные значения пересчитаны из игровых: там полуразмеры 150×44×64, и,
+// например, реактор стоит в (0, −44·0.9, 64·0.3) с радиусом 26 → делим на 150.
+const ZONES = [
+  { name: 'РЕАКТОР ×3',   x: 0,     y: -0.264, z: 0.128, r: 0.173, mult: 3 },
+  { name: 'ДВИГАТЕЛЬ ×2', x: -0.85, y: 0,      z: 0,     r: 0.2,   mult: 2 },
+  { name: 'ДВИГАТЕЛЬ ×2', x: 0.85,  y: 0,      z: 0,     r: 0.2,   mult: 2 },
+  { name: 'МОСТИК ×2',    x: 0,     y: 0.287,  z: 0,     r: 0.16,  mult: 2 }
+];
+let zoneI = 0;                       // выбранная зона: из неё идёт взрыв
+let palKey = 'read';                 // выбранный пресет палитры
+let viewMode2 = 'lab';               // 'lab' — конструктор, 'game' — как рисует игра
+// Бюджет заливки в игре: gBuildMotherModel оставляет около 48 тысяч точек заливки,
+// рёбра берёт целиком. Держим то же число здесь, иначе плотность разойдётся.
+const GAME_FILL_BUDGET = 48000;
+// Перевод размеров точек из «единиц конструктора» в МИРОВЫЕ юниты модели.
+// В лаборатории px = sz·(span/6.4)·H·0.0016 / (dist·0.08), в three для точки с
+// sizeAttenuation px = worldSize·(H/2)/dist. Приравняли — получилось sz·span/160.
+// Ровно это число уезжает в экспорт и читается игрой, поэтому картинки совпадают.
+const toWorldSize = sz => sz * S.span.v / 160;
+const halfSpan = () => S.span.v * 0.5;
+const zoneWorld = z => new THREE.Vector3(z.x * halfSpan(), z.y * halfSpan(), z.z * halfSpan());
+
+// какая ось модели — длина корабля; 'auto' = самая длинная
+let axisMode = 'auto';
+// источник формы
+let srcMode = 'mother';
+const SRC = {
+  mother: 'Захватчик',
+  wedge:  'Клин',
+  sting:  'Жало',
+  hive:   'Улей',
+  file:   'Файл'
+};
+
+// ── сцена ───────────────────────────────────────────────────────────────────
+const cv = g('stage');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+const scene = new THREE.Scene();
+// far/купол сразу с запасом: габарит правится ползунком от 3 до 400 юнитов, и
+// подгонять плоскости отсечения на каждый чих — лишний повод для чёрного экрана
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 6000);
+
+// задник: тёмно-багровый купол — враг должен читаться на «своём» небе
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(3000, 24, 16), new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false,
+  uniforms: { uTop: { value: new THREE.Color(0x0a0710) }, uBot: { value: new THREE.Color(0x26101d) } },
+  vertexShader: 'varying float vY; void main(){ vY=normalize(position).y; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);} ',
+  fragmentShader: 'varying float vY; uniform vec3 uTop,uBot; void main(){ gl_FragColor=vec4(mix(uBot,uTop,smoothstep(-0.35,0.75,vY)),1.0);} '
+})));
+
+function softTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const x = c.getContext('2d');
+  const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,255,255,1)');
+  gr.addColorStop(0.35, 'rgba(255,255,255,0.9)');
+  gr.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+}
+const TEX = softTex();
+
+// ── детерминированный ГПСЧ ──────────────────────────────────────────────────
+// Зачем свой: конструктор должен показывать ОДНУ И ТУ ЖЕ картинку при одних
+// настройках. С Math.random каждое нажатие ползунка давало бы новое облако,
+// и сравнивать варианты было бы нечем.
+let _seed = 1337;
+function rndReset(s) { _seed = s | 0 || 1337; }
+function rnd() { _seed = (_seed * 1664525 + 1013904223) | 0; return ((_seed >>> 8) & 0xffffff) / 0x1000000; }
+
+// ── ЗАГОТОВКИ ФОРМЫ ─────────────────────────────────────────────────────────
+// Инструмент должен что-то показывать сразу, до загрузки файла. Три силуэта —
+// не «дизайн врага», а болванки: на них видно работу шейдера и взрыва, и с них
+// удобно начинать, подгоняя под них уже свою модель.
+function mat(x, y, z, rx, ry, rz, sx, sy, sz) {
+  // Масштаб необязателен, но подставлять надо УЖЕ ПОДСТАВЛЕННОЕ значение, а не сырой
+  // аргумент: иначе при вызове без масштаба в Vector3 уезжает undefined, матрица
+  // становится NaN, площадь треугольника — NaN, и деталь молча даёт ноль точек.
+  const a = sx === undefined ? 1 : sx;
+  const b = sy === undefined ? a : sy;
+  const c = sz === undefined ? a : sz;
+  return new THREE.Matrix4().compose(
+    new THREE.Vector3(x, y, z),
+    new THREE.Quaternion().setFromEuler(new THREE.Euler(rx || 0, ry || 0, rz || 0)),
+    new THREE.Vector3(a, b, c));
+}
+const HALF = Math.PI / 2;
+function blankParts(kind) {
+  const P = [];
+  const add = (geo, m) => P.push({ geo: geo, m: m });
+  if (kind === 'wedge') {
+    // КЛИН — страж. Плоский широкий корпус, острый нос, два выносных плавника.
+    add(new THREE.ConeGeometry(1.0, 4.6, 4, 1), mat(0, 0, -0.4, -HALF, 0, Math.PI / 4, 1, 1, 0.45));
+    add(new THREE.BoxGeometry(2.2, 0.5, 2.0, 2, 1, 2), mat(0, 0, 1.4));
+    [-1, 1].forEach(s => {
+      add(new THREE.BoxGeometry(2.6, 0.22, 1.1, 3, 1, 1), mat(s * 2.0, 0.05, 1.0, 0, 0, s * 0.22));
+      add(new THREE.BoxGeometry(0.3, 0.9, 1.6, 1, 1, 1), mat(s * 3.1, 0.4, 1.3, 0.2, 0, 0));
+      add(new THREE.CylinderGeometry(0.34, 0.26, 0.9, 12), mat(s * 0.8, 0, 2.3, HALF, 0, 0));
+    });
+    add(new THREE.TorusGeometry(1.1, 0.13, 8, 24), mat(0, 0, 1.9, 0, 0, 0));
+  } else if (kind === 'sting') {
+    // ЖАЛО — перехватчик. Всё вытянуто вдоль оси, игла-нос, узкие серпы.
+    add(new THREE.CylinderGeometry(0.06, 0.5, 3.4, 10), mat(0, 0, -1.5, HALF, 0, 0));
+    add(new THREE.CylinderGeometry(0.5, 0.62, 2.6, 12), mat(0, 0, 0.6, HALF, 0, 0));
+    add(new THREE.SphereGeometry(0.72, 16, 12), mat(0, 0, 1.1, 0, 0, 0, 1, 0.8, 1.2));
+    [-1, 1].forEach(s => {
+      add(new THREE.TorusGeometry(1.5, 0.1, 7, 20, Math.PI * 0.7), mat(s * 1.2, 0, 0.8, HALF, 0, s * 0.9));
+      add(new THREE.CylinderGeometry(0.1, 0.1, 2.4, 7), mat(s * 0.85, 0, 0.5, HALF, 0, 0));
+    });
+    add(new THREE.ConeGeometry(0.55, 1.1, 10), mat(0, 0, 2.4, HALF, 0, 0));
+  } else if (kind === 'mother') {
+    // ЗАХВАТЧИК — тот, что уже стоит в SPICE RUN. Пропорции взяты из gBuildMother()
+    // в play/index.html: полуразмеры 150×44×64, то есть корпус почти в три с половиной
+    // раза шире, чем высок. Там он собран сразу точками; здесь та же форма собрана
+    // МЕШЕМ — только так она проходит через общий конвейер и получает рёбра по изгибу,
+    // пробоины, отсечение отвёрнутых и разлёт связными кусками.
+    const W = 1, H = 0.293, D = 0.427;
+    add(new THREE.SphereGeometry(1, 44, 26), mat(0, 0, 0, 0, 0, 0, W, H, D));
+    add(new THREE.BoxGeometry(W * 0.5, H * 0.8, D * 0.55, 3, 2, 2), mat(0, H * 0.95, 0));
+    add(new THREE.BoxGeometry(W * 0.22, H * 0.55, D * 0.4, 2, 2, 2), mat(0, H * 1.5, -D * 0.1));
+    [-1, 1].forEach(s => {
+      add(new THREE.BoxGeometry(W * 0.3, H * 0.7, D * 1.5, 2, 2, 3), mat(s * W * 0.88, 0, 0));
+      add(new THREE.CylinderGeometry(H * 0.3, H * 0.34, D * 0.5, 14), mat(s * W * 0.88, 0, D * 0.85, HALF, 0, 0));
+    });
+    // рваное брюхо — «рана города»: у неё в игре свой оранжевый цвет
+    add(new THREE.BoxGeometry(W * 1.3, H * 0.3, D * 1.1, 5, 1, 4), mat(0, -H * 0.95, D * 0.15, 0.06, 0, 0));
+  } else {
+    // УЛЕЙ — тяжёлый. Гранёное ядро в кольце, стержни-жвала наружу.
+    add(new THREE.IcosahedronGeometry(1.5, 1), mat(0, 0, 0.2, 0, 0, 0, 1, 0.9, 1.3));
+    add(new THREE.TorusGeometry(2.3, 0.24, 10, 34), mat(0, 0, 0.4, 0.18, 0, 0));
+    add(new THREE.TorusGeometry(2.9, 0.1, 8, 40), mat(0, 0, 0.6, -0.3, 0.3, 0));
+    for (let k = 0; k < 6; k++) {
+      const a = k / 6 * Math.PI * 2 + 0.3;
+      add(new THREE.CylinderGeometry(0.18, 0.05, 2.2, 8),
+        mat(Math.cos(a) * 1.9, Math.sin(a) * 0.5, -1.0, HALF - 0.5, 0, -a));
+    }
+    add(new THREE.ConeGeometry(0.7, 1.6, 6), mat(0, 0, -1.9, -HALF, 0, 0));
+  }
+  return P;
+}
+
+// ── всё в одну неиндексированную геометрию (в системе координат модели) ─────
+function mergeParts(parts) {
+  const out = [];
+  const v = new THREE.Vector3();
+  parts.forEach(pt => {
+    const gg = pt.geo.index ? pt.geo.toNonIndexed() : pt.geo;
+    const p = gg.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      v.fromBufferAttribute(p, i); if (pt.m) v.applyMatrix4(pt.m);
+      out.push(v.x, v.y, v.z);
+    }
+  });
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(out, 3));
+  return geo;
+}
+// собрать все меши загруженной сцены (в мировых координатах файла)
+function mergeSceneGeometry(root) {
+  root.updateMatrixWorld(true);
+  const parts = [];
+  root.traverse(o => { if (o.isMesh && o.geometry) parts.push({ geo: o.geometry, m: o.matrixWorld }); });
+  return parts.length ? mergeParts(parts) : null;
+}
+
+// ── ОРИЕНТАЦИЯ И МАСШТАБ ────────────────────────────────────────────────────
+// Модель из файла приходит в любой системе координат. Игра ждёт: нос по −Z,
+// размах по X, верх по Y (так лежит корабль игрока в ship-points.js). Значит
+// самую длинную ось разворачиваем в Z, среднюю — в X, короткую — в Y, и вписываем
+// габарит в заданный размер. Ручной выбор оси оставлен: у «плоских» моделей
+// автоопределение угадывает не всегда.
+function orientMatrix(geo) {
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox, size = new THREE.Vector3(), ctr = new THREE.Vector3();
+  bb.getSize(size); bb.getCenter(ctr);
+  const dims = [['x', size.x], ['y', size.y], ['z', size.z]];
+  let lengthAxis;
+  if (axisMode !== 'auto') lengthAxis = axisMode;
+  else if (srcMode !== 'file') lengthAxis = 'z';   // болванки нарисованы носом по −Z, не трогаем
+  else lengthAxis = dims.slice().sort((a, b) => b[1] - a[1])[0][0];
+  // Автоопределение по самой длинной оси врёт на широких кораблях: у них размах
+  // больше длины, и модель разворачивается боком. Для таких — выбор оси руками.
+  // остальные две: более широкая → X (размах), узкая → Y (высота)
+  const rest = dims.filter(d => d[0] !== lengthAxis).sort((a, b) => b[1] - a[1]);
+  const map = {}; map[lengthAxis] = 'z'; map[rest[0][0]] = 'x'; map[rest[1][0]] = 'y';
+  // МАТРИЦА ПЕРЕСТАНОВКИ. Столбец i матрицы — это образ i-й модельной оси, поэтому
+  // столбцами надо ставить единичные векторы МИРОВЫХ осей в порядке модельных:
+  // (образ x, образ y, образ z). Раньше здесь стояло «переменной с именем map[i]
+  // присвоить e_i» — для перестановок-транспозиций это то же самое, а для трёхцикла
+  // даёт обратную перестановку. Именно так широкий корабль (самая длинная ось X,
+  // вторая Y) вставал на попа: длинная ось уезжала в Y вместо Z.
+  const E = k => new THREE.Vector3(k === 'x' ? 1 : 0, k === 'y' ? 1 : 0, k === 'z' ? 1 : 0);
+  const cx2 = E(map.x), cy2 = E(map.y), cz2 = E(map.z);
+  const perm = new THREE.Matrix4().makeBasis(cx2, cy2, cz2);
+  // правая тройка обязательна: у левой нормали выворачиваются наизнанку и отсечение
+  // начинает прятать лицевую сторону вместо обратной
+  if (perm.determinant() < 0) { cy2.multiplyScalar(-1); perm.makeBasis(cx2, cy2, cz2); }
+  const maxD = Math.max(size.x, size.y, size.z) || 1;
+  const sc = S.span.v / maxD;
+  const m = new THREE.Matrix4();
+  m.multiply(new THREE.Matrix4().makeRotationY(S.yaw0.v * Math.PI / 180));
+  m.multiply(new THREE.Matrix4().makeScale(sc, sc, sc));
+  m.multiply(perm);
+  m.multiply(new THREE.Matrix4().makeTranslation(-ctr.x, -ctr.y, -ctr.z));
+  return m;
+}
+
+// ── ВОКСЕЛИЗАЦИЯ ────────────────────────────────────────────────────────────
+// Пробы разбрасываем ПРОПОРЦИОНАЛЬНО ПЛОЩАДИ треугольника и защёлкиваем в узел
+// кубической сетки. Так плотность одинакова и на мелкой детали, и на большой
+// плоскости — а без защёлкивания точки сбивались бы в комки на мелких полигонах.
+// Нормаль берём прямо с треугольника: она честная, считать её по соседям (как в
+// ship-lab, где нормалей в данных нет) здесь не нужно.
+function voxelize(geo, m, cell) {
+  const gg = geo.index ? geo.toNonIndexed() : geo;
+  const pos = gg.attributes.position;
+  const A = new THREE.Vector3(), B = new THREE.Vector3(), Cv = new THREE.Vector3();
+  const ab = new THREE.Vector3(), ac = new THREE.Vector3(), Nv = new THREE.Vector3(), P = new THREE.Vector3();
+  // сперва общая площадь: по ней страхуемся от модели, которая даст миллион точек
+  let area = 0;
+  for (let t = 0; t + 2 < pos.count; t += 3) {
+    A.fromBufferAttribute(pos, t).applyMatrix4(m);
+    B.fromBufferAttribute(pos, t + 1).applyMatrix4(m);
+    Cv.fromBufferAttribute(pos, t + 2).applyMatrix4(m);
+    area += ab.subVectors(B, A).cross(ac.subVectors(Cv, A)).length() * 0.5;
+  }
+  const CAP = 140000;
+  let cellEff = cell, clamped = false;
+  if (area / (cell * cell) > CAP) { cellEff = Math.sqrt(area / CAP); clamped = true; }
+  const dens = 3 / (cellEff * cellEff);        // проб на единицу площади: с запасом, чтобы залить все ячейки
+  const seen = new Map();                      // ключ ячейки → индекс точки (нормали усредняем)
+  const px = [], py = [], pz = [], nx = [], ny = [], nz = [], nc = [];
+  // Первая нормаль ячейки хранится отдельно — как страховка. Если в одну ячейку
+  // попали две противоположные грани (тонкая стенка, лист, открытый край), их
+  // среднее схлопывается почти в ноль, и точка остаётся БЕЗ нормали: её потом не
+  // осветить и не отсечь. Таких набиралось около четверти процента облака.
+  const fx = [], fy = [], fz = [];
+  rndReset(20260729);
+  for (let t = 0; t + 2 < pos.count; t += 3) {
+    A.fromBufferAttribute(pos, t).applyMatrix4(m);
+    B.fromBufferAttribute(pos, t + 1).applyMatrix4(m);
+    Cv.fromBufferAttribute(pos, t + 2).applyMatrix4(m);
+    ab.subVectors(B, A); ac.subVectors(Cv, A);
+    Nv.crossVectors(ab, ac);
+    const ar = Nv.length() * 0.5;
+    if (ar < 1e-12) continue;
+    Nv.normalize();
+    let cnt = Math.floor(ar * dens);
+    if (rnd() < (ar * dens) % 1) cnt++;
+    if (cnt < 1) cnt = 1;                      // мелкий полигон всё равно даёт хотя бы одну точку
+    for (let k = 0; k < cnt; k++) {
+      let u = rnd(), v = rnd();
+      if (u + v > 1) { u = 1 - u; v = 1 - v; }
+      P.copy(A).addScaledVector(ab, u).addScaledVector(ac, v);
+      const qx = Math.round(P.x / cellEff), qy = Math.round(P.y / cellEff), qz = Math.round(P.z / cellEff);
+      const key = qx * 73856093 ^ qy * 19349663 ^ qz * 83492791;
+      const had = seen.get(key);
+      if (had !== undefined) {                 // ячейка занята — усредняем нормаль, точку не плодим
+        nx[had] += Nv.x; ny[had] += Nv.y; nz[had] += Nv.z; nc[had]++;
+        continue;
+      }
+      seen.set(key, px.length);
+      px.push(qx * cellEff); py.push(qy * cellEff); pz.push(qz * cellEff);
+      nx.push(Nv.x); ny.push(Nv.y); nz.push(Nv.z); nc.push(1);
+      fx.push(Nv.x); fy.push(Nv.y); fz.push(Nv.z);
+    }
+  }
+  const n = px.length;
+  const outP = new Float32Array(n * 3), outN = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    outP[i * 3] = px[i]; outP[i * 3 + 1] = py[i]; outP[i * 3 + 2] = pz[i];
+    let ax = nx[i], ay = ny[i], az = nz[i];
+    let l = Math.hypot(ax, ay, az);
+    if (l < 0.08 * nc[i]) { ax = fx[i]; ay = fy[i]; az = fz[i]; l = Math.hypot(ax, ay, az); }
+    if (!(l > 1e-6)) { ax = 0; ay = 1; az = 0; l = 1; }
+    outN[i * 3] = ax / l; outN[i * 3 + 1] = ay / l; outN[i * 3 + 2] = az / l;
+  }
+  return { pos: outP, nor: outN, n: n, cell: cellEff, clamped: clamped };
+}
+
+// ── РЁБРА БЕРЁМ У МЕША, А НЕ УГАДЫВАЕМ ПО ОБЛАКУ ────────────────────────────
+// Сначала рёбра искались по изгибу нормалей у вокселей. На болванках это работало,
+// на настоящей модели — нет: получалось 30–40 % «рёбер» размазанной кашей, и форма
+// не читалась, оставалось облако точек. У меша рёбра есть ТОЧНО: THREE.EdgesGeometry
+// сваривает совпадающие вершины и отдаёт отрезки, где двугранный угол больше порога.
+// По этим отрезкам мы (а) рассыпаем плотную цепочку точек — тогда силуэт читается и в
+// точечном стиле, (б) рисуем сами линии — тогда форма читается сразу.
+function edgeSegments(geo, m, angDeg) {
+  let eg;
+  try { eg = new THREE.EdgesGeometry(geo, angDeg); }
+  catch (e) { return { seg: new Float32Array(0), len: 0 }; }
+  const p = eg.attributes.position, A = new THREE.Vector3(), B = new THREE.Vector3();
+  const out = new Float32Array(p.count * 3);
+  let len = 0;
+  for (let i = 0; i < p.count; i += 2) {
+    A.fromBufferAttribute(p, i).applyMatrix4(m);
+    B.fromBufferAttribute(p, i + 1).applyMatrix4(m);
+    out[i * 3] = A.x; out[i * 3 + 1] = A.y; out[i * 3 + 2] = A.z;
+    out[(i + 1) * 3] = B.x; out[(i + 1) * 3 + 1] = B.y; out[(i + 1) * 3 + 2] = B.z;
+    len += A.distanceTo(B);
+  }
+  eg.dispose();
+  return { seg: out, len: len };
+}
+// рассыпать точки вдоль отрезков с шагом step, но не больше cap штук
+function edgeCloud(seg, len, step, cap) {
+  if (!seg.length || len <= 0) return new Float32Array(0);
+  if (len / step > cap) step = len / cap;
+  const out = [];
+  for (let i = 0; i < seg.length; i += 6) {
+    const ax = seg[i], ay = seg[i + 1], az = seg[i + 2];
+    const bx = seg[i + 3], by = seg[i + 4], bz = seg[i + 5];
+    const L = Math.hypot(bx - ax, by - ay, bz - az);
+    const n = Math.max(1, Math.round(L / step));
+    for (let k = 0; k <= n; k++) {
+      const t = k / n;
+      out.push(ax + (bx - ax) * t, ay + (by - ay) * t, az + (bz - az) * t);
+    }
+  }
+  return new Float32Array(out);
+}
+// нормаль реберной точки — от ближайшей точки поверхности: своей у ребра нет,
+// а без нормали отсечение отвёрнутых прячет контур вперемешку с изнанкой
+function normalsFromSurface(ePos, en, sPos, sNor, sn, cell) {
+  const nor = new Float32Array(en * 3);
+  const grid = makeGrid(sPos, sn, cell * 2);
+  for (let i = 0; i < en; i++) {
+    const px = ePos[i * 3], py = ePos[i * 3 + 1], pz = ePos[i * 3 + 2];
+    let best = -1, bd = 1e18;
+    const gx = Math.floor(px / grid.cell), gy = Math.floor(py / grid.cell), gz = Math.floor(pz / grid.cell);
+    for (let r = 1; r <= 2 && best < 0; r++) {
+      for (let a = -r; a <= r; a++) for (let b = -r; b <= r; b++) for (let c = -r; c <= r; c++) {
+        const arr = grid.map.get(grid.key(gx + a, gy + b, gz + c));
+        if (!arr) continue;
+        for (let q = 0; q < arr.length; q++) {
+          const j = arr[q];
+          const d = (sPos[j * 3] - px) ** 2 + (sPos[j * 3 + 1] - py) ** 2 + (sPos[j * 3 + 2] - pz) ** 2;
+          if (d < bd) { bd = d; best = j; }
+        }
+      }
+    }
+    if (best < 0) { nor[i * 3] = 0; nor[i * 3 + 1] = 1; nor[i * 3 + 2] = 0; }
+    else { nor[i * 3] = sNor[best * 3]; nor[i * 3 + 1] = sNor[best * 3 + 1]; nor[i * 3 + 2] = sNor[best * 3 + 2]; }
+  }
+  return nor;
+}
+
+// ── сетка соседей: нужна и рёбрам, и всему остальному ───────────────────────
+function makeGrid(pos, n, cell) {
+  const gmap = new Map();
+  const key = (a, b, c) => a * 73856093 ^ b * 19349663 ^ c * 83492791;
+  for (let i = 0; i < n; i++) {
+    const k = key(Math.floor(pos[i * 3] / cell), Math.floor(pos[i * 3 + 1] / cell), Math.floor(pos[i * 3 + 2] / cell));
+    let arr = gmap.get(k); if (!arr) { arr = []; gmap.set(k, arr); }
+    arr.push(i);
+  }
+  return { map: gmap, cell: cell, key: key };
+}
+function eachNear(grid, pos, i, fn) {
+  const px = pos[i * 3], py = pos[i * 3 + 1], pz = pos[i * 3 + 2];
+  const gx = Math.floor(px / grid.cell), gy = Math.floor(py / grid.cell), gz = Math.floor(pz / grid.cell);
+  for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
+    const arr = grid.map.get(grid.key(gx + a, gy + b, gz + c));
+    if (!arr) continue;
+    for (let q = 0; q < arr.length; q++) if (arr[q] !== i) fn(arr[q]);
+  }
+}
+
+// ── РЁБРА СЧИТАЕМ, А НЕ БЕРЁМ ГОТОВЫМИ ─────────────────────────────────────
+// У корабля игрока контурные точки лежат в начале массива (EDGE_N) — их посчитали
+// заранее по двугранному углу. У произвольной модели такого нет. Ищем изгиб сами:
+// сравниваем нормаль точки с нормалями соседей и берём МАКСИМАЛЬНЫЙ угол. На
+// плоскости он около нуля, на сгибе — равен углу сгиба. Порог — ползунком, потому
+// что «что здесь ребро» зависит от модели, а не от математики.
+function computeEdges(pos, nor, n, cell, angDeg) {
+  const grid = makeGrid(pos, n, cell * 1.4);
+  const role = new Float32Array(n);
+  const cosThr = Math.cos(angDeg * Math.PI / 180);
+  const r2 = (cell * 1.35) * (cell * 1.35);
+  let cnt = 0;
+  for (let i = 0; i < n; i++) {
+    const px = pos[i * 3], py = pos[i * 3 + 1], pz = pos[i * 3 + 2];
+    const ax = nor[i * 3], ay = nor[i * 3 + 1], az = nor[i * 3 + 2];
+    let worst = 1;
+    eachNear(grid, pos, i, j => {
+      const dx = pos[j * 3] - px, dy = pos[j * 3 + 1] - py, dz = pos[j * 3 + 2] - pz;
+      if (dx * dx + dy * dy + dz * dz > r2) return;
+      const d = ax * nor[j * 3] + ay * nor[j * 3 + 1] + az * nor[j * 3 + 2];
+      if (d < worst) worst = d;
+    });
+    if (worst < cosThr) { role[i] = 1; cnt++; }
+  }
+  return { role: role, count: cnt };
+}
+
+// ── ЗОНЫ ────────────────────────────────────────────────────────────────────
+// Иерархия «ядро / корпус / крыло / корма» — из ship-lab, но границы считаются от
+// реального габарита модели, а не вбиты числами: модель приходит любая.
+function computeZones(pos, n) {
+  const zone = new Float32Array(n);
+  let mx = 1e-6, my = 1e-6, mz = 1e-6;
+  for (let i = 0; i < n; i++) {
+    mx = Math.max(mx, Math.abs(pos[i * 3]));
+    my = Math.max(my, Math.abs(pos[i * 3 + 1]));
+    mz = Math.max(mz, Math.abs(pos[i * 3 + 2]));
+  }
+  for (let i = 0; i < n; i++) {
+    const x = Math.abs(pos[i * 3]), y = Math.abs(pos[i * 3 + 1]), z = pos[i * 3 + 2];
+    if (z > mz * 0.55) zone[i] = 3;                                  // корма
+    else if (x > mx * 0.6) zone[i] = 2;                              // крыло
+    else if (x < mx * 0.22 && Math.abs(z) < mz * 0.45 && y < my * 0.4) zone[i] = 0;  // ядро
+    else zone[i] = 1;                                                // корпус
+  }
+  return zone;
+}
+
+// ── ПРОБОИНЫ ────────────────────────────────────────────────────────────────
+// Урон должен выглядеть как ПРОБОИНЫ, а не как равномерное растворение. Поэтому
+// выбираем несколько центров пробоин (максимально далеко друг от друга — метод
+// самой дальней точки) и запоминаем для каждой точки нормированное расстояние до
+// ближайшей. Тогда ползунок «Урон» — это просто радиус, а кратеры растут сами.
+function computeWounds(pos, n, count) {
+  const w = new Float32Array(n).fill(1e9);
+  if (n === 0) return w;
+  const centers = [];
+  rndReset(4242);
+  centers.push((rnd() * n) | 0);
+  const d = new Float32Array(n).fill(1e9);
+  const upd = ci => {
+    const cx = pos[ci * 3], cy = pos[ci * 3 + 1], cz = pos[ci * 3 + 2];
+    let far = 0, fi = 0;
+    for (let i = 0; i < n; i++) {
+      const dx = pos[i * 3] - cx, dy = pos[i * 3 + 1] - cy, dz = pos[i * 3 + 2] - cz;
+      const dd = dx * dx + dy * dy + dz * dz;
+      if (dd < d[i]) d[i] = dd;
+      if (d[i] > far) { far = d[i]; fi = i; }
+    }
+    return fi;
+  };
+  let next = upd(centers[0]);
+  for (let k = 1; k < count; k++) { centers.push(next); next = upd(next); }
+  // d[] уже содержит квадрат расстояния до ближайшего центра
+  let mxd = 1e-9;
+  for (let i = 0; i < n; i++) { w[i] = Math.sqrt(d[i]); if (w[i] > mxd) mxd = w[i]; }
+  for (let i = 0; i < n; i++) w[i] /= mxd;
+  return w;
+}
+
+// ── КУСКИ ДЛЯ ВЗРЫВА ────────────────────────────────────────────────────────
+// Корабль должен разлетаться СВЯЗНЫМИ куском, а не рассыпаться пылью — так же,
+// как в игре (gShipCrash). Центры кусков расставляем тем же методом самой дальней
+// точки: тогда куски примерно равного размера, без одного огромного и десяти
+// крошек. Каждой точке пишем центр её куска, скорость куска и ось кувырка —
+// дальше всё считает шейдер.
+function computeFragments(pos, n, count) {
+  const fc = new Float32Array(n * 3), fv = new Float32Array(n * 3), fo = new Float32Array(n * 3);
+  if (n === 0) return { fc: fc, fv: fv, fo: fo, count: 0 };
+  const K = Math.max(1, Math.min(count | 0, n));
+  const centers = [];
+  const d = new Float32Array(n).fill(1e9);
+  const own = new Int32Array(n).fill(0);
+  rndReset(777);
+  centers.push((rnd() * n) | 0);
+  const assign = (ci, idx) => {
+    const cx = pos[ci * 3], cy = pos[ci * 3 + 1], cz = pos[ci * 3 + 2];
+    let far = 0, fi = 0;
+    for (let i = 0; i < n; i++) {
+      const dx = pos[i * 3] - cx, dy = pos[i * 3 + 1] - cy, dz = pos[i * 3 + 2] - cz;
+      const dd = dx * dx + dy * dy + dz * dz;
+      if (dd < d[i]) { d[i] = dd; own[i] = idx; }
+      if (d[i] > far) { far = d[i]; fi = i; }
+    }
+    return fi;
+  };
+  let next = assign(centers[0], 0);
+  for (let k = 1; k < K; k++) { centers.push(next); next = assign(next, k); }
+  const cm = new Float32Array(K * 3), cn = new Float32Array(K);
+  for (let k = 0; k < K; k++) {
+    cm[k * 3] = pos[centers[k] * 3]; cm[k * 3 + 1] = pos[centers[k] * 3 + 1]; cm[k * 3 + 2] = pos[centers[k] * 3 + 2];
+  }
+  // ТРИ ШАГА ЛЛОЙДА. Метод самой дальней точки ставит затравки на выступы — на
+  // законцовки крыльев, на кончик носа. Куски получаются «один огромный и десяток
+  // крошек». Пара итераций «центр съезжает в центр масс своего куска → точки
+  // переназначаются» выравнивает их почти без затрат.
+  for (let it = 0; it < 3; it++) {
+    for (let i = 0; i < n; i++) {
+      let best = 0, bd = 1e18;
+      for (let k = 0; k < K; k++) {
+        const dx = pos[i * 3] - cm[k * 3], dy = pos[i * 3 + 1] - cm[k * 3 + 1], dz = pos[i * 3 + 2] - cm[k * 3 + 2];
+        const dd = dx * dx + dy * dy + dz * dz;
+        if (dd < bd) { bd = dd; best = k; }
+      }
+      own[i] = best;
+    }
+    cm.fill(0); cn.fill(0);
+    for (let i = 0; i < n; i++) {
+      const k = own[i];
+      cm[k * 3] += pos[i * 3]; cm[k * 3 + 1] += pos[i * 3 + 1]; cm[k * 3 + 2] += pos[i * 3 + 2]; cn[k]++;
+    }
+    for (let k = 0; k < K; k++) {
+      if (!cn[k]) { cm[k * 3] = pos[centers[k] * 3]; cm[k * 3 + 1] = pos[centers[k] * 3 + 1]; cm[k * 3 + 2] = pos[centers[k] * 3 + 2]; continue; }
+      cm[k * 3] /= cn[k]; cm[k * 3 + 1] /= cn[k]; cm[k * 3 + 2] /= cn[k];
+    }
+  }
+  // на каждый кусок: направление разлёта (сфера) со своим множителем скорости и ось кувырка
+  const vk = new Float32Array(K * 3), ok = new Float32Array(K * 3);
+  for (let k = 0; k < K; k++) {
+    const az = hash(k, 3) * Math.PI * 2, el = Math.asin(hash(k, 5) * 2 - 1);
+    const sp = 0.45 + hash(k, 7) * 1.1;
+    vk[k * 3] = Math.cos(el) * Math.cos(az) * sp;
+    vk[k * 3 + 1] = Math.sin(el) * sp * 0.8 + 0.35 * sp;   // чуть вверх: обломки должны «подбрасываться»
+    vk[k * 3 + 2] = Math.cos(el) * Math.sin(az) * sp;
+    const oa = hash(k, 11) * Math.PI * 2, oe = Math.asin(hash(k, 13) * 2 - 1);
+    const orate = 0.3 + hash(k, 17);
+    ok[k * 3] = Math.cos(oe) * Math.cos(oa) * orate;
+    ok[k * 3 + 1] = Math.sin(oe) * orate;
+    ok[k * 3 + 2] = Math.cos(oe) * Math.sin(oa) * orate;
+  }
+  for (let i = 0; i < n; i++) {
+    const k = own[i];
+    for (let c = 0; c < 3; c++) {
+      fc[i * 3 + c] = cm[k * 3 + c];
+      fv[i * 3 + c] = vk[k * 3 + c];
+      fo[i * 3 + c] = ok[k * 3 + c];
+    }
+  }
+  return { fc: fc, fv: fv, fo: fo, count: K };
+}
+
+// ── ОБЩИЕ ДЛЯ ВЗРЫВА ЧИСЛА ──────────────────────────────────────────────────
+// Одни и те же объекты-юниформы отдаём во все материалы взрыва (корпус, искры,
+// волна, вспышка). Так фаза, сопротивление и тяга гарантированно совпадают:
+// рассинхрон между обломками и искрами — самая заметная фальшь во взрыве.
+const uBt   = { value: 0 };
+const uBoom = { value: 0 };
+const uDrag = { value: 0.5 };
+const uGrav = { value: 0 };
+const uLife = { value: 3 };
+const uT    = { value: 0 };
+const uPx   = { value: innerHeight };
+
+const COL = {};   // key → THREE.Color, живёт от пипеток
+for (const k in C) COL[k] = { value: new THREE.Color(C[k].v) };
+
+const uni = {
+  uTex: { value: TEX }, uPx: uPx, uT: uT,
+  uSzEdge: { value: 0 }, uSzFill: { value: 0 }, uSzWing: { value: 0 }, uSzCore: { value: 0 },
+  uEdgeBoost: { value: 0 }, uFillDim: { value: 0 }, uDepthK: { value: 0 },
+  uCoreK: { value: 0 }, uCoreR: { value: 1 }, uCorePos: { value: new THREE.Vector3() },
+  uScanK: { value: 0 }, uScanSpd: { value: 1 }, uZMin: { value: -3 }, uZMax: { value: 3 },
+  // ВСЁ, ЧТО ИЗМЕРЯЕТСЯ В ЮНИТАХ, ЖИВЁТ ОТНОСИТЕЛЬНО ГАБАРИТА. Ползунки настроены на
+  // корабль ~6 юнитов; захватчик в игре — 300. Без общего множителя uSzK на большом
+  // корабле точки становятся в пиксель, жар ядра — в невидимую крупинку, а волна
+  // сканера — в бритвенную полоску. Множитель считается один раз в syncUniforms().
+  uSzK: { value: 1 }, uScanW: { value: 0.3 }, uDepthNear: { value: 7 }, uDepthSpan: { value: 18 },
+  // ИГРОВОЙ РЕЖИМ. Игра рисует захватчика обычным PointsMaterial: размер точки задан
+  // в МИРОВЫХ юнитах и падает как 1/расстояние (sizeAttenuation), блендинг обычный, а
+  // заливка прорежена под бюджет кадра. Повторяем это здесь один в один, иначе
+  // подобранный лук в игре выглядит иначе — на что и наткнулись.
+  uGame: { value: 0 }, uGSzEdge: { value: 1 }, uGSzFill: { value: 1 },
+  uGSzWing: { value: 1 }, uGSzCore: { value: 1 }, uGKeep: { value: 1 },
+  uCull: { value: 1 }, uCullSoft: { value: 0.16 }, uXray: { value: 0.12 },
+  uOcclSz: { value: 1.6 }, uOcclBias: { value: 1 },
+  uDmg: { value: 0 }, uRimK: { value: 1.6 }, uBurnK: { value: 0.6 }, uShakeK: { value: 0.35 },
+  uBoom: uBoom, uBt: uBt, uDrag: uDrag, uGrav: uGrav, uLife: uLife,
+  uVel: { value: 16 }, uRadial: { value: 1 }, uSpin: { value: 6 }, uScatter: { value: 2.4 },
+  uOrigin: { value: new THREE.Vector3() }, uMult: { value: 3 }, uZoneR: { value: 1 },
+  uBlastR: { value: 40 }, uBlastSoft: { value: 0.5 }, uWhole: { value: 0 },
+  uLightDir: { value: new THREE.Vector3(0.4, 0.6, 0.7) }, uLightK: { value: 0.8 },
+  uColEdge: COL.edge, uColFill: COL.fill, uColCore: COL.core, uColHot: COL.hot,
+  uColBurn: COL.burn, uColAlarm: COL.alarm,
+  fSil: { value: 1 }, fCore: { value: 1 }, fTemp: { value: 1 }, fScan: { value: 1 },
+  fAlarm: { value: 1 }, fShake: { value: 1 }
+};
+
+// общий кусок GLSL: поворот вокруг оси и «случайное» направление из одного числа
+const GLSL_LIB = `
+  vec3 rotAx(vec3 p, vec3 ax, float a) {
+    float c = cos(a), s = sin(a);
+    return p * c + cross(ax, p) * s + ax * dot(ax, p) * (1.0 - c);
+  }
+  vec3 dirOf(float r) {
+    float a = fract(r * 137.13) * 6.2831853;
+    float e = fract(r * 71.17) * 2.0 - 1.0;
+    float s = sqrt(max(0.0, 1.0 - e * e));
+    return vec3(cos(a) * s, e, sin(a) * s);
+  }
+  // ПОЛЁТ В ЗАКРЫТОЙ ФОРМЕ: p(t) при линейном сопротивлении k и постоянной тяге g.
+  // Именно из-за неё таймлайн можно таскать в обе стороны — нет накопленного состояния.
+  vec3 flight(vec3 p0, vec3 v0, float k, float gr, float t) {
+    vec3 gv = vec3(0.0, -gr, 0.0);
+    k = max(0.01, k);
+    return p0 + (v0 - gv / k) * ((1.0 - exp(-k * t)) / k) + (gv / k) * t;
+  }`;
+
+const FRAG_SOFT = `
+  uniform sampler2D uTex;
+  varying vec3 vCol; varying float vA;
+  void main() {
+    float a = texture2D(uTex, gl_PointCoord).a * vA;
+    if (a < 0.01) discard;
+    gl_FragColor = vec4(vCol, a);
+  }`;
+
+// ── МАТЕРИАЛ КОРПУСА ────────────────────────────────────────────────────────
+const HULL_VERT = `
+    // Четыре скаляра лежат в ОДНОМ vec4, а не четырьмя атрибутами. Причина не в
+    // экономии памяти: WebGL гарантирует всего 8 вершинных атрибутов, а у нас с
+    // раздельными полями выходило девять — на слабом железе шейдер просто не
+    // собрался бы. Здесь их шесть.
+    attribute vec4 aMeta;     // x роль (0 заливка, 1 ребро), y зона, z случайное, w пробоина
+    attribute vec3 aNormal;
+    attribute vec3 aFC;       // центр масс своего куска
+    attribute vec3 aFV;       // направление разлёта куска (со своим множителем)
+    attribute vec3 aFO;       // ось и скорость кувырка куска
+    uniform float uPx, uT;
+    uniform float uSzEdge, uSzFill, uSzWing, uSzCore;
+    uniform float uEdgeBoost, uFillDim, uDepthK, uCoreK, uCoreR;
+    uniform vec3  uCorePos;
+    uniform float uScanK, uScanSpd, uZMin, uZMax;
+    uniform float uSzK, uScanW, uDepthNear, uDepthSpan;
+    uniform float uCull, uCullSoft, uXray;
+    uniform float uPass, uOcclSz, uOcclBias;   // 1 = невидимый проход, пишущий глубину
+    uniform float uDmg, uRimK, uBurnK, uShakeK;
+    uniform float uBoom, uBt, uDrag, uGrav, uLife, uVel, uRadial, uSpin, uScatter;
+    uniform vec3  uOrigin;          // центр детонации — выбранная зона удара
+    uniform float uMult, uZoneR;    // её множитель и радиус
+    uniform float uBlastR, uBlastSoft, uWhole;
+    uniform vec3  uLightDir; uniform float uLightK;
+    uniform float uGame, uGSzEdge, uGSzFill, uGSzWing, uGSzCore, uGKeep;
+    uniform vec3  uColEdge, uColFill, uColCore, uColHot, uColBurn, uColAlarm;
+    uniform float fSil, fCore, fTemp, fScan, fAlarm, fShake;
+    varying vec3 vCol; varying float vA;
+    ${GLSL_LIB}
+    void main() {
+      vec3 p = position;
+      vec3 nrm = aNormal;
+      float aRole = aMeta.x, aZone = aMeta.y, aRand = aMeta.z, aWound = aMeta.w;
+      vec3 jd = dirOf(aRand);
+      float fade = 1.0;
+      float t = uBt;
+
+      // ДРОЖЬ: только пока корабль цел — у обломков своя физика
+      if (fShake > 0.5 && uDmg > 0.01 && uBoom < 0.5)
+        p += jd * (uShakeK * uDmg * 0.05) * sin(uT * 37.0 + aRand * 61.0);
+
+      float infl = 1.0;      // насколько этот кусок вообще задет попаданием
+      if (uBoom > 0.5) {
+        // ЛОКАЛЬНОСТЬ. Корабль гигантский: если от одной ракеты разлетается весь
+        // корпус, масштаб пропадает — становится похоже на модельку, а не на крейсер.
+        // Поэтому влияние взрыва падает с расстоянием от точки удара: рядом куски
+        // срывает, дальше корпус стоит как стоял. Считаем по центру КУСКА, а не по
+        // точке: кусок должен уходить целиком, иначе он расслаивается на полпути.
+        if (uWhole < 0.5)
+          infl = 1.0 - smoothstep(uBlastR * (1.0 - 0.65 * uBlastSoft), uBlastR, length(aFC - uOrigin));
+        vec3 rel = p - aFC;
+        vec3 om = aFO * uSpin * infl;
+        float w = length(om);
+        vec3 ax = w > 1e-4 ? om / w : vec3(0.0, 1.0, 0.0);
+        rel = rotAx(rel, ax, w * t);
+        nrm = rotAx(nrm, ax, w * t);                 // нормаль крутим вместе с куском,
+                                                     // иначе отсечение начинает врать
+        // Взрыв начинается В ЗОНЕ, а не в геометрическом центре: удар по двигателю
+        // и удар по реактору должны выглядеть по-разному. Кусок тем быстрее, чем он
+        // ближе к точке удара, и множитель зоны усиливает именно это — то же, что в
+        // игре даёт очки, здесь видно глазами.
+        vec3 dv = aFC - uOrigin;
+        float boost = 1.0 + (uMult - 1.0) * exp(-length(dv) / max(0.001, uZoneR));
+        vec3 rad = normalize(dv + jd * 0.001);
+        vec3 v0 = ((aFV * uVel + rad * (uRadial * uVel)) * boost + jd * uScatter) * infl;
+        p = flight(aFC + rel, v0, uDrag, uGrav, t);
+        // гаснут только улетевшие обломки; уцелевший корпус остаётся видимым
+        fade = 1.0 - smoothstep(uLife * 0.45, uLife, t) * step(0.02, infl);
+      }
+
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      float dist = -mv.z;
+      vec3 nw = normalize(mat3(modelViewMatrix) * nrm);   // нужна и свету, и отсечению
+
+      // РАЗМЕР И ЦВЕТ ПО РОЛИ И ЗОНЕ
+      float isEdge = step(0.5, aRole);
+      float sz = uSzFill;
+      if (aZone > 1.5 && aZone < 2.5) sz = uSzWing;
+      else if (aZone < 0.5 && fCore > 0.5) sz = uSzCore;
+      vec3 col = uColFill;
+      float br = 1.0;
+      if (isEdge > 0.5) {
+        sz = mix(sz, uSzEdge, fSil);
+        col = mix(col, uColEdge, fSil);
+        br *= mix(1.0, uEdgeBoost, fSil);
+      } else {
+        br *= mix(0.6, uFillDim, fSil);
+      }
+      if (aZone > 2.5) br *= 0.82;                   // корма темнее: акцент уходит носу
+
+      // СВЕТ ПО ГРАНЯМ. Раньше яркость заливки задавалась только случайным числом —
+      // и облако оставалось облаком: плоскости не отличались друг от друга. Обычный
+      // ламберт по нормали разом делает форму читаемой: каждая грань получает свою
+      // светлоту, и глаз собирает из точек объём. Свет держим в координатах камеры —
+      // так корабль можно вертеть, а «студийная» подсветка остаётся на месте.
+      if (uLightK > 0.001 && isEdge < 0.5) {
+        float lam = max(0.0, dot(nw, uLightDir));
+        // Пол в 0.35 обязателен: с нулём отвёрнутая от света половина корпуса
+        // уходила в чистый чёрный и точки пропадали совсем.
+        br *= mix(1.0, 0.35 + 1.25 * lam * lam, uLightK);
+      }
+
+      // ЖАР ЯДРА. Считается от текущей позиции — значит обломки, улетая, остывают.
+      // Гаусс пишем через умножение, а не через pow: pow(x, 2.0) в GLSL считается
+      // как exp2(2·log2(x)) и при отрицательномx даёт NaN. Здесь x неотрицателен,
+      // но ниже — нет, поэтому держим один приём на весь шейдер.
+      float dr = length(p - uCorePos) / max(0.2, uCoreR);
+      float heat = fCore * exp(-dr * dr);
+      col = mix(col, uColCore, clamp(heat * mix(0.35, 0.95, fTemp), 0.0, 1.0));
+      br *= 1.0 + heat * uCoreK;
+
+      // КОНТРАКТ ИГРОВОГО КАДРА. Игра считает ровно четыре вещи: цвет по роли,
+      // множитель по роли (контур ярче / заливка тусклее), ламберт по нормали и
+      // отсечение отвёрнутых. Ни жара ядра, ни затемнения кормы, ни случайной
+      // дитеринг-яркости, ни глубины там нет — значит и здесь их быть не должно,
+      // иначе подобранный лук снова разойдётся с игрой.
+      if (uGame > 0.5) {
+        col = (isEdge > 0.5) ? uColEdge : uColFill;
+        br = (isEdge > 0.5) ? uEdgeBoost : uFillDim;
+        float lamG = max(0.0, dot(nw, uLightDir));
+        br *= mix(1.0, 0.35 + 1.25 * lamG * lamG, uLightK);
+      }
+
+      // СКАНИРУЮЩИЙ ГЛАЗ: волна по контуру вдоль корпуса
+      if (fScan > 0.5 && isEdge > 0.5 && uBoom < 0.5 && uGame < 0.5) {
+        float wp = mix(uZMin, uZMax, fract(uT * uScanSpd));
+        float dz = (p.z - wp) / uScanW;   // знак меняется — pow() здесь дал бы NaN
+        float sw = exp(-dz * dz);
+        col = mix(col, uColHot, sw * 0.55);
+        br *= 1.0 + sw * uScanK * 2.0;
+      }
+
+      // ПРОБОИНЫ. aWound — расстояние до ближайшего центра пробоины, нормированное.
+      // uDmg работает как радиус: кратер растёт, у него обугленное поле и горячая кромка.
+      // Кромка — именно ПОЛОСА вокруг радиуса (произведение двух smoothstep), а не
+      // «всё, что внутри»: иначе кратер светится целиком и читается как лампа, а не рана.
+      float dmgOn = step(0.005, uDmg);
+      float wv = aWound;
+      float hole = (1.0 - smoothstep(uDmg - 0.06, uDmg - 0.005, wv)) * step(0.30, aRand) * dmgOn;
+      float rim  = smoothstep(uDmg + 0.075, uDmg + 0.005, wv)
+                 * smoothstep(uDmg - 0.03, uDmg + 0.005, wv) * (1.0 - hole) * dmgOn;
+      float burn = smoothstep(uDmg + 0.20, uDmg, wv) * (1.0 - hole) * dmgOn;
+      col = mix(col, uColBurn, burn * uBurnK);
+      br *= mix(1.0, 0.28, burn * uBurnK);
+      col = mix(col, uColHot, rim * clamp(uRimK, 0.0, 1.0));
+      br *= 1.0 + rim * uRimK * 1.6;
+      if (fAlarm > 0.5 && isEdge > 0.5 && uGame < 0.5) {
+        float blink = step(0.5, fract(uT * 2.6));
+        col = mix(col, uColAlarm, uDmg * blink * 0.85);
+        br *= 1.0 + uDmg * blink * 0.5;
+      }
+      fade *= (1.0 - hole);
+
+      // ВОРОНКА ОТ ПОПАДАНИЯ. Считается по ИСХОДНОЙ позиции точки — значит отметина
+      // остаётся на уцелевшем корпусе, а не улетает вместе с обломками.
+      if (uBoom > 0.5) {
+        float nearHit = 1.0 - smoothstep(uBlastR * 0.75, uBlastR * 1.7, length(position - uOrigin));
+        col = mix(col, uColBurn, nearHit * 0.75 * smoothstep(0.0, 0.3, t));
+        col = mix(col, uColHot, nearHit * exp(-t * 2.2) * 0.85);
+        br *= 1.0 + nearHit * exp(-t * 3.0) * 2.5;
+      }
+
+      // ГЛУБИНА — только в конструкторе: в игре вместо неё туман сцены
+      if (uGame < 0.5) {
+        float dn = clamp((dist - uDepthNear) / uDepthSpan, 0.0, 1.0);
+        sz *= mix(1.0, 1.0 - dn * 0.5, uDepthK);
+        br *= mix(1.0, 1.0 - dn * 0.6, uDepthK);
+      }
+
+      // ОТСЕЧЕНИЕ ОТВЁРНУТЫХ: без него облако просвечивает и силуэт пропадает
+      // Отвёрнутые точки не пропадают совсем, а гаснут до uXray: при нуле корпус
+      // глухой, при единице просвечивает целиком, между — видно «изнанку» вполсилы,
+      // и объём читается лучше, чем в любой из крайностей.
+      float vis = 1.0;
+      if (uCull > 0.5) {
+        vec3 toEye = normalize(-mv.xyz);
+        float face = smoothstep(-uCullSoft, uCullSoft + 0.08, dot(nw, toEye));
+        vis = mix(uXray, 1.0, face);
+      }
+
+      br *= mix(0.85 + 0.3 * aRand, 1.0, uGame);   // дитеринга по точкам в игре нет
+      vCol = col * br;
+      vA = clamp(br, 0.0, 1.8) * vis * fade;
+      // Проход-заслон пишет глубину чуть ДАЛЬШЕ настоящей: иначе точка не пройдёт
+      // собственный тест глубины (равные значения не проходят) и исчезнет вся модель.
+      vec4 mvo = mv;
+      if (uPass > 0.5) mvo.z -= uOcclBias;
+      gl_Position = projectionMatrix * mvo;
+      float px = clamp(sz * uSzK * uPx * 0.0016 / max(dist * 0.08, 0.25), 0.5, 26.0);
+      if (uGame > 0.5) {
+        // размер в мировых юнитах, падение 1/расстояние — формула three.js
+        // для PointsMaterial с sizeAttenuation. Плюс прореживание заливки: точки с
+        // aRand выше порога игра просто не грузит, значит и здесь их быть не должно.
+        float wsz = uGSzFill;
+        if (aZone > 1.5 && aZone < 2.5) wsz = uGSzWing;
+        else if (aZone < 0.5) wsz = uGSzCore;
+        if (isEdge > 0.5) wsz = uGSzEdge;
+        px = clamp(wsz * uPx * 0.5 / max(dist, 0.001), 0.5, 64.0);
+        if (isEdge < 0.5 && aRand > uGKeep) vA = 0.0;
+        vA *= 0.96;                     // opacity игрового материала
+      }
+      if (uPass > 0.5) px *= uOcclSz;      // диск заслона крупнее самой точки
+      gl_PointSize = px * step(0.004, vA);
+    }`;
+
+// ДВА МАТЕРИАЛА НА ОДИН ШЕЙДЕР. Юниформы у них — ОДНИ И ТЕ ЖЕ объекты (Object.assign
+// копирует ссылки), поэтому любая правка ползунка попадает в оба сразу и заслон не
+// может разойтись с картинкой. Различает их только uPass.
+const hullMat = new THREE.ShaderMaterial({
+  uniforms: Object.assign({}, uni, { uPass: { value: 0 } }),
+  transparent: true, depthWrite: false, depthTest: true, blending: THREE.AdditiveBlending,
+  vertexShader: HULL_VERT,
+  fragmentShader: FRAG_SOFT
+});
+// Проход-заслон: цвета не пишет вовсе, пишет только глубину. Порог 0.5 вместо 0.01 —
+// заслоном работает плотное ядро спрайта, а не его размытая кромка.
+const occlMat = new THREE.ShaderMaterial({
+  uniforms: Object.assign({}, uni, { uPass: { value: 1 } }),
+  transparent: false, depthWrite: true, depthTest: true, blending: THREE.NoBlending,
+  colorWrite: false,
+  vertexShader: HULL_VERT,
+  fragmentShader: `
+    uniform sampler2D uTex;
+    varying vec3 vCol; varying float vA;
+    void main() {
+      if (texture2D(uTex, gl_PointCoord).a * vA < 0.5) discard;
+      gl_FragColor = vec4(0.0);
+    }`
+});
+
+// ── ИСКРЫ ───────────────────────────────────────────────────────────────────
+const sparkUni = {
+  uTex: { value: TEX }, uPx: uPx, uBoom: uBoom, uBt: uBt, uDrag: uDrag, uGrav: uGrav, uLife: uLife,
+  uSparkV: { value: 46 }, uAmt: { value: 1 }, uSzK: { value: 1 },
+  uOrigin: uni.uOrigin, uBlastR: uni.uBlastR, uWhole: uni.uWhole,
+  uColSpark: COL.spark, uColHot: COL.hot
+};
+const sparkMat = new THREE.ShaderMaterial({
+  uniforms: sparkUni, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `
+    attribute vec3 aDir;
+    attribute float aRand;
+    uniform float uPx, uBoom, uBt, uDrag, uGrav, uLife, uSparkV, uAmt, uSzK;
+    uniform vec3 uOrigin; uniform float uBlastR, uWhole;
+    uniform vec3 uColSpark, uColHot;
+    varying vec3 vCol; varying float vA;
+    ${GLSL_LIB}
+    void main() {
+      float t = uBt;
+      float life = uLife * (0.22 + 0.5 * aRand);
+      vec3 v0 = aDir * (uSparkV * (0.35 + 1.1 * aRand));
+      // При локальном попадании искры сыпятся ИЗ ОЧАГА: разбросанные по всему корпусу
+      // они выдавали бы, что «взорвался весь корабль». В финале (uWhole) — наоборот,
+      // по всей обшивке, и для этого искрам оставлены их родные точки на корпусе.
+      vec3 p0 = mix(uOrigin + aDir * (uBlastR * (0.15 + 0.5 * aRand)), position, uWhole);
+      vec3 p = flight(p0, v0, uDrag * 2.4, uGrav * 0.6, t);
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      float dist = -mv.z;
+      float k = clamp(t / max(0.05, life), 0.0, 1.0);
+      float hot = 1.0 - k;
+      vCol = mix(uColSpark, uColHot, k) * (0.4 + 2.2 * hot * hot);
+      vA = (1.0 - k) * uBoom * uAmt;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp((0.35 + 0.5 * hot) * uSzK * uPx * 0.0016 / max(dist * 0.08, 0.25), 0.5, 14.0) * step(0.004, vA);
+    }`,
+  fragmentShader: FRAG_SOFT
+});
+
+// ── УДАРНАЯ ВОЛНА: тонкая сфера точек, разбегается и гаснет ─────────────────
+const waveUni = {
+  uTex: { value: TEX }, uPx: uPx, uBoom: uBoom, uBt: uBt,
+  uWave: { value: 1 }, uWaveV: { value: 22 }, uSzK: { value: 1 },
+  uOrigin: uni.uOrigin, uColWave: COL.wave
+};
+const waveMat = new THREE.ShaderMaterial({
+  uniforms: waveUni, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `
+    attribute vec3 aDir;
+    attribute float aRand;
+    uniform float uPx, uBoom, uBt, uWave, uWaveV, uSzK;
+    uniform vec3 uOrigin;
+    uniform vec3 uColWave;
+    varying vec3 vCol; varying float vA;
+    void main() {
+      float t = max(0.0, uBt);
+      // радиус растёт с замедлением — фронт «выдыхается», как настоящая волна
+      float r = uWaveV * (1.0 - exp(-t * 2.2)) / 2.2 * (0.9 + 0.2 * aRand);
+      vec3 p = uOrigin + aDir * r;    // фронт расходится из точки удара
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      float dist = -mv.z;
+      float env = exp(-t * 2.6) * smoothstep(0.0, 0.05, t);
+      vCol = uColWave * (1.4 * env + 0.2);
+      vA = env * uWave * uBoom;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(0.5 * uSzK * uPx * 0.0016 / max(dist * 0.08, 0.25), 0.5, 10.0) * step(0.004, vA);
+    }`,
+  fragmentShader: FRAG_SOFT
+});
+
+// ── ВСПЫШКА: одна большая мягкая точка в момент детонации ───────────────────
+const flashUni = {
+  uTex: { value: TEX }, uPx: uPx, uBoom: uBoom, uBt: uBt,
+  uFlash: { value: 1.4 }, uSzK: { value: 1 }, uColHot: COL.hot, uColCore: COL.core
+};
+const flashMat = new THREE.ShaderMaterial({
+  uniforms: flashUni, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `
+    uniform float uPx, uBoom, uBt, uFlash, uSzK;
+    uniform vec3 uColHot, uColCore;
+    varying vec3 vCol; varying float vA;
+    void main() {
+      float t = max(0.0, uBt);
+      float g = exp(-t * 9.0) * smoothstep(0.0, 0.02, t + 0.02);
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      vCol = mix(uColHot, uColCore, 0.4) * (3.5 * g);
+      vA = g * uFlash * uBoom;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp((14.0 + 34.0 * (1.0 - exp(-t * 12.0))) * uFlash * uSzK * uPx * 0.0016
+                     / max(-mv.z * 0.08, 0.25), 1.0, 900.0) * step(0.004, vA);
+    }`,
+  fragmentShader: FRAG_SOFT
+});
+
+// ── свечение ядра (отдельная точка, чтобы жар читался и на выключенном корпусе) ──
+const glowUni = { uTex: { value: TEX }, uPx: uPx, uT: uT, uBoom: uBoom, uBt: uBt,
+  uDmg: { value: 0 }, uK: { value: 1.5 }, uSzK: { value: 1 }, uColCore: COL.core };
+const glowMat = new THREE.ShaderMaterial({
+  uniforms: glowUni, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `
+    uniform float uPx, uT, uBoom, uBt, uDmg, uK, uSzK;
+    uniform vec3 uColCore;
+    varying vec3 vCol; varying float vA;
+    void main() {
+      // чем больше урона, тем чаще и злее пульс — ядро «идёт на разрыв»
+      float sp = 2.0 + uDmg * 9.0;
+      float pulse = 0.62 + 0.38 * sin(uT * sp);
+      float live = 1.0 - uBoom * smoothstep(0.0, 0.06, uBt);
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      vCol = uColCore * (1.6 + uDmg * 2.2) * pulse;
+      vA = uK * pulse * live;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp((5.0 + uDmg * 5.0) * uSzK * uPx * 0.0016 / max(-mv.z * 0.08, 0.25), 1.0, 220.0) * step(0.004, vA);
+    }`,
+  fragmentShader: FRAG_SOFT
+});
+
+// ── сборка облака ───────────────────────────────────────────────────────────
+const grp = new THREE.Group();
+scene.add(grp);
+let hull = null, occl = null, sparks = null, wave = null, flash = null, glow = null, helper = null, edgeLines = null;
+let MODEL_GEO = null;       // геометрия источника (меш), в системе координат файла
+let CLOUD = null;           // текущее облако: pos/nor/role/zone/wound/n
+let corePos = new THREE.Vector3();
+// центр масс «ядровых» точек: считается один раз за пересборку. Гонять этот цикл по
+// пятидесяти тысячам точек на каждое движение ползунка было бы расточительно.
+let coreFallback = { x: 0, y: 0, z: 0 };
+
+// Снять объект со сцены и освободить буферы. Возвращает null, чтобы вызов читался
+// как `hull = disposeObj(hull)` — иначе легко забыть обнулить ссылку и потом
+// обращаться к уже выброшенной геометрии.
+function disposeObj(o) { if (o) { o.geometry.dispose(); grp.remove(o); } return null; }
+
+function sourceGeometry() {
+  if (srcMode === 'file' && MODEL_GEO) return MODEL_GEO;
+  return mergeParts(blankParts(srcMode === 'file' ? 'wedge' : srcMode));
+}
+
+// АСИММЕТРИЯ. Симметричный враг читается как «свой» — глаз считает симметрию
+// признаком порядка. Поэтому правый борт уводим вперёд и вниз: силуэт перестаёт
+// быть спокойным, а форма остаётся той же. Делается на облаке, не на меше:
+// нужен именно перекос точек, а не другая модель.
+function applySkew(pos, n) {
+  if (!PR.skew.v || S.skewK.v <= 0) return;
+  let mx = 1e-6;
+  for (let i = 0; i < n; i++) mx = Math.max(mx, Math.abs(pos[i * 3]));
+  const k = S.skewK.v;
+  for (let i = 0; i < n; i++) {
+    const x = pos[i * 3], f = x / mx;
+    if (f > 0) {
+      pos[i * 3 + 2] -= f * f * 0.55 * k;          // правое крыло уходит вперёд
+      pos[i * 3 + 1] -= f * 0.28 * k;              // и провисает
+      pos[i * 3] *= 1 + 0.14 * k;                  // и длиннее левого
+    } else {
+      pos[i * 3 + 1] += Math.abs(f) * 0.1 * k;
+    }
+  }
+}
+
+function rebuildGeometry() {
+  busy(true, 'Считаю точки…');
+  // отрисовать «Считаю точки…» до тяжёлого расчёта: без задержки браузер
+  // покажет плашку уже после того, как всё посчитано, и смысла в ней не будет
+  requestAnimationFrame(() => requestAnimationFrame(() => { try { rebuildNow(); } finally { busy(false); } }));
+}
+
+function rebuildNow() {
+  const t0 = performance.now();
+  const geo = sourceGeometry();
+  const m = orientMatrix(geo);
+  const V = voxelize(geo, m, S.cell.v / 1000 * S.span.v);
+  if (!V.n) { toast('В модели не нашлось поверхностей'); return; }
+
+  // РЁБРА. Основной путь — настоящие рёбра меша. Если модель пришла «супом» из
+  // несваренных треугольников или вся гладкая, отрезков не будет вовсе — тогда
+  // откатываемся на старый поиск по изгибу нормалей и говорим об этом вслух.
+  const ES = edgeSegments(geo, m, S.edgeAng.v);
+  let ePos = edgeCloud(ES.seg, ES.len, V.cell / S.edgeDens.v, Math.min(160000, Math.max(20000, V.n * 2)));
+  let eN = ePos.length / 3;
+  let fallback = false;
+  if (eN < V.n * 0.02) {
+    fallback = true;
+    ePos = new Float32Array(0); eN = 0;
+  }
+  applySkew(V.pos, V.n);
+  if (eN) applySkew(ePos, eN);
+
+  // сборка одного облака: сначала поверхность, потом рёбра
+  const n = V.n + eN;
+  const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), role = new Float32Array(n);
+  pos.set(V.pos); nor.set(V.nor);
+  if (eN) {
+    pos.set(ePos, V.n * 3);
+    nor.set(normalsFromSurface(ePos, eN, V.pos, V.nor, V.n, V.cell), V.n * 3);
+    for (let i = V.n; i < n; i++) role[i] = 1;
+  } else {
+    const E2 = computeEdges(V.pos, V.nor, V.n, V.cell, S.edgeAng.v);
+    role.set(E2.role);
+  }
+  let edgeN = 0;
+  for (let i = 0; i < n; i++) if (role[i] === 1) edgeN++;
+
+  const Z = computeZones(pos, n);
+  const W = computeWounds(pos, n, S.wounds.v | 0);
+  const F = computeFragments(pos, n, S.bFrag.v | 0);
+  CLOUD = { pos: pos, nor: nor, role: role, zone: Z, wound: W, n: n, cell: V.cell, edgeN: edgeN };
+  // Зоны переставляем только когда сменилась сама модель: иначе каждый чих ползунка
+  // сбрасывал бы то, что уже подвинули руками.
+  if (wantAutoZones) { wantAutoZones = false; autoZones(); renderZoneUI(); }
+
+  // Роль, зона, случайное число и пробоина едут одним vec4 — см. комментарий в шейдере.
+  const meta = new Float32Array(n * 4);
+  for (let i = 0; i < n; i++) {
+    meta[i * 4] = role[i]; meta[i * 4 + 1] = Z[i];
+    meta[i * 4 + 2] = hash(i, 13); meta[i * 4 + 3] = W[i];
+  }
+
+  hull = disposeObj(hull);
+  const gg = new THREE.BufferGeometry();
+  gg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  gg.setAttribute('aNormal', new THREE.BufferAttribute(nor, 3));
+  gg.setAttribute('aMeta', new THREE.BufferAttribute(meta, 4));
+  gg.setAttribute('aFC', new THREE.BufferAttribute(F.fc, 3));
+  gg.setAttribute('aFV', new THREE.BufferAttribute(F.fv, 3));
+  gg.setAttribute('aFO', new THREE.BufferAttribute(F.fo, 3));
+  hull = new THREE.Points(gg, hullMat);
+  hull.frustumCulled = false;
+  hull.renderOrder = 0;
+  grp.add(hull);
+  // Заслон — ТА ЖЕ геометрия, другой материал. Рисуется первым (renderOrder −1),
+  // поэтому к моменту отрисовки корпуса и линий буфер глубины уже заполнен.
+  occl = disposeObj(occl);
+  occl = new THREE.Points(gg, occlMat);
+  occl.frustumCulled = false;
+  occl.renderOrder = -1;
+  grp.add(occl);
+
+  // ЛИНИИ РЁБЕР. Точки на рёбрах дают силуэт, но именно линии заставляют форму
+  // читаться мгновенно: глаз видит плоскости, а не туман. Яркость — ползунком,
+  // потому что на большом корабле полная сетка превращается в кашу.
+  edgeLines = disposeObj(edgeLines);
+  if (ES.seg.length) {
+    const ls = ES.seg.slice(0);
+    applySkew(ls, ls.length / 3);
+    const lg = new THREE.BufferGeometry();
+    lg.setAttribute('position', new THREE.BufferAttribute(ls, 3));
+    edgeLines = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({
+      color: new THREE.Color(C.edge.v), transparent: true, opacity: S.lineOp.v,
+      blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true }));
+    edgeLines.frustumCulled = false;
+    edgeLines.renderOrder = 1;      // после заслона: дальние рёбра он и отрежет
+    grp.add(edgeLines);
+  }
+
+  // границы по длине — для сканирующей волны и рамки
+  let zmin = 1e9, zmax = -1e9, cx = 0, cy = 0, cz = 0, cn = 0;
+  let ex = 0, ey = 0, ez = 0;
+  for (let i = 0; i < n; i++) {
+    const z = pos[i * 3 + 2];
+    if (z < zmin) zmin = z; if (z > zmax) zmax = z;
+    ex = Math.max(ex, Math.abs(pos[i * 3])); ey = Math.max(ey, Math.abs(pos[i * 3 + 1])); ez = Math.max(ez, Math.abs(z));
+    if (Z[i] < 0.5) { cx += pos[i * 3]; cy += pos[i * 3 + 1]; cz += z; cn++; }
+  }
+  const spanK = S.span.v / 6.4;
+  uni.uZMin.value = zmin - 0.4 * spanK; uni.uZMax.value = zmax + 0.4 * spanK;
+  if (lastSpan === null) camDist = S.span.v * 2.05;
+  else if (lastSpan !== S.span.v) camDist = clamp(camDist * (S.span.v / lastSpan), 1, 3000);
+  lastSpan = S.span.v;
+  // КАМЕРУ ПЕРЕСБОРКА НЕ ТРОГАЕТ. Раньше здесь стояло «если пользователь не отъезжал —
+  // поставить дистанцию по габариту», но колёсико обнуляло признак, ноль трактовался
+  // как «не трогал», и любая правка ползунка возвращала камеру на место. Теперь
+  // дистанция ставится ровно один раз, при первой сборке, а при смене габарита
+  // масштабируется вместе с ним — видимый размер корабля остаётся тем же.
+  coreFallback = { x: cn ? cx / cn : 0, y: cn ? cy / cn : 0, z: cn ? cz / cn : 0 };
+  updateCore();
+
+  buildBoomExtras({ pos: pos, n: n }, ex, ey, ez);
+  buildHelper(ex, ey, ez);
+  buildZoneMarks();
+  syncUniforms();   // бюджет прореживания и видимость слоёв зависят от свежего облака
+
+  g('mPts').textContent = (n / 1000).toFixed(1) + 'k';
+  g('mEdge').textContent = (edgeN / 1000).toFixed(1) + 'k · ' + Math.round(edgeN / n * 100) + '%';
+  g('mFrag').textContent = F.count;
+  g('mSize').textContent = (ex * 2 | 0) + '×' + (ey * 2 | 0) + '×' + (ez * 2 | 0);
+  if (n < 4000) toast('Всего ' + n + ' точек — уменьши «Шаг, ‰ габарита», иначе облака не видно');
+  else if (fallback) toast('У меша нет рёбер под этим углом — ищу по изгибу нормалей');
+  else if (edgeN > n * 0.6) toast('Рёбрами вышло ' + Math.round(edgeN / n * 100) +
+    '% — модель не сварена по вершинам или порог слишком мелкий');
+  else if (V.clamped) toast('Шаг поднят до ' + V.cell.toFixed(2) + ' юнита — иначе точек было бы слишком много');
+  if (performance.now() - t0 > 1500) console.log('пересборка', Math.round(performance.now() - t0), 'мс');
+}
+
+function buildBoomExtras(V, ex, ey, ez) {
+  // искры вылетают С КОРПУСА, а не из одной точки: иначе взрыв выглядит салютом
+  sparks = disposeObj(sparks);
+  const nS = S.bSparks.v | 0;
+  if (nS > 0) {
+    const sp = new Float32Array(nS * 3), sd = new Float32Array(nS * 3), sr = new Float32Array(nS);
+    for (let k = 0; k < nS; k++) {
+      const i = (hash(k, 101) * V.n) | 0;
+      sp[k * 3] = V.pos[i * 3]; sp[k * 3 + 1] = V.pos[i * 3 + 1]; sp[k * 3 + 2] = V.pos[i * 3 + 2];
+      const az = hash(k, 103) * Math.PI * 2, el = Math.asin(hash(k, 107) * 2 - 1);
+      sd[k * 3] = Math.cos(el) * Math.cos(az);
+      sd[k * 3 + 1] = Math.sin(el) * 0.9 + 0.2;
+      sd[k * 3 + 2] = Math.cos(el) * Math.sin(az);
+      sr[k] = hash(k, 109);
+    }
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+    sg.setAttribute('aDir', new THREE.BufferAttribute(sd, 3));
+    sg.setAttribute('aRand', new THREE.BufferAttribute(sr, 1));
+    sparks = new THREE.Points(sg, sparkMat);
+    sparks.frustumCulled = false;
+    grp.add(sparks);
+  }
+  // волна: равномерная сфера направлений (спираль Фибоначчи — без сгущений у полюсов)
+  if (!wave) {
+    const nW = 2600;
+    const wp = new Float32Array(nW * 3), wd = new Float32Array(nW * 3), wr = new Float32Array(nW);
+    const ga = Math.PI * (3 - Math.sqrt(5));
+    for (let k = 0; k < nW; k++) {
+      const y = 1 - (k / (nW - 1)) * 2, r = Math.sqrt(Math.max(0, 1 - y * y)), a = ga * k;
+      wd[k * 3] = Math.cos(a) * r; wd[k * 3 + 1] = y; wd[k * 3 + 2] = Math.sin(a) * r;
+      wr[k] = hash(k, 211);
+    }
+    const wg = new THREE.BufferGeometry();
+    wg.setAttribute('position', new THREE.BufferAttribute(wp, 3));
+    wg.setAttribute('aDir', new THREE.BufferAttribute(wd, 3));
+    wg.setAttribute('aRand', new THREE.BufferAttribute(wr, 1));
+    wave = new THREE.Points(wg, waveMat);
+    wave.frustumCulled = false;
+    grp.add(wave);
+  }
+  if (!flash) {
+    const fg = new THREE.BufferGeometry();
+    fg.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3));
+    flash = new THREE.Points(fg, flashMat);
+    flash.frustumCulled = false;
+    grp.add(flash);
+  }
+  glow = disposeObj(glow);
+  const cg = new THREE.BufferGeometry();
+  cg.setAttribute('position', new THREE.Float32BufferAttribute([corePos.x, corePos.y, corePos.z], 3));
+  glow = new THREE.Points(cg, glowMat);
+  glow.frustumCulled = false;
+  grp.add(glow);
+  if (flash) {
+    flash.geometry.attributes.position.setXYZ(0, corePos.x, corePos.y, corePos.z);
+    flash.geometry.attributes.position.needsUpdate = true;
+  }
+}
+
+// рамка габарита и оси: без них не видно, куда смотрит нос и во что вписана модель.
+// Экстенты запоминаем, чтобы тумблер рамки не тянул за собой полную вокселизацию.
+let EXT = [3, 1, 3];
+function buildHelper(ex, ey, ez) {
+  if (ex !== undefined) EXT = [ex, ey, ez]; else { ex = EXT[0]; ey = EXT[1]; ez = EXT[2]; }
+  if (helper) { helper.geometry.dispose(); grp.remove(helper); helper = null; }
+  if (!TG.grid.v) return;
+  const p = [];
+  const box = (x, y, z) => {
+    const c = [[-x, -y, -z], [x, -y, -z], [x, y, -z], [-x, y, -z], [-x, -y, z], [x, -y, z], [x, y, z], [-x, y, z]];
+    [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]]
+      .forEach(([a, b]) => p.push(c[a][0], c[a][1], c[a][2], c[b][0], c[b][1], c[b][2]));
+  };
+  box(ex, ey, ez);
+  p.push(0, 0, -ez * 1.5, 0, 0, ez * 1.5);   // ось корабля: нос по −Z, как в игре
+  p.push(-ex * 1.3, 0, 0, ex * 1.3, 0, 0);
+  const hg = new THREE.BufferGeometry();
+  hg.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+  helper = new THREE.LineSegments(hg, new THREE.LineBasicMaterial({
+    color: 0xff7f9c, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending, depthWrite: false }));
+  helper.frustumCulled = false;
+  grp.add(helper);
+}
+
+
+// ── КОЛЬЦА ЗОН И ИХ ПРАВКА ─────────────────────────────────────────────────
+// Кольца рисуем спрайтами с той же канвас-текстурой, что и в игре (srZoneMarkers):
+// инструмент должен показывать ровно то, что игрок увидит при прицеливании.
+function ringTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const x = c.getContext('2d');
+  x.strokeStyle = 'rgba(255,161,78,0.9)'; x.lineWidth = 5;
+  x.beginPath(); x.arc(64, 64, 46, 0, 6.29); x.stroke();
+  x.strokeStyle = 'rgba(255,161,78,0.45)'; x.lineWidth = 2;
+  x.beginPath(); x.arc(64, 64, 58, 0, 6.29); x.stroke();
+  return new THREE.CanvasTexture(c);
+}
+const RING = ringTex();
+let zoneMarks = [];
+function buildZoneMarks() {
+  zoneMarks.forEach(sp => { grp.remove(sp); sp.material.dispose(); });
+  zoneMarks = [];
+  if (!TG.marks.v) return;
+  ZONES.forEach((z, i) => {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: RING, transparent: true,
+      depthTest: false, color: i === zoneI ? 0xffd27a : 0xff7f9c, opacity: i === zoneI ? 0.95 : 0.32 }));
+    sp.position.copy(zoneWorld(z));
+    sp.scale.setScalar(Math.max(0.001, z.r * halfSpan() * 2.2));
+    grp.add(sp); zoneMarks.push(sp);
+  });
+  // охват взрыва — отдельным бледным кольцом вокруг выбранной зоны: без него радиус
+  // приходится подбирать наугад, взрывая и отматывая
+  const az2 = ZONES[zoneI];
+  if (az2 && !TG.whole.v) {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: RING, transparent: true,
+      depthTest: false, color: 0xff5f7a, opacity: 0.16 }));
+    sp.position.copy(zoneWorld(az2));
+    sp.scale.setScalar(Math.max(0.001, S.blastR.v * halfSpan() * 2.35));
+    grp.add(sp); zoneMarks.push(sp);
+  }
+}
+// Ядро (уязвимая точка) садится на зону с самым большим множителем — в игре это
+// реактор. Так свечение и вспышка совпадают с тем, что игра считает главной целью.
+// Положение ядра считается В ОДНОМ месте и применяется сразу везде: в юниформ жара,
+// в спрайт свечения и в экспорт. Раньше оно вычислялось внутри пересборки, поэтому
+// подвинуть ядро без полного пересчёта облака было нельзя.
+function updateCore() {
+  const h = halfSpan();
+  if (TG.coreAuto.v) {
+    const cz = coreZone();
+    if (cz) { S.coreX.v = cz.x; S.coreY.v = cz.y; S.coreZ.v = cz.z; }
+    else {   // зон нет — центр масс «ядровых» точек, посчитанный при пересборке
+      S.coreX.v = coreFallback.x / h; S.coreY.v = coreFallback.y / h; S.coreZ.v = coreFallback.z / h;
+    }
+    ['coreX', 'coreY', 'coreZ'].forEach(k => { if (S[k].show) S[k].show(); });
+  }
+  corePos.set(S.coreX.v * h, S.coreY.v * h, S.coreZ.v * h);
+  uni.uCorePos.value.copy(corePos);
+  if (glow) {
+    glow.geometry.attributes.position.setXYZ(0, corePos.x, corePos.y, corePos.z);
+    glow.geometry.attributes.position.needsUpdate = true;
+  }
+}
+function coreZone() {
+  let best = null;
+  ZONES.forEach(z => { if (!best || z.mult > best.mult) best = z; });
+  return best;
+}
+
+function renderZoneUI() {
+  const btns = g('zoneBtns'); btns.innerHTML = '';
+  ZONES.forEach((z, i) => {
+    const b = document.createElement('button');
+    b.textContent = String(i + 1);
+    b.title = z.name;
+    b.className = i === zoneI ? 'on' : '';
+    b.onclick = () => { zoneI = i; renderZoneUI(); buildZoneMarks(); syncUniforms(); toast(z.name); };
+    btns.appendChild(b);
+  });
+  const nm = g('zName');
+  nm.value = ZONES[zoneI] ? ZONES[zoneI].name : '';
+  nm.oninput = () => { if (ZONES[zoneI]) { ZONES[zoneI].name = nm.value; renderZoneUI(); } };
+  const box = g('zoneSliders'); box.innerHTML = '';
+  const z = ZONES[zoneI];
+  if (!z) { box.textContent = ''; return; }
+  // координаты — в долях полугабарита: правка «Габарита» не сбивает зоны с корпуса
+  [['x', 'Поперёк (X)', -1.3, 1.3, 0.01], ['y', 'Вверх (Y)', -1.3, 1.3, 0.01],
+   ['z', 'Вдоль (Z)', -1.3, 1.3, 0.01], ['r', 'Радиус', 0.02, 0.7, 0.005],
+   ['mult', 'Множитель', 1, 6, 1]].forEach(([k, label, min, max, step]) => {
+    sliderRow(box, {
+      label: label, min: min, max: max, step: step,
+      fmt: v => step >= 1 ? '×' + (v | 0) : (+v).toFixed(3),
+      get: () => z[k], set: v => { z[k] = v; },
+      live: () => { buildZoneMarks(); syncUniforms(); if (k === 'mult') renderZoneUI(); }
+    });
+  });
+}
+addSeg('viewBtns', [['lab', 'Конструктор'], ['game', 'Как в игре']], () => viewMode2,
+  k => { viewMode2 = k; syncUniforms();
+    toast(k === 'game' ? 'Показ как в игре: NormalBlending, мировой размер, заливка прорежена'
+                       : 'Показ конструктора: аддитив, сканер, свечение, линии'); });
+addSeg('palBtns', [['read', 'Читаемая'], ['game', 'Как в игре']], () => palKey,
+  k => { palKey = k; applyPalette(k); });
+g('bZAuto').onclick = () => { autoZones(); renderZoneUI(); buildZoneMarks(); syncUniforms(); toast('Зоны расставлены по модели'); };
+g('bZAdd').onclick = () => {
+  ZONES.push({ name: 'ЗОНА ×1', x: 0, y: 0, z: -0.5, r: 0.15, mult: 1 });
+  zoneI = ZONES.length - 1;
+  renderZoneUI(); buildZoneMarks(); syncUniforms();
+};
+g('bZDel').onclick = () => {
+  if (!ZONES.length) return;
+  ZONES.splice(zoneI, 1);
+  zoneI = Math.max(0, Math.min(zoneI, ZONES.length - 1));
+  renderZoneUI(); buildZoneMarks(); syncUniforms();
+};
+
+// РАССТАНОВКА ПО КЛИКУ. Ползунки хороши для доводки, но «поставь сюда» ими делать
+// мучительно. Луч из курсора переводим в локальные координаты корпуса и ищем точку
+// облака. Тонкость: брать просто ближайшую к лучу нельзя — так зона проваливается на
+// дальнюю стенку, которая случайно оказалась ровно под курсором. Поэтому сначала
+// находим минимальное отклонение, а потом среди всех точек в этом допуске берём
+// САМУЮ БЛИЖНЮЮ К КАМЕРЕ: это и есть видимая поверхность.
+const _ray = new THREE.Raycaster();
+function placeZoneAt(cx, cy) {
+  const z = ZONES[zoneI];
+  if (!z || !CLOUD) return;
+  grp.updateMatrixWorld(true);
+  _ray.setFromCamera(new THREE.Vector2((cx / innerWidth) * 2 - 1, -((cy / innerHeight) * 2 - 1)), camera);
+  const inv = new THREE.Matrix4().copy(grp.matrixWorld).invert();
+  const o = _ray.ray.origin.clone().applyMatrix4(inv);
+  const d = _ray.ray.direction.clone().transformDirection(inv).normalize();
+  const P = CLOUD.pos, n = CLOUD.n;
+  const stride = Math.max(1, Math.floor(n / 30000));   // 30 тысяч проверок хватает
+  let minPerp = 1e18;
+  const cand = [];
+  for (let i = 0; i < n; i += stride) {
+    const px = P[i * 3] - o.x, py = P[i * 3 + 1] - o.y, pz = P[i * 3 + 2] - o.z;
+    const t = px * d.x + py * d.y + pz * d.z;
+    if (t <= 0) continue;
+    const ex = px - d.x * t, ey = py - d.y * t, ez = pz - d.z * t;
+    const perp = ex * ex + ey * ey + ez * ez;
+    cand.push(i, t, perp);
+    if (perp < minPerp) minPerp = perp;
+  }
+  if (!cand.length) return;
+  const tol = Math.max(minPerp * 4, Math.pow(CLOUD.cell * 3, 2));
+  let best = -1, bestT = 1e18;
+  for (let q = 0; q < cand.length; q += 3)
+    if (cand[q + 2] <= tol && cand[q + 1] < bestT) { bestT = cand[q + 1]; best = cand[q]; }
+  if (best < 0) return;
+  const h = halfSpan();
+  z.x = P[best * 3] / h; z.y = P[best * 3 + 1] / h; z.z = P[best * 3 + 2] / h;
+  renderZoneUI(); buildZoneMarks(); syncUniforms();
+  toast(z.name + ' перенесена');
+}
+
+// ── АВТОРАССТАНОВКА ЗОН ────────────────────────────────────────────────────
+// Четыре игровые зоны привязаны к пропорциям захватчика. На чужой модели они
+// оказываются в пустоте — кольца висят снаружи корпуса. Поэтому зоны ищутся ПО
+// ОБЛАКУ: реактор — низ у центра, двигатели — крайние точки бортов, мостик — верх
+// у центра. Это не «умно», это предсказуемо: попадает на настоящую геометрию, а
+// дальше двигается ползунками и Shift+кликом.
+let wantAutoZones = false;
+function autoZones() {
+  if (!CLOUD || !CLOUD.n) return;
+  const P = CLOUD.pos, n = CLOUD.n, h = halfSpan();
+  let mx = 1e-6, my = 1e-6, mz = 1e-6;
+  for (let i = 0; i < n; i++) {
+    mx = Math.max(mx, Math.abs(P[i * 3]));
+    my = Math.max(my, Math.abs(P[i * 3 + 1]));
+    mz = Math.max(mz, Math.abs(P[i * 3 + 2]));
+  }
+  // оценки считаем в ДОЛЯХ габарита по каждой оси — иначе на вытянутой модели
+  // «низ у центра» вырождается в «самый дальний конец»
+  const pick = score => {
+    let bi = 0, bs = Infinity;
+    for (let i = 0; i < n; i++) {
+      const v = score(P[i * 3] / mx, P[i * 3 + 1] / my, P[i * 3 + 2] / mz);
+      if (v < bs) { bs = v; bi = i; }
+    }
+    return bi;
+  };
+  const at = (i, name, r, mult) => ({ name: name, x: P[i * 3] / h, y: P[i * 3 + 1] / h,
+    z: P[i * 3 + 2] / h, r: r, mult: mult });
+  // радиус — от САМОГО УЗКОГО измерения: на плоском корпусе большая зона выглядит
+  // как обруч вокруг корабля, а не как уязвимое место
+  const rr = clamp(0.55 * Math.min(mx, my, mz) / h, 0.05, 0.26);
+  ZONES.length = 0;
+  ZONES.push(at(pick((x, y, z) =>  y + Math.abs(x) * 2.5 + Math.abs(z) * 1.2), 'РЕАКТОР ×3', rr * 1.15, 3));
+  ZONES.push(at(pick((x, y, z) =>  x + Math.abs(y) * 0.6),                     'ДВИГАТЕЛЬ ×2', rr, 2));
+  ZONES.push(at(pick((x, y, z) => -x + Math.abs(y) * 0.6),                     'ДВИГАТЕЛЬ ×2', rr, 2));
+  ZONES.push(at(pick((x, y, z) => -y + Math.abs(x) * 1.5 + Math.abs(z) * 0.8), 'МОСТИК ×2', rr * 0.9, 2));
+  zoneI = 0;
+}
+
+// ── ПРЕСЕТЫ ПАЛИТРЫ ───────────────────────────────────────────────────────
+// «Как в игре» — ровно цвета gBuildMother, для сверки. «Читаемая» — то же по духу,
+// но заливка вытянута до различимой: на аддитивном блендинге почти чёрный корпус
+// исчезает, и от корабля остаются одни линии.
+const PALETTES = {
+  read: { name: 'Читаемая', c: { edge: '#e63d47', fill: '#6d4f61', core: '#ff6b2e', hot: '#ffa14e',
+          burn: '#140d10', alarm: '#ff2d55', spark: '#ffc78a', wave: '#ff9ec4' }, fillDim: 0.5, szFill: 1.5 },
+  game: { name: 'Как в игре', c: { edge: '#e63d47', fill: '#1c2130', core: '#ff6b2e', hot: '#ffa14e',
+          burn: '#140d10', alarm: '#ff2d55', spark: '#ffc78a', wave: '#ff9ec4' }, fillDim: 1.0, szFill: 1.7 }
+};
+function applyPalette(k) {
+  const P = PALETTES[k];
+  if (!P) return;
+  for (const c in P.c) if (C[c]) { C[c].v = P.c[c]; if (C[c].inp) C[c].inp.value = P.c[c]; }
+  S.fillDim.v = P.fillDim; if (S.fillDim.show) S.fillDim.show();
+  S.szFill.v = P.szFill; if (S.szFill.show) S.szFill.show();
+  syncUniforms();
+  toast('Палитра: ' + P.name);
+}
+
+// ── ползунки → юниформы ─────────────────────────────────────────────────────
+let boomOn = false, boomT = 0, playing = false;
+
+function syncUniforms() {
+  // K = во сколько раз корабль крупнее «эталонных» 6.4 юнита, на которые настроены
+  // ползунки. Всё, что мерится в юнитах — размеры точек, радиус жара, скорости
+  // разлёта, глубина — умножается на него. Иначе один и тот же пресет на дроне и на
+  // захватчике выглядит совершенно по-разному.
+  const K = S.span.v / 6.4;
+  uni.uSzK.value = K; sparkUni.uSzK.value = K; waveUni.uSzK.value = K;
+  flashUni.uSzK.value = K; glowUni.uSzK.value = K;
+  uni.uScanW.value = 0.3 * K; uni.uDepthNear.value = 7 * K; uni.uDepthSpan.value = 18 * K;
+  uni.uSzEdge.value = S.szEdge.v; uni.uSzFill.value = S.szFill.v;
+  uni.uSzWing.value = S.szWing.v; uni.uSzCore.value = S.szCore.v;
+  uni.uEdgeBoost.value = S.edgeBoost.v; uni.uFillDim.value = S.fillDim.v;
+  uni.uDepthK.value = S.depthK.v; uni.uCoreK.value = S.coreK.v; uni.uCoreR.value = S.coreR.v * K;
+  uni.uScanK.value = S.scanK.v; uni.uScanSpd.value = S.scanSpd.v;
+  uni.uLightK.value = S.lightK.v;
+  // направление света — из азимута и высоты, в координатах камеры
+  const az = S.lightAz.v * Math.PI / 180, el = S.lightEl.v * Math.PI / 180;
+  uni.uLightDir.value.set(Math.cos(el) * Math.sin(az), Math.sin(el), Math.cos(el) * Math.cos(az)).normalize();
+  if (edgeLines) { edgeLines.material.opacity = S.lineOp.v; edgeLines.material.color.set(C.edge.v); }
+  uni.uCullSoft.value = S.cullSoft.v;
+  uni.uCull.value = PR.cull.v ? 1 : 0; uni.uXray.value = S.xray.v;
+  uni.uOcclSz.value = S.occlSz.v;
+  // Сдвиг глубины заслона привязан к шагу вокселя: он должен быть больше зазора
+  // между соседними точками, но заметно меньше толщины корпуса.
+  uni.uOcclBias.value = (CLOUD ? CLOUD.cell : 1) * 1.6;
+  if (occl) occl.visible = TG.occl.v;
+  uni.uRimK.value = S.rimK.v; uni.uBurnK.value = S.burnK.v; uni.uShakeK.value = S.shakeK.v * K;
+  // урон при взрыве: либо остаётся (обломки уже были битые), либо снимается
+  const dmg = (boomOn && !TG.keep.v) ? 0 : S.dmg.v;
+  uni.uDmg.value = dmg; glowUni.uDmg.value = dmg;
+  glowUni.uK.value = PR.core.v ? clamp01(S.coreK.v / 3) * 1.2 : 0;
+  // скорости — тоже в юнитах: на большом корабле обломки должны разлетаться дальше,
+  // иначе он «оседает на месте» и взрыв читается как осыпание песка
+  uni.uVel.value = S.bVel.v * K; uni.uRadial.value = S.bRadial.v;
+  uni.uSpin.value = S.bSpin.v; uni.uScatter.value = S.bScatter.v * K;
+  uDrag.value = S.bDrag.v; uGrav.value = S.bGrav.v * K; uLife.value = S.bLife.v;
+  sparkUni.uSparkV.value = S.bSparkV.v * K; sparkUni.uAmt.value = 1;
+  // Локальный взрыв: радиус в долях полугабарита. Волна и вспышка обязаны быть по
+  // размеру очага — иначе от точечного попадания расходится фронт на весь крейсер,
+  // и масштаб опять теряется.
+  const whole = TG.whole.v ? 1 : 0;
+  uni.uWhole.value = whole; sparkUni.uWhole.value = whole;
+  uni.uBlastR.value = Math.max(0.001, S.blastR.v * halfSpan());
+  uni.uBlastSoft.value = S.blastSoft.v;
+  const локK = whole ? 1 : clamp(S.blastR.v * 2.2, 0.15, 1);
+  waveUni.uWave.value = S.bWave.v; waveUni.uWaveV.value = S.bWaveV.v * K * локK;
+  flashUni.uFlash.value = S.bFlash.v * локK;
+  uni.fSil.value = PR.silhou.v ? 1 : 0; uni.fCore.value = PR.core.v ? 1 : 0;
+  uni.fTemp.value = PR.temp.v ? 1 : 0; uni.fScan.value = PR.scan.v ? 1 : 0;
+  uni.fAlarm.value = PR.alarm.v ? 1 : 0; uni.fShake.value = PR.shake.v ? 1 : 0;
+  for (const k in C) COL[k].value.set(C[k].v);
+  updateCore();
+  // ИГРОВОЙ РЕЖИМ: обычный блендинг вместо аддитивного, размеры в мировых юнитах,
+  // прореживание заливки, и всё, чего в игре нет, — выключено.
+  const gameOn = viewMode2 === 'game';
+  uni.uGame.value = gameOn ? 1 : 0;
+  uni.uGSzEdge.value = toWorldSize(S.szEdge.v);
+  uni.uGSzFill.value = toWorldSize(S.szFill.v);
+  uni.uGSzWing.value = toWorldSize(S.szWing.v);
+  uni.uGSzCore.value = toWorldSize(S.szCore.v);
+  const fillN = CLOUD ? Math.max(1, CLOUD.n - CLOUD.edgeN) : 1;
+  uni.uGKeep.value = Math.min(1, GAME_FILL_BUDGET / fillN);
+  if (hullMat.blending !== (gameOn ? THREE.NormalBlending : THREE.AdditiveBlending)) {
+    hullMat.blending = gameOn ? THREE.NormalBlending : THREE.AdditiveBlending;
+    hullMat.needsUpdate = true;
+  }
+  if (edgeLines) edgeLines.visible = TG.lines.v && !gameOn;   // линий в игре нет
+  if (glow) glow.visible = !gameOn;                           // отдельного свечения ядра тоже
+  g('mView2').textContent = gameOn ? 'ИГРА' : 'ЛАБ';
+  // центр детонации — выбранная зона; если зон нет, рвёт из центра масс
+  const z = ZONES[zoneI], h = halfSpan();
+  if (z) { uni.uOrigin.value.set(z.x * h, z.y * h, z.z * h); uni.uMult.value = z.mult; uni.uZoneR.value = Math.max(0.001, z.r * h); }
+  else { uni.uOrigin.value.set(0, 0, 0); uni.uMult.value = 1; uni.uZoneR.value = h; }
+  if (flash) {
+    const o = uni.uOrigin.value;
+    flash.geometry.attributes.position.setXYZ(0, o.x, o.y, o.z);
+    flash.geometry.attributes.position.needsUpdate = true;
+  }
+}
+
+// ── интерфейс ───────────────────────────────────────────────────────────────
+const fmtOf = d => v => d.step >= 1 ? String(v | 0) : (d.step < 0.01 ? (+v).toFixed(3) : (+v).toFixed(2));
+
+// ОДНА строка-ползунок на всё: и общие настройки, и параметры зоны. Кнопки − и +
+// обязательны — мышью точное значение не поймать, особенно на «Фазе» и «Радиусе
+// взрыва», где важны сотые. Shift множит шаг на десять.
+function sliderRow(box, o) {
+  const row = document.createElement('div'); row.className = 'row';
+  const lab = document.createElement('label'); lab.textContent = o.label;
+  const minus = document.createElement('button'); minus.className = 'pm'; minus.textContent = '−';
+  const plus = document.createElement('button'); plus.className = 'pm'; plus.textContent = '+';
+  const inp = document.createElement('input');
+  inp.type = 'range'; inp.min = o.min; inp.max = o.max; inp.step = o.step; inp.value = o.get();
+  const val = document.createElement('div'); val.className = 'val';
+  const fmt = o.fmt || (v => o.step >= 1 ? String(v | 0) : (o.step < 0.01 ? (+v).toFixed(3) : (+v).toFixed(2)));
+  // Присваиваем value только если оно реально другое: перезапись того же числа
+  // посреди перетаскивания в некоторых браузерах сбивает захват ползунка.
+  const show = () => { const v = o.get(); if (+inp.value !== v) inp.value = v; val.textContent = fmt(v); };
+  show();
+  inp.oninput = () => { o.set(+inp.value); val.textContent = fmt(+inp.value); if (o.live) o.live(); };
+  if (o.heavy) inp.onchange = () => { o.set(+inp.value); show(); o.heavy(); };
+  const nudge = (dir, ev) => {
+    const st = o.step * (ev && ev.shiftKey ? 10 : 1);
+    o.set(clamp(+(o.get() + dir * st).toFixed(6), o.min, o.max));
+    show(); if (o.live) o.live(); if (o.heavy) o.heavy();
+  };
+  minus.onclick = e => nudge(-1, e);
+  plus.onclick = e => nudge(1, e);
+  row.append(lab, minus, inp, plus, val);
+  box.appendChild(row);
+  return { show: show, inp: inp, val: val, fmt: fmt };
+}
+
+// Один и тот же параметр может стоять в ДВУХ группах — например размер точки
+// заливки логично видеть и рядом с её плотностью в «Форме», и вместе с остальными
+// размерами. Поэтому строки складываются в список, и правка любой из них обновляет
+// все: иначе близнецы разошлись бы и панель начала бы врать.
+function addSlider(k, opts) {
+  const d = S[k];
+  const ui = sliderRow(g((opts && opts.box) || d.box), {
+    label: (opts && opts.label) || d.label, min: d.min, max: d.max, step: d.step,
+    get: () => d.v, set: v => { d.v = v; },
+    // Тяжёлая пересборка — только на отпускание ползунка и на ±. Иначе таскание
+    // «Шага» вешает вкладку: каждый пиксель = полный пересчёт облака.
+    // onSlider ДО синхронизации: он снимает автопривязку ядра, а syncUniforms в
+    // авторежиме затирает положение обратно на зону. При обратном порядке правка
+    // ползунка «Ядро: поперёк» просто не доживала до кадра. syncUniforms вызывается
+    // в конце самого onSlider, поэтому отдельного вызова здесь не нужно.
+    live: () => { d.show(); onSlider(k); },
+    heavy: d.rebuild ? () => { d.show(); syncUniforms(); rebuildGeometry(); } : null
+  });
+  if (!d.rows) d.rows = [];
+  d.rows.push(ui);
+  d.inp = ui.inp; d.valEl = ui.val; d.fmt = ui.fmt;
+  d.show = () => d.rows.forEach(r => r.show());
+}
+function addToggle(k) {
+  const d = TG[k], box = g(d.box);
+  const l = document.createElement('label'); l.className = 'chk';
+  const i = document.createElement('input'); i.type = 'checkbox'; i.checked = d.v;
+  i.onchange = () => { d.v = i.checked; d.on && d.on(); syncUniforms(); };
+  d.inp = i;
+  const s = document.createElement('span'); s.textContent = d.label;
+  l.append(i, s); box.appendChild(l);
+}
+function addColor(k) {
+  const d = C[k], box = g('colBox');
+  const row = document.createElement('div'); row.className = 'crow';
+  const lab = document.createElement('label'); lab.textContent = d.label;
+  const inp = document.createElement('input'); inp.type = 'color'; inp.value = d.v;
+  inp.oninput = () => { d.v = inp.value; syncUniforms(); };
+  d.inp = inp;
+  row.append(lab, inp); box.appendChild(row);
+}
+function addSeg(boxId, items, get, set) {
+  const box = g(boxId); box.innerHTML = '';
+  items.forEach(([k, t]) => {
+    const b = document.createElement('button');
+    b.textContent = t; b.dataset.k = k;
+    b.className = get() === k ? 'on' : '';
+    b.onclick = () => { set(k); [].forEach.call(box.children, c => c.classList.toggle('on', c.dataset.k === get())); };
+    box.appendChild(b);
+  });
+}
+// особые случаи для отдельных ползунков
+function onSlider(k) {
+  if (k === 'bTime') { boomT = S.bTime.v; if (boomT > 0) boomOn = true; playing = false; }
+  if (k === 'blastR') buildZoneMarks();
+  if (k === 'spin' && S.spin.v > 0) spinOn = true;   // иначе ползунок выглядит сломанным
+  // тронул положение ядра — значит ведёт его руками, автопривязку снимаем молча
+  if (k === 'coreX' || k === 'coreY' || k === 'coreZ') {
+    if (TG.coreAuto.v) { TG.coreAuto.v = false; if (TG.coreAuto.inp) TG.coreAuto.inp.checked = false; }
+    updateCore();
+  }
+  syncUniforms();
+}
+
+// приёмы
+PR_KEYS.forEach(k => {
+  const d = PR[k];
+  const el = document.createElement('label');
+  el.className = 'pr' + (d.v ? ' on' : '');
+  el.innerHTML = '<input type="checkbox"' + (d.v ? ' checked' : '') + '>' +
+    '<span class="tx"><span class="nm">' + d.n + '. ' + d.name + '</span>' +
+    '<span class="ds">' + d.ds + '</span></span>';
+  el.querySelector('input').onchange = e => setPr(k, e.target.checked);
+  d.el = el; g('prList').appendChild(el);
+});
+function setPr(k, on) {
+  const d = PR[k];
+  d.v = on;
+  d.el.classList.toggle('on', on);
+  d.el.querySelector('input').checked = on;
+  syncUniforms();
+  if (k === 'skew') rebuildGeometry();   // перекос меняет само облако
+}
+
+addSeg('srcBtns', Object.keys(SRC).map(k => [k, SRC[k]]), () => srcMode, k => {
+  if (k === 'file' && !MODEL_GEO) { g('file').click(); return; }
+  // у захватчика зоны игровые и выверенные — их не трогаем; у остальных ставим по модели
+  if (k !== 'mother') wantAutoZones = true;
+  srcMode = k; rebuildGeometry();
+});
+addSeg('axisBtns', [['auto', 'Авто'], ['x', 'X'], ['y', 'Y'], ['z', 'Z']], () => axisMode, k => {
+  axisMode = k; rebuildGeometry();
+});
+// Плотность и размер точки идут ПАРОЙ: раньше плотность заливки стояла в «Форме», а
+// её размер — в свёрнутой группе «Размеры точек», и выглядело так, будто размера нет.
+addSlider('span');
+addSlider('cell');
+addSlider('szFill', { box: 'formBox', label: 'Размер точки заливки' });
+addSlider('edgeAng');
+addSlider('edgeDens');
+addSlider('szEdge', { box: 'formBox', label: 'Размер точки контура' });
+addSlider('lineOp');
+addToggle('lines');
+['yaw0', 'skewK'].forEach(addSlider);
+addToggle('grid'); TG.grid.on = () => buildHelper();
+addToggle('marks'); TG.marks.on = () => buildZoneMarks();
+['szEdge', 'szFill', 'szWing', 'szCore'].forEach(addSlider);
+Object.keys(C).forEach(addColor);
+['edgeBoost', 'fillDim', 'depthK', 'lightK', 'lightAz', 'lightEl',
+ 'xray', 'cullSoft', 'coreK', 'coreR'].forEach(addSlider);
+addToggle('coreAuto'); TG.coreAuto.on = () => { updateCore(); };
+addToggle('occl'); ['occlSz'].forEach(addSlider);
+['coreX', 'coreY', 'coreZ'].forEach(addSlider);
+['scanK', 'scanSpd', 'spin'].forEach(addSlider);
+['dmg', 'wounds', 'rimK', 'burnK', 'shakeK'].forEach(addSlider);
+['bTime', 'blastR', 'blastSoft', 'bFrag', 'bVel', 'bRadial', 'bSpin', 'bDrag', 'bGrav',
+ 'bScatter', 'bSparks', 'bSparkV', 'bWave', 'bWaveV', 'bFlash', 'bLife', 'bSlow'].forEach(addSlider);
+addToggle('loop'); addToggle('keep'); addToggle('whole');
+TG.whole.on = () => buildZoneMarks();   // кольцо охвата не нужно, когда рвём целиком
+
+// снимок исходных значений — для кнопки «Сбросить всё»
+const DEF = JSON.parse(JSON.stringify({
+  pr: PR_KEYS.reduce((o, k) => (o[k] = PR[k].v, o), {}),
+  s: Object.keys(S).reduce((o, k) => (o[k] = S[k].v, o), {}),
+  tg: Object.keys(TG).reduce((o, k) => (o[k] = TG[k].v, o), {}),
+  c: Object.keys(C).reduce((o, k) => (o[k] = C[k].v, o), {})
+}));
+
+// ── загрузка своей модели ───────────────────────────────────────────────────
+function onGeo(geo, name) {
+  MODEL_GEO = geo;
+  srcMode = 'file';
+  wantAutoZones = true;
+  [].forEach.call(g('srcBtns').children, c => c.classList.toggle('on', c.dataset.k === 'file'));
+  rebuildGeometry();
+  toast('Загружено: ' + name);
+}
+function parseModelFile(file) {
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  const rd = new FileReader();
+  busy(true, 'Читаю файл…');
+  rd.onload = () => {
+    try {
+      if (ext === 'obj') {
+        if (!THREE.OBJLoader) return fail('Загрузчик OBJ не подгрузился — нет сети?');
+        const geo = mergeSceneGeometry(new THREE.OBJLoader().parse(rd.result));
+        geo ? onGeo(geo, file.name) : fail('В файле нет геометрии');
+      } else if (ext === 'stl') {
+        if (!THREE.STLLoader) return fail('Загрузчик STL не подгрузился — нет сети?');
+        const geo = new THREE.STLLoader().parse(rd.result);
+        geo ? onGeo(geo, file.name) : fail('В файле нет геометрии');
+      } else if (ext === 'glb' || ext === 'gltf') {
+        if (!THREE.GLTFLoader) return fail('Загрузчик GLTF не подгрузился — нет сети?');
+        new THREE.GLTFLoader().parse(rd.result, '', gl => {
+          const geo = mergeSceneGeometry(gl.scene);
+          geo ? onGeo(geo, file.name) : fail('В модели нет геометрии');
+        }, () => fail('Не удалось разобрать GLB/GLTF'));
+      } else if (ext === 'fbx') {
+        if (!THREE.FBXLoader) return fail('Загрузчик FBX не подгрузился. Пересохрани в .obj или .glb');
+        const geo = mergeSceneGeometry(new THREE.FBXLoader().parse(rd.result, ''));
+        geo ? onGeo(geo, file.name) : fail('В FBX нет геометрии');
+      } else fail('Понимаю .obj, .glb, .gltf, .stl, .fbx');
+    } catch (e) { fail('Ошибка разбора: ' + e.message); }
+    finally { busy(false); }
+  };
+  rd.onerror = () => { busy(false); fail('Файл не читается'); };
+  if (ext === 'obj') rd.readAsText(file); else rd.readAsArrayBuffer(file);
+}
+function fail(m) { busy(false); toast(m); console.warn(m); }
+g('bLoad').onclick = () => g('file').click();
+g('file').addEventListener('change', e => { const f = e.target.files[0]; if (f) parseModelFile(f); e.target.value = ''; });
+let dragDepth = 0;
+addEventListener('dragenter', e => { e.preventDefault(); dragDepth++; g('drop').classList.add('on'); });
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; g('drop').classList.remove('on'); } });
+addEventListener('drop', e => {
+  e.preventDefault(); dragDepth = 0; g('drop').classList.remove('on');
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) parseModelFile(f);
+});
+
+// ── взрыв: управление ───────────────────────────────────────────────────────
+function detonate() { boomOn = true; boomT = 0; playing = true; syncUniforms(); }
+function reassemble() { boomOn = false; boomT = 0; playing = false; setTime(0); syncUniforms(); }
+function setTime(t) {
+  boomT = t; S.bTime.v = t;
+  if (S.bTime.inp) { S.bTime.inp.value = Math.min(S.bTime.max, t); S.bTime.valEl.textContent = S.bTime.fmt(t); }
+}
+g('bBoom').onclick = detonate;
+g('bReset').onclick = reassemble;
+
+// ── вывод ───────────────────────────────────────────────────────────────────
+function presetJSON() {
+  const p = {}; PR_KEYS.forEach(k => p[PR[k].n + '_' + k] = PR[k].v);
+  const s = {}; for (const k in S) s[k] = S[k].v;
+  const t = {}; for (const k in TG) t[k] = TG[k].v;
+  const c = {}; for (const k in C) c[k] = C[k].v;
+  return JSON.stringify({ source: srcMode, axis: axisMode, principles: p, settings: s, toggles: t, colors: c }, null, 2);
+}
+function copyText(txt, ok) {
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast(ok), () => { console.log(txt); toast('Не дали доступ к буферу — вывел в консоль'); });
+  else { console.log(txt); toast('Вывел в консоль'); }
+}
+g('bCopy').onclick = () => copyText(presetJSON(), 'Пресет скопирован');
+
+// УПАКОВКА В ФОРМАТ ИГРЫ. Тот же приём, что в ship-points.js: контурные точки
+// первыми (чтобы игре хватило одного числа EDGE_N), координаты — знаковым байтом
+// от общего масштаба. Потеря точности порядка габарит/254 глазом не видна, зато
+// облако в 30 тысяч точек весит около 120 КБ вместо мегабайта текста.
+function orderEdgesFirst() {
+  const n = CLOUD.n, order = new Int32Array(n);
+  let w = 0;
+  for (let i = 0; i < n; i++) if (CLOUD.role[i] === 1) order[w++] = i;
+  for (let i = 0; i < n; i++) if (CLOUD.role[i] !== 1) order[w++] = i;
+  return order;
+}
+function packCloud() {
+  const n = CLOUD.n, order = orderEdgesFirst();
+  let edgeN = 0;
+  for (let i = 0; i < n; i++) if (CLOUD.role[i] === 1) edgeN++;
+  let scale = 1e-6;
+  for (let i = 0; i < n * 3; i++) scale = Math.max(scale, Math.abs(CLOUD.pos[i]));
+  const bytes = new Uint8Array(n * 3);
+  for (let k = 0; k < n; k++) {
+    const i = order[k];
+    for (let c = 0; c < 3; c++) {
+      let v = Math.round(CLOUD.pos[i * 3 + c] / scale * 127);
+      v = clamp(v, -127, 127);
+      bytes[k * 3 + c] = v < 0 ? v + 256 : v;
+    }
+  }
+  let s = '';
+  for (let o = 0; o < bytes.length; o += 8192) s += String.fromCharCode.apply(null, bytes.subarray(o, o + 8192));
+  return { edgeN: edgeN, scale: scale, b64: btoa(s) };
+}
+// В файл уезжают НЕ ТОЛЬКО КООРДИНАТЫ. Первая версия отдавала позиции, палитру и
+// зоны — и игра не могла воспроизвести лук: без нормалей нет ни освещения по граням,
+// ни отсечения отвёрнутых точек, а размеры по ролям она просто не читала. Отсюда и
+// «в игре смотрится совсем иначе». Версия 2 отдаёт всё, что нужно для того же кадра.
+// Зона на точку — байт. Нужна игре, чтобы взять тот же размер точки, что и здесь:
+// у крыльев и ядра он свой (szWing, szCore), и без этого байта игра рисовала бы всё
+// одним размером — заметная часть расхождения.
+function packZones() {
+  const n = CLOUD.n, order = orderEdgesFirst();
+  const bytes = new Uint8Array(n);
+  for (let k = 0; k < n; k++) bytes[k] = CLOUD.zone[order[k]] | 0;
+  let out = '';
+  for (let o = 0; o < n; o += 8192) out += String.fromCharCode.apply(null, bytes.subarray(o, o + 8192));
+  return btoa(out);
+}
+function packNormals() {
+  const n = CLOUD.n, order = orderEdgesFirst();
+  const bytes = new Uint8Array(n * 3);
+  for (let k = 0; k < n; k++) {
+    const i = order[k];
+    for (let c = 0; c < 3; c++) {
+      let v = Math.round(clamp(CLOUD.nor[i * 3 + c], -1, 1) * 127);
+      bytes[k * 3 + c] = v < 0 ? v + 256 : v;
+    }
+  }
+  let out = '';
+  for (let o = 0; o < bytes.length; o += 8192) out += String.fromCharCode.apply(null, bytes.subarray(o, o + 8192));
+  return btoa(out);
+}
+function exportJS() {
+  if (!CLOUD) return toast('Сначала собери форму');
+  const P = packCloud();
+  const NOR = packNormals();
+  const ZN = packZones();
+  const num = v => (Math.round(v * 1000) / 1000);
+  const pal = {}; for (const k in C) pal[k] = C[k].v;
+  const boom = { frag: S.bFrag.v, vel: S.bVel.v, radial: S.bRadial.v, spin: S.bSpin.v,
+    drag: S.bDrag.v, grav: S.bGrav.v, scatter: S.bScatter.v, sparks: S.bSparks.v,
+    sparkV: S.bSparkV.v, wave: S.bWave.v, waveV: S.bWaveV.v, flash: S.bFlash.v,
+    life: S.bLife.v, blastR: S.blastR.v, blastSoft: S.blastSoft.v };
+  const sizes = { edge: S.szEdge.v, fill: S.szFill.v, wing: S.szWing.v, core: S.szCore.v,
+    edgeBoost: S.edgeBoost.v, fillDim: S.fillDim.v, depthK: S.depthK.v,
+    coreK: S.coreK.v, coreR: S.coreR.v, cullSoft: S.cullSoft.v };
+  // РАЗМЕРЫ ТОЧЕК В МИРОВЫХ ЮНИТАХ МОДЕЛИ. Игре нужны именно они: у неё точка
+  // задаётся мировым размером с падением 1/расстояние, а не «единицами панели».
+  const ps = { edge: num(toWorldSize(S.szEdge.v)), fill: num(toWorldSize(S.szFill.v)),
+    wing: num(toWorldSize(S.szWing.v)), core: num(toWorldSize(S.szCore.v)) };
+  const h = halfSpan();
+  const zonesU = ZONES.map(z => ({ name: z.name, x: num(z.x * h), y: num(z.y * h),
+    z: num(z.z * h), r: num(z.r * h), mult: z.mult }));
+  const txt =
+'// Вражеский корабль: точки и настройки. Сгенерировано enemy-lab.html — руками не править,\n' +
+'// перегенерировать инструментом. Формат родствен ship-points.js, чтобы игра читала оба\n' +
+'// файла одним кодом: подключается тегом <script> (fetch не работает на file://).\n' +
+'//\n' +
+'// V       — версия формата. 2 = есть нормали, мировые размеры точек, свет и зоны в юнитах.\n' +
+'// EDGE_N  — сколько первых точек лежит на рёбрах: их рисуем крупнее и ярче, на них держится силуэт.\n' +
+'// B64     — координаты знаковым байтом; развернуть множителем SCALE: v = byte / 127 * SCALE.\n' +
+'// NOR     — НОРМАЛИ тем же порядком, байт на компоненту: v = byte / 127. Без них в игре\n' +
+'//           нельзя ни затенить грани, ни убрать просвечивание насквозь.\n' +
+'// ZN      — зона точки тем же порядком, один байт: 0 ядро, 1 корпус, 2 крыло, 3 корма.\n' +
+'//           По ней берётся размер точки из PSIZE.\n' +
+'// КАДР    — игра обязана считать ровно четыре вещи, иначе картинка разойдётся с\n' +
+'//           конструктором: цвет по роли, множитель EDGEBOOST/FILLDIM, ламберт по\n' +
+'//           нормали (LIGHT, в координатах камеры), отсечение отвёрнутых (CULL).\n' +
+'// PSIZE   — размеры точек В МИРОВЫХ ЮНИТАХ модели (умножить на свой масштаб сцены).\n' +
+'// LIGHT   — направление ламберта в координатах КАМЕРЫ (азимут/высота в градусах) и его сила.\n' +
+'// OCCL    — заслон по глубине: невидимый проход пишет глубину диском в sz раз крупнее\n' +
+'//           точки, и всё дальнее перестаёт просвечивать. Сдвиг глубины — CELL×1.6.\n' +
+'// CELL    — шаг воксельной сетки в юнитах модели.\n' +
+'// CULL    — отсечение отвёрнутых точек: включено, мягкость границы и ПРОСВЕТ xray —\n' +
+'//           яркость отвёрнутых точек: 0 глухая оболочка, 1 модель видно насквозь.\n' +
+'// ZONESU  — зоны удара в АБСОЛЮТНЫХ юнитах модели (не в долях): умножить на масштаб сцены.\n' +
+'// CORE    — уязвимое ядро: точка, куда целиться и откуда идёт вспышка при детонации.\n' +
+'// BOOM    — параметры разлёта. Позиция куска — чистая функция времени:\n' +
+'//             v(t) = (v0 - g/k)·e^(-kt) + g/k,  p(t) = p0 + (v0 - g/k)·(1 - e^(-kt))/k + (g/k)·t\n' +
+'//           плюс поворот вокруг своей оси на |ω|·t, и влияние падает с расстоянием от точки\n' +
+'//           удара (blastR) — поэтому от одной ракеты отрывает кусок, а не весь корпус.\n' +
+'(function (root) {\n' +
+'  root.PD_ENEMY = {\n' +
+'    V: 2,\n' +
+'    EDGE_N: ' + P.edgeN + ',\n' +
+'    COUNT: ' + CLOUD.n + ',\n' +
+'    SCALE: ' + num(P.scale) + ',\n' +
+'    SPAN: ' + num(S.span.v) + ',\n' +
+'    CELL: ' + num(CLOUD.cell) + ',\n' +
+'    OCCL: { on: ' + (TG.occl.v ? 'true' : 'false') + ', sz: ' + num(S.occlSz.v) + ' },\n' +
+'    CORE: [' + num(corePos.x) + ', ' + num(corePos.y) + ', ' + num(corePos.z) + '],\n' +
+'    WOUNDS: ' + (S.wounds.v | 0) + ',\n' +
+'    PSIZE: ' + JSON.stringify(ps) + ',\n' +
+'    LIGHT: { az: ' + num(S.lightAz.v) + ', el: ' + num(S.lightEl.v) + ', k: ' + num(S.lightK.v) + ' },\n' +
+'    CULL: { on: ' + (PR.cull.v ? 'true' : 'false') + ', soft: ' + num(S.cullSoft.v) +
+'      , xray: ' + num(S.xray.v) + ' },\n' +
+'    FILLDIM: ' + num(S.fillDim.v) + ',\n' +
+'    EDGEBOOST: ' + num(S.edgeBoost.v) + ',\n' +
+'    ZONES: ' + JSON.stringify(ZONES.map(z => ({ name: z.name, x: z.x, y: z.y, z: z.z, r: z.r, mult: z.mult }))) + ',\n' +
+'    ZONESU: ' + JSON.stringify(zonesU) + ',\n' +
+'    SIZES: ' + JSON.stringify(sizes) + ',\n' +
+'    PALETTE: ' + JSON.stringify(pal) + ',\n' +
+'    BOOM: ' + JSON.stringify(boom) + ',\n' +
+"    B64: '" + P.b64 + "',\n" +
+"    NOR: '" + NOR + "',\n" +
+"    ZN: '" + ZN + "'\n" +
+'  };\n' +
+"})(typeof self !== 'undefined' ? self : (typeof globalThis !== 'undefined' ? globalThis : this));\n";
+  const blob = new Blob([txt], { type: 'text/javascript' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'enemy-points.js';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  // Честное предупреждение вместо молчания: у корабля игрока 4184 точки и 12 КБ.
+  // Тридцать тысяч на врага игра ещё проглотит, сто — нет.
+  const heavy = CLOUD.n > 60000;
+  toast('enemy-points.js · ' + CLOUD.n + ' точек · ' + Math.round(txt.length / 1024) + ' КБ' +
+    (heavy ? ' — для игры многовато, подними шаг вокселя' : ''));
+}
+g('bExport').onclick = exportJS;
+
+g('bDefaults').onclick = () => {
+  PR_KEYS.forEach(k => setPr(k, DEF.pr[k]));
+  for (const k in S) { S[k].v = DEF.s[k]; if (S[k].show) S[k].show(); }
+  for (const k in TG) { TG[k].v = DEF.tg[k]; if (TG[k].inp) TG[k].inp.checked = TG[k].v; }
+  for (const k in C) { C[k].v = DEF.c[k]; if (C[k].inp) C[k].inp.value = C[k].v; }
+  reassemble(); syncUniforms(); rebuildGeometry();
+  toast('Сброшено');
+};
+
+// ── камера: облёт мышью, зум колёсиком, четыре предустановленных ракурса ────
+const VIEWS = [['3/4', 0.72, 0.42], ['СПЕРЕДИ', Math.PI, 0.06], ['СБОКУ', Math.PI / 2, 0.05], ['СВЕРХУ', 0, 1.35]];
+let viewI = 0, camYaw = 0.72, camPitch = 0.42, camDist = 13, dragging = false, lx = 0, ly = 0;
+let lastSpan = null;   // габарит предыдущей сборки: по нему пересчитывается дистанция
+function applyView(i) {
+  viewI = i; camYaw = VIEWS[i][1]; camPitch = VIEWS[i][2];
+  g('mView').textContent = VIEWS[i][0];
+}
+applyView(0);
+cv.addEventListener('pointerdown', e => {
+  if (e.shiftKey) { placeZoneAt(e.clientX, e.clientY); return; }   // Shift — расстановка, не облёт
+  dragging = true; lx = e.clientX; ly = e.clientY; cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener('pointerup', e => { dragging = false; try { cv.releasePointerCapture(e.pointerId); } catch (_) {} });
+cv.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  camYaw -= (e.clientX - lx) * 0.006;
+  camPitch = clamp(camPitch + (e.clientY - ly) * 0.005, -1.45, 1.45);
+  lx = e.clientX; ly = e.clientY;
+});
+cv.addEventListener('wheel', e => { e.preventDefault();
+  camDist = clamp(camDist * (1 + Math.sign(e.deltaY) * 0.08), 1, 3000); }, { passive: false });
+
+addEventListener('keydown', e => {
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= PR_KEYS.length) { const k = PR_KEYS[n - 1]; setPr(k, !PR[k].v); return; }
+  const c = e.key.toLowerCase();
+  if (c === 'x' || c === 'ч') { detonate(); return; }
+  if (c === 'r' || c === 'к') { reassemble(); return; }
+  if (c === 'v' || c === 'м') { applyView((viewI + 1) % VIEWS.length); return; }
+  if (c === 'g' || c === 'п') {
+    viewMode2 = viewMode2 === 'game' ? 'lab' : 'game';
+    [].forEach.call(g('viewBtns').children, b => b.classList.toggle('on', b.dataset.k === viewMode2));
+    syncUniforms(); return;
+  }
+  if (e.key === '[') { applyUiZoom(-0.1); return; }
+  if (e.key === ']') { applyUiZoom(0.1); return; }
+  if (c === 'h' || c === 'р') {
+    const u = g('ui');
+    u.style.display = u.style.display === 'none' ? '' : 'none';
+    applyViewOffset();    // панель убрали — центр возвращается в центр экрана
+    return;
+  }
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (boomOn) playing = !playing; else spinOn = !spinOn;
+  }
+});
+// ── ЦЕНТР СЦЕНЫ — В ЦЕНТРЕ СВОБОДНОЙ ЧАСТИ ЭКРАНА ─────────────────────────
+// Панель занимает левую треть окна и висит НАД холстом, поэтому корабль, стоящий в
+// геометрическом центре кадра, оказывается прижат к панели. Сдвигаем не сцену и не
+// камеру, а саму проекцию: setViewOffset смещает фрустум на половину панели, размер
+// и перспектива при этом не меняются — только кадр съезжает. Панель может быть слева
+// (широкое окно) или сверху (узкое), поэтому направление берём из её реального
+// прямоугольника, а не из медиазапроса.
+function applyViewOffset() {
+  const u = g('ui');
+  const hidden = u.style.display === 'none';
+  const r = hidden ? { width: 0, height: 0 } : u.getBoundingClientRect();
+  const onTop = r.width >= innerWidth * 0.95;
+  const dx = onTop ? 0 : r.width;
+  const dy = onTop ? r.height : 0;
+  camera.aspect = innerWidth / innerHeight;
+  if (dx || dy) camera.setViewOffset(innerWidth, innerHeight, -dx / 2, -dy / 2, innerWidth, innerHeight);
+  else camera.clearViewOffset();
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', () => {
+  renderer.setSize(innerWidth, innerHeight);
+  uPx.value = innerHeight;
+  applyViewOffset();
+});
+
+// ── цикл ────────────────────────────────────────────────────────────────────
+const clock = new THREE.Clock();
+// Автовращение по умолчанию ВЫКЛЮЧЕНО: конструктор — это работа с конкретным
+// ракурсом, а уезжающая из-под курсора модель мешает подбирать и свет, и зоны.
+// Включается пробелом или ползунком «Автовращение».
+let fps = 60, acc = 0, spinYaw = 0, spinOn = false;
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, clock.getDelta());
+  const t = clock.getElapsedTime();
+  uT.value = t;
+
+  if (spinOn && !boomOn) spinYaw += dt * S.spin.v * 0.6;
+  grp.rotation.y = spinYaw;
+  // дрожь всего корпуса: у битого корабля трясётся не только обшивка
+  const sh = (PR.shake.v && !boomOn) ? S.shakeK.v * S.dmg.v * 0.05 : 0;
+  grp.position.set(sh * Math.sin(t * 41), sh * Math.sin(t * 53 + 1.3), 0);
+
+  if (boomOn && playing) {
+    setTime(boomT + dt * S.bSlow.v);
+    if (boomT > S.bLife.v + 0.6) { if (TG.loop.v) setTime(0); else playing = false; }
+  }
+  uBoom.value = boomOn ? 1 : 0;
+  // Во время взрыва заслон снимаем: обломки летят вперемешку, и взаимное
+  // заслонение превращает разлёт в мигающую кашу.
+  if (occl) occl.visible = TG.occl.v && !boomOn;
+  uBt.value = boomT;
+
+  camera.position.set(
+    Math.sin(camYaw) * Math.cos(camPitch) * camDist,
+    Math.sin(camPitch) * camDist,
+    Math.cos(camYaw) * Math.cos(camPitch) * camDist);
+  camera.lookAt(0, 0, 0);
+  renderer.render(scene, camera);
+
+  const f = dt > 0 ? 1 / dt : 60;
+  fps += (f - fps) * 0.08; acc += dt;
+  if (acc > 0.25) {
+    acc = 0;
+    g('mFps').textContent = Math.round(fps);
+    g('mState').textContent = boomOn ? ('ВЗРЫВ ' + boomT.toFixed(2) + 'с')
+      : (S.dmg.v > 0.005 ? ('УРОН ' + Math.round(S.dmg.v * 100) + '%') : 'ЦЕЛ');
+  }
+}
+
+// ── СВОРАЧИВАНИЕ ГРУПП ────────────────────────────────────────────────────
+// Настроек больше пятидесяти: без сворачивания панель превращается в бесконечную
+// простыню, и до «Взрыва» надо крутить полминуты. Состояние держим в localStorage —
+// закрытая группа должна остаться закрытой и после перезагрузки.
+const GRP_KEY = 'pd_enemy_lab_groups';
+const OPEN_BY_DEFAULT = ['ФОРМА', 'ЗОНЫ УДАРА', 'ВЗРЫВ', 'ВЫВОД'];
+(function () {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(GRP_KEY) || '{}'); } catch (e) { saved = {}; }
+  const grps = [].slice.call(document.querySelectorAll('#ui .grp'));
+  grps.forEach(grp => {
+    const lbl = grp.querySelector('.lbl');
+    if (!lbl) return;
+    const name = (lbl.textContent || '').trim().toUpperCase();
+    const open = saved[name] !== undefined ? saved[name]
+      : OPEN_BY_DEFAULT.some(k => name.indexOf(k) === 0);
+    grp.classList.toggle('closed', !open);
+    lbl.onclick = () => {
+      grp.classList.toggle('closed');
+      saved[name] = !grp.classList.contains('closed');
+      try { localStorage.setItem(GRP_KEY, JSON.stringify(saved)); } catch (e) {}
+    };
+  });
+})();
+
+// ── МАСШТАБ ПАНЕЛИ ────────────────────────────────────────────────────────
+// Кегль подобрать «на все глаза» невозможно, поэтому масштаб — руками. zoom меняет
+// и размеры, и ширину панели; высоту приходится пересчитывать самому, потому что
+// проценты внутри zoom считаются уже в масштабированных единицах, и панель при
+// увеличении вылезала бы за низ экрана.
+const UIZ_KEY = 'pd_enemy_lab_uiz';
+let uiZoom = 1.2;
+try { const v = parseFloat(localStorage.getItem(UIZ_KEY)); if (v) uiZoom = v; } catch (e) {}
+function applyUiZoom(d) {
+  uiZoom = clamp(+(uiZoom + (d || 0)).toFixed(2), 0.8, 2.4);
+  const u = g('ui');
+  u.style.zoom = uiZoom;
+  u.style.height = (100 / uiZoom) + '%';
+  g('uiPct').textContent = Math.round(uiZoom * 100) + '%';
+  g('keys').style.left = Math.round(408 * uiZoom + 18) + 'px';
+  try { localStorage.setItem(UIZ_KEY, String(uiZoom)); } catch (e) {}
+  applyViewOffset();      // панель стала шире/уже — кадр надо сдвинуть заново
+}
+g('uiMinus').onclick = () => applyUiZoom(-0.1);
+g('uiPlus').onclick = () => applyUiZoom(0.1);
+applyUiZoom(0);
+
+renderZoneUI();
+syncUniforms();
+rebuildGeometry();
+loop();
+</script>
+</body>
+</html>
