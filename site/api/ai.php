@@ -156,11 +156,20 @@ function pd_action_turn($in) {
     $sess['input'] = ($sess['input'] === '' || $sess['input'] === $in['input']) ? $in['input'] : 'смешанно';
   }
 
-  // Стенограмма для модели: вопрос ассистента → ответ человека.
+  // Стенограмма для модели: ответ человека → реплика ассистента.
+  //
+  // Реплику ассистента кладём В ТОМ ЖЕ ФОРМАТЕ, в котором просим отвечать, — то есть
+  // строкой JSON, а не голым вопросом. Иначе модель видит в истории собственный «ответ»
+  // обычной фразой и на следующем ходу копирует этот формат: разбор падает, разговор
+  // сваливается на резервные вопросы. Ловилось так: первая реплика в сессии проходила
+  // (истории ещё нет, формат берётся из системного промпта), а все следующие — нет.
   $messages = array();
   foreach ($sess['turns'] as $t) {
     if (!empty($t['a'])) $messages[] = array('role' => 'user', 'content' => $t['a']);
-    if (!empty($t['next'])) $messages[] = array('role' => 'assistant', 'content' => $t['next']);
+    if (!empty($t['next'])) {
+      $said = array('words' => array(), 'reply' => $t['next'], 'sub' => isset($t['sub']) ? $t['sub'] : '', 'ready' => false);
+      $messages[] = array('role' => 'assistant', 'content' => json_encode($said, JSON_UNESCAPED_UNICODE));
+    }
   }
   $messages[] = array('role' => 'user', 'content' => $text);
 
@@ -179,7 +188,11 @@ function pd_action_turn($in) {
     // видеть тупик — задаём следующий вопрос из запаса и продолжаем слушать.
     // Но и молчать об этом нельзя: без пометки вопросы из запаса выглядят как живой разговор.
     $degraded = true;
+    // Логируем ОБА случая. Раньше писалась только ошибка транспорта, а самый
+    // неприятный случай — «модель ответила, но не тем форматом» — уходил в тишину,
+    // и по логу нельзя было понять, почему разговор идёт по резервным вопросам.
     if ($res['error']) pd_log('turn', $res['error']);
+    else pd_log('turn', 'ответ не разобран как JSON, первые 300 знаков: ' . pd_str($res['text'], 300));
     $data = array('words' => array(), 'reply' => pd_fallback_question(count($sess['turns']), $lang), 'sub' => '', 'ready' => count($sess['turns']) >= 4);
   }
 
@@ -204,6 +217,9 @@ function pd_action_turn($in) {
     'q' => isset($sess['pending_q']) ? $sess['pending_q'] : '',
     'a' => $text,
     'next' => $reply,
+    // Подсказку храним, чтобы на следующем ходу вернуть модели её собственную
+    // реплику целиком, а не наполовину.
+    'sub' => pd_str(isset($data['sub']) ? $data['sub'] : '', 80),
     'at' => date('c'),
   );
   $sess['pending_q'] = $reply;
