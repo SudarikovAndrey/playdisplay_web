@@ -8,6 +8,63 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-02 01:07 — hybrid-v8 @ d6ccbf5
+
+**Коммиты в этой поставке**
+```
+d6ccbf5 Мобильная версия: меню, ленты проектов и Атласа, чистое видео, замок прокрутки
+8271ce8 Журнал деплоя: c82e1ab
+c82e1ab Голый вопрос от модели — это ответ, а не провал
+d53af03 Журнал деплоя: 51dec42
+11981d5 Смыслы выделяются отдельным проходом: одну задачу модель делает, две — нет
+```
+
+**На сервер отправлено файлов:** 402, удалено: 0
+```
+.htaccess
+enemy-lab.html
+hero-scene.html
+index.html
+llms.txt
+model.js
+odk_frame.js
+robots.txt
+shape-lab.html
+ship-lab.html
+ship-points.js
+sitemap.xml
+styles.css
+textures.js
+work-3d.html
+work-showcase.html
+world-lab.html
+world-worker.js
+world.js
+api/.htaccess
+api/README.md
+api/ai.php
+api/config.sample.php
+api/selftest.php
+api/lib/brief.php
+api/lib/guard.php
+api/lib/llm.php
+api/lib/mailer.php
+api/lib/prompts.php
+api/lib/util.php
+assets/concepts/ar-portal/1.jpg
+assets/concepts/ar-portal/2.jpg
+assets/concepts/ar-portal/thumb.jpg
+assets/concepts/ar-xray/1.jpg
+assets/concepts/ar-xray/2.jpg
+assets/concepts/ar-xray/thumb.jpg
+assets/concepts/art-portrait/1.jpg
+assets/concepts/art-portrait/2.jpg
+assets/concepts/art-portrait/thumb.jpg
+assets/concepts/cabin-hologram/1.jpg
+…и ещё 362
+```
+
+
 ## 2026-08-02 00:51 — hybrid-v8 @ c82e1ab
 
 **Коммиты в этой поставке**
