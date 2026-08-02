@@ -173,13 +173,10 @@ function pd_action_turn($in) {
   }
   $messages[] = array('role' => 'user', 'content' => $text);
 
-  // Подсказываем модели, что уже на экране — чтобы не повторяла смыслы.
-  $onScreen = $sess['words'] ? "\n\nУже на экране: " . implode(', ', array_slice($sess['words'], -18)) : '';
-
   // Бюджет с запасом: короткий вопрос занимает 60–100 токенов, но у моделей с рассуждением
   // часть выхода уходит на размышление, и при тесном лимите ответ приходит пустым.
   $lang = isset($sess['lang']) ? $sess['lang'] : 'ru';
-  $res = pd_llm(pd_prompt_turn($lang) . $onScreen, $messages, 900, $lang);
+  $res = pd_llm(pd_prompt_turn($lang), $messages, 900, $lang);
   $data = $res['error'] ? null : pd_json_from_text($res['text']);
 
   $degraded = false;
@@ -196,9 +193,26 @@ function pd_action_turn($in) {
     $data = array('words' => array(), 'reply' => pd_fallback_question(count($sess['turns']), $lang), 'sub' => '', 'ready' => count($sess['turns']) >= 4);
   }
 
+  // ---- второй проход: смысловые объекты ----
+  // Отдельным коротким вызовом, потому что одним ответом модель делала только первое
+  // дело из двух — вопрос был, смыслы приходили пустыми со второй реплики.
+  // Провал этого прохода разговор не ломает: будет просто меньше слов на экране.
+  $rawWords = array();
+  if (pd_len($text) >= 12) {          // на «да» и «ок» тратить вызов незачем
+    $onScreen = $sess['words'] ? "\n\nУже на экране (не повторяй): " . implode(', ', array_slice($sess['words'], -18)) : '';
+    $wres = pd_llm(pd_prompt_words($lang) . $onScreen,
+      array(array('role' => 'user', 'content' => $text)), 400, $lang);
+    $wdata = $wres['error'] ? null : pd_json_from_text($wres['text']);
+    if (!empty($wdata['words']) && is_array($wdata['words'])) $rawWords = $wdata['words'];
+    elseif ($wres['error']) pd_log('words', $wres['error']);
+    $res['usage'] = array($res['usage'][0] + $wres['usage'][0], $res['usage'][1] + $wres['usage'][1]);
+  }
+  // Если основной проход всё же вернул смыслы (другая модель может и так уметь) — берём их.
+  if (!$rawWords && !empty($data['words']) && is_array($data['words'])) $rawWords = $data['words'];
+
   $words = array();
-  if (!empty($data['words']) && is_array($data['words'])) {
-    foreach ($data['words'] as $w) {
+  if ($rawWords) {
+    foreach ($rawWords as $w) {
       $t = pd_str(isset($w['t']) ? $w['t'] : '', 40);
       if ($t === '' || in_array($t, $sess['words'], true)) continue;
       $weight = isset($w['w']) ? (float)$w['w'] : 1.0;
