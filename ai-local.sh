@@ -13,7 +13,36 @@
 
 set -u
 cd "$(dirname "$0")"
-PORT="${1:-8000}"
+
+# Каталоги Homebrew добавляем в PATH сами. Скрипт запускают из разных окон терминала,
+# и не в каждом отработал brew shellenv — тогда php «пропадает» и скрипт честно, но
+# неверно сообщает «php не установлен». Поймано 01.08.2026.
+PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/sbin:$PATH"
+export PATH
+
+PORT="8000"   # порт задаётся числовым аргументом ниже: ./ai-local.sh 8080
+# По умолчанию сервер слушает только петлю — снаружи к нему не подключиться, и это
+# правильно: лишний слушающий порт в кафе или коворкинге никому не нужен.
+# Флаг --lan открывает его в локальную сеть, чтобы посмотреть вёрстку С ТЕЛЕФОНА:
+#     ./ai-local.sh --lan          (порт 8000)
+#     ./ai-local.sh --lan 8080
+# Адрес для телефона скрипт печатает сам. Телефон и Мак должны быть в одном Wi-Fi;
+# macOS при первом запуске спросит разрешение на входящие соединения — надо разрешить.
+HOSTBIND="127.0.0.1"
+LAN=""
+for a in "$@"; do
+  case "$a" in
+    --lan) LAN=1 ;;
+    [0-9]*) PORT="$a" ;;
+  esac
+done
+if [ -n "$LAN" ]; then
+  HOSTBIND="0.0.0.0"
+  # адрес Мака в сети: сначала Wi-Fi (en0), потом второй интерфейс (en1) — на разных
+  # моделях Wi-Fi висит по-разному, поэтому берём первый непустой
+  LANIP="$(ipconfig getifaddr en0 2>/dev/null || true)"
+  [ -z "$LANIP" ] && LANIP="$(ipconfig getifaddr en1 2>/dev/null || true)"
+fi
 BASE="http://127.0.0.1:$PORT"
 
 say()  { printf '%s\n' "$*"; }
@@ -70,7 +99,20 @@ fi
 
 say ""
 say "── Запуск php-сервера на $BASE ──"
-php -S "127.0.0.1:$PORT" -t site >/tmp/pd-ai-server.log 2>&1 &
+if [ -n "$LAN" ]; then
+  if [ -n "${LANIP:-}" ]; then
+    say ""
+    say "   С ТЕЛЕФОНА (тот же Wi-Fi):  http://$LANIP:$PORT/"
+    say "   подачи проектов:            http://$LANIP:$PORT/?mob=lenta"
+    say "                               http://$LANIP:$PORT/?mob=grid"
+    say "                               http://$LANIP:$PORT/?mob=more"
+    say "                               http://$LANIP:$PORT/?mob=off   ← вернуть как было"
+    say ""
+  else
+    warn "не удалось определить адрес Мака в сети — посмотрите его в Системных настройках → Сеть"
+  fi
+fi
+php -S "$HOSTBIND:$PORT" -t site >/tmp/pd-ai-server.log 2>&1 &
 SRV=$!
 trap 'kill $SRV 2>/dev/null' EXIT
 sleep 1.2

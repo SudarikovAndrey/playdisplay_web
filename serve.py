@@ -23,9 +23,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=ROOT, **kw)
 
+    # Разметку и данные всегда отдаём свежими, тяжёлое сырьё разрешаем кэшировать.
+    # Раньше no-store стоял на всём подряд. На Маке это незаметно, а с телефона каждый
+    # заход заново тянул облако точек, обложки и ролики — лоадер полз минутами, и
+    # верхняя галерея «оживала» только к концу загрузки. Правим мы html/js/json, они и
+    # остаются без кэша; картинки и видео за сессию не меняются.
+    CACHEABLE = ('.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif', '.svg', '.ico',
+                 '.mp4', '.webm', '.mov', '.woff', '.woff2', '.ttf', '.otf')
+
     def end_headers(self):
-        # локальный просмотр всегда должен показывать то, что на диске
-        self.send_header('Cache-Control', 'no-store')
+        path = self.path.split('?', 1)[0].split('#', 1)[0].lower()
+        if path.endswith(self.CACHEABLE):
+            self.send_header('Cache-Control', 'public, max-age=3600')
+        else:
+            self.send_header('Cache-Control', 'no-store')
         self.send_header('Accept-Ranges', 'bytes')
         super().end_headers()
 
@@ -81,7 +92,39 @@ class Server(socketserver.ThreadingTCPServer):
     allow_reuse_address = True
     daemon_threads = True          # перемотка открывает несколько соединений сразу
 
+    def handle_error(self, request, client_address):
+        """Обрыв соединения клиентом — это норма, а не сбой сервера.
+
+        Браузер открывает запрос за куском видео и закрывает его, как только решил, что
+        кусок не нужен: перемотал, ушёл со страницы, снял <video> с паузы. Ядро отвечает
+        BrokenPipe/ConnectionReset, а базовый socketserver печатает на каждый такой случай
+        полный traceback. На странице с десятком роликов терминал заливает так, что
+        настоящую ошибку в нём уже не найти. Молчим про эти два случая, остальные печатаем.
+        """
+        exc = sys.exc_info()[1]
+        if isinstance(exc, (BrokenPipeError, ConnectionResetError)):
+            return
+        super().handle_error(request, client_address)
+
+
+def lan_ip():
+    """Адрес Мака в локальной сети — чтобы не искать его руками ради просмотра с телефона.
+    Соединения не происходит: UDP-сокет только выбирает исходящий интерфейс."""
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('8.8.8.8', 80))
+        return s.getsockname()[0]
+    except OSError:
+        return None
+    finally:
+        s.close()
+
 
 if __name__ == '__main__':
     print('site/ → http://localhost:%d/   (Ctrl+C — стоп)' % PORT)
+    ip = lan_ip()
+    if ip:
+        print('с телефона (тот же Wi-Fi) → http://%s:%d/' % (ip, PORT))
+        print('   подачи проектов: ?mob=strip (основная) · ?mob=grid · ?mob=lenta · ?mob=more · ?mob=off')
     Server(('0.0.0.0', PORT), Handler).serve_forever()

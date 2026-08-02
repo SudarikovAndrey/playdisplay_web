@@ -6,9 +6,26 @@
 <title>PLAYDISPLAY — воксельное портфолио (прототип)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+/* РЕЖИМ ОТЛАДКИ. Кнопка DEV и счётчик FPS — инструменты, а не часть сайта: до 31.07.2026
+   они висели на боевом у каждого посетителя. Теперь появляются только когда режим включён:
+   ?dev=1 или ?cam=1 в адресе самой сцены ИЛИ лендинга, который её встроил.
+   Локалхост намеренно НЕ включает отладку сам: иначе локально невозможно увидеть то,
+   что увидит посетитель. Флаг ставится классом на <html> до отрисовки — иначе плашки мигают. */
+window.PD_DEV = (function(){
+  var re = /[?&](dev|cam)=1/;
+  if (re.test(location.search)) return true;
+  try { if (window.parent !== window && re.test(parent.location.search)) return true; } catch (e) {}
+  return false;
+})();
+if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
+</script>
 <style id="brand-override">
   /* сцена живёт внутри лендинга: служебный UI спрятан, шрифты и позиции — бренд PLAYDISPLAY */
   #settings, #logo, #hint { display: none !important; }
+  /* счётчик кадров — только в режиме отладки (см. PD_DEV выше) */
+  #corner-fps { display: none; }
+  html.pd-dev #corner-fps { display: block; }
   body.dbg #settings { display: block !important; } /* отладка: панель настроек по кнопке DEV */
   #scene-info { bottom: 118px; left: 64px; }
   #scene-num { font-family: 'Roboto Mono', monospace; font-size: 10px; letter-spacing: .3em; opacity: .45; margin-bottom: 7px; }
@@ -310,8 +327,61 @@
   /* мобила (тач): свой курсор ПК не нужен (иначе вторая «фантомная» play по центру); play-кнопку уводим с текста */
   @media (pointer: coarse) {
     #pluscursor, #lensring { display: none !important; }
-    #play-btn { top: 44%; }
+
+    /* КНОПКА ▶ — по центру, НАД заголовком лендинга.
+       Заголовок стоит в левом нижнем углу (его поднимает .hero-inner{bottom:178px}),
+       поэтому свободная полоса — прямо над ним. Опора от низа экрана, а не от верха:
+       высота вьюпорта на телефоне гуляет вместе с панелями браузера, а низ на месте.
+       Вертикальный сдвиг из transform убран (translate(-50%,0)) — с ним `bottom`
+       превращался в загадку: центр уезжал на пол-высоты кнопки. Поэтому переопределены
+       и .visible, и .playing: иначе они вернули бы старый transform целиком.
+       Вид минималистичный: ни заливки, ни блюра, ни тени — тонкий контур и треугольник,
+       чтобы кадр за кнопкой оставался виден. */
+    #play-btn {
+      top: auto; bottom: 292px; width: 58px; height: 58px; font-size: 17px; padding-left: 4px;
+      background: none !important; backdrop-filter: none; box-shadow: none;
+      border-color: rgba(255,255,255,.7);
+      transform: translate(-50%, 0) scale(.8);
+    }
+    #play-btn.visible { transform: translate(-50%, 0) scale(1); }
+    #play-btn.visible:hover { transform: translate(-50%, 0) scale(1); }
+    #play-btn.playing { transform: translate(-50%, 0) scale(1.5); }
+
+    /* НИЗ СЦЕНЫ: три индикатора одного и того же — ползунок, полоса автопрокрутки и точки.
+       На узком экране это читается как мешанина. Оставляем только точки: они говорят,
+       сколько проектов и где мы сейчас, а перетаскивать ползунок пальцем всё равно
+       некому — на мобиле листают свайпом. */
+    #scrub, #autobar { display: none !important; }
+    #dots { left: 50%; right: auto; transform: translateX(-50%); bottom: 26px; gap: 7px; }
+    /* активная точка не прыгает масштабом, а вытягивается в короткую черту — переход
+       читается как движение, а не как мигание */
+    .dot { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.32);
+      transition: width .32s cubic-bezier(.2,.8,.2,1), background .32s ease; }
+    .dot.active { width: 18px; transform: none; background: var(--ink); }
+
+    /* ВИДЕО В ГАЛЕРЕЕ — чистым прямоугольником.
+       Радиальная маска растворяет края кадра в облаке точек: на компе вокруг видео
+       действительно точки, и шва не видно. На телефоне кадр открывается почти во весь
+       экран на чёрных шторках — растворять не во что, и маска даёт рваный край с
+       просвечивающей подложкой-постером. Здесь она вредна, убираем. */
+    #player { -webkit-mask-image: none; mask-image: none; background: #05090c; }
+    #frame { -webkit-mask-image: none; mask-image: none; }
+    #player-close { top: 10px; right: 10px; width: 34px; height: 34px; font-size: 14px;
+      background: rgba(0,0,0,.45); border-color: rgba(255,255,255,.45); }
   }
+  /* ВИРТУАЛЬНЫЙ ДЖОЙСТИК полёта. Рисуется в точке касания, поэтому позиция задаётся из кода
+     (left/top), а translate(-50%,-50%) ставит центр кольца ровно под палец. pointer-events:none —
+     стик только показывает состояние, события ловит window, иначе он бы съедал собственный тач. */
+  #gstick { position: fixed; z-index: 40; width: 148px; height: 148px; margin: 0;
+    transform: translate(-50%,-50%); border-radius: 50%; pointer-events: none;
+    border: 1.5px solid rgba(43,224,198,.55); background: rgba(3,12,16,.28);
+    box-shadow: 0 0 0 1px rgba(3,12,16,.45), inset 0 0 26px rgba(43,224,198,.10);
+    backdrop-filter: blur(2px);
+    opacity: 0; transition: opacity .18s ease; }
+  #gstick.on { opacity: 1; }
+  #gstick i { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px;
+    border-radius: 50%; background: rgba(43,224,198,.34); border: 1.5px solid rgba(43,224,198,.95);
+    box-shadow: 0 0 26px rgba(43,224,198,.55), 0 2px 10px rgba(0,0,0,.4); }
   /* курсор-состояния: play (галерея) ↔ крестик (видео открыто); иконки плавно сменяются */
   #pluscursor .cur-play, #pluscursor .cur-cross, #pluscursor .cur-prev, #pluscursor .cur-next {
     transition: opacity .25s, transform .3s cubic-bezier(.2,.8,.2,1); transform-origin: 24px 24px; }
@@ -792,17 +862,70 @@ addEventListener('mousemove', e => {
 // он сам себя гасит через onInput при GAME.on, конфликта нет). Комп эти строки не выполняет.
 let touchPX = mousePX, touchPY = mousePY;
 if (isMobile) {
-  const trackTouch = e => {
-    if (!GAME.on) return;
-    const t = e.touches[0];
-    if (!t) return;
-    touchPX = t.clientX; touchPY = t.clientY;
+  // ДЖОЙСТИК ВМЕСТО ПРИЦЕЛИВАНИЯ ПАЛЬЦЕМ.
+  // Раньше корабль вставал ровно под палец: чтобы увести его в верхний угол, палец
+  // приходилось держать в верхнем углу — то есть закрывать собой ровно то место,
+  // куда летишь. Теперь касание задаёт НОЛЬ, а корабль слушается отклонения от него.
+  // Стик появляется там, где палец лёг, поэтому телефон можно держать как угодно.
+  //
+  // Отклонение переводим обратно в экранные координаты (touchPX/PY) — те же, что
+  // раньше приходили от пальца. Ниже по коду (gTick, aimX/aimY) ничего менять не нужно:
+  // край стика = край экрана, центр = центр. Отпускание возвращает ноль, и корабль
+  // сам выравнивается по уже существующей пружине.
+  const R = 62;                 // радиус хода ручки, px
+  let stickId = null, ox = 0, oy = 0;
+  const stick = document.createElement('div');
+  stick.id = 'gstick';
+  stick.innerHTML = '<i></i>';
+  const knob = stick.firstElementChild;
+  document.body.appendChild(stick);
+
+  const centerAim = () => { touchPX = innerWidth / 2; touchPY = innerHeight / 2; };
+  const place = (dx, dy) => {
+    const d = Math.hypot(dx, dy) || 1, k = Math.min(1, R / d);
+    const kx = dx * k, ky = dy * k;
+    knob.style.transform = 'translate(' + kx.toFixed(1) + 'px,' + ky.toFixed(1) + 'px)';
+    touchPX = innerWidth / 2 + (kx / R) * (innerWidth / 2);
+    touchPY = innerHeight / 2 + (ky / R) * (innerHeight / 2);
   };
-  addEventListener('touchstart', trackTouch, { passive: true });
-  addEventListener('touchmove', trackTouch, { passive: true });
+
+  addEventListener('touchstart', e => {
+    if (!GAME.on || stickId !== null) return;
+    const t = e.changedTouches[0];
+    if (!t) return;
+    stickId = t.identifier; ox = t.clientX; oy = t.clientY;
+    stick.style.left = ox + 'px'; stick.style.top = oy + 'px';
+    stick.classList.add('on');
+    place(0, 0);
+  }, { passive: true });
+
+  addEventListener('touchmove', e => {
+    if (!GAME.on || stickId === null) return;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const t = e.changedTouches[i];
+      if (t.identifier !== stickId) continue;
+      place(t.clientX - ox, t.clientY - oy);
+      return;
+    }
+  }, { passive: true });
+
+  const release = e => {
+    if (stickId === null) return;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier !== stickId) continue;
+      stickId = null;
+      stick.classList.remove('on');
+      knob.style.transform = '';
+      centerAim();                 // ноль по обеим осям — корабль плавно выходит в центр
+      return;
+    }
+  };
+  addEventListener('touchend', release, { passive: true });
+  addEventListener('touchcancel', release, { passive: true });
+
   // подсказки в онбординге и HUD говорят «мышь»/«клик» — на тач-экране это неверно
   const obFirst = document.querySelector('#game-onboard .ob');
-  if (obFirst) obFirst.innerHTML = '<b>Палец на экране</b> — курс и высота';
+  if (obFirst) obFirst.innerHTML = '<b>Держите палец на экране</b> — джойстик появится под ним';
   const gExit = document.getElementById('game-exit');
   if (gExit) gExit.textContent = 'КРЕСТИК СЛЕВА ВВЕРХУ — ВЕРНУТЬСЯ В ПОРТФОЛИО';
 }
@@ -2322,7 +2445,10 @@ function updatePlay(dt, wMax) {
     if (mobDimTop) {
       const topH = Math.max(0, pcy - ph / 2), botH = Math.max(0, innerHeight - (pcy + ph / 2));
       mobDimTop.style.height = topH + 'px'; mobDimBottom.style.height = botH + 'px';
-      const dimOp = zoomK * 0.72;
+      // Шторки доводим до полной непрозрачности. На 0.72 сквозь них просвечивало облако
+      // точек, и вокруг открытого ролика оставалась мутная кайма — вместе с мягкой маской
+      // кадра это и выглядело как «по краям торчит фон». Плотный чёрный даёт кадру рамку.
+      const dimOp = zoomK;
       mobDimTop.style.opacity = dimOp; mobDimBottom.style.opacity = dimOp;
     }
   }
@@ -5706,8 +5832,10 @@ function openCamPanel() {
 }
 </script>
 <script>
-// отладочная кнопка DEV: показывает/прячет панель настроек 3D-сцены
+// отладочная кнопка DEV: показывает/прячет панель настроек 3D-сцены.
+// Строится только в режиме отладки — на боевом её быть не должно (см. PD_DEV в <head>).
 (function(){
+  if (!window.PD_DEV) return;
   var b = document.createElement('button');
   b.id = 'dbg-toggle'; b.textContent = 'DEV ' + (window.PD_BUILD || '');
   var info = document.createElement('div');

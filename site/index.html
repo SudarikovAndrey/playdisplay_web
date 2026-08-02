@@ -97,6 +97,15 @@
     filter: blur(7px); opacity: 0; transition: opacity .5s ease; }
   #boot .bl.lighting .flare { opacity: .6; }
   @media (prefers-reduced-motion: reduce) { #boot .bl .flare { display: none; } }
+  /* НА ТЕЛЕФОНЕ СВЕЧЕНИЕ ЛОГОТИПА ЛОМАЛОСЬ. Слои .tint и .b1 — это размытые копии
+     надписи, обрезанные clip-path. Мобильные браузеры считают blur ДО обрезки и по
+     прямоугольнику элемента, поэтому вместо мягкого ореола на фронте заливки вставал
+     резкий бирюзовый квадрат (видно на скриншоте загрузки). Оставляем только чёткую
+     копию .lit: заливка слева направо читается ровно так же, а артефакта нет. */
+  @media (max-width: 900px) {
+    #boot .bl .tint, #boot .bl .b1, #boot .bl .flare { display: none; }
+    #boot .bl .lit { filter: none; }
+  }
   #boot #bootPlay { opacity: 0; transform: translateY(10px); pointer-events: none;
     font: 600 13px 'Roboto Mono', monospace; letter-spacing: .22em; text-transform: uppercase;
     color: #04121a; background: #2be0c6; border: none; border-radius: 2px; padding: 16px 34px;
@@ -149,6 +158,60 @@
     transition: transform var(--duration-base) var(--ease-overshoot), box-shadow var(--duration-base);
   }
   .cta-play:hover { transform: translateY(-2px); box-shadow: var(--glow-amber-soft); }
+
+  /* ---------- мобильное меню ----------
+     На десктопе ни бургера, ни оверлея нет вовсе — они включаются только в
+     медиазапросе ≤900px, где nav.links скрыт и других входов в разделы не остаётся.
+     Оверлей лежит ПОД шапкой (z-index 49 против 50): логотип и сам бургер должны
+     оставаться видимыми и кликабельными поверх открытого меню. */
+  .burger { display: none; }
+  .mnav { display: none; }
+  .burger {
+    width: 40px; height: 40px; padding: 0; border: 0; background: none; cursor: pointer;
+    align-items: center; justify-content: center; flex-direction: column; gap: 5px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .burger i { display: block; width: 22px; height: 1.5px; background: var(--scan-white);
+    transition: transform .32s cubic-bezier(.2,.8,.2,1), opacity .2s ease; }
+  .burger.on i:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .burger.on i:nth-child(2) { opacity: 0; }
+  .burger.on i:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+  .mnav {
+    position: fixed; inset: 0; z-index: 49; background: rgba(3,12,16,0.97);
+    backdrop-filter: blur(14px); padding: 92px 20px 32px;
+    opacity: 0; pointer-events: none; transition: opacity .3s ease;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  .mnav.open { opacity: 1; pointer-events: auto; }
+  .mnav-links { display: flex; flex-direction: column; }
+  .mnav-links a {
+    display: block; padding: 18px 0; border-bottom: 1px solid var(--space-line);
+    font: 600 26px/1.1 var(--font-display); letter-spacing: var(--tracking-display);
+    color: rgba(241,251,252,0.94);
+    /* пункты въезжают по очереди — переход виден и не выглядит рывком */
+    opacity: 0; transform: translateY(14px); transition: opacity .4s ease, transform .4s cubic-bezier(.2,.8,.2,1);
+  }
+  .mnav.open .mnav-links a { opacity: 1; transform: none; }
+  .mnav.open .mnav-links a:nth-child(1) { transition-delay: .05s; }
+  .mnav.open .mnav-links a:nth-child(2) { transition-delay: .10s; }
+  .mnav.open .mnav-links a:nth-child(3) { transition-delay: .15s; }
+  .mnav.open .mnav-links a:nth-child(4) { transition-delay: .20s; }
+  .mnav.open .mnav-links a:nth-child(5) { transition-delay: .25s; }
+  .mnav-foot { margin-top: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .mnav .cta-play { flex: 1; justify-content: center; padding: 15px 20px; }
+  .mnav .lang { margin-left: 0; }
+  /* Кнопка игры — отдельным блоком и в другом ключе: не сплошная заливка, как у делового
+     призыва, а тонкий тиловый контур на тёмном. Отбита сверху и линией, и воздухом. */
+  .mnav-game { display: block; width: 100%; margin-top: 34px; padding: 16px 18px;
+    text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    background: rgba(43,224,198,0.05); border: 1px solid rgba(43,224,198,0.38);
+    transition: background .3s ease, border-color .3s ease; }
+  .mnav-game::before { content: "▶︎"; float: right; color: var(--signal-teal); font-size: 13px; margin-top: 3px; }
+  .mnav-game .mg-t { display: block; font: 700 15px var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
+  .mnav-game .mg-s { display: block; margin-top: 4px; font: 400 12px var(--font-mono);
+    letter-spacing: 0.06em; color: var(--scan-white-faint); }
+  .mnav-game:active { background: rgba(43,224,198,0.12); border-color: var(--signal-teal); }
+  body.mnav-on { overflow: hidden; }
 
   /* ---------- hero ---------- */
   .hero { position: relative; min-height: 100vh; display: flex; align-items: flex-start; overflow: hidden; background: var(--space-void); }
@@ -902,6 +965,11 @@
   /* ---------- география: карта мира из точек (маска — стилизованные силуэты материков) ---------- */
   /* ---------- клиенты: лента логотипов ---------- */
   .cl-block { margin-top: 40px; }
+  /* Подпись только на мобиле: на десктопе стена логотипов идёт сразу за абзацем
+     «Среди клиентов — …», там она названа словами и вторая подпись была бы повтором. */
+  .cl-cap { display: none; font: 600 11px var(--font-mono); letter-spacing: 0.24em;
+    text-transform: uppercase; color: var(--scan-white-faint); margin-bottom: 14px; }
+  @media (max-width: 700px) { .cl-cap { display: block; } }
   .cl-block .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
   .cl-block h4 { font: 700 24px var(--font-display); color: #F1FBFC; margin-bottom: 6px; }
   .cl-block .cl-sub { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
@@ -1251,6 +1319,82 @@
     .numbers .cell { padding: 32px 20px; border-right: none; border-bottom: 1px solid var(--space-line); }
     .card-media { height: 220px; }
     .cards { gap: 16px; }
+
+    /* ================= ПОДАЧИ ПРОЕКТОВ НА МОБИЛЕ =================
+       15 карточек в колонку — это 4 800px прокрутки в одной секции. Пробуем три подачи,
+       переключаются адресом: ?mob=lenta | ?mob=grid | ?mob=more. Без параметра всё как было,
+       поэтому эксперимент не влияет ни на боевой сайт, ни на десктоп (весь блок внутри 900px).
+       Выбранная подача потом станет единственной, остальные удалим. */
+    .cards-more, .cards-rail { display: none; }
+
+    /* --- ЛЕНТА: один проект на экран, листается вбок, секция = один экран --- */
+    html[data-mob="lenta"] .work .cards {
+      grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 82%;
+      overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory;
+      gap: 12px; padding-bottom: 6px;
+      /* лента выходит за поля .wrap в край экрана — так видно, что справа есть продолжение */
+      margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px;
+      scrollbar-width: none;
+    }
+    html[data-mob="lenta"] .work .cards::-webkit-scrollbar { display: none; }
+    html[data-mob="lenta"] .work .card { scroll-snap-align: center; }
+    html[data-mob="lenta"] .work .card-media { height: 210px; }
+    html[data-mob="lenta"] #cards-fx { display: none; } /* слой перелёта точек в ленте не нужен */
+    html[data-mob="lenta"] .cards-rail { display: block; height: 2px; margin-top: 18px;
+      background: var(--space-line); position: relative; }
+    html[data-mob="lenta"] .cards-rail span { position: absolute; top: 0; left: 0; height: 100%;
+      width: 12%; background: var(--signal-teal); transition: left .18s linear; }
+
+    /* --- ЛЕНТА В ТРИ СТРОКИ: тот же приём, что в библиотеке решений ---
+       Проекты и концепции — два ряда карточек об одном и том же, и разная механика
+       листания сбивала. Теперь одинаково: пятнадцать проектов лежат в три строки,
+       листаются вбок, под лентой полоса-указатель. Секция занимает один экран.
+       Обложке отдан весь объём плитки, название лежит плашкой поверх низа — как у .c-tile. */
+    html[data-mob="strip"] .work .cards {
+      margin-left: -20px; margin-right: -20px; padding: 10px 20px 12px;
+      grid-template-columns: none; grid-auto-flow: column;
+      grid-template-rows: repeat(3, 1fr); grid-auto-columns: 62vw;
+      gap: 10px; height: min(64vh, 540px);
+      overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity; scrollbar-width: none; }
+    html[data-mob="strip"] .work .cards::-webkit-scrollbar { height: 0; width: 0; }
+    html[data-mob="strip"] .work .card { position: relative; overflow: hidden;
+      scroll-snap-align: start; background: #0a1216; }
+    html[data-mob="strip"] .work .card-media { position: absolute; inset: 0; height: auto; }
+    html[data-mob="strip"] .work .card-body { position: absolute; left: 0; right: 0; bottom: 0;
+      z-index: 2; padding: 20px 11px 9px; gap: 0; flex: none;
+      background: linear-gradient(180deg, rgba(6,13,17,0), rgba(6,13,17,0.9) 55%); }
+    html[data-mob="strip"] .work .card-body h3 { font-size: 14.5px; line-height: 1.15; }
+    html[data-mob="strip"] .work .card-body .cmeta,
+    html[data-mob="strip"] .work .card-body .oneline,
+    html[data-mob="strip"] .work .card-media .play { display: none; }
+    html[data-mob="strip"] .cards-rail { display: block; height: 2px; margin-top: 14px;
+      background: var(--space-line); position: relative; }
+    html[data-mob="strip"] .cards-rail span { position: absolute; top: 0; left: 0; height: 100%;
+      width: 12%; background: var(--signal-teal); transition: left .18s linear; }
+
+    /* --- СЕТКА: две колонки, обложка кадром, под ней только название ---
+       Заказчик с годом, подзаголовок и надпись «смотреть» на 180px ширины превращали
+       карточку в столбик мелкого текста. Всё это есть внутри кейса — в сетке остаётся
+       обложка и имя проекта. */
+    html[data-mob="grid"] .work .cards { grid-template-columns: 1fr 1fr; gap: 10px 10px; }
+    html[data-mob="grid"] .work .card-media { height: 124px; }
+    html[data-mob="grid"] .work .card-body { padding: 9px 0 0; gap: 0; }
+    html[data-mob="grid"] .work .card-body .cmeta,
+    html[data-mob="grid"] .work .card-body .oneline,
+    html[data-mob="grid"] .work .card-media .play { display: none; }
+    html[data-mob="grid"] .work .card-body h3 { font-size: 15px; line-height: 1.15; }
+
+    /* --- ПОКАЗАТЬ ЕЩЁ: сначала шесть, остальные по кнопке ---
+       nth-child считает ВСЕХ детей #cards, а первый ребёнок — <canvas id="cards-fx">,
+       поэтому шестая карточка это седьмой ребёнок, и прячем с восьмого. */
+    html[data-mob="more"] .work .cards .card:nth-child(n+8) { display: none; }
+    html[data-mob="more"] .work.all .cards .card { display: flex; }
+    html[data-mob="more"] .cards-more { display: block; width: 100%; margin-top: 22px;
+      padding: 15px 20px; background: none; color: var(--scan-white);
+      border: 1px solid var(--scan-white-faint); cursor: pointer;
+      font: 700 12.5px "Blender Pro", var(--font-body); letter-spacing: .18em; text-transform: uppercase; }
+    html[data-mob="more"] .work.all .cards-more { display: none; }
     .studio-grid { gap: 16px; margin-top: 44px; }
     .panel { padding: 26px; }
     .viewer-inner { padding: 78px 20px 90px; }
@@ -1269,6 +1413,22 @@
     .card-media .play { opacity: 1; }
   }
 </style>
+<script>
+/* Выбор подачи проектов на мобиле: ?mob=lenta | grid | more. Ставится на <html> ДО отрисовки,
+   иначе сетка успевает мигнуть в старом виде. Без параметра атрибута нет и всё работает как раньше.
+   Выбор запоминается в localStorage, чтобы на телефоне не таскать хвост в адресе. */
+(function(){
+  try {
+    var m = (location.search.match(/[?&]mob=(strip|lenta|grid|more|off)/) || [])[1];
+    if (m === 'off') { localStorage.removeItem('pd_mob'); return; }
+    if (m) localStorage.setItem('pd_mob', m);
+    // Основная подача — лента в три строки, как в библиотеке решений (02.08.2026).
+    // Остальные остаются доступны по адресу для сравнения, ?mob=off — исходная колонка.
+    var v = m || localStorage.getItem('pd_mob') || 'strip';
+    if (v) document.documentElement.setAttribute('data-mob', v);
+  } catch (e) {}
+})();
+</script>
 </head>
 <body class="booting">
 
@@ -1303,9 +1463,38 @@
   </div>
 </header>
 
+<!-- Мобильное меню. На десктопе скрыто целиком (.mnav { display:none }), в разметке
+     живёт отдельно от шапки, чтобы не растягивать .nav-inner. Пункты дублируют nav.links —
+     при правке разделов менять оба списка. -->
+<div class="mnav" id="mnav">
+  <nav class="mnav-links">
+    <a href="#work">Проекты</a>
+    <a href="#concepts">Библиотека</a>
+    <a href="#atlas">Атлас</a>
+    <a href="#studio">Студия</a>
+    <a href="#contact">Контакты</a>
+  </nav>
+  <div class="mnav-foot">
+    <!-- ссылка, а не кнопка: обработчик меню перехватывает a[href^="#"] и снимает
+         замок прокрутки до перехода. С инлайновым onclick хэш менялся, а скролл стоял. -->
+    <a class="cta-play" href="#contact">▶︎ Обсудить идею</a>
+    <div class="lang" id="langM"></div>
+  </div>
+  <!-- Игра стоит особняком и в другом стиле: это не раздел сайта и не призыв к сделке,
+       а развлечение. На первом экране кнопку убрали (там теперь чистый кадр), и меню —
+       единственный вход в неё с телефона. -->
+  <button class="mnav-game" id="mnavGame" type="button">
+    <span class="mg-t">Сыграть в пространство</span>
+    <span class="mg-s">Полёт сквозь облако точек</span>
+  </button>
+</div>
+
 <!-- ===== HERO ===== -->
 <section class="hero" id="start">
-  <iframe class="hero-scene" src="hero-scene.html?v=b2807-game30" title="playdisplay — облако точек" loading="eager"></iframe>
+  <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
+       держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
+       ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
+  <iframe class="hero-scene" src="hero-scene.html?v=b0208-mob2" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1787,6 +1976,104 @@
       });
     });
   })();
+
+  // ----- ЗАМОК ПРОКРУТКИ ПОД ОТКРЫТЫМИ СЛОЯМИ -----
+  // Симптом: открыт кейс или разбор, палец попадает мимо прокручиваемой области — и
+  // свайпает страницу ПОД слоем. Закрываешь окно и оказываешься совсем в другом месте.
+  // overflow:hidden на body мобильные браузеры игнорируют; работает только position:fixed
+  // с запомненным смещением, которое возвращаем при закрытии.
+  // Слои открываются в разных местах кода, поэтому не дёргаем каждое место, а следим за
+  // классом open наблюдателем — одна точка входа и ничего не забыто.
+  (function scrollLock(){
+    var nodes = document.querySelectorAll('#viewer, #ai, .c-view, .a-view, .lb, #mnav');
+    if (!nodes.length || !window.MutationObserver) return;
+    var locked = false, y = 0;
+    function anyOpen(){
+      for (var i = 0; i < nodes.length; i++) if (nodes[i].classList.contains('open')) return true;
+      return false;
+    }
+    function apply(){
+      var need = anyOpen();
+      if (need === locked) return;
+      locked = need;
+      var s = document.body.style;
+      if (need) {
+        y = window.scrollY || 0;
+        s.position = 'fixed'; s.top = (-y) + 'px'; s.left = '0'; s.right = '0'; s.width = '100%';
+      } else {
+        s.position = ''; s.top = ''; s.left = ''; s.right = ''; s.width = '';
+        window.scrollTo(0, y);   // возвращаем ровно туда, где человек был
+      }
+    }
+    var mo = new MutationObserver(apply);
+    [].forEach.call(nodes, function(n){ mo.observe(n, { attributes: true, attributeFilter: ['class'] }); });
+  })();
+
+  // ----- «второй экран»: класс past-hero -----
+  // Им пользуется мобильный стиль микрофона (см. .ai-widget в медиазапросе 900px).
+  // Порог — три четверти экрана: к этому моменту герой уже уехал, и круг в углу
+  // никому не мешает. Считаем на rAF, чтобы не дёргать layout на каждый пиксель.
+  (function pastHero(){
+    var on = false, raf = 0;
+    function check(){
+      raf = 0;
+      var now = scrollY > innerHeight * 0.75;
+      if (now !== on) { on = now; document.body.classList.toggle('past-hero', on); }
+    }
+    addEventListener('scroll', function(){ if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
+    addEventListener('resize', function(){ if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
+    check();
+  })();
+
+  // ----- подачи проектов на мобиле (см. data-mob в <head>) -----
+  (function workLayouts(){
+    var sec = document.getElementById('work'), grid = document.getElementById('cards');
+    if (!sec || !grid) return;
+    var more = document.getElementById('cardsMore'), rail = document.getElementById('cardsRail');
+    if (more) more.addEventListener('click', function(){ sec.classList.add('all'); });
+    // указатель ленты: доля прокрутки → положение бегунка. Ширина бегунка = доля видимого.
+    if (rail) {
+      var fill = rail.firstElementChild;
+      grid.addEventListener('scroll', function(){
+        var max = grid.scrollWidth - grid.clientWidth;
+        if (max < 8) return;
+        var vis = Math.max(0.06, grid.clientWidth / grid.scrollWidth);
+        fill.style.width = (vis * 100).toFixed(1) + '%';
+        fill.style.left = ((grid.scrollLeft / max) * (100 - vis * 100)).toFixed(1) + '%';
+      }, { passive: true });
+    }
+  })();
+
+  // ----- бургер и мобильное меню -----
+  // Меню закрывается само: по клику на пункт (это якорь на той же странице — иначе
+  // оверлей остался бы висеть поверх раздела), по Esc и при уходе за 900px в десктоп.
+  (function mobileNav(){
+    var b = document.getElementById('burger'), m = document.getElementById('mnav');
+    if (!b || !m) return;
+    function set(on){
+      b.classList.toggle('on', on);
+      m.classList.toggle('open', on);
+      b.setAttribute('aria-expanded', on ? 'true' : 'false');
+      document.body.classList.toggle('mnav-on', on);
+    }
+    b.addEventListener('click', function(){ set(!m.classList.contains('open')); });
+    // Переход по пункту: сначала СНЯТЬ замок прокрутки, и только потом менять хэш.
+    // Пока висит body.mnav-on { overflow: hidden }, браузер отрабатывает якорь вхолостую —
+    // хэш в адресе меняется, а страница остаётся на месте. Поймано на 390px 31.07.2026.
+    m.addEventListener('click', function(e){
+      var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+      if (a) {
+        e.preventDefault();
+        var h = a.getAttribute('href');
+        set(false);
+        requestAnimationFrame(function(){ location.hash = h; });
+        return;
+      }
+      if (e.target.closest('.cta-play')) set(false);
+    });
+    addEventListener('keydown', function(e){ if (e.key === 'Escape') set(false); });
+    addEventListener('resize', function(){ if (innerWidth > 900) set(false); });
+  })();
   document.documentElement.lang = PD_LANG;
 
   // ЯКОРИ НЕ ВЫБРАСЫВАЮТ ИЗ ЯЗЫКА. На /en/ стоит <base href="/"> — он нужен, чтобы
@@ -1997,9 +2284,23 @@
   // 3D-архив спрятан с сайта (доработаем позже); вход остался в прототипе (клавиша A)
 
   // кнопка «Сыграть в пространство» → мини-игра в 3D-сцене
-  document.getElementById('btn-game').addEventListener('click', function(){
+  function pdStartGame(){
     var fr = document.querySelector('iframe.hero-scene');
     if (fr && fr.contentWindow) fr.contentWindow.postMessage({ pdGame: true }, '*');
+  }
+  document.getElementById('btn-game').addEventListener('click', pdStartGame);
+  // Тот же запуск из мобильного меню. Сначала закрываем меню и снимаем замок прокрутки,
+  // потом поднимаемся к сцене — играть, глядя на середину страницы, не выйдет,
+  // и только затем говорим сцене «поехали». Каждый шаг — отдельным кадром, иначе
+  // прокрутка не успевает отработать под ещё не снятым position:fixed.
+  var mg = document.getElementById('mnavGame');
+  if (mg) mg.addEventListener('click', function(){
+    var burger = document.getElementById('burger');
+    if (burger && document.getElementById('mnav').classList.contains('open')) burger.click();
+    requestAnimationFrame(function(){
+      window.scrollTo(0, 0);
+      requestAnimationFrame(function(){ setTimeout(pdStartGame, 260); });
+    });
   });
 
   // mobile: горизонтальный свайп по герою вращает 3D-сцену, вертикальный — листает страницу
