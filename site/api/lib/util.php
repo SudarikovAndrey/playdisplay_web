@@ -26,7 +26,7 @@ function pd_config() {
     // Нужно только копии ai.php на отдельном хосте; своему сайту CORS не требуется.
     'cors_origins' => array(),
     'guard_bits' => 16,
-    'guard_bits_max' => 19,
+    'guard_bits_max' => 18,
     'guard_off' => false,
     'limit_sessions_per_ip_hour' => 8,
     'limit_turns_per_session' => 24,
