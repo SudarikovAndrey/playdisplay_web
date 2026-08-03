@@ -740,6 +740,12 @@ const EMBEDS = [
 // http://localhost:8000/proto%203d/index.html
 // первые кадры проектов как проекция задаются в odk_frame.js (base64 → грузятся и на file://)
 const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.mp4', 6: 'videos/coalco.mp4', 9: 'videos/ODK.mp4', 10: 'videos/ra.mp4', 11: 'videos/VDNH_airports.mp4', 12: 'videos/rostec.mp4' }; // 0 ВДНХ, 1 BMW, 2 МИГ-35, 6 COALCO, 9 ОДК, 10 Росатом, 11 Аэропорты, 12 Ростех
+// ЛЁГКИЕ КОПИИ для телефона. Пережаты пока не все: у bmw, mig и coalco рядом лежит
+// «-m» (вдвое-втрое легче), у остальных пяти её нет — они и так по 7-19 МБ.
+// Подменяем ТОЛЬКО там, где копия точно существует: иначе вместо ролика будет 404,
+// а витрина молча останется на точках. Появятся новые «-m» — дописать сюда.
+const LIGHT_OK = { 'videos/bmw.mp4': 1, 'videos/mig.mp4': 1, 'videos/coalco.mp4': 1 };
+function vLight(p){ return (isMobile && LIGHT_OK[p]) ? p.replace(/\.mp4$/, '-m.mp4') : p; }
 
 // СТАРТОВАЯ КАРУСЕЛЬ = только проекты с подготовленными клипами. Привязываем локальный
 // ролик к записи по ИСХОДНОМУ индексу и выкидываем проекты без клипа (Панорама 360,
@@ -2261,7 +2267,7 @@ function preloadVideo(i) {
   preV = null;
   if (WORKS[i] && WORKS[i].local) {
     const v = document.createElement('video');
-    v.src = WORKS[i].local; v.muted = true; v.loop = true; v.playsInline = true;
+    v.src = vLight(WORKS[i].local); v.muted = true; v.loop = true; v.playsInline = true;
     v.setAttribute('playsinline', ''); v.preload = 'auto';
     v.load();
     // прогрев декодера: беззвучно проигрываем долю секунды и откатываемся на 0 —
@@ -2290,7 +2296,7 @@ function startPlay() {
     // локальный mp4: берём предзагруженный элемент (буфер уже полон) — старт без задержки
     const v = (preV && preIdx === i) ? preV : (() => {
       const nv = document.createElement('video');
-      nv.src = WORKS[i].local; nv.muted = true; nv.loop = true; nv.playsInline = true;
+      nv.src = vLight(WORKS[i].local); nv.muted = true; nv.loop = true; nv.playsInline = true;
       nv.setAttribute('playsinline', ''); nv.preload = 'auto';
       return nv;
     })();
@@ -2433,7 +2439,13 @@ function updatePlay(dt, wMax) {
   // обрежет бока/верх сам. zoomK завязан на playE напрямую — симметричен на входе и выходе,
   // отдельного стейта не нужно. Комп (isMobile=false) этот блок не выполняет вовсе.
   if (isMobile) {
-    const zoomK = smoothstep(0.55, 1, playE);
+    // ФАЗА 2 — ролик открыт, им управляет человек. Здесь геометрию НЕ интерполируем.
+    // Симптом был такой: кадр съезжал вбок, а слева оставалась полоска фона. Причина —
+    // коробка кадра застывала на полпути между прямоугольником облака точек (он широкий
+    // и не по центру) и квадратом по центру экрана, потому что подлёт не доходил до
+    // конца. Конечный вид не должен зависеть от того, доиграла ли анимация: как только
+    // ролик показан, ставим ровно целевую рамку.
+    const zoomK = play.state === 2 ? 1 : smoothstep(0.55, 1, playE);
     if (zoomK > 0.001) {
       const side = Math.min(innerWidth * 0.96, innerHeight * 0.6);
       const tcx = innerWidth / 2, tcy = innerHeight * 0.46; // чуть выше центра, не под HUD счёта

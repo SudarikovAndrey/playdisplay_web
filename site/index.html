@@ -105,6 +105,16 @@
   @media (max-width: 900px) {
     #boot .bl .tint, #boot .bl .b1, #boot .bl .flare { display: none; }
     #boot .bl .lit { filter: none; }
+    /* ЛОГОТИП СТОЯЛ ВЫШЕ ЦЕНТРА. Причина не в отступах: #boot — колонка из логотипа и
+       кнопки «Сыграть». Кнопка прозрачная, но место в потоке занимает, и вместе с gap 44px
+       уводила логотип вверх примерно на полсотни пикселей. Убираем её из потока —
+       колонка остаётся из одного элемента и центрируется честно. */
+    #boot { gap: 0; }
+    #boot #bootPlay { position: absolute; left: 50%; bottom: 13vh;
+      transform: translateX(-50%) translateY(10px); }
+    #boot.ready #bootPlay { transform: translateX(-50%); }
+    /* и сам знак на треть мельче: на телефоне 58vw читались как заставка, а не как пауза */
+    #boot .bl { width: min(41vw, 238px); }
   }
   #boot #bootPlay { opacity: 0; transform: translateY(10px); pointer-events: none;
     font: 600 13px 'Roboto Mono', monospace; letter-spacing: .22em; text-transform: uppercase;
@@ -1392,7 +1402,15 @@
     .eyebrow { margin-bottom: 26px; }
     /* hero: scene is the star — full-height, minimal overlay, page scrolls over it */
     .hero { min-height: 100vh; align-items: flex-start; }
+    /* Вне игры сцена не ловит касания: палец должен листать страницу, а не крутить облако.
+       ВО ВРЕМЯ ПОЛЁТА — наоборот. Пока здесь стояло безусловное none, в игру не доходило
+       ни одно касание: джойстик не появлялся, корабль не слушался, крестик выхода не
+       нажимался и после выхода кнопки выглядели мёртвыми. */
     .hero-scene { pointer-events: none; }
+    body.game-live .hero-scene { pointer-events: auto; position: fixed; inset: 0; z-index: 90; }
+    /* Полёт на весь экран: страница под сценой не должна ни проглядывать, ни прокручиваться. */
+    body.game-live { overflow: hidden; }
+    body.game-live .hero, body.game-live .hero-inner, body.game-live #boot { pointer-events: none; }
     .hero .ruler-top, .hero .ruler-left, .hero .readout, .hero .session, .hero .bracket,
     .hero .kicker, .hero-btns { display: none; }
     /* Микрофон ассистента появляется СО ВТОРОГО ЭКРАНА. На первом экране и так тесно:
@@ -1616,7 +1634,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b0208-mob2" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b0208-mob3" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -2120,9 +2138,16 @@
   // классом open наблюдателем — одна точка входа и ничего не забыто.
   (function scrollLock(){
     var nodes = document.querySelectorAll('#viewer, #ai, .c-view, .a-view, .lb, #mnav');
-    if (!nodes.length || !window.MutationObserver) return;
+    if (!window.MutationObserver) return;
     var locked = false, y = 0;
     function anyOpen(){
+      // Стартовый экран и полёт — такие же «слои поверх»: под ними страницы быть не должно.
+      // Пока грузился логотип, палец крутил невидимую страницу, и человек оказывался
+      // неизвестно где ещё до того, как сайт показался. Только на мобиле: на компе
+      // прокрутка мышью во время загрузки никому не мешала, а трогать её не просили.
+      var mob = window.matchMedia && matchMedia('(max-width: 900px)').matches;
+      if (mob && document.body.classList.contains('booting')) return true;
+      if (mob && document.body.classList.contains('game-live')) return true;
       for (var i = 0; i < nodes.length; i++) if (nodes[i].classList.contains('open')) return true;
       return false;
     }
@@ -2136,11 +2161,19 @@
         s.position = 'fixed'; s.top = (-y) + 'px'; s.left = '0'; s.right = '0'; s.width = '100%';
       } else {
         s.position = ''; s.top = ''; s.left = ''; s.right = ''; s.width = '';
-        window.scrollTo(0, y);   // возвращаем ровно туда, где человек был
+        // Возврат ДОЛЖЕН быть мгновенным. У страницы включена плавная прокрутка, и
+        // восстановление позиции проигрывалось как поездка: закрываешь кейс — и экран
+        // едет. Снимаем плавность на один кадр и возвращаем обратно.
+        var html = document.documentElement, prev = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
+        window.scrollTo(0, y);
+        requestAnimationFrame(function(){ html.style.scrollBehavior = prev; });
       }
     }
     var mo = new MutationObserver(apply);
     [].forEach.call(nodes, function(n){ mo.observe(n, { attributes: true, attributeFilter: ['class'] }); });
+    mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    apply();   // страница открывается в booting — замок нужен сразу
   })();
 
   // ----- «второй экран»: класс past-hero -----
@@ -2443,8 +2476,14 @@
     var hero = document.getElementById('start');
     var frame = document.querySelector('iframe.hero-scene');
     var x0 = 0, y0 = 0, axis = null;
-    hero.addEventListener('touchstart', function(e){ var t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; axis = null; }, { passive: true });
+    // Во время полёта этот перехват молчит: там касание — это руль, и сцена читает его
+    // сама. Иначе жест сначала уходил в поворот облака, а до джойстика не доезжал.
+    hero.addEventListener('touchstart', function(e){
+      if (document.body.classList.contains('game-live')) return;
+      var t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; axis = null;
+    }, { passive: true });
     hero.addEventListener('touchmove', function(e){
+      if (document.body.classList.contains('game-live')) return;
       var t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
       if (axis === null && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) axis = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
       if (axis === 'h') {
@@ -5116,9 +5155,18 @@
     // фото и видео вперемешку, стрелки/точки/свайп/лайтбокс работают без единой строчки новой логики)
     function galleryHtml(c){
       var items = (c.gallery && c.gallery.length) ? c.gallery : [{ type: 'image', src: c.cover }];
+      // Лёгкая копия ролика на узком экране. Такой же помощник (vsrc) есть в блоке кейса,
+      // но он спрятан внутри своей обёртки и отсюда не виден — повторяем правило локально,
+      // а не тянем чужую функцию: галерея тянула полноразмерные файлы по 50-90 МБ, и это
+      // и есть то самое «всё грузится очень медленно» на телефоне.
+      // Условие indexOf('videos/') важно: у картинок и гербов из assets/ пары «-m» нет.
+      function lightSrc(p){
+        if (!p || p.indexOf('videos/') !== 0) return p;
+        return matchMedia('(max-width: 760px)').matches ? p.replace(/\.mp4$/, '-m.mp4') : p;
+      }
       var slides = items.map(function(m){
         return m.type === 'video'
-          ? '<div class="gs"><video class="on" autoplay muted loop playsinline preload="metadata"' + (m.poster ? ' poster="' + esc(m.poster) + '"' : '') + ' src="' + esc(m.src) + '"></video></div>'
+          ? '<div class="gs"><video class="on" autoplay muted loop playsinline preload="metadata"' + (m.poster ? ' poster="' + esc(m.poster) + '"' : '') + ' src="' + esc(lightSrc(m.src)) + '"></video></div>'
           : '<div class="gs"><img data-lsrc="' + esc(m.src) + '" alt=""></div>';
       }).join('');
       var nav = items.length > 1
