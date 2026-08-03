@@ -7,12 +7,35 @@
   которые реализованы в pd_sweep() (см. site/api/lib/util.php). Если меняется код —
   меняется и эта страница, иначе она превращается в неправду.
 
-  ЧТО ДОЛЖЕН ДОБАВИТЬ ЮРИСТ:
-   1. Реквизиты оператора: организационно-правовая форма, ИНН, юридический адрес.
-   2. Уведомление в Роскомнадзор об обработке ПД (152-ФЗ, ст. 22) — подано или нет.
-   3. Для гостей из ЕС: нужен ли представитель в ЕС (GDPR ст. 27) при обработке в РФ,
-      и на каком механизме строится передача данных в Россию.
-   4. Проверить формулировку согласия в панели ассистента (site/index.html, .ai-agree).
+  ЭТА СТРАНИЦА НЕ ЗАКРЫВАЕТ ПРАВОВЫЕ ВОПРОСЫ ЦЕЛИКОМ. Она делает одну вещь, и делает её
+  честно: рассказывает посетителю правду о том, что происходит с его данными. Всё
+  остальное — работа юриста. Что осталось сделать:
+
+   1. РЕКВИЗИТЫ ОПЕРАТОРА: организационно-правовая форма, ИНН, юридический адрес.
+      Без них у документа нет субъекта, который что-то обещает.
+   2. УВЕДОМЛЕНИЕ В РОСКОМНАДЗОР об обработке ПД (152-ФЗ, ст. 22) — подаётся ДО начала
+      обработки. Проверить, подано ли, и совпадают ли заявленные цели с тем, что здесь.
+   3. ОТДЕЛЬНАЯ «ПОЛИТИКА ОБРАБОТКИ ПД» по 152-ФЗ ст. 18.1 ч. 2 — обязательный документ
+      со своим набором разделов. Эта страница может стать её основой, но набор разделов
+      надо привести к требованиям закона.
+   4. ФОРМУЛИРОВКА СОГЛАСИЯ (site/index.html, .ai-agree). По 152-ФЗ согласие должно
+      перечислять цели, перечень данных и перечень действий с ними. Сейчас там одна
+      фраза со ссылкой сюда.
+   5. ТРАНСГРАНИЧНАЯ ПЕРЕДАЧА (152-ФЗ ст. 12). Пока и модель, и хостинг в России —
+      вопроса нет. В ту минуту, когда под /en/ и /pt/ встанет зарубежный бэкенд или
+      зарубежная модель, потребуется отдельное уведомление РКН и, возможно, отдельное
+      согласие. Это НЕ мелочь: см. пункт про llm_by_lang в site/api/README.md.
+   6. ЛОКАЛИЗАЦИЯ БАЗЫ (152-ФЗ ст. 18 ч. 5): данные граждан РФ должны первично
+      записываться на территории РФ. Сейчас так и есть (timeweb), но при переносе
+      части сайта за рубеж это надо пересмотреть.
+   7. GDPR для гостей из ЕС: нужен ли представитель в ЕС (ст. 27); договоры на обработку
+      с процессорами — Сбер и timeweb (ст. 28); реестр обработок (ст. 30); порядок
+      действий при утечке (ст. 33 — 72 часа).
+   8. ВОЗРАСТ. Заявлено «не для лиц младше 16», но никак не проверяется. Решить, чем
+      это подкрепить и надо ли.
+
+  Чего здесь НЕТ и не нужно: баннера про cookies. Сайт не ставит cookie и не использует
+  ни одного счётчика аналитики — это проверяется поиском по site/index.html.
 
   Страница вне sitemap и без ссылок из разделов сайта, кроме подвала и панели
   ассистента: её задача — быть доступной там, где собираются данные.
@@ -91,8 +114,9 @@
       кому уходит и как это удалить. Без юридического тумана.</p>
 
     <h2>Кто обрабатывает</h2>
-    <p>Студия интерактивного опыта <b>playdisplay</b>, основатель Андрей Судариков.
-      Вопросы и требования об удалении данных — <a href="mailto:info@playdisplay.com">info@playdisplay.com</a>.</p>
+    <p>Студия интерактивного опыта <b>playdisplay</b>. Ваш запрос читает и обсуждает команда
+      студии — те, кто будет работать над проектом, если он состоится. Вопросы и требования
+      об удалении данных — <a href="mailto:info@playdisplay.com">info@playdisplay.com</a>.</p>
 
     <h2>Что сохраняется</h2>
     <ul>
@@ -100,7 +124,8 @@
         не сохраняется: речь распознаёт ваш браузер, к нам приходит уже текст.</li>
       <li><b>Контакты, которые вы оставили сами:</b> имя, способ связи, название компании
         (необязательно), удобный канал ответа.</li>
-      <li><b>Файл или ссылка</b> — если вы приложили описание задачи.</li>
+      <li><b>Приложенный файл или ссылка</b> — если вы решили что-то показать. Об этом
+        подробнее ниже, потому что в файле обычно больше всего лишнего.</li>
       <li><b>Техническое:</b> необратимый хеш вашего IP-адреса (сам адрес мы не храним),
         название браузера, время разговора, признак «голосом или текстом».</li>
     </ul>
@@ -115,11 +140,28 @@
       момент — просто закройте панель или напишите нам, и мы удалим всё, что успело сохраниться.
       Для гостей из Европейского союза основанием служит ст. 6(1)(a) GDPR.</p>
 
+    <h2>Файлы, которые вы прикладываете</h2>
+    <p>Можно приложить до трёх файлов размером до 10 МБ каждый: <b>презентацию, техническое
+      задание, смету, план помещения, эскиз, таблицу или фотографию</b> — pdf, Word, PowerPoint,
+      Excel, картинки. Или дать ссылку на папку в облаке, если материалов больше.</p>
+    <ul>
+      <li><b>Содержимое файла в языковую модель не уходит.</b> Модель работает только с текстом
+        разговора. Файл мы не разбираем автоматически — его читают глазами.</li>
+      <li>Файл едет вложением в письмо студии и <b>удаляется с нашего сервера сразу после
+        отправки</b>. На сервере он не хранится, наружу не отдаётся и по ссылке не открывается.</li>
+      <li>Дальше файл живёт только в почте студии, вместе с письмом — как любое деловое вложение.</li>
+      <li><b>Просьба.</b> В презентациях и техзаданиях часто оказывается лишнее: персональные
+        данные сотрудников, коммерческая тайна, чужие материалы под NDA. Присылайте только то,
+        что вы вправе показать подрядчику на этапе знакомства. Если приложили лишнее — напишите
+        нам, удалим письмо и вложение.</li>
+    </ul>
+
     <h2>Кому передаётся</h2>
     <table>
-      <tr><td>Языковая модель</td><td>Текст разговора уходит в языковую модель — она задаёт
-        вопросы и собирает описание. Сейчас это <b>GigaChat</b> (ПАО Сбербанк, Россия). Если для
-        разговоров не на русском языке мы подключим другой сервис, он будет назван здесь.</td></tr>
+      <tr><td>Поставщик языковой модели</td><td>Текст разговора уходит в языковую модель — она
+        задаёт вопросы и собирает описание. Сейчас это <b>GigaChat</b> (ПАО Сбербанк, Россия).
+        Если мы поменяем поставщика или подключим другой сервис для разговоров не на русском
+        языке, он будет назван здесь. Приложенные файлы туда не передаются.</td></tr>
       <tr><td>Хостинг</td><td><b>Timeweb</b> (Россия) — на его сервере лежит сайт и файлы разговоров.</td></tr>
       <tr><td>Почта</td><td>Почтовая служба нашего домена — доставляет письмо с описанием проекта в студию.</td></tr>
     </table>
@@ -164,8 +206,9 @@
       who receives it and how to have it deleted. No legal fog.</p>
 
     <h2>Who processes it</h2>
-    <p><b>playdisplay</b>, an interactive experience studio founded by Andrey Sudarikov.
-      Questions and deletion requests — <a href="mailto:info@playdisplay.com">info@playdisplay.com</a>.</p>
+    <p><b>playdisplay</b>, an interactive experience studio. Your enquiry is read and discussed
+      by the studio team — the people who would work on the project if it goes ahead. Questions
+      and deletion requests — <a href="mailto:info@playdisplay.com">info@playdisplay.com</a>.</p>
 
     <h2>What is stored</h2>
     <ul>
@@ -173,7 +216,8 @@
         is kept: your own browser does the speech recognition, and only text reaches us.</li>
       <li><b>The contact details you chose to leave:</b> name, means of contact, company
         (optional), preferred reply channel.</li>
-      <li><b>A file or a link</b>, if you attached a description of the task.</li>
+      <li><b>An attached file or a link</b>, if you decided to show us something. More on this
+        below — a file usually carries the most that you did not mean to send.</li>
       <li><b>Technical:</b> an irreversible hash of your IP address (we do not keep the address
         itself), your browser name, the time of the conversation, and whether you spoke or typed.</li>
     </ul>
@@ -189,12 +233,30 @@
       write to us, and we will delete whatever has been stored. For visitors from the European
       Union the basis is Art. 6(1)(a) GDPR.</p>
 
+    <h2>Files you attach</h2>
+    <p>You can attach up to three files of up to 10 MB each: <b>a presentation, a specification,
+      a budget, a floor plan, a sketch, a spreadsheet or a photo</b> — pdf, Word, PowerPoint,
+      Excel, images. Or give us a link to a cloud folder if there is more material.</p>
+    <ul>
+      <li><b>File contents are not sent to the language model.</b> The model only works with the
+        conversation text. We do not parse your file automatically — a person reads it.</li>
+      <li>The file travels as an email attachment to the studio and is <b>deleted from our server
+        immediately after sending</b>. It is never stored, never served publicly and cannot be
+        opened by URL.</li>
+      <li>After that the file lives only in the studio's mailbox, alongside the email — like any
+        business attachment.</li>
+      <li><b>One request.</b> Presentations and specifications often carry more than intended:
+        employees' personal data, commercial secrets, third-party material under NDA. Please send
+        only what you are entitled to show a contractor at the introduction stage. If something
+        slipped in, write to us and we will delete the email and the attachment.</li>
+    </ul>
+
     <h2>Who it is shared with</h2>
     <table>
-      <tr><td>Language model</td><td>The conversation text goes to a language model, which asks
-        the questions and assembles the summary. Currently this is <b>GigaChat</b> (Sberbank,
-        Russia). If we add another service for conversations in other languages, it will be
-        named here.</td></tr>
+      <tr><td>Language model provider</td><td>The conversation text goes to a language model,
+        which asks the questions and assembles the summary. Currently this is <b>GigaChat</b>
+        (Sberbank, Russia). If we change provider, or add another service for conversations in
+        other languages, it will be named here. Attached files are not sent there.</td></tr>
       <tr><td>Hosting</td><td><b>Timeweb</b> (Russia) — the site and the conversation files live
         on its server.</td></tr>
       <tr><td>Email</td><td>Our domain's mail service — it delivers the project summary to the studio.</td></tr>
