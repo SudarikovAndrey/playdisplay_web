@@ -1490,10 +1490,12 @@
     body.past-hero .ai-widget { opacity: 1; pointer-events: auto; transform: none; }
     .hero-grade { background:
       linear-gradient(180deg, rgba(3,12,16,0.55) 0%, transparent 18%, transparent 80%, rgba(3,12,16,0.55) 100%); }
-    /* Заголовок приподнят, чтобы под ним осталась свободная полоса под кнопку ▶ сцены
-       (она живёт в iframe, внизу по центру). При bottom:110px кнопка вставала прямо на
-       последнюю строку «запоминают.» — два разных слоя, а выглядело как наезд. */
-    .hero-inner { padding-top: 76px; padding-bottom: 0; bottom: 178px; }
+    /* Заголовок прижат к низу экрана, кнопка ▶ сцены — прямо над ним (она живёт в iframe,
+       её отступ задан там же от низа). Оба элемента считаются ОТ НИЗА, а не от центра:
+       на телефоне высота вьюпорта гуляет вместе с панелями браузера, и всё, что привязано
+       к середине, при их появлении уезжает. Раньше блок стоял на 178px и вместе с кнопкой
+       занимал середину кадра — самое интересное место сцены. */
+    .hero-inner { padding-top: 76px; padding-bottom: 0; bottom: 96px; }
     .hero h1 { font-size: 23px; max-width: 15ch; text-shadow: 0 2px 20px rgba(3,12,16,0.95); }
     .numbers .cell { padding: 32px 20px; border-right: none; border-bottom: 1px solid var(--space-line); }
     /* КОМПАКТНАЯ КАРТОЧКА НА МОБИЛЕ. В одну колонку 15 проектов занимали 6 200px —
@@ -1704,7 +1706,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b0208-mob4" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b0208-mob5" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>

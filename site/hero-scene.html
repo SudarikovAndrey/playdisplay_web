@@ -26,6 +26,11 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   /* счётчик кадров — только в режиме отладки (см. PD_DEV выше) */
   #corner-fps { display: none; }
   html.pd-dev #corner-fps { display: block; }
+  /* Панель производительности в левом верхнем углу (FPS, POINTS, CALLS, DPR, CHUNKS,
+     LOD, TERR, WAIT) — инструмент разработчика. Во время полёта она лежала прямо
+     поверх игры и читалась как сбой. Показываем только в режиме отладки. */
+  #fps-hud { display: none; }
+  html.pd-dev #fps-hud { display: block; }
   body.dbg #settings { display: block !important; } /* отладка: панель настроек по кнопке DEV */
   #scene-info { bottom: 118px; left: 64px; }
   #scene-num { font-family: 'Roboto Mono', monospace; font-size: 10px; letter-spacing: .3em; opacity: .45; margin-bottom: 7px; }
@@ -338,7 +343,7 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
        Вид минималистичный: ни заливки, ни блюра, ни тени — тонкий контур и треугольник,
        чтобы кадр за кнопкой оставался виден. */
     #play-btn {
-      top: auto; bottom: 292px; width: 58px; height: 58px; font-size: 17px; padding-left: 4px;
+      top: auto; bottom: 186px; width: 58px; height: 58px; font-size: 17px; padding-left: 4px;
       background: none !important; backdrop-filter: none; box-shadow: none;
       border-color: rgba(255,255,255,.7);
       transform: translate(-50%, 0) scale(.8);
@@ -879,6 +884,13 @@ if (isMobile) {
   // край стика = край экрана, центр = центр. Отпускание возвращает ноль, и корабль
   // сам выравнивается по уже существующей пружине.
   const R = 62;                 // радиус хода ручки, px
+  // РАЗНАЯ ЧУВСТВИТЕЛЬНОСТЬ ПО ОСЯМ — не прихоть, а компенсация игровой математики.
+  // Ниже (см. gTick) курс считается как (aimX/ширина - 0.5) * 120, то есть полный ход
+  // вбок даёт ±60 условных единиц. Высота — clamp((1 - aimY/высота) * 48 + 3, 3, 52),
+  // это всего ±24 от середины. При одинаковом переводе пикселей в «прицел» руль выходил
+  // вдвое с лишним резче вбок, чем вверх-вниз: корабль швыряло по сторонам и почти не
+  // поднимало. Выравниваем ощущение: вбок ослабляем, вверх-вниз усиливаем.
+  const GX = 0.6, GY = 2.4;
   let stickId = null, ox = 0, oy = 0;
   const stick = document.createElement('div');
   stick.id = 'gstick';
@@ -887,12 +899,14 @@ if (isMobile) {
   document.body.appendChild(stick);
 
   const centerAim = () => { touchPX = innerWidth / 2; touchPY = innerHeight / 2; };
+  const clamp01s = (v, lo, hi) => v < lo ? lo : (v > hi ? hi : v);
   const place = (dx, dy) => {
     const d = Math.hypot(dx, dy) || 1, k = Math.min(1, R / d);
     const kx = dx * k, ky = dy * k;
+    // ручка ходит как ходила — усиление живёт только в переводе в «прицел»
     knob.style.transform = 'translate(' + kx.toFixed(1) + 'px,' + ky.toFixed(1) + 'px)';
-    touchPX = innerWidth / 2 + (kx / R) * (innerWidth / 2);
-    touchPY = innerHeight / 2 + (ky / R) * (innerHeight / 2);
+    touchPX = clamp01s(innerWidth / 2 + (kx / R) * (innerWidth / 2) * GX, 0, innerWidth);
+    touchPY = clamp01s(innerHeight / 2 + (ky / R) * (innerHeight / 2) * GY, 0, innerHeight);
   };
 
   addEventListener('touchstart', e => {
@@ -905,15 +919,20 @@ if (isMobile) {
     place(0, 0);
   }, { passive: true });
 
+  // НЕ passive: во время полёта жест обязан гаситься, иначе он одновременно рулит
+  // кораблём и листает страницу под сценой — экран уезжает прямо в игре. Слушатель
+  // с passive:true права отменить прокрутку не имеет, поэтому здесь его нет.
   addEventListener('touchmove', e => {
-    if (!GAME.on || stickId === null) return;
+    if (!GAME.on) return;
+    if (e.cancelable) e.preventDefault();
+    if (stickId === null) return;
     for (let i = 0; i < e.changedTouches.length; i++) {
       const t = e.changedTouches[i];
       if (t.identifier !== stickId) continue;
       place(t.clientX - ox, t.clientY - oy);
       return;
     }
-  }, { passive: true });
+  }, { passive: false });
 
   const release = e => {
     if (stickId === null) return;
