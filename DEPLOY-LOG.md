@@ -8,6 +8,59 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-03 20:12 — hybrid-v8 @ 0a1d7b1
+
+**Коммиты в этой поставке**
+```
+0a1d7b1 Генератор вставляет SEO-блок главной сам: вторая ручная ступень убрана
+0a993fd Генератор сам вставляет SEO-блок в русскую главную между маркерами — последняя ручная ступень убрана. Английская версия так делала всегда, русская ждала человека, и это та же болезнь, что и промежуточный cases.json. Правка соседнего чата, зафиксирована по просьбе владельца
+93a38f7 Генератор читает кейсы прямо из index.html: промежуточного /tmp/cases.json больше нет. Раньше его надо было выкладывать руками, и однажды этого не сделали — английская главная отстала от русской на несколько поставок. Массив CASES разбирается посимвольно (в описаниях есть и «https://», и запятые, на которых регулярки тихо ломались), обязательные поля проверяются с громким падением. Правка соседнего чата, зафиксирована по просьбе владельца
+7334d58 Шесть правок по замечаниям. В контакте вместо имени — «Креативная сессия с playdisplay», заголовок стал «Забронируйте 30 минут», чтобы не повторяться. Подпись подвала больше не заезжает под виджет микрофона (зазор 32 px, на телефоне отступ снизу). Кнопка «сыграть в пространство» на загрузке из яркой заливки стала тонкой рамкой на 72% прозрачности — сцена и логотип снова главные. В шапке появился выключатель звука: один на весь сайт, глушит и ролики, и звуки 3D-сцены (ей уходит pdSound), выбор помнится в том же ключе pd_sound. В разделе Студия карточка основателя с портретом и резюме из трёх строк; фотографии пока нет — на её месте монограмма в фирменной типографике, как только положим assets/andrey-sudarikov.jpg, она подхватится сама. Подписи стартовой сцены переводятся: сцена получает язык в адресе и берёт ТОТ ЖЕ словарь, что и сайт — статусы облака точек, подсказки архива и HUD полёта теперь на языке страницы
+c23a9f1 Журнал деплоя: d221741
+```
+
+**На сервер отправлено файлов:** 37, удалено: 0
+```
+hero-scene.html
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+data/i18n/en.js
+en/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+work/airports/index.html
+work/bmwx5/index.html
+work/coalco/index.html
+work/industry-rf/index.html
+work/mig2019/index.html
+work/odk-oak/index.html
+work/pano360/index.html
+work/proryv/index.html
+work/ptk-group/index.html
+work/rostec/index.html
+work/sinara/index.html
+work/stalingrad/index.html
+work/urban-forum-2018/index.html
+work/vdnh-space-center/index.html
+work/vdnh-space/index.html
+```
+
+
 ## 2026-08-03 11:04 — hybrid-v8 @ d221741
 
 **Коммиты в этой поставке**
