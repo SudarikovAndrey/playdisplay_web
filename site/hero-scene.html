@@ -7,6 +7,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>
+/* ЯЗЫК СЦЕНЫ. Лендинг встраивает её с ?lang=<код> и она берёт ТОТ ЖЕ словарь, что и сайт
+   (data/i18n/<код>.js) — отдельного файла переводов для сцены нет, чтобы подписи проектов
+   и статусы не разъезжались с лендингом. Русский — исходный текст в разметке и в коде. */
+(function(){
+  var m = /[?&]lang=([a-z]{2})/.exec(location.search);
+  window.PD_LANG = (m && m[1] !== 'ru') ? m[1] : 'ru';
+  if (window.PD_LANG !== 'ru') document.write('<scr' + 'ipt src="data/i18n/' + window.PD_LANG + '.js"></scr' + 'ipt>');
+  document.addEventListener('DOMContentLoaded', function(){ document.documentElement.lang = window.PD_LANG; });
+})();
+</script>
+<script>
 /* РЕЖИМ ОТЛАДКИ. Кнопка DEV и счётчик FPS — инструменты, а не часть сайта: до 31.07.2026
    они висели на боевом у каждого посетителя. Теперь появляются только когда режим включён:
    ?dev=1 или ?cam=1 в адресе самой сцены ИЛИ лендинга, который её встроил.
@@ -26,11 +37,13 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   /* счётчик кадров — только в режиме отладки (см. PD_DEV выше) */
   #corner-fps { display: none; }
   html.pd-dev #corner-fps { display: block; }
-  /* Панель производительности в левом верхнем углу (FPS, POINTS, CALLS, DPR, CHUNKS,
-     LOD, TERR, WAIT) — инструмент разработчика. Во время полёта она лежала прямо
-     поверх игры и читалась как сбой. Показываем только в режиме отладки. */
+  /* Панели производительности — инструмент разработчика, не часть игры.
+     Их ДВЕ, и в этом была ошибка: сначала я закрыл только #fps-hud (клавиша F), а на
+     экране висела вторая — #game-metrics с FPS/POINTS/CALLS/DPR/CHUNKS/LOD/TERR/WAIT,
+     её включает правило body.game ниже по файлу. Закрываем обе и только в отладке. */
   #fps-hud { display: none; }
   html.pd-dev #fps-hud { display: block; }
+  html:not(.pd-dev) body.game #game-metrics { display: none !important; }
   body.dbg #settings { display: block !important; } /* отладка: панель настроек по кнопке DEV */
   #scene-info { bottom: 118px; left: 64px; }
   #scene-num { font-family: 'Roboto Mono', monospace; font-size: 10px; letter-spacing: .3em; opacity: .45; margin-bottom: 7px; }
@@ -373,15 +386,28 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
        действительно точки, и шва не видно. На телефоне кадр открывается почти во весь
        экран на чёрных шторках — растворять не во что, и маска даёт рваный край с
        просвечивающей подложкой-постером. Здесь она вредна, убираем. */
-    #player { background: #05090c; }
-    /* КАДР ЦЕЛИКОМ, А НЕ ЕГО СЕРЕДИНА. Коробка кадра на телефоне почти квадратная, ролики
-       16:9 — при object-fit:cover от кадра оставалась центральная полоса шириной чуть
-       больше половины, и на записи это выглядит как «показана боковая часть видео».
-       Вдобавок точечный образ строится по ПОЛНОМУ кадру: обрезанное видео с ним не
-       совпадало, отсюда и ощущение, что стыковки нет. contain показывает кадр целиком,
-       а поля сверху и снизу сливаются с чёрными шторками — рамки не видно. */
-    #player video, #player iframe { object-fit: contain; }
-    #frame { -webkit-mask-image: none; mask-image: none; }
+    /* МАСКУ НЕ ТРОГАЕМ — она и есть проявление из точек. Раз зума нет и кадр садится
+       ровно в облако, край должен растворяться в нём, как на компе. Здесь раньше стояло
+       mask-image:none: это и сделало открытие «банальным», а до того рвало край, пока
+       кадр уезжал зумом в отдельный экран и растворять было не во что.
+       Квадратную середину горизонтального ролика вырезает object-fit: cover из базовых
+       стилей — то же, что показывают точки. */
+
+    /* ===== ИГРОВОЙ ИНТЕРФЕЙС ПОД ШИРИНУ ТЕЛЕФОНА =====
+       Он свёрстан под монитор и на 390px обрезался по всем краям: кольцо авиагоризонта
+       шире экрана втрое, счёт упирался в правый край, подсказка выхода не помещалась
+       в строку. Ужимаем — цифры и кольцо остаются читаемыми, но входят в кадр. */
+    #game-ring { width: 340px; height: 181px; margin: -90px 0 0 -170px; }  /* пропорция 1240:660 сохранена */
+    #game-hud { right: 14px; top: 68px; }
+    #game-score { font-size: 30px; }
+    #game-spice b { font-size: 15px; }
+    #game-spice i { width: 8px; height: 8px; }
+    #game-label { font-size: 8px; letter-spacing: .18em; }
+    /* строка-подсказка выхода на узком экране рвётся пополам и лезет на корабль:
+       крестик и так виден в углу, объяснять его текстом не нужно */
+    #game-exit { display: none; }
+    #game-onboard { bottom: 22vh; font-size: 11px; padding: 0 18px; text-align: center; }
+    /* #frame — тот же кадр в фазе наведения резкости, маску ему тоже возвращаем */
     #player-close { top: 10px; right: 10px; width: 34px; height: 34px; font-size: 14px;
       background: rgba(0,0,0,.45); border-color: rgba(255,255,255,.45); }
   }
@@ -484,6 +510,32 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   #pd-loader .pl { width: min(54vw, 240px); height: auto; display: block; animation: plPulse 1.35s ease-in-out infinite; }
   @keyframes plPulse { 0%,100% { opacity: .3; } 50% { opacity: .95; } }
 </style>
+<script>
+/* Перевод подписей сцены. Тот же приём, что на лендинге: словарь «русская строка →
+   перевод», замена только при точном совпадении, внутрь script/style не заходим. */
+window.PD_T = function(x){
+  var d = window.PD_I18N;
+  if (!d || typeof x !== 'string') return x;
+  return d[x] || d[x.replace(/\s+/g, ' ').trim()] || x;
+};
+addEventListener('DOMContentLoaded', function(){
+  if (!window.PD_I18N) return;
+  var skip = { SCRIPT: 1, STYLE: 1 };
+  var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n;
+  while ((n = w.nextNode())) {
+    var raw = n.nodeValue; if (!raw || !raw.trim()) continue;
+    var p = n.parentNode; if (p && skip[p.tagName]) continue;
+    var hit = window.PD_I18N[raw.replace(/\s+/g, ' ').trim()];
+    if (hit) n.nodeValue = raw.replace(raw.trim(), hit);
+  }
+  document.querySelectorAll('[aria-label],[title]').forEach(function(el){
+    ['aria-label', 'title'].forEach(function(a){
+      var v = el.getAttribute(a); if (!v) return;
+      var t = window.PD_T(v); if (t !== v) el.setAttribute(a, t);
+    });
+  });
+});
+</script>
 </head>
 <body>
 <div id="pd-loader"><img class="pl" src="assets/logos/playdisplay-logo-white.png" alt="PlayDisplay"></div>
@@ -901,8 +953,14 @@ if (isMobile) {
   // это всего ±24 от середины. При одинаковом переводе пикселей в «прицел» руль выходил
   // вдвое с лишним резче вбок, чем вверх-вниз: корабль швыряло по сторонам и почти не
   // поднимало. Выравниваем ощущение: вбок ослабляем, вверх-вниз усиливаем.
-  const GX = 0.6, GY = 2.4;
-  let stickId = null, ox = 0, oy = 0;
+  // Ход сделан заметно спокойнее: полное отклонение ручки больше не швыряет корабль
+  // к краю экрана. Пропорция между осями сохранена (вертикаль всё ещё сильнее,
+  // потому что игровая математика по высоте даёт вдвое меньший размах).
+  const GX = 0.34, GY = 1.35;
+  // База — курс на момент касания, в долях экрана. Отклонение ручки прибавляется К НЕЙ,
+  // а не отсчитывается от середины: иначе каждое новое касание рывком возвращало бы
+  // корабль в центр — ровно то, от чего мы уходим, сохраняя курс после отпускания.
+  let stickId = null, ox = 0, oy = 0, baseX = 0.5, baseY = 0.5;
   const stick = document.createElement('div');
   stick.id = 'gstick';
   stick.innerHTML = '<i></i>';
@@ -916,8 +974,10 @@ if (isMobile) {
     const kx = dx * k, ky = dy * k;
     // ручка ходит как ходила — усиление живёт только в переводе в «прицел»
     knob.style.transform = 'translate(' + kx.toFixed(1) + 'px,' + ky.toFixed(1) + 'px)';
-    touchPX = clamp01s(innerWidth / 2 + (kx / R) * (innerWidth / 2) * GX, 0, innerWidth);
-    touchPY = clamp01s(innerHeight / 2 + (ky / R) * (innerHeight / 2) * GY, 0, innerHeight);
+    const fx = clamp01s(baseX + (kx / R) * 0.5 * GX, 0, 1);
+    const fy = clamp01s(baseY + (ky / R) * 0.5 * GY, 0, 1);
+    touchPX = fx * innerWidth;
+    touchPY = fy * innerHeight;
   };
 
   addEventListener('touchstart', e => {
@@ -925,6 +985,8 @@ if (isMobile) {
     const t = e.changedTouches[0];
     if (!t) return;
     stickId = t.identifier; ox = t.clientX; oy = t.clientY;
+    // берём за ноль ТЕКУЩИЙ курс — корабль не должен дёргаться в момент касания
+    baseX = touchPX / innerWidth; baseY = touchPY / innerHeight;
     stick.style.left = ox + 'px'; stick.style.top = oy + 'px';
     stick.classList.add('on');
     place(0, 0);
@@ -952,7 +1014,10 @@ if (isMobile) {
       stickId = null;
       stick.classList.remove('on');
       knob.style.transform = '';
-      centerAim();                 // ноль по обеим осям — корабль плавно выходит в центр
+      // КОРАБЛЬ ОСТАЁТСЯ ТАМ, ГДЕ ЕГО ОСТАВИЛИ. Раньше здесь стоял возврат прицела
+      // в центр, и после каждого отпускания пальца корабль уезжал обратно на середину
+      // экрана — лететь по краю или держать высоту было невозможно. Отпустили руль —
+      // курс сохраняется, как у настоящего штурвала.
       return;
     }
   };
@@ -2475,51 +2540,23 @@ function updatePlay(dt, wMax) {
     // и не по центру) и квадратом по центру экрана, потому что подлёт не доходил до
     // конца. Конечный вид не должен зависеть от того, доиграла ли анимация: как только
     // ролик показан, ставим ровно целевую рамку.
-    // Зум к полноширинному кадру начинается ПОСЛЕ стыковки с точками (0.78, а не 0.55).
-    // DOM-кадр проявляется на playE>0.72, и при раннем старте зума он к этому моменту
-    // уже уезжал на пятую часть пути к квадрату — отсюда «сдвиг, нет чёткой стыковки».
-    // Теперь порядок такой: точки собираются в кадр → кадр наводится на резкость ровно
-    // по точечному образу → и только потом растёт на всю ширину.
-    const zoomK = play.state === 2 ? 1 : smoothstep(0.78, 1, playE);
-    if (zoomK > 0.001) {
-      // ВО ВСЮ ШИРИНУ, а не 96%: при 0.96 слева и справа оставались щели по 2%,
-      // сквозь которые виднелось облако — те самые «боковые полоски» на части проектов.
-      // КОРОБКА ПО ПРОПОРЦИИ КАДРА, а не квадрат. Все ролики витрины 16:9, а целевая
-      // рамка была квадратной — object-fit доводил разницу обрезкой. Теперь рамка равна
-      // самому кадру: и обрезать нечего, и точечный образ (он строится по полному кадру)
-      // ложится в неё один в один — это и есть та самая стыковка.
-      const tw = innerWidth, th = tw * 9 / 16;
-      // РОВНО ПО ЦЕНТРУ. 0.46 достались от игрового режима, где сверху висит счёт.
-      // В витрине счёта нет, и кадр просто стоял выше середины: сверху 75px черноты,
-      // снизу 145px. На записи это и читается как «видео сдвинуто вверх».
-      const tcx = innerWidth / 2, tcy = innerHeight * 0.5;
-      pw += (tw - r.w) * zoomK;
-      ph += (th - r.h) * zoomK;
-      pcx += (tcx - r.cx) * zoomK;
-      pcy += (tcy - r.cy) * zoomK;
-    }
+    // ЗУМА НЕТ. Решение владельца 03.08.2026: в точках показывается квадратная середина
+    // горизонтального ролика, и видео должно показывать РОВНО ЕЁ — тот же кусок, того же
+    // размера, на том же месте. Любое доведение рамки к «красивому» размеру во время
+    // запуска ломает главное: ощущение, что кадр вырос из точек, а не подъехал откуда-то.
+    // Поэтому pw/ph/pcx/pcy остаются равны экранной проекции точечной сетки (r выше),
+    // а квадратную середину из кадра 16:9 вырезает object-fit: cover в стилях.
+    // Прежние попытки — зум в квадрат (0.55), потом в полную ширину (0.78) — и давали
+    // «сдвиг» и «нет чёткой стыковки»: рамка уезжала раньше, чем кадр наводился на резкость.
+    const zoomK = 0;
     if (mobDimTop) {
       const topH = Math.max(0, pcy - ph / 2), botH = Math.max(0, innerHeight - (pcy + ph / 2));
       mobDimTop.style.height = topH + 'px'; mobDimBottom.style.height = botH + 'px';
-      // Шторки доводим до полной непрозрачности. На 0.72 сквозь них просвечивало облако
-      // точек, и вокруг открытого ролика оставалась мутная кайма — вместе с мягкой маской
-      // кадра это и выглядело как «по краям торчит фон». Плотный чёрный даёт кадру рамку.
-      const dimOp = zoomK;
-      mobDimTop.style.opacity = dimOp; mobDimBottom.style.opacity = dimOp;
-    }
-    // ПРОЯВЛЕНИЕ ИЗ ТОЧЕК — маска живёт только ПОКА ИДЁТ ПЕРЕХОД. Постоянная маска
-    // давала рваный край на открытом ролике (растворять на телефоне не во что), а
-    // убранная совсем — «банальный» прямоугольник без фишки. Теперь край кадра
-    // рассыпается в точки в начале подлёта и срастается в чистую рамку к концу:
-    // граница маски (68%→100%+) уезжает за пределы кадра вместе с playE.
-    // На вылете (state 3) playE спадает — и кадр так же растворяется обратно.
-    if (play.state === 2 || playE > 0.985) {
-      playerEl.style.webkitMaskImage = playerEl.style.maskImage = 'none';
-    } else {
-      const solid = Math.round(52 + 58 * playE);        // 52% → 110%: непрозрачное ядро
-      const edge  = Math.round(96 + 70 * playE);        // 96% → 166%: где край сходит на нет
-      const m = 'radial-gradient(ellipse 74% 74% at center, #000 ' + solid + '%, transparent ' + edge + '%)';
-      playerEl.style.webkitMaskImage = playerEl.style.maskImage = m;
+      // ШТОРКИ ПОГАШЕНЫ. Они затемняли всё вокруг кадра и были нужны только зуму:
+      // когда кадр уезжал в отдельный «экран», сцену за ним требовалось приглушить.
+      // Без зума кадр стоит ровно в облаке, и затемнять нечего — наоборот, точки вокруг
+      // и есть то, во что растворяется его край.
+      mobDimTop.style.opacity = 0; mobDimBottom.style.opacity = 0;
     }
   }
   playerEl.style.width = pw + 'px';
@@ -2569,8 +2606,8 @@ function updateUI(wMax) {
   const titleOp = Math.round((0.3 + 0.7 * wMax) * 50) / 50;
   if (titleOp !== _ui.titleOp) { _ui.titleOp = titleOp; el.title.style.opacity = titleOp; }
   // техно-статусы облака точек (мелкий HUD в углу)
-  const phase = play.state === 1 || play.state === 2 ? 'ПРОЕКЦИЯ АКТИВНА'
-    : wMax > 0.95 ? 'ФОРМА ЗАФИКСИРОВАНА' : wMax > 0.3 ? 'РЕКОНСТРУКЦИЯ ФОРМЫ' : 'СКАНИРОВАНИЕ ПРОСТРАНСТВА';
+  const phase = PD_T(play.state === 1 || play.state === 2 ? 'ПРОЕКЦИЯ АКТИВНА'
+    : wMax > 0.95 ? 'ФОРМА ЗАФИКСИРОВАНА' : wMax > 0.3 ? 'РЕКОНСТРУКЦИЯ ФОРМЫ' : 'СКАНИРОВАНИЕ ПРОСТРАНСТВА');
   if (phase !== _ui.phase) { _ui.phase = phase; el.phase.textContent = phase; cornerStatus.textContent = phase; }
   // fps в другом углу (сглаженный, из авто-качества), обновляем дважды в секунду
   if ((performance.now() - (updateUI._fpsT || 0)) > 500) {
@@ -2798,6 +2835,10 @@ const fpsHud = document.getElementById('fps-hud');
 let hudOn = false, hudT = 0;
 addEventListener('keydown', e => {
   if (e.key === 'f' || e.key === 'F' || e.key === 'а' || e.key === 'А') {
+    // Панель производительности — только в режиме отладки. Прятать её стилем оказалось
+    // недостаточно: видимость ставится ИНЛАЙНОВО отсюда, а инлайн сильнее таблицы стилей,
+    // поэтому на телефоне она продолжала висеть поверх игры. Закрываем в источнике.
+    if (!window.PD_DEV) { hudOn = false; fpsHud.style.display = 'none'; return; }
     hudOn = !hudOn;
     fpsHud.style.display = hudOn ? 'block' : 'none';
   }
@@ -5262,6 +5303,12 @@ function gLabel(t) {
 const gameOverEl = document.getElementById('game-over');
 // вход/выход: сообщение от лендинга, клавиша G; Esc — плавный выход
 addEventListener('message', e => { if (e.data && typeof e.data.pdGame === 'boolean') e.data.pdGame ? enterGame() : startExitGame(); });
+// выключатель звука в шапке лендинга: одно решение на весь сайт
+addEventListener('message', e => {
+  if (!e.data || typeof e.data.pdSound !== 'boolean') return;
+  S.sound = e.data.pdSound;
+  try { Sound.setEnabled(S.sound); } catch (err) {}
+});
 addEventListener('keydown', e => {
   if (e.key === 'Escape' && GAME.on) startExitGame();
   else if (e.key === 'Escape' && ARCHIVE.on) { ARCHIVE.page ? arcClosePage() : startExitArchive(); }
@@ -5455,7 +5502,7 @@ function enterArchive() {
     ARCHIVE.group.add(new THREE.Points(fg, fm));
   })();
   scene.add(ARCHIVE.group);
-  arcCount.textContent = 'РАЗВЕДАНО ' + String(ARCHIVE.seen.size).padStart(2, '0') + '/' + ARC_N;
+  arcCount.textContent = PD_T('РАЗВЕДАНО') + ' ' + String(ARCHIVE.seen.size).padStart(2, '0') + '/' + ARC_N;
   arcPageEl.classList.remove('show');
   if (EMBEDDED) try { parent.postMessage({ pdArchiveOn: true }, '*'); } catch (e) {}
 }
@@ -5509,7 +5556,7 @@ function arcOpenPage(i) {
   document.getElementById('ap-sol').textContent = sol;
   arcPageEl.classList.add('show');
   ARCHIVE.page = true;
-  arcCount.textContent = 'РАЗВЕДАНО ' + String(ARCHIVE.seen.size).padStart(2, '0') + '/' + ARC_N;
+  arcCount.textContent = PD_T('РАЗВЕДАНО') + ' ' + String(ARCHIVE.seen.size).padStart(2, '0') + '/' + ARC_N;
   if (EMBEDDED) try { parent.postMessage({ pdArcOpen: d.slug }, '*'); } catch (e) {}
 }
 function arcClosePage() {

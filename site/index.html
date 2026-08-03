@@ -38,6 +38,19 @@
   .lang a:hover { color: var(--scan-white); }
   .lang a.on { color: var(--space-void); background: var(--scan-white); }
   .lang .sep { color: rgba(159,180,200,.35); font-size: 10px; }
+  /* выключатель звука: один на весь сайт — и ролики, и звуки 3D-сцены */
+  .snd { margin-left: 14px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+    background: none; border: 1px solid transparent; color: var(--scan-white-dim); cursor: pointer;
+    transition: color var(--duration-fast), border-color var(--duration-fast); }
+  .snd:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
+  .snd svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6;
+    stroke-linecap: round; stroke-linejoin: round; }
+  .snd .wave { transition: opacity .18s; }
+  .snd .slash { opacity: 0; transition: opacity .18s; }
+  .snd.off { color: var(--scan-white-faint); }
+  .snd.off .wave { opacity: 0; }
+  .snd.off .slash { opacity: 1; }
+  @media (max-width: 700px) { .snd { margin-left: 6px; width: 26px; height: 26px; } .snd svg { width: 15px; height: 15px; } }
   @media (max-width: 700px) { .lang { margin-left: 8px; } .lang a { padding: 4px 5px; font-size: 10.5px; letter-spacing: .1em; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; overscroll-behavior-x: none; } /* свайп вбок ≠ «назад» */
@@ -116,12 +129,16 @@
     /* и сам знак на треть мельче: на телефоне 58vw читались как заставка, а не как пауза */
     #boot .bl { width: min(41vw, 238px); }
   }
+  /* Кнопка на первом экране нарочно тихая: главное здесь — логотип и сцена, а игра
+     это приглашение, а не требование. Была ярко-бирюзовой заливкой и перетягивала
+     на себя всё внимание; стала тонкой рамкой, которая оживает только под курсором. */
   #boot #bootPlay { opacity: 0; transform: translateY(10px); pointer-events: none;
-    font: 600 13px 'Roboto Mono', monospace; letter-spacing: .22em; text-transform: uppercase;
-    color: #04121a; background: #2be0c6; border: none; border-radius: 2px; padding: 16px 34px;
-    cursor: pointer; transition: opacity .5s ease, transform .5s ease, box-shadow .25s; }
-  #boot.ready #bootPlay { opacity: 1; transform: none; pointer-events: auto; }
-  #boot #bootPlay:hover { box-shadow: 0 10px 34px rgba(43,224,198,0.4); }
+    font: 500 11px 'Roboto Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
+    color: rgba(180,214,220,0.72); background: transparent;
+    border: 1px solid rgba(43,224,198,0.28); border-radius: 2px; padding: 11px 22px;
+    cursor: pointer; transition: opacity .5s ease, transform .5s ease, color .25s, border-color .25s; }
+  #boot.ready #bootPlay { opacity: 0.72; transform: none; pointer-events: auto; }
+  #boot #bootPlay:hover { opacity: 1; color: #dff8f3; border-color: rgba(43,224,198,0.7); }
   /* сияние под курсором: мягкий радиальный свет, следует за мышью (только точный указатель) */
   #cursor-glow { position: fixed; left: 0; top: 0; width: 520px; height: 520px; margin: -260px 0 0 -260px;
     border-radius: 50%; pointer-events: none; z-index: 60; opacity: 0; will-change: transform, opacity;
@@ -1186,6 +1203,26 @@
   .panel h4 { font: 700 20px var(--font-display); color: #F1FBFC; margin-bottom: 12px; }
   .panel p { font: 400 15px/1.65 var(--font-body); color: var(--scan-white-dim); }
   .panel p + p { margin-top: 12px; }
+  /* Основатель: портрет и очень короткое резюме. Фотографии может ещё не быть —
+     тогда на её месте монограмма в фирменной типографике, а не битая картинка. */
+  .founder .f-row { display: flex; gap: 22px; align-items: flex-start; }
+  .founder .f-portrait { position: relative; flex: 0 0 108px; width: 108px; height: 132px;
+    border: 1px solid var(--space-line); background: #0a1620; overflow: hidden; }
+  .founder .f-portrait img { width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: grayscale(0.35) contrast(1.05); }
+  .founder .f-mono { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    font: 800 34px var(--font-display); letter-spacing: -0.02em; color: rgba(43,224,198,0.55); }
+  .founder.noportrait .f-portrait img { display: none; }
+  .founder.noportrait .f-mono { display: flex; }
+  .founder .f-role { font: 500 12px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--scan-white-dim); margin: 4px 0 12px; }
+  .founder .f-cv { list-style: none; padding: 0; margin: 0; }
+  .founder .f-cv li { position: relative; padding-left: 15px; margin-bottom: 7px;
+    font: 400 14.5px/1.55 var(--font-body); color: var(--scan-white-dim); }
+  .founder .f-cv li::before { content: ""; position: absolute; left: 0; top: 9px;
+    width: 5px; height: 1px; background: var(--signal-teal); }
+  @media (max-width: 700px) { .founder .f-row { gap: 16px; }
+    .founder .f-portrait { flex-basis: 84px; width: 84px; height: 104px; } }
 
   /* ---------- contact ---------- */
   .contact { background: var(--space-deep); border-top: 1px solid var(--space-line); }
@@ -1215,14 +1252,17 @@
   .langs { margin-top: 28px; font: 400 13px var(--font-mono); letter-spacing: 0.06em; color: var(--scan-white-faint); }
 
   footer { background: var(--space-void); border-top: 1px solid var(--space-line); }
-  .foot-inner { display: flex; justify-content: space-between; align-items: center; padding: 40px 64px; font: 400 13px var(--font-body); color: var(--scan-white-faint); }
+  /* справа снизу висит виджет ассистента (68px + отступ) — подпись подвала
+     заканчивается раньше, иначе текст читается сквозь микрофон */
+  .foot-inner { display: flex; justify-content: space-between; align-items: center;
+    padding: 40px 64px; padding-right: 130px; font: 400 13px var(--font-body); color: var(--scan-white-faint); }
   .foot-inner .mono { font-size: 12px; letter-spacing: 0.05em; }
   /* подпись авторства: тем же весом, что и остальной подвал, акцент только на имени */
   .foot-made b { color: var(--signal-teal); font-weight: 600; }
   .foot-legal { color: var(--scan-white-faint); text-decoration: none; border-bottom: 1px solid rgba(159,180,200,0.28); }
   .foot-legal:hover { color: var(--scan-white); border-bottom-color: var(--scan-white-faint); }
   @media (max-width: 900px) {
-    .foot-inner { flex-direction: column; align-items: flex-start; gap: 14px; padding: 34px 24px; }
+    .foot-inner { flex-direction: column; align-items: flex-start; gap: 14px; padding: 34px 24px 96px; }
   }
 
   /* блок «на альфе»: клип на чёрном фоне без контейнера — screen убирает чёрный */
@@ -1671,6 +1711,14 @@
     </nav>
     <button class="cta-play" onclick="location.hash='#contact'">▶︎ Обсудить идею</button>
     <div class="lang" id="lang"></div>
+    <button class="snd" id="sndBtn" type="button" aria-label="Выключить звук" title="Выключить звук">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 9.5h3.2L12 5.5v13L7.2 14.5H4z"/>
+        <path class="wave" d="M16 9c1.2 1 1.2 5 0 6"/>
+        <path class="wave" d="M18.7 6.8c2.3 2 2.3 8.4 0 10.4"/>
+        <path class="slash" d="M16.6 9.6l4.8 4.8m0-4.8l-4.8 4.8"/>
+      </svg>
+    </button>
     <button class="burger" id="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mnav"><i></i><i></i><i></i></button>
   </div>
 </header>
@@ -1706,7 +1754,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b0308-mob7" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b0308-mob9" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1933,10 +1981,25 @@
         <p>Креативное ядро ведёт каждый проект от идеи до запуска, а под задачу собирается точная команда: геймдизайнеры, 3D-художники, разработчики, инженеры.</p>
         <p>Никакого раздутого штата — только те, кто нужен вашему проекту.</p>
       </div>
-      <div class="panel">
+      <div class="panel founder">
         <div class="ptitle">Основатель</div>
-        <h4>Андрей Судариков</h4>
-        <p>Основатель и креативный директор. В дизайне с 1999 года: графический, промышленный, мультимедиа. Выпускник Московской школы управления «Сколково». Лично ведёт каждый проект студии.</p>
+        <!-- портрет: если файла ещё нет, блок сам переходит в режим монограммы -->
+        <div class="f-row">
+          <div class="f-portrait">
+            <img src="assets/andrey-sudarikov.jpg" alt="Андрей Судариков" decoding="async"
+                 onerror="this.closest('.founder').classList.add('noportrait')">
+            <span class="f-mono" aria-hidden="true">АС</span>
+          </div>
+          <div class="f-text">
+            <h4>Андрей Судариков</h4>
+            <p class="f-role">Основатель и креативный директор</p>
+            <ul class="f-cv">
+              <li>В дизайне с 1999 года: графика, промышленный дизайн, мультимедиа</li>
+              <li>Выпускник Московской школы управления «Сколково»</li>
+              <li>Лично ведёт каждый проект студии — от идеи до запуска</li>
+            </ul>
+          </div>
+        </div>
       </div>
       <div class="panel">
         <div class="ptitle">Пресса</div>
@@ -1965,8 +2028,8 @@
 <section class="contact sec-pad" id="contact">
   <div class="wrap">
     <div class="kicker eyebrow">Следующий шаг</div>
-    <h2>Креативная сессия</h2>
-    <div class="cs-founder"><b>Андрей Судариков</b><span>Основатель playdisplay</span></div>
+    <h2>Забронируйте 30 минут</h2>
+    <div class="cs-founder"><b>Креативная сессия с playdisplay</b></div>
     <p class="csub">Если кажется, что проекту нужен нестандартный подход — давайте обсудим его вместе.</p>
     <div class="channels">
       <a class="wa" id="bookCall" href="#">▶︎ Забронировать креативную сессию</a>
@@ -4961,6 +5024,40 @@
   var SND = 'pd_sound';
   function soundOn(){ try { return localStorage.getItem(SND) !== 'off'; } catch (e) { return true; } }
   function soundSave(on){ try { localStorage.setItem(SND, on ? 'on' : 'off'); } catch (e) {} }
+  // ВЫКЛЮЧАТЕЛЬ ЗВУКА В ШАПКЕ. Один на весь сайт: и ролики кейсов, и звуки 3D-сцены
+  // в iframe (ей уходит сообщение pdSound). Выбор помнится в том же ключе pd_sound,
+  // которым уже пользуются ролики, — поэтому «выключил один раз» работает и здесь.
+  (function soundSwitch(){
+    var btn = document.getElementById('sndBtn');
+    if (!btn) return;
+    function tellScene(on){
+      var fr = document.querySelector('iframe.hero-scene');
+      if (fr && fr.contentWindow) try { fr.contentWindow.postMessage({ pdSound: on }, '*'); } catch (e) {}
+    }
+    function paint(){
+      var on = soundOn();
+      btn.classList.toggle('off', !on);
+      var label = on ? 'Выключить звук' : 'Включить звук';
+      btn.setAttribute('aria-label', T(label)); btn.setAttribute('title', T(label));
+    }
+    btn.addEventListener('click', function(){
+      var on = !soundOn();
+      soundSave(on);
+      // применяем сразу ко всему, что уже на странице
+      document.querySelectorAll('video').forEach(function(v){
+        var host = v.closest('.v-media');
+        if (host && (host.classList.contains('v-scrub') || host.classList.contains('v-alpha-top'))) return;
+        v.muted = !on;
+      });
+      tellScene(on);
+      paint();
+    });
+    paint();
+    // сцена поднимается позже — сообщаем ей состояние, когда она готова
+    addEventListener('message', function(e){ if (e.data && e.data.pdReady) tellScene(soundOn()); });
+    addEventListener('load', function(){ tellScene(soundOn()); });
+  })();
+
   function armSound(){
     vInner.querySelectorAll('video').forEach(function(v){
       var host = v.closest('.v-media');

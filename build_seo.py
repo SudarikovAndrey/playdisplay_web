@@ -347,6 +347,9 @@ en = re.sub(r'<meta name="twitter:description" content="[^"]*">',
 import hashlib
 dic_path = os.path.join(SITE, 'data/i18n/en.js')
 dic_ver = hashlib.sha1(open(dic_path, 'rb').read()).hexdigest()[:8]
+# сцене язык передаём в адресе: она подхватит тот же словарь
+en = re.sub(r'(src="hero-scene\.html[^"]*)"',
+            lambda m: m.group(1) + '&lang=en"', en, count=1)
 en = en.replace('</head>', "<script>window.PD_LANG='en';</script>\n"
                            '<script src="data/i18n/en.js?v=%s"></script>\n</head>' % dic_ver, 1)
 # SEO-блок русской главной меняем на английский
