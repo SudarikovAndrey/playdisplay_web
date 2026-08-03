@@ -364,10 +364,6 @@ function pd_action_brief($in) {
 
   // Чистим то, что уйдёт и в письмо, и на экран.
   $card['title'] = pd_str(isset($card['title']) ? $card['title'] : '', 160);
-  // Русский заголовок нужен теме письма и шапке брифа: студия ищет письма по-русски,
-  // даже когда разговор шёл на другом языке. Не пришёл — берём тот, что есть.
-  $card['title_ru'] = pd_str(isset($card['title_ru']) ? $card['title_ru'] : '', 160);
-  if ($card['title_ru'] === '') $card['title_ru'] = $card['title'];
   $card['idea']  = pd_str(isset($card['idea']) ? $card['idea'] : '', 900);
   $card['who']   = pd_str(isset($card['who']) ? $card['who'] : '', 300);
   $card['feel']  = pd_str(isset($card['feel']) ? $card['feel'] : '', 300);
@@ -376,6 +372,37 @@ function pd_action_brief($in) {
     foreach (array_slice($card['tags'], 0, 7) as $t) { $t = pd_str($t, 40); if ($t !== '') $tags[] = $t; }
   }
   $card['tags'] = $tags;
+
+  // ---- второй проход: карточка на язык гостя ----
+  // Бриф написан по-русски целиком — так его читает студия. Но верхнюю карточку
+  // видит человек, и она должна быть на его языке. Русский заголовок сохраняем
+  // ДО перевода: он идёт в тему письма, и студия ищет письма по-русски.
+  $card['title_ru'] = $card['title'];
+  if ($lang !== 'ru') {
+    $ask = array('title' => $card['title'], 'idea' => $card['idea'],
+      'who' => $card['who'], 'feel' => $card['feel'], 'tags' => $card['tags']);
+    $tres = pd_llm(pd_prompt_card($lang),
+      array(array('role' => 'user', 'content' => json_encode($ask, JSON_UNESCAPED_UNICODE))), 900, $lang);
+    $tr = $tres['error'] ? null : pd_json_from_text($tres['text']);
+    if ($tr) {
+      // Поле берём только если перевод непустой: половина карточки на чужом языке
+      // хуже, чем вся на русском — человек решит, что интерфейс сломался.
+      foreach (array('title', 'idea', 'who', 'feel') as $k) {
+        $v = pd_str(isset($tr[$k]) ? $tr[$k] : '', $k === 'idea' ? 900 : 300);
+        if ($v !== '') $card[$k] = $v;
+      }
+      if (!empty($tr['tags']) && is_array($tr['tags']) && count($tr['tags']) === count($tags)) {
+        $t2 = array();
+        foreach ($tr['tags'] as $t) { $t = pd_str($t, 40); if ($t !== '') $t2[] = $t; }
+        if (count($t2) === count($tags)) $card['tags'] = $t2;
+      }
+    } else {
+      // Не перевелось — показываем русскую карточку. Это не тупик: смысл верный,
+      // язык не тот. Молчать всё равно нельзя, поэтому пишем в лог.
+      pd_log('card', $tres['error'] ? $tres['error'] : 'перевод карточки не разобран: ' . pd_str($tres['text'], 200));
+    }
+    $res['usage'] = array($res['usage'][0] + $tres['usage'][0], $res['usage'][1] + $tres['usage'][1]);
+  }
 
   $sess['card'] = $card;
   $sess['usage'] = array(
