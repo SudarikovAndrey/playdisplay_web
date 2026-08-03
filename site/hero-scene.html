@@ -343,9 +343,13 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
        Вид минималистичный: ни заливки, ни блюра, ни тени — тонкий контур и треугольник,
        чтобы кадр за кнопкой оставался виден. */
     #play-btn {
-      top: auto; bottom: 186px; width: 58px; height: 58px; font-size: 17px; padding-left: 4px;
-      background: none !important; backdrop-filter: none; box-shadow: none;
-      border-color: rgba(255,255,255,.7);
+      top: auto; bottom: 186px; width: 62px; height: 62px; font-size: 18px; padding-left: 4px;
+      /* Полностью прозрачная кнопка на живом облаке точек растворялась: точки такие же
+         белые, как её контур. Лёгкая тёмная подложка и тень отделяют её от фона,
+         оставаясь тоньше прежней «стеклянной таблетки». */
+      background: rgba(4, 12, 16, 0.38) !important; backdrop-filter: none;
+      box-shadow: 0 4px 22px rgba(0,0,0,.45);
+      border-color: rgba(255,255,255,.9);
       transform: translate(-50%, 0) scale(.8);
     }
     #play-btn.visible { transform: translate(-50%, 0) scale(1); }
@@ -2464,9 +2468,16 @@ function updatePlay(dt, wMax) {
     // и не по центру) и квадратом по центру экрана, потому что подлёт не доходил до
     // конца. Конечный вид не должен зависеть от того, доиграла ли анимация: как только
     // ролик показан, ставим ровно целевую рамку.
-    const zoomK = play.state === 2 ? 1 : smoothstep(0.55, 1, playE);
+    // Зум к полноширинному кадру начинается ПОСЛЕ стыковки с точками (0.78, а не 0.55).
+    // DOM-кадр проявляется на playE>0.72, и при раннем старте зума он к этому моменту
+    // уже уезжал на пятую часть пути к квадрату — отсюда «сдвиг, нет чёткой стыковки».
+    // Теперь порядок такой: точки собираются в кадр → кадр наводится на резкость ровно
+    // по точечному образу → и только потом растёт на всю ширину.
+    const zoomK = play.state === 2 ? 1 : smoothstep(0.78, 1, playE);
     if (zoomK > 0.001) {
-      const side = Math.min(innerWidth * 0.96, innerHeight * 0.6);
+      // ВО ВСЮ ШИРИНУ, а не 96%: при 0.96 слева и справа оставались щели по 2%,
+      // сквозь которые виднелось облако — те самые «боковые полоски» на части проектов.
+      const side = Math.min(innerWidth, innerHeight * 0.6);
       const tcx = innerWidth / 2, tcy = innerHeight * 0.46; // чуть выше центра, не под HUD счёта
       pw += (side - r.w) * zoomK;
       ph += (side - r.h) * zoomK;
@@ -2481,6 +2492,20 @@ function updatePlay(dt, wMax) {
       // кадра это и выглядело как «по краям торчит фон». Плотный чёрный даёт кадру рамку.
       const dimOp = zoomK;
       mobDimTop.style.opacity = dimOp; mobDimBottom.style.opacity = dimOp;
+    }
+    // ПРОЯВЛЕНИЕ ИЗ ТОЧЕК — маска живёт только ПОКА ИДЁТ ПЕРЕХОД. Постоянная маска
+    // давала рваный край на открытом ролике (растворять на телефоне не во что), а
+    // убранная совсем — «банальный» прямоугольник без фишки. Теперь край кадра
+    // рассыпается в точки в начале подлёта и срастается в чистую рамку к концу:
+    // граница маски (68%→100%+) уезжает за пределы кадра вместе с playE.
+    // На вылете (state 3) playE спадает — и кадр так же растворяется обратно.
+    if (play.state === 2 || playE > 0.985) {
+      playerEl.style.webkitMaskImage = playerEl.style.maskImage = 'none';
+    } else {
+      const solid = Math.round(52 + 58 * playE);        // 52% → 110%: непрозрачное ядро
+      const edge  = Math.round(96 + 70 * playE);        // 96% → 166%: где край сходит на нет
+      const m = 'radial-gradient(ellipse 74% 74% at center, #000 ' + solid + '%, transparent ' + edge + '%)';
+      playerEl.style.webkitMaskImage = playerEl.style.maskImage = m;
     }
   }
   playerEl.style.width = pw + 'px';
