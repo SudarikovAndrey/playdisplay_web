@@ -45,6 +45,9 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST')
 $cfg = pd_config();
 $in = pd_body();
 $action = isset($in['action']) ? $in['action'] : '';
+// Файл приходит формой (multipart/form-data), а не JSON: в JSON его не положить,
+// а base64 раздул бы тело на треть. Тогда action и sid лежат в $_POST.
+if ($action === '' && isset($_POST['action'])) { $action = (string)$_POST['action']; $in = $_POST; }
 
 switch ($action) {
   case 'ping':      pd_action_ping();  break;
@@ -53,6 +56,7 @@ switch ($action) {
   case 'start': pd_action_start(); break;
   case 'turn':  pd_action_turn($in);  break;
   case 'brief': pd_action_brief($in); break;
+  case 'file':  pd_action_file($in);  break;   // приложенный запрос или ТЗ
   case 'send':  pd_action_send($in);  break;
   default: pd_fail('неизвестное действие');
 }
@@ -119,6 +123,9 @@ function pd_action_start() {
   }
 
   if (!pd_rate_ok()) pd_fail('слишком много сессий с этого адреса, попробуйте позже', 429);
+  // Уборка по обещанным срокам. Здесь, а не в cron: на шаред-хостинге cron может быть
+  // не настроен вовсе, а сроки хранения напечатаны на privacy.html и должны соблюдаться.
+  pd_sweep();
   // Язык приходит из <html lang> страницы: у сайта под каждый язык своя папка (/en/, /pt/).
   $lang = pd_lang_ok(isset($in['lang']) ? $in['lang'] : 'ru');
   $L = pd_langs();
@@ -173,9 +180,20 @@ function pd_action_turn($in) {
   }
   $messages[] = array('role' => 'user', 'content' => $text);
 
+  // Язык определяем по РЕЧИ, а не по странице: гость с /en/ вполне может рассказывать
+  // по-русски. Голос копим по всей сессии, чтобы одна вставка на чужом языке
+  // («Moscow City» посреди русского рассказа) не переключала разговор целиком.
+  $seen = pd_detect_lang($text);
+  if ($seen !== '') {
+    if (!isset($sess['lang_votes']) || !is_array($sess['lang_votes'])) $sess['lang_votes'] = array();
+    $sess['lang_votes'][$seen] = (isset($sess['lang_votes'][$seen]) ? (int)$sess['lang_votes'][$seen] : 0) + 1;
+  }
+  $lang = pd_talk_lang($sess);
+  $langChanged = (isset($sess['talk_lang']) ? $sess['talk_lang'] : '') !== $lang;
+  $sess['talk_lang'] = $lang;
+
   // Бюджет с запасом: короткий вопрос занимает 60–100 токенов, но у моделей с рассуждением
   // часть выхода уходит на размышление, и при тесном лимите ответ приходит пустым.
-  $lang = isset($sess['lang']) ? $sess['lang'] : 'ru';
   $res = pd_llm(pd_prompt_turn($lang), $messages, 900, $lang);
   $data = $res['error'] ? null : pd_json_from_text($res['text']);
 
@@ -261,6 +279,7 @@ function pd_action_turn($in) {
   );
   pd_sess_save($sess);
 
+  $L = pd_langs();
   pd_json(array(
     'ok' => true,
     'words' => $words,
@@ -268,6 +287,11 @@ function pd_action_turn($in) {
     'sub' => pd_str(isset($data['sub']) ? $data['sub'] : '', 80),
     'ready' => !empty($data['ready']) || count($sess['turns']) >= 8,
     'degraded' => $degraded,
+    // Язык разговора разошёлся с языком страницы — говорим клиенту, чтобы он
+    // переключил и распознавание речи: иначе русская речь на /en/ распознаётся
+    // латиницей в кашу. Отдаём только при смене, чтобы не дёргать микрофон зря.
+    'speech' => $langChanged ? $L[$lang]['speech'] : '',
+    'lang' => $lang,
   ));
 }
 
@@ -314,7 +338,9 @@ function pd_action_brief($in) {
   }
   $messages = array(array('role' => 'user', 'content' => "Стенограмма разговора:\n\n" . implode("\n", $talk)));
 
-  $lang = isset($sess['lang']) ? $sess['lang'] : 'ru';
+  // Язык разговора, а не язык страницы: карточку человек увидит на том языке,
+  // на котором рассказывал. Подробная часть письма всё равно придёт по-русски.
+  $lang = pd_talk_lang($sess);
   $res = pd_llm(pd_prompt_brief($lang), $messages, 2600, $lang);
   $card = $res['error'] ? null : pd_json_from_text($res['text']);
 
@@ -338,6 +364,10 @@ function pd_action_brief($in) {
 
   // Чистим то, что уйдёт и в письмо, и на экран.
   $card['title'] = pd_str(isset($card['title']) ? $card['title'] : '', 160);
+  // Русский заголовок нужен теме письма и шапке брифа: студия ищет письма по-русски,
+  // даже когда разговор шёл на другом языке. Не пришёл — берём тот, что есть.
+  $card['title_ru'] = pd_str(isset($card['title_ru']) ? $card['title_ru'] : '', 160);
+  if ($card['title_ru'] === '') $card['title_ru'] = $card['title'];
   $card['idea']  = pd_str(isset($card['idea']) ? $card['idea'] : '', 900);
   $card['who']   = pd_str(isset($card['who']) ? $card['who'] : '', 300);
   $card['feel']  = pd_str(isset($card['feel']) ? $card['feel'] : '', 300);
@@ -367,6 +397,105 @@ function pd_action_brief($in) {
   ));
 }
 
+// ---------------------------------------------------------------- file
+/**
+ * Что принимаем и чем это должно оказаться внутри. Расширение — только первый фильтр:
+ * дальше смотрим настоящий тип содержимого, потому что назвать exe документом легко.
+ * Офисные форматы 2007+ — это zip, и старый libmagic честно говорит про них
+ * «application/zip»; отвергать за это нельзя.
+ */
+function pd_upload_types() {
+  $zip = array('application/zip', 'application/octet-stream');
+  return array(
+    'pdf'  => array('application/pdf'),
+    'doc'  => array('application/msword', 'application/vnd.ms-office', 'application/x-ole-storage', 'application/octet-stream'),
+    'docx' => array_merge(array('application/vnd.openxmlformats-officedocument.wordprocessingml.document'), $zip),
+    'ppt'  => array('application/vnd.ms-powerpoint', 'application/vnd.ms-office', 'application/x-ole-storage', 'application/octet-stream'),
+    'pptx' => array_merge(array('application/vnd.openxmlformats-officedocument.presentationml.presentation'), $zip),
+    'xls'  => array('application/vnd.ms-excel', 'application/vnd.ms-office', 'application/x-ole-storage', 'application/octet-stream'),
+    'xlsx' => array_merge(array('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'), $zip),
+    'png'  => array('image/png'),
+    'jpg'  => array('image/jpeg'),
+    'jpeg' => array('image/jpeg'),
+    'webp' => array('image/webp'),
+  );
+}
+
+/** Ошибки самой загрузки — человеческими словами, а не кодом PHP. */
+function pd_upload_error($code, $maxMb) {
+  switch ($code) {
+    case UPLOAD_ERR_INI_SIZE:
+    case UPLOAD_ERR_FORM_SIZE:  return 'файл больше ' . $maxMb . ' МБ — пришлите ссылкой на облако';
+    case UPLOAD_ERR_PARTIAL:    return 'файл дошёл не полностью — попробуйте ещё раз';
+    case UPLOAD_ERR_NO_FILE:    return 'файл не выбран';
+    case UPLOAD_ERR_NO_TMP_DIR:
+    case UPLOAD_ERR_CANT_WRITE: return 'сервер не смог сохранить файл — пришлите ссылкой';
+    default:                    return 'файл не принят';
+  }
+}
+
+/**
+ * Приём приложенного файла. Идёт ПОСЛЕ согласия и ТОЛЬКО в живой сессии, поэтому
+ * стража здесь нет: до этой точки скрипт без разговора и брифа не доберётся.
+ *
+ * Файл никогда не отдаётся с сервера обратно: uploads/ закрыт .htaccess, имя на диске
+ * своё, случайное, а имя из формы к файловой системе вообще не подпускается.
+ */
+function pd_action_file($in) {
+  $cfg = pd_config();
+  $sess = pd_sess_load(isset($in['sid']) ? $in['sid'] : '');
+  if (!$sess) pd_fail('сессия не найдена, начните заново', 410);
+  if (!empty($sess['sent'])) pd_fail('бриф уже отправлен');
+  if (empty($in['agree'])) pd_fail('нужно согласие на обработку данных');
+
+  $maxMb = (float)$cfg['upload_max_mb'];
+  $maxFiles = (int)$cfg['upload_max_files'];
+  $files = (isset($sess['files']) && is_array($sess['files'])) ? $sess['files'] : array();
+  if (count($files) >= $maxFiles) pd_fail('больше ' . $maxFiles . ' файлов не нужно — остальное пришлите ссылкой');
+
+  if (empty($_FILES['file']) || !isset($_FILES['file']['error'])) pd_fail('файл не пришёл');
+  $f = $_FILES['file'];
+  if ((int)$f['error'] !== UPLOAD_ERR_OK) pd_fail(pd_upload_error((int)$f['error'], $maxMb));
+  if (!is_uploaded_file($f['tmp_name'])) pd_fail('файл не пришёл');
+  $size = (int)$f['size'];
+  if ($size <= 0) pd_fail('файл пустой');
+  if ($size > $maxMb * 1048576) pd_fail('файл больше ' . $maxMb . ' МБ — пришлите ссылкой на облако');
+
+  // Имя из формы чистим, но на диск не кладём: оно нужно только чтобы подписать
+  // вложение в письме. Слэши и управляющие символы убираем сразу.
+  $orig = pd_str(isset($f['name']) ? $f['name'] : 'file', 120);
+  $orig = preg_replace('~[\\\\/\x00-\x1F]~u', '', $orig);
+  if ($orig === '') $orig = 'file';
+  $ext = pd_lower(pathinfo($orig, PATHINFO_EXTENSION));
+  $allow = pd_upload_types();
+  if (!isset($allow[$ext])) pd_fail('такой файл не примем: pdf, word, powerpoint, excel или картинка');
+
+  // Расширению верить нельзя. Если finfo на хостинге нет, остаёмся на белом списке
+  // расширений: файл всё равно не отдаётся наружу и не исполняется.
+  if (function_exists('finfo_open')) {
+    $fi = @finfo_open(FILEINFO_MIME_TYPE);
+    $mime = $fi ? (string)@finfo_file($fi, $f['tmp_name']) : '';
+    if ($fi) @finfo_close($fi);
+    if ($mime !== '' && !in_array($mime, $allow[$ext], true)) {
+      pd_log('file', 'отклонён .' . $ext . ', внутри ' . $mime);
+      pd_fail('содержимое файла не похоже на .' . $ext);
+    }
+  }
+
+  $dir = pd_dir('uploads') . '/' . $sess['sid'];
+  if (!is_dir($dir) && !@mkdir($dir, 0775, true)) pd_fail('сервер не смог сохранить файл', 500);
+  $safe = bin2hex(function_exists('random_bytes') ? random_bytes(6) : pack('N', mt_rand())) . '.' . $ext;
+  if (!@move_uploaded_file($f['tmp_name'], $dir . '/' . $safe)) pd_fail('сервер не смог сохранить файл', 500);
+
+  $files[] = array('name' => $orig, 'size' => $size, 'file' => $safe, 'mime' => $allow[$ext][0]);
+  $sess['files'] = $files;
+  pd_sess_save($sess);
+
+  $out = array();
+  foreach ($files as $fl) $out[] = array('name' => $fl['name'], 'size' => $fl['size']);
+  pd_json(array('ok' => true, 'files' => $out));
+}
+
 // ---------------------------------------------------------------- send
 function pd_action_send($in) {
   $cfg = pd_config();
@@ -391,17 +520,43 @@ function pd_action_send($in) {
     foreach ($in['channels'] as $ch) if (in_array($ch, $known, true) && !in_array($ch, $channels, true)) $channels[] = $ch;
   }
 
-  $c = array('name' => $name, 'contact' => $contact, 'company' => $company, 'channels' => $channels);
+  // Ссылка на облако — второй путь для тех, у кого материалы не в одном файле.
+  // Схему дописываем сами: люди копируют адрес без «https://» постоянно.
+  $link = pd_str(isset($in['link']) ? $in['link'] : '', 400);
+  if ($link !== '') {
+    if (!preg_match('~^https?://~i', $link)) $link = 'https://' . $link;
+    if (!filter_var($link, FILTER_VALIDATE_URL)) pd_fail('ссылка выглядит неверно — проверьте её');
+  }
+
+  $c = array('name' => $name, 'contact' => $contact, 'company' => $company,
+    'channels' => $channels, 'link' => $link);
   $sess['contact'] = $c;
 
   $card = $sess['card'];
-  $subj = 'Бриф с сайта: ' . ($card['title'] !== '' ? $card['title'] : 'запрос без названия');
+  $subjTitle = !empty($card['title_ru']) ? $card['title_ru'] : $card['title'];
+  $subj = 'Бриф с сайта: ' . ($subjTitle !== '' ? $subjTitle : 'запрос без названия');
   $html = pd_brief_html($card, $c, $sess);            // логотип ссылкой на вложение
   $preview = pd_brief_html($card, $c, $sess, true);   // логотип встроен: для файла на диске
   $textVer = pd_brief_text($card, $c, $sess);
   $replyTo = filter_var($contact, FILTER_VALIDATE_EMAIL) ? $contact : '';
 
-  list($ok, $info) = pd_send_mail($subj, $html, $textVer, $replyTo, $preview);
+  // Вложения собираем прямо перед отправкой: файла могло и не остаться, если уборка
+  // унесла брошенную загрузку, а падать из-за этого письму незачем.
+  $attach = array();
+  $upDir = PD_DIR . '/uploads/' . $sess['sid'];
+  foreach ((isset($sess['files']) && is_array($sess['files'])) ? $sess['files'] : array() as $fl) {
+    $p = $upDir . '/' . (isset($fl['file']) ? $fl['file'] : '');
+    if (isset($fl['file']) && is_file($p)) {
+      $attach[] = array('path' => $p, 'name' => $fl['name'],
+        'mime' => isset($fl['mime']) ? $fl['mime'] : 'application/octet-stream');
+    }
+  }
+
+  list($ok, $info) = pd_send_mail($subj, $html, $textVer, $replyTo, $preview, $attach);
+
+  // Файл сделал свою работу — уехал в письмо. Держать его у себя мы не обещали
+  // и не будем: на privacy.html так и написано, «удаляется сразу после отправки».
+  if ($ok && $attach) pd_rmdir_files($upDir);
 
   $sess['sent'] = $ok;
   $sess['sent_info'] = $info;

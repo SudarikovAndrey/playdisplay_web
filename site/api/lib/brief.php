@@ -55,6 +55,9 @@ define('PD_LOGO_CID', 'pdlogo');
  */
 function pd_brief_html($card, $contact, $sess, $inline = false) {
   $b = isset($card['brief']) && is_array($card['brief']) ? $card['brief'] : array();
+  $titleOrig = trim((string)(isset($card['title']) ? $card['title'] : ''));
+  $titleRu = trim((string)(isset($card['title_ru']) ? $card['title_ru'] : ''));
+  if ($titleRu === '') $titleRu = $titleOrig;
   list($heatText, $heatFg, $heatBg) = pd_heat_label(isset($card['heat']) ? $card['heat'] : 'warm');
   $when = date('d.m.Y H:i');
 
@@ -123,11 +126,25 @@ function pd_brief_html($card, $contact, $sess, $inline = false) {
     : '';
 
   $chan = (!empty($contact['channels']) && is_array($contact['channels'])) ? implode(' · ', $contact['channels']) : '';
+  // Приложенное человеком: файл едет вложением, здесь — только имя, чтобы среди
+  // служебных картинок письма было видно, что настоящее ТЗ пришло.
+  $attached = '';
+  if (!empty($sess['files']) && is_array($sess['files'])) {
+    $names = array();
+    foreach ($sess['files'] as $fl) {
+      if (empty($fl['name'])) continue;
+      $kb = isset($fl['size']) ? ' (' . max(1, (int)round($fl['size'] / 1024)) . ' КБ)' : '';
+      $names[] = $fl['name'] . $kb;
+    }
+    $attached = implode(' · ', $names);
+  }
   $meta = array(
     'Имя' => isset($contact['name']) ? $contact['name'] : '',
     'Связь' => isset($contact['contact']) ? $contact['contact'] : '',
     'Удобнее' => $chan,
     'Компания' => isset($contact['company']) ? $contact['company'] : '',
+    'Ссылка' => isset($contact['link']) ? $contact['link'] : '',
+    'Вложение' => $attached,
   );
   $metaRows = '';
   foreach ($meta as $k => $v) {
@@ -137,7 +154,10 @@ function pd_brief_html($card, $contact, $sess, $inline = false) {
     // Живая ссылка: по адресу из брифа сразу удобно ответить, не копируя его руками.
     // Порядок проверок важен: «@ivanov» — это телеграм, а не почта, и mailto для него
     // был бы битой ссылкой.
-    if (preg_match('/^@[A-Za-z0-9_]{3,}$/', $v)) {
+    if (preg_match('~^https?://~i', $v)) {
+      // Ссылка на облако: кликабельной она нужна больше всего остального в письме.
+      $val = '<a href="' . pd_esc($v) . '" style="color:#0a7d67;word-break:break-all;">' . $val . '</a>';
+    } elseif (preg_match('/^@[A-Za-z0-9_]{3,}$/', $v)) {
       $val = '<a href="https://t.me/' . pd_esc(substr($v, 1)) . '" style="color:#0a7d67;">' . $val . '</a>';
     } elseif (filter_var($v, FILTER_VALIDATE_EMAIL)) {
       $val = '<a href="mailto:' . $val . '" style="color:#0a7d67;">' . $val . '</a>';
@@ -155,11 +175,13 @@ function pd_brief_html($card, $contact, $sess, $inline = false) {
     $how = array('voice' => 'голосом', 'text' => 'текстом', 'смешанно' => 'голосом и текстом');
     $src .= ', ' . (isset($how[$sess['input']]) ? $how[$sess['input']] : $sess['input']);
   }
-  // Язык разговора важен: отвечать человеку надо на том языке, на котором он говорил,
-  // а бриф всегда приходит по-русски и сам об этом не сигналит.
-  if (!empty($sess['lang']) && $sess['lang'] !== 'ru') {
+  // Язык разговора важен: отвечать человеку надо на том языке, на котором он говорил.
+  // Берём язык РЕЧИ, а не язык страницы: гость с /en/ мог рассказывать по-русски,
+  // и тогда писать ему по-английски было бы странно.
+  $talkLang = !empty($sess['talk_lang']) ? $sess['talk_lang'] : (isset($sess['lang']) ? $sess['lang'] : 'ru');
+  if ($talkLang !== 'ru') {
     $names = array('en' => 'по-английски', 'pt' => 'по-португальски');
-    $src .= ' · разговор шёл ' . (isset($names[$sess['lang']]) ? $names[$sess['lang']] : $sess['lang']);
+    $src .= ' · разговор шёл ' . (isset($names[$talkLang]) ? $names[$talkLang] : $talkLang);
   }
 
   // Шапка: логотип студии, а если файла нет — прежняя надпись. Письмо не должно
@@ -172,7 +194,7 @@ function pd_brief_html($card, $contact, $sess, $inline = false) {
 
   return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">'
     . '<meta name="viewport" content="width=device-width,initial-scale=1">'
-    . '<title>' . pd_esc(isset($card['title']) ? $card['title'] : 'Бриф') . '</title></head>'
+    . '<title>' . pd_esc($titleRu !== '' ? $titleRu : 'Бриф') . '</title></head>'
     . '<body style="margin:0;padding:0;background:#f4f5f6;">'
     . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f6;">'
     . '<tr><td align="center" style="padding:28px 14px;">'
@@ -191,8 +213,14 @@ function pd_brief_html($card, $contact, $sess, $inline = false) {
     // заголовок и температура запроса
     . '<span style="display:inline-block;font:600 11px/1 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;'
     . 'color:' . $heatFg . ';background:' . $heatBg . ';padding:7px 11px;">' . pd_esc($heatText) . '</span>'
+    // Заголовок по-русски, а под ним — как проект назван на языке гостя. Два заголовка,
+    // потому что письмо читает студия, а говорить с человеком придётся его словами.
     . '<h1 style="margin:16px 0 0;font:700 25px/1.25 Georgia,serif;color:#0b1418;">'
-    . pd_esc(isset($card['title']) ? $card['title'] : 'Без названия') . '</h1>'
+    . pd_esc($titleRu !== '' ? $titleRu : 'Без названия') . '</h1>'
+    . ($titleOrig !== '' && $titleOrig !== $titleRu
+        ? '<div style="margin:8px 0 0;font:400 14px/1.5 Arial,sans-serif;color:#7a848a;">'
+          . 'На языке гостя: ' . pd_esc($titleOrig) . '</div>'
+        : '')
     . '<p style="margin:14px 0 0;font:400 16px/1.65 Arial,sans-serif;color:#2d3a42;">'
     . nl2br(pd_esc(isset($card['idea']) ? $card['idea'] : '')) . '</p>'
     . ($tags ? '<div style="margin-top:18px;">' . $tags . '</div>' : '')
@@ -235,7 +263,11 @@ function pd_brief_text($card, $contact, $sess) {
   $L = array();
   $L[] = 'БРИФ С САЙТА PLAYDISPLAY · ' . date('d.m.Y H:i');
   $L[] = '';
-  $L[] = mb_strtoupper_safe(isset($card['title']) ? $card['title'] : 'Без названия');
+  $titleRu = trim((string)(isset($card['title_ru']) ? $card['title_ru'] : ''));
+  $titleOrig = trim((string)(isset($card['title']) ? $card['title'] : ''));
+  if ($titleRu === '') $titleRu = $titleOrig;
+  $L[] = mb_strtoupper_safe($titleRu !== '' ? $titleRu : 'Без названия');
+  if ($titleOrig !== '' && $titleOrig !== $titleRu) $L[] = 'На языке гостя: ' . $titleOrig;
   $L[] = '';
   $L[] = isset($card['idea']) ? $card['idea'] : '';
   $L[] = '';
@@ -248,6 +280,10 @@ function pd_brief_text($card, $contact, $sess) {
   $L[] = 'Связь: ' . (isset($contact['contact']) ? $contact['contact'] : '—');
   if (!empty($contact['channels']) && is_array($contact['channels'])) $L[] = 'Удобнее: ' . implode(' · ', $contact['channels']);
   if (!empty($contact['company'])) $L[] = 'Компания: ' . $contact['company'];
+  if (!empty($contact['link'])) $L[] = 'Ссылка: ' . $contact['link'];
+  if (!empty($sess['files']) && is_array($sess['files'])) {
+    foreach ($sess['files'] as $fl) if (!empty($fl['name'])) $L[] = 'Вложение: ' . $fl['name'];
+  }
   $L[] = '';
   $L[] = '--- ПОДРОБНОСТИ ---';
   foreach (pd_brief_labels() as $k => $label) {

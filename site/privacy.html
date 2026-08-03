@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<!--
+  ПОЛИТИКА ОБРАБОТКИ ДАННЫХ — ЧЕРНОВИК, СОСТАВЛЕН 02.08.2026.
+
+  Написан по факту того, что делает код: перечислено ровно то, что собирает
+  site/api/ai.php, ровно те получатели, которым уходят данные, и ровно те сроки,
+  которые реализованы в pd_sweep() (см. site/api/lib/util.php). Если меняется код —
+  меняется и эта страница, иначе она превращается в неправду.
+
+  ЧТО ДОЛЖЕН ДОБАВИТЬ ЮРИСТ:
+   1. Реквизиты оператора: организационно-правовая форма, ИНН, юридический адрес.
+   2. Уведомление в Роскомнадзор об обработке ПД (152-ФЗ, ст. 22) — подано или нет.
+   3. Для гостей из ЕС: нужен ли представитель в ЕС (GDPR ст. 27) при обработке в РФ,
+      и на каком механизме строится передача данных в Россию.
+   4. Проверить формулировку согласия в панели ассистента (site/index.html, .ai-agree).
+
+  Страница вне sitemap и без ссылок из разделов сайта, кроме подвала и панели
+  ассистента: её задача — быть доступной там, где собираются данные.
+-->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Обработка данных · playdisplay</title>
+<meta name="description" content="Какие данные собирает ассистент playdisplay, зачем, кому передаются и как их удалить.">
+<link rel="canonical" href="https://playdisplay.com/privacy.html">
+<link rel="icon" href="assets/logos/favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --space-void: #05141a; --space-deep: #0a1c24; --space-line: rgba(159,180,200,0.16);
+    --signal-teal: #2be0c6; --scan-white: #F1FBFC; --scan-white-dim: rgba(233,244,246,0.72);
+    --scan-white-faint: rgba(159,180,200,0.72);
+    --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--space-void); color: var(--scan-white); }
+  body { font: 400 16px/1.7 var(--font-body); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 56px 24px 90px; }
+  a { color: var(--signal-teal); text-decoration: none; border-bottom: 1px solid rgba(43,224,198,.35); }
+  a:hover { border-bottom-color: var(--signal-teal); }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    padding-bottom: 26px; border-bottom: 1px solid var(--space-line); flex-wrap: wrap; }
+  .home { font: 600 12px var(--font-mono); letter-spacing: .22em; text-transform: uppercase;
+    color: var(--scan-white); border: 0; }
+  .lang { display: flex; gap: 8px; }
+  .lang button { font: 500 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase;
+    color: var(--scan-white-faint); background: transparent; border: 1px solid var(--space-line);
+    padding: 7px 12px; cursor: pointer; }
+  .lang button.on { color: var(--signal-teal); border-color: rgba(43,224,198,.55); background: rgba(43,224,198,.07); }
+  h1 { font: 700 clamp(28px, 5vw, 44px)/1.12 var(--font-body); letter-spacing: -.02em; margin: 40px 0 0; }
+  .upd { margin-top: 14px; font: 400 12px var(--font-mono); letter-spacing: .06em; color: var(--scan-white-faint); }
+  .lead { margin-top: 26px; font-size: 18px; color: var(--scan-white-dim); }
+  h2 { font: 600 13px var(--font-mono); letter-spacing: .16em; text-transform: uppercase;
+    color: var(--signal-teal); margin: 46px 0 0; }
+  h2 + p, h2 + ul, h2 + table { margin-top: 14px; }
+  p { color: var(--scan-white-dim); }
+  ul { color: var(--scan-white-dim); padding-left: 22px; }
+  li { margin-bottom: 9px; }
+  li b, p b { color: var(--scan-white); font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 12px 14px 12px 0; border-bottom: 1px solid var(--space-line);
+    vertical-align: top; color: var(--scan-white-dim); }
+  td:first-child { width: 34%; color: var(--scan-white); font-weight: 600; }
+  .box { margin-top: 20px; padding: 20px 22px; background: var(--space-deep);
+    border-left: 2px solid var(--signal-teal); }
+  .box p { margin: 0; }
+  footer { margin-top: 70px; padding-top: 24px; border-top: 1px solid var(--space-line);
+    font: 400 13px var(--font-body); color: var(--scan-white-faint); }
+  [data-lang] { display: none; }
+  [data-lang].on { display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <a class="home" href="./">← playdisplay</a>
+    <div class="lang">
+      <button type="button" data-go="ru" class="on">Русский</button>
+      <button type="button" data-go="en">English</button>
+    </div>
+  </div>
+
+  <!-- ============================== РУССКИЙ ============================== -->
+  <div data-lang="ru" class="on">
+    <h1>Как мы обращаемся с вашими данными</h1>
+    <div class="upd">Редакция от 2 августа 2026</div>
+    <p class="lead">На сайте есть ассистент: вы рассказываете о своём проекте голосом или текстом,
+      он собирает описание и присылает его в студию. Ниже — что именно при этом сохраняется,
+      кому уходит и как это удалить. Без юридического тумана.</p>
+
+    <h2>Кто обрабатывает</h2>
+    <p>Студия интерактивного опыта <b>playdisplay</b>, основатель Андрей Судариков.
+      Вопросы и требования об удалении данных — <a href="mailto:info@playdisplay.com">info@playdisplay.com</a>.</p>
+
+    <h2>Что сохраняется</h2>
+    <ul>
+      <li><b>Разговор.</b> Расшифровка того, что вы сказали, или напечатанный текст. Аудиозапись
+        не сохраняется: речь распознаёт ваш браузер, к нам приходит уже текст.</li>
+      <li><b>Контакты, которые вы оставили сами:</b> имя, способ связи, название компании
+        (необязательно), удобный канал ответа.</li>
+      <li><b>Файл или ссылка</b> — если вы приложили описание задачи.</li>
+      <li><b>Техническое:</b> необратимый хеш вашего IP-адреса (сам адрес мы не храним),
+        название браузера, время разговора, признак «голосом или текстом».</li>
+    </ul>
+
+    <h2>Зачем</h2>
+    <p>Одна цель: подготовить описание вашего проекта, чтобы студия могла осмысленно ответить.
+      Мы не используем эти данные для рекламы, не строим по ним профили и никому их не продаём.</p>
+
+    <h2>На каком основании</h2>
+    <p>На вашем согласии: перед отправкой вы ставите галочку. До этого момента разговор
+      остаётся на нашем сервере как черновик и никуда не уходит. Отказаться можно в любой
+      момент — просто закройте панель или напишите нам, и мы удалим всё, что успело сохраниться.
+      Для гостей из Европейского союза основанием служит ст. 6(1)(a) GDPR.</p>
+
+    <h2>Кому передаётся</h2>
+    <table>
+      <tr><td>Языковая модель</td><td>Текст разговора уходит в языковую модель — она задаёт
+        вопросы и собирает описание. Сейчас это <b>GigaChat</b> (ПАО Сбербанк, Россия). Если для
+        разговоров не на русском языке мы подключим другой сервис, он будет назван здесь.</td></tr>
+      <tr><td>Хостинг</td><td><b>Timeweb</b> (Россия) — на его сервере лежит сайт и файлы разговоров.</td></tr>
+      <tr><td>Почта</td><td>Почтовая служба нашего домена — доставляет письмо с описанием проекта в студию.</td></tr>
+    </table>
+    <p>Больше никому. Счётчиков аналитики, пикселей и рекламных скриптов на сайте нет вовсе.</p>
+
+    <h2>Сколько храним</h2>
+    <ul>
+      <li><b>Приложенные файлы</b> удаляются с сервера сразу после того, как письмо ушло в студию.</li>
+      <li><b>Разговор и описание проекта</b> — до 6 месяцев, потом удаляются автоматически.</li>
+      <li><b>Переписка по вашему запросу</b> живёт в почте студии, как обычное деловое письмо.</li>
+    </ul>
+
+    <h2>Cookies</h2>
+    <p>Сайт не ставит cookie и не отслеживает вас между посещениями. В памяти браузера
+      (localStorage) остаются только ваши собственные настройки отображения — включён ли звук
+      и какой вид ленты проектов вы выбрали. Мы этих данных не видим.</p>
+
+    <h2>Ваши права</h2>
+    <p>Вы можете попросить показать, что о вас сохранено, исправить это, удалить или отозвать
+      согласие. Напишите на <a href="mailto:info@playdisplay.com">info@playdisplay.com</a> —
+      сделаем в течение 30 дней. Отдельного повода объяснять не нужно.</p>
+    <div class="box">
+      <p>Если вам кажется, что мы обошлись с вашими данными неправильно, скажите нам первым —
+        и мы разберёмся. Это быстрее, чем через регулятора, и обычно достаточно.</p>
+    </div>
+
+    <h2>Дети</h2>
+    <p>Ассистент рассчитан на разговор о рабочих проектах и не предназначен для людей младше 16 лет.
+      Мы не собираем данные детей осознанно; если это случилось — напишите нам, и мы удалим их.</p>
+
+    <h2>Изменения</h2>
+    <p>Если мы поменяем модель, хостинг или сроки хранения, изменится и эта страница —
+      дата редакции стоит сверху.</p>
+  </div>
+
+  <!-- ============================== ENGLISH ============================== -->
+  <div data-lang="en">
+    <h1>How we handle your data</h1>
+    <div class="upd">Version of 2 August 2026</div>
+    <p class="lead">This site has an assistant: you describe your project by voice or in writing,
+      it puts together a summary and sends it to the studio. Below is exactly what gets stored,
+      who receives it and how to have it deleted. No legal fog.</p>
+
+    <h2>Who processes it</h2>
+    <p><b>playdisplay</b>, an interactive experience studio founded by Andrey Sudarikov.
+      Questions and deletion requests — <a href="mailto:info@playdisplay.com">info@playdisplay.com</a>.</p>
+
+    <h2>What is stored</h2>
+    <ul>
+      <li><b>The conversation.</b> A transcript of what you said, or the text you typed. No audio
+        is kept: your own browser does the speech recognition, and only text reaches us.</li>
+      <li><b>The contact details you chose to leave:</b> name, means of contact, company
+        (optional), preferred reply channel.</li>
+      <li><b>A file or a link</b>, if you attached a description of the task.</li>
+      <li><b>Technical:</b> an irreversible hash of your IP address (we do not keep the address
+        itself), your browser name, the time of the conversation, and whether you spoke or typed.</li>
+    </ul>
+
+    <h2>Why</h2>
+    <p>One purpose: to prepare a description of your project so the studio can give you a
+      meaningful answer. We do not use this for advertising, we do not build profiles from it,
+      and we do not sell it to anyone.</p>
+
+    <h2>Legal basis</h2>
+    <p>Your consent: you tick a box before sending. Until then the conversation stays on our
+      server as a draft and goes nowhere. You can withdraw at any time — close the panel or
+      write to us, and we will delete whatever has been stored. For visitors from the European
+      Union the basis is Art. 6(1)(a) GDPR.</p>
+
+    <h2>Who it is shared with</h2>
+    <table>
+      <tr><td>Language model</td><td>The conversation text goes to a language model, which asks
+        the questions and assembles the summary. Currently this is <b>GigaChat</b> (Sberbank,
+        Russia). If we add another service for conversations in other languages, it will be
+        named here.</td></tr>
+      <tr><td>Hosting</td><td><b>Timeweb</b> (Russia) — the site and the conversation files live
+        on its server.</td></tr>
+      <tr><td>Email</td><td>Our domain's mail service — it delivers the project summary to the studio.</td></tr>
+    </table>
+    <p>Nobody else. There are no analytics counters, tracking pixels or advertising scripts on
+      this site at all.</p>
+
+    <h2>How long we keep it</h2>
+    <ul>
+      <li><b>Attached files</b> are deleted from the server as soon as the email reaches the studio.</li>
+      <li><b>The conversation and the project summary</b> — up to 6 months, then deleted automatically.</li>
+      <li><b>Correspondence about your enquiry</b> stays in the studio's mailbox like any business letter.</li>
+    </ul>
+
+    <h2>Cookies</h2>
+    <p>This site sets no cookies and does not track you between visits. Your browser's
+      localStorage holds only your own display preferences — whether sound is on and which
+      project layout you picked. We never see them.</p>
+
+    <h2>Your rights</h2>
+    <p>You can ask to see what is stored about you, correct it, delete it or withdraw consent.
+      Write to <a href="mailto:info@playdisplay.com">info@playdisplay.com</a> — we will act within
+      30 days. You do not need to give a reason.</p>
+    <div class="box">
+      <p>If you think we mishandled your data, tell us first and we will sort it out. That is
+        faster than going through a regulator, and usually enough.</p>
+    </div>
+
+    <h2>Children</h2>
+    <p>The assistant is meant for conversations about professional projects and is not intended
+      for people under 16. We do not knowingly collect children's data; if it happened, write to
+      us and we will delete it.</p>
+
+    <h2>Changes</h2>
+    <p>If we change the model, the hosting or the retention periods, this page changes too —
+      the version date is at the top.</p>
+  </div>
+
+  <footer>playdisplay · <a href="mailto:info@playdisplay.com">info@playdisplay.com</a> · <a href="./">на сайт</a></footer>
+</div>
+
+<script>
+  /* Две версии текста лежат в разметке рядом — так страница открывается без сети и без
+     сборки, и её можно отдать юристу одним файлом. Язык подхватываем из адреса
+     (?lang=en) и из языка браузера, чтобы гость из Лиссабона сразу видел английский. */
+  (function(){
+    var boxes = document.querySelectorAll('[data-lang]');
+    var btns = document.querySelectorAll('[data-go]');
+    function show(code){
+      for (var i = 0; i < boxes.length; i++)
+        boxes[i].className = boxes[i].getAttribute('data-lang') === code ? 'on' : '';
+      for (var j = 0; j < btns.length; j++)
+        btns[j].className = btns[j].getAttribute('data-go') === code ? 'on' : '';
+      document.documentElement.setAttribute('lang', code);
+      try { history.replaceState(null, '', code === 'ru' ? location.pathname : location.pathname + '?lang=en'); } catch (e) {}
+    }
+    for (var k = 0; k < btns.length; k++) btns[k].addEventListener('click', function(){ show(this.getAttribute('data-go')); });
+    var q = (location.search.match(/[?&]lang=([a-z]{2})/i) || [])[1];
+    var nav = (navigator.language || 'ru').slice(0, 2).toLowerCase();
+    show((q || (nav === 'ru' ? 'ru' : 'en')) === 'ru' ? 'ru' : 'en');
+  })();
+</script>
+</body>
+</html>

@@ -14,7 +14,7 @@
  * $htmlPreview — та же вёрстка для файла на диске (логотип встроен в разметку).
  *                Разные, потому что cid работает только внутри письма.
  */
-function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '') {
+function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '', $files = array()) {
   $cfg = pd_config();
   $to = $cfg['mail_to'];
   $from = $cfg['mail_from'];
@@ -36,10 +36,6 @@ function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '') 
   $headers[] = 'Date: ' . date('r');
   $headers[] = 'Message-ID: <' . $alt . '@playdisplay.com>';
   $headers[] = 'MIME-Version: 1.0';
-  // Есть картинка — related (текст+html+картинка), нет — прежний alternative.
-  $headers[] = $logo !== ''
-    ? 'Content-Type: multipart/related; type="multipart/alternative"; boundary="' . $rel . '"'
-    : 'Content-Type: multipart/alternative; boundary="' . $alt . '"';
   if ($replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL)) $headers[] = 'Reply-To: <' . $replyTo . '>';
 
   // Две версии одного письма: текстовая для тех, кто отключил html, и вёрстка.
@@ -53,11 +49,14 @@ function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '') 
         . chunk_split(base64_encode($html)) . "\r\n"
         . "--$alt--\r\n";
 
+  // Есть картинка — related (текст+html+логотип), нет — просто alternative.
   if ($logo === '') {
-    $body = $altPart;
+    $innerType = 'multipart/alternative; boundary="' . $alt . '"';
+    $inner = $altPart;
   } else {
     $cid = defined('PD_LOGO_CID') ? PD_LOGO_CID : 'pdlogo';
-    $body = "--$rel\r\n"
+    $innerType = 'multipart/related; type="multipart/alternative"; boundary="' . $rel . '"';
+    $inner = "--$rel\r\n"
           . "Content-Type: multipart/alternative; boundary=\"$alt\"\r\n\r\n"
           . $altPart
           . "--$rel\r\n"
@@ -70,6 +69,40 @@ function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '') 
           . "--$rel--\r\n";
   }
 
+  // Приложенный человеком файл — настоящее вложение, поэтому над письмом появляется
+  // третий слой, mixed: [ письмо целиком ] + [ файлы ]. Логотип при этом остаётся
+  // внутри related и скрепкой не показывается — иначе в письме было бы два вложения,
+  // и настоящее ТЗ пришлось бы искать среди служебных картинок.
+  $attach = array();
+  foreach ((array)$files as $f) {
+    if (empty($f['path']) || !is_file($f['path'])) continue;
+    $raw = @file_get_contents($f['path']);
+    if ($raw === false) continue;
+    $attach[] = array(
+      'name' => isset($f['name']) ? (string)$f['name'] : 'file',
+      'mime' => isset($f['mime']) ? (string)$f['mime'] : 'application/octet-stream',
+      'data' => $raw,
+    );
+  }
+
+  if (!$attach) {
+    $headers[] = 'Content-Type: ' . $innerType;
+    $body = $inner;
+  } else {
+    $mix = 'pd-mix-' . $rand();
+    $headers[] = 'Content-Type: multipart/mixed; boundary="' . $mix . '"';
+    $body = "--$mix\r\n" . 'Content-Type: ' . $innerType . "\r\n\r\n" . $inner;
+    foreach ($attach as $a) {
+      $body .= "--$mix\r\n"
+        . 'Content-Type: ' . $a['mime'] . '; name="' . pd_mime_filename($a['name']) . "\"\r\n"
+        . "Content-Transfer-Encoding: base64\r\n"
+        . 'Content-Disposition: attachment; filename="' . pd_mime_filename($a['name']) . '"; '
+        . "filename*=UTF-8''" . rawurlencode($a['name']) . "\r\n\r\n"
+        . chunk_split(base64_encode($a['data'])) . "\r\n";
+    }
+    $body .= "--$mix--\r\n";
+  }
+
   switch ($cfg['mailer']) {
     case 'smtp': return pd_mail_smtp($cfg['smtp'], $from, $to, $headers, $body);
     case 'mail': return pd_mail_native($to, $subject, $headers, $body);
@@ -80,6 +113,15 @@ function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '') 
 /** RFC 2047 — иначе русская тема письма приезжает крякозябрами. */
 function pd_mime_header($v) { return '=?UTF-8?B?' . base64_encode((string)$v) . '?='; }
 function pd_mime_name($v)   { return preg_match('/^[\x20-\x7E]+$/', (string)$v) ? '"' . str_replace('"', '', $v) . '"' : pd_mime_header($v); }
+/**
+ * Имя вложения для старого поля filename="…". Латиница проходит как есть, всё
+ * остальное — в RFC 2047; рядом всегда стоит filename*=UTF-8'' по RFC 2231, и
+ * современные почтовики берут именно его, так что кириллица в имени не теряется.
+ */
+function pd_mime_filename($v) {
+  $v = str_replace(array('"', "\r", "\n"), '', (string)$v);
+  return preg_match('/^[\x20-\x7E]+$/', $v) ? $v : pd_mime_header($v);
+}
 
 // ---------------------------------------------------------------- file
 function pd_mail_file($subject, $headers, $body, $html) {

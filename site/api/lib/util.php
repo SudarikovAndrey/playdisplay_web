@@ -32,6 +32,11 @@ function pd_config() {
     'limit_turns_per_session' => 24,
     'limit_chars_per_turn' => 4000,
     'keep_transcripts' => true,
+    // Приложенный файл с запросом или ТЗ. Сроки и размеры продублированы словами
+    // на странице privacy.html — менять надо в двух местах сразу.
+    'upload_max_mb' => 10,
+    'upload_max_files' => 3,
+    'keep_days' => 180,
   );
 
   // Порядок поиска: переменная окружения → вне веб-корня → рядом с ai.php.
@@ -118,6 +123,49 @@ function pd_sess_load($sid) {
 function pd_sess_save($s) {
   $p = pd_sess_path($s['sid']);
   @file_put_contents($p, json_encode($s, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT), LOCK_EX);
+}
+
+// ---------- уборка по срокам ----------
+/**
+ * Удаляет то, что мы обещали не хранить. Сроки взяты не с потолка: они напечатаны
+ * на странice privacy.html, и если код их не соблюдает, страница становится неправдой.
+ *
+ * Зовём из start — раз на сессию. Это несколько stat() по каталогу, дешевле любого
+ * cron на шаред-хостинге, где cron может быть и не настроен вовсе.
+ */
+function pd_sweep() {
+  $cfg = pd_config();
+  $now = time();
+
+  // Разговоры: старше keep_days — под нож. Файлы стража (guard-*) и счётчики (rate-*)
+  // под маску не попадают: имя сессии всегда начинается с года.
+  $days = (int)$cfg['keep_days'];
+  if ($days > 0) {
+    $g = glob(pd_dir('sessions') . '/2*.json');
+    if (is_array($g)) foreach ($g as $f) {
+      if ($now - (int)@filemtime($f) > $days * 86400) @unlink($f);
+    }
+  }
+
+  // Брошенные вложения: человек приложил файл, но письмо так и не отправил.
+  // Держать такое дольше суток незачем и неприятно.
+  $up = PD_DIR . '/uploads';
+  if (is_dir($up)) {
+    $g = glob($up . '/*');
+    if (is_array($g)) foreach ($g as $d) {
+      if (!is_dir($d)) continue;
+      if ($now - (int)@filemtime($d) < 86400) continue;
+      pd_rmdir_files($d);
+    }
+  }
+}
+
+/** Удалить файлы в каталоге и сам каталог. Вглубь не ходим — вложенности здесь нет. */
+function pd_rmdir_files($dir) {
+  if (!is_dir($dir)) return;
+  $g = glob($dir . '/*');
+  if (is_array($g)) foreach ($g as $f) if (is_file($f)) @unlink($f);
+  @rmdir($dir);
 }
 
 // ---------- лимиты ----------

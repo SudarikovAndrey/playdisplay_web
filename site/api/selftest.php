@@ -33,7 +33,7 @@ row($rows, 'драйвер модели: ' . $cfg['llm'], true, $cfg['llm'] === 
 row($rows, 'драйвер почты: ' . $cfg['mailer'], true, 'адресат: ' . $cfg['mail_to']);
 
 // 3. права на запись
-foreach (array('sessions', 'outbox') as $d) {
+foreach (array('sessions', 'outbox', 'uploads') as $d) {
   $path = pd_dir($d);
   $ok = is_dir($path) && is_writable($path);
   row($rows, 'запись в api/' . $d, $ok, $ok ? '' : 'нет прав: chmod 775 ' . $path);
