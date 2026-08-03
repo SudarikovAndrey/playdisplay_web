@@ -38,8 +38,122 @@ LANGS = [
     {'code': 'en', 'prefix': 'en/', 'data': 'data/en', 'locale': 'en_US', 'up': '../../../'},
 ]
 
-cases = {c['slug']: c for c in json.load(open('/tmp/cases.json', encoding='utf-8'))}
-ORDER = [c['slug'] for c in json.load(open('/tmp/cases.json', encoding='utf-8'))]
+# ---------- кейсы: читаем прямо из index.html ----------
+# Раньше скрипту нужен был /tmp/cases.json, выложенный руками: кто-то должен был
+# выдернуть массив CASES из index.html и сохранить его в JSON. Шаг, который надо
+# ПОМНИТЬ, рано или поздно не делают — и не сделали: 03.08.2026 обнаружилось, что
+# /en/index.html отстала от главной на 50 КБ и несколько поставок, а ассистент на
+# английской версии остался прошлого поколения. Теперь источник один — сам массив
+# CASES, единственная правда о кейсах на сайте. Промежуточного файла больше нет.
+#
+# Массив написан на JS: ключи без кавычек, пути склеены из констант (AW+"…", IMG+"…").
+# Разбираем его посимвольно, а не регулярками, потому что внутри строк попадается
+# и «https://», и запятые, и двоеточия — regexp на таком материале ломается тихо.
+
+def _js_array_to_json(src, consts):
+    """JS-литерал массива → строка JSON. Внутри строк ничего не меняем."""
+    out, i, n = [], 0, len(src)
+
+    def read_string(pos):
+        """вернуть (содержимое без кавычек, позиция после закрывающей кавычки)"""
+        j = pos + 1
+        while j < n:
+            if src[j] == '\\':
+                j += 2
+                continue
+            if src[j] == '"':
+                return src[pos + 1:j], j + 1
+            j += 1
+        raise ValueError('незакрытая строка в CASES на позиции %d' % pos)
+
+    def skip_blank(pos):
+        while pos < n:
+            if src[pos] in ' \t\r\n':
+                pos += 1
+            elif src.startswith('//', pos):
+                nl = src.find('\n', pos)
+                pos = n if nl < 0 else nl
+            else:
+                break
+        return pos
+
+    while i < n:
+        c = src[i]
+        if c == '"':
+            body, i = read_string(i)
+            out.append('"' + body + '"')
+            continue
+        # AW+"путь" → "assets/work/путь": константы подставляем сразу
+        m = re.match(r'(%s)\s*\+\s*(?=")' % '|'.join(consts), src[i:]) if consts else None
+        if m:
+            body, i = read_string(i + m.end())
+            out.append('"' + consts[m.group(1)] + body + '"')
+            continue
+        # ключ без кавычек: task: → "task":
+        m = re.match(r'([A-Za-z_$][\w$]*)\s*:', src[i:])
+        if m:
+            out.append('"%s":' % m.group(1))
+            i += m.end()
+            continue
+        if src.startswith('//', i):
+            nl = src.find('\n', i)
+            i = n if nl < 0 else nl
+            continue
+        if c == ',':
+            # висячая запятая перед } или ] — в JSON её быть не может
+            nxt = skip_blank(i + 1)
+            i += 1
+            if nxt < n and src[nxt] in '}]':
+                continue
+            out.append(',')
+            continue
+        out.append(c)
+        i += 1
+    return ''.join(out)
+
+
+def read_cases():
+    src = open(os.path.join(SITE, 'index.html'), encoding='utf-8').read()
+    consts = dict(re.findall(r'var\s+(AW|IMG)\s*=\s*"([^"]*)"', src))
+    head = 'var CASES = ['
+    start = src.find(head)
+    if start < 0:
+        raise SystemExit('в site/index.html не найден массив CASES — SEO собирать не из чего')
+    # конец массива ищем по балансу скобок, пропуская строки: в описаниях есть и «[», и «]»
+    i = start + len(head) - 1
+    depth, in_str = 0, False
+    while i < len(src):
+        ch = src[i]
+        if in_str:
+            if ch == '\\':
+                i += 2
+                continue
+            if ch == '"':
+                in_str = False
+        elif ch == '"':
+            in_str = True
+        elif ch in '[{':
+            depth += 1
+        elif ch in ']}':
+            depth -= 1
+            if depth == 0:
+                break
+        i += 1
+    else:
+        raise SystemExit('массив CASES в site/index.html не закрыт')
+    data = json.loads(_js_array_to_json(src[start + len(head) - 1:i + 1], consts))
+    # Проверяем то, без чего страницы получатся битыми, — и падаем громко.
+    # Тихо собранный неправильный sitemap хуже, чем несобранный.
+    for c in data:
+        for k in ('slug', 'title', 'desc'):
+            if not c.get(k):
+                raise SystemExit('в кейсе %r нет поля %s' % (c.get('title') or c.get('slug'), k))
+    return data
+
+
+CASES_LIST = read_cases()
+cases = {c['slug']: c for c in CASES_LIST}
+ORDER = [c['slug'] for c in CASES_LIST]
 
 
 def load_dict(code):
