@@ -3,7 +3,10 @@
 #  - статические индексируемые страницы /work/<slug>/ и /en/work/<slug>/ (полный текст проекта)
 #  - /en/index.html — копия главной с англоязычными мета-тегами, base, SEO-блоком и словарём
 #  - sitemap.xml (обе версии + hreflang), robots.txt, llms.txt
-#  - JSON-LD + noscript для русской главной (в /tmp/seo_block.html, вставляется между маркерами)
+#  - JSON-LD + noscript для русской главной (вставляется между маркерами <!--SEO-->…<!--/SEO-->)
+#
+# Запуск: python3 build_seo.py — и всё. Промежуточных файлов и ручных ступеней нет:
+# кейсы скрипт читает прямо из массива CASES в site/index.html, SEO-блок вставляет сам.
 #
 # Как устроено двуязычие: русский текст лежит прямо в site/index.html и site/data/*.json.
 # Английский приходит словарём site/data/i18n/en.js («русская строка» → «перевод») и
@@ -425,10 +428,24 @@ def home_block(L):
                 % (('playdisplay projects' if L.code == 'en' else 'Проекты playdisplay'), ns_items))
     return '<!--SEO-->\n' + ld_block + '\n' + noscript + '\n<!--/SEO-->'
 
-open('/tmp/seo_block.html', 'w', encoding='utf-8').write(home_block(RU))
+# ---------- SEO-блок русской главной вставляем САМИ ----------
+# Раньше блок писался в /tmp/seo_block.html, а вставлять его между маркерами
+# <!--SEO-->…<!--/SEO--> должен был человек руками. Это ровно та же болезнь, что и
+# /tmp/cases.json: ступень, которую надо помнить, однажды не делают. Английская версия
+# всё это время вставлялась автоматически (см. ниже) — русская почему-то нет.
+# Замена идёт строго между маркерами, поэтому запуск повторяем сколько угодно раз.
+_home = open(os.path.join(SITE, 'index.html'), encoding='utf-8').read()
+if '<!--SEO-->' not in _home:
+    raise SystemExit('в site/index.html нет маркеров <!--SEO-->…<!--/SEO--> — вставлять некуда')
+_new = re.sub(r'<!--SEO-->.*?<!--/SEO-->', lambda m: home_block(RU), _home, count=1, flags=re.S)
+if _new != _home:
+    open(os.path.join(SITE, 'index.html'), 'w', encoding='utf-8').write(_new)
+    print('index.html: SEO-блок обновлён')
+else:
+    print('index.html: SEO-блок уже актуален')
 
 # ---------- /en/index.html — копия главной под английский ----------
-src = open(os.path.join(SITE, 'index.html'), encoding='utf-8').read()
+src = _new
 EN_TITLE = ('playdisplay — spaces people remember: museums, exhibitions, interactive exhibits')
 EN_DESC = ORG_DESC_EN
 EN_KEYS = ('museum concept design, interactive exhibit design, turnkey multimedia exhibition, '
