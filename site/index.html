@@ -6615,10 +6615,17 @@
       fire('utterance', t);
     }
 
+    // SAFARI НЕ ТЯНЕТ continuous, и это не мелочь: с ним распознавание запускается
+    // (в адресной строке даже загорается микрофон), но результатов не присылает вовсе —
+    // ровно то, что выглядело как «микрофон не улавливает слова» на iPhone и на Маке
+    // 04.08.2026. Там ведём по одной фразе, а непрерывность делаем сами: onend поднимает
+    // распознавание заново, этот цикл у нас и так есть для Chrome.
+    var IS_SAFARI = /^((?!chrome|chromium|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent || '');
+
     function build(){
       rec = new SR();
       rec.lang = SLANG;
-      rec.continuous = true;
+      rec.continuous = !IS_SAFARI;
       rec.interimResults = true;
       rec.maxAlternatives = 1;
 
@@ -6660,6 +6667,9 @@
 
     return {
       supported: !!SR,
+      // Safari отличается настолько, что интерфейсу об этом стоит знать: там и подсказки
+      // другие, и распознавание надо поднимать строго из жеста пользователя.
+      safari: IS_SAFARI,
       listening: function(){ return want; },
       // Человек прямо сейчас говорит: в буфере есть речь, ещё не отправленная.
       // Нужно, чтобы ассистент не подменял вопрос на экране посреди чужой фразы.
@@ -7618,7 +7628,11 @@
       silenceT = setTimeout(function(){
         if (!pdSpeech.listening() || turns > 0) return;
         if (elHeard && elHeard.textContent.replace(/\s/g, '') !== '') return;   // что-то слышали
-        showErr('Не слышу ни слова. Проверьте язык кнопками ниже и разрешение микрофона — или просто напишите текстом.');
+        // В Safari распознавание речи ненадёжно по своей природе: оно может включиться
+        // и не прислать ничего. Не делаем вид, что дело в человеке, — говорим как есть.
+        showErr(pdSpeech.safari
+          ? 'Не слышу ни слова. В Safari распознавание речи работает через раз — надёжнее написать текстом или открыть сайт в Chrome.'
+          : 'Не слышу ни слова. Проверьте язык кнопками ниже и разрешение микрофона — или просто напишите текстом.');
         openSay(false);
       }, 9000);
     }
@@ -7658,12 +7672,19 @@
       if (elDone) { if (turns > 0) elDone.classList.add('on'); else elDone.classList.remove('on'); }
       openSay(how === 'text');
       if (!pdSpeech.supported) openSay(false);
+      // В Safari поле ввода открываем сразу, не дожидаясь провала распознавания: там оно
+      // может не прислать ни слова, и человек должен с самого начала видеть второй путь,
+      // а не искать его после девяти секунд тишины.
+      if (pdSpeech.safari) openSay(false);
 
       renderSlang();
       var go = function(){
         if (how === 'text') { if (elSayIn) try { elSayIn.focus(); } catch (e) {} return; }
-        if (pdSpeech.supported) { pdSpeech.start(SPEECH); micState(); watchSilence(); }
-        else openSay(true);
+        // Обычно микрофон уже слушает: его поднял enter() из самого жеста. Здесь только
+        // подхватываем случаи, когда вход был не через кнопку (например «Рассказать ещё»).
+        if (!pdSpeech.supported) { openSay(true); return; }
+        if (!pdSpeech.listening()) { pdSpeech.start(SPEECH); watchSilence(); }
+        micState();
       };
 
       if (!fresh) { go(); return; }         // «Рассказать ещё» — сессия уже есть
@@ -7674,6 +7695,9 @@
         go();
       }, function(err, d){
         setThink(false);
+        // Микрофон мы подняли заранее, из жеста. Разговор не начался — выключаем,
+        // иначе он слушает пустой экран, а в адресной строке горит запись.
+        if (pdSpeech.listening()) { pdSpeech.stop(); micState(); }
         // Сервер не поверил, что за экраном человек — показываем вторую ступень.
         if (err === 'need-human' && d && d.task) { askHuman(d.task); return; }
         showErr(err === 'no-backend' ? 'Ассистент недоступен. Напишите нам через раздел «Контакты».' : err);
@@ -7859,6 +7883,15 @@
     // и показываем кольцо. Обычно к этому моменту всё уже готово и ждать нечего.
     function enter(how){
       pendingHow = how;
+      // РАСПОЗНАВАНИЕ ПОДНИМАЕМ ЗДЕСЬ, синхронно, пока мы внутри обработчика клика.
+      // Safari (и особенно iOS) разрешает старт только из живого жеста пользователя;
+      // после XHR к серверу — а до недавнего мы запускали именно так — он молча
+      // отказывает: микрофон включается, слова не приходят. Chrome такое прощает.
+      if (how === 'voice' && pdSpeech.supported && !pdSpeech.listening()) {
+        pdSpeech.start(SPEECH);
+        micState();
+        watchSilence();
+      }
       if (window.pdIdea.mode() === 'demo' || window.pdGuard.ready()) { startCapture(how); return; }
       guardWaiting = true;
       if (elRec) elRec.classList.add('warming');
