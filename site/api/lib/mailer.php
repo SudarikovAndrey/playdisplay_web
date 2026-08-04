@@ -14,9 +14,13 @@
  * $htmlPreview — та же вёрстка для файла на диске (логотип встроен в разметку).
  *                Разные, потому что cid работает только внутри письма.
  */
-function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '', $files = array()) {
+/**
+ * $to — кому. Пусто = адрес студии из конфига. Явный адрес нужен копии брифа гостю:
+ * то же письмо, но ему, и с Reply-To на студию, чтобы ответ пришёл нам.
+ */
+function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '', $files = array(), $to = '') {
   $cfg = pd_config();
-  $to = $cfg['mail_to'];
+  if ($to === '' || !filter_var($to, FILTER_VALIDATE_EMAIL)) $to = $cfg['mail_to'];
   $from = $cfg['mail_from'];
   $fromName = $cfg['mail_fromname'];
 

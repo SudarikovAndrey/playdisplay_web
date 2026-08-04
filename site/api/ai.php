@@ -541,10 +541,21 @@ function pd_action_send($in) {
 
   // Каналы связи приходят списком из отмеченных кнопок. Берём только знакомые названия:
   // это ярлыки нашего же интерфейса, произвольный текст здесь не нужен.
+  //
+  // У канала может быть СВОЁ значение: ник в телеграме или номер в вотсапе редко совпадают
+  // с тем, что человек написал в общем поле. Поэтому принимаем и старый вид (строка),
+  // и новый ({ch, v}) — иначе кэшированная страница перестала бы отправлять письма.
   $known = array('Telegram', 'WhatsApp', 'Звонок', 'Почта');
   $channels = array();
+  $seenCh = array();
   if (!empty($in['channels']) && is_array($in['channels'])) {
-    foreach ($in['channels'] as $ch) if (in_array($ch, $known, true) && !in_array($ch, $channels, true)) $channels[] = $ch;
+    foreach ($in['channels'] as $ch) {
+      $name = is_array($ch) ? (isset($ch['ch']) ? $ch['ch'] : '') : $ch;
+      if (!in_array($name, $known, true) || in_array($name, $seenCh, true)) continue;
+      $seenCh[] = $name;
+      $val = is_array($ch) ? pd_str(isset($ch['v']) ? $ch['v'] : '', 120) : '';
+      $channels[] = array('ch' => $name, 'v' => $val);
+    }
   }
 
   // Ссылка на облако — второй путь для тех, у кого материалы не в одном файле.
@@ -581,6 +592,34 @@ function pd_action_send($in) {
 
   list($ok, $info) = pd_send_mail($subj, $html, $textVer, $replyTo, $preview, $attach);
 
+  // ---- копия гостю ----
+  // Человек рассказал о своём проекте — пусть у него останется собранное описание,
+  // а не только надежда, что письмо дошло. Отправляем ТОЛЬКО по отдельной галочке и
+  // только если есть настоящий адрес: в общем поле мог оказаться телефон или телеграм.
+  $copyTo = '';
+  if (!empty($in['copy'])) {
+    if (filter_var($contact, FILTER_VALIDATE_EMAIL)) $copyTo = $contact;
+    else foreach ($channels as $c2) {
+      if ($c2['ch'] === 'Почта' && filter_var($c2['v'], FILTER_VALIDATE_EMAIL)) { $copyTo = $c2['v']; break; }
+    }
+  }
+  $copySent = false;
+  if ($ok && $copyTo !== '') {
+    $gLang = pd_talk_lang($sess);
+    $gT = pd_guest_labels($gLang);
+    // Вложения гостю не пересылаем: он их сам и прислал, а письмо станет вдвое тяжелее.
+    list($copySent, $cInfo) = pd_send_mail(
+      $gT['subj'],
+      pd_brief_guest_html($card, $c, $sess, $gLang),
+      pd_brief_guest_text($card, $c, $sess, $gLang),
+      $cfg['mail_to'],                                  // ответит нам, а не в пустоту
+      pd_brief_guest_html($card, $c, $sess, $gLang, true),
+      array(), $copyTo);
+    if (!$copySent) pd_log('copy', 'копия гостю не ушла: ' . $cInfo);
+    $sess['copy_to'] = $copyTo;
+    $sess['copy_sent'] = $copySent;
+  }
+
   // Файл сделал свою работу — уехал в письмо. Держать его у себя мы не обещали
   // и не будем: на privacy.html так и написано, «удаляется сразу после отправки».
   if ($ok && $attach) pd_rmdir_files($upDir);
@@ -597,5 +636,6 @@ function pd_action_send($in) {
     pd_mail_file($subj, array('Subject: ' . $subj), $textVer, $preview);
     pd_fail('письмо не ушло: ' . $info, 502);
   }
-  pd_json(array('ok' => true, 'info' => $info));
+  // copy — чтобы интерфейс мог сказать «копия ушла на такой-то адрес», а не молчать.
+  pd_json(array('ok' => true, 'info' => $info, 'copy' => $copySent ? $copyTo : ''));
 }

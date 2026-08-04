@@ -125,7 +125,20 @@ function pd_brief_html($card, $contact, $sess, $inline = false) {
       . 'Стенограмма</div>' . $talk . '</div>'
     : '';
 
-  $chan = (!empty($contact['channels']) && is_array($contact['channels'])) ? implode(' · ', $contact['channels']) : '';
+  // Канал со значением получает СВОЮ строку: «Telegram: @petrov» рядом с остальными
+  // контактами и, главное, кликабельным — по нему сразу писать. Каналы без значения
+  // остаются пометкой «удобнее так».
+  $chanRows = array();
+  $chanPlain = array();
+  if (!empty($contact['channels']) && is_array($contact['channels'])) {
+    foreach ($contact['channels'] as $c) {
+      $name = is_array($c) ? (isset($c['ch']) ? $c['ch'] : '') : $c;
+      $val = is_array($c) ? trim((string)(isset($c['v']) ? $c['v'] : '')) : '';
+      if ($name === '') continue;
+      if ($val !== '') $chanRows[$name] = $val; else $chanPlain[] = $name;
+    }
+  }
+  $chan = implode(' · ', $chanPlain);
   // Приложенное человеком: файл едет вложением, здесь — только имя, чтобы среди
   // служебных картинок письма было видно, что настоящее ТЗ пришло.
   $attached = '';
@@ -138,13 +151,18 @@ function pd_brief_html($card, $contact, $sess, $inline = false) {
     }
     $attached = implode(' · ', $names);
   }
-  $meta = array(
-    'Имя' => isset($contact['name']) ? $contact['name'] : '',
-    'Связь' => isset($contact['contact']) ? $contact['contact'] : '',
-    'Удобнее' => $chan,
-    'Компания' => isset($contact['company']) ? $contact['company'] : '',
-    'Ссылка' => isset($contact['link']) ? $contact['link'] : '',
-    'Вложение' => $attached,
+  $meta = array_merge(
+    array(
+      'Имя' => isset($contact['name']) ? $contact['name'] : '',
+      'Связь' => isset($contact['contact']) ? $contact['contact'] : '',
+    ),
+    $chanRows,
+    array(
+      'Удобнее' => $chan,
+      'Компания' => isset($contact['company']) ? $contact['company'] : '',
+      'Ссылка' => isset($contact['link']) ? $contact['link'] : '',
+      'Вложение' => $attached,
+    )
   );
   $metaRows = '';
   foreach ($meta as $k => $v) {
@@ -157,6 +175,11 @@ function pd_brief_html($card, $contact, $sess, $inline = false) {
     if (preg_match('~^https?://~i', $v)) {
       // Ссылка на облако: кликабельной она нужна больше всего остального в письме.
       $val = '<a href="' . pd_esc($v) . '" style="color:#0a7d67;word-break:break-all;">' . $val . '</a>';
+    } elseif ($k === 'WhatsApp' && preg_match('/\d{7,}/', preg_replace('/\D/', '', $v))) {
+      // wa.me принимает только цифры, без плюса и пробелов.
+      $val = '<a href="https://wa.me/' . preg_replace('/\D/', '', $v) . '" style="color:#0a7d67;">' . $val . '</a>';
+    } elseif ($k === 'Telegram' && preg_match('/^@?([A-Za-z0-9_]{3,})$/', $v, $mm)) {
+      $val = '<a href="https://t.me/' . pd_esc($mm[1]) . '" style="color:#0a7d67;">' . $val . '</a>';
     } elseif (preg_match('/^@[A-Za-z0-9_]{3,}$/', $v)) {
       $val = '<a href="https://t.me/' . pd_esc(substr($v, 1)) . '" style="color:#0a7d67;">' . $val . '</a>';
     } elseif (filter_var($v, FILTER_VALIDATE_EMAIL)) {
@@ -258,6 +281,163 @@ function pd_brief_html($card, $contact, $sess, $inline = false) {
     . '</table></td></tr></table></body></html>';
 }
 
+/**
+ * Подписи копии, которая уходит ГОСТЮ. На его языке: письмо читает он, а не студия.
+ * Здесь их немного и они не меняются от разговора к разговору, поэтому словарь, а не модель.
+ */
+function pd_guest_labels($lang) {
+  $all = array(
+    'ru' => array(
+      'subj' => 'Ваша идея, собранная в описание проекта',
+      'kicker' => 'Копия для вас',
+      'who' => 'Для кого', 'feel' => 'Что должен почувствовать посетитель',
+      'said' => 'Что вы рассказали', 'files' => 'Приложено', 'link' => 'Ссылка',
+      'lead' => 'Мы получили ваш запрос и уже читаем его. Ниже — то же описание, что ушло в студию.',
+      'foot' => 'Ответим на этот адрес. Если что-то описано неточно — просто ответьте на письмо, поправим.',
+    ),
+    'en' => array(
+      'subj' => 'Your idea, written up as a project brief',
+      'kicker' => 'Your copy',
+      'who' => 'Who it is for', 'feel' => 'What the visitor should feel',
+      'said' => 'What you told us', 'files' => 'Attached', 'link' => 'Link',
+      'lead' => 'We have your enquiry and are already reading it. Below is the same summary that reached the studio.',
+      'foot' => 'We will reply to this address. If anything is off, just reply to this email and we will fix it.',
+    ),
+    'pt' => array(
+      'subj' => 'A sua ideia, resumida num briefing',
+      'kicker' => 'A sua cópia',
+      'who' => 'Para quem é', 'feel' => 'O que o visitante deve sentir',
+      'said' => 'O que nos contou', 'files' => 'Anexado', 'link' => 'Ligação',
+      'lead' => 'Recebemos o seu pedido e já o estamos a ler. Abaixo está o mesmo resumo que chegou ao estúdio.',
+      'foot' => 'Responderemos para este endereço. Se algo estiver impreciso, basta responder a este email.',
+    ),
+  );
+  return isset($all[$lang]) ? $all[$lang] : $all['ru'];
+}
+
+/**
+ * Копия брифа ГОСТЮ. Не то же письмо, что студии: внутренняя часть (подробности, открытые
+ * вопросы, температура запроса) остаётся у нас. Ему уходит его собственная идея, собранная
+ * в описание, и его же слова — на его языке, с логотипом студии в шапке.
+ */
+function pd_brief_guest_html($card, $contact, $sess, $lang = 'ru', $inline = false) {
+  $T = pd_guest_labels($lang);
+  $logo = pd_logo_src($inline);
+  $brand = $logo
+    ? '<img src="' . pd_esc($logo) . '" width="163" height="20" alt="playdisplay"'
+      . ' style="display:block;border:0;outline:none;text-decoration:none;height:20px;width:163px;">'
+    : '<div style="font:700 13px/1 Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#2be0c6;">playdisplay</div>';
+
+  $tags = '';
+  if (!empty($card['tags']) && is_array($card['tags'])) {
+    foreach ($card['tags'] as $t) {
+      $tags .= '<span style="display:inline-block;font:600 11px/1 Arial,sans-serif;letter-spacing:.08em;'
+        . 'text-transform:uppercase;color:#0a7d67;border:1px solid #b9e5da;padding:7px 10px;margin:0 6px 6px 0;">'
+        . pd_esc($t) . '</span> ';
+    }
+  }
+
+  // Его собственные реплики. Вопросы ассистента не повторяем: гость их только что читал,
+  // а ценность для него — в связном тексте того, что он сам рассказал.
+  $said = '';
+  if (!empty($sess['turns']) && is_array($sess['turns'])) {
+    foreach ($sess['turns'] as $t) {
+      if (empty($t['a'])) continue;
+      $said .= '<p style="margin:0 0 12px;font:400 15px/1.65 Arial,sans-serif;color:#2d3a42;">'
+        . nl2br(pd_esc($t['a'])) . '</p>';
+    }
+  }
+
+  $extra = '';
+  if (!empty($sess['files']) && is_array($sess['files'])) {
+    $names = array();
+    foreach ($sess['files'] as $fl) if (!empty($fl['name'])) $names[] = pd_esc($fl['name']);
+    if ($names) $extra .= '<div style="margin-top:8px;font:400 14px/1.6 Arial,sans-serif;color:#7a848a;">'
+      . pd_esc($T['files']) . ': ' . implode(' · ', $names) . '</div>';
+  }
+  if (!empty($contact['link'])) {
+    $extra .= '<div style="margin-top:6px;font:400 14px/1.6 Arial,sans-serif;color:#7a848a;">'
+      . pd_esc($T['link']) . ': <a href="' . pd_esc($contact['link']) . '" style="color:#0a7d67;">'
+      . pd_esc($contact['link']) . '</a></div>';
+  }
+
+  return '<!DOCTYPE html><html lang="' . pd_esc($lang) . '"><head><meta charset="utf-8">'
+    . '<meta name="viewport" content="width=device-width,initial-scale=1">'
+    . '<title>' . pd_esc(isset($card['title']) ? $card['title'] : $T['subj']) . '</title></head>'
+    . '<body style="margin:0;padding:0;background:#f4f5f6;">'
+    . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f6;">'
+    . '<tr><td align="center" style="padding:28px 14px;">'
+    . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:660px;background:#ffffff;">'
+
+    . '<tr><td style="background:#0b1418;padding:24px 30px;">'
+    . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>'
+    . '<td style="vertical-align:middle;">' . $brand . '</td>'
+    . '<td style="vertical-align:middle;text-align:right;font:400 11px/1.5 Arial,sans-serif;color:#8b979d;white-space:nowrap;">'
+    . pd_esc($T['kicker']) . '</td>'
+    . '</tr></table></td></tr>'
+
+    . '<tr><td style="padding:30px;">'
+    . '<p style="margin:0;font:400 15px/1.6 Arial,sans-serif;color:#7a848a;">' . pd_esc($T['lead']) . '</p>'
+    . '<h1 style="margin:18px 0 0;font:700 25px/1.25 Georgia,serif;color:#0b1418;">'
+    . pd_esc(isset($card['title']) ? $card['title'] : '') . '</h1>'
+    . '<p style="margin:14px 0 0;font:400 16px/1.65 Arial,sans-serif;color:#2d3a42;">'
+    . nl2br(pd_esc(isset($card['idea']) ? $card['idea'] : '')) . '</p>'
+    . ($tags ? '<div style="margin-top:18px;">' . $tags . '</div>' : '')
+
+    . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:26px;">'
+    . '<tr><td style="width:50%;vertical-align:top;padding:16px 18px;background:#f7f9fa;border-top:2px solid #0a7d67;">'
+    . '<div style="font:600 11px/1 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#7a848a;">'
+    . pd_esc($T['who']) . '</div>'
+    . '<div style="margin-top:9px;font:400 15px/1.6 Arial,sans-serif;color:#16202a;">' . pd_esc(isset($card['who']) ? $card['who'] : '') . '</div>'
+    . '</td><td style="width:12px;"></td>'
+    . '<td style="width:50%;vertical-align:top;padding:16px 18px;background:#f7f9fa;border-top:2px solid #0a7d67;">'
+    . '<div style="font:600 11px/1 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#7a848a;">'
+    . pd_esc($T['feel']) . '</div>'
+    . '<div style="margin-top:9px;font:400 15px/1.6 Arial,sans-serif;color:#16202a;">' . pd_esc(isset($card['feel']) ? $card['feel'] : '') . '</div>'
+    . '</td></tr></table>'
+
+    . ($said ? '<div style="margin-top:34px;border-top:1px solid #ececec;padding-top:24px;">'
+        . '<div style="font:600 12px/1 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#7a848a;margin-bottom:14px;">'
+        . pd_esc($T['said']) . '</div>' . $said . '</div>' : '')
+    . $extra
+
+    . '</td></tr>'
+    . '<tr><td style="padding:18px 30px 26px;border-top:1px solid #ececec;font:400 12px/1.6 Arial,sans-serif;color:#9aa3a8;">'
+    . pd_esc($T['foot']) . '</td></tr>'
+    . '</table></td></tr></table></body></html>';
+}
+
+/** Текстовая версия копии гостю: для тех, у кого html выключен. */
+function pd_brief_guest_text($card, $contact, $sess, $lang = 'ru') {
+  $T = pd_guest_labels($lang);
+  $L = array();
+  $L[] = 'playdisplay · ' . $T['kicker'];
+  $L[] = '';
+  $L[] = $T['lead'];
+  $L[] = '';
+  $L[] = mb_strtoupper_safe(isset($card['title']) ? $card['title'] : '');
+  $L[] = '';
+  $L[] = isset($card['idea']) ? $card['idea'] : '';
+  $L[] = '';
+  if (!empty($card['tags']) && is_array($card['tags'])) $L[] = implode(' · ', $card['tags']);
+  $L[] = $T['who'] . ': ' . (isset($card['who']) ? $card['who'] : '—');
+  $L[] = $T['feel'] . ': ' . (isset($card['feel']) ? $card['feel'] : '—');
+  if (!empty($sess['turns']) && is_array($sess['turns'])) {
+    $L[] = '';
+    $L[] = '--- ' . mb_strtoupper_safe($T['said']) . ' ---';
+    foreach ($sess['turns'] as $t) if (!empty($t['a'])) $L[] = $t['a'];
+  }
+  if (!empty($sess['files']) && is_array($sess['files'])) {
+    $names = array();
+    foreach ($sess['files'] as $fl) if (!empty($fl['name'])) $names[] = $fl['name'];
+    if ($names) $L[] = $T['files'] . ': ' . implode(' · ', $names);
+  }
+  if (!empty($contact['link'])) $L[] = $T['link'] . ': ' . $contact['link'];
+  $L[] = '';
+  $L[] = $T['foot'];
+  return implode("\n", $L);
+}
+
 function pd_brief_text($card, $contact, $sess) {
   $b = isset($card['brief']) && is_array($card['brief']) ? $card['brief'] : array();
   $L = array();
@@ -278,7 +458,15 @@ function pd_brief_text($card, $contact, $sess) {
   $L[] = '--- КТО ОСТАВИЛ ---';
   $L[] = 'Имя: ' . (isset($contact['name']) ? $contact['name'] : '—');
   $L[] = 'Связь: ' . (isset($contact['contact']) ? $contact['contact'] : '—');
-  if (!empty($contact['channels']) && is_array($contact['channels'])) $L[] = 'Удобнее: ' . implode(' · ', $contact['channels']);
+  if (!empty($contact['channels']) && is_array($contact['channels'])) {
+    $parts = array();
+    foreach ($contact['channels'] as $c) {
+      $name = is_array($c) ? (isset($c['ch']) ? $c['ch'] : '') : $c;
+      $val = is_array($c) ? trim((string)(isset($c['v']) ? $c['v'] : '')) : '';
+      if ($name !== '') $parts[] = $name . ($val !== '' ? ': ' . $val : '');
+    }
+    if ($parts) $L[] = 'Удобнее: ' . implode(' · ', $parts);
+  }
   if (!empty($contact['company'])) $L[] = 'Компания: ' . $contact['company'];
   if (!empty($contact['link'])) $L[] = 'Ссылка: ' . $contact['link'];
   if (!empty($sess['files']) && is_array($sess['files'])) {
