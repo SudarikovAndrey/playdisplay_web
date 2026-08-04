@@ -205,22 +205,46 @@ TXT;
  * Проход стоит около 300 токенов и нужен только не-русским разговорам.
  */
 function pd_prompt_card($lang) {
-  $L = pd_langs();
   $lang = pd_lang_ok($lang);
-  return "Ты переводчик. Переведи значения полей на " . $L[$lang]['name'] . " язык.\n\n"
-. <<<TXT
-Это описание проекта, его увидит на экране человек, который сам говорит на этом языке.
-Переводи смысл, а не слова: пусть звучит так, будто изначально написано на нём.
+  // Инструкцию пишем НА ЯЗЫКЕ ПЕРЕВОДА, а не по-русски. Русский промпт с русским входом
+  // модель нередко «дочитывала» как «оставь как есть» и возвращала тот же текст без
+  // изменений — на боевом 04.08.2026 англоязычный гость получил русскую карточку, и в
+  // логе не было ошибки: JSON пришёл, просто не переведённый.
+  if ($lang === 'en') {
+    return <<<TXT
+You are a translator. Translate every value in the JSON you receive into ENGLISH.
 
-ЖЁСТКО:
-- ВСЕ поля до последнего. Оставить что-то по-русски нельзя — это и есть ошибка,
-  которую мы правим. Проверь каждое поле перед ответом.
-- Имена, названия городов и брендов не переводи (Москва-Сити, ВДНХ, playdisplay).
-- Ничего не добавляй и не сокращай: сколько было пунктов в списках, столько и осталось.
-- Структуру не меняй: те же ключи, вложенность та же.
+This is a project summary that will be shown on screen to a person who speaks English.
+Translate the meaning, not the words: it should read as if written in English from the start.
 
-Ответь ТОЛЬКО JSON той же формы, что пришёл на вход, без пояснений и без ``` .
+RULES:
+- EVERY field, without exception. Leaving anything in Russian is the exact bug being fixed.
+  Check each field before you answer.
+- Do not translate names of cities, brands or people (Moscow City, VDNH, playdisplay).
+- Do not add or drop anything: the same keys, the same nesting, the same number of list items.
+
+Reply with the JSON only — same shape as the input, no explanations, no ``` .
 TXT;
+  }
+  if ($lang === 'pt') {
+    return <<<TXT
+És um tradutor. Traduz todos os valores do JSON recebido para PORTUGUÊS.
+
+Este é o resumo de um projeto que será mostrado no ecrã a uma pessoa que fala português.
+Traduz o sentido, não as palavras: deve ler-se como se tivesse sido escrito em português.
+
+REGRAS:
+- TODOS os campos, sem exceção. Deixar algo em russo é precisamente o erro a corrigir.
+  Verifica cada campo antes de responder.
+- Não traduzas nomes de cidades, marcas ou pessoas (Moscow City, VDNH, playdisplay).
+- Não acrescentes nem retires nada: as mesmas chaves, a mesma estrutura, o mesmo número
+  de itens nas listas.
+
+Responde apenas com o JSON — a mesma forma do que recebeste, sem explicações e sem ``` .
+TXT;
+  }
+  // Русский путь не используется (переводить не нужно), но пусть будет осмысленным.
+  return "Верни тот же JSON без изменений.";
 }
 
 /**

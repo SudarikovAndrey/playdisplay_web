@@ -399,6 +399,25 @@ function pd_action_brief($in) {
     $tres = pd_llm(pd_prompt_card($lang),
       array(array('role' => 'user', 'content' => json_encode($ask, JSON_UNESCAPED_UNICODE))), 2000, $lang);
     $tr = $tres['error'] ? null : pd_json_from_text($tres['text']);
+
+    // ПРОВЕРЯЕМ РЕЗУЛЬТАТ, а не факт ответа. Модель охотно возвращает валидный JSON с
+    // НЕПЕРЕВЕДЁННЫМ текстом — ошибки нет, в логе тишина, а гость видит русскую карточку
+    // (поймано на боевом 04.08.2026). Заголовок короткий и показательный: если он всё ещё
+    // читается как русский, перевода не было. Один повтор, потом сдаёмся честно.
+    $tries = 0;
+    while ($tr && $tries++ < 1 && pd_detect_lang(isset($tr['title']) ? $tr['title'] : '') === 'ru') {
+      pd_log('card', 'перевод не сработал с первого раза, повторяю: ' . pd_str(isset($tr['title']) ? $tr['title'] : '', 80));
+      $tres2 = pd_llm(pd_prompt_card($lang),
+        array(array('role' => 'user', 'content' => json_encode($ask, JSON_UNESCAPED_UNICODE))), 2000, $lang);
+      $tr2 = $tres2['error'] ? null : pd_json_from_text($tres2['text']);
+      if ($tr2) $tr = $tr2;
+      $tres['usage'] = array($tres['usage'][0] + $tres2['usage'][0], $tres['usage'][1] + $tres2['usage'][1]);
+    }
+    if ($tr && pd_detect_lang(isset($tr['title']) ? $tr['title'] : '') === 'ru') {
+      pd_log('card', 'модель не переводит карточку на ' . $lang . ', показываю русскую');
+      $tr = null;
+    }
+
     if ($tr) {
       // Блоки и вопросы кладём ОТДЕЛЬНО от русских: письмо студии должно остаться русским,
       // на экран уходит перевод. Один и тот же бриф, два читателя — как и с заголовком.
@@ -686,9 +705,8 @@ function pd_action_send($in) {
   pd_sess_save($sess);
 
   if (!$ok) {
+    // Копия в outbox уже лежит: её кладёт сам pd_send_mail, когда smtp не настроен.
     pd_log('send', $info);
-    // Копию в outbox кладём всегда: бриф не должен потеряться из-за почтового сервера.
-    pd_mail_file($subj, array('Subject: ' . $subj), $textVer, $preview);
     pd_fail('письмо не ушло: ' . $info, 502);
   }
   // copy — чтобы интерфейс мог сказать «копия ушла на такой-то адрес», а не молчать.

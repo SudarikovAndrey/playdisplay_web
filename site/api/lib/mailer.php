@@ -23,22 +23,46 @@
  * прошёл, интерфейс сказал спасибо, письма не было. Теперь состояние почты видно и в
  * ping, и в ответе на отправку.
  */
+/** Мы на боевом сервере или на локальной машине разработчика? */
+function pd_is_local() {
+  $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '');
+  return $host === '' || preg_match('~^(localhost|127\.0\.0\.1|\[::1\]|.*\.local)(:\d+)?$~i', $host) === 1;
+}
+
+/**
+ * Каким драйвером письмо уйдёт НА САМОМ ДЕЛЕ. Возвращает 'smtp' | 'mail' | 'file'.
+ *
+ * Главное здесь — запасной путь. Драйвер file означает «никуда не отправлять», и на
+ * боевом сервере это гарантированная потеря запроса: разговор прошёл, письмо легло в
+ * папку, человек ушёл уверенным, что его услышали. Так 04.08.2026 потерялся живой
+ * запрос. Поэтому на живом хосте, если настоящая отправка не настроена, а mail()
+ * доступна, отправляем через неё — письмо в спаме лучше, чем письмо в никуда.
+ * Локально (localhost) остаёмся на file: там file и нужен.
+ */
+function pd_mail_driver() {
+  $cfg = pd_config();
+  $m = isset($cfg['mailer']) ? $cfg['mailer'] : 'file';
+  if ($m === 'smtp') {
+    $s = isset($cfg['smtp']) ? $cfg['smtp'] : array();
+    if (empty($s['host']) || empty($s['user']) || empty($s['pass'])) $m = 'file';
+  }
+  if ($m === 'mail' && !function_exists('mail')) $m = 'file';
+  if ($m === 'file' && function_exists('mail') && !pd_is_local()) return 'mail';
+  return $m;
+}
+
+/** Уйдёт ли письмо по-настоящему. array(готов, причина). */
 function pd_mail_ready() {
   $cfg = pd_config();
-  switch ($cfg['mailer']) {
-    case 'smtp':
-      $s = isset($cfg['smtp']) ? $cfg['smtp'] : array();
-      if (empty($s['host']) || empty($s['user']) || empty($s['pass'])) {
-        return array(false, 'выбран smtp, но не заполнен host, user или pass');
-      }
-      return array(true, '');
-    case 'mail':
-      return function_exists('mail')
-        ? array(true, '')
-        : array(false, 'выбран драйвер mail, но функция mail() отключена на хостинге');
-    default:
-      return array(false, 'письма складываются в api/outbox и наружу не уходят (драйвер file)');
+  $drv = pd_mail_driver();
+  if ($drv === 'smtp') return array(true, '');
+  if ($drv === 'mail') {
+    // Настроенный mail — норма. Незаметно подставленный вместо file — тоже работает,
+    // но об этом надо сказать: без SPF и DKIM письма частенько уходят в спам.
+    if (isset($cfg['mailer']) && $cfg['mailer'] === 'mail') return array(true, '');
+    return array(true, 'отправка идёт через mail() хостинга — проверьте папку спама; для надёжности настройте smtp');
   }
+  return array(false, 'письма складываются в api/outbox и наружу не уходят (драйвер file)');
 }
 
 /**
@@ -134,10 +158,16 @@ function pd_send_mail($subject, $html, $text, $replyTo = '', $htmlPreview = '', 
     $body .= "--$mix--\r\n";
   }
 
-  switch ($cfg['mailer']) {
+  // Копию в outbox кладём ВСЕГДА, когда не настроен smtp: mail() не даёт вменяемой
+  // диагностики, и если письмо не дошло, единственный способ его достать — файл на диске.
+  $drv = pd_mail_driver();
+  if ($drv !== 'smtp') {
+    pd_mail_file($subject, $headers, $body, $htmlPreview !== '' ? $htmlPreview : $html);
+  }
+  switch ($drv) {
     case 'smtp': return pd_mail_smtp($cfg['smtp'], $from, $to, $headers, $body);
     case 'mail': return pd_mail_native($to, $subject, $headers, $body);
-    default:     return pd_mail_file($subject, $headers, $body, $htmlPreview !== '' ? $htmlPreview : $html);
+    default:     return array(true, 'письмо сохранено в api/outbox (отправка не настроена)');
   }
 }
 
@@ -168,14 +198,20 @@ function pd_mail_file($subject, $headers, $body, $html) {
 // ---------------------------------------------------------------- mail()
 function pd_mail_native($to, $subject, $headers, $body) {
   if (!function_exists('mail')) return array(false, 'функция mail() отключена на хостинге');
+  // Обратный адрес для конверта: без него sendmail подставляет пользователя хостинга,
+  // и почтовые фильтры считают письмо чужим. Со своим домена шансов дойти заметно больше.
+  $cfgN = pd_config();
+  $envelope = '-f' . (isset($cfgN['mail_from']) ? $cfgN['mail_from'] : '');
   // Subject и To идут отдельными аргументами — из общего списка их надо убрать.
   $rest = array();
   foreach ($headers as $h) {
     if (stripos($h, 'subject:') === 0 || stripos($h, 'to:') === 0) continue;
     $rest[] = $h;
   }
-  $ok = @mail($to, pd_mime_header($subject), $body, implode("\r\n", $rest));
-  return $ok ? array(true, 'отправлено через mail()') : array(false, 'mail() вернула ошибку');
+  $ok = @mail($to, pd_mime_header($subject), $body, implode("\r\n", $rest), $envelope);
+  // Пятый аргумент на некоторых хостингах запрещён в safe_mode — пробуем без него.
+  if (!$ok) $ok = @mail($to, pd_mime_header($subject), $body, implode("\r\n", $rest));
+  return $ok ? array(true, 'отправлено через mail() хостинга') : array(false, 'mail() вернула ошибку');
 }
 
 // ---------------------------------------------------------------- SMTP
