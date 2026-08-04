@@ -89,6 +89,7 @@ function pd_action_ping() {
   // обещал живой разговор, а выдавал вопросы из запаса — это и выглядело как «данные не те».
   $ready = pd_llm_ready($lang);
   $drv = pd_llm_driver($lang);
+  list($mailOk, $mailWhy) = pd_mail_ready();
   $L = pd_langs();
   pd_json(array(
     'ok' => true,
@@ -97,6 +98,10 @@ function pd_action_ping() {
     'why' => $ready ? '' : ($drv === 'mock'
       ? 'в api/config.php выбран драйвер mock'
       : 'драйвер ' . $drv . ' выбран, но ключ не заполнен'),
+    // Состояние почты отдаём ОТДЕЛЬНО от модели: разговор может быть настоящим,
+    // а письмо всё равно никуда не уйти. Молчать об этом нельзя — теряются запросы.
+    'mail' => $mailOk,
+    'mail_why' => $mailWhy,
     // Код для распознавания речи отдаёт сервер: список поддерживаемых языков
     // живёт в одном месте (lib/prompts.php), а не дублируется в клиенте.
     'speech' => $L[$lang]['speech'],
@@ -379,12 +384,38 @@ function pd_action_brief($in) {
   // ДО перевода: он идёт в тему письма, и студия ищет письма по-русски.
   $card['title_ru'] = $card['title'];
   if ($lang !== 'ru') {
+    // Переводим ВСЁ, что человек увидит на экране: карточку, блоки подробностей и
+    // открытые вопросы. Одним вызовом, потому что это одна задача — перевод. Вложения
+    // и цитаты не трогаем: цитаты и так на его языке.
+    $askBrief = array();
+    if (!empty($card['brief']) && is_array($card['brief'])) {
+      foreach ($card['brief'] as $bk => $bv) { $bv = trim((string)$bv); if ($bv !== '') $askBrief[$bk] = $bv; }
+    }
     $ask = array('title' => $card['title'], 'idea' => $card['idea'],
-      'who' => $card['who'], 'feel' => $card['feel'], 'tags' => $card['tags']);
+      'who' => $card['who'], 'feel' => $card['feel'], 'tags' => $card['tags'],
+      'brief' => $askBrief,
+      'open_questions' => (!empty($card['open_questions']) && is_array($card['open_questions']))
+        ? array_values($card['open_questions']) : array());
     $tres = pd_llm(pd_prompt_card($lang),
-      array(array('role' => 'user', 'content' => json_encode($ask, JSON_UNESCAPED_UNICODE))), 900, $lang);
+      array(array('role' => 'user', 'content' => json_encode($ask, JSON_UNESCAPED_UNICODE))), 2000, $lang);
     $tr = $tres['error'] ? null : pd_json_from_text($tres['text']);
     if ($tr) {
+      // Блоки и вопросы кладём ОТДЕЛЬНО от русских: письмо студии должно остаться русским,
+      // на экран уходит перевод. Один и тот же бриф, два читателя — как и с заголовком.
+      if (!empty($tr['brief']) && is_array($tr['brief'])) {
+        $bt = array();
+        foreach ($askBrief as $bk => $bv) {
+          $tv = pd_str(isset($tr['brief'][$bk]) ? $tr['brief'][$bk] : '', 1200);
+          $bt[$bk] = $tv !== '' ? $tv : $bv;
+        }
+        $card['brief_screen'] = $bt;
+      }
+      if (!empty($tr['open_questions']) && is_array($tr['open_questions'])
+          && count($tr['open_questions']) === count($ask['open_questions'])) {
+        $qt = array();
+        foreach ($tr['open_questions'] as $q) { $q = pd_str($q, 300); if ($q !== '') $qt[] = $q; }
+        if (count($qt) === count($ask['open_questions'])) $card['open_screen'] = $qt;
+      }
       // Поле берём только если перевод непустой: половина карточки на чужом языке
       // хуже, чем вся на русском — человек решит, что интерфейс сломался.
       foreach (array('title', 'idea', 'who', 'feel') as $k) {
@@ -411,9 +442,28 @@ function pd_action_brief($in) {
   );
   pd_sess_save($sess);
 
-  // На экран — только карточка концепции. Внутренняя часть брифа остаётся на сервере.
-  // degraded говорит клиенту, что модель не сработала: показать это надо, иначе человек
-  // примет заглушку за настоящий разбор своих слов.
+  // На экран уходит ВСЁ собранное, разбитое на блоки: человек должен видеть, что именно
+  // мы поняли, до того как нажмёт «отправить». Раньше показывалась только карточка, и
+  // подробности оставались тайной — а это его собственные слова, скрывать их незачем.
+  // degraded говорит клиенту, что модель не сработала: иначе он примет заглушку за разбор.
+  $lab = pd_block_labels($lang);
+  $bsrc = !empty($card['brief_screen']) ? $card['brief_screen']
+        : ((!empty($card['brief']) && is_array($card['brief'])) ? $card['brief'] : array());
+  $blocks = array();
+  foreach (pd_brief_labels() as $bk => $ruLabel) {
+    $v = isset($bsrc[$bk]) ? trim((string)$bsrc[$bk]) : '';
+    if ($v === '' || pd_lower($v) === 'не обсуждали') continue;   // пустые блоки не показываем
+    $blocks[] = array('label' => isset($lab[$bk]) ? $lab[$bk] : $ruLabel, 'v' => pd_str($v, 1200));
+  }
+  $qs = !empty($card['open_screen']) ? $card['open_screen']
+      : ((!empty($card['open_questions']) && is_array($card['open_questions'])) ? $card['open_questions'] : array());
+  $questions = array();
+  foreach ($qs as $q) { $q = pd_str($q, 300); if ($q !== '') $questions[] = $q; }
+  $quotes = array();
+  if (!empty($card['quotes']) && is_array($card['quotes'])) {
+    foreach ($card['quotes'] as $q) { $q = pd_str($q, 400); if ($q !== '') $quotes[] = $q; }
+  }
+
   pd_json(array(
     'ok' => true,
     'degraded' => !empty($card['degraded']),
@@ -421,6 +471,11 @@ function pd_action_brief($in) {
       'title' => $card['title'], 'idea' => $card['idea'],
       'who' => $card['who'], 'feel' => $card['feel'], 'tags' => $card['tags'],
     ),
+    'blocks' => $blocks,
+    'questions' => $questions,
+    'quotes' => $quotes,
+    // Подписи разделов — тем же ответом, чтобы клиент не держал свой словарь языков.
+    'labels' => array('open' => $lab['_open'], 'quotes' => $lab['_quotes'], 'all' => $lab['_all']),
   ));
 }
 
@@ -637,5 +692,9 @@ function pd_action_send($in) {
     pd_fail('письмо не ушло: ' . $info, 502);
   }
   // copy — чтобы интерфейс мог сказать «копия ушла на такой-то адрес», а не молчать.
-  pd_json(array('ok' => true, 'info' => $info, 'copy' => $copySent ? $copyTo : ''));
+  // stored — драйвер file: бриф сохранён на сервере, но на почту НЕ отправлен. Интерфейс
+  // обязан сказать это прямо, иначе запрос теряется, а человек уверен, что всё дошло.
+  list($mailLive) = pd_mail_ready();
+  pd_json(array('ok' => true, 'info' => $info, 'copy' => $copySent ? $copyTo : '',
+    'stored' => !$mailLive));
 }

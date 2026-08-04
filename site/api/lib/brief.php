@@ -15,6 +15,41 @@ function pd_heat_label($h) {
   }
 }
 
+/**
+ * Названия блоков брифа для ЭКРАНА, на языке гостя. В письме студии они всегда русские
+ * (pd_brief_labels), а здесь их читает сам человек. Это подписи интерфейса, а не текст
+ * разговора, поэтому словарь, а не модель: перевод «Сроки» не стоит вызова.
+ */
+function pd_block_labels($lang) {
+  $all = array(
+    'ru' => array(
+      'task' => 'Задача', 'context' => 'Контекст', 'audience' => 'Аудитория',
+      'scenario' => 'Что происходит с посетителем', 'format' => 'Формат', 'place' => 'Площадка',
+      'scale' => 'Масштаб', 'timeline' => 'Сроки', 'budget' => 'Бюджет',
+      'constraints' => 'Ограничения', 'success' => 'Что считать успехом',
+      '_open' => 'Осталось выяснить', '_quotes' => 'Вашими словами',
+      '_none' => 'не обсуждали', '_all' => 'Собранное описание',
+    ),
+    'en' => array(
+      'task' => 'The task', 'context' => 'Context', 'audience' => 'Audience',
+      'scenario' => 'What happens to the visitor', 'format' => 'Format', 'place' => 'Venue',
+      'scale' => 'Scale', 'timeline' => 'Timeline', 'budget' => 'Budget',
+      'constraints' => 'Constraints', 'success' => 'What counts as success',
+      '_open' => 'Still to figure out', '_quotes' => 'In your own words',
+      '_none' => 'not discussed', '_all' => 'The brief so far',
+    ),
+    'pt' => array(
+      'task' => 'A tarefa', 'context' => 'Contexto', 'audience' => 'Público',
+      'scenario' => 'O que acontece ao visitante', 'format' => 'Formato', 'place' => 'Espaço',
+      'scale' => 'Escala', 'timeline' => 'Prazos', 'budget' => 'Orçamento',
+      'constraints' => 'Restrições', 'success' => 'O que conta como sucesso',
+      '_open' => 'Ainda a esclarecer', '_quotes' => 'Nas suas palavras',
+      '_none' => 'não discutido', '_all' => 'O resumo até agora',
+    ),
+  );
+  return isset($all[$lang]) ? $all[$lang] : $all['ru'];
+}
+
 /** Ярлык поля брифа → человеческое название в письме. */
 function pd_brief_labels() {
   return array(

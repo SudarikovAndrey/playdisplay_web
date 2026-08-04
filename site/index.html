@@ -989,6 +989,14 @@
   #aiSumErr:not(:empty) { margin-top: 28px; }
   /* плашка режима на первом экране: в демо она предупреждение, а не сноска */
   .ai-note.warn { color: #ff8a5c; text-transform: none; letter-spacing: 0.02em; font-size: 12px; max-width: 62ch; margin-left: auto; margin-right: auto; }
+  /* переключатель языка распознавания: тихий, но доступный */
+  .ai-slang { display: flex; gap: 6px; align-items: center; }
+  .ai-slang:empty { display: none; }
+  .ai-slang button { font: 500 10.5px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--scan-white-faint); background: transparent; border: 1px solid transparent;
+    padding: 5px 9px; cursor: pointer; transition: all var(--duration-fast); }
+  .ai-slang button:hover { color: var(--scan-white); border-color: var(--space-line); }
+  .ai-slang button.on { color: var(--signal-teal); border-color: rgba(43,224,198,0.45); }
   /* ввод текстом — равноправный путь, а не костыль: в Firefox распознавания нет вовсе */
   .ai-say { display: none; width: min(560px, 90vw); grid-template-columns: 1fr auto; }
   .ai-say.on { display: grid; }
@@ -1016,6 +1024,12 @@
   .ai-wave { position: absolute; left: 50%; top: 50%; width: 100%; height: 100%;
     transform: translate(-50%, -50%); pointer-events: none; opacity: 0; transition: opacity .4s ease; }
   .ai-rec.think .ai-wave { opacity: 1; }
+  /* Пока микрофон слушает, волны расходятся РЕДКО и спокойно: это «я здесь, я слышу»,
+     а не «идёт работа». Одна волна раз в три с половиной секунды — дыхание, не спиннер. */
+  .ai-rec.hear .ai-wave { opacity: 0.75; }
+  .ai-rec.hear:not(.think) .ai-wave i { animation: aiWave 3.6s cubic-bezier(.18,.72,.3,1) infinite; }
+  .ai-rec.hear:not(.think) .ai-wave i:nth-child(2) { animation-delay: 1.2s; }
+  .ai-rec.hear:not(.think) .ai-wave i:nth-child(3) { animation-delay: 2.4s; }
   .ai-wave i { position: absolute; inset: 0; border-radius: 50%;
     border: 1px solid var(--signal-teal); opacity: 0; }
   /* анимацию включаем ТОЛЬКО в состоянии «думает»: иначе браузер крутит её всё время,
@@ -1085,6 +1099,21 @@
     font: 500 11px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--scan-white-dim); }
   .ai-duo .m p { margin-top: 12px; font: 400 15px/1.6 var(--font-body); color: rgba(233,244,246,0.85);
     text-transform: none; letter-spacing: 0; max-width: none; }
+  /* блоки собранного: два в ряд на большом экране, один на узком */
+  .ai-blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; text-align: left; }
+  .ai-blocks:empty { display: none; }
+  .ai-blocks .b { background: rgba(16,30,37,0.42); border: 1px solid rgba(159,180,200,0.10);
+    border-left: 2px solid rgba(43,224,198,0.4); padding: 16px 18px; }
+  .ai-blocks .b h4 { font: 500 10.5px var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--scan-white-faint); margin-bottom: 8px; }
+  .ai-blocks .b p { margin: 0; font: 400 14.5px/1.6 var(--font-body); color: rgba(233,244,246,0.86); max-width: none; }
+  /* открытые вопросы и цитаты — на всю ширину: их читают подряд, а не сравнивают */
+  .ai-blocks .b.wide { grid-column: 1 / -1; border-left-color: rgba(255,138,92,0.55); }
+  .ai-blocks .b.quote { grid-column: 1 / -1; border-left-color: rgba(159,180,200,0.35); }
+  .ai-blocks .b ul { margin: 0; padding-left: 18px; }
+  .ai-blocks .b li { font: 400 14.5px/1.6 var(--font-body); color: rgba(233,244,246,0.86); margin-bottom: 6px; }
+  .ai-blocks .b.quote p { font-style: italic; color: rgba(233,244,246,0.72); margin-bottom: 8px; }
+  @media (max-width: 700px) { .ai-blocks { grid-template-columns: 1fr; } }
   .ai-actions { display: flex; justify-content: center; gap: 16px; margin-top: 44px; flex-wrap: wrap; }
   /* минимальная форма — появляется только после «Отправить» */
   #aiFormEl { margin-top: 40px; display: grid; gap: 14px; justify-items: center; }
@@ -1150,6 +1179,36 @@
     #aiCapture .ai-rec { width: 76px; height: 76px; }
     .ai-prompt { padding-top: 9vh; }
     #aiCapture h2 { font-size: clamp(21px, 6vw, 30px); }
+  }
+
+  /* ---------- печатная версия брифа: «Скачать PDF» без сторонних библиотек ----------
+     Печатает сам браузер, а мы отдаём ему нормальную бумажную вёрстку: белый фон,
+     чёрный текст, чёрный логотип. visibility, а не display: панель ассистента — fixed,
+     и display:none на родителе ломал бы поток; спрятанное по visibility просто не красится. */
+  #aiPrint { display: none; }
+  @media print {
+    body * { visibility: hidden !important; }
+    #aiPrint, #aiPrint * { visibility: visible !important; }
+    #aiPrint { display: block !important; position: absolute; left: 0; top: 0; width: 100%;
+      background: #fff; color: #10171b; font: 400 11pt/1.55 Helvetica, Arial, sans-serif; }
+    #aiPrint .p-head { display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 1.5pt solid #10171b; padding-bottom: 8pt; margin-bottom: 18pt; }
+    #aiPrint .p-head img { width: 42mm; height: auto; }
+    #aiPrint .p-head span { font: 400 8.5pt/1.4 Helvetica, Arial, sans-serif; color: #6b7780; }
+    #aiPrint h1 { font: 700 20pt/1.2 Georgia, serif; margin: 0 0 8pt; }
+    #aiPrint .p-idea { font: 400 12pt/1.5 Helvetica, Arial, sans-serif; margin: 0 0 14pt; }
+    #aiPrint .p-tags { font: 400 8.5pt/1.5 Helvetica, Arial, sans-serif; color: #0a7d67;
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16pt; }
+    #aiPrint .p-b { margin-bottom: 11pt; page-break-inside: avoid; }
+    #aiPrint .p-b h4 { font: 700 8pt/1.3 Helvetica, Arial, sans-serif; letter-spacing: .12em;
+      text-transform: uppercase; color: #6b7780; margin: 0 0 3pt; }
+    #aiPrint .p-b p, #aiPrint .p-b li { margin: 0 0 3pt; font-size: 10.5pt; }
+    #aiPrint .p-b ul { margin: 0; padding-left: 14pt; }
+    #aiPrint .p-quote { font-style: italic; color: #3d4a52; border-left: 1pt solid #c9d2d7;
+      padding-left: 8pt; margin: 0 0 6pt; }
+    #aiPrint .p-foot { margin-top: 20pt; padding-top: 8pt; border-top: .5pt solid #c9d2d7;
+      font: 400 8pt/1.5 Helvetica, Arial, sans-serif; color: #8b949a; }
+    @page { margin: 16mm 15mm; }
   }
 
   /* ---------- география: карта мира из точек (маска — стилизованные силуэты материков) ---------- */
@@ -2166,6 +2225,10 @@
       <div class="ai-bottom">
         <div class="ai-heard" id="aiHeard"></div>
         <div class="ai-err" id="aiErr"></div>
+        <!-- Язык распознавания. Догадка по браузеру верна почти всегда, но когда она
+             неверна, микрофон просто молчит — и человеку нужно место, где это поправить
+             самому, не разбираясь в настройках Chrome. -->
+        <div class="ai-slang" id="aiSlang" aria-label="Язык распознавания речи"></div>
         <div class="ai-say" id="aiSay">
           <input type="text" id="aiSayIn" placeholder="Написать ответ" autocomplete="off" enterkeyhint="send">
           <button class="ai-say-go" id="aiSayGo" aria-label="Отправить ответ">▶︎</button>
@@ -2184,9 +2247,13 @@
         <div class="m">Для кого<p id="aiWho"></p></div>
         <div class="m">Что человек должен почувствовать<p id="aiFeel"></p></div>
       </div>
+      <!-- Всё собранное, разбитое на блоки: это его собственные слова, скрывать их незачем.
+           Человек должен видеть, что именно мы поняли, ДО того как нажмёт «отправить». -->
+      <div class="ai-blocks" id="aiBlocks"></div>
       <div class="ai-err" id="aiSumErr"></div>
       <div class="ai-actions">
         <button class="btn-line" id="aiMore"><span class="tri">▶︎</span> Рассказать ещё</button>
+        <button class="btn-line" id="aiPdf"><span class="tri">▶︎</span> Скачать PDF</button>
         <button class="wa" id="aiSend">▶︎ Отправить в playdisplay</button>
       </div>
     </div>
@@ -2245,6 +2312,13 @@
     </div>
   </div>
 </div>
+
+<!-- ===== ПЕЧАТНАЯ ВЕРСИЯ БРИФА =====
+     Отдельный слой, который видно ТОЛЬКО при печати (@media print). Так «Скачать PDF»
+     работает без единой сторонней библиотеки: браузер сам печатает в PDF, а вёрстка
+     наша — с чёрным логотипом на белом, а не тёмная тема сайта. Заполняется из того же
+     ответа сервера, что и экран. -->
+<div id="aiPrint" aria-hidden="true"></div>
 
 <!-- ===== ПРОСМОТР КОНЦЕПЦИИ ===== -->
 <div class="c-view" id="cView">
@@ -6198,12 +6272,20 @@
           mode = d.demo ? 'demo' : 'live';
           // Код распознавания речи говорит сервер: список языков лежит в lib/prompts.php
           // и не дублируется в клиенте.
-          if (d.speech) window.pdSpeech.setLang(d.speech);
+          // Локаль распознавания сервер знает только по языку СТРАНИЦЫ. Если браузер
+          // подсказал другой поддерживаемый язык — верим браузеру: на английской версии
+          // сайта человек с русской системой почти наверняка и говорить будет по-русски.
+          if (d.speech && !window.pdSpeech.guessed()) window.pdSpeech.setLang(d.speech);
           // Сервер присылает и причину (нет ключа / выбран mock) — показываем её,
           // иначе демо-режим не отличить от живого разговора, пока не дойдёшь до брифа.
-          done(mode, d.demo
+          // Почта — отдельная беда: разговор настоящий, а письмо никуда не уходит.
+          var note = d.demo
             ? 'Демо-режим: ' + (d.why || 'модель не подключена') + '. Ответы идут по прошитому сценарию.'
-            : '');
+            : '';
+          if (!d.demo && d.mail === false) {
+            note = 'Почта не настроена: ' + (d.mail_why || 'письмо не отправится') + '.';
+          }
+          done(mode, note);
         }, function(){
           mode = 'demo';
           done('demo', 'Бэкенд не отвечает: PHP не запущен. Идёт демонстрация сценария, письмо не отправится.');
@@ -6499,7 +6581,27 @@
     // нельзя: с чужой локалью распознавание не понимает вообще ничего.
     var HTML_LANG = (document.documentElement.getAttribute('lang') || 'ru').slice(0, 2).toLowerCase();
     var GUESS = { ru: 'ru-RU', en: 'en-US', pt: 'pt-PT' };
-    var SLANG = GUESS[HTML_LANG] || 'ru-RU';
+    // ЯЗЫК СТРАНИЦЫ — ПЛОХАЯ ДОГАДКА ПРО РЕЧЬ, и это стоило нам сломанного микрофона.
+    // Гость открыл /en/, заговорил по-русски — распознавание на en-US не понимает ни слова
+    // и молчит. Сервер умеет определить язык по тексту, но текста не появляется НИКОГДА:
+    // замкнутый круг. Браузер знает язык человека лучше страницы, поэтому сначала смотрим
+    // navigator.languages и берём первый поддерживаемый.
+    var guessedByBrowser = false;
+    var SLANG = (function(){
+      var list = [];
+      if (navigator.languages && navigator.languages.length) list = [].slice.call(navigator.languages);
+      else if (navigator.language) list = [navigator.language];
+      for (var i = 0; i < list.length; i++) {
+        var code = String(list[i]).slice(0, 2).toLowerCase();
+        if (GUESS[code]) {
+          // Совпало с языком страницы — это не «догадка браузера», а просто согласие.
+          guessedByBrowser = code !== HTML_LANG;
+          // Полную локаль браузера уважаем, если она нашей же группы (pt-BR вместо pt-PT).
+          return /^[a-z]{2}-[A-Za-z]{2,}$/.test(list[i]) ? String(list[i]) : GUESS[code];
+        }
+      }
+      return GUESS[HTML_LANG] || 'ru-RU';
+    })();
 
     function fire(name, a, b){ if (h[name]) try { h[name](a, b); } catch (e) { console.warn('speech ' + name, e); } }
 
@@ -6563,6 +6665,9 @@
       // Нужно, чтобы ассистент не подменял вопрос на экране посреди чужой фразы.
       talking: function(){ return (finalBuf + interim).replace(/\s+/g, '') !== ''; },
       lang: function(){ return SLANG; },
+      // true — локаль взята у браузера и расходится с языком страницы. Тогда подсказку
+      // сервера (он знает только страницу) применять не надо: браузер знает точнее.
+      guessed: function(){ return guessedByBrowser; },
       // Смена языка на живом объекте распознавания не действует — нужен новый.
       // Поэтому старый выбрасываем, и следующий start() соберёт его с новой локалью.
       // Если микрофон был включён, поднимаем распознавание сразу: язык может
@@ -7478,10 +7583,51 @@
       elStop.setAttribute('aria-label', pdSpeech.listening() ? 'Микрофон включён — нажмите, чтобы поставить на паузу' : 'Микрофон на паузе — нажмите, чтобы продолжить');
     }
 
+    // ================= язык распознавания =================
+    // Три кнопки под строкой «услышано». Нужны потому, что неверная локаль не даёт ошибки:
+    // микрофон просто молчит, и человек решает, что сломался сайт.
+    var SLANGS = [['ru-RU', 'RU'], ['en-US', 'EN'], ['pt-PT', 'PT']];
+    var elSlang = document.getElementById('aiSlang');
+    function renderSlang(){
+      if (!elSlang || !pdSpeech.supported) return;
+      var cur = (pdSpeech.lang() || '').slice(0, 2).toLowerCase();
+      elSlang.innerHTML = '';
+      SLANGS.forEach(function(pair){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = pair[1];
+        if (pair[0].slice(0, 2).toLowerCase() === cur) b.className = 'on';
+        b.addEventListener('click', function(){
+          pdSpeech.setLang(pair[0]);
+          renderSlang();
+          heardSince = Date.now();          // отсчёт тишины начинается заново
+          showErr('');
+        });
+        elSlang.appendChild(b);
+      });
+    }
+
+    // Сторож тишины: если после включения микрофона не пришло НИ ОДНОГО слова, дело
+    // почти всегда в локали или в разрешении. Молчать об этом нельзя — человек сидит
+    // и говорит в пустоту. Через 9 секунд подсказываем и открываем ввод текстом.
+    var heardSince = 0, silenceT = null;
+    function watchSilence(){
+      if (silenceT) clearTimeout(silenceT);
+      if (!pdSpeech.supported) return;
+      heardSince = Date.now();
+      silenceT = setTimeout(function(){
+        if (!pdSpeech.listening() || turns > 0) return;
+        if (elHeard && elHeard.textContent.replace(/\s/g, '') !== '') return;   // что-то слышали
+        showErr('Не слышу ни слова. Проверьте язык кнопками ниже и разрешение микрофона — или просто напишите текстом.');
+        openSay(false);
+      }, 9000);
+    }
+
     // Обработчики распознавания: живая строка «услышано» и отправка по паузе в речи.
     var SPEECH = {
       heard: function(fin, inter){
         if (!elHeard) return;
+        if (fin || inter) { heardSince = Date.now(); if (silenceT) { clearTimeout(silenceT); silenceT = null; } }
         elHeard.className = 'ai-heard' + (fin || inter ? ' hot' : '');
         elHeard.innerHTML = pdEsc(fin) + (inter ? ' <i>' + pdEsc(inter) + '</i>' : '');
       },
@@ -7513,9 +7659,10 @@
       openSay(how === 'text');
       if (!pdSpeech.supported) openSay(false);
 
+      renderSlang();
       var go = function(){
         if (how === 'text') { if (elSayIn) try { elSayIn.focus(); } catch (e) {} return; }
-        if (pdSpeech.supported) { pdSpeech.start(SPEECH); micState(); }
+        if (pdSpeech.supported) { pdSpeech.start(SPEECH); micState(); watchSilence(); }
         else openSay(true);
       };
 
@@ -7534,6 +7681,81 @@
       });
     }
 
+    // ================= показ собранного =================
+    // Блоки приходят с сервера уже готовыми: подпись на языке гостя и значение. Пустые
+    // он не присылает — экран не должен пестреть строками «не обсуждали».
+    var brief = null;
+    function renderBlocks(d){
+      var box = document.getElementById('aiBlocks');
+      if (!box) return;
+      box.innerHTML = '';
+      var lab = (d && d.labels) || {};
+      (d.blocks || []).forEach(function(b){
+        var el = document.createElement('div');
+        el.className = 'b';
+        var h = document.createElement('h4'); h.textContent = b.label; el.appendChild(h);
+        var p = document.createElement('p'); p.textContent = b.v; el.appendChild(p);
+        box.appendChild(el);
+      });
+      if ((d.questions || []).length) {
+        var q = document.createElement('div');
+        q.className = 'b wide';
+        var qh = document.createElement('h4'); qh.textContent = lab.open || 'Осталось выяснить'; q.appendChild(qh);
+        var ul = document.createElement('ul');
+        d.questions.forEach(function(t){ var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+        q.appendChild(ul);
+        box.appendChild(q);
+      }
+      if ((d.quotes || []).length) {
+        var c = document.createElement('div');
+        c.className = 'b quote';
+        var ch = document.createElement('h4'); ch.textContent = lab.quotes || 'Вашими словами'; c.appendChild(ch);
+        d.quotes.forEach(function(t){ var p2 = document.createElement('p'); p2.textContent = '«' + t + '»'; c.appendChild(p2); });
+        box.appendChild(c);
+      }
+    }
+
+    /**
+     * Печатная версия. Собираем разметку в скрытый слой и отдаём браузеру — он сам
+     * печатает в PDF. Так «Скачать PDF» работает без сторонних библиотек: своего
+     * генератора PDF на сайте нет, а jsPDF пришлось бы тащить с CDN вместе со шрифтом
+     * с кириллицей (штатные шрифты jsPDF её не умеют) — это две зависимости ради одной кнопки.
+     */
+    function printBrief(){
+      var host = document.getElementById('aiPrint');
+      if (!host || !card) return;
+      var esc = pdEsc;
+      var html = '<div class="p-head">'
+        + '<img src="assets/logos/playdisplay-logo-black.png" alt="playdisplay">'
+        + '<span>' + esc(new Date().toLocaleDateString()) + '</span></div>'
+        + '<h1>' + esc(card.title || '') + '</h1>'
+        + '<p class="p-idea">' + esc(card.idea || '') + '</p>';
+      if ((card.tags || []).length) html += '<div class="p-tags">' + esc(card.tags.join('  ·  ')) + '</div>';
+      var duo = document.querySelectorAll('#aiSummary .ai-duo .m');
+      for (var i = 0; i < duo.length; i++) {
+        var lab2 = duo[i].childNodes[0] ? String(duo[i].childNodes[0].nodeValue || '').trim() : '';
+        var val = duo[i].querySelector('p');
+        if (val && val.textContent) html += '<div class="p-b"><h4>' + esc(lab2) + '</h4><p>' + esc(val.textContent) + '</p></div>';
+      }
+      ((brief && brief.blocks) || []).forEach(function(b){
+        html += '<div class="p-b"><h4>' + esc(b.label) + '</h4><p>' + esc(b.v) + '</p></div>';
+      });
+      if (brief && (brief.questions || []).length) {
+        html += '<div class="p-b"><h4>' + esc((brief.labels && brief.labels.open) || 'Осталось выяснить') + '</h4><ul>';
+        brief.questions.forEach(function(q){ html += '<li>' + esc(q) + '</li>'; });
+        html += '</ul></div>';
+      }
+      if (brief && (brief.quotes || []).length) {
+        html += '<div class="p-b"><h4>' + esc((brief.labels && brief.labels.quotes) || 'Вашими словами') + '</h4>';
+        brief.quotes.forEach(function(q){ html += '<p class="p-quote">«' + esc(q) + '»</p>'; });
+        html += '</div>';
+      }
+      html += '<div class="p-foot">playdisplay · playdisplay.com · info@playdisplay.com</div>';
+      host.innerHTML = html;
+      // Ждём кадр: без него Safari печатает слой до того, как разметка попала в дерево.
+      requestAnimationFrame(function(){ setTimeout(function(){ try { window.print(); } catch (e) {} }, 60); });
+    }
+
     // ================= сборка брифа =================
     function stopCapture(){
       // Человек нажал «собрать» на полуслове — досказанное не выбрасываем, а отправляем
@@ -7548,6 +7770,7 @@
         window.pdIdea.brief(function(d){
           setThink(false);
           card = d.card || {};
+          brief = d;                       // блоки нужны и экрану, и печатной версии
           document.getElementById('aiTitle').textContent = card.title || '';
           document.getElementById('aiIdea').textContent = card.idea || '';
           document.getElementById('aiWho').textContent = card.who || '';
@@ -7559,6 +7782,7 @@
             sp.textContent = t;
             tags.appendChild(sp);
           });
+          renderBlocks(d);
           // Разбор не удался — карточка собрана механически. Человек должен это видеть
           // до того, как нажмёт «Отправить», а не удивляться потом.
           var warn = document.getElementById('aiSumErr');
@@ -7653,8 +7877,8 @@
     if (elFresh) elFresh.addEventListener('click', function(){ resetTalk(); });
     // Микрофон в разговоре — пауза и продолжение, а не «завершить»: завершение теперь отдельной кнопкой.
     document.getElementById('aiStop').addEventListener('click', function(){
-      if (pdSpeech.listening()) { pdSpeech.stop(true); micState(); }
-      else { pdSpeech.start(SPEECH); micState(); }
+      if (pdSpeech.listening()) { pdSpeech.stop(true); micState(); if (silenceT) { clearTimeout(silenceT); silenceT = null; } }
+      else { pdSpeech.start(SPEECH); micState(); watchSilence(); }
     });
     if (elDone) elDone.addEventListener('click', stopCapture);
     if (elSayGo) elSayGo.addEventListener('click', sendTyped);
@@ -7663,6 +7887,8 @@
     });
     document.getElementById('aiMore').addEventListener('click', function(){ startCapture(lastHow); }); // смыслы не стираются — дополняются
     document.getElementById('aiSend').addEventListener('click', function(){ stage('form'); });
+    var elPdf = document.getElementById('aiPdf');
+    if (elPdf) elPdf.addEventListener('click', printBrief);
     document.getElementById('aiFormEl').addEventListener('submit', function(e){
       e.preventDefault();
       var btn = this.querySelector('button[type="submit"]');
@@ -7685,6 +7911,11 @@
         if (d && d.demo) {
           h2.textContent = 'Демо-режим: письмо не отправлено.';
           p.textContent = 'Бриф собран, но ассистент не подключён к почте — напишите нам через раздел «Контакты».';
+        } else if (d && d.stored) {
+          // Драйвер file: бриф лёг на сервер, но письма не будет. Врать нельзя —
+          // человек уйдёт уверенным, что запрос дошёл, а он не дошёл.
+          h2.textContent = 'Описание сохранено, но письмо не отправлено.';
+          p.textContent = 'На сервере не настроена почта. Напишите нам на info@playdisplay.com — или скачайте описание кнопкой «Скачать PDF» и пришлите вложением.';
         } else {
           h2.textContent = 'Спасибо. Мы получили описание проекта.';
           p.textContent = 'Следующий шаг — персональная креативная сессия с playdisplay.'
