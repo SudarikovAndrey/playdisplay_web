@@ -1079,6 +1079,14 @@
   .ai-done { opacity: 0; pointer-events: none; transition: opacity .5s ease, color .3s, border-color .3s; }
   .ai-done.on { opacity: 1; pointer-events: auto; }
   .ai-done.hot { color: var(--signal-teal); border-color: rgba(43,224,198,0.55); }
+  /* Модель сказала «хватит», а вопрос на экране остался прежним — кнопка обязана позвать
+     сама, иначе разговор выглядит зависшим. Дыхание рамкой, без прыжков размера. */
+  .ai-done.call { animation: aiCall 2.2s ease-in-out infinite; }
+  @keyframes aiCall {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(43,224,198,0.28); }
+    50%      { box-shadow: 0 0 0 9px rgba(43,224,198,0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .ai-done.call { animation: none; } }
   /* мелкая ссылка «или напишите текстом» на первом экране */
   .ai-alt { margin-top: 22px; background: none; border: 0; cursor: pointer;
     font: 400 11px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase;
@@ -7425,7 +7433,65 @@
     // чем выше, поэтому сначала пробуем места по бокам, потом всё ближе к вертикали.
     var WORD_ANGLES = [180, 0, 200, 340, 160, 20, 220, 320, 140, 40, 245, 295, 115, 65, 260, 280];
 
-    function addWord(text, scale, key){
+    /**
+     * ПЕРЕРАСКЛАДКА при смене вопроса. Свободная полоса зависит от высоты вопроса, а он
+     * растёт и сжимается на каждом ходу: «Где это будет?» — одна строка, «Планируете
+     * разместить музей в новом здании или переоборудовать существующее?» — четыре.
+     * Слова, поставленные при коротком вопросе, оказывались под длинным (поймано на
+     * боевом 04.08.2026). Углы и радиусы сохраняем — доска не перемешивается, только
+     * подбирается под новые границы, и делает это плавно, переходом.
+     */
+    function relayoutWords(){
+      if (!placed.length || !field) return;
+      var W = field.clientWidth, H = field.clientHeight;
+      if (!W || !H) return;
+      var free = freeRect(W, H);
+      var done = [];
+      for (var i = 0; i < placed.length; i++) {
+        var rec = placed[i];
+        rec.free = free;
+        rec.box = ringBox(rec, W, H);
+        // Полоса стала УЖЕ — то, что не пересекалось на широкой, может столкнуться здесь.
+        // Разводим: сначала пробуем соседние углы (доска не перемешивается, слово лишь
+        // сдвигается вдоль своего кольца), потом чуть отпускаем наружу.
+        if (overlapArea(rec.box, done) > 0) {
+          var a0 = rec.a, r0 = rec.r, fixed = false;
+          for (var step = 1; step <= 8 && !fixed; step++) {
+            for (var sign = 1; sign >= -1 && !fixed; sign -= 2) {
+              rec.a = a0 + sign * step * 14 * Math.PI / 180;
+              var box = ringBox(rec, W, H);
+              if (overlapArea(box, done) === 0) { rec.box = box; fixed = true; }
+            }
+          }
+          if (!fixed) {
+            rec.a = a0;
+            for (var out = 1; out <= 3 && !fixed; out++) {
+              rec.r = Math.min(1.0, r0 + out * 0.07);
+              var box2 = ringBox(rec, W, H);
+              if (overlapArea(box2, done) === 0) { rec.box = box2; fixed = true; }
+            }
+            if (!fixed) { rec.r = r0; rec.box = ringBox(rec, W, H); }
+          }
+        }
+        done.push(rec.box);
+        place(rec.el, rec.box, rec.scale);
+      }
+    }
+
+    /**
+     * Пачка смыслов за один ход. Раздвигаем доску ОДИН раз, а не по разу на каждое слово:
+     * три слова в ответе давали тройной сдвиг, и это читалось как рывок, а не как дрейф.
+     */
+    function addWords(list){
+      if (!list || !list.length) return;
+      var W = field.clientWidth, H = field.clientHeight;
+      pushWordsOut(W, H);
+      for (var i = 0; i < list.length; i++) {
+        addWord(list[i].t, list[i].w || 1, !!list[i].key, true);
+      }
+    }
+
+    function addWord(text, scale, key, pushed){
       var el = document.createElement('span');
       el.className = 'ai-word' + (key ? ' key' : '');
       el.textContent = text;
@@ -7440,8 +7506,9 @@
       var rec = { el: el, w0: el.offsetWidth, h0: el.offsetHeight,
                   base: scale, scale: scale, free: free, a: 0, r: 0.14, box: null };
 
-      // Сначала раздвигаем всё, что уже стоит: центр должен освободиться под свежее слово.
-      pushWordsOut(W, H);
+      // Раздвигаем прежние, освобождая центр. Для пачки это уже сделано в addWords —
+      // один сдвиг на ход, иначе доска дёргается по разу на каждое слово.
+      if (!pushed) pushWordsOut(W, H);
 
       var look = function(maxR){
         for (var ri = 0; ri < 6; ri++) {
@@ -7496,7 +7563,7 @@
       window.pdIdea.say(text, lastHow, function(d){
         busy = false; setThink(false);
         turns++;
-        (d.words || []).forEach(function(w){ addWord(w.t, w.w || 1, !!w.key); });
+        addWords(d.words || []);
         ask(d.reply, d.sub, d.ready);
         if (elHeard) { elHeard.innerHTML = ''; elHeard.className = 'ai-heard'; }
         if (elDone) elDone.classList.add('on');
@@ -7529,11 +7596,19 @@
     var askWaitT = null;
     function ask(reply, sub, ready){
       if (!reply || !elPrompt) return;
-      // Когда модель решила, что материала хватит, она иногда отвечает не вопросом,
-      // а служебной фразой вроде «Готово, собрали достаточно информации». Ставить её
-      // заголовком экрана нельзя: человек читает её как обращение к себе и не понимает,
-      // что делать. Оставляем прежний вопрос — кнопка «Собрать бриф» и так подсветится.
-      if (ready && reply.indexOf('?') === -1) return;
+      // Модель решила, что материала хватит, и ответила не вопросом, а служебной фразой
+      // («Готово, информации достаточно»). Ставить её заголовком нельзя — человек читает
+      // её как обращение к себе. Но и МОЛЧАТЬ нельзя: раньше мы просто выходили, экран
+      // не менялся вовсе, и это выглядело как зависание — ровно на вопросе про бюджет,
+      // который модель задаёт последним (поймано на боевом 04.08.2026).
+      // Поэтому вопрос оставляем, а под ним честно пишем, что можно собирать.
+      if (ready && reply.indexOf('?') === -1) {
+        if (elPromptSub) elPromptSub.textContent = 'Материала достаточно — можно собирать описание.';
+        if (elDone) { elDone.classList.add('on'); elDone.classList.add('hot'); elDone.classList.add('call'); }
+        relayoutWords();
+        return;
+      }
+      if (elDone) elDone.classList.remove('call');
       // Ассистент дожидается своей очереди. Если человек уже начал говорить дальше,
       // подменять вопрос нельзя: он читает не то, на что отвечает, и сбивается.
       // Главная задача панели — дать выговориться, а не вести допрос по расписанию.
@@ -7552,6 +7627,9 @@
         if (subEl) subEl.textContent = sub || '';
         elPrompt.classList.remove('q-out'); elPrompt.classList.add('q-in');
         if (subEl) { subEl.classList.remove('q-out'); subEl.classList.add('q-in'); }
+        // Вопрос поменял высоту — доска обязана подобраться под новые границы, иначе
+        // слова, поставленные при коротком вопросе, окажутся под длинным.
+        relayoutWords();
         // Два кадра: первый ставит начальное состояние, второй запускает переход.
         // Без второго браузер склеит их в один и анимации не будет вовсе.
         requestAnimationFrame(function(){
@@ -7740,17 +7818,27 @@
     }
 
     /**
-     * Печатная версия. Собираем разметку в скрытый слой и отдаём браузеру — он сам
-     * печатает в PDF. Так «Скачать PDF» работает без сторонних библиотек: своего
-     * генератора PDF на сайте нет, а jsPDF пришлось бы тащить с CDN вместе со шрифтом
-     * с кириллицей (штатные шрифты jsPDF её не умеют) — это две зависимости ради одной кнопки.
+     * Печатная версия брифа.
+     *
+     * Печатаем ОТДЕЛЬНЫМ ДОКУМЕНТОМ в новом окне, а не текущую страницу. Первая версия
+     * прятала весь сайт через `visibility: hidden` и оставляла один слой — и получался
+     * пустой PDF: панель ассистента `fixed`, у body во время сессии `overflow: hidden`,
+     * и браузеру нечего было раскладывать по страницам. Отдельный документ ни от чего
+     * этого не зависит. Слой на странице остался запасным путём — на случай, когда
+     * блокировщик не даёт открыть окно.
+     *
+     * Своего генератора PDF нет сознательно: jsPDF пришлось бы тащить с CDN вместе со
+     * шрифтом с кириллицей (штатные шрифты jsPDF её не умеют) — две зависимости ради
+     * одной кнопки, и обе ломают самодостаточность site/.
      */
-    function printBrief(){
-      var host = document.getElementById('aiPrint');
-      if (!host || !card) return;
+    function briefPrintBody(){
+      if (!card) return '';
       var esc = pdEsc;
+      // Абсолютный адрес логотипа: в новом окне относительные пути считать не от чего.
+      var logo = 'assets/logos/playdisplay-logo-black.png';
+      try { logo = new URL(logo, document.baseURI).href; } catch (e) {}
       var html = '<div class="p-head">'
-        + '<img src="assets/logos/playdisplay-logo-black.png" alt="playdisplay">'
+        + '<img src="' + esc(logo) + '" alt="playdisplay" onerror="this.style.display=\'none\'">'
         + '<span>' + esc(new Date().toLocaleDateString()) + '</span></div>'
         + '<h1>' + esc(card.title || '') + '</h1>'
         + '<p class="p-idea">' + esc(card.idea || '') + '</p>';
@@ -7775,8 +7863,52 @@
         html += '</div>';
       }
       html += '<div class="p-foot">playdisplay · playdisplay.com · info@playdisplay.com</div>';
-      host.innerHTML = html;
-      // Ждём кадр: без него Safari печатает слой до того, как разметка попала в дерево.
+      return html;
+    }
+
+    // Бумажные стили для отдельного окна. Дублировать @media print на странице не нужно:
+    // там свой набор, он остался запасным путём.
+    var PRINT_CSS = 'html,body{margin:0;padding:0;background:#fff;color:#10171b;'
+      + "font:400 11pt/1.55 Helvetica,Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}"
+      + '.sheet{max-width:180mm;margin:0 auto;padding:16mm 12mm}'
+      + '.p-head{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1.5pt solid #10171b;padding-bottom:8pt;margin-bottom:18pt}'
+      + '.p-head img{width:42mm;height:auto}'
+      + '.p-head span{font-size:8.5pt;color:#6b7780}'
+      + 'h1{font:700 20pt/1.2 Georgia,serif;margin:0 0 8pt}'
+      + '.p-idea{font-size:12pt;line-height:1.5;margin:0 0 14pt}'
+      + '.p-tags{font-size:8.5pt;color:#0a7d67;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16pt}'
+      + '.p-b{margin-bottom:11pt;page-break-inside:avoid}'
+      + '.p-b h4{font:700 8pt/1.3 Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#6b7780;margin:0 0 3pt}'
+      + '.p-b p,.p-b li{margin:0 0 3pt;font-size:10.5pt}'
+      + '.p-b ul{margin:0;padding-left:14pt}'
+      + '.p-quote{font-style:italic;color:#3d4a52;border-left:1pt solid #c9d2d7;padding-left:8pt;margin:0 0 6pt}'
+      + '.p-foot{margin-top:20pt;padding-top:8pt;border-top:.5pt solid #c9d2d7;font-size:8pt;color:#8b949a}'
+      + '@page{margin:0}';
+
+    function printBrief(){
+      var body = briefPrintBody();
+      if (!body) return;
+      // Заголовок документа Chrome подставляет как имя файла — пусть PDF называется проектом.
+      var name = (card && card.title ? card.title : 'playdisplay').replace(/[\\/:*?"<>|]/g, ' ').slice(0, 80);
+      var w = null;
+      try { w = window.open('', '_blank'); } catch (e) {}
+      if (w && w.document) {
+        w.document.open();
+        w.document.write('<!DOCTYPE html><html lang="' + (document.documentElement.getAttribute('lang') || 'ru')
+          + '"><head><meta charset="utf-8"><title>' + pdEsc(name) + '</title><style>' + PRINT_CSS
+          + '</style></head><body><div class="sheet">' + body + '</div></body></html>');
+        w.document.close();
+        // Даём картинке дойти: печать до загрузки логотипа даст лист без шапки.
+        var go = function(){ try { w.focus(); w.print(); } catch (e) {} };
+        var img = w.document.images && w.document.images[0];
+        if (img && !img.complete) { img.onload = go; img.onerror = go; setTimeout(go, 1500); }
+        else setTimeout(go, 150);
+        return;
+      }
+      // Окно не открылось (блокировщик) — печатаем слой на самой странице.
+      var host = document.getElementById('aiPrint');
+      if (!host) return;
+      host.innerHTML = body;
       requestAnimationFrame(function(){ setTimeout(function(){ try { window.print(); } catch (e) {} }, 60); });
     }
 
