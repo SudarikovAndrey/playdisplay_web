@@ -1,0 +1,73 @@
+body {
+  font-family: Onest, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.playdisplay-logo { display: inline-flex; align-items: center; line-height: 1; }
+.book-mark, .chapter-meta, .scroll-cue, .footer { font-size: 11px; line-height: 1.35; letter-spacing: .075em; text-transform: uppercase; }
+.chapter-nav { font-size: 10px; line-height: 1; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+
+.overline { margin: 0 0 22px; color: #9eabcf; font-size: 11px; line-height: 1.2; letter-spacing: .18em; text-transform: uppercase; }
+h1 {
+  font-family: Unbounded, "Arial Black", sans-serif;
+  margin: 0;
+  max-width: 920px;
+  font-size: clamp(68px, 11.3vw, 176px);
+  font-weight: 700;
+  line-height: .82;
+  letter-spacing: -.052em;
+}
+.hero-statement { max-width: 690px; margin: 38px 0 0; font-size: clamp(20px, 2.1vw, 32px); line-height: 1.18; letter-spacing: -.035em; }
+.hero-status { color: var(--muted); font-size: 12px; line-height: 1.55; }
+.opening-statement { font-family: Unbounded, "Arial Black", sans-serif; font-size: clamp(42px, 7.1vw, 108px); font-weight: 700; line-height: .98; letter-spacing: -.045em; }
+.chapter::before { font-size: clamp(160px, 25vw, 390px); font-weight: 700; line-height: 1; letter-spacing: -.08em; }
+.chapter-number { color: var(--electric); font-size: 18px; font-weight: 600; letter-spacing: -.03em; }
+.chapter-meta { color: var(--muted); }
+.chapter-copy h2 {
+  font-family: Unbounded, "Arial Black", sans-serif;
+  max-width: 100%;
+  margin: 0 0 clamp(60px, 8vw, 110px);
+  font-size: clamp(42px, 4.6vw, 72px);
+  font-weight: 700;
+  line-height: .98;
+  letter-spacing: -.045em;
+  text-transform: uppercase;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: balance;
+}
+.chapter-copy h3 { margin: 72px 0 18px; color: white; font-family: Unbounded, "Arial Black", sans-serif; font-size: clamp(22px, 2.1vw, 31px); font-weight: 600; line-height: 1.2; letter-spacing: -.025em; }
+.chapter-copy p { max-width: 760px; margin: 0 0 27px; color: #cbd2df; font-size: clamp(18px, 1.42vw, 21px); line-height: 1.7; letter-spacing: -.012em; }
+.chapter-copy .pull { max-width: 900px; margin: 72px 0; color: var(--paper); font-family: Unbounded, "Arial Black", sans-serif; font-size: clamp(28px, 3.55vw, 50px); font-weight: 600; line-height: 1.18; letter-spacing: -.035em; }
+.clean-list { font-size: clamp(17px, 1.25vw, 20px); line-height: 1.5; }
+.stat-line { font-size: clamp(18px, 1.55vw, 24px); line-height: 1.35; }
+.art-index { color: #a9b7ef; font-size: 10px; letter-spacing: .19em; text-transform: uppercase; }
+.art-title { font-family: Unbounded, "Arial Black", sans-serif; font-size: clamp(42px, 7vw, 104px); font-weight: 700; line-height: .96; letter-spacing: -.045em; }
+.art-frame figcaption { color: #b7c0d2; font-size: 12px; line-height: 1.4; letter-spacing: .02em; }
+.art-frame figcaption span { color: #626c80; font-size: 10px; letter-spacing: .11em; text-transform: uppercase; }
+.diagram { font-size: 12px; line-height: 1.2; letter-spacing: .08em; text-transform: uppercase; }
+.closing-art p { font-size: clamp(44px, 7vw, 112px); font-weight: 520; line-height: .96; letter-spacing: -.065em; }
+.closing-art strong { color: var(--electric); font-weight: 620; }
+
+@media (max-width: 680px) {
+  body { font-size: 16px; }
+  h1 { font-size: clamp(58px, 23vw, 96px); }
+  .hero-statement { font-size: 20px; }
+  .chapter-copy h2 { font-size: clamp(28px, 9vw, 52px); overflow-wrap: normal; word-break: normal; }
+  .chapter-copy p { font-size: 17px; line-height: 1.62; }
+  .chapter-copy .pull { font-size: clamp(28px, 9vw, 42px); }
+  .opening-statement { font-size: clamp(40px, 13vw, 72px); }
+}
+
+@media print {
+  body { font-size: 10.5pt; }
+  h1 { font-size: 64pt; }
+  .chapter-copy h2 { font-size: 38pt; }
+  .chapter-copy h3 { color: #111; font-size: 16pt; }
+  .chapter-copy p { color: #222; font-size: 10.5pt; line-height: 1.5; }
+  .chapter-copy .pull { color: #111; font-size: 23pt; }
+}
