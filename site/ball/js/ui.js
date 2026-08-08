@@ -29,6 +29,30 @@
     if (e.target && e.target.tagName === 'IMG') e.preventDefault();
   });
 
+  /* ---------- Полноэкранные кадры: точный вылет из колонки ----------
+   * Кадры «на всю ширину» живут внутри текстовой колонки и выходят из неё отрицательным
+   * отступом. В CSS этот отступ считается от ширины страницы — и верно это только пока
+   * колонка стоит по центру. У «feature»-глав она отжата к правому краю, и ролик арены
+   * уезжал в сторону на пол-колонки. Здесь отступ берётся по НАСТОЯЩЕМУ положению
+   * родителя: сколько до левого края области содержания, столько и отыгрываем.
+   */
+  function bleed() {
+    var navW = parseFloat(getComputedStyle(root).getPropertyValue('--nav-width')) || 0;
+    var w = innerWidth - navW;
+    var list = document.querySelectorAll('.art-frame--fullscreen');
+    Array.prototype.forEach.call(list, function (el) {
+      el.style.width = '';                       // сначала снимаем прошлую правку,
+      el.style.marginLeft = '';                  // иначе меряем уже сдвинутое
+      var pl = el.parentElement.getBoundingClientRect().left;
+      el.style.width = w + 'px';
+      el.style.marginLeft = (navW - pl) + 'px';
+      el.style.marginRight = '0px';
+    });
+  }
+  bleed();
+  addEventListener('resize', bleed, { passive: true });
+  addEventListener('load', bleed);               // после подгрузки шрифтов колонка сдвигается
+
   /* ---------- Движущиеся иллюстрации ----------
    * Ролики без звука играют только пока в кадре: книга длинная, и десяток видео,
    * крутящихся за экраном, съедает батарею впустую. Ставим на паузу за кадром. */
