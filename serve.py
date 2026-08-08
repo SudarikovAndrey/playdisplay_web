@@ -40,7 +40,28 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Accept-Ranges', 'bytes')
         super().end_headers()
 
+    # Закрытые PHP-страницы: локально показываем их содержимое без пароля.
+    # Книга концепции лежит в ball/private/page.html и на боевом отдаётся через
+    # ball/index.php — по адресу /ball/. Открывать её напрямую из private/ нельзя:
+    # относительные пути к css и картинкам уезжают на уровень глубже, и страница
+    # приходит без стилей. Здесь /ball/ отдаёт саму книгу, поэтому вёрстка выглядит
+    # ровно так, как на сервере. Пароль на боевом это не отменяет.
+    PHP_PREVIEW = {'/ball/': 'ball/private/page.html',
+                   '/ball/index.php': 'ball/private/page.html'}
+
     def send_head(self):
+        clean = self.path.split('?', 1)[0]
+        # прямой заход в private/ — это всегда книга без стилей: пути к css и картинкам
+        # считаются от текущей папки и уезжают на уровень глубже. Отправляем на /ball/
+        if clean.startswith('/ball/private/'):
+            self.send_response(302)
+            self.send_header('Location', '/ball/')
+            self.send_header('Content-Length', '0')
+            self.end_headers()
+            return None
+        alt = self.PHP_PREVIEW.get(clean)
+        if alt and os.path.isfile(os.path.join(ROOT, alt)):
+            self.path = '/' + alt + (('?' + self.path.split('?', 1)[1]) if '?' in self.path else '')
         rng = self.headers.get('Range')
         if not rng:
             return super().send_head()

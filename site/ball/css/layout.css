@@ -407,19 +407,27 @@ body {
 /* Мяч теперь рисует канвас (js/ball.js): облако точек, полное вращение, швы как у
    мячей последних чемпионатов. Прежняя CSS-сфера из градиентов и пятиугольников не
    вращалась и не держала стиль сайта — её правила удалены целиком. */
+/* Мяч должен ЧИТАТЬСЯ мячом. Первая версия унаследовала посадку прежней CSS-сферы
+   (78vw, сдвиг вверх и вправо на 15-17vw): у неподвижной сферы из градиентов такой
+   срез работал как фон, а у облака точек за кадром оставался центр — на экране висела
+   дуга из редких точек, похожая на шум. Теперь шар помещается в кадр целиком по высоте
+   и уходит за правый край лишь краем. */
 .hero-ball-canvas {
   position: absolute;
   z-index: 0;
-  width: min(78vw, 1180px);
+  width: min(58vw, 860px);
   aspect-ratio: 1;
-  right: -17vw;
-  top: -15vw;
-  opacity: .62;
-  pointer-events: none;
-  filter: drop-shadow(0 0 120px rgba(35,62,255,.22));
+  right: -6vw;
+  top: 50%;
+  transform: translateY(-52%);
+  opacity: .82;
+  cursor: pointer;                 /* по клику мяч меняет вид спорта (js/ball.js) */
 }
+/* Свечения через filter: drop-shadow здесь больше нет: фильтр пересчитывается КАЖДЫЙ
+   кадр по всему канвасу, а точек стало 27 000 — на этом кадр перестал укладываться
+   в 16 мс. Ореол даёт сам радиальный градиент фона .hero-intro. */
 @media (max-width: 680px) {
-  .hero-ball-canvas { width: 128vw; right: -34vw; top: -22vw; opacity: .5; }
+  .hero-ball-canvas { width: 116vw; right: -30vw; top: 34%; opacity: .6; }
 }
 
 .hero::before {
@@ -458,7 +466,11 @@ body {
   background: transparent;
   backdrop-filter: none;
 }
-.hero-intro .scroll-cue { left: 7vw; bottom: 28px; }
+/* «Начать путешествие» — в потоке, а не поверх него. Подсказка была прибита к низу
+   `.hero-intro` абсолютом, и как только статус документа встал в поток (а он длинный,
+   две строки), они наложились друг на друга. Здесь подсказка просто последний элемент
+   сетки: расстояние держится само, при любой длине статуса. */
+.hero-intro .scroll-cue { position: static; left: auto; bottom: auto; margin: 30px 0 0; }
 .opening-statement p:last-child { color: var(--coral); }
 .playdisplay-logo img { display: block; width: 164px; height: auto; filter: invert(1); }
 
@@ -481,7 +493,7 @@ body {
   .chapter-nav .playdisplay-logo--nav { display: none; }
   .hero-intro { min-height: 92svh; padding: 110px 20px 110px; }
   .hero-copy { width: 100%; }
-  .hero-intro .scroll-cue { left: 20px; }
+  .hero-intro .scroll-cue { margin-top: 24px; }
   .hero-visual { height: 68svh; }
   .hero-visual img { object-position: 50% 50%; filter: none; }
   .playdisplay-logo img { width: 135px; }
