@@ -8,6 +8,60 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-07 21:21 — hybrid-v8 @ 7da830d
+
+**Коммиты в этой поставке**
+```
+7da830d Закрытая концепция «Музей Мяча» на /ball/: доступ только по прямой ссылке и по паролю. Проверка на сервере, а не в браузере — вёрстка лежит в private/, куда веб-сервер не пускает вовсе, и отдаётся только после успешной проверки; при клиентской проверке её было бы видно через просмотр кода. Пароля в файлах нет: соль и отпечаток PBKDF2-SHA256, 200 000 итераций, сравнение постоянным по времени, пауза 0,4 с на попытку, вход помнится месяц в cookie только для /ball/. Закрыто от поисковых и AI-краулеров заголовком (вместе с картинками), листинг папки выключен; ни в sitemap, ни в llms.txt, ни в robots.txt пути нет — чтобы не подсказывать его. Картинки переведены из PNG в WebP без потерь: 41 → 24 МБ, сверил все 15 пиксель в пиксель
+6c4bda3 Журнал деплоя: a28c3fe
+```
+
+**На сервер отправлено файлов:** 83, удалено: 0
+```
+enemy-lab.html
+hero-scene.html
+index.html
+privacy.html
+api/.htaccess
+api/README.md
+api/ai.php
+api/config.sample.php
+api/selftest.php
+api/lib/brief.php
+api/lib/mailer.php
+api/lib/prompts.php
+api/lib/util.php
+ball/
+ball/.htaccess
+ball/index.php
+ball/assets/
+ball/assets/audio/
+ball/assets/audio/deep-space-tension.mp3
+ball/assets/illustrations/
+ball/assets/illustrations/andrey-sudarikov.webp
+ball/assets/illustrations/arena-football.webp
+ball/assets/illustrations/arena-tennis.webp
+ball/assets/illustrations/ball-passport.webp
+ball/assets/illustrations/family-visit.webp
+ball/assets/illustrations/interactive-basketball.webp
+ball/assets/illustrations/interactive-bowling.webp
+ball/assets/illustrations/interactive-golf.webp
+ball/assets/illustrations/interactive-volleyball.webp
+ball/assets/illustrations/interactive-water-polo.webp
+ball/assets/illustrations/lab-inventory.webp
+ball/assets/illustrations/lab-table-tennis.webp
+ball/assets/illustrations/museum-floorplan.webp
+ball/assets/illustrations/philosophy-room.webp
+ball/assets/logo/
+ball/assets/logo/playdisplay-logo.webp
+ball/css/
+ball/css/animations.css
+ball/css/components.css
+ball/css/layout.css
+…и ещё 43
+```
+
+
 ## 2026-08-05 12:08 — hybrid-v8 @ a28c3fe
 
 **Коммиты в этой поставке**
