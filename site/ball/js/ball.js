@@ -242,16 +242,16 @@
    *     выборкой точек самих кривых, и ширина всюду одинаковая — как у тенниса.
    */
   var BASKETPTS = (function () {
-    var K = 150, A = 0.42, out = [], j, t;
+    var K = 200, A = 0.52, out = [], j, t;
     for (j = 0; j < K; j++) { t = j / K * Math.PI * 2; out.push(Math.cos(t), 0, Math.sin(t)); }
     for (j = 0; j < K; j++) { t = j / K * Math.PI * 2; out.push(Math.cos(t), Math.sin(t), 0); }
-    // «меридианные» кольца с волной: долгота гуляет по широте, поэтому шов изогнут
-    [Math.PI / 4, 3 * Math.PI / 4].forEach(function (L) {
-      for (var i2 = 0; i2 < K; i2++) {
-        var s = i2 / K * Math.PI * 2, lon = L + A * Math.sin(2 * s), c = Math.cos(s);
-        out.push(c * Math.cos(lon), Math.sin(s), c * Math.sin(lon));
-      }
-    });
+    // Третье кольцо — С ВОЛНОЙ: долгота гуляет по широте. Оно и даёт баскетбольный вид.
+    // Спереди видно ровно две «скобки» по бокам — это его передняя и задняя половины,
+    // а не два разных шва. Ровно три линии и дают восемь панелей.
+    for (j = 0; j < K; j++) {
+      var s = j / K * Math.PI * 2, lon = Math.PI / 2 + A * Math.sin(2 * s), c = Math.cos(s);
+      out.push(c * Math.cos(lon), Math.sin(s), c * Math.sin(lon));
+    }
     return new Float32Array(out);
   })();
   function basket(x, y, z) {
@@ -580,22 +580,37 @@
     return false;
   }
 
-  var probe = 0, onZone = false;
+  /* ПОЯВЛЕНИЕ И УХОД КУРСОРА-МЯЧА.
+   * Переход между точкой и мячом раньше был мгновенной подменой — мяч возникал из
+   * ниоткуда. Теперь у курсора четыре состояния: `off` (точка), `in` (частицы слетаются
+   * в мяч), `on` (мяч), `out` (мяч рассыпается, и точка возвращается). Прежняя точка
+   * гасится в начале слёта и включается только в конце разлёта, поэтому в кадре никогда
+   * нет двух курсоров сразу.
+   *
+   * Счётчики проверок РАЗНЫЕ, и это не мелочь: на одном общем счётчике одна из проверок
+   * получала только нечётные значения (внутри зоны он растёт вдвое быстрее) и не
+   * срабатывала НИКОГДА — так пропал и выход из зоны, и разлёт мяча по строкам.
+   */
+  var zTick = 0, hTick = 0, phase = 'off', ph = 0;
+  var IN_T = 0.5, OUT_T = 0.34;
+
   function drawCursor(dt) {
     if (!cc) return;
 
     // зону проверяем не каждый кадр: это чтение геометрии страницы
-    if (++probe % 6 === 0) {
-      var now2 = inZone(mx, my);
-      if (now2 !== onZone) {
-        onZone = now2;
-        cc.style.display = now2 ? 'block' : 'none';
-        document.documentElement.classList.toggle('has-ball-cursor', now2);
-        if (!now2) { cctx.clearRect(0, 0, CW, CH); burst = -1; armed = true; lastEl = null; }
-        else { cx2 = mx; cy2 = my; }        // появляется сразу под рукой, а не подлетает
+    if (++zTick % 6 === 0) {
+      var here = inZone(mx, my);
+      if (here && (phase === 'off' || phase === 'out')) {
+        phase = 'in'; ph = 0;
+        cx2 = mx; cy2 = my;                 // собирается сразу под рукой, а не подлетает
+        cc.style.display = 'block';
+        document.documentElement.classList.add('has-ball-cursor');
+        burst = -1; armed = true; lastEl = null;
+      } else if (!here && (phase === 'on' || phase === 'in')) {
+        phase = 'out'; ph = 0; burst = -1;
       }
     }
-    if (!onZone) return;
+    if (phase === 'off') return;
 
     cx2 += (mx - cx2) * 0.24; cy2 += (my - cy2) * 0.24;
     crot += 0.55 * dt;
@@ -606,26 +621,45 @@
     // после выхода в пустое место. Пауза оставлена короткой — от мельтешения при
     // быстром проходе по абзацу.
     if (cool > 0) cool -= dt;
-    if (++probe % 4 === 0) {
+    if (phase === 'on' && ++hTick % 4 === 0) {
       var over = lineHit(cx2, cy2, CR);
-      if (!over) { armed = true; lastEl = null; }
-      else if (burst < 0 && cool <= 0 && (armed || over !== lastEl)) {
-        burst = 0; switched = false; armed = false; lastEl = over; cool = 0.45;
+      if (!over) { armed = true; }             // ушли с текста — снова заряжен
+      else if (burst < 0 && cool <= 0 && armed) {
+        burst = 0; switched = false; armed = false; cool = 0.6;
       }
     }
 
     var expand = 0, fade = 1;
-    if (burst >= 0) {
+
+    if (phase === 'in') {                        // частицы слетаются в мяч
+      ph += dt;
+      var ti = Math.min(1, ph / IN_T);
+      expand = 2.1 * (1 - ti) * (1 - ti) * (1 - ti);
+      fade = ti * ti;
+      if (ti >= 1) { phase = 'on'; ph = 0; }
+    } else if (phase === 'out') {                // мяч рассыпается, возвращается точка
+      ph += dt;
+      var to = Math.min(1, ph / OUT_T);
+      expand = 2.3 * to * to;
+      fade = (1 - to) * (1 - to);
+      if (to >= 1) {
+        phase = 'off';
+        cctx.clearRect(0, 0, CW, CH);
+        cc.style.display = 'none';
+        document.documentElement.classList.remove('has-ball-cursor');
+        return;
+      }
+    } else if (burst >= 0) {
       burst += dt;
-      if (burst < OUTT) {                        // разлёт
+      if (burst < OUTT) {                        // разлёт по касанию строки
         var t1 = burst / OUTT;
-        expand = 1.7 * (1 - (1 - t1) * (1 - t1));   // резко вначале, потом мягче
-        fade = 1 - t1 * 0.94;
+        expand = 2.1 * (1 - (1 - t1) * (1 - t1));   // резко вначале, потом мягче
+        fade = 1 - t1 * 0.95;
       } else if (burst < OUTT + INN) {           // сборка — уже следующим мячом
         if (!switched) { switched = true; nextCursorBall(); }
         var t2 = (burst - OUTT) / INN;
-        expand = 1.7 * (1 - t2) * (1 - t2);
-        fade = 0.06 + 0.94 * t2;
+        expand = 2.1 * (1 - t2) * (1 - t2);
+        fade = 0.05 + 0.95 * t2;
       } else {
         burst = -1;
       }

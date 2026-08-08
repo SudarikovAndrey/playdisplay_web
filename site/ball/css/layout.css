@@ -450,6 +450,29 @@ body {
 .hero-noise { z-index: 4; }
 .hero-visual { position: relative; z-index: 1; width: 100%; height: 100svh; margin: 0; overflow: hidden; background: #020507; }
 .hero-visual img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 50% 50%; filter: none; transform: none; }
+
+/* РЕНТГЕН КУПОЛА (js/xray.js). Слой лежит ровно поверх базовой картинки и с тем же
+   object-fit: cover — только так он совпадает с ней при любом кадрировании. Проявляется
+   кругом 200 точек в диаметре: маска — радиальный градиент, у clip-path край был бы
+   резким. Центр приходит переменными --xr-x/--xr-y; пока курсора на картинке не было,
+   он уведён далеко за кадр, чтобы при загрузке ничего не светилось. */
+.hero-visual .xray-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .32s ease;
+  --xr-r: 100px;
+  -webkit-mask-image: radial-gradient(circle var(--xr-r) at var(--xr-x, -999px) var(--xr-y, -999px),
+                      #000 0 42%, rgba(0, 0, 0, .55) 72%, transparent 100%);
+          mask-image: radial-gradient(circle var(--xr-r) at var(--xr-x, -999px) var(--xr-y, -999px),
+                      #000 0 42%, rgba(0, 0, 0, .55) 72%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+}
+.hero-visual.is-xray .xray-layer { opacity: 1; }
+@media print { .hero-visual .xray-layer { display: none; } }
 .hero-copy {
   width: min(920px, 82vw);
   padding: 0;

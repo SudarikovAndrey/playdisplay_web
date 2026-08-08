@@ -56,6 +56,10 @@
       </div>
       <figure class="hero-visual">
         <img src="assets/illustrations/arena-football.webp" alt="Центральная светодиодная сфера в образе футбольного мяча внутри панорамной арены">
+        <!-- Рентген купола: тот же кадр с прорисованной сеткой несущей конструкции.
+             Проявляется круглым пятном под курсором и только в верхней части кадра —
+             ниже слой прозрачен, поэтому проявлять там нечего. -->
+        <img class="xray-layer" src="assets/illustrations/arena-dome-xray.webp" alt="" aria-hidden="true">
       </figure>
     </section>
     <section class="opening-statement"><p class="reveal" data-parallax="0.012">Мяч – проводник.</p><p class="reveal" data-parallax="0.026">Главный герой – человек.</p></section>
@@ -467,6 +471,7 @@
     <span class="final-credits__index">MUSEUM OF BALL / VISION BOOK 0.1</span>
   </footer>
   <audio id="ambientAudio" loop preload="auto" autoplay><source src="assets/audio/deep-space-tension.mp3" type="audio/mpeg"></audio>
+  <script defer src="js/xray.js"></script>
   <script defer src="js/navigation.js"></script>
   <script defer src="js/scroll.js"></script>
   <script defer src="js/ball.js"></script>
