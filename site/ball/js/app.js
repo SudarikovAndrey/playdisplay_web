@@ -126,7 +126,7 @@
   const toggle = document.getElementById('soundToggle');
   if (!audio || !toggle) return;
 
-  audio.volume = .26;
+  audio.volume = .18;   // было .26 — тише на 30% по просьбе владельца
   let soundRequested = true;
   let pausedByVisibility = false;
   const setSoundState = (playing) => {
