@@ -1,8 +1,18 @@
 (() => {
   const progress = document.getElementById('readingProgress');
-  const parallaxItems = [...document.querySelectorAll('[data-parallax]')];
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let ticking = false;
+
+  /* ПАРАЛЛАКС КАРТИНОК СИЛЬНЕЕ, И ЕГО ТЕПЕРЬ ПОЛУЧАЮТ ВСЕ КАРТИНКИ.
+     Атрибут data-parallax стоял ровно у трёх иллюстраций из двенадцати, и значения были
+     0.025-0.045 — сдвиг на десяток пикселей за целый экран прокрутки, то есть эффекта
+     не видно вовсе. Множитель поднят, а рамкам без атрибута он проставляется здесь же:
+     держать это в разметке значило бы дописывать атрибут к каждой новой картинке. */
+  const STRONG = 2.8, DEFAULT = 0.05;
+  document.querySelectorAll('.art-frame, .content-art, .diagram').forEach((el) => {
+    if (!el.dataset.parallax) el.dataset.parallax = String(DEFAULT);
+  });
+  const parallaxItems = [...document.querySelectorAll('[data-parallax]')];
 
   const update = () => {
     const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -13,7 +23,9 @@
       parallaxItems.forEach((item) => {
         const rect = item.getBoundingClientRect();
         if (rect.bottom < -100 || rect.top > window.innerHeight + 100) return;
-        const amount = Number(item.dataset.parallax || 0);
+        // у элементов первого экрана коэффициент уже подобран под их слои — их не усиливаем
+        const own = Number(item.dataset.parallax || 0);
+        const amount = item.closest('.hero') ? own : own * STRONG;
         const offset = (rect.top + rect.height / 2 - window.innerHeight / 2) * -amount;
         item.style.setProperty('--parallax-y', `${offset.toFixed(1)}px`);
       });

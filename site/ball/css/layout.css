@@ -471,6 +471,49 @@ body {
    две строки), они наложились друг на друга. Здесь подсказка просто последний элемент
    сетки: расстояние держится само, при любой длине статуса. */
 .hero-intro .scroll-cue { position: static; left: auto; bottom: auto; margin: 30px 0 0; }
+
+/* КУРСОР-МЯЧ (js/ball.js). Канвас во весь экран: мяч 15 % высоты, и на разлёте точки
+   уходят далеко за его габарит — рисовать в маленький канвас, привязанный к курсору,
+   значит обрезать разлёт. Прежняя точка-курсор (.cursor-core) при этом убирается:
+   две метки под рукой читаются как сбой отрисовки. Дальний ореол .cursor-glow оставлен —
+   он держит ту же атмосферу, что и на сайте. */
+.ball-cursor { position: fixed; z-index: 200; left: 0; top: 0; pointer-events: none; }
+.has-ball-cursor .cursor-core { display: none; }
+@media print { .ball-cursor { display: none !important; } }
+
+/* ПЕРВЫЙ ЭКРАН РАЗЛОЖЕН НА БЛИЗКИЕ, НО ОТДЕЛЬНЫЕ СЛОИ.
+   Раньше «МУЗЕЙ МЯЧА» был одним элементом с <br>, и обе строки ходили как одна доска.
+   Теперь каждая строка — свой слой со своим коэффициентом: под курсором они расходятся
+   чуть по-разному, а на прокрутке уезжают с разной скоростью. Коэффициенты близкие
+   (1.35 и 0.68), потому что это одно слово в две строки — им нужна глубина, а не разброд.
+   Оба движения живут в ОДНОМ transform: свойство одно, и вторая запись просто затирала
+   бы первую, поэтому смещение курсора и смещение прокрутки складываются в calc(). */
+.hero-copy h1 { transform: none; }
+.hero-copy h1 span {
+  display: block;
+  --d: 1;
+  transform: translate3d(calc(var(--hero-title-x, 0px) * var(--d)),
+                         calc(var(--hero-title-y, 0px) * var(--d) + var(--parallax-y, 0px)), 0);
+  transition: transform .7s cubic-bezier(.16, 1, .3, 1);
+  will-change: transform;
+}
+.hero-copy h1 .l1 { --d: 1.35; }
+.hero-copy h1 .l2 { --d: .68; }
+.hero-overline[data-parallax] {
+  transform: translate3d(var(--hero-overline-x, 0px),
+                         calc(var(--hero-overline-y, 0px) + var(--parallax-y, 0px)), 0);
+}
+.hero-statement--float[data-parallax] {
+  transform: translate3d(var(--hero-statement-x, 0px),
+                         calc(var(--hero-statement-y, 0px) + var(--parallax-y, 0px)), 0);
+}
+.hero-status[data-parallax] { transform: translate3d(0, var(--parallax-y, 0px), 0); }
+
+/* Вступление: каждая строка приходит и плывёт САМА. Обе строки были одним блоком
+   с классом reveal — появлялись разом и двигались вместе, из-за чего пауза между
+   «Мяч – проводник» и «Главный герой – человек» пропадала, а она тут смысловая. */
+.opening-statement p { transition-delay: 0s; }
+.opening-statement p + p { transition-delay: .16s; }
 .opening-statement p:last-child { color: var(--coral); }
 .playdisplay-logo img { display: block; width: 164px; height: auto; filter: invert(1); }
 
