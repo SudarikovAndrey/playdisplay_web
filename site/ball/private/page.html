@@ -173,9 +173,31 @@
           <div class="visitor-profile">
             <div class="profile-heading"><small>ПАРАМЕТРЫ ПОСЕТИТЕЛЯ</small><b>УРОВЕНЬ 08</b></div>
             <div class="radar-stage">
-              <div class="radar" aria-hidden="true">
-                <i></i><i></i><i></i><i></i>
-              </div>
+              <!-- Лепестковая диаграмма нарисована ТОЧНОЙ геометрией, а не подобранными
+                   на глаз процентами: центр 200,200, внешнее кольцо 160, вершина каждой
+                   оси = 160 × значение / 100. Поэтому вершины стоят ровно на своих осях,
+                   а подписи — на продолжении тех же осей (см. .radar-label в CSS). -->
+              <svg class="radar-plot" viewBox="0 0 400 400" aria-hidden="true">
+                <g class="radar-grid">
+                  <circle cx="200" cy="200" r="40"/>
+                  <circle cx="200" cy="200" r="80"/>
+                  <circle cx="200" cy="200" r="120"/>
+                  <circle cx="200" cy="200" r="160" class="radar-edge"/>
+                  <path d="M200 200 L200 40 M200 200 L313.14 86.86 M200 200 L360 200
+                           M200 200 L313.14 313.14 M200 200 L200 360 M200 200 L86.86 313.14
+                           M200 200 L40 200 M200 200 L86.86 86.86"/>
+                </g>
+                <polygon class="radar-shape" points="200,81.6 292.8,107.2 308.8,200 287.1,287.1
+                                                    200,297.6 120.8,279.2 96,200 110.6,110.6"/>
+                <g class="radar-dots">
+                  <circle cx="200" cy="81.6" r="2.6"/><circle cx="308.8" cy="200" r="2.6"/>
+                  <circle cx="287.1" cy="287.1" r="2.6"/><circle cx="200" cy="297.6" r="2.6"/>
+                  <circle cx="120.8" cy="279.2" r="2.6"/><circle cx="96" cy="200" r="2.6"/>
+                  <circle cx="110.6" cy="110.6" r="2.6"/>
+                </g>
+                <circle class="radar-peak" cx="292.8" cy="107.2" r="4.6"/>
+                <circle class="radar-hub" cx="200" cy="200" r="3"/>
+              </svg>
               <div class="radar-label radar-label--n"><span>Скорость</span><b>74</b></div>
               <div class="radar-label radar-label--ne"><span>Точность</span><b>82</b></div>
               <div class="radar-label radar-label--e"><span>Тактика</span><b>68</b></div>
