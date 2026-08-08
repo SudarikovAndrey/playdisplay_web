@@ -90,26 +90,34 @@
    * прокрутка ТОЛЬКО мгновенная (`behavior: 'instant'`), а плавность даём мы сами.
    * CSS-плавность при этом остаётся для перехода по разделам меню — там она уместна.
    */
-  var target = scrollY, running = false, hijack = false;
+  var target = scrollY, running = false, hijack = false, steps = 0, mine = -1;
 
   function maxScroll() {
     return Math.max(0, document.documentElement.scrollHeight - innerHeight);
   }
 
+  function stop() { running = false; hijack = false; mine = -1; }
+
   function frame() {
     var d = target - scrollY;
-    if (Math.abs(d) < 0.6) {
+    // Три страховки, и каждая появилась не зря: без них цикл однажды не закончился и
+    // ДЕРЖАЛ страницу — ни программная прокрутка, ни переход по разделу не срабатывали,
+    // потому что каждый кадр позиция возвращалась на место.
+    if (Math.abs(d) < 0.6 || ++steps > 120) {     // дошли, либо пора отпустить
       scrollTo({ top: target, behavior: 'instant' });
-      running = false; hijack = false;
+      stop();
       return;
     }
-    scrollTo({ top: scrollY + d * 0.14, behavior: 'instant' });   // ≈ треть секунды на докрутку
+    if (mine >= 0 && Math.abs(scrollY - mine) > 4) { stop(); return; }  // страницу двигает кто-то ещё
+    var y = scrollY + d * 0.14;                   // ≈ треть секунды на докрутку
+    mine = y;
+    scrollTo({ top: y, behavior: 'instant' });
     requestAnimationFrame(frame);
   }
 
   function go(y) {
     target = Math.max(0, Math.min(maxScroll(), y));
-    hijack = true;
+    hijack = true; steps = 0; mine = -1;
     if (!running) { running = true; requestAnimationFrame(frame); }
   }
 
@@ -118,9 +126,11 @@
   addEventListener('wheel', function (e) {
     if (e.ctrlKey || e.metaKey) return;                     // зум
     var d = e.deltaY;
-    if (!d) return;
-    // тачпад: мелкие дробные шаги. Их не перехватываем — своя инерция уже есть
-    if (e.deltaMode === 0 && Math.abs(d) < 40 && Math.abs(d % 1) > 0) return;
+    // Перехватываем ТОЛЬКО щелчок колеса мыши: у него шаг от сорока пикселей и больше.
+    // Всё мелкое — тачпад, инерция, синтетические события — пропускаем к браузеру.
+    // Прежнее условие отсеивало лишь дробные значения, и поток мелких целочисленных
+    // событий бесконечно подталкивал цель: страница ползла и не отпускала управление.
+    if (!d || (e.deltaMode === 0 && Math.abs(d) < 40)) return;
     e.preventDefault();
     go((hijack ? target : scrollY) + d * 1.15);
   }, { passive: false });
