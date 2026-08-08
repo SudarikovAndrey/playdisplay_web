@@ -29,9 +29,11 @@
         const own = Number(item.dataset.parallax || 0);
         const amount = item.closest('.hero, .opening-statement') ? own : own * STRONG;
         const raw = (rect.top + rect.height / 2 - window.innerHeight / 2) * -amount;
-        // и всё равно с ограничителем: на длинной странице сдвиг иначе уходит в сотни
-        // пикселей и любая вёрстка рано или поздно сталкивается сама с собой
-        const offset = Math.max(-150, Math.min(150, raw));
+        // И всё равно с ограничителем: на длинной странице сдвиг иначе уходит в сотни
+        // пикселей и любая вёрстка рано или поздно сталкивается сама с собой. Предел
+        // согласован с отступом сверху у полноэкранных кадров (см. components.css):
+        // сдвиг не должен съедать весь воздух до заголовка.
+        const offset = Math.max(-95, Math.min(95, raw));
         item.style.setProperty('--parallax-y', `${offset.toFixed(1)}px`);
       });
     }

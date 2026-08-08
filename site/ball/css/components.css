@@ -52,6 +52,12 @@
   width: calc(100vw - var(--nav-width));
   margin-left: calc((var(--page) - (100vw - var(--nav-width))) / 2);
 }
+/* Воздух сверху обязателен: кадр уезжает по прокрутке параллаксом (до 95 пикселей), а
+   соседний заголовок стоит на месте — без отступа кадр наезжал на текст.
+   Селектор с двумя классами не для красоты: у «feature»-глав правило
+   `.feature .art-frame { margin: 0 0 … }` задано СОКРАЩЁННОЙ записью и обнуляет
+   верхний отступ, а специфичности одного класса не хватало, чтобы это перебить. */
+.art-frame.art-frame--fullscreen { margin-top: clamp(72px, 9vw, 150px); }
 .art-frame--fullscreen .art-surface {
   min-height: 100svh;
   border-left: 0;
