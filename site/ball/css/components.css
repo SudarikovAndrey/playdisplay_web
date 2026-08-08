@@ -54,6 +54,9 @@
   border-right: 0;
 }
 .art-frame--fullscreen figcaption { padding: 0 24px; }
+/* Ролик ведёт себя ровно как картинка в такой же рамке: тот же object-fit: cover,
+   те же границы кадра. Иначе видео со своим соотношением сторон растягивало рамку. */
+.art-surface--video video { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .art-title { width: min(750px, 70%); }
 .art-frame figcaption { display: flex; justify-content: space-between; gap: 24px; margin-top: 14px; padding: 0 2px; }
 

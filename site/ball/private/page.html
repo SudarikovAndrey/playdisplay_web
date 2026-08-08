@@ -249,6 +249,17 @@
         </header>
         <article class="chapter-copy"><h2>ЦЕНТРАЛЬНАЯ АРЕНА</h2>
       <h3>Главный Мяч и живой театр спорта</h3>
+<!-- Ролик арены во всю ширину — таким же приёмом, как остальные полноэкранные кадры:
+     фигура живёт внутри chapter-copy и выходит из колонки классом --fullscreen.
+     Звука у файла нет намеренно: это движущаяся иллюстрация, а не видео для просмотра,
+     и играет она только пока в кадре. -->
+<figure class="art-frame art-frame--fullscreen art-motion" data-parallax="0.03">
+  <div class="art-surface art-surface--image art-surface--video">
+    <video src="assets/video/arena-show.mp4" muted loop playsinline preload="metadata" aria-label="Шоу на Центральной Арене вокруг Главного Мяча"></video>
+    <span class="art-index">CENTRAL ARENA / SHOW</span>
+  </div>
+  <figcaption>Шоу вокруг Главного Мяча: сезон, достижения и мировые события в одном кадре<span>Центральная Арена</span></figcaption>
+</figure>
 <p>Центральная Арена – не холл и не просто большая медиазона. Это эмоциональный центр пространства, где сходятся сезон, достижения посетителей, мировые спортивные события и регулярные шоу.</p>
 <h3>Что происходит на арене</h3>
 <ul class="clean-list"><li>Короткие шоу в течение дня, построенные вокруг Главного Мяча и панорамного экрана.</li><li>Представление спорта сезона через звук, масштаб, ритм и реальные достижения.</li><li>Появление лидеров дня и лучших результатов на главной медиасцене.</li><li>Публичные дуэли, финалы челленджей и командные события.</li><li>Реакция среды на общий прогресс посетителей.</li><li>Синхронизация с крупными актуальными спортивными событиями, когда это уместно.</li></ul>
@@ -349,7 +360,7 @@
 <p>Отдельный смысловой блок показывает, что спорт – это не только соревнование спортсменов. За каждым результатом стоят материалы, дизайн, инженерия, аналитика, экипировка, покрытия, производство и новые технологии.</p>
 <h3>Лаборатория инвентаря</h3>
 <ul class="clean-list"><li>Мячи разных конструкций, материалов, давлений и назначений.</li><li>Ракетки, клюшки, обувь, защитная экипировка, покрытия.</li><li>Разрезы, слои, материалы и реальные образцы, которые можно трогать.</li><li>Испытания: отскок, сцепление, жёсткость, баланс, износ, влияние конструкции на ощущение игры.</li><li>Прототипы и экспериментальные решения.</li><li>Роботы, машинное зрение, трекинг и новые способы спортивной аналитики.</li></ul>
-<figure class="art-frame lab-art" data-parallax="0.025">
+<figure class="art-frame art-frame--fullscreen lab-art" data-parallax="0.025">
   <div class="art-surface art-surface--image"><img src="assets/illustrations/lab-inventory.webp" alt="Лаборатория спорта с роботизированной рукой, материалами и прототипами спортивного инвентаря"><span class="art-index">SPORTS LAB / 01</span></div>
   <figcaption>Материалы, производство, испытания и новые технологии спорта<span>Лаборатория инвентаря</span></figcaption>
 </figure>
@@ -470,8 +481,11 @@
     </div>
     <span class="final-credits__index">MUSEUM OF BALL / VISION BOOK 0.1</span>
   </footer>
+  <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
   <audio id="ambientAudio" loop preload="auto" autoplay><source src="assets/audio/deep-space-tension.mp3" type="audio/mpeg"></audio>
   <script defer src="js/xray.js"></script>
+  <script defer src="js/courts.js"></script>
+  <script defer src="js/ui.js"></script>
   <script defer src="js/navigation.js"></script>
   <script defer src="js/scroll.js"></script>
   <script defer src="js/ball.js"></script>

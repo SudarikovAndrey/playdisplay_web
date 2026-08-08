@@ -1,0 +1,109 @@
+/* ПОВЕДЕНИЕ КНИГИ КАК ПРИЛОЖЕНИЯ: мягкая прокрутка, кнопка «в начало», запрет
+ * выделения и перетаскивания.
+ *
+ * 1. МЯГКАЯ ПРОКРУТКА. Колесо мыши двигает страницу рывками по 100 пикселей — на
+ *    книге с крупными кадрами это читается как дёрганье. Здесь колесо не двигает
+ *    страницу само, а сдвигает ЦЕЛЬ, к которой позиция подтягивается каждый кадр.
+ *    Важные оговорки, из-за которых такие «улучшения» обычно и ломают сайты:
+ *      • тачпад и тач-скролл не перехватываем — там инерция уже своя, и вмешательство
+ *        делает её двойной. Тачпад отличаем по дробному deltaY и режиму deltaMode 0
+ *        с малым шагом;
+ *      • Ctrl+колесо — это зум, его не трогаем;
+ *      • если человек тянет полосу прокрутки, жмёт пробел или PageDown, цель
+ *        подтягивается к настоящему положению, иначе страница «отпружинит» назад;
+ *      • при `prefers-reduced-motion` не работаем вовсе.
+ *
+ * 2. КНОПКА «В НАЧАЛО» появляется после первого экрана и ведёт наверх штатной
+ *    плавной прокруткой.
+ *
+ * 3. ВЫДЕЛЕНИЕ И ПЕРЕТАСКИВАНИЕ. Выделение снято в CSS, а перетаскивание картинок
+ *    приходится отменять событием: `-webkit-user-drag` понимают не все браузеры,
+ *    а вот `dragstart` есть везде.
+ */
+(function () {
+  var root = document.documentElement;
+  var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- 3. монолитность ----------
+  document.addEventListener('dragstart', function (e) {
+    if (e.target && e.target.tagName === 'IMG') e.preventDefault();
+  });
+
+  /* ---------- Движущиеся иллюстрации ----------
+   * Ролики без звука играют только пока в кадре: книга длинная, и десяток видео,
+   * крутящихся за экраном, съедает батарею впустую. Ставим на паузу за кадром. */
+  var motion = document.querySelectorAll('.art-surface--video video');
+  if (motion.length && window.IntersectionObserver) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        var v = e.target;
+        if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+        else v.pause();
+      });
+    }, { rootMargin: '15% 0px' });
+    Array.prototype.forEach.call(motion, function (v) { io.observe(v); });
+  }
+
+  // ---------- 2. кнопка «в начало» ----------
+  var top = document.getElementById('toTop');
+  if (top) {
+    top.addEventListener('click', function () {
+      if (reduced) { scrollTo(0, 0); return; }
+      go(0);                                   // своей же плавной прокруткой, см. ниже
+    });
+    var lastShown = false;
+    addEventListener('scroll', function () {
+      var show = scrollY > innerHeight * 0.9;
+      if (show !== lastShown) { lastShown = show; top.classList.toggle('is-on', show); }
+    }, { passive: true });
+  }
+
+  /* ---------- 1. мягкая прокрутка ----------
+   * ВАЖНАЯ ЛОВУШКА: у страницы задан `scroll-behavior: smooth`, и из-за него КАЖДЫЙ
+   * программный scrollTo() браузер сам превращает в плавную прокрутку. Кадровый лерп
+   * на этом ломался: каждый кадр начиналась новая анимация, гасила предыдущую, и за
+   * 700 мс страница проезжала 17 пикселей вместо трёхсот. Поэтому внутри цикла
+   * прокрутка ТОЛЬКО мгновенная (`behavior: 'instant'`), а плавность даём мы сами.
+   * CSS-плавность при этом остаётся для перехода по разделам меню — там она уместна.
+   */
+  var target = scrollY, running = false, hijack = false;
+
+  function maxScroll() {
+    return Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  }
+
+  function frame() {
+    var d = target - scrollY;
+    if (Math.abs(d) < 0.6) {
+      scrollTo({ top: target, behavior: 'instant' });
+      running = false; hijack = false;
+      return;
+    }
+    scrollTo({ top: scrollY + d * 0.14, behavior: 'instant' });   // ≈ треть секунды на докрутку
+    requestAnimationFrame(frame);
+  }
+
+  function go(y) {
+    target = Math.max(0, Math.min(maxScroll(), y));
+    hijack = true;
+    if (!running) { running = true; requestAnimationFrame(frame); }
+  }
+
+  if (reduced) return;
+
+  addEventListener('wheel', function (e) {
+    if (e.ctrlKey || e.metaKey) return;                     // зум
+    var d = e.deltaY;
+    if (!d) return;
+    // тачпад: мелкие дробные шаги. Их не перехватываем — своя инерция уже есть
+    if (e.deltaMode === 0 && Math.abs(d) < 40 && Math.abs(d % 1) > 0) return;
+    e.preventDefault();
+    go((hijack ? target : scrollY) + d * 1.15);
+  }, { passive: false });
+
+  // любая другая прокрутка (полоса, клавиатура, привязка к разделу) — цель за ней
+  addEventListener('scroll', function () {
+    if (!hijack) target = scrollY;
+  }, { passive: true });
+  addEventListener('keydown', function () { hijack = false; }, { passive: true });
+})();

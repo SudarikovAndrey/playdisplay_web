@@ -516,9 +516,13 @@
    */
   var fine = !window.matchMedia || matchMedia('(pointer: fine)').matches;
   var cc = null, cctx = null, CW = 0, CH = 0, CR = 0;
-  var ci = 0, crot = 0, cx2 = mx, cy2 = my;
+  // У КУРСОРА СВОЙ СПИСОК МЯЧЕЙ. Футбол и баскетбол из него убраны: их рисунок держится
+  // на тонких швах, и на мяче в 120 пикселей, который ещё и постоянно движется, швы
+  // сыпятся в рябь. На большом шаре первого экрана они остаются.
+  var CUR_LIST = [2, 3, 4, 5];               // теннис, волейбол, бейсбол, гольф
+  var cq = 0, ci = CUR_LIST[0], crot = 0, cx2 = mx, cy2 = my;
   var burst = -1, switched = false, cool = 0, armed = true, lastEl = null;
-  var OUTT = 0.3, INN = 0.55;
+  var OUTT = 0.34, INN = 0.72;
   var TEXTY = ' H1 H2 H3 H4 P LI BLOCKQUOTE FIGCAPTION DT DD ';
 
   if (fine && !reduce) {
@@ -528,7 +532,7 @@
     document.body.appendChild(cc);
     cctx = cc.getContext('2d');
     cc.style.display = 'none';                 // включается только в своих зонах
-    smallTable(0);
+    smallTable(ci);
     fitCursor();
     addEventListener('resize', fitCursor, { passive: true });
   }
@@ -592,7 +596,14 @@
    * срабатывала НИКОГДА — так пропал и выход из зоны, и разлёт мяча по строкам.
    */
   var zTick = 0, hTick = 0, phase = 'off', ph = 0;
-  var IN_T = 0.5, OUT_T = 0.34;
+  var IN_T = 0.85, OUT_T = 0.5;                // слёт и разлёт спокойные, не хлопком
+
+  // «резиновая» сборка: к концу проскакивает чуть выше единицы и возвращается.
+  // Это тот самый ease-out-back, только записанный руками — библиотеку сюда не тащим.
+  function backOut(t) {
+    var c = 1.9, p = t - 1;
+    return 1 + (c + 1) * p * p * p + c * p * p;
+  }
 
   function drawCursor(dt) {
     if (!cc) return;
@@ -612,8 +623,11 @@
     }
     if (phase === 'off') return;
 
-    cx2 += (mx - cx2) * 0.24; cy2 += (my - cy2) * 0.24;
-    crot += 0.55 * dt;
+    // Задержка следования: мяч догоняет курсор, а не приклеен к нему. Коэффициент 0.085
+    // против прежних 0.24 — это примерно четверть секунды отставания на быстром рывке,
+    // и облако точек успевает читаться как тело, а не как метка.
+    cx2 += (mx - cx2) * 0.085; cy2 += (my - cy2) * 0.085;
+    crot += 0.45 * dt;
 
     // Взрыв — на КАСАНИЕ, а не на присутствие. Первая версия проверяла только паузу
     // между взрывами: курсор, оставленный на строке, разлетался каждую секунду без конца.
@@ -629,19 +643,25 @@
       }
     }
 
-    var expand = 0, fade = 1;
+    // expand — разлёт точек, fade — общая прозрачность, scl — размер мяча.
+    // Собирается мяч сначала меньше своего размера и дотягивается с перебегом (backOut):
+    // без этого сборка выглядела как «включили картинку», а не как собравшееся тело.
+    var expand = 0, fade = 1, scl = 1;
 
     if (phase === 'in') {                        // частицы слетаются в мяч
       ph += dt;
       var ti = Math.min(1, ph / IN_T);
-      expand = 2.1 * (1 - ti) * (1 - ti) * (1 - ti);
-      fade = ti * ti;
+      var ei = 1 - (1 - ti) * (1 - ti) * (1 - ti);
+      expand = 1.5 * (1 - ei);
+      fade = ei;
+      scl = 0.66 + 0.34 * backOut(ti);
       if (ti >= 1) { phase = 'on'; ph = 0; }
     } else if (phase === 'out') {                // мяч рассыпается, возвращается точка
       ph += dt;
       var to = Math.min(1, ph / OUT_T);
-      expand = 2.3 * to * to;
+      expand = 1.7 * to * to;
       fade = (1 - to) * (1 - to);
+      scl = 1 + 0.12 * to;
       if (to >= 1) {
         phase = 'off';
         cctx.clearRect(0, 0, CW, CH);
@@ -653,24 +673,28 @@
       burst += dt;
       if (burst < OUTT) {                        // разлёт по касанию строки
         var t1 = burst / OUTT;
-        expand = 2.1 * (1 - (1 - t1) * (1 - t1));   // резко вначале, потом мягче
+        expand = 1.6 * (1 - (1 - t1) * (1 - t1));   // резко вначале, потом мягче
         fade = 1 - t1 * 0.95;
+        scl = 1 + 0.1 * t1;
       } else if (burst < OUTT + INN) {           // сборка — уже следующим мячом
         if (!switched) { switched = true; nextCursorBall(); }
         var t2 = (burst - OUTT) / INN;
-        expand = 2.1 * (1 - t2) * (1 - t2);
-        fade = 0.05 + 0.95 * t2;
+        var e2 = 1 - (1 - t2) * (1 - t2) * (1 - t2);
+        expand = 1.6 * (1 - e2);
+        fade = 0.05 + 0.95 * e2;
+        scl = 0.66 + 0.34 * backOut(t2);
       } else {
         burst = -1;
       }
     }
 
     cctx.clearRect(0, 0, CW, CH);
-    paint(cctx, SMALL, cx2, cy2, CR, crot, -0.28, ci, -1, -1, 1, expand, fade);
+    paint(cctx, SMALL, cx2, cy2, CR * scl, crot, -0.28, ci, -1, -1, 1, expand, fade);
   }
 
   function nextCursorBall() {
-    ci = (ci + 1) % BALLS.length;
+    cq = (cq + 1) % CUR_LIST.length;
+    ci = CUR_LIST[cq];
     smallTable(ci);                            // маленькая таблица считается мгновенно
     if (cc) cc.dataset.ball = BALLS[ci].name;
   }
