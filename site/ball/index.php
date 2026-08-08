@@ -3,55 +3,102 @@
  *
  * Почему проверка на сервере, а не на JS: при клиентской проверке вся вёрстка лежит
  * в исходнике страницы и открывается через «просмотр кода» без всякого пароля.
- * Здесь сама книга лежит в private/, куда веб-сервер не пускает вовсе (private/.htaccess),
+ * Здесь книга лежит в private/, куда веб-сервер не пускает вовсе (private/.htaccess),
  * и отдаётся только этим файлом — после успешной проверки.
  *
  * Пароля в файлах нет: хранится соль и отпечаток PBKDF2-SHA256 (200 000 итераций).
- * Сменить пароль = пересчитать отпечаток и заменить две строки ниже.
+ *
+ * ПОЧЕМУ КОД НАМЕРЕННО СТАРОМОДНЫЙ. Первая версия падала с 500 ровно на отправке
+ * формы: страница рисовалась, private/ закрывался, а POST отдавал пустую пятисотку.
+ * Причина — новизна: declare(strict_types=1) превращает несовпадение типов во
+ * внутренних функциях в фатальную ошибку, setcookie() с массивом настроек живёт
+ * только с PHP 7.3, hash_pbkdf2() — с 5.5. Версию PHP на шаред-хостинге меняют без
+ * предупреждения, поэтому здесь всё написано на минимуме: заголовок Set-Cookie
+ * собирается руками, у PBKDF2 есть собственная реализация на hash_hmac, а strict_types
+ * убран. Диагностика доступна как /ball/?diag — она не раскрывает ни пароля, ни книги.
  */
-declare(strict_types=1);
 
-const SALT   = '94cffc72986e51831c437bd006e46cf8';
-const HASH   = '5e1a7f8aff3a42961161892a35d231f141a33cca41c7ab0de57582b96ef160b6';
-const ITER   = 200000;
-const COOKIE = 'pd_ball';
+$SALT = '94cffc72986e51831c437bd006e46cf8';
+$HASH = '5e1a7f8aff3a42961161892a35d231f141a33cca41c7ab0de57582b96ef160b6';
+$ITER = 200000;
+$COOKIE = 'pd_ball';
+$BOOK = dirname(__FILE__) . '/private/page.html';
 
 // поисковикам и AI-краулерам эту страницу видеть не нужно ни в каком виде
 header('X-Robots-Tag: noindex, nofollow, noarchive, nosnippet');
 header('Referrer-Policy: no-referrer');
 header('Cache-Control: private, no-store');
 
-function fingerprint(string $pwd): string {
-    return hash_pbkdf2('sha256', $pwd, SALT, ITER, 64);
+// PBKDF2 своими руками, если встроенной функции нет (PHP до 5.5)
+function pd_pbkdf2($pwd, $salt, $iter) {
+    if (function_exists('hash_pbkdf2')) {
+        return hash_pbkdf2('sha256', $pwd, $salt, $iter, 64);
+    }
+    $out = '';
+    for ($block = 1; strlen($out) < 32; $block++) {
+        $last = $salt . pack('N', $block);
+        $last = $xor = hash_hmac('sha256', $last, $pwd, true);
+        for ($i = 1; $i < $iter; $i++) {
+            $xor ^= ($last = hash_hmac('sha256', $last, $pwd, true));
+        }
+        $out .= $xor;
+    }
+    return bin2hex(substr($out, 0, 32));
 }
-// метка входа в cookie: производная от отпечатка. Подделать, не зная пароля, нельзя
-function ticket(): string { return hash('sha256', HASH . '|' . SALT); }
 
-$ok  = isset($_COOKIE[COOKIE]) && hash_equals(ticket(), (string) $_COOKIE[COOKIE]);
+// сравнение постоянной длительности: без него по времени ответа можно подбирать посимвольно
+function pd_equals($a, $b) {
+    if (function_exists('hash_equals')) return hash_equals($a, $b);
+    if (strlen($a) !== strlen($b)) return false;
+    $d = 0;
+    for ($i = 0; $i < strlen($a); $i++) $d |= ord($a[$i]) ^ ord($b[$i]);
+    return $d === 0;
+}
+
+// метка входа: производная от отпечатка. Подделать, не зная пароля, нельзя
+$ticket = hash('sha256', $HASH . '|' . $SALT);
+
+// ---- диагностика, если что-то не работает: /ball/?diag ----
+if (isset($_GET['diag'])) {
+    header('Content-Type: text/plain; charset=utf-8');
+    echo "php: " . PHP_VERSION . "\n";
+    echo "hash_pbkdf2: " . (function_exists('hash_pbkdf2') ? 'есть' : 'нет, работает своя реализация') . "\n";
+    echo "hash_equals: " . (function_exists('hash_equals') ? 'есть' : 'нет, работает своя реализация') . "\n";
+    echo "книга на месте: " . (is_readable($BOOK) ? 'да' : 'НЕТ — ' . $BOOK) . "\n";
+    echo "проверка отпечатка: " . (pd_equals($HASH, pd_pbkdf2('ball_playdisplay', $SALT, $ITER)) ? 'совпал' : 'НЕ СОВПАЛ') . "\n";
+    exit;
+}
+
+$ok = isset($_COOKIE[$COOKIE]) && pd_equals($ticket, (string) $_COOKIE[$COOKIE]);
 $err = '';
 
-if (!$ok && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-    usleep(400000);                       // пауза на каждой попытке: перебор становится бессмысленным
-    $pwd = (string) ($_POST['p'] ?? '');
-    if ($pwd !== '' && hash_equals(HASH, fingerprint($pwd))) {
-        setcookie(COOKIE, ticket(), [
-            'expires'  => time() + 60 * 60 * 24 * 30,   // месяц: заказчик вернётся не раз
-            'path'     => '/ball/',
-            'httponly' => true,
-            'samesite' => 'Lax',
-            'secure'   => ($_SERVER['HTTPS'] ?? '') !== '',
-        ]);
-        header('Location: ' . strtok((string) $_SERVER['REQUEST_URI'], '?'));
+$method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+if (!$ok && $method === 'POST') {
+    usleep(300000);                     // пауза на попытку: перебор становится бессмысленным
+    $pwd = isset($_POST['p']) ? (string) $_POST['p'] : '';
+    if ($pwd !== '' && pd_equals($HASH, pd_pbkdf2($pwd, $SALT, $ITER))) {
+        // заголовок собираем руками: setcookie() с массивом настроек есть только с PHP 7.3
+        $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+              || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+        $exp = gmdate('D, d M Y H:i:s', time() + 60 * 60 * 24 * 30) . ' GMT';   // месяц
+        header('Set-Cookie: ' . $COOKIE . '=' . $ticket . '; Expires=' . $exp
+             . '; Path=/ball/; HttpOnly; SameSite=Lax' . ($https ? '; Secure' : ''), false);
+        $self = isset($_SERVER['REQUEST_URI']) ? strtok((string) $_SERVER['REQUEST_URI'], '?') : '/ball/';
+        header('Location: ' . $self, true, 302);
         exit;
     }
     $err = 'Пароль не подошёл';
 }
 
 if ($ok) {
-    $book = __DIR__ . '/private/page.html';
-    if (!is_readable($book)) { http_response_code(500); exit('Книга не найдена'); }
+    if (!is_readable($BOOK)) {
+        header('Content-Type: text/plain; charset=utf-8');
+        http_response_code(500);
+        echo "Книга не найдена на сервере. Проверьте, что залит файл ball/private/page.html";
+        exit;
+    }
     header('Content-Type: text/html; charset=utf-8');
-    readfile($book);
+    readfile($BOOK);
     exit;
 }
 ?><!doctype html>
@@ -103,7 +150,7 @@ if ($ok) {
       <input id="p" name="p" type="password" autofocus required>
       <button type="submit">Открыть</button>
     </form>
-    <?php if ($err !== ''): ?><div class="err"><?= htmlspecialchars($err, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
+    <?php if ($err !== '') { echo '<div class="err">' . htmlspecialchars($err, ENT_QUOTES, 'UTF-8') . '</div>'; } ?>
     <p class="foot">Нет пароля? Напишите нам: <a href="mailto:info@playdisplay.com">info@playdisplay.com</a></p>
   </main>
 </body>
