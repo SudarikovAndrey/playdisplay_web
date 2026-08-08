@@ -301,16 +301,31 @@ body {
     linear-gradient(180deg, #030c10 0%, #061016 48%, #02080b 100%);
 }
 
+/* ЛОГОТИП В ШАПКЕ, ПО МОДУЛЬНОЙ СЕТКЕ.
+   Раньше он висел в левой навигационной полосе и ни с чем не был выровнен. Теперь стоит
+   у левого края центральной панели — ровно там, где начинается содержание глав. Отступ
+   считается той же формулой, что и колонка: полоса навигации плюс половина того, что
+   осталось от страницы. Значение не выдумано, оно повторяет `.chapter-shell`
+   (width: var(--page); margin: 0 auto) внутри области после навигации. */
 .masthead {
-  justify-content: flex-end;
-  padding-left: calc(var(--nav-width) + 28px);
+  justify-content: space-between;
+  padding-left: calc(var(--nav-width) + (100vw - var(--nav-width) - var(--page)) / 2);
+  padding-right: calc((100vw - var(--nav-width) - var(--page)) / 2);
   background: rgba(3,12,16,.72);
+}
+.playdisplay-logo--top { display: block; }
+.playdisplay-logo--top img { width: clamp(112px, 10vw, 148px); filter: invert(1); }
+.playdisplay-logo--top:hover img { opacity: .82; }
+@media (max-width: 1100px) {
+  .masthead { padding-left: 20px; padding-right: 20px; }
+  .playdisplay-logo--top img { width: 104px; }
 }
 
 .chapter-nav {
   align-items: stretch;
   justify-content: center;
-  padding: 92px 12px 22px;
+  /* верхний отступ держал логотип; логотип уехал в шапку, место больше не нужно */
+  padding: 26px 12px 22px;
   background: rgba(3,12,16,.9);
   overflow-y: auto;
   scrollbar-width: none;
@@ -450,6 +465,28 @@ body {
 .hero-noise { z-index: 4; }
 .hero-visual { position: relative; z-index: 1; width: 100%; height: 100svh; margin: 0; overflow: hidden; background: #020507; }
 .hero-visual img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 50% 50%; filter: none; transform: none; }
+
+/* ЗАСТАВКА (js/boot.js). Держит книгу закрытой, пока не пришли кадры первого экрана.
+   Слой лежит в разметке, а не создаётся скриптом: иначе между показом страницы и
+   запуском скрипта успевает мигнуть недогруженная вёрстка. Прокрутка на это время
+   заблокирована классом на <html>. */
+.boot {
+  position: fixed;
+  z-index: 300;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #04070c;
+  transition: opacity .7s ease, visibility .7s ease;
+}
+html.booted .boot { opacity: 0; visibility: hidden; }
+html.booting, html.booting body { overflow: hidden; }
+.boot-inner { display: grid; justify-items: center; gap: 26px; width: min(300px, 62vw); }
+.boot-logo { width: 100%; filter: invert(1); opacity: .96; }
+.boot-bar { position: relative; width: 100%; height: 1px; background: rgba(255, 255, 255, .14); overflow: hidden; }
+.boot-bar i { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: var(--electric); transition: width .35s ease; }
+.boot-note { margin: 0; color: #64798c; font: 400 10.5px/1 'Roboto Mono', monospace; letter-spacing: .26em; text-transform: uppercase; }
+@media print { .boot { display: none !important; } }
 
 /* РАЗМЕТКА ПЛОЩАДОК НА ФОНЕ (js/courts.js). Слой закреплён на экране и лежит ПОЗАДИ
    содержания: `main` объявлен position: relative с z-index 1, поэтому слою хватает
@@ -610,7 +647,7 @@ img, video { -webkit-user-drag: none; user-drag: none; }
 @media (max-width: 1100px) {
   :root { --nav-width: 64px; --page: calc(100vw - 116px); }
   .masthead { padding-left: 84px; }
-  .chapter-nav { padding: 78px 8px 18px; }
+  .chapter-nav { padding: 22px 8px 18px; }
   .chapter-nav a { min-height: 34px; grid-template-columns: 1fr; padding: 6px; text-align: center; }
   .chapter-nav .playdisplay-logo--nav { top: 18px; left: 10px; width: calc(100% - 20px); padding: 0; }
   .chapter-nav a small { display: none; }

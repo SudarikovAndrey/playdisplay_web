@@ -19,11 +19,20 @@
   <div class="cursor-core" aria-hidden="true"></div>
   <div class="brand-particles" id="brandParticles" aria-hidden="true"></div>
   <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
+  <!-- Заставка. Книга открывается, когда всё загружено: иначе первый экран показывает
+       наполовину пришедшие кадры и мяч, который ещё не собрался. Снимается в js/boot.js. -->
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <img class="boot-logo" src="assets/logo/playdisplay-logo.webp" alt="Playdisplay">
+      <div class="boot-bar"><i id="bootBar"></i></div>
+      <p class="boot-note">Музей Мяча · Vision Book</p>
+    </div>
+  </div>
   <header class="masthead">
+    <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="Playdisplay – в начало"><img src="assets/logo/playdisplay-logo.webp" alt="Playdisplay"></a>
     <div class="book-mark"><span>Museum of Ball</span><span>Vision Book · 0.1</span></div>
   </header>
   <nav class="chapter-nav" aria-label="Навигация по главам">
-    <a class="playdisplay-logo playdisplay-logo--nav" href="#top" data-brand-logo aria-label="Playdisplay – в начало"><img src="assets/logo/playdisplay-logo.webp" alt="Playdisplay"></a>
     <a href="#s01" data-section="s01"><span>01</span><small>Большая идея</small></a>
     <a href="#s02" data-section="s02"><span>02</span><small>Продуктовая рамка</small></a>
     <a href="#s03" data-section="s03"><span>03</span><small>Core Experience</small></a>
@@ -499,7 +508,6 @@
   </main>
   <footer class="final-credits" id="contacts">
     <div class="final-credits__main">
-      <a class="playdisplay-logo playdisplay-logo--final" href="https://playdisplay.com/en/" target="_blank" rel="noreferrer" data-brand-logo aria-label="Открыть сайт Playdisplay"><img src="assets/logo/playdisplay-logo.webp" alt="Playdisplay"></a>
       <div class="final-credits__director">
         <img src="assets/illustrations/andrey-sudarikov.webp" alt="Андрей Судариков">
         <p><span>Креативный директор</span><strong>Андрей Судариков</strong></p>
@@ -509,6 +517,7 @@
   </footer>
   <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
   <audio id="ambientAudio" loop preload="auto" autoplay><source src="assets/audio/deep-space-tension.mp3" type="audio/mpeg"></audio>
+  <script defer src="js/boot.js"></script>
   <script defer src="js/xray.js"></script>
   <script defer src="js/hotspots.js"></script>
   <script defer src="js/courts.js"></script>
