@@ -23,10 +23,15 @@
       parallaxItems.forEach((item) => {
         const rect = item.getBoundingClientRect();
         if (rect.bottom < -100 || rect.top > window.innerHeight + 100) return;
-        // у элементов первого экрана коэффициент уже подобран под их слои — их не усиливаем
+        // У текстовых слоёв первого экрана и вступления коэффициент уже подобран под их
+        // строки — усиливать их нельзя: они разъезжаются и НАЕЗЖАЮТ ДРУГ НА ДРУГА,
+        // пока прокрутка не дошла до места. Усиление — только для картинок.
         const own = Number(item.dataset.parallax || 0);
-        const amount = item.closest('.hero') ? own : own * STRONG;
-        const offset = (rect.top + rect.height / 2 - window.innerHeight / 2) * -amount;
+        const amount = item.closest('.hero, .opening-statement') ? own : own * STRONG;
+        const raw = (rect.top + rect.height / 2 - window.innerHeight / 2) * -amount;
+        // и всё равно с ограничителем: на длинной странице сдвиг иначе уходит в сотни
+        // пикселей и любая вёрстка рано или поздно сталкивается сама с собой
+        const offset = Math.max(-150, Math.min(150, raw));
         item.style.setProperty('--parallax-y', `${offset.toFixed(1)}px`);
       });
     }
