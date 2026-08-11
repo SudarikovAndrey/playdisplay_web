@@ -8,6 +8,41 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-11 17:31 — hybrid-v8 @ 9644b52
+
+**Коммиты в этой поставке**
+```
+9644b52 Игра: онбординг и приборы
+59bbcad Журнал деплоя: f48ee88
+```
+
+**На сервер отправлено файлов:** 22, удалено: 0
+```
+kit/
+kit/blocks.json
+kit/assets/
+kit/css/
+kit/css/animations.css
+kit/css/components.css
+kit/css/layout.css
+kit/css/scrub.css
+kit/css/typography.css
+kit/js/
+kit/js/ball.js
+kit/js/boot.js
+kit/js/courts.js
+kit/js/hotspots.js
+kit/js/lists.js
+kit/js/nav.js
+kit/js/parallax.js
+kit/js/reveal-cursor.js
+kit/js/scrub.js
+kit/js/ui.js
+kit/js/xray.js
+kit/parts/
+```
+
+
 ## 2026-08-11 17:22 — hybrid-v8 @ f48ee88
 
 **Коммиты в этой поставке**
