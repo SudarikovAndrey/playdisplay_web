@@ -460,14 +460,25 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   }
   /* Строка без тени: подложка под буквами выглядит дёшево. Берём размером и разрядкой,
      в две строки — так она читается на любом фоне без подпорок. */
-  #ob-say { position: fixed; left: 0; right: 0; top: 26%; z-index: 41;
-    pointer-events: none; text-align: center; opacity: 0; transition: opacity .45s ease;
-    font: 700 21px/1.35 'Roboto Mono', monospace; letter-spacing: .16em;
+  /* Строка стоит РЯДОМ С КОЛЬЦОМ, а не на другом конце экрана: подсказка и предмет,
+     о котором она говорит, должны читаться одним взглядом. Над кольцом и по его оси.
+     Без тени — подложка под буквами выглядит дёшево; берём кеглем и разрядкой.
+     Каретка мигает, пока строка набирается или стирается. */
+  #ob-say { position: fixed; left: 74%; top: 72%; width: 230px;
+    margin: -170px 0 0 -115px; z-index: 41;
+    pointer-events: none; text-align: center; opacity: 0; transition: opacity .3s ease;
+    font: 700 19px/1.4 'Roboto Mono', monospace; letter-spacing: .14em;
     text-transform: uppercase; color: #f1fbfc; }
+  #ob-say::after { content: '_'; opacity: .8; animation: obCaret 1s steps(1) infinite; }
+  @keyframes obCaret { 50% { opacity: 0; } }
   body.ob-demo-on #ob-demo, body.ob-demo-on #ob-say { opacity: 1; }
   /* ПРИБОРОВ НЕТ, ПОКА НЕТ КОРАБЛЯ. Кольцо авиагоризонта, счёт и спидометр — это
      приборы корабля; они висели в пустом коридоре ещё до того, как он появился. */
   body.ob-noship #game-ring, body.ob-noship #game-hud { opacity: 0 !important; }
+  /* шторка перехода: чёрный прямоугольник, который просто гаснет */
+  #g-fade { position: fixed; inset: 0; z-index: 43; background: #04090c;
+    pointer-events: none; opacity: 1; }
+  #g-fade.out { opacity: 0; transition: opacity .75s ease; }
   #gstick i { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px;
     border-radius: 50%; background: rgba(43,224,198,.34); border: 1.5px solid rgba(43,224,198,.95);
     box-shadow: 0 0 26px rgba(43,224,198,.55), 0 2px 10px rgba(0,0,0,.4); }
@@ -999,7 +1010,7 @@ function obEls() {
   OB.tEl = document.createElement('div'); OB.tEl.id = 'ob-demo';
   OB.tEl.innerHTML = '<i></i>';
   OB.aEl = document.createElement('div'); OB.aEl.id = 'ob-say';
-  OB.aEl.innerHTML = 'Управляй<br>джойстиком';   // две строки — крупнее и без тени
+  OB.aEl.textContent = '';   // текст набирается посимвольно в фазе 2
   document.body.appendChild(OB.tEl); document.body.appendChild(OB.aEl);
 }
 // первое касание в фазе 2 — обучение пройдено, зовём корабль
@@ -1009,9 +1020,39 @@ function obTouched() {
 }
 // палец сейчас на экране и ведёт руль? (флаг ставит блок джойстика ниже)
 function obTouching() { return !!OB.live; }
+
+// Чёрная шторка на стыке «галерея → полёт». Обычный div: ничего не считает, гасится
+// композитором. Дешёвая замена морфу облака, который на телефоне давал рывки.
+function obFade() {
+  let f = document.getElementById('g-fade');
+  if (!f) { f = document.createElement('div'); f.id = 'g-fade'; document.body.appendChild(f); }
+  f.classList.remove('out');
+  void f.offsetWidth;                  // перезапуск перехода: без этого класс снимут в том же кадре
+  requestAnimationFrame(() => f.classList.add('out'));
+}
+
+// Строка подсказки набирается по букве и так же стирается — «печатная машинка».
+let _obTypeT = null;
+function obType(el, text, speed, done) {
+  clearInterval(_obTypeT);
+  let i = 0; el.textContent = '';
+  _obTypeT = setInterval(() => {
+    i++; el.textContent = text.slice(0, i);
+    if (i >= text.length) { clearInterval(_obTypeT); _obTypeT = null; if (done) done(); }
+  }, speed);
+}
+function obUntype(el, speed) {
+  clearInterval(_obTypeT);
+  let i = el.textContent.length;
+  _obTypeT = setInterval(() => {
+    i--; el.textContent = el.textContent.slice(0, Math.max(0, i));
+    if (i <= 0) { clearInterval(_obTypeT); _obTypeT = null; }
+  }, speed);
+}
 function obFinish() {
   if (OB.phase >= 3) return;
   OB.phase = 3; OB.t = 0;
+  if (OB.aEl) obUntype(OB.aEl, 26);   // строка стирается так же, по букве
   document.body.classList.remove('ob-demo-on', 'ob-noship');
   try { GAME.ship.visible = true; GAME.trail.visible = true; } catch (e) {}
 }
@@ -1031,7 +1072,11 @@ function obUpdate(dt) {
     // ДВУХ ДЖОЙСТИКОВ БЫТЬ НЕ ДОЛЖНО. Если палец уже на экране — показывать, как
     // пользоваться рулём, поздно и глупо: человек уже рулит. Отдаём корабль сразу.
     if (obTouching()) { obFinish(); return; }
-    if (OB.t > 3.5) { OB.phase = 2; OB.t = 0; obEls(); document.body.classList.add('ob-demo-on'); }
+    if (OB.t > 3.5) {
+      OB.phase = 2; OB.t = 0; obEls();
+      document.body.classList.add('ob-demo-on');
+      obType(OB.aEl, 'УПРАВЛЯЙ ДЖОЙСТИКОМ', 48);
+    }
     return;
   }
   // ФАЗА 2 — показательное кольцо там же, где палец обычно и лежит (низ справа),
@@ -1069,7 +1114,8 @@ if (isMobile) {
   // потому что игровая математика по высоте даёт вдвое меньший размах).
   // Ещё вдвое спокойнее (03.08): на 0.34/1.35 корабль всё ещё дёргался от малейшего
   // движения пальца. Руль должен вести, а не швырять.
-  const GX = 0.17, GY = 0.68;
+  // ещё −30% (11.08): 0.17/0.68 -> 0.12/0.48
+  const GX = 0.12, GY = 0.48;
   // База — курс на момент касания, в долях экрана. Отклонение ручки прибавляется К НЕЙ,
   // а не отсчитывается от середины: иначе каждое новое касание рывком возвращало бы
   // корабль в центр — ровно то, от чего мы уходим, сохраняя курс после отпускания.
@@ -4696,6 +4742,7 @@ function enterGame() {
     // заставляет корабль мигать на 8 Гц и переписывать прозрачность всего облака точек
     // каждый кадр: при grace=1e9 это шло бесконечно и читалось как тормоза и дёрганье.
     OB.safe = true;
+    obFade();                          // чёрная шторка закрывает стык галереи и полёта
     gameOnboard.classList.remove('show', 'fade');
     document.body.classList.remove('ob-demo-on');
     document.body.classList.add('ob-noship');   // прячет приборы, пока корабля нет
@@ -4808,7 +4855,20 @@ function updateGame(dt, time) {
   gFallMat.uniforms.uT.value = time; // водопады текут
   // ВЛЁТ ИЗ СЛАЙДА: первые ~1.2с точки галереи растворяются в пыль, мир полёта проявляется,
   // камера перелетает с ракурса слайда в позицию полёта
-  if (GAME.enter < 1) {
+  if (GAME.enter < 1 && isMobile) {
+    // ПЕРЕХОД ЗАТЕМНЕНИЕМ (решение владельца 11.08). Морф облака галереи в мир красив,
+    // но дорог: каждый кадр обходился ВЕСЬ GAME.group с записью material.opacity, и это
+    // ложилось поверх загрузки чанков и шейдерного разлёта точек. На телефоне ровно эти
+    // полторы секунды и давали рывки. Здесь галерею гасим сразу, мир показываем целиком,
+    // а стык закрывает чёрная шторка в DOM — она ничего не считает и сцену не трогает.
+    GAME.enter = Math.min(1, GAME.enter + dt / 0.9);
+    if (_galleryVis && scene.children.includes(GAME.group)) {
+      scene.children.forEach(o => { if (o !== skyMesh && o !== GAME.group) o.visible = false; });
+    }
+    worldEnvFade = 1;
+    gFallMat.uniforms.uOp.value = 1;
+    voxUniforms.uSpread.value = S.spread;
+  } else if (GAME.enter < 1) {
     GAME.enter = Math.min(1, GAME.enter + dt / 1.75);
     const k = GAME.enter, ke = k * k * (3 - 2 * k);
     // ПРОЛЁТ СКВОЗЬ СЦЕНУ: точки галереи стоят на местах, пока камера не вошла в облако
