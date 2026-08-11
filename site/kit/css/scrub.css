@@ -1,0 +1,63 @@
+/* КРУТИЛКА КАДРОВ РОЛИКА (kit/js/scrub.js).
+ *
+ * Ролик, который смотрят не кнопкой «плей», а рукой: сборка стенда, поворот сцены на
+ * 360°, любой процесс, где важно положение, а не время. Перенесено из лендинга
+ * playdisplay.com (там это `.v-scrub`), правила оставлены дословно вместе с
+ * объяснениями — они дорого добывались.
+ *
+ * Разметка (см. blocks.json → scrub):
+ *   <div class="v-media v-scrub">           ← добавить .vy для вертикального рельса
+ *     <video src="…" preload="none" playsinline muted></video>
+ *     <div class="sc-bar"><div class="sc-knob"><i>←</i><span>ТЯНИТЕ</span></div></div>
+ *     <div class="sc-hint">Потяните, чтобы собрать стенд</div>
+ *   </div>
+ */
+.v-media { position: relative; overflow: hidden; background: #04070c; }
+.v-media video { display: block; width: 100%; height: auto; }
+.v-media.v-scrub { cursor: ew-resize; touch-action: pan-y; }
+.v-scrub video { pointer-events: none; }
+.v-scrub.touched .sc-hint { opacity: 0; }
+/* Управление — широкая плашка с крупной ручкой: её видно на любом кадре и в неё
+   попадаешь не целясь. Полосы заполнения нет: это не прогресс просмотра, а положение
+   руки на съёмке — сколько собрано или под каким углом повёрнут стенд. */
+.v-scrub .sc-bar { position: absolute; left: 50%; transform: translateX(-50%); bottom: 26px;
+  width: min(560px, 78%); height: 56px; border-radius: 99px;
+  background: rgba(3,12,16,0.55); border: 1px solid rgba(241,251,252,0.14);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+/* ручка не распирается текстом и не липнет к краю плашки: ширина по содержимому
+   плюс воздух по бокам, а ход начинается с отступа в 6 px (см. INSET в armScrub) */
+.v-scrub .sc-knob { position: absolute; top: 6px; left: 6px; height: 44px;
+  min-width: 84px; padding: 0 20px; box-sizing: border-box;
+  border-radius: 99px; background: #E9F3F5; color: #06131a; cursor: grab;
+  display: flex; align-items: center; justify-content: center; gap: 11px; white-space: nowrap;
+  font: 600 12px var(--font-mono); letter-spacing: 0.08em;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.45); }
+.v-scrub .sc-knob i { font-style: normal; opacity: 0.5; font-size: 13px; }
+.v-scrub.dragging .sc-knob { cursor: grabbing; }
+/* вертикальный вариант: рельс справа, ручка идёт сверху вниз. Так удобнее там, где
+   объект в кадре переворачивается через себя — жест повторяет движение модели */
+.v-scrub.vy .sc-bar { left: auto; right: 26px; top: 50%; bottom: auto;
+  transform: translateY(-50%); width: 96px; height: min(360px, 68%); }
+.v-scrub.vy .sc-knob { left: 6px; top: 6px; min-width: 0; width: 84px; padding: 0 12px; }
+.v-scrub.vy:not(.touched) .sc-knob { animation: scNudgeY 2.8s ease-in-out infinite; }
+@keyframes scNudgeY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(22px); } }
+.v-scrub.vy .sc-bar { touch-action: none; }   /* рельс забирает вертикальный жест себе */
+@media (max-width: 700px) {
+  .v-scrub.vy .sc-bar { right: 12px; width: 82px; height: 58%; }
+  .v-scrub.vy .sc-knob { width: 72px; left: 5px; padding: 0 10px; } }
+/* пока ролик едет в память, ручка честно показывает, что занята */
+.v-scrub.loading .sc-knob { opacity: 0.55; animation: none; }
+.v-scrub.loading .sc-bar::after { content: ""; position: absolute; left: 6px; right: 6px; bottom: -1px;
+  height: 1px; background: linear-gradient(90deg, transparent, var(--signal-teal), transparent);
+  animation: scLoad 1.1s linear infinite; }
+@keyframes scLoad { 0% { opacity: .25; } 50% { opacity: 1; } 100% { opacity: .25; } }
+.v-scrub .sc-hint { position: absolute; left: 0; right: 0; bottom: 44px; text-align: center;
+  font: 500 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--scan-white-dim); pointer-events: none; transition: opacity .35s; }
+/* до первого касания ручка сама подсказывает жест */
+.v-scrub:not(.touched) .sc-knob { animation: scNudge 2.8s ease-in-out infinite; }
+@keyframes scNudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(22px); } }
+@media (max-width: 700px) {
+  .v-scrub .sc-bar { width: 88%; height: 48px; bottom: 14px; }
+  .v-scrub .sc-knob { min-width: 74px; height: 38px; top: 5px; left: 5px; padding: 0 15px; gap: 9px; font-size: 11px; }
+  .v-scrub .sc-hint { bottom: 34px; font-size: 10px; } }
