@@ -8,6 +8,32 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-11 17:49 — hybrid-v8 @ c35d432
+
+**Коммиты в этой поставке**
+```
+c35d432 Игра: производительность и онбординг
+48ff1c3 Онбординг: неуязвимость без мигания, один джойстик, приборы после корабля
+afcf6b2 Журнал деплоя: 9644b52
+```
+
+**На сервер отправлено файлов:** 12, удалено: 0
+```
+hero-scene.html
+index.html
+kit/KIT.md
+kit/catalog.html
+kit/new-page.py
+kit/assets/demo/
+kit/assets/demo/frame-xray.webp
+kit/assets/demo/frame.webp
+kit/assets/demo/logo.webp
+kit/assets/demo/motion.mp4
+kit/assets/demo/portrait.webp
+kit/js/catalog.js
+```
+
+
 ## 2026-08-11 17:31 — hybrid-v8 @ 9644b52
 
 **Коммиты в этой поставке**
