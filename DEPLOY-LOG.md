@@ -8,6 +8,59 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-11 17:20 — hybrid-v8 @ 047896a
+
+**Коммиты в этой поставке**
+```
+047896a Игра: онбординг и приборы
+9d7fb62 Аналитика и SEO: GA4 (G-8L3XFCPG2V) + Метрика (111509723) с событиями воронки, обогащённый JSON-LD, llms.txt с услугами, файлы верификации GSC и Вебмастера
+38c8f8e Журнал деплоя: 8d85210
+```
+
+**На сервер отправлено файлов:** 39, удалено: 0
+```
+analytics.js
+googlef6f357af5bf896e5.html
+hero-scene.html
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+yandex_c3a5c35e56115302.html
+en/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+work/airports/index.html
+work/bmwx5/index.html
+work/coalco/index.html
+work/industry-rf/index.html
+work/mig2019/index.html
+work/odk-oak/index.html
+work/pano360/index.html
+work/proryv/index.html
+work/ptk-group/index.html
+work/rostec/index.html
+work/sinara/index.html
+work/stalingrad/index.html
+work/urban-forum-2018/index.html
+work/vdnh-space-center/index.html
+work/vdnh-space/index.html
+```
+
+
 ## 2026-08-11 16:58 — hybrid-v8 @ 8d85210
 
 **Коммиты в этой поставке**
