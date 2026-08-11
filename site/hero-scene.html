@@ -438,7 +438,10 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   /* ОБУЧЕНИЕ: показательный руль чуть ниже центра экрана. Ручка сама ходит по кругу —
      видно, что и куда двигать. Это ОТДЕЛЬНЫЙ элемент: настоящий #gstick мы не трогаем,
      иначе он повисает на экране лишним кольцом (так и вышло в первой версии). */
-  #ob-demo { position: fixed; left: 50%; top: 58%; width: 148px; height: 148px;
+  /* Кольцо стоит ТАМ, ГДЕ ПАЛЕЦ И ЛЕЖИТ. По записи видно: руль человек держит внизу
+     справа, примерно на 3/4 ширины и 3/4 высоты. Показывать демонстрацию по центру —
+     значит учить одному месту, а рулить в другом. */
+  #ob-demo { position: fixed; left: 74%; top: 72%; width: 148px; height: 148px;
     margin: -74px 0 0 -74px; z-index: 41; pointer-events: none; border-radius: 50%;
     border: 1.5px solid rgba(43,224,198,.55); background: rgba(3,12,16,.22);
     opacity: 0; transition: opacity .45s ease; }
@@ -455,11 +458,16 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     60% { transform: translate(-46px, 0); }
     80% { transform: translate(0, 40px); }
   }
-  #ob-say { position: fixed; left: 0; right: 0; top: calc(58% + 96px); z-index: 41;
+  /* Строка без тени: подложка под буквами выглядит дёшево. Берём размером и разрядкой,
+     в две строки — так она читается на любом фоне без подпорок. */
+  #ob-say { position: fixed; left: 0; right: 0; top: 26%; z-index: 41;
     pointer-events: none; text-align: center; opacity: 0; transition: opacity .45s ease;
-    font: 600 12px 'Roboto Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
-    color: rgba(241,251,252,.9); text-shadow: 0 2px 14px rgba(0,0,0,.8); }
+    font: 700 21px/1.35 'Roboto Mono', monospace; letter-spacing: .16em;
+    text-transform: uppercase; color: #f1fbfc; }
   body.ob-demo-on #ob-demo, body.ob-demo-on #ob-say { opacity: 1; }
+  /* ПРИБОРОВ НЕТ, ПОКА НЕТ КОРАБЛЯ. Кольцо авиагоризонта, счёт и спидометр — это
+     приборы корабля; они висели в пустом коридоре ещё до того, как он появился. */
+  body.ob-noship #game-ring, body.ob-noship #game-hud { opacity: 0 !important; }
   #gstick i { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px;
     border-radius: 50%; background: rgba(43,224,198,.34); border: 1.5px solid rgba(43,224,198,.95);
     box-shadow: 0 0 26px rgba(43,224,198,.55), 0 2px 10px rgba(0,0,0,.4); }
@@ -981,7 +989,7 @@ addEventListener('mousemove', e => {
 //       сложность сам (planLevel: INTRO → LEARN → … → CLIMAX).
 // Всё живёт в DOM поверх сцены: ни генерация мира, ни физика не затронуты — если
 // обучение почему-то сорвётся, игра остаётся ровно такой, какой была.
-const OB = { on: false, phase: 0, t: 0, tx: 0, ty: 0, hold: 0, tEl: null, aEl: null };
+const OB = { on: false, safe: false, live: false, phase: 0, t: 0, tx: 0, ty: 0, hold: 0, tEl: null, aEl: null };
 
 function obEls() {
   if (OB.tEl) return;
@@ -991,7 +999,7 @@ function obEls() {
   OB.tEl = document.createElement('div'); OB.tEl.id = 'ob-demo';
   OB.tEl.innerHTML = '<i></i>';
   OB.aEl = document.createElement('div'); OB.aEl.id = 'ob-say';
-  OB.aEl.textContent = 'Управляй джойстиком';
+  OB.aEl.innerHTML = 'Управляй<br>джойстиком';   // две строки — крупнее и без тени
   document.body.appendChild(OB.tEl); document.body.appendChild(OB.aEl);
 }
 // первое касание в фазе 2 — обучение пройдено, зовём корабль
@@ -999,9 +1007,12 @@ function obTouched() {
   if (OB.phase !== 2) return;
   obFinish();
 }
+// палец сейчас на экране и ведёт руль? (флаг ставит блок джойстика ниже)
+function obTouching() { return !!OB.live; }
 function obFinish() {
+  if (OB.phase >= 3) return;
   OB.phase = 3; OB.t = 0;
-  document.body.classList.remove('ob-demo-on');
+  document.body.classList.remove('ob-demo-on', 'ob-noship');
   try { GAME.ship.visible = true; GAME.trail.visible = true; } catch (e) {}
 }
 function obUpdate(dt) {
@@ -1017,18 +1028,21 @@ function obUpdate(dt) {
   // ФАЗА 1 — просто летим над простой картой. Ничего не показываем и ничего не просим:
   // первые секунды человек должен увидеть мир, а не интерфейс.
   if (OB.phase === 1) {
+    // ДВУХ ДЖОЙСТИКОВ БЫТЬ НЕ ДОЛЖНО. Если палец уже на экране — показывать, как
+    // пользоваться рулём, поздно и глупо: человек уже рулит. Отдаём корабль сразу.
+    if (obTouching()) { obFinish(); return; }
     if (OB.t > 3.5) { OB.phase = 2; OB.t = 0; obEls(); document.body.classList.add('ob-demo-on'); }
     return;
   }
-  // ФАЗА 2 — кольцо чуть ниже центра само показывает ход ручки, под ним одна строка.
-  // Ждём касания. Страховка: смотрит и не трогает — через 8 секунд отдаём корабль сами,
-  // сайт не должен превращаться в экзамен.
+  // ФАЗА 2 — показательное кольцо там же, где палец обычно и лежит (низ справа),
+  // ручка сама ходит по кругу, под ним строка. Первое касание — управление ваше.
+  // Страховка: смотрит и не трогает — через 8 секунд отдаём корабль сами.
   if (OB.phase === 2) {
-    if (OB.t > 8) obFinish();
+    if (obTouching() || OB.t > 8) obFinish();
     return;
   }
   // ФАЗА 3 — корабль в руках, разбиться нельзя. Дальше уровень наращивает сложность сам.
-  if (OB.t > 7) { OB.on = false; GAME.grace = 0; }
+  if (OB.t > 7) { OB.on = false; OB.safe = false; }
 }
 
 let touchPX = mousePX, touchPY = mousePY;
@@ -1084,7 +1098,8 @@ if (isMobile) {
     const t = e.changedTouches[0];
     if (!t) return;
     stickId = t.identifier; ox = t.clientX; oy = t.clientY;
-    if (OB.on && OB.phase === 2) obTouched();   // первое касание — обучение пройдено
+    OB.live = true;
+    if (OB.on && OB.phase <= 2) obFinish();   // палец на экране — управление сразу ваше
     // берём за ноль ТЕКУЩИЙ курс — корабль не должен дёргаться в момент касания
     baseX = touchPX / innerWidth; baseY = touchPY / innerHeight;
     stick.style.left = ox + 'px'; stick.style.top = oy + 'px';
@@ -1111,7 +1126,7 @@ if (isMobile) {
     if (stickId === null) return;
     for (let i = 0; i < e.changedTouches.length; i++) {
       if (e.changedTouches[i].identifier !== stickId) continue;
-      stickId = null;
+      stickId = null; OB.live = false;
       stick.classList.remove('on');
       knob.style.transform = '';
       // КОРАБЛЬ ОСТАЁТСЯ ТАМ, ГДЕ ЕГО ОСТАВИЛИ. Раньше здесь стоял возврат прицела
@@ -4677,9 +4692,13 @@ function enterGame() {
   OB.on = !!(window.PD_OB && isMobile);
   if (OB.on) {
     OB.phase = 1; OB.t = 0; OB.tx = 0; OB.ty = 0; OB.hold = 0;
-    GAME.grace = 1e9;                 // на время обучения разбиться нельзя
+    // Неуязвимость обучения — СВОИМ флагом, а не гигантским GAME.grace. Тот же счётчик
+    // заставляет корабль мигать на 8 Гц и переписывать прозрачность всего облака точек
+    // каждый кадр: при grace=1e9 это шло бесконечно и читалось как тормоза и дёрганье.
+    OB.safe = true;
     gameOnboard.classList.remove('show', 'fade');
     document.body.classList.remove('ob-demo-on');
+    document.body.classList.add('ob-noship');   // прячет приборы, пока корабля нет
     try { if (GAME.ship) GAME.ship.visible = false; if (GAME.trail) GAME.trail.visible = false; } catch (e) {}
   } else {
     OB.on = false; OB.phase = 0;
@@ -5171,7 +5190,10 @@ function updateGame(dt, time) {
   } else if ((GAME._shipOp || 1) < 1 && !GAME.over) gShipOpacity(1);
   // столкновение либо с самим рельефом (по высоте), либо с балкой-препятствием (по отрезку,
   // см. gHazardHit — наклонные колонны и мост-арка из gMakeChunk)
-  if ((alt < 1.3 || gHazardHit()) && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over && GAME.grace === 0) {
+  // во время обучения разбиться нельзя — и корабль при этом НЕ мигает (см. OB.safe)
+  if (OB.on && OB.safe && alt < 6) GAME.shipP.y = groundH + 6;   // мягко выталкиваем с рельефа
+  if ((alt < 1.3 || gHazardHit()) && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over
+      && GAME.grace === 0 && !(OB.on && OB.safe)) {
     GAME.over = true; // столкновение — гейм-овер
     GAME.overT = 0;
     document.body.classList.add('over'); // возвращаем системный курсор и клики по кнопкам
