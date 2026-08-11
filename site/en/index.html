@@ -469,6 +469,14 @@
     transform-origin: 88% 96%;
     transform: scale(1.16) translate3d(-1.2vw, -2vh, 0);
   }
+  /* Выход — НЕ обратный ход норы. Возвращаться в угол виджета неправильно: человек уходит
+     не в кнопку, а на страницу, с которой пришёл. Поэтому страница приходит не из угла,
+     а из центра и чуть «слишком близко» — и отъезжает на нормальную дистанцию, пока
+     панель уходит в глубину. Читается как шаг назад из комнаты, а не как схлопывание. */
+  body.ai-rise section > .wrap, body.ai-rise header {
+    transform-origin: 50% 50%;
+    transform: scale(1.22);
+  }
   .card:hover .card-media img { animation: cardAlive 2.4s ease-in-out infinite;
     filter: grayscale(0); opacity: 1;
     /* цвет включается тем же кадром, что и наведение: любая плавность здесь читается
@@ -935,10 +943,15 @@
   /* Поле смыслов занимает почти весь экран: куда слову можно встать, решает не этот
      отступ, а живые прямоугольники заголовка и нижней панели (см. placeWord). */
   .ai-field { position: absolute; inset: 4% 3% 4%; pointer-events: none; }
+  /* Слово ЕДЕТ на новое место, а не перескакивает: left/top тоже в переходе. Долгая
+     кривая с длинным хвостом (1.1 с) — потому что смещение наружу должно читаться как
+     дрейф доски, а не как рывок вслед за каждым ответом модели. */
   .ai-word { position: absolute; padding: 11px 16px; border: 1px solid rgba(241,251,252,0.22);
     background: rgba(10,18,22,0.82); border-radius: 999px; white-space: nowrap;
-    font: 500 14px var(--font-body); color: #dfe9ec;
-    opacity: 0; transform: scale(0.5); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
+    font: 500 14px var(--font-body); color: #dfe9ec; will-change: left, top, transform, opacity;
+    opacity: 0; transform: scale(0.5);
+    transition: opacity .7s ease, transform 1.1s cubic-bezier(.22,.7,.25,1),
+                left 1.1s cubic-bezier(.22,.7,.25,1), top 1.1s cubic-bezier(.22,.7,.25,1); }
   .ai-word.show { opacity: 1; transform: scale(var(--w-scale, 1)); }
   .ai-word.key { border-color: rgba(43,224,198,0.6); color: #F1FBFC; }
   /* ---------- страж: кольцо вокруг микрофона и циферблат второй ступени ---------- */
@@ -977,6 +990,14 @@
   #aiSumErr:not(:empty) { margin-top: 28px; }
   /* плашка режима на первом экране: в демо она предупреждение, а не сноска */
   .ai-note.warn { color: #ff8a5c; text-transform: none; letter-spacing: 0.02em; font-size: 12px; max-width: 62ch; margin-left: auto; margin-right: auto; }
+  /* переключатель языка распознавания: тихий, но доступный */
+  .ai-slang { display: flex; gap: 6px; align-items: center; }
+  .ai-slang:empty { display: none; }
+  .ai-slang button { font: 500 10.5px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--scan-white-faint); background: transparent; border: 1px solid transparent;
+    padding: 5px 9px; cursor: pointer; transition: all var(--duration-fast); }
+  .ai-slang button:hover { color: var(--scan-white); border-color: var(--space-line); }
+  .ai-slang button.on { color: var(--signal-teal); border-color: rgba(43,224,198,0.45); }
   /* ввод текстом — равноправный путь, а не костыль: в Firefox распознавания нет вовсе */
   .ai-say { display: none; width: min(560px, 90vw); grid-template-columns: 1fr auto; }
   .ai-say.on { display: grid; }
@@ -999,16 +1020,28 @@
      подменяется вращающимися шариками. Раньше здесь бежала дуга по контуру — она
      читалась как «страница грузится», то есть как поломка, а не как «вас слушают». */
   .ai-rec { position: relative; }
-  .ai-rec.think { animation: none; box-shadow: none; }
+  .ai-rec.think, .ai-rec.think-out { animation: none; box-shadow: none; }
   /* волны рисуем ЗА кнопкой: они выходят далеко за её край, поэтому overflow не режем */
   .ai-wave { position: absolute; left: 50%; top: 50%; width: 100%; height: 100%;
     transform: translate(-50%, -50%); pointer-events: none; opacity: 0; transition: opacity .4s ease; }
   .ai-rec.think .ai-wave { opacity: 1; }
+  /* Пока микрофон слушает, волны расходятся РЕДКО и спокойно: это «я здесь, я слышу»,
+     а не «идёт работа». Одна волна раз в три с половиной секунды — дыхание, не спиннер. */
+  .ai-rec.hear .ai-wave { opacity: 0.75; }
+  .ai-rec.hear:not(.think) .ai-wave i { animation: aiWave 3.6s cubic-bezier(.18,.72,.3,1) infinite; }
+  .ai-rec.hear:not(.think) .ai-wave i:nth-child(2) { animation-delay: 1.2s; }
+  .ai-rec.hear:not(.think) .ai-wave i:nth-child(3) { animation-delay: 2.4s; }
   .ai-wave i { position: absolute; inset: 0; border-radius: 50%;
     border: 1px solid var(--signal-teal); opacity: 0; }
   /* анимацию включаем ТОЛЬКО в состоянии «думает»: иначе браузер крутит её всё время,
      пока панель открыта, и на слабом ноутбуке это заметно на 3D-сцене рядом */
-  .ai-rec.think .ai-wave i { animation: aiWave 2.4s cubic-bezier(.18,.72,.3,1) infinite; }
+  .ai-rec.think .ai-wave i, .ai-rec.think-out .ai-wave i { animation: aiWave 2.4s cubic-bezier(.18,.72,.3,1) infinite; }
+  /* Волна РАСТВОРЯЕТСЯ, а не гаснет мгновенно: класс think-out держит анимацию живой,
+     пока прозрачность уходит в ноль. Иначе последний круг обрывался на полпути —
+     и это читалось как сбой, ровно там, где должно читаться «ответ пришёл». */
+  .ai-rec.think-out .ai-wave { opacity: 0; transition: opacity 1.15s cubic-bezier(.3,0,.7,1); }
+  .ai-rec.think-out .ai-balls { opacity: 0; animation: aiSpin 1.05s linear infinite; }
+  .ai-rec.think-out .mic-i { opacity: 1; transition: opacity .55s ease .2s; }
   /* три волны с равными задержками: круг успевает уйти и растаять до следующего */
   .ai-wave i:nth-child(2) { animation-delay: .8s; }
   .ai-wave i:nth-child(3) { animation-delay: 1.6s; }
@@ -1032,10 +1065,29 @@
     .ai-wave i, .ai-balls { animation: none; }
     .ai-rec.think .ai-wave { opacity: .35; }
   }
+  /* Вопрос СМЕНЯЕТСЯ, а не подменяется: уходит вверх с размытием, приходит снизу.
+     Разница важна — человек должен заметить, что его спросили о другом, и заметить это
+     до того, как начнёт отвечать. Мгновенная подмена текста читается как глюк. */
+  .ai-prompt, .ai-prompt-sub {
+    transition: opacity .36s ease, transform .42s cubic-bezier(.2,.75,.25,1), filter .36s ease; }
+  .ai-prompt.q-out, .ai-prompt-sub.q-out { opacity: 0; transform: translateY(-18px); filter: blur(8px); }
+  .ai-prompt.q-in,  .ai-prompt-sub.q-in  { opacity: 0; transform: translateY(16px);  filter: blur(8px); }
+  @media (prefers-reduced-motion: reduce) {
+    .ai-prompt, .ai-prompt-sub { transition: opacity .2s ease; }
+    .ai-prompt.q-out, .ai-prompt.q-in, .ai-prompt-sub.q-out, .ai-prompt-sub.q-in { transform: none; filter: none; }
+  }
   /* «собрать бриф»: появляется, когда есть что собирать, и подсвечивается, когда модель сказала «хватит» */
   .ai-done { opacity: 0; pointer-events: none; transition: opacity .5s ease, color .3s, border-color .3s; }
   .ai-done.on { opacity: 1; pointer-events: auto; }
   .ai-done.hot { color: var(--signal-teal); border-color: rgba(43,224,198,0.55); }
+  /* Модель сказала «хватит», а вопрос на экране остался прежним — кнопка обязана позвать
+     сама, иначе разговор выглядит зависшим. Дыхание рамкой, без прыжков размера. */
+  .ai-done.call { animation: aiCall 2.2s ease-in-out infinite; }
+  @keyframes aiCall {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(43,224,198,0.28); }
+    50%      { box-shadow: 0 0 0 9px rgba(43,224,198,0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .ai-done.call { animation: none; } }
   /* мелкая ссылка «или напишите текстом» на первом экране */
   .ai-alt { margin-top: 22px; background: none; border: 0; cursor: pointer;
     font: 400 11px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase;
@@ -1056,6 +1108,21 @@
     font: 500 11px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--scan-white-dim); }
   .ai-duo .m p { margin-top: 12px; font: 400 15px/1.6 var(--font-body); color: rgba(233,244,246,0.85);
     text-transform: none; letter-spacing: 0; max-width: none; }
+  /* блоки собранного: два в ряд на большом экране, один на узком */
+  .ai-blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; text-align: left; }
+  .ai-blocks:empty { display: none; }
+  .ai-blocks .b { background: rgba(16,30,37,0.42); border: 1px solid rgba(159,180,200,0.10);
+    border-left: 2px solid rgba(43,224,198,0.4); padding: 16px 18px; }
+  .ai-blocks .b h4 { font: 500 10.5px var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--scan-white-faint); margin-bottom: 8px; }
+  .ai-blocks .b p { margin: 0; font: 400 14.5px/1.6 var(--font-body); color: rgba(233,244,246,0.86); max-width: none; }
+  /* открытые вопросы и цитаты — на всю ширину: их читают подряд, а не сравнивают */
+  .ai-blocks .b.wide { grid-column: 1 / -1; border-left-color: rgba(255,138,92,0.55); }
+  .ai-blocks .b.quote { grid-column: 1 / -1; border-left-color: rgba(159,180,200,0.35); }
+  .ai-blocks .b ul { margin: 0; padding-left: 18px; }
+  .ai-blocks .b li { font: 400 14.5px/1.6 var(--font-body); color: rgba(233,244,246,0.86); margin-bottom: 6px; }
+  .ai-blocks .b.quote p { font-style: italic; color: rgba(233,244,246,0.72); margin-bottom: 8px; }
+  @media (max-width: 700px) { .ai-blocks { grid-template-columns: 1fr; } }
   .ai-actions { display: flex; justify-content: center; gap: 16px; margin-top: 44px; flex-wrap: wrap; }
   /* минимальная форма — появляется только после «Отправить» */
   #aiFormEl { margin-top: 40px; display: grid; gap: 14px; justify-items: center; }
@@ -1097,6 +1164,20 @@
     padding: 8px 12px; cursor: pointer; transition: all var(--duration-fast); }
   .ai-chan button:hover { color: var(--scan-white); border-color: var(--scan-white-faint); }
   .ai-chan button.on { color: var(--signal-teal); border-color: rgba(43,224,198,0.55); background: rgba(43,224,198,0.07); }
+  /* поля под выбранные каналы: появляются по одному, порядок как у кнопок */
+  .ai-chan-in { display: grid; gap: 8px; width: min(420px, 88vw); }
+  .ai-chan-in:not(:empty) { margin-top: 4px; }
+  .ai-chan-in input { font: 400 14px var(--font-body); color: var(--scan-white);
+    background: rgba(16,30,37,0.6); border: 1px solid var(--space-line); padding: 11px 14px; outline: none; }
+  .ai-chan-in input:focus { border-color: var(--signal-teal); }
+  .ai-agree-2 { margin-top: -4px; }
+  /* выбор при возвращении: продолжить прошлый разговор или начать чистый */
+  .ai-resume { margin-top: 26px; display: none; }
+  .ai-resume.on { display: block; }
+  .ai-resume-t { font: 400 12px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--scan-white-faint); margin-bottom: 14px; }
+  .ai-resume-b { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; }
+  .ai-resume-b .ai-alt { margin-top: 0; }
   @media (max-width: 900px) {
     .ai-duo { grid-template-columns: 1fr; }
     /* поле смыслов сжимается: снизу теперь панель ввода, накладываться им нельзя */
@@ -1107,6 +1188,36 @@
     #aiCapture .ai-rec { width: 76px; height: 76px; }
     .ai-prompt { padding-top: 9vh; }
     #aiCapture h2 { font-size: clamp(21px, 6vw, 30px); }
+  }
+
+  /* ---------- печатная версия брифа: «Скачать PDF» без сторонних библиотек ----------
+     Печатает сам браузер, а мы отдаём ему нормальную бумажную вёрстку: белый фон,
+     чёрный текст, чёрный логотип. visibility, а не display: панель ассистента — fixed,
+     и display:none на родителе ломал бы поток; спрятанное по visibility просто не красится. */
+  #aiPrint { display: none; }
+  @media print {
+    body * { visibility: hidden !important; }
+    #aiPrint, #aiPrint * { visibility: visible !important; }
+    #aiPrint { display: block !important; position: absolute; left: 0; top: 0; width: 100%;
+      background: #fff; color: #10171b; font: 400 11pt/1.55 Helvetica, Arial, sans-serif; }
+    #aiPrint .p-head { display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 1.5pt solid #10171b; padding-bottom: 8pt; margin-bottom: 18pt; }
+    #aiPrint .p-head img { width: 42mm; height: auto; }
+    #aiPrint .p-head span { font: 400 8.5pt/1.4 Helvetica, Arial, sans-serif; color: #6b7780; }
+    #aiPrint h1 { font: 700 20pt/1.2 Georgia, serif; margin: 0 0 8pt; }
+    #aiPrint .p-idea { font: 400 12pt/1.5 Helvetica, Arial, sans-serif; margin: 0 0 14pt; }
+    #aiPrint .p-tags { font: 400 8.5pt/1.5 Helvetica, Arial, sans-serif; color: #0a7d67;
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16pt; }
+    #aiPrint .p-b { margin-bottom: 11pt; page-break-inside: avoid; }
+    #aiPrint .p-b h4 { font: 700 8pt/1.3 Helvetica, Arial, sans-serif; letter-spacing: .12em;
+      text-transform: uppercase; color: #6b7780; margin: 0 0 3pt; }
+    #aiPrint .p-b p, #aiPrint .p-b li { margin: 0 0 3pt; font-size: 10.5pt; }
+    #aiPrint .p-b ul { margin: 0; padding-left: 14pt; }
+    #aiPrint .p-quote { font-style: italic; color: #3d4a52; border-left: 1pt solid #c9d2d7;
+      padding-left: 8pt; margin: 0 0 6pt; }
+    #aiPrint .p-foot { margin-top: 20pt; padding-top: 8pt; border-top: .5pt solid #c9d2d7;
+      font: 400 8pt/1.5 Helvetica, Arial, sans-serif; color: #8b949a; }
+    @page { margin: 16mm 15mm; }
   }
 
   /* ---------- география: карта мира из точек (маска — стилизованные силуэты материков) ---------- */
@@ -1681,8 +1792,10 @@
   } catch (e) {}
 })();
 </script>
+<!-- Аналитика: GA4 + Яндекс.Метрика + события воронки. Один файл на все страницы. -->
+<script src="analytics.js" defer></script>
 <script>window.PD_LANG='en';</script>
-<script src="data/i18n/en.js?v=4fb9debc"></script>
+<script src="data/i18n/en.js?v=d9772d55"></script>
 </head>
 <body class="booting">
 
@@ -1757,7 +1870,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b0308-mob9&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b0308-ob1&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -2097,6 +2210,15 @@
            согласие галочкой стоит там, где спрашивают имя и контакт. -->
       <div class="ai-legal">Речь распознаёт ваш браузер, к нам приходит текст. Разговор разбирает
         языковая модель, запись не сохраняется. <a href="privacy.html" target="_blank" rel="noopener">Как мы обращаемся с данными</a></div>
+      <!-- Прошлый разговор сохранён. Молча продолжать нельзя: человек вернулся через час,
+           не помнит, о чём говорил, и видит чужие на вид смыслы. Спрашиваем до микрофона. -->
+      <div class="ai-resume" id="aiResume">
+        <div class="ai-resume-t" id="aiResumeT">Прошлый разговор сохранён</div>
+        <div class="ai-resume-b">
+          <button class="btn-line" id="aiGoOn" type="button"><span class="tri">▶︎</span> Продолжить</button>
+          <button class="ai-alt" id="aiFresh" type="button">Начать заново</button>
+        </div>
+      </div>
     </div>
     <!-- вторая ступень проверки: появляется только если поведение похоже на скрипт -->
     <div class="ai-stage" id="aiHuman">
@@ -2116,6 +2238,10 @@
       <div class="ai-bottom">
         <div class="ai-heard" id="aiHeard"></div>
         <div class="ai-err" id="aiErr"></div>
+        <!-- Язык распознавания. Догадка по браузеру верна почти всегда, но когда она
+             неверна, микрофон просто молчит — и человеку нужно место, где это поправить
+             самому, не разбираясь в настройках Chrome. -->
+        <div class="ai-slang" id="aiSlang" aria-label="Язык распознавания речи"></div>
         <div class="ai-say" id="aiSay">
           <input type="text" id="aiSayIn" placeholder="Написать ответ" autocomplete="off" enterkeyhint="send">
           <button class="ai-say-go" id="aiSayGo" aria-label="Отправить ответ">▶︎</button>
@@ -2134,9 +2260,13 @@
         <div class="m">Для кого<p id="aiWho"></p></div>
         <div class="m">Что человек должен почувствовать<p id="aiFeel"></p></div>
       </div>
+      <!-- Всё собранное, разбитое на блоки: это его собственные слова, скрывать их незачем.
+           Человек должен видеть, что именно мы поняли, ДО того как нажмёт «отправить». -->
+      <div class="ai-blocks" id="aiBlocks"></div>
       <div class="ai-err" id="aiSumErr"></div>
       <div class="ai-actions">
         <button class="btn-line" id="aiMore"><span class="tri">▶︎</span> Рассказать ещё</button>
+        <button class="btn-line" id="aiPdf"><span class="tri">▶︎</span> Скачать PDF</button>
         <button class="wa" id="aiSend">▶︎ Отправить в playdisplay</button>
       </div>
     </div>
@@ -2153,6 +2283,10 @@
           <button type="button" data-ch="Звонок">Звонок</button>
           <button type="button" data-ch="Почта">Почта</button>
         </div>
+        <!-- Выбрал канал — сюда встаёт поле под него. Ник в телеграме и номер в вотсапе
+             редко совпадают с тем, что человек написал в общем поле, и угадывать за него
+             нельзя: письмо уйдёт, а ответить будет некуда. -->
+        <div class="ai-chan-in" id="aiChanIn"></div>
         <input type="text" id="aiCompany" placeholder="Компания (необязательно)">
         <!-- Готовый запрос или ТЗ: файлом или ссылкой на облако. Загрузка идёт только
              в момент отправки формы, после согласия — недоотправленные файлы у нас
@@ -2174,6 +2308,11 @@
              показать юристу — см. список правок в начале privacy.html. -->
         <div class="ai-fine">Текст разговора уходит в языковую модель и в письмо студии, файл удаляется
           с сервера сразу после отправки. Разговор храним до 6 месяцев, удалим раньше по первому письму.</div>
+        <!-- Копия себе: человек рассказал о своём проекте, пусть собранное описание останется
+             и у него. Отдельная галочка, а не «в комплекте» с первой: это отдельная отправка
+             на его адрес, и согласие на неё должно быть отдельным. -->
+        <label class="ai-agree ai-agree-2"><input type="checkbox" id="aiCopy">
+          <span>Прислать мне копию описания на эту почту</span></label>
         <div class="ai-err" id="aiFormErr"></div>
         <div class="ai-actions"><button class="wa" type="submit">▶︎ Отправить</button></div>
       </form>
@@ -2181,11 +2320,18 @@
     <div class="ai-stage" id="aiSent">
       <div class="kicker teal">Запрос отправлен</div>
       <h2>Спасибо. Мы получили описание проекта.</h2>
-      <p>Следующий шаг — персональная креативная сессия с Андреем Судариковым.</p>
+      <p>Следующий шаг — персональная креативная сессия с playdisplay.</p>
       <div class="ai-actions"><button class="wa" id="aiBook">▶︎ Забронировать креативную сессию</button></div>
     </div>
   </div>
 </div>
+
+<!-- ===== ПЕЧАТНАЯ ВЕРСИЯ БРИФА =====
+     Отдельный слой, который видно ТОЛЬКО при печати (@media print). Так «Скачать PDF»
+     работает без единой сторонней библиотеки: браузер сам печатает в PDF, а вёрстка
+     наша — с чёрным логотипом на белом, а не тёмная тема сайта. Заполняется из того же
+     ответа сервера, что и экран. -->
+<div id="aiPrint" aria-hidden="true"></div>
 
 <!-- ===== ПРОСМОТР КОНЦЕПЦИИ ===== -->
 <div class="c-view" id="cView">
@@ -6139,12 +6285,20 @@
           mode = d.demo ? 'demo' : 'live';
           // Код распознавания речи говорит сервер: список языков лежит в lib/prompts.php
           // и не дублируется в клиенте.
-          if (d.speech) window.pdSpeech.setLang(d.speech);
+          // Локаль распознавания сервер знает только по языку СТРАНИЦЫ. Если браузер
+          // подсказал другой поддерживаемый язык — верим браузеру: на английской версии
+          // сайта человек с русской системой почти наверняка и говорить будет по-русски.
+          if (d.speech && !window.pdSpeech.guessed()) window.pdSpeech.setLang(d.speech);
           // Сервер присылает и причину (нет ключа / выбран mock) — показываем её,
           // иначе демо-режим не отличить от живого разговора, пока не дойдёшь до брифа.
-          done(mode, d.demo
+          // Почта — отдельная беда: разговор настоящий, а письмо никуда не уходит.
+          var note = d.demo
             ? 'Демо-режим: ' + (d.why || 'модель не подключена') + '. Ответы идут по прошитому сценарию.'
-            : '');
+            : '';
+          if (!d.demo && d.mail === false) {
+            note = 'Почта не настроена: ' + (d.mail_why || 'письмо не отправится') + '.';
+          }
+          done(mode, note);
         }, function(){
           mode = 'demo';
           done('demo', 'Бэкенд не отвечает: PHP не запущен. Идёт демонстрация сценария, письмо не отправится.');
@@ -6246,7 +6400,8 @@
         if (mode === 'demo') { setTimeout(function(){ ok({ demo: true }); }, 700); return; }
         post('send', {
           name: contact.name, contact: contact.contact, company: contact.company,
-          channels: contact.channels || [], link: contact.link || '', agree: true
+          channels: contact.channels || [], link: contact.link || '',
+          copy: !!contact.copy, agree: true
         }, ok, bad);
       }
     };
@@ -6439,7 +6594,27 @@
     // нельзя: с чужой локалью распознавание не понимает вообще ничего.
     var HTML_LANG = (document.documentElement.getAttribute('lang') || 'ru').slice(0, 2).toLowerCase();
     var GUESS = { ru: 'ru-RU', en: 'en-US', pt: 'pt-PT' };
-    var SLANG = GUESS[HTML_LANG] || 'ru-RU';
+    // ЯЗЫК СТРАНИЦЫ — ПЛОХАЯ ДОГАДКА ПРО РЕЧЬ, и это стоило нам сломанного микрофона.
+    // Гость открыл /en/, заговорил по-русски — распознавание на en-US не понимает ни слова
+    // и молчит. Сервер умеет определить язык по тексту, но текста не появляется НИКОГДА:
+    // замкнутый круг. Браузер знает язык человека лучше страницы, поэтому сначала смотрим
+    // navigator.languages и берём первый поддерживаемый.
+    var guessedByBrowser = false;
+    var SLANG = (function(){
+      var list = [];
+      if (navigator.languages && navigator.languages.length) list = [].slice.call(navigator.languages);
+      else if (navigator.language) list = [navigator.language];
+      for (var i = 0; i < list.length; i++) {
+        var code = String(list[i]).slice(0, 2).toLowerCase();
+        if (GUESS[code]) {
+          // Совпало с языком страницы — это не «догадка браузера», а просто согласие.
+          guessedByBrowser = code !== HTML_LANG;
+          // Полную локаль браузера уважаем, если она нашей же группы (pt-BR вместо pt-PT).
+          return /^[a-z]{2}-[A-Za-z]{2,}$/.test(list[i]) ? String(list[i]) : GUESS[code];
+        }
+      }
+      return GUESS[HTML_LANG] || 'ru-RU';
+    })();
 
     function fire(name, a, b){ if (h[name]) try { h[name](a, b); } catch (e) { console.warn('speech ' + name, e); } }
 
@@ -6453,10 +6628,17 @@
       fire('utterance', t);
     }
 
+    // SAFARI НЕ ТЯНЕТ continuous, и это не мелочь: с ним распознавание запускается
+    // (в адресной строке даже загорается микрофон), но результатов не присылает вовсе —
+    // ровно то, что выглядело как «микрофон не улавливает слова» на iPhone и на Маке
+    // 04.08.2026. Там ведём по одной фразе, а непрерывность делаем сами: onend поднимает
+    // распознавание заново, этот цикл у нас и так есть для Chrome.
+    var IS_SAFARI = /^((?!chrome|chromium|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent || '');
+
     function build(){
       rec = new SR();
       rec.lang = SLANG;
-      rec.continuous = true;
+      rec.continuous = !IS_SAFARI;
       rec.interimResults = true;
       rec.maxAlternatives = 1;
 
@@ -6498,11 +6680,17 @@
 
     return {
       supported: !!SR,
+      // Safari отличается настолько, что интерфейсу об этом стоит знать: там и подсказки
+      // другие, и распознавание надо поднимать строго из жеста пользователя.
+      safari: IS_SAFARI,
       listening: function(){ return want; },
       // Человек прямо сейчас говорит: в буфере есть речь, ещё не отправленная.
       // Нужно, чтобы ассистент не подменял вопрос на экране посреди чужой фразы.
       talking: function(){ return (finalBuf + interim).replace(/\s+/g, '') !== ''; },
       lang: function(){ return SLANG; },
+      // true — локаль взята у браузера и расходится с языком страницы. Тогда подсказку
+      // сервера (он знает только страницу) применять не надо: браузер знает точнее.
+      guessed: function(){ return guessedByBrowser; },
       // Смена языка на живом объекте распознавания не действует — нужен новый.
       // Поэтому старый выбрасываем, и следующий start() соберёт его с новой локалью.
       // Если микрофон был включён, поднимаем распознавание сразу: язык может
@@ -6706,18 +6894,56 @@
     // Каналы связи: можно отметить несколько, можно ни одного — это подсказка Андрею,
     // а не обязательное поле. Подсказка нужна и затем, чтобы человек увидел:
     // телефон и мессенджер здесь ждут не меньше, чем почту.
+    // Что именно нужно спросить у человека под каждый канал. Пустая подсказка = поле не нужно.
+    var CHAN_ASK = {
+      'Telegram': '@ник в Telegram или телефон',
+      'WhatsApp': 'Номер в WhatsApp',
+      'Звонок': 'Телефон для звонка',
+      'Почта': 'Email для ответа'
+    };
     (function(){
-      var box = document.getElementById('aiChan');
+      var box = document.getElementById('aiChan'), holder = document.getElementById('aiChanIn');
       if (!box) return;
+      var kept = {};        // введённое не теряется, если канал отключили и включили снова
+      function render(){
+        if (!holder) return;
+        var bs = box.querySelectorAll('button.on'), i, b, ch;
+        // Запоминаем набранное до перерисовки.
+        var ins = holder.querySelectorAll('input[data-ch]');
+        for (i = 0; i < ins.length; i++) kept[ins[i].getAttribute('data-ch')] = ins[i].value;
+        holder.innerHTML = '';
+        for (i = 0; i < bs.length; i++) {
+          ch = bs[i].getAttribute('data-ch');
+          if (!CHAN_ASK[ch]) continue;
+          var inp = document.createElement('input');
+          inp.type = 'text';
+          inp.setAttribute('data-ch', ch);
+          inp.placeholder = CHAN_ASK[ch];
+          inp.autocomplete = 'off';
+          if (kept[ch]) inp.value = kept[ch];
+          holder.appendChild(inp);
+        }
+      }
       box.addEventListener('click', function(e){
         var b = e.target.closest ? e.target.closest('button[data-ch]') : null;
         if (!b) return;
         b.classList.toggle('on');
+        render();
+        // Только что включили канал — сразу ставим курсор в его поле: иначе человек
+        // отметит «Telegram» и уйдёт дальше, не заметив, что ник у него не спросили.
+        if (b.classList.contains('on') && holder) {
+          var f = holder.querySelector('input[data-ch="' + b.getAttribute('data-ch') + '"]');
+          if (f) try { f.focus(); } catch (err) {}
+        }
       });
     })();
     function chosenChannels(){
-      var out = [], bs = document.querySelectorAll('#aiChan button.on');
-      for (var i = 0; i < bs.length; i++) out.push(bs[i].getAttribute('data-ch'));
+      var out = [], bs = document.querySelectorAll('#aiChan button.on'), holder = document.getElementById('aiChanIn');
+      for (var i = 0; i < bs.length; i++) {
+        var ch = bs[i].getAttribute('data-ch');
+        var f = holder ? holder.querySelector('input[data-ch="' + ch + '"]') : null;
+        out.push({ ch: ch, v: f ? f.value.replace(/\s+/g, ' ').trim() : '' });
+      }
       return out;
     }
 
@@ -6920,9 +7146,10 @@
       try { flyOutOfAIInner(); }
       catch (e) {
         console.warn('ai flyOut fallback:', e);
-        flyBusy = false; document.body.classList.remove('flying'); document.body.classList.remove('ai-dive');
+        flyBusy = false; document.body.classList.remove('flying');
+        document.body.classList.remove('ai-dive'); document.body.classList.remove('ai-rise');
         var aE2 = document.getElementById('ai');
-        aE2.style.transition = ''; aE2.style.transform = '';
+        aE2.style.transition = ''; aE2.style.transform = ''; aE2.style.opacity = '';
         closeAI();
       }
     }
@@ -6939,8 +7166,13 @@
         srcPts = harvest(sg, W, H, SC, step);
       } catch (e) { srcPts = null; }
       if (!srcPts || srcPts.length < 120) { closeAI(); return; }
-      var c0x = r.left + r.width / 2, c0y = r.top + r.height / 2;
-      var rHW = r.width / 2, rHH = r.height / 2;
+      // Уходим НЕ в кнопку виджета, а назад на страницу. Поэтому центр сборки — середина
+      // экрана, а не угол: панель рассыпается «на себя» и растворяется по всему кадру,
+      // страница возвращается целиком. Раньше здесь стоял прямоугольник виджета, и выход
+      // читался как схлопывание в угол — правильная симметрия со влётом, но неправильное
+      // ощущение: человек возвращается на страницу, а не в кнопку.
+      var c0x = innerWidth / 2, c0y = innerHeight / 2;
+      var rHW = Math.min(innerWidth, innerHeight) * 0.13, rHH = rHW;
       var maxD = 0;
       [[0,0],[innerWidth,0],[0,innerHeight],[innerWidth,innerHeight]].forEach(function(pt){
         maxD = Math.max(maxD, boxDist(pt[0], pt[1], c0x, c0y, rHW, rHH));
@@ -6961,9 +7193,9 @@
       }
       var tint = [0.008, 0.018, 0.026];
       if (!FlyGL.begin(parts, 95)) { closeAI(); return; }
-      // выныривание из норы: страница будет пересобираться ИЗ ГЛУБИНЫ (снятие ai-dive в конце
-      // анимирует .wrap'ы из масштаба обратно к норме синхронно с кросс-фейдом)
-      document.body.classList.add('flying', 'ai-dive');
+      // ai-rise, а не ai-dive: страница приходит из центра и чуть «слишком близко», а
+      // снятие класса в конце отводит её на нормальную дистанцию. Это и есть вылет назад.
+      document.body.classList.add('flying', 'ai-rise');
       var aiEl2 = document.getElementById('ai');
       aiEl2.style.transition = 'none';
       var camEnd = 1.35, DUR = 1300 * FLY_SLOW, t0 = performance.now(), closed = false;
@@ -6976,12 +7208,15 @@
         var cam = camEnd * (1 - smootherstep((k - 0.05) / 0.85));
         if (!closed && k >= 0.32) {
           closed = true;
-          aiEl2.style.transition = ''; aiEl2.style.transform = ''; // дальше панель ведёт CSS
+          aiEl2.style.transition = ''; aiEl2.style.transform = ''; aiEl2.style.opacity = ''; // дальше панель ведёт CSS
           closeAI(); // панель прячем, когда тьма её уже накрыла
         } else if (!closed) {
-          // панель НЕ тает на месте: она пролетает МИМО камеры (translateZ к зрителю) — обратный ход норы
+          // Панель УХОДИТ ОТ зрителя, а не на него. Раньше она летела к камере (+Z), и это
+          // читалось как «интерфейс вырос» — то самое неприятное увеличение перед схлопыванием.
+          // Теперь она отступает в глубину и слегка отворачивается: мы отходим назад.
           var pk = sstep(0, 0.32, k);
-          aiEl2.style.transform = 'perspective(1500px) translateZ(' + (pk * 470) + 'px) rotateX(' + (-3 * pk) + 'deg)';
+          aiEl2.style.transform = 'perspective(1500px) translateZ(' + (-pk * 620) + 'px) rotateX(' + (2.5 * pk) + 'deg)';
+          aiEl2.style.opacity = String(1 - pk * 0.65);
         }
         FlyGL.frame({
           rectCX: c0x, rectCY: c0y, rectHW: rHW, rectHH: rHH,
@@ -6999,7 +7234,7 @@
           // снимаем оба класса разом: opacity и transform анимируются вместе — страница
           // «выныривает» из глубины, а не просто проявляется плоским слоем
           document.body.classList.remove('flying');
-          document.body.classList.remove('ai-dive');
+          document.body.classList.remove('ai-rise');
           FlyGL.end();
           setTimeout(function(){ flyBusy = false; }, 300);
         }
@@ -7032,12 +7267,45 @@
         elRec.style.display = 'none';
         if (elAlt) elAlt.textContent = 'Начать и написать текстом';
       }
+      // Разговор уже был — предлагаем выбор ДО микрофона. Иначе человек возвращается
+      // через час, видит на доске незнакомые смыслы и не понимает, чей это разговор.
+      showResume();
       // Пропуск готовим прямо сейчас: пока человек читает заголовок, браузер успевает
       // сделать работу, и нажатие микрофона срабатывает без задержки.
       guardWaiting = false;
       ring.hide();
       if (elRec) elRec.classList.remove('warming');
       warmGuard();
+    }
+
+    // ================= продолжить или начать заново =================
+    // Первый вопрос запоминаем при загрузке: на языковых версиях он уже переведён
+    // словарём, поэтому брать его из разметки надёжнее, чем хранить строку в коде.
+    var FIRST_Q = elPrompt ? elPrompt.textContent : '';
+    var FIRST_SUB = elPromptSub ? elPromptSub.textContent : '';
+    var elResume = document.getElementById('aiResume'),
+        elResumeT = document.getElementById('aiResumeT');
+
+    function showResume(){
+      if (!elResume) return;
+      var has = turns > 0;
+      elResume.className = 'ai-resume' + (has ? ' on' : '');
+      if (has && elResumeT) {
+        // Число реплик — не украшение: по нему человек понимает, тот ли это разговор.
+        elResumeT.textContent = 'Прошлый разговор сохранён' + (turns ? ' · реплик: ' + turns : '');
+      }
+    }
+    /** Чистый лист: новая сессия на сервере начнётся сама при следующем begin(). */
+    function resetTalk(){
+      turns = 0; ready = false; card = null; pending = '';
+      field.innerHTML = '';
+      resetWords();
+      if (elDone) { elDone.classList.remove('on'); elDone.classList.remove('hot'); }
+      if (elHeard) { elHeard.innerHTML = ''; elHeard.className = 'ai-heard'; }
+      showErr('');
+      if (elPrompt) { elPrompt.className = 'ai-prompt'; elPrompt.textContent = FIRST_Q; }
+      if (elPromptSub) { elPromptSub.className = 'ai-prompt-sub'; elPromptSub.textContent = FIRST_SUB; }
+      showResume();
     }
     function closeAI(){
       pdSpeech.stop();
@@ -7047,65 +7315,112 @@
       if (window.pdHeroLive) window.pdHeroLive(true);
     }
 
-    // ================= раскладка смыслов =================
-    // Прежняя версия ставила слово в случайную клетку сетки 3×4 и ни во что не смотрела:
-    // слова наезжали друг на друга, лезли под вопрос и под панель ввода. Теперь место
-    // ВЫБИРАЕТСЯ: измеряем настоящий габарит слова и настоящие прямоугольники вопроса
-    // и нижней панели, а дальше идём кольцами от центра наружу до первого свободного места.
-    var placed = [];              // [{box, el}] — что уже стоит, в порядке появления
+    // ================= доска смыслов =================
+    // Слова копятся и живут на доске, а не мелькают. Свежее встаёт у центра, прежние
+    // сдвигаются наружу, мельчают и гаснут — доска показывает не последнюю реплику,
+    // а весь разговор, с самым важным в середине. Первая версия ставила слово в случайную
+    // клетку сетки 3×4 (слова наезжали друг на друга и лезли под вопрос), вторая находила
+    // свободное место, но при нехватке выбрасывала старое — доска не накапливалась.
+    var placed = [];              // [{el, a, r, base, scale, w0, h0, free, box}], свежие в конце
     function resetWords(){ placed = []; }
     function busyBoxes(){
       var out = [];
-      for (var i = 0; i < placed.length; i++) out.push(placed[i].box);
+      for (var i = 0; i < placed.length; i++) if (placed[i].box) out.push(placed[i].box);
       return out;
     }
-    /**
-     * Убрать самое старое слово. Нужно, когда места на экране больше нет: облако из
-     * шести наложенных друг на друга слов читается хуже, чем облако из четырёх свежих.
-     * На телефоне это единственный разумный выход — там в свободную полосу влезает
-     * три-четыре слова, а разговор даёт десяток.
-     */
-    function dropOldestWord(){
-      var old = placed.shift();
-      if (!old || !old.el) return;
-      old.el.classList.remove('show');
-      setTimeout(function(){ if (old.el.parentNode) old.el.parentNode.removeChild(old.el); }, 700);
+    /** Слово ушло за край поля — снимаем его совсем. */
+    function dropWord(rec){
+      var at = placed.indexOf(rec);
+      if (at >= 0) placed.splice(at, 1);
+      if (!rec.el) return;
+      rec.el.classList.remove('show');
+      // Прозрачность гасим ИНЛАЙНОМ: она же выставлена инлайном при дрейфе наружу,
+      // и снятие класса .show её бы не перебило — слово застыло бы у края.
+      rec.el.style.opacity = '0';
+      setTimeout(function(){ if (rec.el.parentNode) rec.el.parentNode.removeChild(rec.el); }, 900);
     }
 
-    /** Куда вставать нельзя. Считаем каждый раз заново: вопрос меняет высоту на каждом ходу. */
-    function tabooZones(W, H){
-      var fr = field.getBoundingClientRect(), out = [];
+    /**
+     * Доска: свежее слово встаёт ближе к центру, а всё, что было, отодвигается наружу.
+     *
+     * Так разговор виден целиком: у середины — то, о чём говорят сейчас, к краям уходит
+     * сказанное раньше. Мельчает и гаснет по мере удаления, поэтому десяток слов на
+     * экране читается как глубина, а не как свалка. Раньше вместо этого самое старое
+     * слово просто удалялось — доска не накапливалась, и разговор на ней не читался.
+     */
+    function pushWordsOut(W, H){
+      for (var i = placed.length - 1; i >= 0; i--) {
+        var rec = placed[i];
+        // Шаг наружу в долях полуполя. 0.09, а не 0.13: чем мельче шаг, тем больше слов
+        // держится на доске одновременно (одиннадцать против восьми), а разговор на ней
+        // читается целиком. Меньше уже нельзя — кольца сливаются.
+        rec.r += 0.09;
+        // r = 1.0 — это ровно край поля (проверено формулой ringBox). Выше не пускаем:
+        // при 1.06 слово вылезало за рамку на несколько пикселей.
+        if (rec.r > 1.0) { dropWord(rec); continue; }
+        // Дальше от центра — мельче и тише. Ниже 0.62 не опускаем: слово должно
+        // оставаться читаемым, иначе доска превращается в шум.
+        var fade = Math.max(0, Math.min(1, (rec.r - 0.22) / 0.78));
+        rec.scale = rec.base * (1 - fade * 0.34);
+        var box = ringBox(rec, W, H);
+        rec.box = box;
+        place(rec.el, box, rec.scale);
+        rec.el.style.opacity = String(1 - fade * 0.62);
+        rec.el.style.zIndex = String(40 - i);    // свежие поверх прежних
+      }
+    }
+
+    /** Прямоугольник слова по его углу и радиусу — внутри свободной полосы поля. */
+    function ringBox(rec, W, H){
+      var free = rec.free;
+      var w = rec.w0 * rec.scale, h = rec.h0 * rec.scale;
+      var cx = free.x + free.w / 2, cy = free.y + free.h / 2;
+      return {
+        x: cx + Math.cos(rec.a) * rec.r * (free.w - w) / 2 - w / 2,
+        y: cy + Math.sin(rec.a) * rec.r * (free.h - h) / 2 - h / 2,
+        w: w, h: h
+      };
+    }
+
+    /** Поставить элемент так, чтобы ВИДИМЫЙ прямоугольник совпал с box (масштаб — от центра). */
+    function place(el, box, scale){
+      var w0 = box.w / scale, h0 = box.h / scale;
+      el.style.left = (box.x - (w0 - box.w) / 2) + 'px';
+      el.style.top = (box.y - (h0 - box.h) / 2) + 'px';
+      el.style.setProperty('--w-scale', scale);
+    }
+
+    /**
+     * Свободная полоса доски: всё поле МИНУС вопрос сверху и панель ввода снизу.
+     * Считаем заново на каждое слово — вопрос меняет высоту на каждом ходу.
+     *
+     * Вопрос отрезаем полосой во всю ширину, а не его прямоугольником: он растёт и
+     * сжимается, и слово, поставленное сбоку от короткого, оказывалось под длинным.
+     * Раз все слова живут внутри этой полосы, отдельная проверка запретных зон больше
+     * не нужна — они не пересекаются по построению.
+     */
+    function freeRect(W, H){
+      var fr = field.getBoundingClientRect();
       var rectOf = function(el){
         if (!el) return null;
         var r = el.getBoundingClientRect();
         if (!r.width || !r.height) return null;
-        return { x: r.left - fr.left, y: r.top - fr.top, w: r.width, h: r.height };
+        return { y: r.top - fr.top, h: r.height };
       };
-      // Вопрос закрываем ПОЛОСОЙ во всю ширину, а не своим прямоугольником: он растёт и
-      // сжимается с каждым новым вопросом, и слово, поставленное сбоку от короткого,
-      // оказывалось под длинным. Полоса переживает смену вопроса.
       var q = rectOf(elPrompt), qs = rectOf(elPromptSub);
       var top = 0;
       if (q) top = Math.max(top, q.y + q.h);
       if (qs) top = Math.max(top, qs.y + qs.h);
-      if (top > 0) top += 22;
+      if (top > 0) top += 18;
       var panel = rectOf(document.querySelector('#aiCapture .ai-bottom'));
-      var bottom = panel ? Math.max(0, H - (panel.y - 18)) : 0;
-      // Если между полосами почти не осталось места (длинный вопрос на телефоне),
-      // полосы душат раскладку целиком. Тогда отступаем к честным прямоугольникам:
-      // пусть слово встанет сбоку от вопроса, чем поверх него.
-      if (H - top - bottom < 130) {
-        out = [];
-        if (q) out.push(pad(q, 14));
-        if (qs) out.push(pad(qs, 10));
-        if (panel) out.push(pad(panel, 12));
-        return out;
-      }
-      if (top > 0) out.push({ x: 0, y: 0, w: W, h: top });
-      if (bottom > 0) out.push({ x: 0, y: H - bottom, w: W, h: bottom });
-      return out;
+      var bottom = panel ? Math.max(0, H - (panel.y - 14)) : 0;
+      var h = H - top - bottom;
+      // Полоса вышла слишком узкой (длинный вопрос на телефоне) — отбираем часть у
+      // вопроса. Слово чуть выше, чем хотелось, лучше, чем пустая доска.
+      if (h < 150) { top = Math.max(0, top - (150 - h)); h = H - top - bottom; }
+      if (h < 60) { top = 0; h = H; }
+      return { x: 0, y: top, w: W, h: h };
     }
-    function pad(r, p){ return { x: r.x - p, y: r.y - p, w: r.w + p * 2, h: r.h + p * 2 }; }
 
     /** Площадь пересечения прямоугольника со всеми занятыми — 0 значит место свободно. */
     function overlapArea(a, list){
@@ -7119,11 +7434,69 @@
       return sum;
     }
 
-    // Углы обхода: сначала строго по бокам, потом всё ближе к вертикали. Порядок не
-    // случайный — сверху вопрос, снизу панель, поэтому свободно всегда слева и справа.
+    // Углы, по которым слово может встать. Порядок не случайный: свободная полоса шире,
+    // чем выше, поэтому сначала пробуем места по бокам, потом всё ближе к вертикали.
     var WORD_ANGLES = [180, 0, 200, 340, 160, 20, 220, 320, 140, 40, 245, 295, 115, 65, 260, 280];
 
-    function addWord(text, scale, key){
+    /**
+     * ПЕРЕРАСКЛАДКА при смене вопроса. Свободная полоса зависит от высоты вопроса, а он
+     * растёт и сжимается на каждом ходу: «Где это будет?» — одна строка, «Планируете
+     * разместить музей в новом здании или переоборудовать существующее?» — четыре.
+     * Слова, поставленные при коротком вопросе, оказывались под длинным (поймано на
+     * боевом 04.08.2026). Углы и радиусы сохраняем — доска не перемешивается, только
+     * подбирается под новые границы, и делает это плавно, переходом.
+     */
+    function relayoutWords(){
+      if (!placed.length || !field) return;
+      var W = field.clientWidth, H = field.clientHeight;
+      if (!W || !H) return;
+      var free = freeRect(W, H);
+      var done = [];
+      for (var i = 0; i < placed.length; i++) {
+        var rec = placed[i];
+        rec.free = free;
+        rec.box = ringBox(rec, W, H);
+        // Полоса стала УЖЕ — то, что не пересекалось на широкой, может столкнуться здесь.
+        // Разводим: сначала пробуем соседние углы (доска не перемешивается, слово лишь
+        // сдвигается вдоль своего кольца), потом чуть отпускаем наружу.
+        if (overlapArea(rec.box, done) > 0) {
+          var a0 = rec.a, r0 = rec.r, fixed = false;
+          for (var step = 1; step <= 8 && !fixed; step++) {
+            for (var sign = 1; sign >= -1 && !fixed; sign -= 2) {
+              rec.a = a0 + sign * step * 14 * Math.PI / 180;
+              var box = ringBox(rec, W, H);
+              if (overlapArea(box, done) === 0) { rec.box = box; fixed = true; }
+            }
+          }
+          if (!fixed) {
+            rec.a = a0;
+            for (var out = 1; out <= 3 && !fixed; out++) {
+              rec.r = Math.min(1.0, r0 + out * 0.07);
+              var box2 = ringBox(rec, W, H);
+              if (overlapArea(box2, done) === 0) { rec.box = box2; fixed = true; }
+            }
+            if (!fixed) { rec.r = r0; rec.box = ringBox(rec, W, H); }
+          }
+        }
+        done.push(rec.box);
+        place(rec.el, rec.box, rec.scale);
+      }
+    }
+
+    /**
+     * Пачка смыслов за один ход. Раздвигаем доску ОДИН раз, а не по разу на каждое слово:
+     * три слова в ответе давали тройной сдвиг, и это читалось как рывок, а не как дрейф.
+     */
+    function addWords(list){
+      if (!list || !list.length) return;
+      var W = field.clientWidth, H = field.clientHeight;
+      pushWordsOut(W, H);
+      for (var i = 0; i < list.length; i++) {
+        addWord(list[i].t, list[i].w || 1, !!list[i].key, true);
+      }
+    }
+
+    function addWord(text, scale, key, pushed){
       var el = document.createElement('span');
       el.className = 'ai-word' + (key ? ' key' : '');
       el.textContent = text;
@@ -7132,56 +7505,45 @@
       field.appendChild(el);
 
       var W = field.clientWidth, H = field.clientHeight;
+      var free = freeRect(W, H);
       // offsetWidth — габарит ДО масштабирования; на экране слово шире в scale раз,
       // и раскладку надо вести по видимому размеру, иначе крупные слова слипаются.
-      var w0 = el.offsetWidth, h0 = el.offsetHeight;
-      var w = w0 * scale, h = h0 * scale;
-      var zones = tabooZones(W, H);
-      var cx = W / 2, cy = H / 2;
+      var rec = { el: el, w0: el.offsetWidth, h0: el.offsetHeight,
+                  base: scale, scale: scale, free: free, a: 0, r: 0.14, box: null };
 
-      // Обход: кольцами от центра наружу. Возвращает свободное место или, если такого
-      // нет, самое незанятое — оно пригодится, когда убирать больше нечего.
-      var look = function(busy){
-        var free = null, near = null, nearArea = Infinity;
-        for (var ri = 0; ri < 5 && !free; ri++) {
-          var k = 0.40 + ri * 0.15;
+      // Раздвигаем прежние, освобождая центр. Для пачки это уже сделано в addWords —
+      // один сдвиг на ход, иначе доска дёргается по разу на каждое слово.
+      if (!pushed) pushWordsOut(W, H);
+
+      var look = function(maxR){
+        for (var ri = 0; ri < 6; ri++) {
+          rec.r = 0.10 + ri * 0.16;
+          if (rec.r > maxR) break;
           for (var ai = 0; ai < WORD_ANGLES.length; ai++) {
-            // Небольшой разброс по углу — чтобы кольца не читались как кольца.
-            var a = (WORD_ANGLES[ai] + (Math.random() * 16 - 8)) * Math.PI / 180;
-            var box = {
-              x: cx + Math.cos(a) * k * (W - w) / 2 - w / 2,
-              y: cy + Math.sin(a) * k * (H - h) / 2 - h / 2,
-              w: w, h: h
-            };
-            if (box.x < 0 || box.y < 0 || box.x + w > W || box.y + h > H) continue;
-            var area = overlapArea(box, busy);
-            if (area === 0) { free = box; break; }
-            if (area < nearArea) { nearArea = area; near = box; }
+            // Разброс по углу — чтобы кольца не читались как кольца.
+            rec.a = (WORD_ANGLES[ai] + (Math.random() * 18 - 9)) * Math.PI / 180;
+            var box = ringBox(rec, W, H);
+            if (overlapArea(box, busyBoxes()) === 0) return { a: rec.a, r: rec.r, box: box };
           }
         }
-        return free || near;
+        return null;
       };
 
-      var spot = look(zones.concat(busyBoxes()));
-      // Место есть, но занято. Освобождаем его, убирая самые старые слова: облако из
-      // четырёх свежих смыслов читается лучше, чем из восьми наложенных. На телефоне
-      // в свободную полосу влезает три-четыре слова, а разговор приносит десяток —
-      // без этого там получалась именно каша.
-      var guardLoop = 0;
-      while (placed.length && guardLoop++ < 12
-             && (!spot || overlapArea(spot, zones.concat(busyBoxes())) > 0)) {
-        dropOldestWord();
-        spot = look(zones.concat(busyBoxes()));
-      }
-      // Не влезает даже в пустое поле (очень длинное слово на очень узком экране) —
-      // ставим по центру: смысл всё равно должен появиться, тупик хуже наложения.
-      if (!spot) spot = { x: Math.max(0, (W - w) / 2), y: Math.max(0, (H - h) / 2), w: w, h: h };
-      placed.push({ box: spot, el: el });
+      // Сначала ищем место ТОЛЬКО во внутренней половине доски: свежее слово должно
+      // оказаться у центра, это и есть смысл доски. Если центр занят — раздвигаем
+      // прежние ещё раз и пробуем снова. На узком экране без этого новое слово вставало
+      // ДАЛЬШЕ старого, и доска читалась наоборот.
+      var spot = look(0.42), tries = 0;
+      while (!spot && tries++ < 3) { pushWordsOut(W, H); spot = look(0.42); }
+      // Совсем некуда (очень длинное слово на очень узкой доске) — пусть встанет дальше,
+      // чем хотелось: смысл должен появиться, тупик хуже неидеального места.
+      if (!spot) spot = look(1.0);
+      if (!spot) { rec.r = 0.12; rec.a = Math.random() * 6.2832; rec.box = ringBox(rec, W, H); }
+      else { rec.a = spot.a; rec.r = spot.r; rec.box = spot.box; }
 
-      // left/top задают ЛЕВЫЙ ВЕРХ неотмасштабированного блока, а масштаб растёт от центра.
-      // Поэтому смещаем на половину разницы — иначе крупные слова уезжают вверх-влево.
-      el.style.left = (spot.x - (w0 - w) / 2) + 'px';
-      el.style.top = (spot.y - (h0 - h) / 2) + 'px';
+      placed.push(rec);
+      place(el, rec.box, rec.scale);
+      el.style.zIndex = '40';
       setTimeout(function(){ el.classList.add('show'); }, 30);
     }
 
@@ -7206,7 +7568,7 @@
       window.pdIdea.say(text, lastHow, function(d){
         busy = false; setThink(false);
         turns++;
-        (d.words || []).forEach(function(w){ addWord(w.t, w.w || 1, !!w.key); });
+        addWords(d.words || []);
         ask(d.reply, d.sub, d.ready);
         if (elHeard) { elHeard.innerHTML = ''; elHeard.className = 'ai-heard'; }
         if (elDone) elDone.classList.add('on');
@@ -7239,11 +7601,19 @@
     var askWaitT = null;
     function ask(reply, sub, ready){
       if (!reply || !elPrompt) return;
-      // Когда модель решила, что материала хватит, она иногда отвечает не вопросом,
-      // а служебной фразой вроде «Готово, собрали достаточно информации». Ставить её
-      // заголовком экрана нельзя: человек читает её как обращение к себе и не понимает,
-      // что делать. Оставляем прежний вопрос — кнопка «Собрать бриф» и так подсветится.
-      if (ready && reply.indexOf('?') === -1) return;
+      // Модель решила, что материала хватит, и ответила не вопросом, а служебной фразой
+      // («Готово, информации достаточно»). Ставить её заголовком нельзя — человек читает
+      // её как обращение к себе. Но и МОЛЧАТЬ нельзя: раньше мы просто выходили, экран
+      // не менялся вовсе, и это выглядело как зависание — ровно на вопросе про бюджет,
+      // который модель задаёт последним (поймано на боевом 04.08.2026).
+      // Поэтому вопрос оставляем, а под ним честно пишем, что можно собирать.
+      if (ready && reply.indexOf('?') === -1) {
+        if (elPromptSub) elPromptSub.textContent = 'Материала достаточно — можно собирать описание.';
+        if (elDone) { elDone.classList.add('on'); elDone.classList.add('hot'); elDone.classList.add('call'); }
+        relayoutWords();
+        return;
+      }
+      if (elDone) elDone.classList.remove('call');
       // Ассистент дожидается своей очереди. Если человек уже начал говорить дальше,
       // подменять вопрос нельзя: он читает не то, на что отвечает, и сбивается.
       // Главная задача панели — дать выговориться, а не вести допрос по расписанию.
@@ -7252,18 +7622,49 @@
         askWaitT = setTimeout(function(){ ask(reply, sub, ready); }, 500);
         return;
       }
-      elPrompt.style.opacity = '0';
+      // Уходит вверх с размытием, возвращается снизу. Текст подменяем в невидимой фазе,
+      // поэтому «прыжка» букв не видно даже на длинном вопросе.
+      var subEl = elPromptSub;
+      elPrompt.classList.add('q-out');
+      if (subEl) subEl.classList.add('q-out');
       setTimeout(function(){
         elPrompt.textContent = reply;
-        if (elPromptSub) elPromptSub.textContent = sub || '';
-        elPrompt.style.opacity = '';
-      }, 220);
+        if (subEl) subEl.textContent = sub || '';
+        elPrompt.classList.remove('q-out'); elPrompt.classList.add('q-in');
+        if (subEl) { subEl.classList.remove('q-out'); subEl.classList.add('q-in'); }
+        // Вопрос поменял высоту — доска обязана подобраться под новые границы, иначе
+        // слова, поставленные при коротком вопросе, окажутся под длинным.
+        relayoutWords();
+        // Два кадра: первый ставит начальное состояние, второй запускает переход.
+        // Без второго браузер склеит их в один и анимации не будет вовсе.
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            elPrompt.classList.remove('q-in');
+            if (subEl) subEl.classList.remove('q-in');
+          });
+        });
+      }, 380);
     }
 
+    // Обдумывание. Выключение НЕ мгновенное: волна должна растаять, а не оборваться,
+    // поэтому состояние переходит в think-out, где анимация ещё живёт, а прозрачность
+    // уже уходит. Класс снимаем, когда затухание закончилось.
+    var thinkOutT = null;
     function setThink(on){
       if (!elStop) return;
-      if (on) elStop.classList.add('think');
-      else elStop.classList.remove('think');
+      if (thinkOutT) { clearTimeout(thinkOutT); thinkOutT = null; }
+      if (on) {
+        elStop.classList.remove('think-out');
+        elStop.classList.add('think');
+        return;
+      }
+      if (!elStop.classList.contains('think')) return;   // и не думали — нечего растворять
+      elStop.classList.remove('think');
+      elStop.classList.add('think-out');
+      thinkOutT = setTimeout(function(){
+        elStop.classList.remove('think-out');
+        thinkOutT = null;
+      }, 1250);
     }
     function showErr(msg){ if (elErr) elErr.textContent = msg || ''; }
 
@@ -7275,10 +7676,55 @@
       elStop.setAttribute('aria-label', pdSpeech.listening() ? 'Микрофон включён — нажмите, чтобы поставить на паузу' : 'Микрофон на паузе — нажмите, чтобы продолжить');
     }
 
+    // ================= язык распознавания =================
+    // Три кнопки под строкой «услышано». Нужны потому, что неверная локаль не даёт ошибки:
+    // микрофон просто молчит, и человек решает, что сломался сайт.
+    var SLANGS = [['ru-RU', 'RU'], ['en-US', 'EN'], ['pt-PT', 'PT']];
+    var elSlang = document.getElementById('aiSlang');
+    function renderSlang(){
+      if (!elSlang || !pdSpeech.supported) return;
+      var cur = (pdSpeech.lang() || '').slice(0, 2).toLowerCase();
+      elSlang.innerHTML = '';
+      SLANGS.forEach(function(pair){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = pair[1];
+        if (pair[0].slice(0, 2).toLowerCase() === cur) b.className = 'on';
+        b.addEventListener('click', function(){
+          pdSpeech.setLang(pair[0]);
+          renderSlang();
+          heardSince = Date.now();          // отсчёт тишины начинается заново
+          showErr('');
+        });
+        elSlang.appendChild(b);
+      });
+    }
+
+    // Сторож тишины: если после включения микрофона не пришло НИ ОДНОГО слова, дело
+    // почти всегда в локали или в разрешении. Молчать об этом нельзя — человек сидит
+    // и говорит в пустоту. Через 9 секунд подсказываем и открываем ввод текстом.
+    var heardSince = 0, silenceT = null;
+    function watchSilence(){
+      if (silenceT) clearTimeout(silenceT);
+      if (!pdSpeech.supported) return;
+      heardSince = Date.now();
+      silenceT = setTimeout(function(){
+        if (!pdSpeech.listening() || turns > 0) return;
+        if (elHeard && elHeard.textContent.replace(/\s/g, '') !== '') return;   // что-то слышали
+        // В Safari распознавание речи ненадёжно по своей природе: оно может включиться
+        // и не прислать ничего. Не делаем вид, что дело в человеке, — говорим как есть.
+        showErr(pdSpeech.safari
+          ? 'Не слышу ни слова. В Safari распознавание речи работает через раз — надёжнее написать текстом или открыть сайт в Chrome.'
+          : 'Не слышу ни слова. Проверьте язык кнопками ниже и разрешение микрофона — или просто напишите текстом.');
+        openSay(false);
+      }, 9000);
+    }
+
     // Обработчики распознавания: живая строка «услышано» и отправка по паузе в речи.
     var SPEECH = {
       heard: function(fin, inter){
         if (!elHeard) return;
+        if (fin || inter) { heardSince = Date.now(); if (silenceT) { clearTimeout(silenceT); silenceT = null; } }
         elHeard.className = 'ai-heard' + (fin || inter ? ' hot' : '');
         elHeard.innerHTML = pdEsc(fin) + (inter ? ' <i>' + pdEsc(inter) + '</i>' : '');
       },
@@ -7309,11 +7755,19 @@
       if (elDone) { if (turns > 0) elDone.classList.add('on'); else elDone.classList.remove('on'); }
       openSay(how === 'text');
       if (!pdSpeech.supported) openSay(false);
+      // В Safari поле ввода открываем сразу, не дожидаясь провала распознавания: там оно
+      // может не прислать ни слова, и человек должен с самого начала видеть второй путь,
+      // а не искать его после девяти секунд тишины.
+      if (pdSpeech.safari) openSay(false);
 
+      renderSlang();
       var go = function(){
         if (how === 'text') { if (elSayIn) try { elSayIn.focus(); } catch (e) {} return; }
-        if (pdSpeech.supported) { pdSpeech.start(SPEECH); micState(); }
-        else openSay(true);
+        // Обычно микрофон уже слушает: его поднял enter() из самого жеста. Здесь только
+        // подхватываем случаи, когда вход был не через кнопку (например «Рассказать ещё»).
+        if (!pdSpeech.supported) { openSay(true); return; }
+        if (!pdSpeech.listening()) { pdSpeech.start(SPEECH); watchSilence(); }
+        micState();
       };
 
       if (!fresh) { go(); return; }         // «Рассказать ещё» — сессия уже есть
@@ -7324,11 +7778,143 @@
         go();
       }, function(err, d){
         setThink(false);
+        // Микрофон мы подняли заранее, из жеста. Разговор не начался — выключаем,
+        // иначе он слушает пустой экран, а в адресной строке горит запись.
+        if (pdSpeech.listening()) { pdSpeech.stop(); micState(); }
         // Сервер не поверил, что за экраном человек — показываем вторую ступень.
         if (err === 'need-human' && d && d.task) { askHuman(d.task); return; }
         showErr(err === 'no-backend' ? 'Ассистент недоступен. Напишите нам через раздел «Контакты».' : err);
         openSay(true);
       });
+    }
+
+    // ================= показ собранного =================
+    // Блоки приходят с сервера уже готовыми: подпись на языке гостя и значение. Пустые
+    // он не присылает — экран не должен пестреть строками «не обсуждали».
+    var brief = null;
+    function renderBlocks(d){
+      var box = document.getElementById('aiBlocks');
+      if (!box) return;
+      box.innerHTML = '';
+      var lab = (d && d.labels) || {};
+      (d.blocks || []).forEach(function(b){
+        var el = document.createElement('div');
+        el.className = 'b';
+        var h = document.createElement('h4'); h.textContent = b.label; el.appendChild(h);
+        var p = document.createElement('p'); p.textContent = b.v; el.appendChild(p);
+        box.appendChild(el);
+      });
+      if ((d.questions || []).length) {
+        var q = document.createElement('div');
+        q.className = 'b wide';
+        var qh = document.createElement('h4'); qh.textContent = lab.open || 'Осталось выяснить'; q.appendChild(qh);
+        var ul = document.createElement('ul');
+        d.questions.forEach(function(t){ var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+        q.appendChild(ul);
+        box.appendChild(q);
+      }
+      if ((d.quotes || []).length) {
+        var c = document.createElement('div');
+        c.className = 'b quote';
+        var ch = document.createElement('h4'); ch.textContent = lab.quotes || 'Вашими словами'; c.appendChild(ch);
+        d.quotes.forEach(function(t){ var p2 = document.createElement('p'); p2.textContent = '«' + t + '»'; c.appendChild(p2); });
+        box.appendChild(c);
+      }
+    }
+
+    /**
+     * Печатная версия брифа.
+     *
+     * Печатаем ОТДЕЛЬНЫМ ДОКУМЕНТОМ в новом окне, а не текущую страницу. Первая версия
+     * прятала весь сайт через `visibility: hidden` и оставляла один слой — и получался
+     * пустой PDF: панель ассистента `fixed`, у body во время сессии `overflow: hidden`,
+     * и браузеру нечего было раскладывать по страницам. Отдельный документ ни от чего
+     * этого не зависит. Слой на странице остался запасным путём — на случай, когда
+     * блокировщик не даёт открыть окно.
+     *
+     * Своего генератора PDF нет сознательно: jsPDF пришлось бы тащить с CDN вместе со
+     * шрифтом с кириллицей (штатные шрифты jsPDF её не умеют) — две зависимости ради
+     * одной кнопки, и обе ломают самодостаточность site/.
+     */
+    function briefPrintBody(){
+      if (!card) return '';
+      var esc = pdEsc;
+      // Абсолютный адрес логотипа: в новом окне относительные пути считать не от чего.
+      var logo = 'assets/logos/playdisplay-logo-black.png';
+      try { logo = new URL(logo, document.baseURI).href; } catch (e) {}
+      var html = '<div class="p-head">'
+        + '<img src="' + esc(logo) + '" alt="playdisplay" onerror="this.style.display=\'none\'">'
+        + '<span>' + esc(new Date().toLocaleDateString()) + '</span></div>'
+        + '<h1>' + esc(card.title || '') + '</h1>'
+        + '<p class="p-idea">' + esc(card.idea || '') + '</p>';
+      if ((card.tags || []).length) html += '<div class="p-tags">' + esc(card.tags.join('  ·  ')) + '</div>';
+      var duo = document.querySelectorAll('#aiSummary .ai-duo .m');
+      for (var i = 0; i < duo.length; i++) {
+        var lab2 = duo[i].childNodes[0] ? String(duo[i].childNodes[0].nodeValue || '').trim() : '';
+        var val = duo[i].querySelector('p');
+        if (val && val.textContent) html += '<div class="p-b"><h4>' + esc(lab2) + '</h4><p>' + esc(val.textContent) + '</p></div>';
+      }
+      ((brief && brief.blocks) || []).forEach(function(b){
+        html += '<div class="p-b"><h4>' + esc(b.label) + '</h4><p>' + esc(b.v) + '</p></div>';
+      });
+      if (brief && (brief.questions || []).length) {
+        html += '<div class="p-b"><h4>' + esc((brief.labels && brief.labels.open) || 'Осталось выяснить') + '</h4><ul>';
+        brief.questions.forEach(function(q){ html += '<li>' + esc(q) + '</li>'; });
+        html += '</ul></div>';
+      }
+      if (brief && (brief.quotes || []).length) {
+        html += '<div class="p-b"><h4>' + esc((brief.labels && brief.labels.quotes) || 'Вашими словами') + '</h4>';
+        brief.quotes.forEach(function(q){ html += '<p class="p-quote">«' + esc(q) + '»</p>'; });
+        html += '</div>';
+      }
+      html += '<div class="p-foot">playdisplay · playdisplay.com · info@playdisplay.com</div>';
+      return html;
+    }
+
+    // Бумажные стили для отдельного окна. Дублировать @media print на странице не нужно:
+    // там свой набор, он остался запасным путём.
+    var PRINT_CSS = 'html,body{margin:0;padding:0;background:#fff;color:#10171b;'
+      + "font:400 11pt/1.55 Helvetica,Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}"
+      + '.sheet{max-width:180mm;margin:0 auto;padding:16mm 12mm}'
+      + '.p-head{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1.5pt solid #10171b;padding-bottom:8pt;margin-bottom:18pt}'
+      + '.p-head img{width:42mm;height:auto}'
+      + '.p-head span{font-size:8.5pt;color:#6b7780}'
+      + 'h1{font:700 20pt/1.2 Georgia,serif;margin:0 0 8pt}'
+      + '.p-idea{font-size:12pt;line-height:1.5;margin:0 0 14pt}'
+      + '.p-tags{font-size:8.5pt;color:#0a7d67;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16pt}'
+      + '.p-b{margin-bottom:11pt;page-break-inside:avoid}'
+      + '.p-b h4{font:700 8pt/1.3 Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#6b7780;margin:0 0 3pt}'
+      + '.p-b p,.p-b li{margin:0 0 3pt;font-size:10.5pt}'
+      + '.p-b ul{margin:0;padding-left:14pt}'
+      + '.p-quote{font-style:italic;color:#3d4a52;border-left:1pt solid #c9d2d7;padding-left:8pt;margin:0 0 6pt}'
+      + '.p-foot{margin-top:20pt;padding-top:8pt;border-top:.5pt solid #c9d2d7;font-size:8pt;color:#8b949a}'
+      + '@page{margin:0}';
+
+    function printBrief(){
+      var body = briefPrintBody();
+      if (!body) return;
+      // Заголовок документа Chrome подставляет как имя файла — пусть PDF называется проектом.
+      var name = (card && card.title ? card.title : 'playdisplay').replace(/[\\/:*?"<>|]/g, ' ').slice(0, 80);
+      var w = null;
+      try { w = window.open('', '_blank'); } catch (e) {}
+      if (w && w.document) {
+        w.document.open();
+        w.document.write('<!DOCTYPE html><html lang="' + (document.documentElement.getAttribute('lang') || 'ru')
+          + '"><head><meta charset="utf-8"><title>' + pdEsc(name) + '</title><style>' + PRINT_CSS
+          + '</style></head><body><div class="sheet">' + body + '</div></body></html>');
+        w.document.close();
+        // Даём картинке дойти: печать до загрузки логотипа даст лист без шапки.
+        var go = function(){ try { w.focus(); w.print(); } catch (e) {} };
+        var img = w.document.images && w.document.images[0];
+        if (img && !img.complete) { img.onload = go; img.onerror = go; setTimeout(go, 1500); }
+        else setTimeout(go, 150);
+        return;
+      }
+      // Окно не открылось (блокировщик) — печатаем слой на самой странице.
+      var host = document.getElementById('aiPrint');
+      if (!host) return;
+      host.innerHTML = body;
+      requestAnimationFrame(function(){ setTimeout(function(){ try { window.print(); } catch (e) {} }, 60); });
     }
 
     // ================= сборка брифа =================
@@ -7345,6 +7931,7 @@
         window.pdIdea.brief(function(d){
           setThink(false);
           card = d.card || {};
+          brief = d;                       // блоки нужны и экрану, и печатной версии
           document.getElementById('aiTitle').textContent = card.title || '';
           document.getElementById('aiIdea').textContent = card.idea || '';
           document.getElementById('aiWho').textContent = card.who || '';
@@ -7356,6 +7943,7 @@
             sp.textContent = t;
             tags.appendChild(sp);
           });
+          renderBlocks(d);
           // Разбор не удался — карточка собрана механически. Человек должен это видеть
           // до того, как нажмёт «Отправить», а не удивляться потом.
           var warn = document.getElementById('aiSumErr');
@@ -7432,6 +8020,15 @@
     // и показываем кольцо. Обычно к этому моменту всё уже готово и ждать нечего.
     function enter(how){
       pendingHow = how;
+      // РАСПОЗНАВАНИЕ ПОДНИМАЕМ ЗДЕСЬ, синхронно, пока мы внутри обработчика клика.
+      // Safari (и особенно iOS) разрешает старт только из живого жеста пользователя;
+      // после XHR к серверу — а до недавнего мы запускали именно так — он молча
+      // отказывает: микрофон включается, слова не приходят. Chrome такое прощает.
+      if (how === 'voice' && pdSpeech.supported && !pdSpeech.listening()) {
+        pdSpeech.start(SPEECH);
+        micState();
+        watchSilence();
+      }
       if (window.pdIdea.mode() === 'demo' || window.pdGuard.ready()) { startCapture(how); return; }
       guardWaiting = true;
       if (elRec) elRec.classList.add('warming');
@@ -7443,10 +8040,15 @@
     }
     document.getElementById('aiRec').addEventListener('click', function(){ enter('voice'); });
     if (elAlt) elAlt.addEventListener('click', function(){ enter('text'); });
+    // «Продолжить» — вернуться в тот же разговор, доска и стенограмма на месте.
+    // «Начать заново» — чистая доска и новая сессия на сервере, но панель не закрываем.
+    var elGoOn = document.getElementById('aiGoOn'), elFresh = document.getElementById('aiFresh');
+    if (elGoOn) elGoOn.addEventListener('click', function(){ enter(lastHow || 'voice'); });
+    if (elFresh) elFresh.addEventListener('click', function(){ resetTalk(); });
     // Микрофон в разговоре — пауза и продолжение, а не «завершить»: завершение теперь отдельной кнопкой.
     document.getElementById('aiStop').addEventListener('click', function(){
-      if (pdSpeech.listening()) { pdSpeech.stop(true); micState(); }
-      else { pdSpeech.start(SPEECH); micState(); }
+      if (pdSpeech.listening()) { pdSpeech.stop(true); micState(); if (silenceT) { clearTimeout(silenceT); silenceT = null; } }
+      else { pdSpeech.start(SPEECH); micState(); watchSilence(); }
     });
     if (elDone) elDone.addEventListener('click', stopCapture);
     if (elSayGo) elSayGo.addEventListener('click', sendTyped);
@@ -7455,6 +8057,8 @@
     });
     document.getElementById('aiMore').addEventListener('click', function(){ startCapture(lastHow); }); // смыслы не стираются — дополняются
     document.getElementById('aiSend').addEventListener('click', function(){ stage('form'); });
+    var elPdf = document.getElementById('aiPdf');
+    if (elPdf) elPdf.addEventListener('click', printBrief);
     document.getElementById('aiFormEl').addEventListener('submit', function(e){
       e.preventDefault();
       var btn = this.querySelector('button[type="submit"]');
@@ -7465,7 +8069,8 @@
         contact: document.getElementById('aiContact').value,
         company: document.getElementById('aiCompany').value,
         link: elLink ? elLink.value : '',
-        channels: chosenChannels()
+        channels: chosenChannels(),
+        copy: !!(document.getElementById('aiCopy') || {}).checked
       };
       var go = function(){ window.pdIdea.send(payload, onSent, onFail); };
       function onSent(d){
@@ -7476,9 +8081,16 @@
         if (d && d.demo) {
           h2.textContent = 'Демо-режим: письмо не отправлено.';
           p.textContent = 'Бриф собран, но ассистент не подключён к почте — напишите нам через раздел «Контакты».';
+        } else if (d && d.stored) {
+          // Драйвер file: бриф лёг на сервер, но письма не будет. Врать нельзя —
+          // человек уйдёт уверенным, что запрос дошёл, а он не дошёл.
+          h2.textContent = 'Описание сохранено, но письмо не отправлено.';
+          p.textContent = 'На сервере не настроена почта. Напишите нам на info@playdisplay.com — или скачайте описание кнопкой «Скачать PDF» и пришлите вложением.';
         } else {
           h2.textContent = 'Спасибо. Мы получили описание проекта.';
-          p.textContent = 'Следующий шаг — персональная креативная сессия с Андреем Судариковым.';
+          p.textContent = 'Следующий шаг — персональная креативная сессия с playdisplay.'
+            // Копию обещали галочкой — надо сказать, что она ушла, и на какой адрес.
+            + (d && d.copy ? ' Копия описания отправлена на ' + d.copy + '.' : '');
         }
         stage('sent');
       }
@@ -7515,7 +8127,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#05141a"/><g fill="#2be0c6"><circle cx="34" cy="42" r="2"/><circle cx="44" cy="36" r="2"/><circle cx="54" cy="44" r="2"/><circle cx="64" cy="38" r="2"/><circle cx="40" cy="52" r="2"/><circle cx="52" cy="56" r="2"/><circle cx="62" cy="52" r="2"/></g><circle cx="50" cy="50" r="16" fill="none" stroke="#ff6a3d" stroke-width="1.5"/><path d="M46 44l10 6-10 6z" fill="#f1fbfc"/></svg>
 </template>
 <!--SEO-->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay", "url": "https://playdisplay.com/", "description": "playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "founder": {"@type": "Person", "name": "Andrey Sudarikov"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay", "url": "https://playdisplay.com/", "description": "playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "email": "info@playdisplay.com", "foundingDate": "2011", "areaServed": "Worldwide", "knowsAbout": ["museum concept design", "interactive exhibition design", "multimedia installations", "immersive exhibitions", "visitor centre design", "projection mapping", "augmented and virtual reality", "interactive showrooms"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "email": "info@playdisplay.com", "availableLanguage": ["Russian", "English", "Portuguese"]}, "founder": {"@type": "Person", "name": "Andrey Sudarikov"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "playdisplay", "url": "https://playdisplay.com/en/", "inLanguage": "en"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "playdisplay projects", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://playdisplay.com/en/work/industry-rf/", "name": "Russian Industry"}, {"@type": "ListItem", "position": 2, "url": "https://playdisplay.com/en/work/airports/", "name": "Russian Airports"}, {"@type": "ListItem", "position": 3, "url": "https://playdisplay.com/en/work/odk-oak/", "name": "UEC UAC"}, {"@type": "ListItem", "position": 4, "url": "https://playdisplay.com/en/work/proryv/", "name": "Proryv"}, {"@type": "ListItem", "position": 5, "url": "https://playdisplay.com/en/work/rostec/", "name": "Rostec Expo"}, {"@type": "ListItem", "position": 6, "url": "https://playdisplay.com/en/work/ptk-group/", "name": "PTK Group"}, {"@type": "ListItem", "position": 7, "url": "https://playdisplay.com/en/work/mig2019/", "name": "MiG-35 Booth"}, {"@type": "ListItem", "position": 8, "url": "https://playdisplay.com/en/work/bmwx5/", "name": "BMW X5"}, {"@type": "ListItem", "position": 9, "url": "https://playdisplay.com/en/work/pano360/", "name": "Panorama 360"}, {"@type": "ListItem", "position": 10, "url": "https://playdisplay.com/en/work/urban-forum-2018/", "name": "Urban Forum 2018"}, {"@type": "ListItem", "position": 11, "url": "https://playdisplay.com/en/work/stalingrad/", "name": "Password to Victory: Stalingrad"}, {"@type": "ListItem", "position": 12, "url": "https://playdisplay.com/en/work/coalco/", "name": "COALCO Dry Port"}, {"@type": "ListItem", "position": 13, "url": "https://playdisplay.com/en/work/sinara/", "name": "Sinara Transport Machines"}, {"@type": "ListItem", "position": 14, "url": "https://playdisplay.com/en/work/vdnh-space/", "name": "VDNH Space"}, {"@type": "ListItem", "position": 15, "url": "https://playdisplay.com/en/work/vdnh-space-center/", "name": "Cosmonautics and Aviation Center"}]}</script>
 <noscript><section><h2>playdisplay projects</h2><ul><li><a href="/en/work/industry-rf/">Russian Industry</a> — An industry you can examine up close. The country has ambitious plans for shipbuilding: a new generation of civilian vessels, breakthrough engineering, the m…</li><li><a href="/en/work/airports/">Russian Airports</a> — A space that takes you by the hand. Present three of Russia’s international airports at Russia Expo so that each one reveals its own architecture and charact…</li><li><a href="/en/work/odk-oak/">UEC UAC</a> — A complex product is sold by whoever lets you touch it. MAKS, the International Aviation and Space Salon, is one of the world’s major aerospace events. Unite…</li><li><a href="/en/work/proryv/">Proryv</a> — Tomorrow’s technology told in the language of experience. Build an installation that shows in plain visual terms how a nuclear power platform with a closed n…</li><li><a href="/en/work/rostec/">Rostec Expo</a> — The scale of a corporation held in one space. Create the centerpiece exhibit at the entrance to the Rostec Expo pavilion and bring the products of every comp…</li><li><a href="/en/work/ptk-group/">PTK Group</a> — A presentation people take part in. PTK Group builds modern track machines — equipment for constructing, repairing and maintaining railways. Almost all of it…</li><li><a href="/en/work/mig2019/">MiG-35 Booth</a> — The jet was already a star — we built it a stage. Make the MiG-35 stand out among the other manufacturers’ aircraft, and build a demonstration tool for prese…</li><li><a href="/en/work/bmwx5/">BMW X5</a> — The car you built yourself is the one you want to buy. Equip the sales office with an interactive tool for choosing and configuring a car.</li><li><a href="/en/work/pano360/">Panorama 360</a> — Not a window into history — a way in. Give visitors to one of Europe’s highest observation decks — Panorama 360, on the 89th floor of the Federation Tower in…</li><li><a href="/en/work/urban-forum-2018/">Urban Forum 2018</a> — A queue at the installation is the best metric there is. A booth for a city government that speaks to residents in their own language — by showing plainly wh…</li><li><a href="/en/work/stalingrad/">Password to Victory: Stalingrad</a> — Play can speak about serious things too. Draw public attention to a heritage site of federal significance and tell the story of the Battle of Stalingrad of 1…</li><li><a href="/en/work/coalco/">COALCO Dry Port</a> — Logistics you can see instead of reading about it in a brochure. The dry port is on such a scale that it only makes sense shown whole: how this new transport…</li><li><a href="/en/work/sinara/">Sinara Transport Machines</a> — Heavy machinery shown in the palm of your hand. Sinara Transport Machines builds a new generation of locomotives. The task was to show not only the machines …</li><li><a href="/en/work/vdnh-space/">VDNH Space</a> — The visitor does not read the exhibition — they explore it. The whole history of spaceflight in one playable system: 115 exhibits, interactive 3D models of s…</li><li><a href="/en/work/vdnh-space-center/">Cosmonautics and Aviation Center</a> — A museum that answers with movement. Tell the history of spaceflight and rocketry through high-technology solutions.</li></ul></section></noscript>

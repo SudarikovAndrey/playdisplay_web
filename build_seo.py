@@ -250,7 +250,17 @@ def project_jsonld(L, slug):
     }
     if p.get('year'): data["dateCreated"] = str(p['year'])
     if p.get('client'): data["about"] = p['client']
-    return json.dumps(data, ensure_ascii=False, indent=0)
+    crumbs = {
+        "@context": "https://schema.org", "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
+            {"@type": "ListItem", "position": 2, "name": L.t('Проекты'), "item": L.url('#work')},
+            {"@type": "ListItem", "position": 3, "name": p.get('title'),
+             "item": L.url('work/%s/' % slug)},
+        ],
+    }
+    # два объекта в одном <script>: JSON-массив — валидный JSON-LD
+    return json.dumps([data, crumbs], ensure_ascii=False, indent=0)
 
 
 def alternates(tail):
@@ -284,6 +294,7 @@ PAGE = '''<!DOCTYPE html>
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{cover}">
 <script type="application/ld+json">{jsonld}</script>
+<script src="{up}analytics.js" defer></script>
 <style>
   body {{ margin:0; background:#040c10; color:#e9f4f6; font:400 18px/1.7 -apple-system,'Segoe UI',Roboto,sans-serif; }}
   .wrap {{ max-width:1000px; margin:0 auto; padding:64px 24px 100px; }}
@@ -348,7 +359,7 @@ for L in langs:
             lang=L.code, title=esc(p['title']), subtitle=esc(p.get('subtitle') or ''),
             desc=esc(L.meta_desc(slug)), canon=L.url('work/%s/' % slug), alts=alternates('work/%s/' % slug),
             slug=slug, cover=esc(cover_url(slug, L.pmap)), locale=L.locale, home=L.up + L.prefix,
-            jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p, slug),
+            jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p, slug), up=L.up,
             work=L.t('Проекты'), cta=L.t('Открыть интерактивную версию →'),
             footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
             f_home=L.t('На главную'), f_all=L.t('Все проекты')))
@@ -393,6 +404,13 @@ lines = ['# playdisplay', '', '> ' + ORG_DESC, '',
          'О студии рассказывал Discovery Channel. Среди клиентов — BMW, Ростех, '
          'Росатом, ОДК, аэропорты и национальные музеи России.', '',
          'English version: %s/en/' % BASE, '',
+         '## Услуги / Services', '',
+         '- Разработка концепции музея и экспозиции (museum & exhibition concept design)',
+         '- Дизайн интерактивных экспозиций и visitor centre (interactive exhibits, visitor centres)',
+         '- Мультимедийные и иммерсивные инсталляции (multimedia & immersive installations)',
+         '- Проекционный маппинг, AR/VR (projection mapping, augmented & virtual reality)',
+         '- Интерактивные шоурумы и брендовые пространства (interactive showrooms, brand spaces)',
+         '- Полный цикл: от идеи до запуска (full cycle: concept to launch)', '',
          '## Проекты', '']
 for slug in ORDER:
     p = RU.pmap.get(slug, {})
@@ -401,7 +419,12 @@ lines += ['', '## Projects (English)', '']
 for slug in ORDER:
     p = EN.pmap.get(slug, {})
     lines.append('- [%s](%s/en/work/%s/): %s' % (p.get('title'), BASE, slug, EN.meta_desc(slug)))
-lines += ['', '## Контакт', '', '- Сайт: %s/' % BASE, '- Основатель: Андрей Судариков']
+lines += ['', '## Контакт / Contact', '',
+          '- Сайт: %s/' % BASE,
+          '- Email: info@playdisplay.com',
+          '- Основатель: Андрей Судариков (Andrey Sudarikov)',
+          '- Первый шаг: бесплатная 30-минутная креативная сессия — кнопка «Забронировать креативную сессию» на %s/' % BASE,
+          '- Языки: русский, английский, португальский']
 open(os.path.join(SITE, 'llms.txt'), 'w', encoding='utf-8').write('\n'.join(lines) + '\n')
 
 # ---------- JSON-LD + noscript для главной ----------
@@ -412,6 +435,21 @@ def home_block(L):
         {"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay",
          "url": BASE + '/', "description": (ORG_DESC_EN if L.code == 'en' else ORG_DESC),
          "logo": BASE + '/assets/logos/logo.svg', "sameAs": SOCIALS,
+         "email": "info@playdisplay.com", "foundingDate": "2011",
+         "areaServed": "Worldwide",
+         "knowsAbout": ([
+             "museum concept design", "interactive exhibition design", "multimedia installations",
+             "immersive exhibitions", "visitor centre design", "projection mapping",
+             "augmented and virtual reality", "interactive showrooms"
+         ] if L.code == 'en' else [
+             "разработка концепции музея", "дизайн интерактивной экспозиции",
+             "мультимедийные инсталляции", "иммерсивные выставки", "visitor centre",
+             "проекционный маппинг", "дополненная и виртуальная реальность",
+             "интерактивные шоурумы"
+         ]),
+         "contactPoint": {"@type": "ContactPoint", "contactType": "sales",
+                          "email": "info@playdisplay.com",
+                          "availableLanguage": ["Russian", "English", "Portuguese"]},
          "founder": {"@type": "Person", "name": L.t('Андрей Судариков')}},
         {"@context": "https://schema.org", "@type": "WebSite", "name": "playdisplay",
          "url": L.url(), "inLanguage": L.code},
