@@ -29,6 +29,16 @@ window.PD_DEV = (function(){
   try { if (window.parent !== window && re.test(parent.location.search)) return true; } catch (e) {}
   return false;
 })();
+/* МЯГКИЙ ОНБОРДИНГ ПОЛЁТА — пока по приглашению, включается ?ob=1 (в адресе сцены или
+   лендинга). Только на телефоне: на компе мышь понятна без обучения, и там старт
+   остаётся прежним. Выключатель нужен потому, что игру нельзя прогнать в стенде —
+   обкатывается вживую, и боевой старт при этом не трогается. */
+window.PD_OB = (function(){
+  var re = /[?&]ob=1/;
+  if (re.test(location.search)) return true;
+  try { if (window.parent !== window && re.test(parent.location.search)) return true; } catch (e) {}
+  return false;
+})();
 if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
 </script>
 <style id="brand-override">
@@ -397,12 +407,16 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
        Он свёрстан под монитор и на 390px обрезался по всем краям: кольцо авиагоризонта
        шире экрана втрое, счёт упирался в правый край, подсказка выхода не помещалась
        в строку. Ужимаем — цифры и кольцо остаются читаемыми, но входят в кадр. */
-    #game-ring { width: 340px; height: 181px; margin: -90px 0 0 -170px; }  /* пропорция 1240:660 сохранена */
-    #game-hud { right: 14px; top: 68px; }
-    #game-score { font-size: 30px; }
-    #game-spice b { font-size: 15px; }
-    #game-spice i { width: 8px; height: 8px; }
-    #game-label { font-size: 8px; letter-spacing: .18em; }
+    /* Кольцо авиагоризонта: 1240px при экране 390 — втрое шире, обрезалось. Пропорция 1240:660 сохранена. */
+    #game-ring { width: 340px; height: 181px; margin: -90px 0 0 -170px; }
+    /* В прошлый раз я ужал счёт слишком сильно — стало мелко и жалось к кораблю.
+       Возвращаю читаемый кегль и отвожу блок в самый угол: корабль летит по центру,
+       и всё, что вокруг него, должно расходиться к краям, а не липнуть к нему. */
+    #game-hud { right: 12px; top: 54px; }
+    #game-score { font-size: 40px; }
+    #game-spice b { font-size: 20px; }
+    #game-spice i { width: 10px; height: 10px; }
+    #game-label { font-size: 9.5px; letter-spacing: .22em; opacity: .7; }
     /* строка-подсказка выхода на узком экране рвётся пополам и лезет на корабль:
        крестик и так виден в углу, объяснять его текстом не нужно */
     #game-exit { display: none; }
@@ -421,6 +435,25 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     backdrop-filter: blur(2px);
     opacity: 0; transition: opacity .18s ease; }
   #gstick.on { opacity: 1; }
+  /* ОБУЧЕНИЕ. Пока ждём первого касания, кольцо руля стоит само — внизу справа, под
+     большой палец, и мягко дышит. Это единственная подсказка: слов нет вовсе. */
+  body.ob-live #gstick { opacity: .85; left: auto !important; right: 74px; top: auto !important;
+    bottom: 120px; transform: none; animation: obBreath 2.2s ease-in-out infinite; }
+  @keyframes obBreath { 50% { opacity: .35; transform: scale(.88); } }
+  /* цель в коридоре: её надо поймать прицелом и подержать полсекунды */
+  #ob-target, #ob-aim { position: fixed; z-index: 41; pointer-events: none;
+    transform: translate(-50%, -50%); border-radius: 50%; opacity: 0; transition: opacity .3s ease; }
+  #ob-target { width: 74px; height: 74px; border: 1.5px solid rgba(43,224,198,.7);
+    box-shadow: 0 0 26px rgba(43,224,198,.3) inset; animation: obPulse 1.6s ease-in-out infinite; }
+  #ob-target.on { opacity: 1; }
+  #ob-target.near { border-color: #2be0c6; background: rgba(43,224,198,.16);
+    box-shadow: 0 0 34px rgba(43,224,198,.5); animation: none; }
+  @keyframes obPulse { 50% { transform: translate(-50%,-50%) scale(1.16); opacity: .6; } }
+  /* прицел — куда смотрит руль. Корабля ещё нет, и без него человек не понял бы,
+     что вообще подчиняется его пальцу. */
+  #ob-aim { width: 16px; height: 16px; background: rgba(255,255,255,.92);
+    box-shadow: 0 0 16px rgba(255,255,255,.6); }
+  body.ob-aiming #ob-aim { opacity: 1; }
   #gstick i { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px;
     border-radius: 50%; background: rgba(43,224,198,.34); border: 1.5px solid rgba(43,224,198,.95);
     box-shadow: 0 0 26px rgba(43,224,198,.55), 0 2px 10px rgba(0,0,0,.4); }
@@ -934,6 +967,65 @@ addEventListener('mousemove', e => {
 // МОБИЛА: полёт касанием — палец целится кораблём, как курсор мыши на компе. Только
 // во время игры (иначе тач продолжает крутить галерею — этим занят другой touchmove ниже,
 // он сам себя гасит через onInput при GAME.on, конфликта нет). Комп эти строки не выполняет.
+// ================= МЯГКИЙ ОНБОРДИНГ ПОЛЁТА (телефон, ?ob=1) =================
+// Три фазы вместо четырёх строк текста, которые «читать некогда и не хочется»:
+//   1 — летим по коридору, корабля нет, кольцо руля дышит и ждёт первого касания;
+//   2 — коснулись: в коридоре загорается цель, её надо поймать рулём и подержать;
+//   3 — поймали: прилетает корабль, разбиться нельзя, дальше уровень наращивает
+//       сложность сам (planLevel: INTRO → LEARN → … → CLIMAX).
+// Всё живёт в DOM поверх сцены: ни генерация мира, ни физика не затронуты — если
+// обучение почему-то сорвётся, игра остаётся ровно такой, какой была.
+const OB = { on: false, phase: 0, t: 0, tx: 0, ty: 0, hold: 0, tEl: null, aEl: null };
+
+function obEls() {
+  if (OB.tEl) return;
+  OB.tEl = document.createElement('div'); OB.tEl.id = 'ob-target';
+  OB.aEl = document.createElement('div'); OB.aEl.id = 'ob-aim';
+  document.body.appendChild(OB.tEl); document.body.appendChild(OB.aEl);
+}
+// цель ставим в стороне от центра, но с запасом от краёв — чтобы до неё пришлось вести
+function obPlaceTarget() {
+  const mx = innerWidth * 0.26, my = innerHeight * 0.22;
+  OB.tx = (Math.random() < 0.5 ? mx : innerWidth - mx);
+  OB.ty = my + Math.random() * (innerHeight * 0.34);
+  OB.tEl.style.left = OB.tx + 'px'; OB.tEl.style.top = OB.ty + 'px';
+  OB.tEl.classList.add('on');
+}
+function obTouched() {
+  if (OB.phase !== 1) return;
+  OB.phase = 2; OB.hold = 0; OB.t = 0;
+  obEls(); obPlaceTarget();
+  document.body.classList.add('ob-aiming');
+}
+function obFinish() {
+  OB.phase = 3; OB.t = 0;
+  if (OB.tEl) OB.tEl.classList.remove('on');
+  document.body.classList.remove('ob-aiming', 'ob-live');
+  try { GAME.ship.visible = true; } catch (e) {}
+}
+function obUpdate(dt) {
+  if (!OB.on) return;
+  OB.t += dt;
+  // корабля нет, пока не пройдено обучение рулю
+  try { if (GAME.ship) GAME.ship.visible = OB.phase >= 3; } catch (e) {}
+  if (OB.phase === 1) {
+    // ждём касания. Страховка: если человек просто смотрит, через 9 секунд
+    // отдаём корабль сами — сайт не должен превращаться в экзамен.
+    if (OB.t > 9) { obTouched(); obFinish(); }
+    return;
+  }
+  if (OB.phase === 2) {
+    OB.aEl.style.left = touchPX + 'px'; OB.aEl.style.top = touchPY + 'px';
+    const near = Math.hypot(touchPX - OB.tx, touchPY - OB.ty) < innerWidth * 0.13;
+    OB.tEl.classList.toggle('near', near);
+    OB.hold = near ? OB.hold + dt : 0;
+    if (OB.hold > 0.4 || OB.t > 14) obFinish();   // поймал — или устал ловить
+    return;
+  }
+  // фаза 3: несколько секунд безопасного полёта, потом обычные правила
+  if (OB.t > 7) { OB.on = false; GAME.grace = 0; if (OB.aEl) OB.aEl.classList.remove('on'); }
+}
+
 let touchPX = mousePX, touchPY = mousePY;
 if (isMobile) {
   // ДЖОЙСТИК ВМЕСТО ПРИЦЕЛИВАНИЯ ПАЛЬЦЕМ.
@@ -985,6 +1077,7 @@ if (isMobile) {
     const t = e.changedTouches[0];
     if (!t) return;
     stickId = t.identifier; ox = t.clientX; oy = t.clientY;
+    if (OB.on && OB.phase === 1) obTouched();   // первое касание — обучение идёт дальше
     // берём за ноль ТЕКУЩИЙ курс — корабль не должен дёргаться в момент касания
     baseX = touchPX / innerWidth; baseY = touchPY / innerHeight;
     stick.style.left = ox + 'px'; stick.style.top = oy + 'px';
@@ -4569,11 +4662,26 @@ function enterGame() {
   gSpawnAhead();
   gameScore.textContent = '0';
   gameOverEl.classList.remove('show');
-  // онбординг: шпаргалка на первые секунды полёта, гаснет сама
-  gameOnboard.classList.remove('fade');
-  gameOnboard.classList.add('show');
-  setTimeout(() => gameOnboard.classList.add('fade'), 6500);
-  setTimeout(() => gameOnboard.classList.remove('show'), 7500);
+  // МЯГКИЙ ОНБОРДИНГ (телефон, ?ob=1): вместо простыни из четырёх строк — три фазы.
+  // Фаза 1: летим по коридору, корабля ещё нет, кольцо руля дышит и ждёт касания.
+  // Фаза 2: коснулись — в коридоре загорается цель, её надо поймать рулём.
+  // Фаза 3: поймали — прилетает корабль, разбиться нельзя, дальше уровень сам
+  // наращивает сложность (planLevel: INTRO → LEARN → … → CLIMAX).
+  OB.on = !!(window.PD_OB && isMobile);
+  if (OB.on) {
+    OB.phase = 1; OB.t = 0; OB.tx = 0; OB.ty = 0; OB.hold = 0;
+    GAME.grace = 1e9;                 // на время обучения разбиться нельзя
+    gameOnboard.classList.remove('show', 'fade');
+    document.body.classList.add('ob-live');
+  } else {
+    OB.on = false; OB.phase = 0;
+    document.body.classList.remove('ob-live');
+    // онбординг: шпаргалка на первые секунды полёта, гаснет сама
+    gameOnboard.classList.remove('fade');
+    gameOnboard.classList.add('show');
+    setTimeout(() => gameOnboard.classList.add('fade'), 6500);
+    setTimeout(() => gameOnboard.classList.remove('show'), 7500);
+  }
   if (EMBEDDED) try { parent.postMessage({ pdGameOn: true }, '*'); } catch (e) {}
 }
 // рестарт после столкновения: безопасная высота над РЕАЛЬНЫМ рельефом + период
@@ -4667,6 +4775,9 @@ function gMetrics(dt) {
 }
 
 function updateGame(dt, time) {
+  // Обучение поверх игры. В try, потому что проверить его в стенде нельзя, а сорваться
+  // оно не должно ценой всего кадра: упало — просто идёт обычный полёт.
+  try { obUpdate(dt); } catch (e) { OB.on = false; }
   gFallMat.uniforms.uT.value = time; // водопады текут
   // ВЛЁТ ИЗ СЛАЙДА: первые ~1.2с точки галереи растворяются в пыль, мир полёта проявляется,
   // камера перелетает с ракурса слайда в позицию полёта
