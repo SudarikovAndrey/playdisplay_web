@@ -435,25 +435,31 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     backdrop-filter: blur(2px);
     opacity: 0; transition: opacity .18s ease; }
   #gstick.on { opacity: 1; }
-  /* ОБУЧЕНИЕ. Пока ждём первого касания, кольцо руля стоит само — внизу справа, под
-     большой палец, и мягко дышит. Это единственная подсказка: слов нет вовсе. */
-  body.ob-live #gstick { opacity: .85; left: auto !important; right: 74px; top: auto !important;
-    bottom: 120px; transform: none; animation: obBreath 2.2s ease-in-out infinite; }
-  @keyframes obBreath { 50% { opacity: .35; transform: scale(.88); } }
-  /* цель в коридоре: её надо поймать прицелом и подержать полсекунды */
-  #ob-target, #ob-aim { position: fixed; z-index: 41; pointer-events: none;
-    transform: translate(-50%, -50%); border-radius: 50%; opacity: 0; transition: opacity .3s ease; }
-  #ob-target { width: 74px; height: 74px; border: 1.5px solid rgba(43,224,198,.7);
-    box-shadow: 0 0 26px rgba(43,224,198,.3) inset; animation: obPulse 1.6s ease-in-out infinite; }
-  #ob-target.on { opacity: 1; }
-  #ob-target.near { border-color: #2be0c6; background: rgba(43,224,198,.16);
-    box-shadow: 0 0 34px rgba(43,224,198,.5); animation: none; }
-  @keyframes obPulse { 50% { transform: translate(-50%,-50%) scale(1.16); opacity: .6; } }
-  /* прицел — куда смотрит руль. Корабля ещё нет, и без него человек не понял бы,
-     что вообще подчиняется его пальцу. */
-  #ob-aim { width: 16px; height: 16px; background: rgba(255,255,255,.92);
-    box-shadow: 0 0 16px rgba(255,255,255,.6); }
-  body.ob-aiming #ob-aim { opacity: 1; }
+  /* ОБУЧЕНИЕ: показательный руль чуть ниже центра экрана. Ручка сама ходит по кругу —
+     видно, что и куда двигать. Это ОТДЕЛЬНЫЙ элемент: настоящий #gstick мы не трогаем,
+     иначе он повисает на экране лишним кольцом (так и вышло в первой версии). */
+  #ob-demo { position: fixed; left: 50%; top: 58%; width: 148px; height: 148px;
+    margin: -74px 0 0 -74px; z-index: 41; pointer-events: none; border-radius: 50%;
+    border: 1.5px solid rgba(43,224,198,.55); background: rgba(3,12,16,.22);
+    opacity: 0; transition: opacity .45s ease; }
+  #ob-demo i { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px;
+    margin: -29px 0 0 -29px; border-radius: 50%;
+    background: rgba(43,224,198,.34); border: 1.5px solid rgba(43,224,198,.95);
+    box-shadow: 0 0 26px rgba(43,224,198,.55);
+    animation: obDrive 3.2s ease-in-out infinite; }
+  /* ход по кругу: вбок, вверх, вбок, вниз — обе оси показаны за один проход */
+  @keyframes obDrive {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(46px, 0); }
+    40% { transform: translate(0, -40px); }
+    60% { transform: translate(-46px, 0); }
+    80% { transform: translate(0, 40px); }
+  }
+  #ob-say { position: fixed; left: 0; right: 0; top: calc(58% + 96px); z-index: 41;
+    pointer-events: none; text-align: center; opacity: 0; transition: opacity .45s ease;
+    font: 600 12px 'Roboto Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
+    color: rgba(241,251,252,.9); text-shadow: 0 2px 14px rgba(0,0,0,.8); }
+  body.ob-demo-on #ob-demo, body.ob-demo-on #ob-say { opacity: 1; }
   #gstick i { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px;
     border-radius: 50%; background: rgba(43,224,198,.34); border: 1.5px solid rgba(43,224,198,.95);
     box-shadow: 0 0 26px rgba(43,224,198,.55), 0 2px 10px rgba(0,0,0,.4); }
@@ -979,51 +985,50 @@ const OB = { on: false, phase: 0, t: 0, tx: 0, ty: 0, hold: 0, tEl: null, aEl: n
 
 function obEls() {
   if (OB.tEl) return;
-  OB.tEl = document.createElement('div'); OB.tEl.id = 'ob-target';
-  OB.aEl = document.createElement('div'); OB.aEl.id = 'ob-aim';
+  // Демонстрационный руль — СВОЙ элемент, не настоящий #gstick. Настоящий должен
+  // по-прежнему появляться под пальцем; в прошлой версии я двигал его стилем, и он
+  // повисал отдельным кольцом на экране — тот самый «артефактный круг».
+  OB.tEl = document.createElement('div'); OB.tEl.id = 'ob-demo';
+  OB.tEl.innerHTML = '<i></i>';
+  OB.aEl = document.createElement('div'); OB.aEl.id = 'ob-say';
+  OB.aEl.textContent = 'Управляй джойстиком';
   document.body.appendChild(OB.tEl); document.body.appendChild(OB.aEl);
 }
-// цель ставим в стороне от центра, но с запасом от краёв — чтобы до неё пришлось вести
-function obPlaceTarget() {
-  const mx = innerWidth * 0.26, my = innerHeight * 0.22;
-  OB.tx = (Math.random() < 0.5 ? mx : innerWidth - mx);
-  OB.ty = my + Math.random() * (innerHeight * 0.34);
-  OB.tEl.style.left = OB.tx + 'px'; OB.tEl.style.top = OB.ty + 'px';
-  OB.tEl.classList.add('on');
-}
+// первое касание в фазе 2 — обучение пройдено, зовём корабль
 function obTouched() {
-  if (OB.phase !== 1) return;
-  OB.phase = 2; OB.hold = 0; OB.t = 0;
-  obEls(); obPlaceTarget();
-  document.body.classList.add('ob-aiming');
+  if (OB.phase !== 2) return;
+  obFinish();
 }
 function obFinish() {
   OB.phase = 3; OB.t = 0;
-  if (OB.tEl) OB.tEl.classList.remove('on');
-  document.body.classList.remove('ob-aiming', 'ob-live');
-  try { GAME.ship.visible = true; } catch (e) {}
+  document.body.classList.remove('ob-demo-on');
+  try { GAME.ship.visible = true; GAME.trail.visible = true; } catch (e) {}
 }
 function obUpdate(dt) {
   if (!OB.on) return;
   OB.t += dt;
-  // корабля нет, пока не пройдено обучение рулю
-  try { if (GAME.ship) GAME.ship.visible = OB.phase >= 3; } catch (e) {}
+  // Корабля нет, пока не пройдено обучение рулю. Вместе с ним прячем и след из сопел:
+  // это отдельный объект, и без него в пустом коридоре горел огонь без корабля.
+  try {
+    const vis = OB.phase >= 3;
+    if (GAME.ship) GAME.ship.visible = vis;
+    if (GAME.trail) GAME.trail.visible = vis;
+  } catch (e) {}
+  // ФАЗА 1 — просто летим над простой картой. Ничего не показываем и ничего не просим:
+  // первые секунды человек должен увидеть мир, а не интерфейс.
   if (OB.phase === 1) {
-    // ждём касания. Страховка: если человек просто смотрит, через 9 секунд
-    // отдаём корабль сами — сайт не должен превращаться в экзамен.
-    if (OB.t > 9) { obTouched(); obFinish(); }
+    if (OB.t > 3.5) { OB.phase = 2; OB.t = 0; obEls(); document.body.classList.add('ob-demo-on'); }
     return;
   }
+  // ФАЗА 2 — кольцо чуть ниже центра само показывает ход ручки, под ним одна строка.
+  // Ждём касания. Страховка: смотрит и не трогает — через 8 секунд отдаём корабль сами,
+  // сайт не должен превращаться в экзамен.
   if (OB.phase === 2) {
-    OB.aEl.style.left = touchPX + 'px'; OB.aEl.style.top = touchPY + 'px';
-    const near = Math.hypot(touchPX - OB.tx, touchPY - OB.ty) < innerWidth * 0.13;
-    OB.tEl.classList.toggle('near', near);
-    OB.hold = near ? OB.hold + dt : 0;
-    if (OB.hold > 0.4 || OB.t > 14) obFinish();   // поймал — или устал ловить
+    if (OB.t > 8) obFinish();
     return;
   }
-  // фаза 3: несколько секунд безопасного полёта, потом обычные правила
-  if (OB.t > 7) { OB.on = false; GAME.grace = 0; if (OB.aEl) OB.aEl.classList.remove('on'); }
+  // ФАЗА 3 — корабль в руках, разбиться нельзя. Дальше уровень наращивает сложность сам.
+  if (OB.t > 7) { OB.on = false; GAME.grace = 0; }
 }
 
 let touchPX = mousePX, touchPY = mousePY;
@@ -1048,7 +1053,9 @@ if (isMobile) {
   // Ход сделан заметно спокойнее: полное отклонение ручки больше не швыряет корабль
   // к краю экрана. Пропорция между осями сохранена (вертикаль всё ещё сильнее,
   // потому что игровая математика по высоте даёт вдвое меньший размах).
-  const GX = 0.34, GY = 1.35;
+  // Ещё вдвое спокойнее (03.08): на 0.34/1.35 корабль всё ещё дёргался от малейшего
+  // движения пальца. Руль должен вести, а не швырять.
+  const GX = 0.17, GY = 0.68;
   // База — курс на момент касания, в долях экрана. Отклонение ручки прибавляется К НЕЙ,
   // а не отсчитывается от середины: иначе каждое новое касание рывком возвращало бы
   // корабль в центр — ровно то, от чего мы уходим, сохраняя курс после отпускания.
@@ -1077,7 +1084,7 @@ if (isMobile) {
     const t = e.changedTouches[0];
     if (!t) return;
     stickId = t.identifier; ox = t.clientX; oy = t.clientY;
-    if (OB.on && OB.phase === 1) obTouched();   // первое касание — обучение идёт дальше
+    if (OB.on && OB.phase === 2) obTouched();   // первое касание — обучение пройдено
     // берём за ноль ТЕКУЩИЙ курс — корабль не должен дёргаться в момент касания
     baseX = touchPX / innerWidth; baseY = touchPY / innerHeight;
     stick.style.left = ox + 'px'; stick.style.top = oy + 'px';
@@ -4672,10 +4679,11 @@ function enterGame() {
     OB.phase = 1; OB.t = 0; OB.tx = 0; OB.ty = 0; OB.hold = 0;
     GAME.grace = 1e9;                 // на время обучения разбиться нельзя
     gameOnboard.classList.remove('show', 'fade');
-    document.body.classList.add('ob-live');
+    document.body.classList.remove('ob-demo-on');
+    try { if (GAME.ship) GAME.ship.visible = false; if (GAME.trail) GAME.trail.visible = false; } catch (e) {}
   } else {
     OB.on = false; OB.phase = 0;
-    document.body.classList.remove('ob-live');
+    document.body.classList.remove('ob-demo-on');
     // онбординг: шпаргалка на первые секунды полёта, гаснет сама
     gameOnboard.classList.remove('fade');
     gameOnboard.classList.add('show');
@@ -5305,21 +5313,31 @@ function gDangerRing(dt, time, alt) {
   g.beginPath(); g.moveTo(R + 18 * SS, 0); g.lineTo(R + 210 * SS, 0); g.stroke();
   g.restore();
   // скорость слева, энергия справа (числа не крутятся — как в приборах)
+  // МОБИЛА. Кольцо на телефоне выводится втрое мельче, чтобы влезть в ширину экрана,
+  // и текст уезжал вместе с ним — отсюда «надписи мелкие и невидные». Размер холста
+  // трогать нельзя (в нём вся геометрия приборов), поэтому компенсируем прямо здесь:
+  // кегль крупнее, отвод от центра дальше, и подъём на две высоты строки.
+  // Холст 1860×990 выводится на телефоне как 340×181 — всё уменьшается в 5,5 раза.
+  // Поэтому множители такие крупные: 38px кегля превращались в 10px на экране.
+  const HK = isMobile ? 2.6 : 1;             // 38 → 99 в холсте ≈ 27px на экране
+  const HOUT = isMobile ? 220 * SS : 0;      // ≈60px разлёта по каждой стороне
+  const FS = 38 * SS * HK;
+  const HUP = isMobile ? FS * 2 : 0;         // ровно две высоты самого текста
   g.textBaseline = 'alphabetic';
   g.fillStyle = 'rgba(241,251,252,0.95)';
-  g.font = '600 ' + (38 * SS) + 'px ui-monospace, "SF Mono", Menlo, monospace';
+  g.font = '600 ' + FS + 'px ui-monospace, "SF Mono", Menlo, monospace';
   g.textAlign = 'right';
-  g.fillText(String(Math.round(GAME.speed * 2.4)), C_X - R - 40 * SS, C_Y - 16 * SS);
-  g.font = '600 ' + (11 * SS) + 'px ui-monospace, monospace';
+  g.fillText(String(Math.round(GAME.speed * 2.4)), C_X - R - 40 * SS - HOUT, C_Y - 16 * SS - HUP);
+  g.font = '600 ' + (11 * SS * HK) + 'px ui-monospace, monospace';
   g.fillStyle = 'rgba(220,238,240,0.6)';
-  g.fillText('КМ/Ч', C_X - R - 40 * SS, C_Y + 3 * SS);
-  g.font = '600 ' + (38 * SS) + 'px ui-monospace, "SF Mono", Menlo, monospace';
+  g.fillText('КМ/Ч', C_X - R - 40 * SS - HOUT, C_Y + 3 * SS - HUP);
+  g.font = '600 ' + FS + 'px ui-monospace, "SF Mono", Menlo, monospace';
   g.fillStyle = 'rgba(241,251,252,0.95)';
   g.textAlign = 'left';
   const scoreS = String(GAME.score);
-  g.fillText(scoreS, C_X + R + 66 * SS, C_Y - 22 * SS);
+  g.fillText(scoreS, C_X + R + 66 * SS + HOUT, C_Y - 22 * SS - HUP);
   // молния-глиф энергии
-  const bx = C_X + R + 66 * SS + g.measureText(scoreS).width + 14 * SS, by = C_Y - 52 * SS;
+  const bx = C_X + R + 66 * SS + HOUT + g.measureText(scoreS).width + 14 * SS, by = C_Y - 52 * SS - HUP;
   g.beginPath();
   g.moveTo(bx + 14 * SS, by); g.lineTo(bx + 2 * SS, by + 20 * SS); g.lineTo(bx + 10 * SS, by + 20 * SS);
   g.lineTo(bx + 5 * SS, by + 36 * SS); g.lineTo(bx + 22 * SS, by + 14 * SS); g.lineTo(bx + 13 * SS, by + 14 * SS);
