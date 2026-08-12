@@ -16,7 +16,13 @@
  * прокруткой, поэтому длинные перечни не сваливаются на читателя разом.
  */
 (function () {
-  var lists = document.querySelectorAll('.clean-list');
+  /* Разбор вынесен в функцию и открыт наружу как window.kitLists(). Причина простая:
+     на странице содержание может появиться ПОЗЖЕ загрузки скрипта — каталог кита
+     вставляет карточки после чтения описи, вьюеры и табы тоже дорисовывают разделы.
+     Один проход при загрузке такие списки не увидит вовсе. Повторный вызов безопасен:
+     уже разобранные списки помечены классом подачи и пропускаются. */
+  function scan(root) {
+  var lists = (root || document).querySelectorAll('.clean-list:not(.clean-list--steps):not(.clean-list--cards):not(.clean-list--plain):not(.clean-list--pillar)');
   if (!lists.length) return;
 
   var STEP = /^\s*(\d{1,2})\s*[.)]\s+/;      // «1. » или «1) »
@@ -89,4 +95,8 @@
       ul.classList.add('is-in');
     }
   });
+  }
+
+  scan(document);
+  window.kitLists = scan;
 })();

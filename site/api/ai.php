@@ -4,6 +4,7 @@
  *
  * Единая точка входа. Тело запроса — JSON, поле action:
  *   ping   →  {ok, live}                          проверка, что бэкенд есть (клиент зовёт при открытии)
+ *   lead   →  {ok, mail_live}                     короткий бриф со страницы /digital/
  *   start  →  {ok, sid, reply, sub}               начало сессии
  *   turn   →  {ok, words[], reply, sub, ready}    очередная реплика человека
  *   brief  →  {ok, card}                          сборка брифа
@@ -53,6 +54,7 @@ switch ($action) {
   case 'ping':      pd_action_ping();  break;
   case 'challenge': pd_action_challenge(); break;   // выдать задачу-пропуск
   case 'human':     pd_action_human($in);  break;   // вторая ступень, если поведение странное
+  case 'lead':      pd_action_lead($in);   break;   // короткий бриф из /digital/
   case 'start': pd_action_start(); break;
   case 'turn':  pd_action_turn($in);  break;
   case 'brief': pd_action_brief($in); break;
@@ -107,6 +109,93 @@ function pd_action_ping() {
     'speech' => $L[$lang]['speech'],
     'lang' => $lang,
   ));
+}
+
+// ---------------------------------------------------------------- digital lead
+/**
+ * Структурированный запрос со страницы /digital/. Здесь нет вызова языковой модели:
+ * посетитель уже заполнил короткий бриф, его нужно надёжно и читаемо доставить студии.
+ */
+function pd_action_lead($in) {
+  // Поле скрыто от человека и заполняется простыми спам-ботами. Отвечаем успехом молча,
+  // чтобы бот не учился обходить ловушку.
+  if (pd_str(isset($in['website']) ? $in['website'] : '', 200) !== '') {
+    pd_json(array('ok' => true, 'mail_live' => true));
+  }
+  if (!pd_rate_ok()) pd_fail('слишком много запросов с этого адреса, попробуйте позже', 429);
+
+  $name = pd_str(isset($in['name']) ? $in['name'] : '', 120);
+  $company = pd_str(isset($in['company']) ? $in['company'] : '', 160);
+  $contact = pd_str(isset($in['contact']) ? $in['contact'] : '', 160);
+  $task = pd_str(isset($in['task']) ? $in['task'] : '', 2000);
+  $timeline = pd_str(isset($in['timeline']) ? $in['timeline'] : '', 120);
+  if ($name === '' || $contact === '' || $task === '') pd_fail('заполните имя, контакт и задачу');
+  if (empty($in['agree'])) pd_fail('нужно согласие на обработку данных');
+  if (strpos($contact, '@') === false && !preg_match('/\d/', $contact)) pd_fail('укажите email, телефон или Telegram');
+
+  $types = array(
+    'Событие или выставка',
+    'Государственная или корпоративная программа',
+    'Обучение и развитие',
+    'Виртуальное пространство',
+    'Сложный продукт или технология',
+    'Другая задача',
+  );
+  $projectType = pd_str(isset($in['project_type']) ? $in['project_type'] : '', 120);
+  if (!in_array($projectType, $types, true)) pd_fail('выберите тип проекта');
+
+  $knownComponents = array('AI-ассистент', 'Виртуальное пространство', 'Игра или симуляция',
+    'Интерактивная библиотека', 'Интерактивный объект');
+  $components = array();
+  foreach ((isset($in['components']) && is_array($in['components'])) ? $in['components'] : array() as $item) {
+    $item = pd_str($item, 80);
+    if (in_array($item, $knownComponents, true) && !in_array($item, $components, true)) $components[] = $item;
+  }
+
+  $budgets = array('', 'до 3 млн ₽', '3–7 млн ₽', '7–15 млн ₽', 'от 15 млн ₽');
+  $budget = pd_str(isset($in['budget']) ? $in['budget'] : '', 80);
+  if (!in_array($budget, $budgets, true)) $budget = '';
+
+  $rows = array(
+    'Имя' => $name,
+    'Компания' => $company,
+    'Контакт' => $contact,
+    'Тип проекта' => $projectType,
+    'Состав решения' => $components ? implode(' · ', $components) : 'предложить Playdisplay',
+    'Задача и результат' => $task,
+    'Срок запуска' => $timeline,
+    'Бюджетный ориентир' => $budget !== '' ? $budget : 'обсудить',
+  );
+
+  $table = '';
+  $plain = array();
+  foreach ($rows as $label => $value) {
+    if ($value === '') continue;
+    $table .= '<tr><td style="width:180px;padding:12px 18px 12px 0;border-bottom:1px solid #e5e8ea;vertical-align:top;'
+      . 'font:600 11px/1.4 Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#77838b;">'
+      . pd_esc($label) . '</td><td style="padding:12px 0;border-bottom:1px solid #e5e8ea;'
+      . 'font:400 15px/1.55 Arial,sans-serif;color:#111c23;">' . nl2br(pd_esc($value)) . '</td></tr>';
+    $plain[] = $label . ': ' . $value;
+  }
+
+  $html = '<div style="max-width:760px;margin:0 auto;padding:36px;background:#ffffff;color:#111c23;">'
+    . '<div style="padding:28px 30px;background:#071016;color:#f4f7f8;">'
+    . '<div style="font:600 11px/1.3 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8197ff;">Цифровой слой</div>'
+    . '<h1 style="margin:12px 0 0;font:700 28px/1.15 Arial,sans-serif;">Новый бриф с сайта</h1></div>'
+    . '<table role="presentation" style="width:100%;border-collapse:collapse;margin-top:24px;">' . $table . '</table>'
+    . '<p style="margin:28px 0 0;font:400 12px/1.5 Arial,sans-serif;color:#7a858c;">Источник: playdisplay.com/digital/ · '
+    . date('d.m.Y H:i') . '</p></div>';
+  $text = "ЦИФРОВОЙ СЛОЙ — НОВЫЙ БРИФ\n\n" . implode("\n", $plain);
+  $subject = 'Цифровой слой: ' . $projectType . ($company !== '' ? ' — ' . $company : ' — ' . $name);
+  $replyTo = filter_var($contact, FILTER_VALIDATE_EMAIL) ? $contact : '';
+
+  list($mailLive, $mailWhy) = pd_mail_ready();
+  list($ok, $info) = pd_send_mail($subject, $html, $text, $replyTo, $html);
+  if (!$ok) {
+    pd_log('lead', 'письмо не ушло: ' . $info);
+    pd_fail('сервис отправки временно недоступен, попробуйте ещё раз', 500);
+  }
+  pd_json(array('ok' => true, 'mail_live' => $mailLive, 'mail_note' => $mailWhy));
 }
 
 // ---------------------------------------------------------------- start

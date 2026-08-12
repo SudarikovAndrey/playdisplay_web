@@ -18,10 +18,24 @@
  * на телефоне, где наведения нет вовсе.
  */
 (function () {
-  var hosts = document.querySelectorAll('[data-spots]');
-  if (!hosts.length) return;
-
+  /* Как и у списков, разбор открыт наружу как window.kitHotspots(): кадры могут
+     появиться после загрузки скрипта. Повторный вызов безопасен — картинки, у которых
+     слой меток уже построен, пропускаются. */
   var all = [];
+  var hosts = [];
+
+  function scan(root) {
+    hosts = [];
+    Array.prototype.forEach.call((root || document).querySelectorAll('[data-spots]'), function (m) {
+      if (!m.parentElement || m.parentElement.querySelector(':scope > .spot-layer')) return;
+      hosts.push(m);
+    });
+    if (!hosts.length) { place(); return; }
+    build();
+    place();
+  }
+
+  function build() {
 
   Array.prototype.forEach.call(hosts, function (media) {
     var spots;
@@ -61,6 +75,8 @@
     all.push({ media: media, items: items });
   });
 
+  }
+
   function place() {
     all.forEach(function (g) {
       var m = g.media;
@@ -82,11 +98,10 @@
     });
   }
 
-  place();
+  scan(document);
+  window.kitHotspots = scan;
+
   addEventListener('resize', place, { passive: true });
   addEventListener('load', place);
-  Array.prototype.forEach.call(hosts, function (m) {
-    if (m.tagName === 'IMG' && !m.complete) m.addEventListener('load', place, { once: true });
-    if (m.tagName === 'VIDEO') m.addEventListener('loadedmetadata', place, { once: true });
-  });
+  addEventListener('load', function () { scan(document); });
 })();

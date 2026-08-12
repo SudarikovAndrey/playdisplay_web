@@ -105,7 +105,13 @@
         (missingDemo.length ? ' · без демо: ' + missingDemo.join(', ') : '') +
         (extra.length ? ' · демо без записи в описи: ' + extra.join(', ') : '');
 
-      // блоки каталога появились после запуска модулей — просим их разобрать новое
+      /* Карточки появились ПОСЛЕ того, как модули отработали свой единственный проход
+         (опись читается запросом, это всегда позже). Поэтому просим их разобрать новое.
+         Ровно та же нужда возникает на настоящих страницах, где разделы дорисовываются
+         позже, — поэтому у модулей и появился открытый наружу вызов. */
+      if (window.kitReveal) window.kitReveal(document);
+      if (window.kitLists) window.kitLists(document);
+      if (window.kitHotspots) window.kitHotspots(document);
       if (window.kitArmScrub) window.kitArmScrub(document);
       dispatchEvent(new Event('resize'));
     })

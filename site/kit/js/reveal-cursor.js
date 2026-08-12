@@ -109,18 +109,40 @@
     addEventListener('beforeunload', () => cancelAnimationFrame(animationFrame), { once: true });
   }
 
-  if (reduced || !('IntersectionObserver' in window)) {
-    targets.forEach((target) => target.classList.add('is-visible'));
-  } else {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      });
-    }, { threshold: .06, rootMargin: '0px 0px -7% 0px' });
-    targets.forEach((target) => observer.observe(target));
+  /* ПОЯВЛЕНИЕ ПО ПРОКРУТКЕ — с возможностью пересобрать список цели.
+   *
+   * Пока страница собрана целиком в разметке, одного прохода при загрузке достаточно.
+   * Но содержание может прийти ПОЗЖЕ: каталог кита вставляет карточки после чтения
+   * описи, вьюеры и табы дорисовывают разделы. Такие элементы остаются с opacity: 0
+   * навсегда — выглядит это как «картинка не загрузилась», хотя она на месте. Поэтому
+   * наблюдатель создаётся один раз, а подписка на новые цели открыта наружу как
+   * window.kitReveal(root). Повторный вызов безопасен: уже показанные пропускаются.
+   */
+  const SEL = '.reveal, .chapter-copy > *, .diagram, .art-frame';
+  let observer = null;
+
+  function watch(root) {
+    const list = [...(root || document).querySelectorAll(SEL)]
+      .filter((el) => !el.classList.contains('is-visible'));
+    if (!list.length) return;
+    if (reduced || !('IntersectionObserver' in window)) {
+      list.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+    if (!observer) {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: .06, rootMargin: '0px 0px -7% 0px' });
+    }
+    list.forEach((el) => observer.observe(el));
   }
+
+  watch(document);
+  window.kitReveal = watch;
 
   const audio = document.getElementById('ambientAudio');
   const toggle = document.getElementById('soundToggle');

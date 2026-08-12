@@ -376,6 +376,9 @@ for tail, prio in [('', '1.0')] + [('work/%s/' % s, '0.8') for s in ORDER]:
     for spec in LANGS:
         urls.append('<url><loc>%s/%s%s</loc>%s<changefreq>monthly</changefreq><priority>%s</priority></url>'
                     % (BASE, spec['prefix'], tail, sm_alts(tail), prio))
+# Самостоятельная русская продуктовая страница без английского дубля. Держим её здесь,
+# а не только в готовом sitemap: генератор запускается перед деплоем и иначе удалит URL.
+urls.append('<url><loc>%s/digital/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>' % BASE)
 open(os.path.join(SITE, 'sitemap.xml'), 'w', encoding='utf-8').write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" %s>\n' % XH +
     '\n'.join(urls) + '\n</urlset>\n')
