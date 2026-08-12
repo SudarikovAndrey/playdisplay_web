@@ -8,6 +8,38 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-12 13:03 — hybrid-v8 @ 9c9fba3
+
+**Коммиты в этой поставке**
+```
+9c9fba3 Игра: новый руль
+a651f99 Руль = скорость: углы достижимы; аудит — чистка онбординга при выходе
+bf4662c Журнал деплоя: 9af21b4
+```
+
+**На сервер отправлено файлов:** 18, удалено: 0
+```
+hero-scene.html
+index.html
+sitemap.xml
+api/README.md
+api/ai.php
+digital/
+digital/digital.css
+digital/digital.js
+digital/index.html
+digital/assets/
+digital/assets/complex-loop.mp4
+digital/assets/complex.jpg
+digital/assets/virtual-event-loop.mp4
+digital/assets/virtual-event.jpg
+digital/assets/youth-loop.mp4
+digital/assets/youth.jpg
+kit/js/catalog.js
+kit/js/reveal-cursor.js
+```
+
+
 ## 2026-08-11 18:13 — hybrid-v8 @ 9af21b4
 
 **Коммиты в этой поставке**
