@@ -1091,6 +1091,7 @@ function obUpdate(dt) {
 }
 
 let touchPX = mousePX, touchPY = mousePY;
+let stickVX = 0, stickVY = 0;   // ход руля, −1…1 по осям; интегрирует gTick
 if (isMobile) {
   // ДЖОЙСТИК ВМЕСТО ПРИЦЕЛИВАНИЯ ПАЛЬЦЕМ.
   // Раньше корабль вставал ровно под палец: чтобы увести его в верхний угол, палец
@@ -1103,23 +1104,7 @@ if (isMobile) {
   // край стика = край экрана, центр = центр. Отпускание возвращает ноль, и корабль
   // сам выравнивается по уже существующей пружине.
   const R = 62;                 // радиус хода ручки, px
-  // РАЗНАЯ ЧУВСТВИТЕЛЬНОСТЬ ПО ОСЯМ — не прихоть, а компенсация игровой математики.
-  // Ниже (см. gTick) курс считается как (aimX/ширина - 0.5) * 120, то есть полный ход
-  // вбок даёт ±60 условных единиц. Высота — clamp((1 - aimY/высота) * 48 + 3, 3, 52),
-  // это всего ±24 от середины. При одинаковом переводе пикселей в «прицел» руль выходил
-  // вдвое с лишним резче вбок, чем вверх-вниз: корабль швыряло по сторонам и почти не
-  // поднимало. Выравниваем ощущение: вбок ослабляем, вверх-вниз усиливаем.
-  // Ход сделан заметно спокойнее: полное отклонение ручки больше не швыряет корабль
-  // к краю экрана. Пропорция между осями сохранена (вертикаль всё ещё сильнее,
-  // потому что игровая математика по высоте даёт вдвое меньший размах).
-  // Ещё вдвое спокойнее (03.08): на 0.34/1.35 корабль всё ещё дёргался от малейшего
-  // движения пальца. Руль должен вести, а не швырять.
-  // ещё −30% (11.08): 0.17/0.68 -> 0.12/0.48
-  const GX = 0.12, GY = 0.48;
-  // База — курс на момент касания, в долях экрана. Отклонение ручки прибавляется К НЕЙ,
-  // а не отсчитывается от середины: иначе каждое новое касание рывком возвращало бы
-  // корабль в центр — ровно то, от чего мы уходим, сохраняя курс после отпускания.
-  let stickId = null, ox = 0, oy = 0, baseX = 0.5, baseY = 0.5;
+  let stickId = null, ox = 0, oy = 0;
   const stick = document.createElement('div');
   stick.id = 'gstick';
   stick.innerHTML = '<i></i>';
@@ -1128,15 +1113,18 @@ if (isMobile) {
 
   const centerAim = () => { touchPX = innerWidth / 2; touchPY = innerHeight / 2; };
   const clamp01s = (v, lo, hi) => v < lo ? lo : (v > hi ? hi : v);
+  // РУЛЬ = СКОРОСТЬ, А НЕ СМЕЩЕНИЕ (11.08). Аудит показал две беды прежней схемы.
+  // Во-первых, отклонение нормировалось по РАДИУСУ (Math.hypot): зона руля была кругом,
+  // и в углы экрана — «полный вбок + полный вверх» — попасть было геометрически нельзя.
+  // Во-вторых, полный ход ручки сдвигал прицел всего на 6% экрана (0.5·GX при GX=0.12):
+  // до края приходилось перехватывать палец несколько раз.
+  // Теперь оси НЕЗАВИСИМЫ (кламп по каждой — зона квадратная, углы достижимы), а
+  // отклонение задаёт СКОРОСТЬ прицела: держишь ручку — корабль продолжает ехать,
+  // отпустил — остановился, где был. Интегрирует gTick, там есть dt.
   const place = (dx, dy) => {
-    const d = Math.hypot(dx, dy) || 1, k = Math.min(1, R / d);
-    const kx = dx * k, ky = dy * k;
-    // ручка ходит как ходила — усиление живёт только в переводе в «прицел»
+    const kx = clamp01s(dx, -R, R), ky = clamp01s(dy, -R, R);
     knob.style.transform = 'translate(' + kx.toFixed(1) + 'px,' + ky.toFixed(1) + 'px)';
-    const fx = clamp01s(baseX + (kx / R) * 0.5 * GX, 0, 1);
-    const fy = clamp01s(baseY + (ky / R) * 0.5 * GY, 0, 1);
-    touchPX = fx * innerWidth;
-    touchPY = fy * innerHeight;
+    stickVX = kx / R; stickVY = ky / R;      // −1…1 по каждой оси
   };
 
   addEventListener('touchstart', e => {
@@ -1146,8 +1134,7 @@ if (isMobile) {
     stickId = t.identifier; ox = t.clientX; oy = t.clientY;
     OB.live = true;
     if (OB.on && OB.phase <= 2) obFinish();   // палец на экране — управление сразу ваше
-    // берём за ноль ТЕКУЩИЙ курс — корабль не должен дёргаться в момент касания
-    baseX = touchPX / innerWidth; baseY = touchPY / innerHeight;
+
     stick.style.left = ox + 'px'; stick.style.top = oy + 'px';
     stick.classList.add('on');
     place(0, 0);
@@ -1172,7 +1159,7 @@ if (isMobile) {
     if (stickId === null) return;
     for (let i = 0; i < e.changedTouches.length; i++) {
       if (e.changedTouches[i].identifier !== stickId) continue;
-      stickId = null; OB.live = false;
+      stickId = null; OB.live = false; stickVX = 0; stickVY = 0;
       stick.classList.remove('on');
       knob.style.transform = '';
       // КОРАБЛЬ ОСТАЁТСЯ ТАМ, ГДЕ ЕГО ОСТАВИЛИ. Раньше здесь стоял возврат прицела
@@ -4809,6 +4796,14 @@ function exitGame() {
   _dngN = 0; _dngAttr.fill(null); // ссылки на атрибуты утилизированных чанков не держим
   _ringOp = 0; if (gameRing) gameRing.style.opacity = '0';
   gameOnboard.classList.remove('show');
+  // Онбординг не должен пережить выход (дыра из аудита 11.08): выйди игрок крестиком
+  // посреди фазы 2 — кольцо-демонстрация и «УПРАВЛЯЙ ДЖОЙСТИКОМ» остались бы висеть
+  // поверх галереи. Гасим всё и останавливаем набор текста.
+  OB.on = false; OB.safe = false; OB.phase = 0;
+  document.body.classList.remove('ob-demo-on', 'ob-noship');
+  if (typeof _obTypeT !== 'undefined' && _obTypeT) { clearInterval(_obTypeT); _obTypeT = null; }
+  if (OB.aEl) OB.aEl.textContent = '';
+  stickVX = 0; stickVY = 0;
   if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
   applySceneMode(); // корректная видимость окружения по текущему режиму
   gameOverEl.classList.remove('show'); // игровые оверлеи не должны пережить выход
@@ -5001,6 +4996,12 @@ function updateGame(dt, time) {
   }
   // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной;
   // на мобиле вместо курсора мыши — палец на экране (touchPX/Y), комп это ветвление не задействует
+  if (isMobile && (stickVX || stickVY)) {
+    // полное отклонение: весь экран по X за ~1.2с, по Y за ~0.8с (вертикальный
+    // диапазон прицела вдвое меньше горизонтального — компенсируем скоростью)
+    touchPX = Math.max(0, Math.min(innerWidth,  touchPX + stickVX * innerWidth  * 0.85 * dt));
+    touchPY = Math.max(0, Math.min(innerHeight, touchPY + stickVY * innerHeight * 1.25 * dt));
+  }
   const aimX = isMobile ? touchPX : mousePX, aimY = isMobile ? touchPY : mousePY;
   const tx = (aimX / innerWidth - 0.5) * 120;
   const ty = clamp((1 - aimY / innerHeight) * 48 + 3, 3, 52); // потолок выше потолка гор (~40) — вверх всегда есть выход
