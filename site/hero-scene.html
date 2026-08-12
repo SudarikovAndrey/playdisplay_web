@@ -4999,8 +4999,10 @@ function updateGame(dt, time) {
   if (isMobile && (stickVX || stickVY)) {
     // полное отклонение: весь экран по X за ~1.2с, по Y за ~0.8с (вертикальный
     // диапазон прицела вдвое меньше горизонтального — компенсируем скоростью)
-    touchPX = Math.max(0, Math.min(innerWidth,  touchPX + stickVX * innerWidth  * 0.85 * dt));
-    touchPY = Math.max(0, Math.min(innerHeight, touchPY + stickVY * innerHeight * 1.25 * dt));
+    // ×0.5 (11.08, вторая итерация): на 0.85/1.25 руль «лютовал». Теперь полный ход
+    // проходит экран за ~2.4с по X и ~1.6с по Y — ведёт, а не швыряет.
+    touchPX = Math.max(0, Math.min(innerWidth,  touchPX + stickVX * innerWidth  * 0.42 * dt));
+    touchPY = Math.max(0, Math.min(innerHeight, touchPY + stickVY * innerHeight * 0.62 * dt));
   }
   const aimX = isMobile ? touchPX : mousePX, aimY = isMobile ? touchPY : mousePY;
   const tx = (aimX / innerWidth - 0.5) * 120;
@@ -5277,15 +5279,23 @@ function updateGame(dt, time) {
   // камера за кораблём. При влёте — дуга Безье СКВОЗЬ центр облака точек галереи:
   // зритель буквально пролетает через точки, которые видел на экране, и летит дальше
   const eK = GAME.enter * GAME.enter * (3 - 2 * GAME.enter);
-  const cx = GAME.shipP.x * 0.55 + (Math.random() - 0.5) * shake;
-  const cy = GAME.shipP.y * 0.62 + 7 + (Math.random() - 0.5) * shake;
+  // МОБИЛА: камера держится за кораблём плотнее. На компе коэффициенты 0.55/0.62 дают
+  // красивый параллакс — корабль гуляет по широкому кадру. На узком вертикальном экране
+  // тот же параллакс выносил его за края: у крайних позиций корабль был не виден вовсе.
+  // 0.85/0.88 оставляют лёгкий сдвиг (кадр живой, не приклеенный), но корабль всегда в поле.
+  const FX = isMobile ? 0.85 : 0.55, FY = isMobile ? 0.88 : 0.62;
+  const cx = GAME.shipP.x * FX + (Math.random() - 0.5) * shake;
+  const cy = GAME.shipP.y * FY + 7 + (Math.random() - 0.5) * shake;
   const uB = 1 - eK;
   const mBx = TARGET.x, mBy = TARGET.y + S.viewy, mBz = TARGET.z; // центр облака галереи
   camera.position.set(
     uB * uB * GAME.camStart.x + 2 * uB * eK * mBx + eK * eK * cx,
     uB * uB * GAME.camStart.y + 2 * uB * eK * mBy + eK * eK * cy,
     uB * uB * GAME.camStart.z + 2 * uB * eK * mBz + eK * eK * 17);
-  camera.lookAt(GAME.shipP.x * 0.8 * eK, GAME.shipP.y * 0.85 * eK + (1 - eK) * (TARGET.y + S.viewy), -50 * eK + (1 - eK) * TARGET.z);
+  // взгляд на мобиле тоже ближе к кораблю (0.95 против 0.8) — вместе со сдвигом
+  // позиции это и держит его в кадре
+  const LX = isMobile ? 0.95 : 0.8, LY = isMobile ? 0.95 : 0.85;
+  camera.lookAt(GAME.shipP.x * LX * eK, GAME.shipP.y * LY * eK + (1 - eK) * (TARGET.y + S.viewy), -50 * eK + (1 - eK) * TARGET.z);
   // FOV-кик сверхзвука: короткий импульс линзы при пробитии кольца
   const boomFov = (GAME.boom != null && GAME.boom >= 0) ? Math.sin(Math.PI * Math.min(1, GAME.boom / 0.65)) * 7 : 0;
   if (GAME.exit < 0) camera.fov = GAME.fovStart + (S.fov + Math.min(24, GAME.speed * 0.08) + boomFov - GAME.fovStart) * eK;
