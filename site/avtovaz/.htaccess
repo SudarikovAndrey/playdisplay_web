@@ -1,0 +1,24 @@
+# Закрытая концепция: доступ только по прямой ссылке и по паролю (см. index.php).
+# Ни в sitemap, ни в llms.txt, ни в одной ссылке с сайта этой папки нет.
+
+# Индексация запрещена на уровне заголовка — это сильнее мета-тега:
+# так же закрыты и картинки, а их поисковики любят подхватывать отдельно.
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex"
+  Header set Referrer-Policy "no-referrer"
+</IfModule>
+
+# Списка файлов в папке быть не должно
+Options -Indexes
+
+DirectoryIndex index.php
+
+# Страница живёт на PHP, поэтому правило одностраничника из корня сюда лезть не должно
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /ball/
+  # всё, чего нет на диске, отдаём калитке с паролем, а не главной сайта
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . index.php [L]
+</IfModule>

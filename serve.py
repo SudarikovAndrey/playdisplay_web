@@ -47,18 +47,23 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     # приходит без стилей. Здесь /ball/ отдаёт саму книгу, поэтому вёрстка выглядит
     # ровно так, как на сервере. Пароль на боевом это не отменяет.
     PHP_PREVIEW = {'/ball/': 'ball/private/page.html',
-                   '/ball/index.php': 'ball/private/page.html'}
+                   '/ball/index.php': 'ball/private/page.html',
+                   '/avtovaz/': 'avtovaz/private/page.html',
+                   '/avtovaz/index.php': 'avtovaz/private/page.html'}
 
     def send_head(self):
         clean = self.path.split('?', 1)[0]
-        # прямой заход в private/ — это всегда книга без стилей: пути к css и картинкам
-        # считаются от текущей папки и уезжают на уровень глубже. Отправляем на /ball/
-        if clean.startswith('/ball/private/'):
-            self.send_response(302)
-            self.send_header('Location', '/ball/')
-            self.send_header('Content-Length', '0')
-            self.end_headers()
-            return None
+        # прямой заход в private/ — это всегда страница без стилей: пути к css и картинкам
+        # считаются от текущей папки и уезжают на уровень глубже. Отправляем на /<раздел>/.
+        # Список берём из самой таблицы, чтобы новая закрытая страница подхватывалась
+        # одной строкой в PHP_PREVIEW, а не двумя правками в разных местах.
+        for pref in self.PHP_PREVIEW:
+            if pref.endswith('/') and clean.startswith(pref + 'private/'):
+                self.send_response(302)
+                self.send_header('Location', pref)
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return None
         alt = self.PHP_PREVIEW.get(clean)
         if alt and os.path.isfile(os.path.join(ROOT, alt)):
             self.path = '/' + alt + (('?' + self.path.split('?', 1)[1]) if '?' in self.path else '')

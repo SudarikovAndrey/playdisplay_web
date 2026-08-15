@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#06070a">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Рынок Пацана × АвтоВАЗ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Roboto+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
+  <link rel="stylesheet" href="../../kit/css/layout.css">
+  <link rel="stylesheet" href="../../kit/css/typography.css">
+  <link rel="stylesheet" href="../../kit/css/components.css">
+  <link rel="stylesheet" href="../../kit/css/animations.css">
+</head>
+<body>
+  <!-- Заставка: страница открывается, когда пришли шрифты и кадры первых двух экранов -->
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <img class="boot-logo" src="../../kit/assets/demo/logo.webp" alt="">
+      <div class="boot-bar"><i id="bootBar"></i></div>
+      <p class="boot-note">Рынок Пацана × АвтоВАЗ</p>
+    </div>
+  </div>
+
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="cursor-core" aria-hidden="true"></div>
+  <div class="brand-particles" id="brandParticles" aria-hidden="true"></div>
+  <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="../../kit/assets/demo/logo.webp" alt="Playdisplay"></a>
+    <div class="book-mark"><span>Рынок Пацана × АвтоВАЗ</span><span>Версия 0.1</span></div>
+  </header>
+
+  <nav class="chapter-nav" aria-label="Навигация по разделам">
+    <a href="#s01" data-section="s01"><span>01</span><small>Первый раздел</small></a>
+    <p class="nav-legal">© Playdisplay</p>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-intro">
+        <div class="hero-copy reveal">
+          <p class="overline hero-overline" data-parallax="0.03">Надстрочник · версия 0.1</p>
+          <h1><span class="l1" data-parallax="0.075">ПЕРВАЯ</span><span class="l2" data-parallax="0.05">СТРОКА</span></h1>
+          <p class="hero-statement hero-statement--float" data-parallax="0.04">Короткий слоган в одну строку.</p>
+        </div>
+        <p class="hero-status" data-parallax="0.02">Статус документа: черновик. Заменить или убрать.</p>
+        <a class="scroll-cue" href="#s01"><span>Начать</span><i></i></a>
+      </div>
+    </section>
+
+    <section class="opening-statement">
+      <p class="reveal" data-parallax="0.012">Главная мысль.</p>
+      <p class="reveal" data-parallax="0.026">Вторая строка.</p>
+    </section>
+
+    <section id="s01" class="chapter" data-chapter="01">
+      <div class="chapter-shell">
+        <header class="chapter-header reveal">
+          <span class="chapter-number">01</span>
+          <span class="chapter-rule"></span>
+          <span class="chapter-meta">Версия 0.1</span>
+        </header>
+        <article class="chapter-copy">
+          <h2>ПЕРВЫЙ РАЗДЕЛ</h2>
+          <h3>Подзаголовок</h3>
+          <p>Текст раздела. Блоки берите из каталога: <code>kit/catalog.html</code>.</p>
+          <ul class="clean-list">
+            <li>1. Первый шаг.</li>
+            <li>2. Второй шаг.</li>
+            <li>3. Третий шаг.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="final-credits" id="contacts">
+    <div class="final-credits__main">
+      <div class="final-credits__director">
+        <img src="../../kit/assets/demo/portrait.webp" alt="">
+        <p><span>Роль</span><strong>Имя Фамилия</strong></p>
+      </div>
+    </div>
+    <span class="final-credits__index">Рынок Пацана × АвтоВАЗ / 0.1</span>
+  </footer>
+
+  <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
+
+  <script defer src="../../kit/js/boot.js"></script>
+  <script defer src="../../kit/js/reveal-cursor.js"></script>
+  <script defer src="../../kit/js/nav.js"></script>
+  <script defer src="../../kit/js/parallax.js"></script>
+  <script defer src="../../kit/js/lists.js"></script>
+  <script defer src="../../kit/js/hotspots.js"></script>
+  <script defer src="../../kit/js/ui.js"></script>
+</body>
+</html>
