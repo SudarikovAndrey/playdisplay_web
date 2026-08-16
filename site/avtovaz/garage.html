@@ -101,7 +101,7 @@
     renderer.setClearColor(0x000000, 0);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.06;
+    renderer.toneMappingExposure = 0.82;   // сцена была пересвечена: бетон уходил в белое
     /* Тени включаем: без них машина «наклеена» на пол, а сцена читается плоской.
        PCFSoft — мягкий край, как от лампы через плафон, а не бритвенно резкий. */
     renderer.shadowMap.enabled = true;
@@ -120,7 +120,7 @@
       var env = new THREE.Scene();
       env.add(new THREE.Mesh(
         new THREE.SphereGeometry(12, 24, 16),
-        new THREE.MeshBasicMaterial({ side: THREE.BackSide, color: 0x8f9196 })
+        new THREE.MeshBasicMaterial({ side: THREE.BackSide, color: 0x75726c })
       ));
       function panel(w, h, x, y, z, k) {
         var m = new THREE.Mesh(new THREE.PlaneGeometry(w, h),
@@ -129,9 +129,9 @@
         m.lookAt(0, 0, 0);
         env.add(m);
       }
-      panel(9, 9, 0, 7.5, 1.5, 3.6);       // верхний софтбокс
-      panel(7, 5, -6.5, 2.5, 4.5, 1.6);    // заполняющий слева-спереди
-      panel(6, 2.4, 4.5, 3.6, -5.5, 2.8);  // контровой справа-сзади
+      panel(9, 9, 0, 7.5, 1.5, 2.4);       // верхний софтбокс
+      panel(7, 5, -6.5, 2.5, 4.5, 1.1);    // заполняющий слева-спереди
+      panel(6, 2.4, 4.5, 3.6, -5.5, 1.9);  // контровой справа-сзади
       panel(12, 8, 0, -6, 0, 0.10);        // тёмный низ
       return env;
     }
@@ -150,7 +150,7 @@
          • ключевой — сверху-сбоку, единственный, кто отбрасывает тень;
          • контровой холодный сзади — отделяет кузов от тёмной стены;
          • тёплая подсветка снизу-спереди — вытягивает бампер и решётку из черноты. */
-    var key = new THREE.DirectionalLight(0xfff2dd, 2.1);
+    var key = new THREE.DirectionalLight(0xfff2dd, 1.5);
     key.position.set(4.2, 7.5, 5.0);
     key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048);
@@ -163,11 +163,11 @@
     sc.near = 1; sc.far = 22;
     scene.add(key, key.target);
 
-    var rimBack = new THREE.DirectionalLight(0x9db8ff, 1.15);
+    var rimBack = new THREE.DirectionalLight(0xa8bcf0, 0.5);
     rimBack.position.set(-5.5, 3.2, -6);
     scene.add(rimBack);
 
-    var fillWarm = new THREE.DirectionalLight(0xffb27a, 0.55);
+    var fillWarm = new THREE.DirectionalLight(0xffb27a, 0.35);
     fillWarm.position.set(-2.5, 0.9, 5.5);
     scene.add(fillWarm);
 
@@ -226,8 +226,8 @@
       c.width = c.height = 128;
       var g = c.getContext('2d');
       var grad = g.createRadialGradient(64, 64, 4, 64, 64, 62);
-      grad.addColorStop(0, 'rgba(0,0,0,.62)');
-      grad.addColorStop(.55, 'rgba(0,0,0,.28)');
+      grad.addColorStop(0, 'rgba(0,0,0,.34)');
+      grad.addColorStop(.55, 'rgba(0,0,0,.15)');
       grad.addColorStop(1, 'rgba(0,0,0,0)');
       g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
       var tex = new THREE.CanvasTexture(c);
@@ -273,7 +273,36 @@
        Масштаб считается ОТ МАШИНЫ: у комнаты и у модели свои единицы, и «подогнать
        на глаз» означает, что при смене машины гараж окажется кукольным или гигантским. */
     var roomLoaded = false;
-    function loadRoom(carHeight) {
+    var floorLevel = 0;
+    var raycaster = new THREE.Raycaster();
+
+    /* УРОВЕНЬ ПОЛА. Нижняя грань габарита не годится: снизу у модели плита основания,
+       и машина проваливалась по ступицу. Первый же луч сверху вниз тоже не годится —
+       он цепляется за подвесную лампу, грушу и полки, и машина зависала над полом.
+       Поэтому: пускаем пять лучей (центр и четыре точки вокруг), из всех пересечений
+       берём только те, что лежат в НИЖНЕЙ ТРЕТИ комнаты (выше плиты, ниже верстака),
+       и выбираем самую высокую такую поверхность — это и есть пол. Из пяти лучей берём
+       медиану: один может попасть на ящик или домкрат. */
+    function findFloor(root, box) {
+      var lowLimit = box.min.y + (box.max.y - box.min.y) * 0.34;
+      var step = Math.min(box.max.x - box.min.x, box.max.z - box.min.z) * 0.12;
+      var probes = [[0, 0], [step, 0], [-step, 0], [0, step], [0, -step]];
+      var found = [];
+      probes.forEach(function (p) {
+        raycaster.set(new THREE.Vector3(p[0], box.max.y + 5, p[1]), new THREE.Vector3(0, -1, 0));
+        var hits = raycaster.intersectObject(root, true);
+        var best = null;
+        hits.forEach(function (h) {
+          if (h.point.y > lowLimit) return;                 // потолок, лампа, полки — мимо
+          if (best === null || h.point.y > best) best = h.point.y;   // самая высокая из нижних
+        });
+        if (best !== null) found.push(best);
+      });
+      if (!found.length) return 0;
+      found.sort(function (a, b) { return a - b; });
+      return found[Math.floor(found.length / 2)];           // медиана: ящик под одним лучом не сдвинет пол
+    }
+    function loadRoom(carLength) {
       if (roomLoaded) return;
       roomLoaded = true;
       loader.load('models/garage.glb', function (gltf) {
@@ -289,14 +318,20 @@
         var box = new THREE.Box3().setFromObject(root);
         var size = new THREE.Vector3(), center = new THREE.Vector3();
         box.getSize(size); box.getCenter(center);
-        /* Считаем по ВЫСОТЕ: у гаража главное — потолок над машиной (примерно два её
-           роста). По длине комната у этой модели почти квадратная, и подгонка по длине
-           давала зал 18 на 18 единиц вокруг пятиметровой машины — не гараж, а ангар. */
-        var k = (carHeight * 2.1) / size.y;
+        /* Комната считается ОТ ДЛИНЫ МАШИНЫ: коэффициент 2.6 даёт по половине корпуса
+           воздуха с каждой стороны. При прежней подгонке по высоте (2.1 роста) машина
+           упиралась бампером в стеллаж, а бортом — в диван. */
+        var k = (carLength * 3.6) / Math.max(size.x, size.z);
         root.scale.setScalar(k);
         root.position.set(-center.x * k, -box.min.y * k, -center.z * k);
         roomRoot.add(root);
-        if (DEV) console.log('гараж:', size, 'масштаб', k.toFixed(3));
+        root.updateMatrixWorld(true);
+        floorLevel = findFloor(root, new THREE.Box3().setFromObject(root));
+        roomHalf = Math.min(size.x, size.z) * k / 2;
+        carRoot.position.y = floorLevel + fit.h / 2;      // пересаживаем машину на найденный пол
+        if (shadow) shadow.position.y = floorLevel + 0.02;
+        orbit.target.set(0, floorLevel + fit.h * 0.52, 0);
+        if (DEV) console.log('гараж:', size, 'масштаб', k.toFixed(3), 'пол на высоте', floorLevel.toFixed(3));
       }, undefined, function () { /* без интерьера сцена остаётся студийной — это не поломка */ });
     }
 
@@ -318,8 +353,12 @@
       box.getSize(size); box.getCenter(center);
 
       /* Постоянный размер и центр в начале координат: модели приходят в разных
-         масштабах, а кадр обязан быть одинаковым при переключении вариантов. */
-      var scale = 2.4 / size.y;
+         масштабах, а кадр обязан быть одинаковым при переключении вариантов.
+         Равняем ПО ДЛИНЕ: у настоящих машин длина держится в коридоре 4,0–4,3 м, а
+         высота гуляет вдвое — при выравнивании по высоте раллийная «восьмёрка»
+         получалась размером с внедорожник. */
+      var CAR_LENGTH = 4.2;
+      var scale = CAR_LENGTH / Math.max(size.x, size.z);
       root.scale.setScalar(scale);
       root.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
       carRoot.add(root);
@@ -331,9 +370,11 @@
       fit.h = size.y * scale;
       fitCamera();
 
-      /* Машина стоит НА ПОЛУ гаража, а не висит в центре координат: пол комнаты — y = 0,
-         поэтому модель поднимаем на половину своей высоты. */
-      carRoot.position.y = fit.h / 2;
+      /* Машина стоит НА ПОЛУ гаража. Поднять на половину высоты недостаточно: в габарит
+         комнаты входит плита основания, и её низ лежит НИЖЕ настоящего пола — машина
+         оказывалась утопленной по ступицу. Уровень пола ищем лучом вниз по геометрии
+         комнаты (floorLevel), а до её загрузки считаем полом ноль. */
+      carRoot.position.y = floorLevel + fit.h / 2;
       key.target.position.set(0, fit.h * 0.5, 0);
       key.target.updateMatrixWorld();
       if (shadow) scene.remove(shadow);
@@ -344,13 +385,14 @@
          он равен расстоянию до машины минус её радиус. Всё, что ближе, — рассыпается. */
       roomUniforms.uBand.value = fit.w * 0.18;
       roomUniforms.uFloorY.value = fit.h * 0.16;   // всё, что ниже колёсных арок, — пол
-      loadRoom(fit.h);
+      loadRoom(fit.w);
       updateCamera();
     }
 
     /* ── КАМЕРА ─────────────────────────────────────────────────────────────*/
-    var orbit = { az: 2.35, el: 0.22, dist: 6.4, target: new THREE.Vector3(0, 1.2, 0) };
+    var orbit = { az: 2.35, el: 0.16, dist: 6.4, target: new THREE.Vector3(0, 1.2, 0) };
     var fit = { w: 4.6, h: 2.4 };
+    var roomHalf = 0;      // половина меньшей стороны комнаты; 0 — комната ещё не загружена
 
     /* Дистанция считается ПО ОБОИМ углам обзора. Вертикальный угол задан камерой,
        горизонтальный зависит от пропорций рамки; если считать только по ширине модели,
@@ -362,6 +404,9 @@
       var dV = (fit.h / 2) / Math.tan(fovV / 2);
       var dH = (fit.w / 2) / Math.tan(fovH / 2);
       orbit.dist = Math.max(dV, dH) * 1.62 + 0.6;
+      /* Держим камеру внутри комнаты: за стеной пропадает и смысл сцены, и растворение —
+         стены рассыпаются только когда стоят МЕЖДУ камерой и машиной. */
+      if (roomHalf) orbit.dist = Math.min(orbit.dist, roomHalf * 0.85);
       updateCamera();
     }
     function updateCamera() {
@@ -379,7 +424,7 @@
     canvas.addEventListener('pointermove', function (e) {
       if (!drag) return;
       orbit.az -= (e.clientX - drag.x) * 0.006;
-      orbit.el = Math.max(0.03, Math.min(0.8, orbit.el + (e.clientY - drag.y) * 0.004));
+      orbit.el = Math.max(0.03, Math.min(0.42, orbit.el + (e.clientY - drag.y) * 0.004));
       drag.x = e.clientX; drag.y = e.clientY;
       spin = 0;                                   // человек взял управление — автоповорот стоп
     });
@@ -391,7 +436,8 @@
     canvas.addEventListener('wheel', function (e) {
       if (!e.shiftKey) return;
       e.preventDefault();
-      orbit.dist = Math.max(3.6, Math.min(12, orbit.dist + e.deltaY * 0.004));
+      var far = roomHalf ? roomHalf * 0.92 : 12;
+      orbit.dist = Math.max(3.2, Math.min(far, orbit.dist + e.deltaY * 0.004));
     }, { passive: false });
 
     document.getElementById('models').addEventListener('click', function (e) {
