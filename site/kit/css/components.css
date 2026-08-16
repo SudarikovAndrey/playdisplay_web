@@ -928,3 +928,36 @@ html.deck { scroll-snap-type: y mandatory; }
 .steps-2col .clean-list--steps { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(20px, 3vw, 52px); }
 .steps-2col .clean-list--steps li:nth-last-child(2) { border-bottom: 0; }
 @media (max-width: 760px) { .steps-2col .clean-list--steps { grid-template-columns: 1fr; } }
+
+/* СЛАЙД-КАДР: изображение во весь экран, текст поверх.
+   Нужен там, где картинка сама и есть аргумент — мир игры, персонаж, сцена. Кадры из
+   магазинов приложений ВЕРТИКАЛЬНЫЕ (телефон), а слайд широкий, поэтому кадр обрезается
+   по месту: точку обрезки задаём на самом кадре (`object-position`), иначе на широком
+   экране в кадр попадает случайная середина — у плакатов это подбородок героя.
+   Затемнение обязательно: белый заголовок по светлой картинке не читается, а по тёмной
+   не читается тёмный. Полоса градиента идёт от края с текстом. */
+.slide--cover { overflow: hidden; }
+.slide--cover > .slide-cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 35%;
+}
+.slide--cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(9,9,10,.94) 0%, rgba(9,9,10,.82) 34%, rgba(9,9,10,.35) 62%, rgba(9,9,10,.12) 100%);
+}
+.slide--cover > .slide-shell { position: relative; z-index: 2; }
+.slide--cover .slide-head p { max-width: 620px; color: #d8dae0; }
+.slide--cover .slide-note { color: #b9bcc4; }
+@media (max-width: 760px) {
+  /* На телефоне текст стоит внизу, а кадр виден сверху: боковое затемнение съело бы
+     всю картинку, ради которой слайд и сделан. */
+  .slide--cover::after { background: linear-gradient(180deg, rgba(9,9,10,.25) 0%, rgba(9,9,10,.55) 42%, rgba(9,9,10,.95) 78%); }
+  .slide--cover { align-content: end; }
+}
+@media print { .slide--cover::after { background: rgba(255,255,255,.86); } }
