@@ -220,9 +220,19 @@
 .league-path span { white-space: nowrap; color: #dbe1ed; }
 .league-path i { flex: 1; height: 1px; margin: 0 12px; background: linear-gradient(90deg, var(--ultra), rgba(255,255,255,.18)); }
 
-.collection-diagram { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.collection-diagram div { min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; padding: 22px; border: 1px solid var(--line); background: linear-gradient(145deg, rgba(255,255,255,.075), transparent); }
+/* minmax(0, 1fr), а не 1fr: у колонки 1fr нижний предел — минимальная ширина содержимого,
+   и длинная подпись вроде «игровых взаимодействий с LADA» раздвигает плитки шире сетки.
+   На телефоне это выносило полосу за экран на 31 пиксель (замер при ширине окна 401). */
+.collection-diagram { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.collection-diagram div { min-width: 0; min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; padding: 22px; border: 1px solid var(--line); background: linear-gradient(145deg, rgba(255,255,255,.075), transparent); }
+.collection-diagram span { overflow-wrap: anywhere; }
 .collection-diagram b { color: var(--electric); font-size: 46px; font-weight: 420; letter-spacing: -.06em; }
+/* Пять плиток в ряд. Нужен, когда метрик ровно пять: в сетке из четырёх колонок пятая
+   встаёт одна во второй ряд, и полоса читается как незаконченная. Правило стоит ДО
+   мобильного media-блока сознательно — там .collection-diagram переводится в две
+   колонки, и при равной специфичности побеждает то, что ниже: телефон должен выиграть. */
+.collection-diagram--five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.collection-diagram--five b { font-size: 38px; }
 
 .season-diagram { min-height: 580px; position: relative; display: grid; place-items: center; overflow: hidden; }
 .season-diagram::before, .season-diagram::after { content: ""; position: absolute; width: 70%; height: 42%; border: 1px solid rgba(112,136,255,.22); border-radius: 50%; transform: rotate(-15deg); }
@@ -243,6 +253,16 @@
 
 .chapter-08 .chapter-copy,
 .chapter-09 .chapter-copy { width: min(1120px, 92%); }
+
+/* ШИРОКАЯ ГЛАВА. Ставится на саму секцию: <section class="chapter chapter--wide">.
+   Нужна там, где глава собрана не из абзацев, а из карточек, сопоставлений и плашек.
+   Причина числовая: читаемая текстовая колонка — 780 пикселей, и сетка из трёх карточек
+   в ней даёт по 190 пикселей на карточку, а полоса из пяти плашек — по 110. Заголовки в
+   таких клетках ломаются по слогам. Абзацам ширина не достаётся: у них свой max-width.
+   Левый отступ обнуляется НЕ для красоты: у обычной колонки он равен 11vw, и колонка
+   шириной во всю страницу уезжала за правый край экрана на 26 пикселей — появлялась
+   горизонтальная прокрутка (замер при ширине окна 1280). */
+.chapter--wide .chapter-copy { width: min(1120px, 100%); margin-left: 0; margin-right: 0; }
 
 .concept-grid {
   width: min(1120px, 100%);
@@ -383,7 +403,7 @@
   .radar-label { position: static; transform: none; max-width: none; min-width: 0; min-height: 42px; justify-content: space-between; padding: 12px; background: #0a0e15; white-space: normal; overflow-wrap: anywhere; }
   .profile-heading { align-items: flex-start; }
   .league-path { grid-column: 1; overflow-x: auto; padding-bottom: 8px; }
-  .collection-diagram { grid-template-columns: repeat(2, 1fr); }
+  .collection-diagram { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .season-diagram { min-height: 520px; }
   .season-ball { width: 160px; }
   .orbit-label.one { left: 4%; }.orbit-label.two { right: 3%; }.orbit-label.three { right: 4%; }.orbit-label.four { left: 3%; }
@@ -510,4 +530,139 @@
   letter-spacing: .12em;
   color: var(--electric);
   transform: translateY(-.35em);
+}
+
+/* ─── БЛОКИ КОММЕРЧЕСКОГО ПРЕДЛОЖЕНИЯ ────────────────────────────────────────
+   Компред отличается от книги концепции тремя вещами: в нём есть цифры, которых
+   ещё нет; есть сравнение «как обычно» и «как у нас»; и есть цена. */
+
+/* ПРОПУСК ПОД ЧИСЛО. Часть цифр приходит от заказчика позже, и пустое место обязано
+   БРОСАТЬСЯ В ГЛАЗА: набранное текстом «[___]» читается как опечатка вёрстки, а
+   незаполненный пропуск уезжает партнёру незамеченным. Ширина и высота заданы в em,
+   поэтому пропуск соразмерен и строке текста, и числу в 46 пикселей — в пикселях он
+   выглядел бы соринкой в крупной плашке и брусом в абзаце. */
+.blank {
+  display: inline-block;
+  width: 2.6em;
+  height: .58em;
+  vertical-align: baseline;
+  border-bottom: .09em solid var(--coral);
+  background: linear-gradient(90deg, rgba(255,106,61,.16), rgba(255,106,61,.05));
+  opacity: .8;
+}
+.blank--wide { width: 4.6em; }
+@media print { .blank { border-bottom-color: #999; background: #eee; } }
+
+/* СОПОСТАВЛЕНИЕ. Две колонки: слева как бывает обычно, справа — что предлагаем.
+   Правая колонка выделена рамкой и подсветкой, левая намеренно тусклее: сравнение
+   должно читаться с одного взгляда, а не после чтения обеих колонок. На узком экране
+   колонки становятся строками — порядок «сначала обычное, потом наше» сохраняется,
+   поэтому сравнение не разваливается. */
+.compare {
+  width: min(1120px, 100%);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 34px 0 clamp(60px, 8vw, 110px);
+}
+.compare-col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(22px, 2.6vw, 34px);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+}
+.compare-col > span {
+  color: var(--muted);
+  font: 500 10.5px/1 "Roboto Mono", monospace;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.compare-col > b {
+  color: #cfd6e4;
+  font-family: Unbounded, "Arial Black", sans-serif;
+  font-size: clamp(17px, 1.5vw, 23px);
+  font-weight: 560;
+  line-height: 1.24;
+  letter-spacing: -.03em;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+.compare-col--strong {
+  border-color: rgba(135,156,255,.48);
+  background:
+    radial-gradient(circle at 100% 0, rgba(48,76,255,.22), transparent 52%),
+    linear-gradient(145deg, rgba(220,238,240,.075), rgba(220,238,240,.018));
+}
+.compare-col--strong > span { color: var(--electric); }
+.compare-col--strong > b { color: var(--paper); }
+/* Колонка живёт внутри .chapter-copy, где у абзаца своя ширина и свой цвет —
+   без этого правила пояснение в колонке уезжало бы по ширине текстовой колонки. */
+.chapter-copy .compare-col p { width: auto; max-width: none; margin: 0; color: #a8b3c4; font-size: 15.5px; line-height: 1.5; }
+
+/* ПЛАШКА ПРЕДЛОЖЕНИЯ С ЦЕНОЙ. Цена отбита линейкой и прижата к низу карточки
+   (`margin-top: auto`): у двух программ разной длины состав отличается на несколько
+   строк, и без прижатия цены вставали на разной высоте — глаз сравнивал их дольше,
+   чем читал. */
+.offer-grid {
+  width: min(1120px, 100%);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 34px 0 clamp(60px, 8vw, 110px);
+}
+.offer-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: clamp(26px, 3vw, 40px);
+  border: 1px solid rgba(220,238,240,.16);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(48,76,255,.2), transparent 45%),
+    linear-gradient(145deg, rgba(220,238,240,.075), rgba(220,238,240,.018));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 22px 70px rgba(0,0,0,.18);
+}
+.offer-card > span {
+  color: var(--coral);
+  font: 500 11px/1 "Roboto Mono", monospace;
+  letter-spacing: .12em;
+}
+.offer-card h4 {
+  margin: 0;
+  color: var(--paper);
+  font-family: Unbounded, "Arial Black", sans-serif;
+  font-size: clamp(21px, 2vw, 30px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -.035em;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+/* :not(.offer-price) обязателен. Правило внутри .chapter-copy сильнее одиночного класса
+   .offer-price и обнуляло его margin: auto — цена переставала прижиматься к низу и в двух
+   карточках разной длины вставала на разной высоте (замер: расхождение 24 пикселя). */
+.chapter-copy .offer-card p:not(.offer-price) { width: auto; max-width: none; margin: 0; color: #aebac6; font-size: 16px; line-height: 1.55; }
+/* Селектор из двух классов не для красоты: у абзаца внутри главы уже есть правило
+   `.chapter-copy p { margin: 0 0 27px }`, и оно сильнее одиночного класса — margin: auto
+   не срабатывал, цена шла по потоку и в карточках с разным составом расходилась по
+   высоте на 24 пикселя (замер при ширине 1280). */
+.offer-card .offer-price {
+  margin: auto 0 0;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  color: var(--paper);
+  font: 600 clamp(28px, 3.2vw, 48px)/1 Unbounded, "Arial Black", sans-serif;
+  letter-spacing: -.05em;
+}
+@media (max-width: 760px) {
+  .compare, .offer-grid { grid-template-columns: 1fr; }
+}
+@media print {
+  .compare-col, .offer-card { color: #111; background: #f6f6f6 !important; border-color: #bbb; }
+  .compare-col > b, .offer-card h4, .offer-price { color: #111; }
 }

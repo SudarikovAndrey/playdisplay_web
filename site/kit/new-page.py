@@ -31,7 +31,10 @@ PAGE = '''<!doctype html>
   <meta name="robots" content="noindex, nofollow">
   <title>{title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Roboto+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Onest обязателен: именно он объявлен основным в typography.css. Раньше здесь
+       стоял Manrope, которого в стилях нет вовсе, — страница молча уезжала на Helvetica -->
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Unbounded:wght@400;600;700;800&display=swap" rel="stylesheet">
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="{up}kit/css/layout.css">
   <link rel="stylesheet" href="{up}kit/css/typography.css">
