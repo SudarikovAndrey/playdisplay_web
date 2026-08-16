@@ -71,13 +71,16 @@
       <div class="hero-intro">
         <div class="hero-copy hero-copy--narrow reveal">
           <p class="overline hero-overline" data-parallax="0.03">Игровая программа LADA на 2027 год</p>
+          <!-- Два настоящих знака. Присланный знак LADA — в тёмно-серой печатной версии,
+               на асфальте он не читается: класс on-dark красит его в белый фильтром,
+               прозрачность при этом остаётся. -->
           <div class="lockup" data-parallax="0.06">
-            <span class="lockup-slot">Место под знак LADA</span>
+            <img class="on-dark lockup-mark--wide" src="assets/lada-lockup.png" alt="LADA">
             <span class="lockup-x">×</span>
             <img src="assets/game-logo.png" alt="Рынок Пацана">
           </div>
-          <h1><span class="l1" data-parallax="0.075">АВТОМОБИЛИ LADA</span><span class="l2" data-parallax="0.05">В МОБИЛЬНОЙ ИГРЕ</span></h1>
-          <p class="hero-statement hero-statement--float" data-parallax="0.04">Не реклама внутри игры, а игровой слой, который игрок сам хочет пройти.</p>
+          <h1><span class="l1" data-parallax="0.075">LADA — НЕ ПРОСТО</span><span class="l2" data-parallax="0.05">МАШИНА, А МЕЧТА</span></h1>
+          <p class="hero-statement hero-statement--float" data-parallax="0.04">Популяризация марки через мобильную игру про девяностые — эпоху, где LADA была символом успеха и предметом желания.</p>
           <ul class="hero-facts" data-parallax="0.03">
             <li><b>1+ млн</b><span>установок на всех площадках</span></li>
             <li><b>4,4</b><span>в App Store, 813 оценок</span></li>
@@ -85,6 +88,9 @@
             <li><b>30+ мин</b><span>в игре ежедневно</span></li>
           </ul>
         </div>
+        <!-- Кадр игры стоит справа ЦЕЛИКОМ и не срезается краем экрана. Когда придёт
+             нарезка геймплея, тег меняется на <video autoplay muted loop playsinline>,
+             стили у картинки и ролика одни и те же. -->
         <figure class="hero-phone" data-parallax="0.08">
           <img src="assets/shot2.jpg" alt="Экран игры: ход по району, кубики и деньги">
         </figure>
@@ -455,7 +461,7 @@
           <div class="game-card">
             <div class="game-card__top">
               <span>Гараж · внедорожник</span>
-              <b>NIVA</b>
+              <b><img src="assets/lada-emblem.png" alt="" style="height:.86em;vertical-align:-.06em;margin-right:.28em;filter:brightness(0) invert(1)">NIVA</b>
               <i class="game-card__lvl">8 ур.</i>
             </div>
             <div class="game-card__body">
@@ -698,7 +704,7 @@
         <p><span>Креативный директор Playdisplay</span><strong>Андрей Судариков</strong></p>
       </div>
       <div class="lockup">
-        <span class="lockup-slot">Место под знак LADA</span>
+        <img class="on-dark lockup-mark--wide" src="assets/lada-lockup.png" alt="LADA">
         <span class="lockup-x">×</span>
         <img src="assets/game-logo.png" alt="Рынок Пацана">
       </div>
