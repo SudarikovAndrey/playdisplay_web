@@ -65,12 +65,13 @@
 
   <div class="hud">
     <div class="plate">
-      <b id="plateName">NIVA · вариант 1</b>
-      <span id="plateNote">Тюнинг: кенгурятник, багажник, фары</span>
+      <b id="plateName">NIVA · экспедиция</b>
+      <span id="plateNote">Кенгурятник, багажник, люстра</span>
     </div>
     <div class="switch" id="models">
-      <button type="button" data-model="models/niva-a.glb" data-name="NIVA · вариант 1" data-note="Тюнинг: кенгурятник, багажник, фары" aria-pressed="true">1</button>
-      <button type="button" data-model="models/niva-b.glb" data-name="NIVA · вариант 2" data-note="Заниженная, роспись по кузову" aria-pressed="false">2</button>
+      <button type="button" data-model="models/niva-a.glb" data-name="NIVA · экспедиция" data-note="Кенгурятник, багажник, люстра" aria-pressed="true">1</button>
+      <button type="button" data-model="models/car-cruiser.glb" data-name="NIVA · круизер" data-note="Городская сборка" aria-pressed="false">2</button>
+      <button type="button" data-model="models/car-castrol.glb" data-name="NIVA · ралли" data-note="Раллийная ливрея" aria-pressed="false">3</button>
     </div>
   </div>
 
@@ -100,7 +101,11 @@
     renderer.setClearColor(0x000000, 0);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.02;
+    renderer.toneMappingExposure = 1.06;
+    /* Тени включаем: без них машина «наклеена» на пол, а сцена читается плоской.
+       PCFSoft — мягкий край, как от лампы через плафон, а не бритвенно резкий. */
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
@@ -138,9 +143,33 @@
     /* Тонкая направленная подсветка поверх окружения: даёт резкий блик на лаке,
        которого у чистого IBL не бывает. Тени выключены сознательно — на рендере Meshy
        машина стоит без тени, а любая тень тут же выдаёт отсутствие пола. */
-    var key = new THREE.DirectionalLight(0xffffff, 0.5);
-    key.position.set(3.5, 6, 4.5);
-    scene.add(key);
+    /* ── СВЕТ СЦЕНЫ ─────────────────────────────────────────────────────────
+       Окружение (IBL) даёт объём и отражения, но не даёт НАПРАВЛЕНИЯ: без него нет
+       ни блика по ребру крыла, ни тени на полу, и кадр выглядит пресным.
+       Три источника, у каждого своя работа:
+         • ключевой — сверху-сбоку, единственный, кто отбрасывает тень;
+         • контровой холодный сзади — отделяет кузов от тёмной стены;
+         • тёплая подсветка снизу-спереди — вытягивает бампер и решётку из черноты. */
+    var key = new THREE.DirectionalLight(0xfff2dd, 2.1);
+    key.position.set(4.2, 7.5, 5.0);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.bias = -0.0009;          // без сдвига по тени идёт «зебра» самозатенения
+    key.shadow.normalBias = 0.02;
+    key.shadow.radius = 3;
+    var sc = key.shadow.camera;         // рамка тени охватывает машину, а не всю комнату:
+    sc.left = -4; sc.right = 4;         // чем меньше рамка, тем крупнее пиксель карты теней
+    sc.top = 4; sc.bottom = -4;
+    sc.near = 1; sc.far = 22;
+    scene.add(key, key.target);
+
+    var rimBack = new THREE.DirectionalLight(0x9db8ff, 1.15);
+    rimBack.position.set(-5.5, 3.2, -6);
+    scene.add(rimBack);
+
+    var fillWarm = new THREE.DirectionalLight(0xffb27a, 0.55);
+    fillWarm.position.set(-2.5, 0.9, 5.5);
+    scene.add(fillWarm);
 
     /* ── ИНТЕРЬЕР ГАРАЖА ────────────────────────────────────────────────────
        Растворение по глубине: фрагмент тем прозрачнее, чем ближе он к камере.
@@ -254,6 +283,8 @@
           if (!o.isMesh || !o.material) return;
           if (o.material.map) { o.material.map.anisotropy = maxAniso; o.material.map.needsUpdate = true; }
           patchRoom(o.material);
+          o.receiveShadow = true;      // пол и стены принимают тень машины
+          o.castShadow = false;        // но сами не отбрасывают: стены рассыпаются, и тень от них мигала бы
         });
         var box = new THREE.Box3().setFromObject(root);
         var size = new THREE.Vector3(), center = new THREE.Vector3();
@@ -278,6 +309,8 @@
         if (!o.isMesh || !o.material) return;
         if (o.material.map) { o.material.map.anisotropy = maxAniso; o.material.map.needsUpdate = true; }
         o.material.side = THREE.FrontSide;
+        o.castShadow = true;
+        o.receiveShadow = true;        // тень от крыла ложится на капот и порог
       });
 
       var box = new THREE.Box3().setFromObject(root);
@@ -301,6 +334,8 @@
       /* Машина стоит НА ПОЛУ гаража, а не висит в центре координат: пол комнаты — y = 0,
          поэтому модель поднимаем на половину своей высоты. */
       carRoot.position.y = fit.h / 2;
+      key.target.position.set(0, fit.h * 0.5, 0);
+      key.target.updateMatrixWorld();
       if (shadow) scene.remove(shadow);
       shadow = contactShadow(fit.w);
       scene.add(shadow);
