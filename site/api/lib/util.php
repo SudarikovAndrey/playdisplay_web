@@ -12,7 +12,11 @@ function pd_config() {
   if ($cfg !== null) return $cfg;
 
   $defaults = array(
-    'mail_to' => 'andrey@rolltorule.com',
+    // Общий ящик студии, а не личный: письма читает не один человек, и адрес
+    // напечатан на самом сайте. Осторожно: это ЗНАЧЕНИЕ ПО УМОЛЧАНИЮ — если
+    // на сервере в config.php (или ~/wordpress_2/pd-ai-config.php) есть свой
+    // mail_to, побеждает он, а деплой его не трогает. Проверять надо там.
+    'mail_to' => 'info@playdisplay.com',
     'mail_from' => 'ai@playdisplay.com',
     'mail_fromname' => 'PlayDisplay AI',
     'llm' => 'mock',
