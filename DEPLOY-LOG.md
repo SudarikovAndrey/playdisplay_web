@@ -8,6 +8,55 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-15 23:40 — hybrid-v8 @ d7d118f
+
+**Коммиты в этой поставке**
+```
+d7d118f Отпечаток содержимого у styles.css и analytics.js: nginx кэширует статику год
+e309559 Журнал деплоя: 5b76972
+```
+
+**На сервер отправлено файлов:** 36, удалено: 0
+```
+.htaccess
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+en/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+work/airports/index.html
+work/bmwx5/index.html
+work/coalco/index.html
+work/industry-rf/index.html
+work/mig2019/index.html
+work/odk-oak/index.html
+work/pano360/index.html
+work/proryv/index.html
+work/ptk-group/index.html
+work/rostec/index.html
+work/sinara/index.html
+work/stalingrad/index.html
+work/urban-forum-2018/index.html
+work/vdnh-space-center/index.html
+work/vdnh-space/index.html
+```
+
+
 ## 2026-08-15 22:58 — hybrid-v8 @ 5b76972
 
 **Коммиты в этой поставке**
