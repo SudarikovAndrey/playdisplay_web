@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PLAYDISPLAY — воксельное портфолио (прототип)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Шрифты у нас, не с fonts.googleapis.com (15.08.2026) — описание в assets/fonts/fonts.css.
+     Путь без ведущего слэша: сцена открывается и как страница сайта, и с диска. -->
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <script>
 /* ЯЗЫК СЦЕНЫ. Лендинг встраивает её с ?lang=<код> и она берёт ТОТ ЖЕ словарь, что и сайт
    (data/i18n/<код>.js) — отдельного файла переводов для сцены нет, чтобы подписи проектов
@@ -421,6 +422,8 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
        крестик и так виден в углу, объяснять его текстом не нужно */
     #game-exit { display: none; }
     #game-onboard { bottom: 22vh; font-size: 11px; padding: 0 18px; text-align: center; }
+    /* подсказки геймовера на узком экране — колонкой, а не строкой */
+    #game-over .go-how { flex-direction: column; gap: 10px; margin-top: 22px; align-items: center; }
     /* #frame — тот же кадр в фазе наведения резкости, маску ему тоже возвращаем */
     #player-close { top: 10px; right: 10px; width: 34px; height: 34px; font-size: 14px;
       background: rgba(0,0,0,.45); border-color: rgba(255,255,255,.45); }
@@ -816,13 +819,18 @@ addEventListener('DOMContentLoaded', function(){
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-<script defer src="https://unpkg.com/three@0.128.0/examples/js/libs/fflate.min.js"></script>
-<script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSUtils.js"></script>
-<script defer src="https://unpkg.com/three@0.128.0/examples/js/curves/NURBSCurve.js"></script>
-<script defer src="https://unpkg.com/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+<!-- three.js ЛЕЖИТ У НАС, а не на cdnjs (15.08.2026). Раньше первый экран сайта
+     зависел от чужого сервера: не открылся cdnjs — нет сцены, нет героя, посетитель
+     видит пустоту. Для российской аудитории это не теория. Копия r128 в
+     assets/vendor/three-r128/ — та же сборка, что раздавал cdnjs, взята с github
+     проекта. Обновлять вручную и вместе с проверкой сцены: r128 старая, но код
+     сцены написан под неё (см. комментарий про юниформы материала около строки 3936). -->
+<script src="assets/vendor/three-r128/three.min.js"></script>
+<!-- ЗАГРУЗЧИКИ МОДЕЛЕЙ ЗДЕСЬ БОЛЬШЕ НЕ ПОДКЛЮЧАЮТСЯ. Пять файлов (GLTF, OBJ, FBX,
+     NURBS, fflate) весили около 260 КБ и приезжали КАЖДОМУ посетителю лендинга, а
+     нужны они ровно в одном месте — когда владелец перетаскивает свою модель в
+     панель настроек (?cam=1). Теперь они грузятся в тот момент, когда файл выбран;
+     код подгрузки — рядом с parseModelFile. Функциональность панели не изменилась. -->
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
@@ -1177,6 +1185,9 @@ if (isMobile) {
   if (obFirst) obFirst.innerHTML = '<b>Держите палец на экране</b> — джойстик появится под ним';
   const gExit = document.getElementById('game-exit');
   if (gExit) gExit.textContent = 'КРЕСТИК СЛЕВА ВВЕРХУ — ВЕРНУТЬСЯ В ПОРТФОЛИО';
+  // подсказки на экране геймовера говорят «мышь» — на таче это джойстик
+  const ghFirst = document.querySelector('#game-over .gh b');
+  if (ghFirst) ghFirst.textContent = 'Джойстик';
 }
 
 // ---------- Шейдер воксельных точек ----------
@@ -1680,27 +1691,57 @@ function setCentralModel(kind) {
   applySceneMode();
 }
 
+/* Загрузчики моделей подтягиваем ПО ТРЕБОВАНИЮ — в тот момент, когда файл выбран
+   в панели настроек. Раньше пять файлов висели в <head> и грузились у каждого
+   посетителя лендинга, хотя нужны одному человеку и раз в месяц.
+   Порядок важен: FBXLoader опирается на fflate (распаковка бинарного FBX) и на
+   NURBSCurve (кривые в сцене), а тот — на NURBSUtils. Поэтому список грузится
+   последовательно, а не пачкой: параллельная загрузка не гарантирует, что
+   зависимость доедет раньше зависимого. Каждый файл берётся один раз — повторный
+   вызов отдаёт уже готовое обещание. */
+const MODEL_LIBS = {
+  obj:  ['OBJLoader.js'],
+  glb:  ['GLTFLoader.js'],
+  gltf: ['GLTFLoader.js'],
+  fbx:  ['fflate.min.js', 'NURBSUtils.js', 'NURBSCurve.js', 'FBXLoader.js'],
+};
+const libCache = {};
+function loadLib(name) {
+  if (libCache[name]) return libCache[name];
+  return libCache[name] = new Promise((ok, no) => {
+    const s = document.createElement('script');
+    s.src = 'assets/vendor/three-r128/' + name;
+    s.onload = ok;
+    s.onerror = () => { delete libCache[name]; no(new Error(name)); };
+    document.head.appendChild(s);
+  });
+}
+async function ensureModelLibs(ext) {
+  for (const name of (MODEL_LIBS[ext] || [])) await loadLib(name);
+}
+
 // общий разбор файла модели .glb/.gltf/.obj/.fbx → геометрия в onGeo(geo)
-function parseModelFile(file, onGeo) {
+async function parseModelFile(file, onGeo) {
   const ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (!MODEL_LIBS[ext]) return alert('Поддерживаются .glb, .gltf, .obj, .fbx');
+  try { await ensureModelLibs(ext); }
+  catch (e) { return alert('Не удалось подгрузить загрузчик ' + ext.toUpperCase() + ' (' + e.message + ')'); }
   const reader = new FileReader();
   reader.onload = () => {
     try {
+      // Расширение и наличие загрузчиков проверены выше, до чтения файла.
       if (ext === 'obj') {
-        if (!THREE.OBJLoader) return alert('Загрузчик OBJ не подгрузился (нет сети?)');
         const geo = mergeSceneGeometry(new THREE.OBJLoader().parse(reader.result));
         if (geo) onGeo(geo); else alert('В файле нет геометрии');
       } else if (ext === 'glb' || ext === 'gltf') {
-        if (!THREE.GLTFLoader) return alert('Загрузчик GLTF не подгрузился (нет сети?)');
         new THREE.GLTFLoader().parse(reader.result, '', gltf => {
           const geo = mergeSceneGeometry(gltf.scene);
           if (geo) onGeo(geo); else alert('В модели нет геометрии');
         }, () => alert('Не удалось разобрать GLB/GLTF'));
       } else if (ext === 'fbx') {
-        if (!THREE.FBXLoader) return alert('Загрузчик FBX не подгрузился (нет сети?)');
         const geo = mergeSceneGeometry(new THREE.FBXLoader().parse(reader.result, ''));
         if (geo) onGeo(geo); else alert('В FBX нет геометрии');
-      } else alert('Поддерживаются .glb, .gltf, .obj, .fbx');
+      }
     } catch (e) { alert('Ошибка загрузки модели: ' + e.message); }
   };
   if (ext === 'obj') reader.readAsText(file); else reader.readAsArrayBuffer(file);
@@ -4737,11 +4778,16 @@ function enterGame() {
   } else {
     OB.on = false; OB.phase = 0;
     document.body.classList.remove('ob-demo-on');
-    // онбординг: шпаргалка на первые секунды полёта, гаснет сама
-    gameOnboard.classList.remove('fade');
-    gameOnboard.classList.add('show');
-    setTimeout(() => gameOnboard.classList.add('fade'), 6500);
-    setTimeout(() => gameOnboard.classList.remove('show'), 7500);
+    // На ТЕЛЕФОНЕ стартовой шпаргалки нет вовсе (решение 11.08): четыре абзаца поверх
+    // полёта никто не читает, они закрывали пол-экрана. Эти же описания человек видит
+    // на экране после столкновения (блок go-how) — там для них есть и время, и место.
+    // Комп остаётся как был: там шпаргалка одной строкой и не мешает.
+    if (!isMobile) {
+      gameOnboard.classList.remove('fade');
+      gameOnboard.classList.add('show');
+      setTimeout(() => gameOnboard.classList.add('fade'), 6500);
+      setTimeout(() => gameOnboard.classList.remove('show'), 7500);
+    }
   }
   if (EMBEDDED) try { parent.postMessage({ pdGameOn: true }, '*'); } catch (e) {}
 }
@@ -4999,10 +5045,13 @@ function updateGame(dt, time) {
   if (isMobile && (stickVX || stickVY)) {
     // полное отклонение: весь экран по X за ~1.2с, по Y за ~0.8с (вертикальный
     // диапазон прицела вдвое меньше горизонтального — компенсируем скоростью)
-    // ×0.5 (11.08, вторая итерация): на 0.85/1.25 руль «лютовал». Теперь полный ход
-    // проходит экран за ~2.4с по X и ~1.6с по Y — ведёт, а не швыряет.
-    touchPX = Math.max(0, Math.min(innerWidth,  touchPX + stickVX * innerWidth  * 0.42 * dt));
-    touchPY = Math.max(0, Math.min(innerHeight, touchPY + stickVY * innerHeight * 0.62 * dt));
+    // Кривая отклика КВАДРАТИЧНАЯ (11.08 v3): v·|v|. У центра ручки ход тонкий —
+    // прицельные движения не разгоняют корабль, полное отклонение тоже умерено:
+    // экран за ~3.4с по X и ~2.3с по Y. Именно линейный отклик «ускорял в стену»:
+    // любое заметное отклонение сразу давало полную скорость.
+    const kvx = stickVX * Math.abs(stickVX), kvy = stickVY * Math.abs(stickVY);
+    touchPX = Math.max(0, Math.min(innerWidth,  touchPX + kvx * innerWidth  * 0.30 * dt));
+    touchPY = Math.max(0, Math.min(innerHeight, touchPY + kvy * innerHeight * 0.44 * dt));
   }
   const aimX = isMobile ? touchPX : mousePX, aimY = isMobile ? touchPY : mousePY;
   const tx = (aimX / innerWidth - 0.5) * 120;
@@ -5283,7 +5332,7 @@ function updateGame(dt, time) {
   // красивый параллакс — корабль гуляет по широкому кадру. На узком вертикальном экране
   // тот же параллакс выносил его за края: у крайних позиций корабль был не виден вовсе.
   // 0.85/0.88 оставляют лёгкий сдвиг (кадр живой, не приклеенный), но корабль всегда в поле.
-  const FX = isMobile ? 0.85 : 0.55, FY = isMobile ? 0.88 : 0.62;
+  const FX = isMobile ? 0.94 : 0.55, FY = isMobile ? 0.95 : 0.62;  // 11.08 v2: корабль максимум наполовину у края
   const cx = GAME.shipP.x * FX + (Math.random() - 0.5) * shake;
   const cy = GAME.shipP.y * FY + 7 + (Math.random() - 0.5) * shake;
   const uB = 1 - eK;
@@ -5294,7 +5343,7 @@ function updateGame(dt, time) {
     uB * uB * GAME.camStart.z + 2 * uB * eK * mBz + eK * eK * 17);
   // взгляд на мобиле тоже ближе к кораблю (0.95 против 0.8) — вместе со сдвигом
   // позиции это и держит его в кадре
-  const LX = isMobile ? 0.95 : 0.8, LY = isMobile ? 0.95 : 0.85;
+  const LX = isMobile ? 0.985 : 0.8, LY = isMobile ? 0.985 : 0.85;
   camera.lookAt(GAME.shipP.x * LX * eK, GAME.shipP.y * LY * eK + (1 - eK) * (TARGET.y + S.viewy), -50 * eK + (1 - eK) * TARGET.z);
   // FOV-кик сверхзвука: короткий импульс линзы при пробитии кольца
   const boomFov = (GAME.boom != null && GAME.boom >= 0) ? Math.sin(Math.PI * Math.min(1, GAME.boom / 0.65)) * 7 : 0;
