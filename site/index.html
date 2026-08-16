@@ -2183,10 +2183,17 @@
       </div>
       <div class="panel founder">
         <div class="ptitle">Основатель</div>
-        <!-- портрет: если файла ещё нет, блок сам переходит в режим монограммы -->
+        <!-- Портрет. Файл появился 16.08.2026 — до этого его не было, и блок всё это
+             время показывал запасную монограмму «АС». Фолбэк оставлен: он ничего не
+             стоит и спасёт, если файл когда-нибудь не доедет деплоем.
+             Снимок квадратный, а рамка 108x132 — кадрирует object-fit: cover,
+             срезая по 9 % с боков. Заранее обрезать нельзя: на телефоне рамка
+             другая (84x104), и зашитый в файл кадр подошёл бы только одной из них.
+             loading="lazy" — «Студия» лежит далеко внизу, до неё доходят не все. -->
         <div class="f-row">
           <div class="f-portrait">
-            <img src="assets/andrey-sudarikov.jpg" alt="Андрей Судариков" decoding="async"
+            <img src="assets/andrey-sudarikov.jpg" alt="Андрей Судариков"
+                 width="600" height="600" decoding="async" loading="lazy"
                  onerror="this.closest('.founder').classList.add('noportrait')">
             <span class="f-mono" aria-hidden="true">АС</span>
           </div>
