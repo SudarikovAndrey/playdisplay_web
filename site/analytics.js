@@ -16,6 +16,22 @@
 
   var GA_ID = 'G-8L3XFCPG2V';
   var YM_ID = 111509723;
+
+  /* Do Not Track уважаем, хотя ни GA, ни Метрика сами этого не делают.
+     Причина не в законе, а в том, что на site/privacy.html человеку обещано:
+     «включите DNT — и счётчиков не будет». Обещание, которое проверяется одним
+     переключателем в браузере, должно быть правдой. Проверяем три написания:
+     стандартное navigator.doNotTrack, старое window.doNotTrack и вариант IE.
+     Значение '1' и 'yes' — это «не следить». */
+  var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+  var NOTRACK = (dnt === '1' || dnt === 'yes' || navigator.globalPrivacyControl === true);
+
+  // Выходим ДО всего остального, а не гасим отправку внутри track(): при отказе не
+  // должно остаться ни счётчиков, ни слушателей кликов, ни таймеров секций. Заодно
+  // на боевом сайте такой посетитель не получит поток console.log вместо тишины.
+  // Ничего снаружи на window.gtag и window.ym не опирается — проверено поиском.
+  if (NOTRACK) return;
+
   var LIVE = /(^|\.)playdisplay\.(com|ru)$/.test(location.hostname);
 
   /* ---- загрузка GA4 (gtag.js) ---- */
@@ -32,15 +48,21 @@
     gtag('config', GA_ID);
   }
 
-  /* ---- загрузка Метрики (tag.js) ---- */
-  (function (m, e, t, r, i, k, a) {
-    m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
-    m[i].l = 1 * new Date();
-    for (var j = 0; j < e.scripts.length; j++) { if (e.scripts[j].src === r) return; }
-    k = e.createElement(t); a = e.getElementsByTagName(t)[0];
-    k.async = 1; k.src = r; a.parentNode.insertBefore(k, a);
-  })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
+  /* ---- загрузка Метрики (tag.js) ----
+     Очередь ym() заводим ВСЕГДА: на неё опирается track() ниже, и без неё каждый
+     вызов пришлось бы оборачивать проверкой. А сам скрипт качаем ТОЛЬКО на боевом.
+     До 15.08.2026 загрузчик стоял снаружи проверки — закрыт был один init. В итоге
+     93 КБ tag.js приезжали и на localhost, и на превью GitHub Pages: замерено в
+     браузере. Скрипт Метрики ставит свои куки, то есть это была не только лишняя
+     загрузка, но и третья сторона там, где её быть не должно. */
+  window.ym = window.ym || function () { (window.ym.a = window.ym.a || []).push(arguments); };
+  window.ym.l = 1 * new Date();
   if (LIVE) {
+    (function (e, t, r) {
+      for (var j = 0; j < e.scripts.length; j++) { if (e.scripts[j].src === r) return; }
+      var k = e.createElement(t), a = e.getElementsByTagName(t)[0];
+      k.async = 1; k.src = r; a.parentNode.insertBefore(k, a);
+    })(document, 'script', 'https://mc.yandex.ru/metrika/tag.js');
     window.ym(YM_ID, 'init', {
       ssr: true, clickmap: true, trackLinks: true, accurateTrackBounce: true,
       webvisor: true // вебвизор и карта скроллинга — ради них Метрика и стоит
@@ -93,20 +115,25 @@
       if (this.__pdUrl && this.__pdUrl.indexOf('ai.php') >= 0 && typeof body === 'string') {
         var action = (JSON.parse(body) || {}).action;
         if (action === 'start') track('ai_start', {});
-        if (action === 'send') {
-          var x = this;
+        /* Две конверсии, ведущие в одну точку: бриф от ассистента (send) и форма
+           брони креативной сессии (book). Разные пути, одинаковая ценность —
+           письмо в студию, — поэтому обе шлют generate_lead и различаются полем
+           method. Считать их одним событием нельзя: по разбивке видно, чем люди
+           на самом деле пользуются. Форма брони ходит на тот же api/ai.php тем же
+           XHR, так что подслушивание работает и для неё без единой правки в её коде. */
+        if (action === 'send' || action === 'book') {
+          var x = this, method = (action === 'book') ? 'book_form' : 'ai_brief';
           x.addEventListener('load', function () {
             var d = null;
             try { d = JSON.parse(x.responseText); } catch (e) {}
             if (d && d.ok) {
-              /* Главная конверсия сайта: бриф собран и отправлен студии.
-                 generate_lead — стандартное имя GA4; qualify_lead шлём рядом,
+              /* generate_lead — стандартное имя GA4; qualify_lead шлём рядом,
                  потому что ИМЕННО ОНО уже отмечено ключевым событием в ресурсе
                  (новый GA4 не даёт отметить событие ключевым, пока оно ни разу
                  не пришло, — а конверсии должны считаться с первого дня). */
-              if (LIVE) try { gtag('event', 'qualify_lead', { method: 'ai_brief' }); } catch (e) {}
-              track('generate_lead', { method: 'ai_brief' });
-              track('brief_send', {});
+              if (LIVE) try { gtag('event', 'qualify_lead', { method: method }); } catch (e) {}
+              track('generate_lead', { method: method });
+              track(action === 'book' ? 'book_send' : 'brief_send', {});
             }
           });
         }
