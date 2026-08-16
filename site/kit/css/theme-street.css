@@ -13,7 +13,13 @@
  * Фактура картона приходит СНАРУЖИ переменной --kraft: у кита своей фотографии картона нет
  * и быть не должно (это материал конкретного проекта). Без неё работает запасной вариант
  * из градиентов — полосатая гофра. Страница задаёт своё:
- *   <body class="theme-street" style="--kraft:url('assets/kraft.jpg')">
+ *   <body class="theme-street" style="--kraft:url('/avtovaz/assets/kraft.jpg')">
+ *
+ * ПУТЬ ОБЯЗАН БЫТЬ АБСОЛЮТНЫМ. `url()` внутри пользовательской переменной браузер
+ * разрешает относительно ФАЙЛА СТИЛЕЙ, в котором переменная подставляется, а не
+ * относительно страницы: относительный `assets/kraft.jpg` превращался в
+ * `/kit/css/assets/kraft.jpg`, картон молча не грузился, и врезки с плашками цены
+ * оставались пустыми — при этом в инспекторе всё выглядело правильно.
  */
 
 body.theme-street {
@@ -67,7 +73,8 @@ body.theme-street .chapter-copy h3 { font-weight: 600; text-transform: none; }
 /* Заголовки Oswald УЖЕ узкие: при той же ширине колонки в строку влезает больше знаков,
    и кегель можно вернуть к крупному, не рискуя вылетом за экран. Предел мобильного
    кегля всё равно держим — проверено на 401 px. */
-body.theme-street .chapter-copy p { color: #cdc7bb; }
+body.theme-street .chapter-copy p,
+body.theme-street .slide-head p { color: #cdc7bb; }
 
 /* ── ТРИ ПОЛОСЫ ───────────────────────────────────────────────────────────
    Опознавательный знак игры: три белые полосы на чёрном (спортивный костюм 90-х).
@@ -100,6 +107,7 @@ body.theme-street .chapter-number {
    очередная карточка интерфейса. Поворот берём МАЛЕНЬКИЙ (0.4°): на большем углу
    съезжает базовая линия соседних строк и глаз спотыкается. */
 body.theme-street .chapter-copy .pull,
+body.theme-street .slide .pull,
 body.theme-street .offer-card,
 body.theme-street .compare-col--strong {
   color: var(--kraft-ink);
@@ -109,7 +117,8 @@ body.theme-street .compare-col--strong {
   border: 0;
   box-shadow: 0 18px 40px rgba(0, 0, 0, .45);
 }
-body.theme-street .chapter-copy .pull {
+body.theme-street .chapter-copy .pull,
+body.theme-street .slide .pull {
   padding: clamp(22px, 3vw, 40px) clamp(24px, 3.4vw, 46px);
   transform: rotate(-.4deg);
 }
