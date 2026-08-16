@@ -55,6 +55,7 @@ switch ($action) {
   case 'challenge': pd_action_challenge(); break;   // выдать задачу-пропуск
   case 'human':     pd_action_human($in);  break;   // вторая ступень, если поведение странное
   case 'lead':      pd_action_lead($in);   break;   // короткий бриф из /digital/
+  case 'book':      pd_action_book($in);   break;   // заявка на креативную сессию с главной
   case 'start': pd_action_start(); break;
   case 'turn':  pd_action_turn($in);  break;
   case 'brief': pd_action_brief($in); break;
@@ -193,6 +194,84 @@ function pd_action_lead($in) {
   list($ok, $info) = pd_send_mail($subject, $html, $text, $replyTo, $html);
   if (!$ok) {
     pd_log('lead', 'письмо не ушло: ' . $info);
+    pd_fail('сервис отправки временно недоступен, попробуйте ещё раз', 500);
+  }
+  pd_json(array('ok' => true, 'mail_live' => $mailLive, 'mail_note' => $mailWhy));
+}
+
+// ---------------------------------------------------------------- book
+/**
+ * Заявка на креативную сессию с главной страницы.
+ *
+ * Почему отдельное действие, а не 'lead'. У lead своя анкета из /digital/: тип
+ * проекта и состав решения проверяются по закрытым спискам, без них он падает.
+ * Здесь анкета другая и намеренно короткая — человек нажал «Забронировать», а не
+ * «Заполнить бриф», и каждое лишнее поле здесь стоит дороже, чем там.
+ *
+ * Почему без стража (guard.php). Страж защищает разговор с моделью, где каждое
+ * обращение стоит денег. Здесь обращения к модели нет вовсе: цена спама — одно
+ * письмо. Ставим то же, что у lead, — ловушку для простых ботов и общий лимит по
+ * адресу. Если спам пойдёт, страж прикручивается сюда двумя строками.
+ */
+function pd_action_book($in) {
+  // Поле скрыто от человека и заполняется простыми ботами. Отвечаем успехом молча,
+  // чтобы бот не научился обходить ловушку.
+  if (pd_str(isset($in['website']) ? $in['website'] : '', 200) !== '') {
+    pd_json(array('ok' => true));
+  }
+  if (!pd_rate_ok()) pd_fail('слишком много запросов с этого адреса, попробуйте позже', 429);
+
+  $name    = pd_str(isset($in['name'])    ? $in['name']    : '', 120);
+  $company = pd_str(isset($in['company']) ? $in['company'] : '', 160);
+  $contact = pd_str(isset($in['contact']) ? $in['contact'] : '', 160);
+  $about   = pd_str(isset($in['about'])   ? $in['about']   : '', 2000);
+  $when    = pd_str(isset($in['when'])    ? $in['when']    : '', 200);
+  $lang    = pd_str(isset($in['lang'])    ? $in['lang']    : 'ru', 8);
+
+  if ($name === '' || $contact === '') pd_fail('заполните имя и контакт');
+  if (empty($in['agree'])) pd_fail('нужно согласие на обработку данных');
+  // Почта, телефон или ник — годится любое. Просто проверяем, что это не «asdf»:
+  // либо собака, либо цифры, либо телеграмная решётка.
+  if (strpos($contact, '@') === false && strpos($contact, 't.me') === false
+      && !preg_match('/\d/', $contact)) {
+    pd_fail('укажите email, телефон или Telegram');
+  }
+
+  $rows = array(
+    'Имя'            => $name,
+    'Компания'       => $company,
+    'Контакт'        => $contact,
+    'О проекте'      => $about,
+    'Удобное время'  => $when,
+    'Язык страницы'  => $lang,
+  );
+
+  $table = '';
+  $plain = array();
+  foreach ($rows as $label => $value) {
+    if ($value === '') continue;
+    $table .= '<tr><td style="width:180px;padding:12px 18px 12px 0;border-bottom:1px solid #e5e8ea;vertical-align:top;'
+      . 'font:600 11px/1.4 Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#77838b;">'
+      . pd_esc($label) . '</td><td style="padding:12px 0;border-bottom:1px solid #e5e8ea;'
+      . 'font:400 15px/1.55 Arial,sans-serif;color:#111c23;">' . nl2br(pd_esc($value)) . '</td></tr>';
+    $plain[] = $label . ': ' . $value;
+  }
+
+  $html = '<div style="max-width:760px;margin:0 auto;padding:36px;background:#ffffff;color:#111c23;">'
+    . '<div style="padding:28px 30px;background:#071016;color:#f4f7f8;">'
+    . '<div style="font:600 11px/1.3 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#2be0c6;">Креативная сессия</div>'
+    . '<h1 style="margin:12px 0 0;font:700 28px/1.15 Arial,sans-serif;">Заявка на 30 минут</h1></div>'
+    . '<table role="presentation" style="width:100%;border-collapse:collapse;margin-top:24px;">' . $table . '</table>'
+    . '<p style="margin:28px 0 0;font:400 12px/1.5 Arial,sans-serif;color:#7a858c;">Источник: главная страница · '
+    . date('d.m.Y H:i') . '</p></div>';
+  $text = "КРЕАТИВНАЯ СЕССИЯ — ЗАЯВКА НА 30 МИНУТ\n\n" . implode("\n", $plain);
+  $subject = 'Креативная сессия: ' . ($company !== '' ? $company . ' — ' . $name : $name);
+  $replyTo = filter_var($contact, FILTER_VALIDATE_EMAIL) ? $contact : '';
+
+  list($mailLive, $mailWhy) = pd_mail_ready();
+  list($ok, $info) = pd_send_mail($subject, $html, $text, $replyTo, $html);
+  if (!$ok) {
+    pd_log('book', 'письмо не ушло: ' . $info);
     pd_fail('сервис отправки временно недоступен, попробуйте ещё раз', 500);
   }
   pd_json(array('ok' => true, 'mail_live' => $mailLive, 'mail_note' => $mailWhy));

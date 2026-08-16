@@ -26,8 +26,14 @@
 <meta name="twitter:description" content="Музеи, интерактивные экспозиции, visitor centre и иммерсивные выставки: превращаем идею в опыт, который хочется пережить.">
 <meta name="twitter:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
 <link rel="stylesheet" href="styles.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Шрифты лежат у нас, а не на fonts.googleapis.com (15.08.2026). Внешний запрос на
+     первом экране — это лишние DNS и TLS до двух чужих хостов, зависимость от их
+     доступности и адрес посетителя, уходящий третьей стороне (вопрос по 152-ФЗ).
+     Описание набора и как его пересобрать — в шапке assets/fonts/fonts.css.
+     Заголовок героя — Unbounded 600, кириллица: греем ровно этот файл. Один preload,
+     а не пачка: каждый лишний отнимает полосу у того, что нужно прямо сейчас. -->
+<link rel="preload" href="assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <style>
   /* переключатель языка в шапке: RU · ENG · (позже PT). Текстом, а не флагами —
      флаг означает страну, а не язык, и для трёх языков это только путает */
@@ -1362,6 +1368,75 @@
   .cmail a:hover { border-bottom-color: var(--signal-teal); }
   .langs { margin-top: 28px; font: 400 13px var(--font-mono); letter-spacing: 0.06em; color: var(--scan-white-faint); }
 
+  /* ---------- форма брони креативной сессии ----------
+     Кнопка «Забронировать» раньше вела в mailto: заголовок обещал календарь, а
+     открывался почтовый клиент с шаблоном — да ещё английским на русской странице.
+     Теперь она раскрывает форму здесь же. Форма СПРЯТАНА до нажатия сознательно:
+     раздел заканчивает страницу, и шесть полей вместо одной кнопки читались бы как
+     работа, а не как приглашение.
+     Раскрытие через max-height, а не display: у display нет промежуточных значений,
+     переход по нему не идёт. Число заведомо больше настоящей высоты — иначе на узком
+     экране, где поля встают в одну колонку, форма обрежется. */
+  /* visibility, а не только max-height. Свёрнутая через overflow:hidden форма
+     остаётся в порядке табуляции: человек с клавиатуры уезжал бы курсором в шесть
+     невидимых полей, не понимая, где он. visibility убирает её из обхода целиком.
+     Задержка 0.55s — чтобы при закрытии форма сначала свернулась и только потом
+     пропала; при открытии задержки нет, иначе поля появлялись бы после анимации. */
+  .book-form { max-height: 0; overflow: hidden; opacity: 0; visibility: hidden;
+    transition: max-height .55s var(--ease-overshoot), opacity .4s ease,
+                margin-top .55s var(--ease-overshoot), visibility 0s linear .55s; }
+  .book-form.open { max-height: 1400px; opacity: 1; margin-top: 34px;
+    visibility: visible; transition-delay: 0s; }
+  .bf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 22px; max-width: 720px; }
+  .bf-wide { grid-column: 1 / -1; }
+  .bf-f { display: flex; flex-direction: column; gap: 8px; }
+  .bf-f label { font: 600 11px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--scan-white-faint); }
+  .bf-f .req { color: var(--signal-amber); }
+  .bf-f input, .bf-f textarea {
+    font: 400 15px/1.5 var(--font-body); color: var(--scan-white);
+    background: rgba(255,255,255,0.035); border: 1px solid var(--space-line);
+    padding: 13px 15px; width: 100%; border-radius: 0;
+    transition: border-color var(--duration-fast), background var(--duration-fast);
+  }
+  .bf-f textarea { resize: vertical; min-height: 92px; }
+  .bf-f input:focus, .bf-f textarea:focus { outline: none; border-color: var(--signal-teal); background: rgba(255,255,255,0.06); }
+  .bf-f input::placeholder, .bf-f textarea::placeholder { color: var(--scan-white-faint); opacity: .75; }
+  /* ловушка для ботов: убираем из потока и от скринридера, но НЕ display:none —
+     часть простых ботов пропускает именно скрытые через display поля */
+  .bf-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .bf-agree { display: flex; gap: 12px; align-items: flex-start; margin-top: 4px;
+    font: 400 13px/1.5 var(--font-body); color: var(--scan-white-dim); }
+  .bf-agree input { margin-top: 2px; width: 16px; height: 16px; flex: none; accent-color: var(--signal-teal); }
+  .bf-agree a { color: var(--signal-teal); text-decoration: none; border-bottom: 1px solid rgba(43,224,198,.35); }
+  .bf-foot { display: flex; align-items: center; gap: 18px; margin-top: 26px; flex-wrap: wrap; }
+  .bf-send { font: 700 15px var(--font-body); letter-spacing: 0.02em;
+    background: var(--signal-amber); color: var(--space-void); padding: 16px 30px; border: none; cursor: pointer;
+    clip-path: polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+    transition: transform var(--duration-base) var(--ease-overshoot), box-shadow var(--duration-base); }
+  .bf-send:hover:not(:disabled) { transform: translateY(-3px); box-shadow: var(--glow-amber-soft); }
+  .bf-send:disabled { opacity: .5; cursor: default; }
+  /* Сообщение о результате — область с aria-live, поэтому она в разметке ВСЕГДА,
+     а не создаётся кодом: узел, появившийся вместе с текстом, скринридер часто
+     не успевает объявить. */
+  .bf-msg { font: 400 14px/1.5 var(--font-body); color: var(--scan-white-dim); min-height: 1em; }
+  .bf-msg.err { color: var(--signal-amber); }
+  .bf-msg.ok { color: var(--signal-teal); }
+  /* Итог вместо формы: человек уже всё сказал, показывать ему пустые поля незачем */
+  .bf-done { display: none; max-width: 46ch; }
+  .book-form.sent .bf-grid, .book-form.sent .bf-foot { display: none; }
+  .book-form.sent .bf-done { display: block; }
+  .bf-done h3 { font: 700 clamp(22px,2.4vw,30px)/1.2 var(--font-display); color: #F1FBFC; }
+  .bf-done p { margin-top: 14px; font: 400 16px/1.6 var(--font-body); color: var(--scan-white-dim); }
+  .bf-done a { color: var(--signal-teal); text-decoration: none; border-bottom: 1px solid rgba(43,224,198,.35); }
+  .bf-done a:hover { border-bottom-color: var(--signal-teal); }
+  @media (max-width: 700px) {
+    .bf-grid { grid-template-columns: 1fr; }
+    .bf-send { width: 100%; justify-content: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .book-form { transition: none; }
+  }
+
   footer { background: var(--space-void); border-top: 1px solid var(--space-line); }
   /* справа снизу висит виджет ассистента (68px + отступ) — подпись подвала
      заканчивается раньше, иначе текст читается сквозь микрофон */
@@ -1867,7 +1942,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b1108-ob6" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b1108-ob7" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -2145,8 +2220,63 @@
     <div class="cs-founder"><b>Креативная сессия с playdisplay</b></div>
     <p class="csub">Если кажется, что проекту нужен нестандартный подход — давайте обсудим его вместе.</p>
     <div class="channels">
-      <a class="wa" id="bookCall" href="#">▶︎ Забронировать креативную сессию</a>
+      <!-- button, а не ссылка: это переключатель на той же странице, никуда не ведёт.
+           Ссылкой он был, пока открывал mailto, и это же было его бедой. -->
+      <button class="wa" id="bookCall" type="button" aria-expanded="false" aria-controls="bookForm">▶︎ Забронировать креативную сессию</button>
     </div>
+
+    <!-- Форма брони. Уходит письмом через тот же api/ai.php (действие book), что и
+         ассистент. Если бэкенда нет (превью, PHP выключен) — честно предлагаем почту,
+         а не делаем вид, что заявка ушла. -->
+    <form class="book-form" id="bookForm" novalidate>
+      <div class="bf-grid">
+        <div class="bf-f">
+          <label for="bfName">Как вас зовут <span class="req">*</span></label>
+          <input id="bfName" name="name" type="text" autocomplete="name" maxlength="120" required>
+        </div>
+        <div class="bf-f">
+          <label for="bfCompany">Компания или проект</label>
+          <input id="bfCompany" name="company" type="text" autocomplete="organization" maxlength="160">
+        </div>
+        <div class="bf-f">
+          <label for="bfContact">Как связаться <span class="req">*</span></label>
+          <input id="bfContact" name="contact" type="text" maxlength="160" required
+                 placeholder="почта, телефон или телеграм">
+        </div>
+        <div class="bf-f">
+          <label for="bfWhen">Когда вам удобно</label>
+          <input id="bfWhen" name="when" type="text" maxlength="200" placeholder="например, будни после 15:00 МСК">
+        </div>
+        <div class="bf-f bf-wide">
+          <label for="bfAbout">О чём хотите поговорить</label>
+          <textarea id="bfAbout" name="about" maxlength="2000" rows="3"
+                    placeholder="Пространство, задача, сроки — что уже понятно. Необязательно и можно коротко."></textarea>
+        </div>
+        <!-- ловушка для ботов: человек этого поля не видит и не заполнит -->
+        <div class="bf-trap" aria-hidden="true">
+          <label for="bfSite">Не заполняйте это поле</label>
+          <input id="bfSite" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <label class="bf-agree bf-wide">
+          <input type="checkbox" id="bfAgree" required>
+          <span>Согласен на обработку этих данных — они нужны, чтобы с вами связаться.
+            <a href="privacy.html" target="_blank" rel="noopener">Как мы с ними обращаемся</a>.</span>
+        </label>
+      </div>
+      <div class="bf-foot">
+        <button class="bf-send" id="bfSend" type="submit">Отправить</button>
+        <span class="bf-msg" id="bfMsg" role="status" aria-live="polite"></span>
+      </div>
+      <!-- Два абзаца, а не один с ссылкой внутри: перевод идёт по ТЕКСТОВЫМ УЗЛАМ,
+           и фраза, разорванная ссылкой посередине, распадается на куски, которых нет
+           в словаре. Здесь каждый переводимый кусок — целая фраза. -->
+      <div class="bf-done" id="bfDone">
+        <h3>Спасибо, получили.</h3>
+        <p>Андрей ответит лично и предложит время — обычно в течение рабочего дня.</p>
+        <p>Если удобнее раньше — <a href="mailto:info@playdisplay.com">info@playdisplay.com</a></p>
+      </div>
+    </form>
+
     <!-- почта видна и работает без ассистента: не всем удобно говорить с микрофоном -->
     <p class="cmail">Или напишите письмом: <a href="mailto:info@playdisplay.com">info@playdisplay.com</a></p>
     <div class="langs">Говорим по-русски, по-английски и по-португальски.</div>
@@ -2567,14 +2697,107 @@
 
   // Кнопка «забронировать» обязана что-то делать до появления календаря: открываем
   // готовое письмо. Когда появится ссылка на бронирование, меняется только href.
-  var BOOK_MAIL = 'mailto:info@playdisplay.com'
-    + '?subject=' + encodeURIComponent('30-minute call with PlayDisplay')
-    + '&body=' + encodeURIComponent('Hello PlayDisplay,\n\nI’d like to book a 30-minute call.\n\n'
-        + 'Name:\nCompany:\nProject or space:\nTime zone:\nPreferred dates:\n');
-  addEventListener('DOMContentLoaded', function(){
-    var b = document.getElementById('bookCall');
-    if (b) b.setAttribute('href', BOOK_MAIL);
-  });
+  /* ===== ФОРМА БРОНИ КРЕАТИВНОЙ СЕССИИ =====
+     Раньше здесь собирался mailto с шаблоном письма. Он был плох дважды: заголовок
+     «Забронируйте 30 минут» обещает календарь, а открывался почтовый клиент; и шаблон
+     был английским независимо от языка страницы. Теперь кнопка раскрывает форму, а
+     заявка уходит письмом через api/ai.php.
+
+     Свой транспорт, а не pdIdea.post: у ассистента своя территория (см. CLAUDE.md),
+     а здесь нужен один POST без сессии, языка разговора и стража. Пятнадцать строк
+     своего XHR дешевле, чем общая зависимость между двумя несвязанными вещами.
+
+     Стиль ES5, как весь лендинг: var/function, без промисов и fetch. */
+  window.pdBook = (function(){
+    var API = '/api/ai.php';   // от корня домена: относительный путь ломается на /en/
+    var busy = false;
+
+    function post(data, ok, bad){
+      var x = new XMLHttpRequest();
+      try { x.open('POST', API, true); } catch (e) { bad('no-backend'); return; }
+      x.setRequestHeader('Content-Type', 'application/json');
+      x.timeout = 30000;
+      x.onload = function(){
+        var d = null;
+        try { d = JSON.parse(x.responseText); } catch (e) {}
+        // не JSON = бэкенда нет вовсе: на превью GitHub Pages .php отдаётся текстом,
+        // поэтому проверять один только статус ответа недостаточно
+        if (!d) { bad('no-backend'); return; }
+        if (!d.ok) { bad(d.error || 'Что-то не сошлось.'); return; }
+        ok(d);
+      };
+      x.onerror = function(){ bad('no-backend'); };
+      x.ontimeout = function(){ bad('Сервер долго не отвечает.'); };
+      x.send(JSON.stringify(data));
+    }
+
+    function init(){
+      var btn  = document.getElementById('bookCall');
+      var form = document.getElementById('bookForm');
+      var msg  = document.getElementById('bfMsg');
+      var send = document.getElementById('bfSend');
+      if (!btn || !form) return;
+
+      function say(text, kind){
+        msg.textContent = text || '';
+        msg.className = 'bf-msg' + (kind ? ' ' + kind : '');
+      }
+
+      btn.addEventListener('click', function(){
+        var open = form.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        // Фокус в первое поле — но только при раскрытии и только с задержкой на
+        // анимацию: браузер доводит до фокуса прокруткой, и на закрытой ещё форме
+        // это дёргает страницу.
+        if (open) setTimeout(function(){
+          var f = document.getElementById('bfName'); if (f) f.focus();
+        }, 380);
+      });
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        if (busy) return;
+
+        var val = function(id){ var el = document.getElementById(id); return el ? el.value.replace(/^\s+|\s+$/g, '') : ''; };
+        var name = val('bfName'), contact = val('bfContact');
+        // Проверяем сами, а не браузерным required: у формы стоит novalidate,
+        // потому что штатная подсказка браузера появляется у поля, а форма может
+        // быть свёрнута — человек услышал бы гудок и не увидел причину.
+        if (!name)    { say('Скажите, как к вам обращаться.', 'err'); document.getElementById('bfName').focus(); return; }
+        if (!contact) { say('Нужен способ связи — почта, телефон или телеграм.', 'err'); document.getElementById('bfContact').focus(); return; }
+        if (!document.getElementById('bfAgree').checked) { say('Без согласия на обработку данных мы не сможем ответить.', 'err'); return; }
+
+        busy = true; send.disabled = true; say('Отправляем…');
+        post({
+          action: 'book',
+          name: name,
+          company: val('bfCompany'),
+          contact: contact,
+          about: val('bfAbout'),
+          when: val('bfWhen'),
+          website: val('bfSite'),          // ловушка: у человека всегда пустая
+          agree: true,
+          lang: (document.documentElement.getAttribute('lang') || 'ru').slice(0, 2)
+        }, function(){
+          busy = false;
+          say('');
+          form.classList.add('sent');
+          // Цель в аналитике здесь НЕ шлём: analytics.js слушает транспорт ai.php и
+          // видит удачный ответ на action=book сам. Так у формы нет знания о счётчиках,
+          // а у счётчиков — обработчика, который может отвалиться при правке формы.
+        }, function(err){
+          busy = false; send.disabled = false;
+          say(err === 'no-backend'
+            ? 'Форма сейчас недоступна. Напишите на info@playdisplay.com — ответим так же быстро.'
+            : err, 'err');
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') addEventListener('DOMContentLoaded', init);
+    else init();
+    return { open: function(){ var b = document.getElementById('bookCall'); if (b && !document.getElementById('bookForm').classList.contains('open')) b.click(); } };
+  })();
   if (I18N) {
     // Страница собирается кодом в десятке мест (сетка работ, кейс-вьюер, Атлас,
     // библиотека, панель ассистента). Вместо того чтобы дописывать перевод в каждый
