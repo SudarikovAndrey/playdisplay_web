@@ -8,6 +8,64 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-15 22:58 — hybrid-v8 @ 5b76972
+
+**Коммиты в этой поставке**
+```
+5b76972 Форма брони вместо mailto; аудит сайта по десяти ролям
+cc94216 Три.js и шрифты — свои, а не с чужих CDN; загрузчики моделей по требованию
+39b41e2 Сжатие и кэш на сервере, счётчики только на боевом, политика — по правде
+3f5d870 Компред LADA × Рынок Пацана: 10 разделов на ките; кит 0.2 — пропуск под число, сопоставление, плашка с ценой, широкая глава + три мобильные починки
+adb0eab Компред для АвтоВАЗа: скелет закрытой страницы на ките + локальный просмотр /avtovaz/
+7d67548 Журнал деплоя: 6e1b17d
+```
+
+**На сервер отправлено файлов:** 113, удалено: 111
+```
+.htaccess
+analytics.js
+hero-scene.html
+index.html
+llms.txt
+privacy.html
+robots.txt
+sitemap.xml
+styles.css
+api/ai.php
+assets/fonts/fonts.css
+assets/fonts/onest-400-cyrillic-ext.woff2
+assets/fonts/onest-400-cyrillic.woff2
+assets/fonts/onest-400-latin-ext.woff2
+assets/fonts/onest-400-latin.woff2
+assets/fonts/onest-500-cyrillic-ext.woff2
+assets/fonts/onest-500-cyrillic.woff2
+assets/fonts/onest-500-latin-ext.woff2
+assets/fonts/onest-500-latin.woff2
+assets/fonts/onest-600-cyrillic-ext.woff2
+assets/fonts/onest-600-cyrillic.woff2
+assets/fonts/onest-600-latin-ext.woff2
+assets/fonts/onest-600-latin.woff2
+assets/fonts/onest-700-cyrillic-ext.woff2
+assets/fonts/onest-700-cyrillic.woff2
+assets/fonts/onest-700-latin-ext.woff2
+assets/fonts/onest-700-latin.woff2
+assets/fonts/roboto-mono-400-cyrillic-ext.woff2
+assets/fonts/roboto-mono-400-cyrillic.woff2
+assets/fonts/roboto-mono-400-latin-ext.woff2
+assets/fonts/roboto-mono-400-latin.woff2
+assets/fonts/roboto-mono-500-cyrillic-ext.woff2
+assets/fonts/roboto-mono-500-cyrillic.woff2
+assets/fonts/roboto-mono-500-latin-ext.woff2
+assets/fonts/roboto-mono-500-latin.woff2
+assets/fonts/unbounded-400-cyrillic-ext.woff2
+assets/fonts/unbounded-400-cyrillic.woff2
+assets/fonts/unbounded-400-latin-ext.woff2
+assets/fonts/unbounded-400-latin.woff2
+assets/fonts/unbounded-500-cyrillic-ext.woff2
+…и ещё 73
+```
+
+
 ## 2026-08-12 19:08 — hybrid-v8 @ 6e1b17d
 
 **Коммиты в этой поставке**
