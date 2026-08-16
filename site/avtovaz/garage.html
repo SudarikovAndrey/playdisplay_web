@@ -9,7 +9,13 @@
   ПРОСМОТР МОДЕЛИ. Отдельная страница со сценой, вставляется в компред через <iframe>:
   у неё свой контекст WebGL и своё падение — без WebGL гаснет рамка, а не документ.
 
-  ГЛАВНОЕ РЕШЕНИЕ ЭТОЙ СТРАНИЦЫ — СВЕТ. Первая версия освещала машину лампами «как в
+  СЦЕНА: машина стоит в гараже, камера ходит вокруг неё. Стены при этом ЗАКРЫВАЛИ БЫ
+  обзор — угол поворота ограничивать не стали (это отбирает у человека главное действие),
+  вместо этого стены РАСТВОРЯЮТСЯ, когда оказываются между камерой и машиной: у материала
+  интерьера альфа считается по глубине в координатах камеры. Ближе порога — прозрачно,
+  дальше — плотно. Так гараж виден со всех сторон, а машина не перекрывается никогда.
+
+  ГЛАВНОЕ РЕШЕНИЕ ПО СВЕТУ. Первая версия освещала машину лампами «как в
   гараже», и это была ошибка: у модели metalness = 1, поверхность не красится светом, а
   ОТРАЖАЕТ окружение. Отражать нечего — и вместо кузова видно каждую складку сетки и
   каждый шов развёртки; именно этим модель выглядела «дефектной». В Meshy картинку даёт
@@ -78,6 +84,7 @@
   <script>
   (function () {
     'use strict';
+    var DEV = /[?&]dev=1/.test(location.search);   // отладка: габариты и масштабы в консоль
     var canvas = document.getElementById('stage');
     var loading = document.getElementById('loading');
     var bar = document.getElementById('bar');
@@ -135,9 +142,80 @@
     key.position.set(3.5, 6, 4.5);
     scene.add(key);
 
+    /* ── ИНТЕРЬЕР ГАРАЖА ────────────────────────────────────────────────────
+       Растворение по глубине: фрагмент тем прозрачнее, чем ближе он к камере.
+       Порог и полоса перехода заданы в единицах сцены и пересчитываются от габарита
+       машины, а не константами — иначе на другой модели стены исчезнут целиком.
+       depthWrite выключен: полупрозрачная стена, пишущая глубину, срезала бы машину
+       за собой прямоугольной дырой. */
+    var roomRoot = new THREE.Group();
+    scene.add(roomRoot);
+    var roomUniforms = { uFade: { value: 3.2 }, uBand: { value: 1.6 }, uFloorY: { value: 0.35 } };
+
+    function patchRoom(mat) {
+      /* Прозрачность здесь НЕ ГОДИТСЯ, и это выяснилось на первой же сборке: у
+         полупрозрачных поверхностей своя очередь отрисовки, и пол гаража лёг белёсой
+         плёнкой поверх колёс. Поэтому стены не «полупрозрачные», а РАССЫПАЮТСЯ:
+         пиксель либо рисуется целиком, либо отбрасывается по шумовому порогу
+         (упорядоченный дизеринг). Глубина при этом честная, сортировать нечего. */
+      mat.transparent = false;
+      mat.depthWrite = true;
+      mat.side = THREE.DoubleSide;      // изнутри комнаты видна изнанка стен
+      mat.onBeforeCompile = function (shader) {
+        shader.uniforms.uFade = roomUniforms.uFade;
+        shader.uniforms.uBand = roomUniforms.uBand;
+        shader.uniforms.uFloorY = roomUniforms.uFloorY;
+        shader.vertexShader = shader.vertexShader
+          .replace('void main() {', 'varying float vViewDepth;\nvarying float vWorldY;\nvoid main() {')
+          .replace('#include <project_vertex>',
+                   '#include <project_vertex>\nvViewDepth = -mvPosition.z;\nvWorldY = (modelMatrix * vec4(transformed, 1.0)).y;');
+        shader.fragmentShader = shader.fragmentShader
+          .replace('void main() {', [
+            'uniform float uFade;',
+            'uniform float uBand;',
+            'varying float vViewDepth;',
+            'varying float vWorldY;',
+            'uniform float uFloorY;',
+            /* Шум по координате пикселя: узор мелкий и в движении не «плывёт» по стене */
+            'float roomHash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
+            'void main() {',
+            /* Пол не рассыпаем: он лежит НИЖЕ линии взгляда и обзору не мешает, а
+               рассыпающийся под колёсами пол читается как брак картинки. */
+            '  float roomKeep = smoothstep(uFade, uFade + uBand, vViewDepth);',
+            '  if (vWorldY > uFloorY && roomKeep < roomHash(gl_FragCoord.xy)) discard;'
+          ].join('\n'));
+      };
+      mat.needsUpdate = true;
+    }
+
+    /* ПЯТНО ПОД МАШИНОЙ. Настоящих теней в сцене нет (свет даёт окружение), и без
+       контактного пятна машина «висит» над полом — глаз читает это мгновенно, даже
+       не понимая причины. Пятно рисуется градиентом на текстуре: одна плоскость дешевле
+       любой карты теней и не зависит от направления света. */
+    function contactShadow(size) {
+      var c = document.createElement('canvas');
+      c.width = c.height = 128;
+      var g = c.getContext('2d');
+      var grad = g.createRadialGradient(64, 64, 4, 64, 64, 62);
+      grad.addColorStop(0, 'rgba(0,0,0,.62)');
+      grad.addColorStop(.55, 'rgba(0,0,0,.28)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
+      var tex = new THREE.CanvasTexture(c);
+      var m = new THREE.Mesh(
+        new THREE.PlaneGeometry(size * 1.25, size * 0.62),
+        new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
+      );
+      m.rotation.x = -Math.PI / 2;
+      m.position.y = 0.02;      // чуть выше пола, иначе плоскости мерцают друг сквозь друга
+      m.renderOrder = 1;
+      return m;
+    }
+
     /* ── МОДЕЛЬ ─────────────────────────────────────────────────────────────*/
     var carRoot = new THREE.Group();
     scene.add(carRoot);
+    var shadow = null;
 
     var loader = new THREE.GLTFLoader();
     var current = 'models/niva-a.glb';
@@ -160,6 +238,35 @@
       }, function (e) {
         if (e.lengthComputable) bar.style.setProperty('--p', Math.round(e.loaded / e.total * 100) + '%');
       }, function () { fail('Не удалось загрузить модель.'); });
+    }
+
+    /* Интерьер грузится один раз и живёт независимо от переключения машин.
+       Масштаб считается ОТ МАШИНЫ: у комнаты и у модели свои единицы, и «подогнать
+       на глаз» означает, что при смене машины гараж окажется кукольным или гигантским. */
+    var roomLoaded = false;
+    function loadRoom(carHeight) {
+      if (roomLoaded) return;
+      roomLoaded = true;
+      loader.load('models/garage.glb', function (gltf) {
+        var root = gltf.scene;
+        var maxAniso = renderer.capabilities.getMaxAnisotropy();
+        root.traverse(function (o) {
+          if (!o.isMesh || !o.material) return;
+          if (o.material.map) { o.material.map.anisotropy = maxAniso; o.material.map.needsUpdate = true; }
+          patchRoom(o.material);
+        });
+        var box = new THREE.Box3().setFromObject(root);
+        var size = new THREE.Vector3(), center = new THREE.Vector3();
+        box.getSize(size); box.getCenter(center);
+        /* Считаем по ВЫСОТЕ: у гаража главное — потолок над машиной (примерно два её
+           роста). По длине комната у этой модели почти квадратная, и подгонка по длине
+           давала зал 18 на 18 единиц вокруг пятиметровой машины — не гараж, а ангар. */
+        var k = (carHeight * 2.1) / size.y;
+        root.scale.setScalar(k);
+        root.position.set(-center.x * k, -box.min.y * k, -center.z * k);
+        roomRoot.add(root);
+        if (DEV) console.log('гараж:', size, 'масштаб', k.toFixed(3));
+      }, undefined, function () { /* без интерьера сцена остаётся студийной — это не поломка */ });
     }
 
     function place(root) {
@@ -190,10 +297,24 @@
       fit.w = Math.max(size.x, size.z) * scale;
       fit.h = size.y * scale;
       fitCamera();
+
+      /* Машина стоит НА ПОЛУ гаража, а не висит в центре координат: пол комнаты — y = 0,
+         поэтому модель поднимаем на половину своей высоты. */
+      carRoot.position.y = fit.h / 2;
+      if (shadow) scene.remove(shadow);
+      shadow = contactShadow(fit.w);
+      scene.add(shadow);
+      orbit.target.set(0, fit.h * 0.52, 0);
+      /* Полоса перехода задаётся один раз, а сам порог считается каждый кадр в цикле:
+         он равен расстоянию до машины минус её радиус. Всё, что ближе, — рассыпается. */
+      roomUniforms.uBand.value = fit.w * 0.18;
+      roomUniforms.uFloorY.value = fit.h * 0.16;   // всё, что ниже колёсных арок, — пол
+      loadRoom(fit.h);
+      updateCamera();
     }
 
     /* ── КАМЕРА ─────────────────────────────────────────────────────────────*/
-    var orbit = { az: 2.35, el: 0.30, dist: 6.4, target: new THREE.Vector3(0, 0, 0) };
+    var orbit = { az: 2.35, el: 0.22, dist: 6.4, target: new THREE.Vector3(0, 1.2, 0) };
     var fit = { w: 4.6, h: 2.4 };
 
     /* Дистанция считается ПО ОБОИМ углам обзора. Вертикальный угол задан камерой,
@@ -205,7 +326,7 @@
       var fovH = 2 * Math.atan(Math.tan(fovV / 2) * camera.aspect);
       var dV = (fit.h / 2) / Math.tan(fovV / 2);
       var dH = (fit.w / 2) / Math.tan(fovH / 2);
-      orbit.dist = Math.max(dV, dH) * 1.18 + 0.5;
+      orbit.dist = Math.max(dV, dH) * 1.62 + 0.6;
       updateCamera();
     }
     function updateCamera() {
@@ -223,7 +344,7 @@
     canvas.addEventListener('pointermove', function (e) {
       if (!drag) return;
       orbit.az -= (e.clientX - drag.x) * 0.006;
-      orbit.el = Math.max(-0.12, Math.min(0.85, orbit.el + (e.clientY - drag.y) * 0.004));
+      orbit.el = Math.max(0.03, Math.min(0.8, orbit.el + (e.clientY - drag.y) * 0.004));
       drag.x = e.clientX; drag.y = e.clientY;
       spin = 0;                                   // человек взял управление — автоповорот стоп
     });
@@ -262,7 +383,10 @@
     function frame(now) {
       requestAnimationFrame(frame);
       var dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
-      carRoot.rotation.y += spin * dt;
+      orbit.az += spin * dt;
+      /* Рассыпаем всё, что оказалось между камерой и машиной: порог идёт за камерой,
+         поэтому колонна, стена или стеллаж исчезают ровно тогда, когда лезут в кадр. */
+      roomUniforms.uFade.value = Math.max(0.35, orbit.dist - fit.w * 0.62);
       updateCamera();
       renderer.render(scene, camera);
     }
