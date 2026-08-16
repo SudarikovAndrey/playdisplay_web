@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Гараж · NIVA</title>
+<!--
+  ГАРАЖ. Отдельная страница со сценой, которая вставляется в компред через <iframe>.
+
+  Почему отдельной страницей, а не куском основной: сцена держит свой контекст WebGL,
+  свой цикл кадров и падает изолированно — если у гостя нет WebGL, ломается рамка, а не
+  весь документ. Тот же приём, что у первого экрана лендинга (kit: блок hero-3d).
+
+  Модель приходит одной сеткой на 88 тысяч треугольников: колёс как отдельных объектов
+  в ней нет. Поэтому они ВЫДЕЛЯЮТСЯ ИЗ ГЕОМЕТРИИ при загрузке — по цилиндрам вокруг
+  четырёх нижних углов габарита. Числа подобраны замером на этой модели и показаны
+  в отладке: `?dev=1` красит найденные колёса и рисует цилиндры.
+-->
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: #0a0a0b; color: #f3ece0;
+               font-family: "Roboto Mono", ui-monospace, monospace; overflow: hidden; }
+  #stage { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+  #stage.dragging { cursor: grabbing; }
+
+  /* Панель как в автомобильной аркаде: слева состояние, справа органы управления */
+  .hud { position: absolute; inset: auto 0 0 0; padding: 14px clamp(12px, 2vw, 26px) clamp(12px, 2vw, 22px);
+         display: flex; gap: clamp(12px, 2vw, 30px); align-items: flex-end; justify-content: space-between;
+         flex-wrap: wrap; pointer-events: none;
+         background: linear-gradient(transparent, rgba(6,6,7,.86) 45%); }
+  .hud > * { pointer-events: auto; }
+
+  .plate { display: grid; gap: 3px; }
+  .plate b { font: 700 clamp(18px, 2.4vw, 30px)/1 Oswald, "Arial Narrow", sans-serif; letter-spacing: .01em; text-transform: uppercase; }
+  .plate span { color: #8d867a; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+
+  .controls { display: flex; gap: clamp(10px, 1.6vw, 22px); align-items: flex-end; flex-wrap: wrap; }
+  .ctl { display: grid; gap: 7px; }
+  .ctl > label { color: #8d867a; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; }
+
+  .paints { display: flex; gap: 7px; }
+  .paints button { width: 26px; height: 26px; padding: 0; border: 1px solid rgba(243,236,224,.28);
+                   border-radius: 50%; cursor: pointer; transition: transform .18s, border-color .18s; }
+  .paints button:hover { transform: translateY(-2px); }
+  .paints button[aria-pressed="true"] { border-color: #f3ece0; box-shadow: 0 0 0 2px rgba(243,236,224,.22); }
+
+  input[type=range] { -webkit-appearance: none; appearance: none; width: clamp(96px, 12vw, 150px); height: 20px;
+                      background: transparent; cursor: pointer; }
+  input[type=range]::-webkit-slider-runnable-track { height: 2px; background: rgba(243,236,224,.28); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -6px;
+                                            border-radius: 50%; background: #e2694b; border: 1px solid #0a0a0b; }
+  input[type=range]::-moz-range-track { height: 2px; background: rgba(243,236,224,.28); }
+  input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #e2694b; border: 1px solid #0a0a0b; }
+
+  .switch { display: flex; gap: 0; border: 1px solid rgba(243,236,224,.22); }
+  .switch button { padding: 7px 11px; border: 0; background: transparent; color: #8d867a; cursor: pointer;
+                   font: 500 9.5px/1 "Roboto Mono", monospace; letter-spacing: .16em; text-transform: uppercase; }
+  .switch button[aria-pressed="true"] { background: rgba(192,67,47,.9); color: #fff; }
+
+  .hint { position: absolute; left: clamp(12px, 2vw, 26px); top: clamp(12px, 2vw, 22px);
+          color: #6f6a61; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
+  .loading { position: absolute; inset: 0; display: grid; place-content: center; gap: 14px; justify-items: center;
+             background: #0a0a0b; z-index: 5; transition: opacity .5s; }
+  .loading.done { opacity: 0; pointer-events: none; }
+  .loading i { display: block; width: 180px; height: 2px; background: rgba(243,236,224,.16); position: relative; }
+  .loading i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--p, 0%); background: #e2694b; }
+  .loading p { margin: 0; color: #6f6a61; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
+  .fallback { max-width: 320px; text-align: center; color: #8d867a; font-size: 12px; line-height: 1.5; letter-spacing: .04em; }
+</style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <p class="hint">Тяните, чтобы повернуть</p>
+
+  <div class="hud">
+    <div class="plate">
+      <b id="plateName">NIVA · 50 лет</b>
+      <span id="plateNote">Гараж · сборка игрока</span>
+    </div>
+    <div class="controls">
+      <div class="ctl">
+        <label for="paints">Цвет кузова</label>
+        <div class="paints" id="paints"></div>
+      </div>
+      <div class="ctl">
+        <label for="ride">Подвеска</label>
+        <input id="ride" type="range" min="0" max="100" value="45" aria-label="Высота подвески">
+      </div>
+      <div class="ctl">
+        <label for="steer">Колёса</label>
+        <input id="steer" type="range" min="-100" max="100" value="0" aria-label="Поворот колёс">
+      </div>
+      <div class="ctl">
+        <label>Модель</label>
+        <div class="switch" id="models">
+          <button type="button" data-model="models/niva-a.glb" aria-pressed="true">A</button>
+          <button type="button" data-model="models/niva-b.glb" aria-pressed="false">B</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">
+    <i id="bar"></i>
+    <p id="loadNote">Загрузка модели</p>
+  </div>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/GLTFLoader.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    var DEV = /[?&]dev=1/.test(location.search);
+    // в отладке сцена вынесена наружу: без неё в консоли не проверить ни материал, ни юниформы
+
+    var canvas = document.getElementById('stage');
+    var loading = document.getElementById('loading');
+    var bar = document.getElementById('bar');
+    var loadNote = document.getElementById('loadNote');
+
+    if (!window.THREE) { fail('Не удалось загрузить движок сцены.'); return; }
+
+    var renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+    } catch (e) { fail('Браузер не поддерживает WebGL.'); return; }
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.32;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    var scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x08080a);
+    scene.fog = new THREE.Fog(0x08080a, 7.5, 19);
+
+    var camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+
+    /* ── СВЕТ ГАРАЖА ────────────────────────────────────────────────────────
+       Одна лампа сверху (та самая, что качается на проводе), холодная подсветка
+       сзади-слева и тёплая справа. Тёплый и холодный контровой — приём автомобильной
+       съёмки: они рисуют рёбра кузова, которых при одном верхнем свете не видно вовсе. */
+    scene.add(new THREE.HemisphereLight(0x8fa4c0, 0x120f0c, 0.14));
+
+    var lamp = new THREE.SpotLight(0xfff0d6, 42, 24, Math.PI / 4.6, 0.42, 1.3);
+    lamp.position.set(0.4, 5.2, 1.2);
+    lamp.castShadow = true;
+    lamp.shadow.mapSize.set(1024, 1024);
+    lamp.shadow.bias = -0.0016;
+    scene.add(lamp, lamp.target);
+
+    var rimCold = new THREE.DirectionalLight(0x7ea6ff, 1.15);
+    rimCold.position.set(-6, 2.4, -5);
+    scene.add(rimCold);
+
+    var rimWarm = new THREE.DirectionalLight(0xff8a4a, 0.95);
+    rimWarm.position.set(6.5, 1.8, -3.2);
+    scene.add(rimWarm);
+
+    /* Мягкая заливка спереди. Без неё борт, повёрнутый к зрителю, остаётся в тени
+       и краску не видно вовсе — а это главное, что здесь можно менять. */
+    var fill = new THREE.DirectionalLight(0xfff3e2, 0.55);
+    fill.position.set(2.2, 2.6, 6);
+    scene.add(fill);
+
+    /* Сама лампа: абажур и провод. Без видимого источника пятно света на полу
+       читается как пятно грязи, а не как свет. */
+    var lampGroup = new THREE.Group();
+    var shade = new THREE.Mesh(
+      new THREE.ConeGeometry(0.46, 0.34, 24, 1, true),
+      new THREE.MeshStandardMaterial({ color: 0x2a2724, metalness: .7, roughness: .5, side: THREE.DoubleSide })
+    );
+    shade.position.y = 5.2;
+    var bulb = new THREE.Mesh(
+      new THREE.SphereGeometry(0.08, 16, 12),
+      new THREE.MeshBasicMaterial({ color: 0xffdca8 })
+    );
+    bulb.position.y = 5.06;
+    var wire = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.008, 0.008, 3.2, 6),
+      new THREE.MeshBasicMaterial({ color: 0x14120f })
+    );
+    wire.position.y = 6.9;
+    lampGroup.add(shade, bulb, wire);
+    lampGroup.position.set(0.4, 0, 1.2);
+    scene.add(lampGroup);
+
+    /* ── ПОЛ ГАРАЖА ─────────────────────────────────────────────────────────
+       Бетон с разметкой ямы: тёмный, чтобы машина не тонула в нём, но с блеском —
+       на матовом полу отражения нет, и машина висит в пустоте. */
+    var floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(60, 60),
+      new THREE.MeshStandardMaterial({ color: 0x121316, roughness: .68, metalness: .1 })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    /* Коробка гаража. Стены нужны не для красоты: без них свет уходит в пустоту и
+       машина стоит в чёрном ничто. Стены ловят отблеск лампы и задают масштаб. */
+    var wallMat = new THREE.MeshStandardMaterial({ color: 0x141518, roughness: .97, metalness: .03 });
+    function wall(w, h, x, y, z, ry) {
+      var m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), wallMat);
+      m.position.set(x, y, z); m.rotation.y = ry; m.receiveShadow = true; scene.add(m); return m;
+    }
+    wall(16, 6, 0, 3, -6, 0);          // задняя стена
+    wall(12, 6, -8, 3, 0, Math.PI / 2); // левая
+    wall(12, 6, 8, 3, 0, -Math.PI / 2); // правая
+
+    /* Ворота: гофрированный металл. Полосы сделаны геометрией, а не текстурой —
+       текстуру пришлось бы тащить файлом ради двадцати полос. */
+    var gate = new THREE.Group();
+    for (var gi = 0; gi < 26; gi++) {
+      var slat = new THREE.Mesh(
+        new THREE.BoxGeometry(6.4, 0.17, 0.06),
+        new THREE.MeshStandardMaterial({ color: gi % 2 ? 0x212429 : 0x1b1e22, roughness: .7, metalness: .35 })
+      );
+      slat.position.set(0, 0.12 + gi * 0.18, 0);
+      gate.add(slat);
+    }
+    gate.position.set(0, 0, -5.9);
+    scene.add(gate);
+
+    /* Реквизит силуэтами: стопка покрышек, канистры, верстак. Тёмные, без деталей —
+       они работают на глубину кадра, а не на разглядывание. */
+    var propMat = new THREE.MeshStandardMaterial({ color: 0x1a1b1e, roughness: .95, metalness: .05 });
+    for (var ti = 0; ti < 3; ti++) {
+      var tyre = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.16, 8, 20), propMat);
+      tyre.rotation.x = Math.PI / 2;
+      tyre.position.set(-4.4, 0.16 + ti * 0.3, -3.6);
+      tyre.castShadow = true;
+      scene.add(tyre);
+    }
+    var bench = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.9, 0.7), propMat);
+    bench.position.set(4.6, 0.45, -4.4); bench.castShadow = true; scene.add(bench);
+    for (var ci = 0; ci < 3; ci++) {
+      var can = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.46, 0.22), propMat);
+      can.position.set(3.6 + ci * 0.42, 1.13, -4.4); can.castShadow = true; scene.add(can);
+    }
+
+    var grid = new THREE.GridHelper(60, 60, 0x2a2c30, 0x1c1e21);
+    grid.position.y = 0.002;
+    grid.material.transparent = true;
+    grid.material.opacity = .22;
+    scene.add(grid);
+
+    /* Пыль в луче: десяток тысяч точек — лишнее, хватает трёхсот. Они и создают
+       ощущение воздуха в гараже. */
+    var dustGeo = new THREE.BufferGeometry();
+    var dustPos = new Float32Array(300 * 3);
+    for (var i = 0; i < 300; i++) {
+      dustPos[i * 3] = (Math.random() - 0.5) * 7;
+      dustPos[i * 3 + 1] = Math.random() * 4.4 + 0.15;
+      dustPos[i * 3 + 2] = (Math.random() - 0.5) * 7;
+    }
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+    var dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
+      color: 0xffe6bd, size: 0.018, transparent: true, opacity: .5, depthWrite: false
+    }));
+    scene.add(dust);
+
+    /* ── ПЕРЕКРАСКА ─────────────────────────────────────────────────────────
+       Текстура у модели запечённая: отдельного материала кузова нет, кузов, стёкла и
+       резина живут в одной картинке. Значит, маску надо брать из самой текстуры.
+       Две попытки отделить кузов ПО ТЕКСТУРЕ провалились, и вот почему — это видно
+       только замером гистограммы (снят прямо в браузере по картинке материала):
+       99 % текселей имеют насыщенность ниже 0.1, а 94 % лежат в узкой полосе светлот
+       0.1–0.3. Текстура у модели почти чёрно-белая, цвет в кадре даёт СВЕТ, а не карта.
+       Значит, ни по насыщенности, ни по светлоте кузов от резины не отличить.
+       Отделяем ГЕОМЕТРИЕЙ: колёса уже вырезаны в отдельные объекты, и краска вешается
+       только на материал кузова (у колёс — своя копия материала, без патча).
+       Полоса светлот оставлена лишь как предохранитель от полностью чёрных мест. */
+    var PAINT = { color: new THREE.Color('#1d3f8f'), lumMin: 0.02, lumMax: 0.96, on: 0 };
+    function patchMaterial(mat) {
+      mat.userData.paint = PAINT;
+      mat.onBeforeCompile = function (shader) {
+        shader.uniforms.uPaint = { value: PAINT.color };
+        shader.uniforms.uLumMin = { value: PAINT.lumMin };
+        shader.uniforms.uLumMax = { value: PAINT.lumMax };
+        shader.uniforms.uPaintOn = { value: PAINT.on };
+        mat.userData.shader = shader;
+        shader.fragmentShader = shader.fragmentShader
+          .replace('void main() {', 'uniform vec3 uPaint;\nuniform float uLumMin;\nuniform float uLumMax;\nuniform float uPaintOn;\nvoid main() {')
+          .replace('#include <map_fragment>', [
+            '#include <map_fragment>',
+            'if (uPaintOn > 0.5) {',
+            '  vec3 c = diffuseColor.rgb;',
+            '  float lum = max(max(c.r, c.g), c.b);',
+            /* полоса светлот: снизу отсекаются резина и стёкла, сверху — хром и фары */
+            '  float k = smoothstep(uLumMin, uLumMin + 0.03, lum) * (1.0 - smoothstep(uLumMax - 0.10, uLumMax, lum));',
+            /* яркость берём у самого текселя: так на кузове остаются блики, грязь и
+               тени — иначе машина превращается в плоскую заливку */
+            '  diffuseColor.rgb = mix(diffuseColor.rgb, uPaint * clamp(0.5 + 1.6 * lum, 0.0, 1.4), k);',
+            '}'
+          ].join('\n'));
+      };
+      mat.needsUpdate = true;
+    }
+    function setPaint(hex) {
+      PAINT.color.set(hex);
+      PAINT.on = 1;
+      applyUniforms();
+    }
+    function applyUniforms() {
+      scene.traverse(function (o) {
+        if (o.isMesh && o.material && o.material.userData && o.material.userData.shader) {
+          var u = o.material.userData.shader.uniforms;
+          u.uPaint.value = PAINT.color;
+          u.uLumMin.value = PAINT.lumMin;
+          u.uLumMax.value = PAINT.lumMax;
+          u.uPaintOn.value = PAINT.on;
+        }
+      });
+    }
+
+    /* ── СБОРКА МАШИНЫ ──────────────────────────────────────────────────────*/
+    var carRoot = new THREE.Group();          // общий поворот сцены (автовращение и мышь)
+    var bodyGroup = new THREE.Group();        // кузов: его поднимает подвеска
+    var wheels = [];                          // четыре колеса со своими осями
+    scene.add(carRoot);
+    carRoot.add(bodyGroup);
+
+    var SPLIT = {          // доли габарита; проверяются отладкой ?dev=1
+      band: 0.40,          // нижняя полоса, в которой вообще ищем колёса
+      axleMin: 0.34,       // насколько далеко от центра по длине стоит ось
+      radius: 0.235        // радиус цилиндра колеса в долях высоты машины
+    };
+
+    var loader = new THREE.GLTFLoader();
+    var current = 'models/niva-a.glb';
+
+    function clearCar() {
+      for (var i = bodyGroup.children.length - 1; i >= 0; i--) bodyGroup.remove(bodyGroup.children[i]);
+      for (var j = carRoot.children.length - 1; j >= 0; j--) if (carRoot.children[j] !== bodyGroup) carRoot.remove(carRoot.children[j]);
+      wheels = [];
+    }
+
+    function load(url) {
+      loading.classList.remove('done');
+      loadNote.textContent = 'Загрузка модели';
+      bar.style.setProperty('--p', '0%');
+      loader.load(url, function (gltf) {
+        clearCar();
+        build(gltf.scene);
+        loading.classList.add('done');
+      }, function (e) {
+        if (e.lengthComputable) bar.style.setProperty('--p', Math.round(e.loaded / e.total * 100) + '%');
+      }, function () {
+        fail('Не удалось загрузить модель.');
+      });
+    }
+
+    function build(root) {
+      var src = null;
+      root.traverse(function (o) { if (o.isMesh && !src) src = o; });
+      if (!src) { fail('В файле нет геометрии.'); return; }
+
+      src.updateWorldMatrix(true, false);
+      var geo = src.geometry.clone().applyMatrix4(src.matrixWorld);
+      geo.computeBoundingBox();
+      var bb = geo.boundingBox, size = new THREE.Vector3(), center = new THREE.Vector3();
+      bb.getSize(size); bb.getCenter(center);
+
+      /* Ставим машину на пол и приводим к постоянному размеру: модели приходят
+         в разных масштабах, а кадр должен быть одинаковым. */
+      var scale = 2.35 / size.y;
+      var mat = src.material;
+      mat.side = THREE.FrontSide;
+      /* МЕТАЛЛИЧНОСТЬ У ЭТОЙ МОДЕЛИ ПРИШЛА ЕДИНИЦЕЙ, и это ломало всю перекраску:
+         у полного металла диффузной составляющей нет вовсе — поверхность показывает
+         только отражения, поэтому кузов оставался синевато-серым, каким его красили
+         контровые лампы, а не выбранным цветом. Проверяется одной строкой в консоли:
+         material.metalness. Крашеный кузов — это лак поверх металла: немного зеркальности
+         и средняя шероховатость. */
+      mat.metalness = 0.22;
+      mat.roughness = 0.42;
+      /* Копия ДО патча: клон разделяет карты по ссылке (лишней памяти нет), но своих
+         onBeforeCompile у него не будет — значит, краска на колёса не попадёт */
+      var wheelMat = mat.clone();
+      wheelMat.metalness = 0.45;   // диски блестят сильнее кузова, резина — за счёт шероховатости
+      wheelMat.roughness = 0.62;
+      patchMaterial(mat);
+
+      var parts = splitWheels(geo, bb, size);
+      var body = new THREE.Mesh(parts.body, mat);
+      body.castShadow = true; body.receiveShadow = true;
+      bodyGroup.add(body);
+
+      parts.wheels.forEach(function (w) {
+        var pivot = new THREE.Group();
+        pivot.position.copy(w.center);
+        var mesh = new THREE.Mesh(w.geometry, DEV ? new THREE.MeshStandardMaterial({ color: 0xff3b1f }) : wheelMat);
+        mesh.castShadow = true;
+        mesh.position.copy(w.center).multiplyScalar(-1);
+        pivot.add(mesh);
+        pivot.userData.front = w.front;
+        carRoot.add(pivot);
+        wheels.push(pivot);
+      });
+
+      carRoot.scale.setScalar(scale);
+      carRoot.position.set(0, -bb.min.y * scale, 0);
+      bodyGroup.position.y = 0;
+
+      lamp.target.position.set(0, 1, 0);
+      frameCamera(size.clone().multiplyScalar(scale));
+      setPaint(PAINT.color.getHexString ? '#' + PAINT.color.getHexString() : '#1d3f8f');
+
+      if (DEV) {
+        var box = new THREE.Box3Helper(new THREE.Box3(bb.min.clone().multiplyScalar(scale), bb.max.clone().multiplyScalar(scale)), 0x39ff88);
+        scene.add(box);
+        console.log('габарит', size, 'колёс найдено', parts.wheels.length);
+      }
+    }
+
+    /* Разделение сетки на кузов и колёса.
+       Треугольник уходит в колесо, если его центр попал в один из четырёх цилиндров,
+       поставленных у нижних углов габарита. Цилиндр, а не шар: у колеса ось поперёк
+       машины, и шар прихватывает арку крыла вместе с диском. */
+    function splitWheels(geo, bb, size) {
+      var pos = geo.attributes.position;
+      var idx = geo.index;
+      var count = idx ? idx.count : pos.count;
+      var lateralAxis = size.x > size.z ? 'z' : 'x';     // поперёк машины
+      var longAxis = size.x > size.z ? 'x' : 'z';        // вдоль машины
+      var longHalf = size[longAxis] / 2, latHalf = size[lateralAxis] / 2;
+      var bandTop = bb.min.y + size.y * SPLIT.band;
+      var wheelR = size.y * SPLIT.radius;
+
+      /* Центры колёс ищем по самим точкам, и В ДВА ПРОХОДА.
+         Одного прохода мало: в нижней полосе кроме колёс лежат бампера, пороги и
+         защита, они тянут среднее к краям машины — на первой сборке в «колесо»
+         уезжала половина бампера (видно было отладкой). Поэтому сначала грубая
+         оценка по четвертям с отсечкой по бортам, потом уточнение по точкам,
+         попавшим в цилиндр вокруг этой оценки. */
+      var centers = [null, null, null, null];
+      var v = new THREE.Vector3();
+      function estimate(pass) {
+        var acc = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]];   // sumLong, sumY, n
+        for (var p = 0; p < pos.count; p++) {
+          v.fromBufferAttribute(pos, p);
+          if (v.y > bandTop) continue;
+          var L = v[longAxis], T = v[lateralAxis];
+          if (Math.abs(T) < latHalf * 0.42) continue;                 // колёса стоят по бортам
+          if (Math.abs(L) < longHalf * SPLIT.axleMin) continue;       // не под центром машины
+          if (Math.abs(L) > longHalf * 0.94) continue;                // и не в самом бампере
+          var q = (L > 0 ? 0 : 2) + (T > 0 ? 0 : 1);
+          if (pass && centers[q]) {
+            var dL = L - centers[q][longAxis], dY = v.y - centers[q].y;
+            if (dL * dL + dY * dY > wheelR * wheelR * 1.44) continue;
+          }
+          acc[q][0] += L; acc[q][1] += v.y; acc[q][2]++;
+        }
+        return acc.map(function (a, q) {
+          if (a[2] < 200) return null;
+          var c = new THREE.Vector3();
+          c[longAxis] = a[0] / a[2];
+          c[lateralAxis] = (q === 0 || q === 2 ? 1 : -1) * latHalf * 0.7;  // ось у борта
+          c.y = Math.max(bb.min.y + wheelR * 0.92, a[1] / a[2]);
+          return c;
+        });
+      }
+      centers = estimate(0);
+      centers = estimate(1).map(function (c, i) { return c || centers[i]; });
+      if (DEV) console.log('центры колёс', centers.map(function (c) { return c && c.toArray().map(function (n) { return +n.toFixed(3); }); }));
+
+      var wheelTris = [[], [], [], []], bodyTris = [];
+      var a = new THREE.Vector3(), b = new THREE.Vector3(), c2 = new THREE.Vector3(), mid = new THREE.Vector3();
+      for (var t = 0; t < count; t += 3) {
+        var i0 = idx ? idx.getX(t) : t, i1 = idx ? idx.getX(t + 1) : t + 1, i2 = idx ? idx.getX(t + 2) : t + 2;
+        a.fromBufferAttribute(pos, i0); b.fromBufferAttribute(pos, i1); c2.fromBufferAttribute(pos, i2);
+        mid.copy(a).add(b).add(c2).multiplyScalar(1 / 3);
+        var hit = -1;
+        for (var w = 0; w < 4; w++) {
+          var cc = centers[w];
+          if (!cc) continue;
+          var dLong = mid[longAxis] - cc[longAxis];
+          var dY = mid.y - cc.y;
+          var dLat = Math.abs(mid[lateralAxis] - cc[lateralAxis]);
+          if (dLong * dLong + dY * dY < wheelR * wheelR && dLat < latHalf * 0.42) { hit = w; break; }
+        }
+        if (hit >= 0) wheelTris[hit].push(i0, i1, i2); else bodyTris.push(i0, i1, i2);
+      }
+
+      return {
+        body: subGeometry(geo, bodyTris),
+        wheels: centers.map(function (cc, w) {
+          if (!cc || wheelTris[w].length < 300) return null;   // мало треугольников — не колесо
+          return { geometry: subGeometry(geo, wheelTris[w]), center: cc, front: cc[longAxis] > 0 };
+        }).filter(Boolean)
+      };
+    }
+
+    function subGeometry(geo, indices) {
+      var g = new THREE.BufferGeometry();
+      var src = geo.attributes;
+      /* Читаем через getX/getY/getZ, а НЕ напрямую из at.array. Модель ужата с
+         чересстрочной раскладкой вершин (interleaved), и в этом случае at.array —
+         это общий буфер всех атрибутов сразу: прямая выборка по индексу давала
+         кашу из осколков вместо машины. Аксессоры знают про смещение и шаг. */
+      ['position', 'normal', 'uv'].forEach(function (name) {
+        var at = src[name];
+        if (!at) return;
+        var n = at.itemSize;
+        var arr = new Float32Array(indices.length * n);
+        for (var i = 0; i < indices.length; i++) {
+          var s = indices[i];
+          arr[i * n] = at.getX(s);
+          if (n > 1) arr[i * n + 1] = at.getY(s);
+          if (n > 2) arr[i * n + 2] = at.getZ(s);
+          if (n > 3) arr[i * n + 3] = at.getW(s);
+        }
+        g.setAttribute(name, new THREE.BufferAttribute(arr, n));
+      });
+      g.computeBoundingSphere();
+      return g;
+    }
+
+    /* ── КАМЕРА ─────────────────────────────────────────────────────────────*/
+    var orbit = { az: 2.44, el: 0.17, dist: 7.2, target: new THREE.Vector3(0, 1.05, 0) };
+    function frameCamera(size) {
+      var span = Math.max(size.x, size.z);
+      orbit.dist = span * 1.9 + 1.2;
+      orbit.target.set(0, size.y * 0.48, 0);
+    }
+    function updateCamera() {
+      var ce = Math.cos(orbit.el), se = Math.sin(orbit.el);
+      camera.position.set(
+        orbit.target.x + Math.cos(orbit.az) * ce * orbit.dist,
+        orbit.target.y + se * orbit.dist,
+        orbit.target.z + Math.sin(orbit.az) * ce * orbit.dist
+      );
+      camera.lookAt(orbit.target);
+    }
+
+    var drag = null, spin = 0.16;
+    canvas.addEventListener('pointerdown', function (e) {
+      drag = { x: e.clientX, y: e.clientY };
+      canvas.classList.add('dragging');
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      orbit.az -= (e.clientX - drag.x) * 0.006;
+      orbit.el = Math.max(-0.05, Math.min(0.75, orbit.el + (e.clientY - drag.y) * 0.004));
+      drag.x = e.clientX; drag.y = e.clientY;
+      spin = 0;                                   // человек взял управление — автоповорот стоп
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
+      canvas.addEventListener(ev, function () { drag = null; canvas.classList.remove('dragging'); });
+    });
+    canvas.addEventListener('wheel', function (e) {
+      /* Колесо мыши НЕ отменяем полностью: страница-хозяин должна продолжать
+         прокручиваться, иначе рамка ловит скролл и документ застревает на гараже.
+         Приближаем только при зажатом Shift. */
+      if (!e.shiftKey) return;
+      e.preventDefault();
+      orbit.dist = Math.max(4, Math.min(14, orbit.dist + e.deltaY * 0.004));
+    }, { passive: false });
+
+    /* ── ОРГАНЫ УПРАВЛЕНИЯ ──────────────────────────────────────────────────*/
+    var PAINTS = [
+      { hex: '#1d3f8f', name: 'Синий' },
+      { hex: '#8d1f1f', name: 'Вишня' },
+      { hex: '#dfe3e6', name: 'Белый' },
+      { hex: '#2f6b3f', name: 'Хаки' },
+      { hex: '#d98a1f', name: 'Охра' },
+      { hex: '#1b1c1f', name: 'Асфальт' }
+    ];
+    var paintsHost = document.getElementById('paints');
+    PAINTS.forEach(function (p, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.style.background = p.hex;
+      b.title = p.name;
+      b.setAttribute('aria-label', 'Цвет: ' + p.name);
+      b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+      b.addEventListener('click', function () {
+        setPaint(p.hex);
+        [].forEach.call(paintsHost.children, function (o) { o.setAttribute('aria-pressed', 'false'); });
+        b.setAttribute('aria-pressed', 'true');
+        document.getElementById('plateNote').textContent = 'Окрас: ' + p.name.toLowerCase();
+      });
+      paintsHost.appendChild(b);
+    });
+
+    var ride = document.getElementById('ride');
+    ride.addEventListener('input', function () {
+      /* Подвеска двигает КУЗОВ, а не машину целиком: колёса остаются на полу,
+         иначе «поднятая» машина просто улетает вверх вместе с колёсами. */
+      var k = (ride.value - 45) / 100;
+      bodyGroup.position.y = k * 0.34;
+      document.getElementById('plateNote').textContent = k > 0.08 ? 'Подвеска: лифт' : (k < -0.08 ? 'Подвеска: занижена' : 'Подвеска: сток');
+    });
+
+    var steer = document.getElementById('steer');
+    steer.addEventListener('input', function () {
+      var ang = steer.value / 100 * 0.5;
+      wheels.forEach(function (w) { if (w.userData.front) w.rotation.y = ang; });
+    });
+
+    document.getElementById('models').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-model]');
+      if (!b || b.dataset.model === current) return;
+      [].forEach.call(this.children, function (o) { o.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true');
+      current = b.dataset.model;
+      load(current);
+    });
+
+    /* ── КАДР ───────────────────────────────────────────────────────────────*/
+    function resize() {
+      var w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    addEventListener('resize', resize);
+
+    var t0 = performance.now();
+    function frame(now) {
+      requestAnimationFrame(frame);
+      var dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
+      carRoot.rotation.y += spin * dt;
+      lampGroup.rotation.z = Math.sin(now / 2400) * 0.02;   // лампа чуть покачивается
+      dust.rotation.y += dt * 0.02;
+      updateCamera();
+      renderer.render(scene, camera);
+    }
+
+    function fail(msg) {
+      loading.innerHTML = '<p class="fallback">' + msg + '<br>Кадры игры показаны ниже на странице.</p>';
+      loading.classList.remove('done');
+    }
+
+    if (DEV) { window.__g = { scene: scene, paint: PAINT, wheels: function () { return wheels; } }; }
+    resize();
+    load(current);
+    requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>

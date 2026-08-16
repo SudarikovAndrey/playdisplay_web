@@ -532,6 +532,142 @@
   transform: translateY(-.35em);
 }
 
+/* ДОКАЗАТЕЛЬСТВО НА ПЕРВОМ ЭКРАНЕ: полоса фактов и кадр приложения.
+   Партнёр решает, читать ли документ, на первом экране. Если предложение опирается на
+   чужую площадку (игру, сервис, площадку с аудиторией), её масштаб и её вид должны быть
+   видны СРАЗУ, до первого абзаца: цифры словами читаются дольше, чем цифры плашками, а
+   слово «мобильная» объясняется кадром телефона быстрее, чем любой строкой. */
+.hero-facts {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(16px, 2.4vw, 40px);
+  margin: clamp(20px, 2.8vw, 36px) 0 0;
+  padding: 0;
+}
+.hero-facts li { min-width: 0; max-width: 250px; display: grid; gap: 5px; }
+.hero-facts b {
+  color: var(--paper);
+  font: 600 clamp(22px, 2.4vw, 38px)/1 Unbounded, "Arial Black", sans-serif;
+  letter-spacing: -.045em;
+}
+.hero-facts span { color: var(--muted); font: 400 11.5px/1.35 "Roboto Mono", monospace; letter-spacing: .06em; text-transform: uppercase; }
+
+/* Кадр приложения стоит абсолютом в правой части первого экрана, а колонка текста рядом
+   с ним ОБЯЗАНА быть уже обычной: при полной ширине (min(830px, 70vw)) заголовок доезжал
+   до телефона и налезал на него на экранах уже 1500 пикселей. */
+.hero-copy--narrow { width: min(660px, 52vw); }
+.hero-phone {
+  position: absolute;
+  right: 6vw;
+  bottom: -4%;
+  z-index: 4;
+  width: clamp(190px, 19vw, 300px);
+  margin: 0;
+  transform: rotate(2.5deg);
+}
+.hero-phone img {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, .6);
+}
+/* Ниже 1000 пикселей телефон убирается совсем: он либо налезает на текст, либо
+   ужимается до полоски. Тот же кадр всё равно показан в разделе о площадке. */
+@media (max-width: 1000px) {
+  .hero-phone { display: none; }
+  .hero-copy--narrow { width: 100%; }
+}
+
+/* ВСТРОЕННАЯ СЦЕНА. Тяжёлая трёхмерная сцена подключается отдельной страницей через
+   iframe: у неё свой контекст WebGL, свой цикл кадров и своё падение — если у гостя нет
+   WebGL, гаснет рамка, а не весь документ. Атрибут loading="lazy" обязателен: внутри
+   мегабайты модели, и грузиться они должны, когда до раздела дошли, а не на первом экране. */
+.scene-embed {
+  position: relative;
+  width: min(100%, 1120px);
+  aspect-ratio: 16 / 9;
+  margin: 30px 0 14px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #08080a;
+}
+.scene-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+.scene-embed + figcaption,
+.chapter-copy .scene-caption {
+  margin: 0 0 clamp(60px, 8vw, 110px);
+  color: var(--muted);
+  font: 400 12px/1.5 "Roboto Mono", monospace;
+  letter-spacing: .04em;
+}
+/* На телефоне широкий кадр превращает машину в полоску: даём вертикальную рамку,
+   а панель управления внутри сцены переносится сама. */
+@media (max-width: 760px) { .scene-embed { aspect-ratio: 4 / 5; } }
+
+/* СВЯЗКА ЛОГОТИПОВ «А × Б». Первый экран партнёрского предложения: два знака и крест
+   между ними. Знаки выравниваются по ВЫСОТЕ, а не по ширине — у одного логотипа может
+   быть длинная надпись, у другого только эмблема, и выравнивание по ширине делает один
+   из них вдвое крупнее по смыслу.
+   Пустое место (.lockup-slot) — та же мысль, что у блока blank: знака партнёра ещё нет,
+   и это должно быть видно, а не забыто. */
+.lockup { display: flex; align-items: center; gap: clamp(16px, 2.6vw, 40px); flex-wrap: wrap; margin: 0 0 clamp(22px, 3vw, 40px); }
+.lockup img { display: block; width: auto; height: clamp(34px, 4.4vw, 66px); }
+.lockup-x { color: var(--muted); font: 400 clamp(24px, 3vw, 44px)/1 Unbounded, "Arial Black", sans-serif; }
+.lockup-slot {
+  display: grid;
+  place-items: center;
+  min-width: clamp(140px, 15vw, 220px);
+  min-height: clamp(52px, 5.4vw, 80px);
+  padding: 10px 16px;
+  border: 1px dashed var(--coral);
+  border-radius: 4px;
+  color: var(--coral);
+  font: 500 10px/1.35 "Roboto Mono", monospace;
+  letter-spacing: .14em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* ЭКРАНЫ ПРИЛОЖЕНИЯ. Полоса вертикальных кадров — то, чем показывают мобильную игру
+   или сервис. На широком экране это ряд равных колонок, на телефоне — лента, которую
+   листают пальцем: семь кадров, ужатых в ширину телефона, дают полоски по 45 пикселей,
+   на них не видно ничего. Прокрутка с прилипанием честнее уменьшения.
+   Пропорция кадра задана явно (--phone-ratio): без неё object-fit: cover срезает
+   интерфейс сверху и снизу, а именно он тут и есть содержание. */
+.phone-strip {
+  --phone-ratio: 44 / 95;
+  width: min(100%, 1120px);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin: 30px 0 clamp(60px, 8vw, 110px);
+}
+.phone-strip figure { min-width: 0; margin: 0; }
+.phone-strip img {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--phone-ratio);
+  object-fit: cover;
+  object-position: 50% 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #05070c;
+}
+.chapter-copy .phone-strip figcaption,
+.phone-strip figcaption {
+  margin-top: 9px;
+  color: var(--muted);
+  font: 500 10px/1.3 "Roboto Mono", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+@media (max-width: 760px) {
+  .phone-strip { grid-auto-columns: 64%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
+  .phone-strip figure { scroll-snap-align: start; }
+}
+
 /* ─── БЛОКИ КОММЕРЧЕСКОГО ПРЕДЛОЖЕНИЯ ────────────────────────────────────────
    Компред отличается от книги концепции тремя вещами: в нём есть цифры, которых
    ещё нет; есть сравнение «как обычно» и «как у нас»; и есть цена. */

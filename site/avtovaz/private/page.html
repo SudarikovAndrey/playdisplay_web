@@ -10,21 +10,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Onest обязателен: именно он объявлен основным в typography.css -->
-  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Unbounded:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Unbounded:wght@400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css">
   <link rel="stylesheet" href="../../kit/css/typography.css">
   <link rel="stylesheet" href="../../kit/css/components.css">
   <link rel="stylesheet" href="../../kit/css/animations.css">
+  <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
+  <link rel="stylesheet" href="../../kit/css/theme-street.css">
 </head>
-<body>
+<body class="theme-street" style="--kraft:url('assets/kraft.jpg')">
   <!-- Заставка лежит В РАЗМЕТКЕ, а не создаётся скриптом: иначе между показом страницы
        и запуском скрипта мигает недогруженная вёрстка -->
   <div class="boot" id="boot">
     <div class="boot-inner">
       <img class="boot-logo" src="assets/playdisplay-logo.webp" alt="Playdisplay">
       <div class="boot-bar"><i id="bootBar"></i></div>
-      <p class="boot-note">LADA × Рынок Пацана</p>
+      <p class="boot-note">LADA × Рынок Пацана · компред</p>
     </div>
   </div>
 
@@ -40,15 +42,17 @@
 
   <nav class="chapter-nav" aria-label="Навигация по разделам">
     <a href="#s01" data-section="s01"><span>01</span><small>Два направления</small></a>
-    <a href="#s02" data-section="s02"><span>02</span><small>Рынок Пацана</small></a>
-    <a href="#s03" data-section="s03"><span>03</span><small>Не хватает тачек</small></a>
-    <a href="#s04" data-section="s04"><span>04</span><small>Не реклама. Игра</small></a>
-    <a href="#s05" data-section="s05"><span>05</span><small>Объект желания</small></a>
-    <a href="#s06" data-section="s06"><span>06</span><small>Что получает LADA</small></a>
-    <a href="#s07" data-section="s07"><span>07</span><small>NIVA — 50 лет</small></a>
-    <a href="#s08" data-section="s08"><span>08</span><small>Юбилейный сезон</small></a>
-    <a href="#s09" data-section="s09"><span>09</span><small>Продукт и медиа</small></a>
-    <a href="#s10" data-section="s10"><span>10</span><small>Предложение</small></a>
+    <a href="#s02" data-section="s02"><span>02</span><small>Площадка</small></a>
+    <a href="#s03" data-section="s03"><span>03</span><small>Кто эти люди</small></a>
+    <a href="#s04" data-section="s04"><span>04</span><small>Язык и юмор</small></a>
+    <a href="#s05" data-section="s05"><span>05</span><small>Не хватает тачек</small></a>
+    <a href="#s06" data-section="s06"><span>06</span><small>Не реклама. Игра</small></a>
+    <a href="#s07" data-section="s07"><span>07</span><small>Объект желания</small></a>
+    <a href="#s08" data-section="s08"><span>08</span><small>Что получает LADA</small></a>
+    <a href="#s09" data-section="s09"><span>09</span><small>NIVA — 50 лет</small></a>
+    <a href="#s10" data-section="s10"><span>10</span><small>Юбилейный сезон</small></a>
+    <a href="#s11" data-section="s11"><span>11</span><small>Продукт и медиа</small></a>
+    <a href="#s12" data-section="s12"><span>12</span><small>Предложение</small></a>
     <p class="nav-legal">© Playdisplay · для АвтоВАЗ</p>
   </nav>
 
@@ -57,11 +61,31 @@
     <!-- ═══ СЛАЙД 1. Первый экран ═══ -->
     <section class="hero">
       <div class="hero-intro">
-        <div class="hero-copy reveal">
+        <div class="hero-copy hero-copy--narrow reveal">
           <p class="overline hero-overline" data-parallax="0.03">Игровая программа LADA на 2027 год</p>
-          <h1><span class="l1" data-parallax="0.075">LADA ×</span><span class="l2" data-parallax="0.05">РЫНОК ПАЦАНА</span></h1>
-          <p class="hero-statement hero-statement--float" data-parallax="0.04">Автомобили LADA становятся частью игрового мира.</p>
+          <!-- Название игры на первом экране даёт ЗНАК, а не текст: в заголовке оно
+               читалось бы как второй логотип и спорило с настоящим -->
+          <div class="lockup" data-parallax="0.06">
+            <span class="lockup-slot">Место под знак LADA</span>
+            <span class="lockup-x">×</span>
+            <img src="assets/game-logo.png" alt="Рынок Пацана">
+          </div>
+          <h1><span class="l1" data-parallax="0.075">АВТОМОБИЛИ LADA</span><span class="l2" data-parallax="0.05">В МОБИЛЬНОЙ ИГРЕ</span></h1>
+          <p class="hero-statement hero-statement--float" data-parallax="0.04">Не реклама внутри игры, а игровой слой, который игрок сам хочет пройти.</p>
+          <!-- Доказательство аудитории стоит НА ПЕРВОМ ЭКРАНЕ: партнёр должен увидеть
+               масштаб площадки раньше, чем начнёт читать -->
+          <ul class="hero-facts" data-parallax="0.03">
+            <li><b>1+ млн</b><span>установок</span></li>
+            <li><b>4,3</b><span>рейтинг сторов</span></li>
+            <li><b>5</b><span>площадок дистрибуции</span></li>
+            <li><b>5 млн</b><span>цель по игрокам в СНГ к 2027</span></li>
+          </ul>
         </div>
+        <!-- Телефон с настоящим кадром игры: он объясняет «мобильная игра» быстрее,
+             чем это делает любая строка текста -->
+        <figure class="hero-phone" data-parallax="0.08">
+          <img src="assets/screen1.jpg" alt="Экран игры: ход по клеткам на карте района">
+        </figure>
         <p class="hero-status" data-parallax="0.02">Коммерческое предложение Playdisplay. Оранжевой чертой отмечены цифры, которые предстоит подставить.</p>
         <a class="scroll-cue" href="#s01"><span>Смотреть</span><i></i></a>
       </div>
@@ -103,6 +127,10 @@
         </header>
         <article class="chapter-copy">
           <h2>ЧТО ТАКОЕ «РЫНОК ПАЦАНА»</h2>
+          <div class="lockup">
+            <img src="assets/app-icon.png" alt="Иконка приложения «Рынок Пацана»" style="border-radius:14px">
+            <img src="assets/game-logo.png" alt="Рынок Пацана">
+          </div>
           <h3>Мобильная игра про путь от простого пацана до хозяина города</h3>
           <p>Игрок начинает с небольшого бизнеса и постепенно строит собственную империю: захватывает районы, развивает предприятия, собирает команду бойцов, участвует в разборках и конкурирует с другими игроками.</p>
           <p>Мир игры вдохновлён эстетикой и культурой лихих 90-х.</p>
@@ -115,6 +143,16 @@
             <div><b>5 млн</b><span>цель 2027 года в СНГ</span></div>
           </div>
 
+          <h3>Как это выглядит</h3>
+          <!-- Четыре экрана здесь и три в разделе про прокачку: семь кадров в одной полосе
+               на колонку в 960 пикселей дают по 123 пикселя — интерфейса на них не видно -->
+          <div class="phone-strip">
+            <figure><img src="assets/screen1.jpg" alt="Ход по клеткам на карте района"><figcaption>Ход по карте</figcaption></figure>
+            <figure><img src="assets/screen2.jpg" alt="Профиль игрока"><figcaption>Профиль</figcaption></figure>
+            <figure><img src="assets/screen3.jpg" alt="Хаты — жильё игрока"><figcaption>Хаты</figcaption></figure>
+            <figure><img src="assets/screen4.jpg" alt="Пацаны — команда игрока"><figcaption>Пацаны</figcaption></figure>
+          </div>
+
           <h3>Где играют</h3>
           <ul class="clean-list">
             <li>Google Play</li>
@@ -125,19 +163,85 @@
           </ul>
         </article>
 
-        <!-- Пустая рамка вместо кадра оставлена сознательно и подписана: скриншотов игры
-             у нас ещё нет, а немой декоративный экран во всю высоту читался бы как
-             недоделанный слайд. Когда придут картинки — сюда ставится
-             <div class="art-surface art-surface--image"><img …></div> -->
-        <figure class="art-frame" data-parallax="0.05">
-          <div class="art-surface">
-            <span class="art-index">Материал заказчика</span>
-            <!-- Короткая фраза не случайно: .art-title набран кеглем в 7vw, и длинное
-                 слово вроде «скриншоты» браузер разрывает посреди строки -->
-            <p class="art-title">Кадры игры</p>
+        <!-- Кадр игры во всю ширину области содержания. Метки на кадре считаются
+             скриптом от НАСТОЯЩИХ пропорций картинки: кадр выведен через object-fit: cover,
+             и проценты от рамки не совпали бы с процентами от изображения -->
+        <figure class="art-frame art-frame--fullscreen" data-parallax="0.05">
+          <div class="art-surface art-surface--image">
+            <img src="assets/board.jpg" alt="Игровой экран: ход по клеткам поверх карты района 90-х"
+                 data-spots='[{"x":50,"y":40,"r":2.4,"t":"Игрок ходит по клеткам поверх настоящей карты района"},{"x":50,"y":72,"r":2.2,"t":"Бизнесы района: ларьки, склады, видеосалоны"},{"x":51,"y":83,"r":2,"t":"Кубик — ядро механики: бросок и ход"}]'>
+            <span class="art-index">Экран игры</span>
           </div>
-          <figcaption>Главный экран и три-четыре характерных игровых экрана<span>Скриншоты</span></figcaption>
+          <figcaption>Настольная механика поверх карты города девяностых<span>Игровая доска</span></figcaption>
         </figure>
+      </div>
+    </section>
+
+
+    <!-- ═══ АУДИТОРИЯ. Цифры взяты из питч-дека игры (market volume, targeting) ═══ -->
+    <section id="s03" class="chapter chapter--wide" data-chapter="03">
+      <div class="chapter-shell">
+        <header class="chapter-header reveal">
+          <span class="chapter-number">03</span>
+          <span class="chapter-rule"></span>
+          <span class="chapter-meta">Аудитория</span>
+        </header>
+        <article class="chapter-copy">
+          <h2>КТО ЭТИ ЛЮДИ</h2>
+          <h3>Мужчина 18–44, ядро 35–44</h3>
+          <p>Тот, кто застал девяностые подростком или ребёнком, — и тот, кто их не застал, но смотрел «Слово пацана». Ностальгия по этому времени работает на обе группы: у одних это память, у других — миф, в который интересно попасть.</p>
+          <p>Что он выбирает в мобильных играх: настольные экономические стратегии, симуляторы, файтинги и <strong>гонки</strong>. Автомобильная тема для этой аудитории не чужая — её там просто пока нет.</p>
+
+          <h3>Сколько их</h3>
+          <div class="diagram collection-diagram">
+            <div><b>33,5 млн</b><span>целевых мобильных игроков: мужчины 18–44, любители настолок, экономических симуляторов, файтингов и гонок</span></div>
+            <div><b>77 млн</b><span>MAU мобильных площадок: RuStore, Google Play, App Store</span></div>
+            <div><b>41,6 %</b><span>доля мобильного гейминга в игровом рынке России</span></div>
+            <div><b>883 млн $</b><span>объём мобильного гейминга в России</span></div>
+          </div>
+
+          <h3>Как они играют</h3>
+          <div class="diagram collection-diagram collection-diagram--five">
+            <div><b>5 мин</b><span>средняя сессия</span></div>
+            <div><b>30+ мин</b><span>в день на игрока</span></div>
+            <div><b>40 %</b><span>возврат на первый день</span></div>
+            <div><b>18 %</b><span>возврат на седьмой день</span></div>
+            <div><b>1,5</b><span>K-фактор: игроки приводят игроков</span></div>
+          </div>
+          <p>Тридцать минут в день — это не показ баннера. Это время, которое человек проводит внутри мира по своей воле, и в этом времени может жить автомобиль.</p>
+          <p class="pull">Ядро аудитории игры — мужчины 35–44. Доля этой группы в аудитории LADA — <span class="blank" aria-label="уточняется"></span>, и это разговор о совпадении, который стоит проверить на ваших данных.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ═══ ЯЗЫК И ЮМОР. Из фичелиста игры: «пацанский сленг и юмор в каждой детали» ═══ -->
+    <section id="s04" class="chapter chapter--wide" data-chapter="04">
+      <div class="chapter-shell">
+        <header class="chapter-header reveal">
+          <span class="chapter-number">04</span>
+          <span class="chapter-rule"></span>
+          <span class="chapter-meta">Тональность</span>
+        </header>
+        <article class="chapter-copy">
+          <h2>ЯЗЫК И ЮМОР</h2>
+          <h3>Пацанский сленг и юмор — в каждой детали проекта</h3>
+          <p>Это записано в списке ключевых свойств игры наравне с механикой. Юмор здесь не украшение и не постирония: он держит всю интонацию мира — рынки, где джинсы меряли стоя на картонке, видеосалоны, спортивные костюмы, разборки во дворе.</p>
+          <p>Картон на асфальте — это и есть фирменный знак игры. Дешёвый материал, из которого в девяностые делали всё: прилавок, коврик для примерки, вывеску.</p>
+          <div class="compare">
+            <div class="compare-col">
+              <span>Так звучит реклама</span>
+              <b>«Обновлённая LADA NIVA Legend: надёжность, проверенная временем»</b>
+              <p>Язык брошюры. В мире игры он звучит как чужой голос из телевизора — и мгновенно опознаётся как реклама.</p>
+            </div>
+            <div class="compare-col compare-col--strong">
+              <span>Так звучит игра</span>
+              <b>«Нивы возьмут там, где остальные встанут»</b>
+              <p>Язык двора. То же самое свойство машины, сказанное так, как о нём говорили бы во дворе — коротко и по делу.</p>
+            </div>
+          </div>
+          <p>Отсюда правило для всей интеграции: об автомобиле в игре говорят так, как о нём говорили бы пацаны. Ни одной фразы из каталога.</p>
+          <p class="pull">Юмор — это уважение к предмету, а не насмешка над ним. Над LADA в этой игре не смеются: её хотят.</p>
+        </article>
       </div>
     </section>
 
@@ -147,10 +251,10 @@
       <p class="reveal" data-parallax="0.026">не хватает тачек.</p>
     </section>
 
-    <section id="s03" class="chapter" data-chapter="03">
+    <section id="s05" class="chapter" data-chapter="05">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">03</span>
+          <span class="chapter-number">05</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Пустое место</span>
         </header>
@@ -164,10 +268,10 @@
     </section>
 
     <!-- ═══ СЛАЙД 4. Не реклама. Игра ═══ -->
-    <section id="s04" class="chapter" data-chapter="04">
+    <section id="s06" class="chapter" data-chapter="06">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">04</span>
+          <span class="chapter-number">06</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Подход</span>
         </header>
@@ -190,10 +294,10 @@
     </section>
 
     <!-- ═══ СЛАЙД 5. Игрок должен захотеть LADA ═══ -->
-    <section id="s05" class="chapter" data-chapter="05">
+    <section id="s07" class="chapter chapter--wide" data-chapter="07">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">05</span>
+          <span class="chapter-number">07</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Механика</span>
         </header>
@@ -211,16 +315,23 @@
             <li>8. Показать другим.</li>
           </ul>
           <p>У каждого игрока появляется собственный гараж. Редкие модели и детали невозможно просто купить — их нужно заработать. Две одинаковые машины постепенно превращаются в совершенно разные сборки.</p>
+          <!-- Экраны показывают, что механика прокачки в игре уже есть: гараж встаёт
+               в готовую систему, а не изобретается с нуля -->
+          <div class="phone-strip">
+            <figure><img src="assets/screen5.jpg" alt="Новый бизнес куплен"><figcaption>Покупка</figcaption></figure>
+            <figure><img src="assets/screen6.jpg" alt="Улучшение точки: доход, вместимость, оборот"><figcaption>Прокачка</figcaption></figure>
+            <figure><img src="assets/screen7.jpg" alt="Склад продуктов: закупка товара"><figcaption>Склад</figcaption></figure>
+          </div>
           <p class="pull">LADA становится не объектом рекламного просмотра, а объектом желания.</p>
         </article>
       </div>
     </section>
 
     <!-- ═══ СЛАЙД 6. Что получает LADA ═══ -->
-    <section id="s06" class="chapter chapter--wide" data-chapter="06">
+    <section id="s08" class="chapter chapter--wide" data-chapter="08">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">06</span>
+          <span class="chapter-number">08</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Результат</span>
         </header>
@@ -258,10 +369,10 @@
       <p class="reveal" data-parallax="0.026">начинается игра NIVA.</p>
     </section>
 
-    <section id="s07" class="chapter chapter--wide" data-chapter="07">
+    <section id="s09" class="chapter chapter--wide" data-chapter="09">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">07</span>
+          <span class="chapter-number">09</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Юбилей</span>
         </header>
@@ -282,15 +393,24 @@
           </ul>
           <p>Главное правило:</p>
           <p class="pull">Характер реальной NIVA превращается в игровые механики.</p>
+
+          <h3>Гараж игрока: как это работает</h3>
+          <p>Ниже — не ролик, а живая сцена: NIVA стоит в гараже, её можно повернуть, перекрасить, поднять на подвеске и вывернуть колёса. Ровно из таких действий и складывается автомобильный слой игры.</p>
+          <!-- Сцена подключена отдельной страницей: свой контекст WebGL, своё падение.
+               loading="lazy" обязателен — внутри четыре мегабайта модели -->
+          <div class="scene-embed">
+            <iframe src="garage.html" title="Гараж: NIVA, перекраска, подвеска, колёса" loading="lazy"></iframe>
+          </div>
+          <p class="scene-caption">Тяните мышью, чтобы повернуть. Цвет, подвеска и колёса — панель внизу сцены. Модель предварительная, до согласования с АвтоВАЗом.</p>
         </article>
       </div>
     </section>
 
     <!-- ═══ СЛАЙД 8. NIVA 50 — юбилейный сезон ═══ -->
-    <section id="s08" class="chapter chapter--wide" data-chapter="08">
+    <section id="s10" class="chapter chapter--wide" data-chapter="10">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">08</span>
+          <span class="chapter-number">10</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Сезон</span>
         </header>
@@ -319,10 +439,10 @@
     </section>
 
     <!-- ═══ СЛАЙД 9. Продукт и медиа ═══ -->
-    <section id="s09" class="chapter chapter--wide" data-chapter="09">
+    <section id="s11" class="chapter chapter--wide" data-chapter="11">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">09</span>
+          <span class="chapter-number">11</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Бюджет</span>
         </header>
@@ -358,10 +478,10 @@
     </section>
 
     <!-- ═══ СЛАЙД 10. Предложение ═══ -->
-    <section id="s10" class="chapter chapter--wide" data-chapter="10">
+    <section id="s12" class="chapter chapter--wide" data-chapter="12">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">10</span>
+          <span class="chapter-number">12</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Предложение</span>
         </header>
@@ -394,6 +514,11 @@
       <div class="final-credits__director">
         <img src="assets/andrey-sudarikov.webp" alt="Андрей Судариков">
         <p><span>Креативный директор Playdisplay</span><strong>Андрей Судариков</strong></p>
+      </div>
+      <div class="lockup">
+        <span class="lockup-slot">Место под знак LADA</span>
+        <span class="lockup-x">×</span>
+        <img src="assets/game-logo.png" alt="Рынок Пацана">
       </div>
     </div>
     <span class="final-credits__index">LADA × РЫНОК ПАЦАНА / КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ 0.1</span>

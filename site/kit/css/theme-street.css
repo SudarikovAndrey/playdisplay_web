@@ -1,0 +1,154 @@
+/* ТЕМА «АСФАЛЬТ И КАРТОН».
+ *
+ * Подключается ПОСЛЕ остальных файлов кита и включается классом на теле страницы:
+ *   <body class="theme-street">
+ *
+ * Зачем тема, а не правки в самих блоках: конструктор собран под фирменный тёмно-синий
+ * стиль студии, и он должен таким остаться. Но презентация партнёру часто должна говорить
+ * НА ЯЗЫКЕ ПРЕДМЕТА — здесь это мир игры «Рынок Пацана»: чёрный асфальт, крафтовый картон,
+ * белая краска по трафарету, кирпично-красные кнопки интерфейса. Тема меняет только токены
+ * и поверхности; разметка блоков не трогается вовсе, поэтому страницу можно вернуть к
+ * фирменному виду, сняв один класс.
+ *
+ * Фактура картона приходит СНАРУЖИ переменной --kraft: у кита своей фотографии картона нет
+ * и быть не должно (это материал конкретного проекта). Без неё работает запасной вариант
+ * из градиентов — полосатая гофра. Страница задаёт своё:
+ *   <body class="theme-street" style="--kraft:url('assets/kraft.jpg')">
+ */
+
+body.theme-street {
+  /* Цвета сняты пипеткой с интерфейса игры и с обложки её презентации */
+  --black: #0b0b0c;          /* асфальт */
+  --ink: #121213;
+  --paper: #f3ece0;          /* белая краска по трафарету */
+  --muted: #928b7e;
+  --ultra: #c0432f;          /* кирпично-красный: кнопки в игре */
+  --electric: #e2694b;       /* он же, светлее — цифры и акценты на тёмном */
+  --coral: #e8a13c;          /* охра: метки и пропуски */
+  --line: rgba(243, 236, 224, .16);
+  --glass: rgba(243, 236, 224, .05);
+
+  /* Запасная гофра, если страница не дала фотографию картона */
+  --kraft: repeating-linear-gradient(90deg, #c9a370 0 6px, #bd9765 6px 12px);
+  --kraft-ink: #17140f;      /* текст на картоне */
+
+  background:
+    radial-gradient(circle at 78% 6%, rgba(192, 67, 47, .10), transparent 30rem),
+    repeating-linear-gradient(112deg, rgba(255,255,255,.014) 0 2px, transparent 2px 5px),
+    linear-gradient(#0b0b0c, #0e0e10 60%, #0b0b0c);
+}
+
+/* ── ТИПОГРАФИКА: ШТАМП ────────────────────────────────────────────────────
+   У игры заголовки набраны узкой тяжёлой гарнитурой и отпечатаны через трафарет.
+   Ближайшее с кириллицей на Google Fonts — Oswald. Межбуквенное у него уже плотное,
+   поэтому отрицательный трекинг кита снимается: с ним буквы налезали друг на друга. */
+body.theme-street h1,
+body.theme-street .chapter-copy h2,
+body.theme-street .chapter-copy h3,
+body.theme-street .opening-statement,
+body.theme-street .chapter-copy .pull,
+body.theme-street .art-title,
+body.theme-street .concept-card h4,
+body.theme-street .offer-card h4,
+body.theme-street .compare-col > b,
+body.theme-street .final-credits__director strong {
+  font-family: Oswald, "Arial Narrow", "Arial Black", sans-serif;
+  letter-spacing: .002em;
+  text-transform: uppercase;
+}
+/* Кегль заголовка в этой теме СВОЙ, и это не вкусовщина. Кит рассчитан на два коротких
+   слова («МУЗЕЙ МЯЧА») при 11.3vw. Здесь в заголовке осмысленная фраза из четырёх слов,
+   и на 11.3vw она рассыпается на четыре строки высотой в полтора экрана. 5.2vw даёт две
+   строки на широком экране и три на узком — проверено замером на 1440, 1280 и 401. */
+body.theme-street h1 { font-weight: 700; line-height: .92; font-size: clamp(32px, 5.2vw, 86px); max-width: 100%; }
+body.theme-street .opening-statement { font-weight: 700; line-height: 1.02; }
+body.theme-street .chapter-copy h2 { font-weight: 700; }
+body.theme-street .chapter-copy h3 { font-weight: 600; text-transform: none; }
+/* Заголовки Oswald УЖЕ узкие: при той же ширине колонки в строку влезает больше знаков,
+   и кегель можно вернуть к крупному, не рискуя вылетом за экран. Предел мобильного
+   кегля всё равно держим — проверено на 401 px. */
+body.theme-street .chapter-copy p { color: #cdc7bb; }
+
+/* ── ТРИ ПОЛОСЫ ───────────────────────────────────────────────────────────
+   Опознавательный знак игры: три белые полосы на чёрном (спортивный костюм 90-х).
+   Живёт как самостоятельный элемент <i class="stripes"></i> и как замена линейки
+   в шапке главы: тонкая серая черта кита в этой теме читается как чужая. */
+.stripes {
+  display: inline-block;
+  width: 34px;
+  height: 30px;
+  background: repeating-linear-gradient(90deg, var(--paper) 0 6px, transparent 6px 14px);
+  opacity: .9;
+}
+.stripes--wide { width: 100%; height: 22px; background-size: auto; }
+body.theme-street .chapter-rule {
+  height: 22px;
+  background: repeating-linear-gradient(90deg, rgba(243,236,224,.5) 0 3px, transparent 3px 11px);
+}
+body.theme-street .chapter-number {
+  color: var(--paper);
+  font-family: Oswald, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ── КАРТОН ───────────────────────────────────────────────────────────────
+   Картон достаётся тем блокам, которые в компреде должны «лежать поверх»: вынесенной
+   мысли, сильной колонке сравнения и плашкам с ценой. Текст на них — тёмный: светлый
+   текст кита на крафте не читается вовсе.
+   Лёгкий поворот и жёсткая тень — это кусок картона, положенный на асфальт, а не
+   очередная карточка интерфейса. Поворот берём МАЛЕНЬКИЙ (0.4°): на большем углу
+   съезжает базовая линия соседних строк и глаз спотыкается. */
+body.theme-street .chapter-copy .pull,
+body.theme-street .offer-card,
+body.theme-street .compare-col--strong {
+  color: var(--kraft-ink);
+  background: var(--kraft);
+  background-size: cover;
+  background-position: center;
+  border: 0;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .45);
+}
+body.theme-street .chapter-copy .pull {
+  padding: clamp(22px, 3vw, 40px) clamp(24px, 3.4vw, 46px);
+  transform: rotate(-.4deg);
+}
+body.theme-street .offer-card { border-radius: 4px; transform: rotate(.35deg); }
+body.theme-street .offer-card:last-child { transform: rotate(-.3deg); }
+body.theme-street .offer-card > span { color: #8a2f1e; }
+body.theme-street .offer-card h4,
+body.theme-street .offer-card .offer-price { color: var(--kraft-ink); }
+body.theme-street .chapter-copy .offer-card p:not(.offer-price) { color: #3f382c; }
+body.theme-street .offer-card .offer-price { border-top: 2px solid rgba(23,20,15,.35); }
+body.theme-street .compare-col--strong { border-radius: 4px; }
+body.theme-street .compare-col--strong > span { color: #8a2f1e; }
+body.theme-street .compare-col--strong > b { color: var(--kraft-ink); }
+body.theme-street .chapter-copy .compare-col--strong p { color: #3f382c; }
+/* Левая колонка сравнения остаётся асфальтовой: контраст «как обычно / как у нас»
+   в этой теме держится не подсветкой, а самим материалом — асфальт против картона. */
+body.theme-street .compare-col { border-color: rgba(243,236,224,.14); }
+
+/* ── ПРОЧИЕ ПОВЕРХНОСТИ ───────────────────────────────────────────────────*/
+body.theme-street .concept-card {
+  border-color: rgba(243, 236, 224, .14);
+  border-radius: 4px;
+  background: linear-gradient(160deg, rgba(243,236,224,.07), rgba(243,236,224,.02));
+}
+body.theme-street .concept-card:hover { border-color: rgba(226, 105, 75, .5); }
+body.theme-street .concept-card::after { background: rgba(192, 67, 47, .22); }
+body.theme-street .collection-diagram div,
+body.theme-street .diagram { border-radius: 2px; }
+body.theme-street .diagram { background: linear-gradient(140deg, rgba(243,236,224,.05), rgba(243,236,224,.015)); }
+body.theme-street .clean-list--cards li { border-radius: 2px; }
+body.theme-street .art-surface { border-radius: 2px; }
+body.theme-street .boot { background: #0b0b0c; }
+body.theme-street .reading-progress { background: linear-gradient(90deg, var(--ultra), var(--coral)); box-shadow: 0 0 14px rgba(192,67,47,.6); }
+body.theme-street .chapter-nav a:hover,
+body.theme-street .chapter-nav a.active { background: rgba(192, 67, 47, .16); }
+body.theme-street .blank { border-bottom-color: var(--coral); background: linear-gradient(90deg, rgba(232,161,60,.2), rgba(232,161,60,.06)); }
+
+@media print {
+  body.theme-street .chapter-copy .pull,
+  body.theme-street .offer-card,
+  body.theme-street .compare-col--strong { transform: none; box-shadow: none; }
+}
