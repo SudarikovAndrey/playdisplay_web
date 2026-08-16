@@ -15,11 +15,49 @@
 # язык в LANGS здесь и в LANGS в index.html.
 #
 # Запуск: python3 build_seo.py
-import json, os, re, html
+import json, os, re, html, hashlib
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(ROOT, 'site')
 BASE = 'https://playdisplay.com'
+
+
+# ---------- отпечаток общих файлов: styles.css и analytics.js ----------
+# Найдено 16.08.2026 замером боевого сайта. Статику отдаёт НЕ Apache, а nginx
+# напрямую, поэтому mod_expires из site/.htaccess для неё не исполняется вовсе:
+# nginx ставит свой Cache-Control: max-age=31536000 — ГОД. Проверяется так:
+#     curl -sI https://playdisplay.com/styles.css | grep -i cache-control
+# Следствие: у всех, кто заходил раньше, старые styles.css и analytics.js лежат
+# в кэше год, и правка до них не доедет. Для analytics.js это особенно скверно —
+# именно там чинили загрузку счётчика и добавляли уважение Do Not Track.
+#
+# Лечится единственным способом, который нам доступен: разным адресом. Версию
+# берём ХЕШЕМ СОДЕРЖИМОГО, а не датой и не числом руками. Причина ровно та же,
+# по которой отсюда убрали /tmp/cases.json: ступень, которую надо помнить, однажды
+# не делают. Хеш меняется сам и ровно тогда, когда файл действительно изменился —
+# не изменился, значит и кэш сбрасывать незачем.
+def asset_v(name):
+    """?v=<8 знаков хеша> для файла из site/. Пустая строка, если файла нет."""
+    p = os.path.join(SITE, name)
+    if not os.path.exists(p):
+        return ''
+    return '?v=' + hashlib.sha1(open(p, 'rb').read()).hexdigest()[:8]
+
+
+V_STYLES = asset_v('styles.css')
+V_ANALYTICS = asset_v('analytics.js')
+
+
+def stamp_assets(text, up=''):
+    """проставить отпечаток ссылкам на styles.css и analytics.js
+
+    Заменяем ВМЕСТЕ со старым ?v=…, иначе от прошлой сборки останется хвост и
+    адрес перестанет меняться. up — путь наверх для вложенных страниц работ."""
+    text = re.sub(r'(["\'])((?:\.\./)*)styles\.css(\?v=[^"\']*)?\1',
+                  lambda m: '%s%sstyles.css%s%s' % (m.group(1), m.group(2), V_STYLES, m.group(1)), text)
+    text = re.sub(r'(["\'])((?:\.\./)*)analytics\.js(\?v=[^"\']*)?\1',
+                  lambda m: '%s%sanalytics.js%s%s' % (m.group(1), m.group(2), V_ANALYTICS, m.group(1)), text)
+    return text
 ORG_DESC = ('playdisplay проектирует пространства и впечатления, которые люди запоминают: '
             'современные музеи, интерактивные экспозиции, visitor centre, шоурумы и '
             'иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.')
@@ -355,14 +393,14 @@ for L in langs:
         if not p: continue
         d = os.path.join(SITE, L.prefix, 'work', slug)
         os.makedirs(d, exist_ok=True)
-        open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(PAGE.format(
+        open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(PAGE.format(
             lang=L.code, title=esc(p['title']), subtitle=esc(p.get('subtitle') or ''),
             desc=esc(L.meta_desc(slug)), canon=L.url('work/%s/' % slug), alts=alternates('work/%s/' % slug),
             slug=slug, cover=esc(cover_url(slug, L.pmap)), locale=L.locale, home=L.up + L.prefix,
             jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p, slug), up=L.up,
             work=L.t('Проекты'), cta=L.t('Открыть интерактивную версию →'),
             footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
-            f_home=L.t('На главную'), f_all=L.t('Все проекты')))
+            f_home=L.t('На главную'), f_all=L.t('Все проекты'))))
         n += 1
     print('project pages [%s]: %d' % (L.code, n))
 
@@ -479,11 +517,14 @@ _home = open(os.path.join(SITE, 'index.html'), encoding='utf-8').read()
 if '<!--SEO-->' not in _home:
     raise SystemExit('в site/index.html нет маркеров <!--SEO-->…<!--/SEO--> — вставлять некуда')
 _new = re.sub(r'<!--SEO-->.*?<!--/SEO-->', lambda m: home_block(RU), _home, count=1, flags=re.S)
+# отпечаток общих файлов проставляем здесь же: /en/index.html делается копией
+# этого текста и получает его заодно, без второй ступени
+_new = stamp_assets(_new)
 if _new != _home:
     open(os.path.join(SITE, 'index.html'), 'w', encoding='utf-8').write(_new)
-    print('index.html: SEO-блок обновлён')
+    print('index.html: обновлён (SEO-блок / отпечатки styles.css%s analytics.js%s)' % (V_STYLES, V_ANALYTICS))
 else:
-    print('index.html: SEO-блок уже актуален')
+    print('index.html: уже актуален')
 
 # ---------- /en/index.html — копия главной под английский ----------
 src = _new

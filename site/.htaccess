@@ -48,11 +48,21 @@ AddType font/woff2 .woff2
   ExpiresByType font/otf "access plus 30 days"
   # Шрифты теперь наши: имена файлов не меняются, содержимое тоже — держим год.
   ExpiresByType font/woff2 "access plus 1 year"
-  # Скрипты и стили — СУТКИ, а не год. Имена у них без отпечатка содержимого
-  # (styles.css, analytics.js), версия проставлена запросом ?v= только у тяжёлых
-  # файлов сцены. Год кэша означал бы, что правка доедет до вернувшегося посетителя
-  # через год. Сутки дают выигрыш повторного захода и ограничивают отставание.
-  # Когда появится сборка с отпечатком в имени — тут будет год.
+  # ВНИМАНИЕ: ЭТИ ТРИ СТРОКИ НА БОЕВОМ НЕ РАБОТАЮТ. Проверено 16.08.2026 замером:
+  #     curl -sI https://playdisplay.com/styles.css | grep -i 'cache-control\|server'
+  #     → server: nginx/1.30.4 · cache-control: max-age=31536000
+  # Статику на timeweb отдаёт nginx НАПРЯМУЮ, до Apache запрос не доходит, и
+  # mod_expires для css/js/woff2 не исполняется вовсе — nginx ставит свой год.
+  # (Разметка и json идут через Apache, там правила ниже действуют: max-age=0.)
+  # Вдобавок nginx зовёт скрипты application/x-javascript, а не application/javascript,
+  # так что даже в Apache строка ниже по типу бы не совпала.
+  #
+  # Оставлены НАМЕРЕННО, как запись найденного: убрать их — и следующий человек
+  # снова полдня будет думать, почему кэш не слушается. Настоящее лекарство другое
+  # и уже применено: build_seo.py проставляет ?v=<хеш содержимого> ссылкам на
+  # styles.css и analytics.js, поэтому изменившийся файл получает новый адрес и
+  # годовой кэш ему не помеха. Если понадобится управлять кэшем статики всерьёз —
+  # это разговор с поддержкой timeweb про конфиг nginx, а не правка здесь.
   ExpiresByType text/css "access plus 1 day"
   ExpiresByType application/javascript "access plus 1 day"
   ExpiresByType text/javascript "access plus 1 day"
