@@ -961,3 +961,65 @@ html.deck { scroll-snap-type: y mandatory; }
   .slide--cover { align-content: end; }
 }
 @media print { .slide--cover::after { background: rgba(255,255,255,.86); } }
+
+/* ─── БЛОКИ ДЛЯ ЗАЩИТЫ БЮДЖЕТА ───────────────────────────────────────────────
+   Всё, что ниже, появилось после прогона компреда «глазами заказчика»: партнёру,
+   который подписывает счёт, нужны не механики, а сроки, смета, границы и гарантии. */
+
+/* КАЛЕНДАРЬ ВЕХ. Горизонтальная линия с датами: без неё «2027 год» остаётся словом,
+   а у юбилея есть жёсткая дата, к которой контент должен быть готов заранее. */
+.timeline { width: min(100%, 1120px); display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 0; margin: 26px 0 0; }
+.timeline > div { position: relative; min-width: 0; padding: 26px 18px 0 0; }
+/* Линия и точка рисуются на самом столбце: отдельная линия под сеткой разъезжается
+   с колонками, как только у одной из них меняется ширина. */
+.timeline > div::before { content: ""; position: absolute; left: 0; top: 7px; right: 0; height: 1px; background: var(--line); }
+.timeline > div::after { content: ""; position: absolute; left: 0; top: 3px; width: 9px; height: 9px; border-radius: 50%; background: var(--electric); }
+.timeline > div:last-child::before { right: 40%; }
+.timeline b { display: block; margin-bottom: 7px; color: var(--paper); font: 600 clamp(15px, 1.4vw, 20px)/1.1 Unbounded, "Arial Black", sans-serif; letter-spacing: -.02em; }
+.timeline span { display: block; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+.timeline em { display: block; margin-bottom: 4px; color: var(--electric); font: 500 10.5px/1 "Roboto Mono", monospace; font-style: normal; letter-spacing: .16em; text-transform: uppercase; }
+@media (max-width: 760px) {
+  .timeline { grid-auto-flow: row; grid-auto-columns: auto; }
+  .timeline > div { padding: 0 0 20px 22px; }
+  .timeline > div::before { left: 4px; top: 0; bottom: 0; right: auto; width: 1px; height: auto; }
+  .timeline > div::after { left: 0; top: 4px; }
+}
+
+/* СМЕТА. Строки «статья — доля — сумма». Партнёр читает не «15 млн», а «из чего». */
+.cost-list { width: min(100%, 900px); margin: 22px 0 0; border-top: 1px solid var(--line); }
+.cost-list > div { display: grid; grid-template-columns: minmax(0, 1fr) 84px 132px; gap: 16px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid var(--line); }
+.cost-list strong { color: var(--paper); font-weight: 600; font-size: 15.5px; }
+.cost-list span { color: var(--muted); font: 500 12px/1 "Roboto Mono", monospace; }
+.cost-list b { color: var(--paper); font: 600 15px/1 "Roboto Mono", monospace; text-align: right; }
+.cost-list .cost-total strong, .cost-list .cost-total b { color: var(--electric); }
+@media (max-width: 680px) { .cost-list > div { grid-template-columns: minmax(0, 1fr) 64px 92px; gap: 10px; } .cost-list strong { font-size: 14px; } }
+
+/* ТРИ УРОВНЯ вместо одного предложения: отказать одному варианту легче, чем выбрать
+   из трёх. Средний выделен — на него и смотрят в первую очередь. */
+.offer-grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.offer-card--lead { outline: 2px solid var(--electric); outline-offset: -2px; }
+@media (max-width: 900px) { .offer-grid--three { grid-template-columns: 1fr; } }
+
+/* МОКАП ИГРОВОЙ КАРТОЧКИ. Показывает, как предмет партнёра выглядит ВНУТРИ интерфейса.
+   Рисуется вёрсткой, а не картинкой: макет правится текстом, пока идёт согласование,
+   и не требует художника на каждую итерацию. */
+.game-card {
+  width: min(100%, 380px);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #efe3c6;
+  color: #24211c;
+  box-shadow: 0 26px 60px rgba(0,0,0,.45);
+  font-family: Onest, system-ui, sans-serif;
+}
+.game-card__top { position: relative; padding: 16px 18px 14px; background: #2f5d43; color: #f4ecd8; }
+.game-card__top b { display: block; font: 700 clamp(19px, 1.9vw, 26px)/1.05 Oswald, "Arial Narrow", sans-serif; letter-spacing: .01em; text-transform: uppercase; }
+.game-card__top span { display: block; margin-top: 4px; font: 500 10.5px/1 "Roboto Mono", monospace; letter-spacing: .14em; text-transform: uppercase; opacity: .8; }
+.game-card__lvl { position: absolute; right: 14px; top: 14px; padding: 6px 11px; border-radius: 99px; background: #c0432f; color: #fff; font: 700 12px/1 Oswald, sans-serif; letter-spacing: .06em; }
+.game-card__body { padding: 14px 18px 18px; display: grid; gap: 9px; }
+.game-card__row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 46px; gap: 10px; align-items: center; font-size: 13px; }
+.game-card__row i { display: block; height: 9px; border-radius: 99px; background: rgba(36,33,28,.14); overflow: hidden; }
+.game-card__row i::after { content: ""; display: block; height: 100%; width: var(--v, 50%); background: #2f5d43; }
+.game-card__row u { text-decoration: none; font: 600 12px/1 "Roboto Mono", monospace; text-align: right; }
+.game-card__btn { margin-top: 6px; padding: 13px; border-radius: 12px; background: #c0432f; color: #fff; text-align: center; font: 700 14px/1 Oswald, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.game-card__note { padding: 0 18px 16px; color: #6b6459; font-size: 11.5px; line-height: 1.4; }
