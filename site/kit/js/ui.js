@@ -121,7 +121,10 @@
     if (!running) { running = true; requestAnimationFrame(frame); }
   }
 
-  if (reduced) return;
+  /* В РЕЖИМЕ СЛАЙДОВ (html.deck) свой лерп не нужен и вреден: прокруткой там управляет
+     прилипание браузера (scroll-snap), а перехват колеса не давал ему сработать — экран
+     останавливался между слайдами. Одно правило вместо двух конкурирующих механизмов. */
+  if (reduced || document.documentElement.classList.contains('deck')) return;
 
   addEventListener('wheel', function (e) {
     if (e.ctrlKey || e.metaKey) return;                     // зум

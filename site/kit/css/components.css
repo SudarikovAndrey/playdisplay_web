@@ -802,3 +802,129 @@
   .compare-col, .offer-card { color: #111; background: #f6f6f6 !important; border-color: #bbb; }
   .compare-col > b, .offer-card h4, .offer-price { color: #111; }
 }
+
+/* ─── РЕЖИМ ПРЕЗЕНТАЦИИ: ОДИН ПОСЫЛ — ОДИН ЭКРАН ─────────────────────────────
+   Книга читается лентой, компред — слайдами: партнёр листает и на каждом экране
+   получает ровно одну мысль. Прилипание делает браузер (scroll-snap), без скриптов:
+   любая своя реализация «перелистывания» отбирает у человека привычную прокрутку и
+   ломается на тачпаде.
+   `proximity`, а НЕ `mandatory`: слайд с длинным списком выше экрана, и при mandatory
+   браузер не даёт остановиться внутри него — содержание становится недоступным. */
+.deck { scroll-snap-type: y mandatory; }
+.slide {
+  position: relative;
+  min-height: 100svh;
+  margin-left: var(--nav-width);
+  display: grid;
+  align-content: center;
+  padding: clamp(80px, 9vh, 124px) 0 clamp(56px, 7vh, 92px);
+  scroll-snap-align: start;
+  border-bottom: 1px solid var(--line);
+}
+.slide > .slide-shell { width: var(--page); margin: 0 auto; }
+/* Номер слайда крупно и почти невидимо — тот же приём, что у глав книги */
+.slide::before {
+  content: attr(data-slide);
+  position: absolute;
+  left: 2.2vw; top: 12vh;
+  color: rgba(255, 255, 255, .035);
+  font: 700 clamp(70px, 11vw, 190px)/1 Unbounded, "Arial Black", sans-serif;
+  pointer-events: none;
+}
+.slide--dark { background: linear-gradient(160deg, rgba(255,255,255,.03), transparent 55%); }
+
+/* ЗАГОЛОВОК СЛАЙДА: крупная мысль и пояснение мельче НА ТОМ ЖЕ ЭКРАНЕ.
+   Раньше мысль занимала отдельный экран, а пояснение уезжало на следующий — между
+   ними получался пустой экран, и презентация читалась как набор дыр. */
+.slide-head { display: grid; gap: clamp(14px, 1.8vw, 26px); max-width: 1120px; margin: 0 0 clamp(26px, 3.4vw, 48px); }
+.slide-head .overline { margin: 0; }
+.slide-head h2 {
+  margin: 0;
+  color: var(--paper);
+  font-family: Unbounded, "Arial Black", sans-serif;
+  font-size: clamp(30px, 4.6vw, 76px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+.slide-head p {
+  max-width: 780px;
+  margin: 0;
+  color: #c3c9d4;
+  font-size: clamp(16px, 1.35vw, 21px);
+  line-height: 1.5;
+}
+.slide-head p b, .slide-head p strong { color: var(--paper); font-weight: 600; }
+/* Мысль-акцент: та же роль, что у крупной фразы в книге, но внутри слайда */
+.slide-punch {
+  max-width: 1000px;
+  margin: 0 0 clamp(20px, 2.6vw, 36px);
+  color: var(--paper);
+  font-family: Unbounded, "Arial Black", sans-serif;
+  font-size: clamp(26px, 3.6vw, 58px);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+}
+.slide-punch em { font-style: normal; color: var(--electric); }
+.slide-note { margin: clamp(18px, 2.2vw, 30px) 0 0; color: var(--muted); font-size: 14px; line-height: 1.55; max-width: 760px; }
+/* Внутри слайда блоки кита не должны тащить свои книжные отступы: экран один,
+   и вертикального воздуха у него ровно столько, сколько осталось от заголовка. */
+.slide .concept-grid, .slide .compare, .slide .offer-grid, .slide .phone-strip,
+.slide .clean-list, .slide .stats-grid { margin-top: 0; margin-bottom: 0; }
+.slide .diagram { margin: 0; }
+.slide .scene-embed { margin: 0; width: 100%; aspect-ratio: auto; height: min(46svh, 430px); }
+
+/* НА ТЕЛЕФОНЕ ПРИЛИПАНИЕ МЯГКОЕ. Замер на экране 402×820: карточки, сравнения и плашки
+   встают в столбик, и тринадцать слайдов из двадцати перерастают экран — от 850 до 1240
+   пикселей. При жёстком прилипании низ такого слайда становится труднодоступным:
+   браузер утягивает обратно к его началу. На узком экране документ читают прокруткой,
+   а не листанием, поэтому здесь proximity. */
+@media (max-width: 760px) {
+  html.deck { scroll-snap-type: y proximity; }
+  .slide { margin-left: 0; padding: clamp(84px, 12vh, 120px) 0 clamp(84px, 12vh, 120px); }
+  .slide > .slide-shell { width: calc(100vw - 40px); }
+  .slide::before { font-size: clamp(56px, 22vw, 120px); top: 7vh; left: 4vw; }
+  .slide .scene-embed { height: 58svh; }
+}
+@media print {
+  .deck { scroll-snap-type: none; }
+  .slide { min-height: auto; break-inside: avoid; break-after: page; margin-left: 0; }
+}
+
+/* mandatory, а не proximity: партнёр листает слайды, и остановка между экранами
+   читается как поломка. Условие одно — КАЖДЫЙ слайд обязан помещаться в экран;
+   если слайд перерос высоту, чинить надо слайд, а не прилипание. */
+html.deck { scroll-snap-type: y mandatory; }
+/* Первый экран тоже участвует в прилипании — иначе прокрутка «проскакивает» его
+   и партнёр попадает сразу на второй слайд. */
+.deck .hero { scroll-snap-align: start; }
+
+/* ЗНАКИ ПЛОЩАДОК. Ряд плашек «где играют»: знак плюс название. Рисованные глифы, а не
+   официальные бейджи — у бейджей шесть разных форм, высот и цветов, и в одном ряду они
+   выглядят свалкой. Одинаковая плашка читается как список площадок, а не как реклама. */
+.stores { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.stores li {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--glass);
+  color: var(--paper);
+  font: 500 12px/1 "Roboto Mono", monospace;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+.stores svg { width: 15px; height: 15px; flex: none; fill: currentColor; }
+@media (max-width: 680px) { .stores li { padding: 8px 11px; font-size: 11px; } }
+
+/* ШАГИ В ДВЕ КОЛОНКИ. Восемь шагов столбиком не помещаются в экран: слайд вырастает
+   в полтора экрана и перестаёт быть слайдом. Считано замером: 8 шагов в одну колонку —
+   1152 px при экране 900. */
+.steps-2col .clean-list--steps { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(20px, 3vw, 52px); }
+.steps-2col .clean-list--steps li:nth-last-child(2) { border-bottom: 0; }
+@media (max-width: 760px) { .steps-2col .clean-list--steps { grid-template-columns: 1fr; } }
