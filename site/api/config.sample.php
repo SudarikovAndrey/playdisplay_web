@@ -20,6 +20,11 @@ return array(
   'mail_to'       => 'andrey@rolltorule.com',
   'mail_from'     => 'ai@playdisplay.com',
   'mail_fromname' => 'PlayDisplay AI',
+  // Заявки формы брони с главной идут отдельно — на info@playdisplay.com. Адрес
+  // задан прямо в pd_action_book(), потому что боевой config.php лежит только на
+  // сервере и правка отсюда до него не доезжает. Этот ключ нужен, только если
+  // адрес заявок понадобится сменить, не трогая код.
+  // 'mail_to_book'  => 'info@playdisplay.com',
 
   // ============ ЯЗЫКОВАЯ МОДЕЛЬ ============
   // mock          — без сети, прошитый сценарий (по умолчанию)

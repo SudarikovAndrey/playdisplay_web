@@ -268,8 +268,19 @@ function pd_action_book($in) {
   $subject = 'Креативная сессия: ' . ($company !== '' ? $company . ' — ' . $name : $name);
   $replyTo = filter_var($contact, FILTER_VALIDATE_EMAIL) ? $contact : '';
 
+  /* Получатель задан ЗДЕСЬ, а не берётся из mail_to. Причина в доставке: боевой
+     api/config.php лежит только на сервере (он в .gitignore и в исключениях
+     deploy.sh), поэтому правка конфига из репозитория до сайта не доезжает — а
+     адрес заявок поменять надо было наверняка. Ключ mail_to_book оставлен как
+     возможность переопределить с сервера, если адрес когда-нибудь сменится.
+     Брифы ассистента по-прежнему уходят на mail_to: это разные потоки, и
+     складывать их в один ящик — решение владельца, а не побочный эффект правки. */
+  $cfgBook = pd_config();
+  $bookTo = (isset($cfgBook['mail_to_book']) && filter_var($cfgBook['mail_to_book'], FILTER_VALIDATE_EMAIL))
+    ? $cfgBook['mail_to_book'] : 'info@playdisplay.com';
+
   list($mailLive, $mailWhy) = pd_mail_ready();
-  list($ok, $info) = pd_send_mail($subject, $html, $text, $replyTo, $html);
+  list($ok, $info) = pd_send_mail($subject, $html, $text, $replyTo, $html, array(), $bookTo);
   if (!$ok) {
     pd_log('book', 'письмо не ушло: ' . $info);
     pd_fail('сервис отправки временно недоступен, попробуйте ещё раз', 500);
