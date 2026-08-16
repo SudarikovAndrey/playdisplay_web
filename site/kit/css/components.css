@@ -929,38 +929,69 @@ html.deck { scroll-snap-type: y mandatory; }
 .steps-2col .clean-list--steps li:nth-last-child(2) { border-bottom: 0; }
 @media (max-width: 760px) { .steps-2col .clean-list--steps { grid-template-columns: 1fr; } }
 
-/* СЛАЙД-КАДР: изображение во весь экран, текст поверх.
-   Нужен там, где картинка сама и есть аргумент — мир игры, персонаж, сцена. Кадры из
-   магазинов приложений ВЕРТИКАЛЬНЫЕ (телефон), а слайд широкий, поэтому кадр обрезается
-   по месту: точку обрезки задаём на самом кадре (`object-position`), иначе на широком
-   экране в кадр попадает случайная середина — у плакатов это подбородок героя.
-   Затемнение обязательно: белый заголовок по светлой картинке не читается, а по тёмной
-   не читается тёмный. Полоса градиента идёт от края с текстом. */
+/* СЛАЙД-КАДР: игровая картинка во весь экран, текст поверх.
+   ГЛАВНАЯ ЛОВУШКА — ПРОПОРЦИИ ИСХОДНИКА. Кадры мобильной игры вертикальные (1282×2778),
+   слайд горизонтальный. Первая версия растягивала их на всю ширину через object-fit: cover:
+   картинка увеличивалась почти вдвое и на большом экране выглядела мыльной, а от кадра
+   оставалась случайная середина.
+   Теперь кадр НЕ УВЕЛИЧИВАЕТСЯ: он стоит в свою натуральную высоту у правого края, а фон
+   заполняет та же картинка — размытая и притемнённая. Размытому увеличение не вредит,
+   потому что деталей в нём нет по определению. Источник один (`--cover`), второй раз он
+   не скачивается.
+   Когда придут ГОРИЗОНТАЛЬНЫЕ кадры, слайду достаточно класса `slide--cover-wide`:
+   там кадр честно кладётся во весь экран, потому что пропорции совпадают. */
 .slide--cover { overflow: hidden; }
-.slide--cover > .slide-cover-img {
+.slide--cover::before {
+  content: "";
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 35%;
+  background: var(--cover) center / cover no-repeat;
+  filter: blur(26px) brightness(.46) saturate(1.06);
+  transform: scale(1.1);          /* размытие съедает края — растягиваем, чтобы не было каймы */
 }
 .slide--cover::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(9,9,10,.94) 0%, rgba(9,9,10,.82) 34%, rgba(9,9,10,.35) 62%, rgba(9,9,10,.12) 100%);
+  background: linear-gradient(90deg, rgba(9,9,10,.93) 0%, rgba(9,9,10,.78) 38%, rgba(9,9,10,.3) 66%, rgba(9,9,10,.08) 100%);
+}
+.slide-cover-art {
+  position: absolute;
+  right: clamp(20px, 5vw, 90px);
+  top: 50%;
+  z-index: 1;
+  height: min(78svh, 720px);
+  width: auto;
+  transform: translateY(-50%);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 40px 90px rgba(0,0,0,.6);
 }
 .slide--cover > .slide-shell { position: relative; z-index: 2; }
-.slide--cover .slide-head p { max-width: 620px; color: #d8dae0; }
-.slide--cover .slide-note { color: #b9bcc4; }
-@media (max-width: 760px) {
-  /* На телефоне текст стоит внизу, а кадр виден сверху: боковое затемнение съело бы
-     всю картинку, ради которой слайд и сделан. */
-  .slide--cover::after { background: linear-gradient(180deg, rgba(9,9,10,.25) 0%, rgba(9,9,10,.55) 42%, rgba(9,9,10,.95) 78%); }
-  .slide--cover { align-content: end; }
+.slide--cover .slide-head p { max-width: 560px; color: #d8dae0; }
+.slide--cover .slide-note { color: #b9bcc4; max-width: 560px; }
+
+/* Горизонтальный кадр: пропорции совпадают со слайдом, увеличения нет — кладём во весь экран */
+.slide--cover-wide .slide-cover-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+  object-fit: cover;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
-@media print { .slide--cover::after { background: rgba(255,255,255,.86); } }
+.slide--cover-wide::before { display: none; }
+
+@media (max-width: 900px) {
+  /* На узком экране кадр уходит ЗА текст и притемняется: рядом с текстом он становится
+     полоской в треть ширины, на которой ничего не разобрать. */
+  .slide-cover-art { right: 50%; transform: translate(50%, -50%); height: min(64svh, 560px); opacity: .5; }
+  .slide--cover::after { background: linear-gradient(180deg, rgba(9,9,10,.6) 0%, rgba(9,9,10,.78) 45%, rgba(9,9,10,.95) 100%); }
+}
+@media print { .slide--cover::after { background: rgba(255,255,255,.86); } .slide--cover::before { display: none; } }
 
 /* ─── БЛОКИ ДЛЯ ЗАЩИТЫ БЮДЖЕТА ───────────────────────────────────────────────
    Всё, что ниже, появилось после прогона компреда «глазами заказчика»: партнёру,
