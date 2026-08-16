@@ -44,19 +44,32 @@ def asset_v(name):
     return '?v=' + hashlib.sha1(open(p, 'rb').read()).hexdigest()[:8]
 
 
-V_STYLES = asset_v('styles.css')
-V_ANALYTICS = asset_v('analytics.js')
+# Список, а не переменная на каждый файл: следующему файлу, которому понадобится
+# отпечаток, хватит одной строки, и его не забудут проставить в трёх местах.
+# Иконки тоже здесь: nginx кэширует их год, а меняются они редко, но метко.
+# /favicon.ico намеренно НЕ в списке — его браузеры просят вслепую, не читая
+# разметку, и версия в адресе до них всё равно не доедет.
+STAMPED = [
+    'styles.css',
+    'analytics.js',
+    'assets/logos/favicon-32.png',
+    'assets/logos/favicon-180.png',
+]
+VERSIONS = {name: asset_v(name) for name in STAMPED}
 
 
 def stamp_assets(text, up=''):
-    """проставить отпечаток ссылкам на styles.css и analytics.js
+    """проставить отпечаток ссылкам на файлы из STAMPED
 
     Заменяем ВМЕСТЕ со старым ?v=…, иначе от прошлой сборки останется хвост и
-    адрес перестанет меняться. up — путь наверх для вложенных страниц работ."""
-    text = re.sub(r'(["\'])((?:\.\./)*)styles\.css(\?v=[^"\']*)?\1',
-                  lambda m: '%s%sstyles.css%s%s' % (m.group(1), m.group(2), V_STYLES, m.group(1)), text)
-    text = re.sub(r'(["\'])((?:\.\./)*)analytics\.js(\?v=[^"\']*)?\1',
-                  lambda m: '%s%sanalytics.js%s%s' % (m.group(1), m.group(2), V_ANALYTICS, m.group(1)), text)
+    адрес перестанет меняться. Префикс перед именем сохраняем каким был: у страниц
+    работ это «../../», у иконок — ведущий «/» от корня домена."""
+    for name in STAMPED:
+        pat = r'(["\'])((?:\.\./)*|/)?' + re.escape(name) + r'(\?v=[^"\']*)?\1'
+        text = re.sub(
+            pat,
+            lambda m, n=name: '%s%s%s%s%s' % (m.group(1), m.group(2) or '', n, VERSIONS[n], m.group(1)),
+            text)
     return text
 ORG_DESC = ('playdisplay проектирует пространства и впечатления, которые люди запоминают: '
             'современные музеи, интерактивные экспозиции, visitor centre, шоурумы и '
@@ -332,6 +345,9 @@ PAGE = '''<!DOCTYPE html>
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{cover}">
 <script type="application/ld+json">{jsonld}</script>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/assets/logos/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/logos/favicon-180.png">
 <script src="{up}analytics.js" defer></script>
 <style>
   body {{ margin:0; background:#040c10; color:#e9f4f6; font:400 18px/1.7 -apple-system,'Segoe UI',Roboto,sans-serif; }}
@@ -522,7 +538,8 @@ _new = re.sub(r'<!--SEO-->.*?<!--/SEO-->', lambda m: home_block(RU), _home, coun
 _new = stamp_assets(_new)
 if _new != _home:
     open(os.path.join(SITE, 'index.html'), 'w', encoding='utf-8').write(_new)
-    print('index.html: обновлён (SEO-блок / отпечатки styles.css%s analytics.js%s)' % (V_STYLES, V_ANALYTICS))
+    print('index.html: обновлён (SEO-блок / отпечатки: %s)'
+          % ', '.join('%s%s' % (n, VERSIONS[n]) for n in STAMPED))
 else:
     print('index.html: уже актуален')
 

@@ -25,6 +25,18 @@
 <meta name="twitter:title" content="playdisplay — пространства, которые люди запоминают">
 <meta name="twitter:description" content="Музеи, интерактивные экспозиции, visitor centre и иммерсивные выставки: превращаем идею в опыт, который хочется пережить.">
 <meta name="twitter:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
+<!-- Иконка вкладки. До 16.08.2026 её не было ВООБЩЕ ни на одной из 33 страниц —
+     во вкладке стоял пустой лист бумаги. Нарезана из assets/logos/mark.png.
+     Значок ® из иконок убран намеренно: 18 пикселей из 600 при уменьшении до 32
+     превращаются в грязную точку у края и читаются как дефект, а не как знак.
+     Кадр взят плотнее исходника: фон чёрный и сама иконка — чёрный квадрат,
+     поэтому поля физически не видны, видно только, насколько крупен белый знак.
+     Пути ОТ КОРНЯ домена: страницы работ лежат на два уровня глубже, а /en/ живёт
+     с <base href="/"> — относительный путь развалился бы и там, и там.
+     Отпечаток ?v= проставляет build_seo.py (список STAMPED). -->
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/assets/logos/favicon-32.png?v=be32f3d0" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/logos/favicon-180.png?v=c9973eae">
 <link rel="stylesheet" href="styles.css?v=20d8f814">
 <!-- Шрифты лежат у нас, а не на fonts.googleapis.com (15.08.2026). Внешний запрос на
      первом экране — это лишние DNS и TLS до двух чужих хостов, зависимость от их
