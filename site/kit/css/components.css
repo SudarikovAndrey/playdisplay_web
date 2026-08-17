@@ -237,8 +237,8 @@
    например лента отзывов. В полный рост (220 px на плитку плюс кегль 46) плитка съедает
    почти весь экран, и всё, что ниже, уезжает за нижний край: в режиме слайдов это не
    «доскроллить», а «не увидеть вовсе». Замерено на 1080: полная плитка 500 px, плотная 190. */
-.collection-diagram--tight { gap: 10px; padding: clamp(14px, 1.7vw, 24px); }
-.collection-diagram--tight div { min-height: 0; padding: 14px 16px; gap: 10px; justify-content: flex-start; }
+.collection-diagram--tight { gap: 10px; padding: clamp(12px, 1.2vw, 17px); }
+.collection-diagram--tight div { min-height: 0; padding: 12px 14px; gap: 8px; justify-content: flex-start; }
 .collection-diagram--tight b { font-size: clamp(22px, 2.2vw, 32px); line-height: 1; }
 .collection-diagram--tight span { font-size: 12px; line-height: 1.35; }
 
@@ -1198,8 +1198,8 @@ html.deck { scroll-snap-type: y mandatory; }
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
-  padding-bottom: 12px;
-  margin: 0 0 6px;
+  padding-bottom: 10px;
+  margin: 0 0 2px;
   /* Полоса прокрутки тонкая и тёмная: жирная системная в презентации выглядит грубо */
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,.28) transparent;
@@ -1233,13 +1233,13 @@ html.deck { scroll-snap-type: y mandatory; }
    и карточка выглядела сломанной: человек видит оборванную на полуслове чужую речь и
    ищет, где дочитать. Высоту вместо этого держим кеглем и плотными отступами. */
 .reviews--tight { grid-auto-columns: minmax(220px, 268px); }
-.reviews--tight .review { padding: 14px 15px 13px; gap: 6px; }
+.reviews--tight .review { padding: 13px 14px 12px; gap: 6px; }
 .reviews--tight .review b { font-size: 14px; }
 .slide .reviews--tight .review p,
 .reviews--tight .review p { font-size: 12.5px; line-height: 1.4; }
 /* ПЛОТНЫЙ СЛАЙД: когда на экране два блока подряд, воздух между ними приходится ужимать.
    Отдельным классом, а не правкой .slide-head: в обычном слайде этот воздух нужен. */
-.slide--packed .slide-head { margin-bottom: clamp(16px, 2vw, 30px); }
+.slide--packed .slide-head { margin-bottom: clamp(12px, 1.4vw, 20px); }
 .slide--packed .reviews-lead { margin-top: clamp(10px, 1.2vw, 18px); }
 
 /* ═══ ПОЛНОЭКРАННАЯ ГАЛЕРЕЯ (js/gallery.js) ═══════════════════════════════════
@@ -1525,6 +1525,69 @@ html.deck { scroll-snap-type: y mandatory; }
 .reviews--light .review__store { fill: rgba(23,20,15,.4); }
 .reviews--light .review__stars { color: #c0432f; }
 .reviews--light .review--car { border-color: #c0432f; background: #f7ede1; box-shadow: inset 0 0 0 1px rgba(192,67,47,.32); }
+
+/* ── ЛЕНТА: ОТКЛИК НА КУРСОР, ВЫЛЕТ ЗА КОЛОНКУ, СТРЕЛКИ (js/strip.js) ──────
+   Карточка чуть подрастает под курсором: у ленты нет ни одной подсказки, что с ней
+   можно взаимодействовать, и отклик – самая дешёвая из них.
+   БЕЗ translateY и без большого масштаба: лента – контейнер прокрутки, а он обрезает
+   и по вертикали тоже (overflow-x: auto вынуждает overflow-y вести себя так же).
+   Поэтому рост маленький, от центра, а сверху добавлен воздух, чтобы его хватило. */
+.reviews { padding-top: 8px; }
+.review { transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+.reviews .review:hover { transform: scale(1.035); box-shadow: 0 14px 30px rgba(0,0,0,.45); }
+.reviews--light .review:hover { border-color: rgba(23,20,15,.4); }
+
+/* Вылет вправо до края окна. Значение считает скрипт (--bleed): в CSS его не вывести –
+   колонка не центрирована в окне, слева боковая полоса разделов. */
+.reviews--bleed { margin-right: calc(-1 * var(--bleed, 0px)); }
+
+/* Полоса над лентой: слева ссылка, справа стрелки */
+.strip-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  /* Воздух здесь скупой: полоса стоит между плиткой цифр и лентой, и каждый её
+     пиксель уходит из бюджета высоты слайда (замер: с полосой слайд вылезал на 51 px) */
+  margin: clamp(10px, 1.1vw, 14px) 0 0;
+}
+.strip-nav { display: flex; gap: 8px; }
+.strip-nav button {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  background: rgba(255,255,255,.05);
+  color: var(--paper);
+  font-size: 15px; line-height: 1;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, opacity .2s ease;
+}
+.strip-nav button:hover { background: rgba(255,255,255,.14); border-color: var(--paper); }
+.strip-nav button[disabled] { opacity: .25; cursor: default; }
+
+/* ── КНОПКА-ССЫЛКА ───────────────────────────────────────────────────────
+   Обычная ссылка в теле слайда не читается как действие. Здесь нужна именно кнопка:
+   «зайти в группу» – это переход наружу, и он должен выглядеть как предложение. */
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--glass);
+  color: var(--paper);
+  text-decoration: none;
+  font: 600 11.5px/1 "Roboto Mono", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.link-button:hover { border-color: var(--electric); background: rgba(226,105,75,.12); transform: translateY(-1px); }
+.link-button svg { flex: none; width: 17px; height: 17px; fill: currentColor; }
+.link-button i { font-style: normal; color: var(--muted); letter-spacing: .06em; text-transform: none; }
 
 /* ПОДВАЛ ТОЖЕ ТОЧКА ПРИВЯЗКИ. Без этого последний экран «отскакивал назад»: подвал
    лежит вне main и точкой привязки не был, поэтому жёсткое прилипание тянуло страницу

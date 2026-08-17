@@ -73,7 +73,10 @@ body.theme-street .final-credits__director strong {
    слова («МУЗЕЙ МЯЧА») при 11.3vw. Здесь в заголовке осмысленная фраза из четырёх слов,
    и на 11.3vw она рассыпается на четыре строки высотой в полтора экрана. 5.2vw даёт две
    строки на широком экране и три на узком — проверено замером на 1440, 1280 и 401. */
-body.theme-street h1 { font-weight: 700; line-height: .92; font-size: clamp(30px, 4.7vw, 78px); max-width: 100%; }
+/* Межстрочное не .92, а .98. Строки в этом заголовке набраны Oswald в верхнем регистре:
+   заглавная занимает почти всю строку, и при .92 верхние выносные второй строки
+   касаются базовой линии первой – на узком экране буквы просто слипались. */
+body.theme-street h1 { font-weight: 700; line-height: .98; font-size: clamp(30px, 4.7vw, 78px); max-width: 100%; }
 body.theme-street .opening-statement { font-weight: 700; line-height: 1.02; }
 body.theme-street .chapter-copy h2 { font-weight: 700; }
 body.theme-street .chapter-copy h3 { font-weight: 600; text-transform: none; }
