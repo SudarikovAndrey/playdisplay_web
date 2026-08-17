@@ -63,8 +63,17 @@
       var k = e.createElement(t), a = e.getElementsByTagName(t)[0];
       k.async = 1; k.src = r; a.parentNode.insertBefore(k, a);
     })(document, 'script', 'https://mc.yandex.ru/metrika/tag.js');
+    /* НИКАКОГО ssr: true. Название обманывает: это не «сайт отдаётся сервером», а
+       «просмотр я отправлю сам». С ним счётчик инициализируется, тег загружается,
+       Ya._metrika существует — и НИ ОДНОГО хита не уходит. Именно так Метрика полгода
+       показывала нули, пока GA4 рядом честно собирал данные: gtag отправляет page_view
+       сам, а Метрика с этим флагом ждёт ручного вызова, которого не было.
+       Проверяется в браузере одной строкой: на загрузке должен появиться запрос к
+       mc.yandex.ru/watch/111509723 — было ноль, стало один.
+       trackHash тоже не включаем: переходы по разделам мы отправляем сами ниже
+       (ym 'hit' на hashchange), иначе визит посчитается дважды. */
     window.ym(YM_ID, 'init', {
-      ssr: true, clickmap: true, trackLinks: true, accurateTrackBounce: true,
+      clickmap: true, trackLinks: true, accurateTrackBounce: true,
       webvisor: true // вебвизор и карта скроллинга — ради них Метрика и стоит
     });
   }
