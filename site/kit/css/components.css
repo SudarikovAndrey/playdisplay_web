@@ -1176,3 +1176,42 @@ html.deck { scroll-snap-type: y mandatory; }
   opacity: .55;
   font-size: 11px;
 }
+
+/* ГАЛЕРЕЯ ОТЗЫВОВ. Настоящие отзывы из магазина приложений: их листают и читают.
+   Лента горизонтальная с прилипанием – так на экран влезает много карточек, и видно,
+   что их МНОГО (это и есть аргумент). Вертикальный список из двадцати штук занял бы
+   пять экранов и потерял бы смысл.
+   Прокрутка ленты не мешает прокрутке страницы: направления разные. */
+.reviews {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 300px);
+  gap: 12px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding-bottom: 12px;
+  margin: 0 0 6px;
+  /* Полоса прокрутки тонкая и тёмная: жирная системная в презентации выглядит грубо */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.28) transparent;
+}
+.reviews::-webkit-scrollbar { height: 6px; }
+.reviews::-webkit-scrollbar-thumb { background: rgba(255,255,255,.24); border-radius: 99px; }
+.review {
+  scroll-snap-align: start;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 18px 18px 16px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--glass);
+}
+.review__stars { color: var(--coral); font-size: 13px; letter-spacing: .1em; }
+.review b { color: var(--paper); font-size: 15px; font-weight: 600; line-height: 1.25; }
+.slide .review p, .review p { margin: 0; color: #b9bcc4; font-size: 13.5px; line-height: 1.45; }
+.review figcaption { margin-top: auto; padding-top: 8px; color: var(--muted); font: 500 10.5px/1 "Roboto Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
+@media (max-width: 680px) { .reviews { grid-auto-columns: 78%; } }
