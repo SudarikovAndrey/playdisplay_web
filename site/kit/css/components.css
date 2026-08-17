@@ -1348,6 +1348,36 @@ html.deck { scroll-snap-type: y mandatory; }
 }
 .gallery__label img { display: block; width: auto; height: clamp(16px, 1.8vw, 24px); }
 
+/* ПРЕДМЕТ ВМЕСТО ФОТОГРАФИИ. Кадром галереи может быть не снимок, а вырезанный объект –
+   изометрическая сцена, макет, модель. Его нельзя выводить через cover: cover обрезает,
+   а у предмета обрезать нечего, он и есть всё содержание. Поэтому contain.
+   Под предметом мягкое пятно света: вырезанный объект на ровном тёмном фоне выглядит
+   наклейкой, а пятно возвращает ему место в пространстве.
+   Предмет уходит ВПРАВО, а текст занимает левую половину. Нижняя полоса, как у обычного
+   кадра, здесь не работает: предмет по высоте занимает почти весь экран, и текст,
+   положенный под ним, налезал на пол гаража (замер: перекрытие 130 px). */
+.gallery__item--object { background: radial-gradient(46% 50% at 72% 44%, rgba(255,255,255,.08), transparent 70%); }
+.gallery__item--object img {
+  inset: 8% 0 auto auto;
+  width: 56%;
+  height: 78%;
+  object-fit: contain;
+  object-position: 100% 30%;
+}
+/* Затемнение – слева направо, чтобы держать текст, и не гасить пятно света под предметом */
+.gallery__item--object::after { inset: 0; background: linear-gradient(90deg, rgba(8,8,9,.9) 0%, rgba(8,8,9,.72) 38%, rgba(8,8,9,0) 62%); }
+/* Колонка текста УЖЕ половины кадра: у изометрической сцены левый угол опускается к
+   середине высоты, и колонка в 46 % заезжала под него (замер: 82 px). 37 % оставляют
+   зазор при любой высоте текста. */
+.gallery__item--object .gallery__copy { right: auto; width: min(37%, 470px); max-width: none; }
+.gallery__item--object .gallery__facts { grid-template-columns: 1fr; gap: 8px; max-width: none; }
+.gallery__item--object .gallery__facts li { padding-top: 7px; }
+@media (max-width: 900px) {
+  .gallery__item--object img { inset: 6% 0 auto 0; width: 100%; height: 46%; object-position: 50% 0; }
+  .gallery__item--object::after { background: linear-gradient(180deg, rgba(8,8,9,0) 30%, rgba(8,8,9,.8) 52%, rgba(8,8,9,.95)); }
+  .gallery__item--object .gallery__copy { width: auto; right: clamp(20px, 4vw, 64px); }
+}
+
 /* ТРИ ДОВОДА ВНУТРИ КАДРА. Нужны, когда в галерею переезжает слайд с несколькими
    опорами – например тремя эффектами из исследований. Ставим их СТРОКОЙ под текстом,
    а не карточками: карточки закрыли бы кадр, ради которого галерея и сделана.
