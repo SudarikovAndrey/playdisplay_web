@@ -31,3 +31,4 @@ samizdat/
 
 # Локальные настройки деплоя (адрес сервера, путь). Образец — deploy.conf.sample.
 deploy.conf
+site/avtovaz/material/
