@@ -233,6 +233,14 @@
    колонки, и при равной специфичности побеждает то, что ниже: телефон должен выиграть. */
 .collection-diagram--five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .collection-diagram--five b { font-size: 38px; }
+/* ПЛОТНЫЙ ВАРИАНТ ПЛИТКИ. Нужен, когда на слайде под цифрами живёт ещё один блок –
+   например лента отзывов. В полный рост (220 px на плитку плюс кегль 46) плитка съедает
+   почти весь экран, и всё, что ниже, уезжает за нижний край: в режиме слайдов это не
+   «доскроллить», а «не увидеть вовсе». Замерено на 1080: полная плитка 500 px, плотная 190. */
+.collection-diagram--tight { gap: 10px; padding: clamp(14px, 1.7vw, 24px); }
+.collection-diagram--tight div { min-height: 0; padding: 14px 16px; gap: 10px; justify-content: flex-start; }
+.collection-diagram--tight b { font-size: clamp(22px, 2.2vw, 32px); line-height: 1; }
+.collection-diagram--tight span { font-size: 12px; line-height: 1.35; }
 
 .season-diagram { min-height: 580px; position: relative; display: grid; place-items: center; overflow: hidden; }
 .season-diagram::before, .season-diagram::after { content: ""; position: absolute; width: 70%; height: 42%; border: 1px solid rgba(112,136,255,.22); border-radius: 50%; transform: rotate(-15deg); }
@@ -1215,6 +1223,21 @@ html.deck { scroll-snap-type: y mandatory; }
 .slide .review p, .review p { margin: 0; color: #b9bcc4; font-size: 13.5px; line-height: 1.45; }
 .review figcaption { margin-top: auto; padding-top: 8px; color: var(--muted); font: 500 10.5px/1 "Roboto Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
 @media (max-width: 680px) { .reviews { grid-auto-columns: 78%; } }
+/* Подводка к ленте отзывов. Нужна, когда лента стоит НЕ отдельным слайдом, а под другим
+   содержанием: без строки-перехода карточки читаются как продолжение предыдущего блока. */
+.reviews-lead { margin: clamp(14px, 1.7vw, 24px) 0 10px; max-width: 78ch; color: #b9bcc4; font-size: clamp(13.5px, 1.05vw, 16px); line-height: 1.5; }
+/* Плотная лента – для того же случая: карточки ниже ростом, чтобы влезть под цифрами.
+   ВЫСОТУ ЛЕНТЫ ЗАДАЁТ САМЫЙ ДЛИННЫЙ ОТЗЫВ: карточки лежат в строке грида и тянутся до
+   его высоты, поэтому один разговорчивый автор поднимал всю ленту на 320 px и выталкивал
+   её за нижний край экрана. Обрезаем текст по шести строкам – остальное человек дочитает
+   в магазине, а ровный ряд карточек читается как «их много», ради чего лента и нужна. */
+.reviews--tight { grid-auto-columns: minmax(220px, 268px); }
+.reviews--tight .review { padding: 14px 15px 13px; gap: 6px; }
+.reviews--tight .review p { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+/* ПЛОТНЫЙ СЛАЙД: когда на экране два блока подряд, воздух между ними приходится ужимать.
+   Отдельным классом, а не правкой .slide-head: в обычном слайде этот воздух нужен. */
+.slide--packed .slide-head { margin-bottom: clamp(16px, 2vw, 30px); }
+.slide--packed .reviews-lead { margin-top: clamp(10px, 1.2vw, 18px); }
 
 /* ═══ ПОЛНОЭКРАННАЯ ГАЛЕРЕЯ (js/gallery.js) ═══════════════════════════════════
    Рассказ из нескольких кадров на ОДНОМ экране: листается стрелками, точками и пальцем.
