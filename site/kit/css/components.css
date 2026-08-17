@@ -1270,6 +1270,9 @@ html.deck { scroll-snap-type: y mandatory; }
   scrollbar-width: none;
 }
 .gallery__track::-webkit-scrollbar { display: none; }
+/* На время своей анимации прилипание снимается — иначе браузер обрывает плавный
+   ход рывком к ближайшему кадру (см. gallery.js). */
+.gallery__track.is-animating { scroll-snap-type: none; }
 .gallery__item {
   position: relative;
   flex: 0 0 100%;
@@ -1802,4 +1805,64 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   .stages__switch button { padding: 8px 11px; }
   .stages__switch b { font-size: 12px; }
   .stages__note { text-align: center; }
+}
+
+/* ── СБОРКИ ВНУТРИ КАДРА ГАЛЕРЕИ ──────────────────────────────────────────
+   Переключатель сборок живёт кадром галереи, а не отдельным экраном: это часть рассказа
+   про тачки, и листается вместе с остальными доводами.
+
+   ФОН НЕ ЧЁРНЫЙ, И ЭТО НЕ ВКУСОВЩИНА. На ровном чёрном у машины пропадал низ: тёмные
+   шины и жёсткая тень сливались с фоном, машина висела в пустоте. Здесь под ней светлое
+   пятно земли — не декорация, а то, что даёт колёсам опору. Асфальт к низу светлеет,
+   как под лампой в гараже. */
+.gallery__item--stage {
+  background:
+    /* Пятно света стоит РОВНО ПОД КОЛЁСАМИ, а не «где-то внизу»: линия земли у кадра
+       приходится на 55 % высоты рамки, центр машины — на 72 % ширины (замер по вёрстке).
+       Первый вариант светил на 72 % высоты, то есть на полтораста пикселей ниже колёс,
+       и низ машины всё равно пропадал. */
+    radial-gradient(40% 24% at 72% 56%, rgba(226,214,192,.22), transparent 74%),
+    linear-gradient(180deg, #0c0c0e 0%, #131319 46%, #1e1e25 72%, #17171d 100%);
+}
+/* Кадра-фотографии здесь нет, значит нижнее затемнение не нужно: гасить нечего, а оно
+   съедало то самое светлое пятно под колёсами. */
+.gallery__item--stage::after { display: none; }
+.gallery__item--stage .stages { position: absolute; inset: 0; display: block; }
+.gallery__item--stage .stages__stage {
+  position: absolute;
+  right: 4%;
+  top: 6%;
+  height: 50%;
+  width: auto;
+  margin: 0;
+}
+/* Текст кадра здесь УЖЕ обычного: справа стоят машина, панель сборок и подпись, и
+   стандартная колонка в 760 px заезжала под них (замер: перекрытие по горизонтали
+   157 px, по вертикали текст доходил до панели). */
+.gallery__item--stage .gallery__copy { right: auto; width: min(42%, 500px); max-width: none; }
+.gallery__item--stage .stages__switch {
+  position: absolute;
+  right: 4%;
+  top: 68%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 54%;
+  z-index: 2;
+}
+.gallery__item--stage .stages__note {
+  position: absolute;
+  right: 4%;
+  top: 84%;
+  max-width: 46%;
+  min-height: 0;
+  text-align: right;
+  font-size: clamp(12px, .95vw, 14.5px);
+  z-index: 2;
+}
+@media (max-width: 900px) {
+  /* На узком экране машина уходит наверх, панель под неё, текст кадра остаётся внизу */
+  .gallery__item--stage .stages__stage { right: auto; left: 50%; transform: translateX(-50%); top: 7%; height: 34%; }
+  .gallery__item--stage .stages__switch { right: auto; left: 50%; transform: translateX(-50%); top: 44%; max-width: 92%; justify-content: center; }
+  .gallery__item--stage .stages__note { right: auto; left: 50%; transform: translateX(-50%); top: 60%; max-width: 88%; text-align: center; }
 }

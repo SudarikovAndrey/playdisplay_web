@@ -14,7 +14,7 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=5708622e">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=a875e11b">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
@@ -386,7 +386,7 @@
                  уезжают за край. -->
             <img src="assets/garage-yard.jpg" alt="Гаражный двор: четыре LADA и пацаны в круге света" style="object-position:50% 68%">
             <div class="gallery__copy">
-              <p class="overline">Тачки в игре · 01 / 05</p>
+              <p class="overline">Тачки в игре · 01 / 06</p>
               <h2>В&nbsp;мире 90-х не&nbsp;хватает тачек</h2>
               <p>В&nbsp;игре есть деньги, бизнесы, районы, бойцы и&nbsp;статус. Нет главного символа успеха той эпохи&nbsp;– автомобиля. Мы&nbsp;создаём новый игровой слой: ТАЧКИ.</p>
             </div>
@@ -394,15 +394,42 @@
           <figure class="gallery__item">
             <img src="assets/wide5.jpg" alt="Босс района" style="object-position:72% 26%">
             <div class="gallery__copy">
-              <p class="overline">Тачки в игре · 02 / 05</p>
+              <p class="overline">Тачки в игре · 02 / 06</p>
               <h2>Не&nbsp;реклама. Игра.</h2>
               <p>Ни&nbsp;баннеров, ни&nbsp;персонажей, рассказывающих, какая LADA хорошая. Для игрока это выглядит иначе: «наконец-то в&nbsp;игру добавили тачки».</p>
+            </div>
+          </figure>
+          <!-- Кадр-переключатель: пять сборок одной машины. Фон здесь свой, светлеющий
+               к низу: на ровном чёрном пропадал низ машины вместе с тенью. -->
+          <figure class="gallery__item gallery__item--stage">
+          <div class="stages" data-stages>
+            <div class="stages__stage">
+              <i class="stages__shadow" aria-hidden="true"></i>
+              <img class="stages__car is-on" data-stage-car src="assets/tuning/stage-1.webp" alt="NIVA, сборка «Сток»">
+              <img class="stages__car" data-stage-car data-src="assets/tuning/stage-2.webp" alt="NIVA, сборка «Турист»">
+              <img class="stages__car" data-stage-car data-src="assets/tuning/stage-3.webp" alt="NIVA, сборка «Трейл»">
+              <img class="stages__car" data-stage-car data-src="assets/tuning/stage-4.webp" alt="NIVA, сборка «Экспедиция»">
+              <img class="stages__car" data-stage-car data-src="assets/tuning/stage-5.webp" alt="NIVA, сборка «Легенда»">
+            </div>
+            <div class="stages__switch">
+              <button type="button" data-stage="0" aria-pressed="true" data-stage-note="Заводская машина: то, с чего начинает каждый игрок."><b>Сток</b><i>BASE 01</i></button>
+              <button type="button" data-stage="1" aria-pressed="false" data-stage-note="Багажник и уверенная резина — первые детали, которые видно со стороны."><b>Турист</b><i>ROUTE 02</i></button>
+              <button type="button" data-stage="2" aria-pressed="false" data-stage-note="Лифт, силовая защита и колёса под сложный рельеф."><b>Трейл</b><i>TRAIL 03</i></button>
+              <button type="button" data-stage="3" aria-pressed="false" data-stage-note="Полная автономность: топливо, защита, экспедиционный сетап."><b>Экспедиция</b><i>EXPED 04</i></button>
+              <button type="button" data-stage="4" aria-pressed="false" data-stage-note="Предельная сборка. Её видят все, и собрать её можно только временем."><b>Легенда</b><i>MAX 05</i></button>
+            </div>
+            <p class="stages__note" data-stage-caption>Заводская машина: то, с чего начинает каждый игрок.</p>
+          </div>
+            <div class="gallery__copy">
+              <p class="overline">Тачки в игре · 03 / 06</p>
+              <h2>Одна NIVA&nbsp;– пять сборок</h2>
+              <p>Автомобиль становится игровым активом: заработать, найти редкие детали, собрать своё. Каждая деталь видна со&nbsp;стороны&nbsp;– именно поэтому её&nbsp;хочется добыть.</p>
             </div>
           </figure>
           <figure class="gallery__item">
             <img src="assets/car-niva.jpg" alt="NIVA в игровом исполнении" style="object-position:50% 50%">
             <div class="gallery__copy">
-              <p class="overline">Тачки в игре · 03 / 05</p>
+              <p class="overline">Тачки в игре · 04 / 06</p>
               <h2>Две одинаковые машины становятся разными</h2>
               <p>У&nbsp;каждого игрока свой гараж. Редкие детали невозможно просто купить&nbsp;– их&nbsp;нужно заработать. LADA становится не&nbsp;объектом просмотра, а&nbsp;объектом желания.</p>
             </div>
@@ -410,7 +437,7 @@
           <figure class="gallery__item gallery__item--object">
             <img src="assets/niva-offroad.png" alt="NIVA на бездорожье: шноркель, багажник, запаска на крыше">
             <div class="gallery__copy">
-              <p class="overline">Тачки в игре · 04 / 05</p>
+              <p class="overline">Тачки в игре · 05 / 06</p>
               <h2>NIVA 50: там, где заканчивается дорога</h2>
               <p>К&nbsp;юбилею&nbsp;– серия игровых событий: экспедиции, бездорожье, редкие версии, коллекции. Характер настоящей машины превращается в&nbsp;игровые механики.</p>
             </div>
@@ -418,7 +445,7 @@
           <figure class="gallery__item gallery__item--object">
             <img src="assets/garage-tuning.png" alt="Гараж игрока: девятка на подъёмнике, диски, инструмент, плакаты">
             <div class="gallery__copy">
-              <p class="overline">Тачки в игре · 05 / 05</p>
+              <p class="overline">Тачки в игре · 06 / 06</p>
               <h2>Собранное своими руками ценят дороже</h2>
               <p>Игровой слой не&nbsp;показывает автомобиль&nbsp;– он&nbsp;заставляет его заработать, собрать и&nbsp;показать другим. Работают три эффекта из&nbsp;поведенческой экономики, и&nbsp;все три играют на&nbsp;образ марки.</p>
               <ul class="gallery__facts">
@@ -433,46 +460,14 @@
           <button class="gallery__nav gallery__nav--next" type="button" data-gallery-next aria-label="Следующий кадр">›</button>
           <div class="gallery__pager">
             <div class="gallery__dots" data-gallery-dots></div>
-            <span class="gallery__counter" data-gallery-counter>01 / 05</span>
+            <span class="gallery__counter" data-gallery-counter>01 / 06</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══ ПРОКАЧКА: ПЯТЬ СБОРОК ОДНОЙ МАШИНЫ ═══════════════════════════════
-         Заменил кадр галереи «Получить. Собрать. Показать другим»: словами прокачку не
-         объяснить так, как показывает один взгляд на пять состояний одной машины.
-         Кадры — вырезанные рендеры, сведённые по линии земли; тень жёсткая, как у
-         изометрии с резким солнцем в самой игре. -->
-    <section class="slide" id="s09" data-slide="06">
-      <div class="slide-shell">
-        <div class="slide-head reveal">
-          <p class="overline">Прокачка</p>
-          <h2>Одна NIVA&nbsp;– пять сборок</h2>
-          <p>Автомобиль становится игровым активом: заработать, найти редкие детали, собрать своё. Каждая деталь видна со&nbsp;стороны&nbsp;– именно поэтому её&nbsp;хочется добыть.</p>
-        </div>
-        <div class="stages" data-stages>
-          <div class="stages__stage">
-            <i class="stages__shadow" aria-hidden="true"></i>
-            <img class="stages__car is-on" data-stage-car src="assets/tuning/stage-1.webp" alt="NIVA, сборка «Сток»">
-            <img class="stages__car" data-stage-car data-src="assets/tuning/stage-2.webp" alt="NIVA, сборка «Турист»">
-            <img class="stages__car" data-stage-car data-src="assets/tuning/stage-3.webp" alt="NIVA, сборка «Трейл»">
-            <img class="stages__car" data-stage-car data-src="assets/tuning/stage-4.webp" alt="NIVA, сборка «Экспедиция»">
-            <img class="stages__car" data-stage-car data-src="assets/tuning/stage-5.webp" alt="NIVA, сборка «Легенда»">
-          </div>
-          <div class="stages__switch">
-            <button type="button" data-stage="0" aria-pressed="true" data-stage-note="Заводская машина: то, с чего начинает каждый игрок."><b>Сток</b><i>BASE 01</i></button>
-            <button type="button" data-stage="1" aria-pressed="false" data-stage-note="Багажник и уверенная резина — первые детали, которые видно со стороны."><b>Турист</b><i>ROUTE 02</i></button>
-            <button type="button" data-stage="2" aria-pressed="false" data-stage-note="Лифт, силовая защита и колёса под сложный рельеф."><b>Трейл</b><i>TRAIL 03</i></button>
-            <button type="button" data-stage="3" aria-pressed="false" data-stage-note="Полная автономность: топливо, защита, экспедиционный сетап."><b>Экспедиция</b><i>EXPED 04</i></button>
-            <button type="button" data-stage="4" aria-pressed="false" data-stage-note="Предельная сборка. Её видят все, и собрать её можно только временем."><b>Легенда</b><i>MAX 05</i></button>
-          </div>
-          <p class="stages__note" data-stage-caption>Заводская машина: то, с чего начинает каждый игрок.</p>
-        </div>
-      </div>
-    </section>
     <!-- ═══ 12. ЧТО ПОЛУЧАЕТ LADA ═══ -->
-    <section class="slide slide--dark" id="s13" data-slide="07">
+    <section class="slide slide--dark" id="s13" data-slide="06">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Результат</p>
@@ -494,7 +489,7 @@
       </div>
     </section>
     <!-- ═══ 13. МЕТРИКИ ═══ -->
-    <section class="slide" id="s14" data-slide="08">
+    <section class="slide" id="s14" data-slide="07">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Измерение</p>
@@ -513,7 +508,7 @@
     <!-- ═══ КРАСНЫЕ ЛИНИИ ═══
          Главный риск этой интеграции – усилить клише «Жигули = братва 90-х».
          Партнёр обязан увидеть границы раньше, чем задаст вопрос. -->
-    <section class="slide" id="s10b" data-slide="09">
+    <section class="slide" id="s10b" data-slide="08">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Границы</p>
@@ -532,7 +527,7 @@
       </div>
     </section>
     <!-- ═══ 16. СЕЗОН ═══ -->
-    <section class="slide slide--dark" id="s17" data-slide="10">
+    <section class="slide slide--dark" id="s17" data-slide="09">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Юбилейный сезон</p>
@@ -549,7 +544,7 @@
     <!-- ═══ КАЛЕНДАРЬ ═══
          «2027 год» без дат – это не план. У юбилея NIVA жёсткая привязка к весне
          (первая товарная партия – апрель 1977), и контент должен быть готов раньше. -->
-    <section class="slide" id="s18b" data-slide="11">
+    <section class="slide" id="s18b" data-slide="10">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Сроки</p>
@@ -566,7 +561,7 @@
       </div>
     </section>
     <!-- ═══ 18. ПРОДУКТ И МЕДИА ═══ -->
-    <section class="slide slide--dark" id="s19" data-slide="12">
+    <section class="slide slide--dark" id="s19" data-slide="11">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Как работает бюджет</p>
@@ -590,7 +585,7 @@
     <!-- ═══ ПРЕДЛОЖЕНИЕ: ТРИ УРОВНЯ ═══
          Один вариант – это «да или нет». Три уровня превращают решение в выбор,
          и разговор продолжается даже при отказе от большого бюджета. -->
-    <section class="slide slide--dark" id="s21" data-slide="13">
+    <section class="slide slide--dark" id="s21" data-slide="12">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Предложение</p>
@@ -615,7 +610,7 @@
       </div>
     </section>
     <!-- ═══ ЭКОНОМИКА КОНТАКТА ═══ -->
-    <section class="slide slide--dark" id="s14b" data-slide="14">
+    <section class="slide slide--dark" id="s14b" data-slide="13">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Экономика</p>
@@ -638,7 +633,7 @@
       </div>
     </section>
     <!-- ═══ 19. РОСТ ═══ -->
-    <section class="slide" id="s20" data-slide="15">
+    <section class="slide" id="s20" data-slide="14">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Масштаб</p>
@@ -659,7 +654,7 @@
       </div>
     </section>
     <!-- ═══ 21. ИТОГ ═══ -->
-    <section class="slide" id="s22" data-slide="16">
+    <section class="slide" id="s22" data-slide="15">
       <div class="slide-shell">
         <p class="slide-punch reveal">Механики и&nbsp;аудитория<br>остаются в&nbsp;игре <em>после кампании</em>.</p>
         <div class="slide-head">
@@ -692,7 +687,7 @@
   <script defer src="../../kit/js/parallax.js?v=aae347d9"></script>
   <script defer src="../../kit/js/lists.js?v=8493dc93"></script>
   <script defer src="../../kit/js/hotspots.js?v=5b3c99e7"></script>
-  <script defer src="../../kit/js/gallery.js?v=9f248dcd"></script>
+  <script defer src="../../kit/js/gallery.js?v=af47fd7e"></script>
   <script defer src="../../kit/js/spotlight.js?v=593c767d"></script>
   <script defer src="../../kit/js/stages.js?v=dc8e7c6e"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>

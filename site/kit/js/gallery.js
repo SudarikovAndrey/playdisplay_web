@@ -58,12 +58,19 @@
       var to = n * track.clientWidth;
       if (Math.abs(to - from) < 1) return;
       if (anim) cancelAnimationFrame(anim);
-      var t0 = performance.now(), dur = 380;
+      /* ПРИЛИПАНИЕ НА ВРЕМЯ ХОДА СНИМАЕМ. Без этого браузер сам подтягивает ленту к
+         ближайшему кадру, и наша плавная дорожка обрывается рывком в самом конце —
+         именно это читалось как «галерея листается резко». */
+      track.classList.add('is-animating');
+      var t0 = performance.now(), dur = 460;
       (function step(now) {
         var k = Math.min(1, (now - t0) / dur);
-        var e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;   // плавный вход и выход
+        /* Выезд с торможением: кадр стартует живо и мягко встаёт на место. Симметричная
+           кривая на ходу в один экран читается вяло в начале и всё равно резко в конце. */
+        var e = 1 - Math.pow(1 - k, 3);
         track.scrollLeft = from + (to - from) * e;
-        if (k < 1) anim = requestAnimationFrame(step); else anim = null;
+        if (k < 1) anim = requestAnimationFrame(step);
+        else { anim = null; track.classList.remove('is-animating'); }
       })(t0);
     }
 
