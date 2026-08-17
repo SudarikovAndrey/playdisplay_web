@@ -108,10 +108,22 @@
         var hidden = Math.max(0, -x) - Math.max(0, x + w - view);
         var k = Math.max(-1, Math.min(1, hidden / Math.max(1, w)));
         var a = Math.abs(k);
-        el.style.transform = 'perspective(1500px) translateZ(' + (-a * 74).toFixed(1) + 'px) '
-          + 'rotateY(' + (k * 26).toFixed(1) + 'deg) scale(' + (1 - a * 0.04).toFixed(3) + ')';
+        /* ПОВОРОТ ВОКРУГ ВНУТРЕННЕГО РЕБРА, а не вокруг середины: карточка уходит за край
+           как створка, ближняя к нам кромка остаётся на месте. При повороте вокруг центра
+           дальний край выезжает НА СОСЕДА – именно это и было видно как наползание. */
+        el.style.transformOrigin = (k > 0 ? '100%' : '0%') + ' 50%';
+        /* perspective НЕ вписываем в transform самой карточки: своя перспектива у каждой
+           означает своё плоское пространство, и глубина между соседями не считается вовсе.
+           Перспектива одна и живёт на ленте. */
+        el.style.transform = 'translateZ(' + (-a * 64).toFixed(1) + 'px) '
+          + 'rotateY(' + (k * 30).toFixed(1) + 'deg) scale(' + (1 - a * 0.03).toFixed(3) + ')';
+        /* ПОРЯДОК НАЛОЖЕНИЯ ЗАДАЁМ РУКАМИ. Браузер сам сортировал бы по глубине, но лента –
+           контейнер прокрутки, а у него transform-style принудительно flat: трёхмерного
+           пространства нет, и соседи рисуются просто по порядку в разметке. Повёрнутая
+           карточка оказывалась ПОВЕРХ ровной, потому что стоит в разметке позже. */
+        el.style.zIndex = String(1000 - Math.round(a * 1000));
         el.style.filter = 'brightness(' + (1 - a * 0.42).toFixed(3) + ')';
-        el.style.opacity = (1 - a * 0.32).toFixed(3);
+        el.style.opacity = (1 - a * 0.30).toFixed(3);
       }
     }
 
@@ -121,13 +133,20 @@
       target = Math.max(0, Math.min(max, target));
       if (Math.abs(target - from) < 1) return;
       if (anim) cancelAnimationFrame(anim);
-      var t0 = performance.now(), dur = 360;
+      /* Прилипание снимаем и на время СВОЕЙ анимации, не только на время тяги: иначе
+         браузер подтягивает ленту к ближайшей карточке посреди хода, и плавное
+         смещение превращается в щелчок. */
+      strip.classList.add('is-animating');
+      var t0 = performance.now(), dur = 460;
       (function frame(now) {
         var k = Math.min(1, (now - t0) / dur);
-        var e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        /* Выезд с торможением (easeOutCubic): карточка стартует живо и мягко встаёт на
+           место. Симметричная кривая на коротком ходу в одну карточку читалась вяло. */
+        var e = 1 - Math.pow(1 - k, 3);
         strip.scrollLeft = from + (target - from) * e;
         shape();
-        if (k < 1) anim = requestAnimationFrame(frame); else { anim = null; paint(); }
+        if (k < 1) anim = requestAnimationFrame(frame);
+        else { anim = null; strip.classList.remove('is-animating'); paint(); }
       })(t0);
     }
 

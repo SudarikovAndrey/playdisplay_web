@@ -1592,7 +1592,11 @@ html.deck { scroll-snap-type: y mandatory; }
    включённом прилипании браузер сам подтягивает ленту к ближайшей карточке на каждое
    изменение scrollLeft. Замер показывал ступени вместо движения – угол поворота шёл
    0°, 0°, 0°, 26°, 26° вместо плавного роста, и колода дёргалась под рукой. */
-.strip-wrap > [data-strip].is-dragging { cursor: grabbing; scroll-snap-type: none; }
+.strip-wrap > [data-strip].is-dragging { cursor: grabbing; }
+/* Прилипание снимается и на тягу, и на свою анимацию: браузер иначе подтягивает
+   ленту к ближайшей карточке посреди хода, и плавное смещение становится щелчком. */
+.strip-wrap > [data-strip].is-dragging,
+.strip-wrap > [data-strip].is-animating { scroll-snap-type: none; }
 /* Отклик на курсор без масштаба: масштаб спорил бы с поворотом, который каждый кадр
    ставит скрипт. Поднимаем не размером, а светом и тенью. */
 .reviews--light .review:hover { box-shadow: 0 18px 38px rgba(0,0,0,.5); border-color: rgba(23,20,15,.42); }
