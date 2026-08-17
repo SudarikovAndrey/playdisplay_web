@@ -1232,7 +1232,15 @@ html.deck { scroll-snap-type: y mandatory; }
   height: 100%;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
+  /* proximity, а НЕ mandatory: при жёстком прилипании плавная прокрутка от стрелок
+     гасится на первом же кадре – браузер тут же возвращает ленту к ближайшей точке,
+     и кадр не листается вовсе (проверено: scrollLeft оставался нулём). При proximity
+     плавный переход доходит до места, а лента всё равно доводится до кадра. */
+  scroll-snap-type: x proximity;
+  /* Якорение прокрутки выключено: браузер «придерживает» содержимое при перекладке
+     страницы и на первом же листании возвращал ленту в ноль – первый щелчок по стрелке
+     не срабатывал, второй работал. */
+  overflow-anchor: none;
   scrollbar-width: none;
 }
 .gallery__track::-webkit-scrollbar { display: none; }

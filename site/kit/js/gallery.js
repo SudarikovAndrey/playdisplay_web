@@ -43,13 +43,28 @@
       }
     }
 
+    /* ЛИСТАЕМ СВОИМ ЦИКЛОМ, А НЕ behavior: 'smooth'.
+       Штатная плавная прокрутка внутри этой ленты не работает: страница сама живёт в
+       режиме слайдов с прилипанием, и её механика гасит вложенную плавную прокрутку –
+       замер показывал scrollLeft = 0 после нажатия на стрелку. Свой цикл с мгновенными
+       шагами доезжает всегда и заодно даёт одинаковую скорость во всех браузерах.
+       Цель считаем как «номер × ширина кадра»: offsetLeft отсчитывается от ближайшего
+       позиционированного предка (это сама галерея, а не лента) и после первой прокрутки
+       показывает положение кадра НА ЭКРАНЕ, а не в ленте. */
+    var anim = null;
     function go(n) {
       n = Math.max(0, Math.min(items.length - 1, n));
-      /* Цель считаем как «номер × ширина кадра», а НЕ по offsetLeft элемента.
-         offsetLeft отсчитывается от ближайшего позиционированного предка (у нас это
-         сама галерея, а не лента), и после первой же прокрутки он показывает положение
-         кадра НА ЭКРАНЕ: стрелки жали, а лента стояла на месте. */
-      track.scrollTo({ left: n * track.clientWidth, behavior: 'smooth' });
+      var from = track.scrollLeft;
+      var to = n * track.clientWidth;
+      if (Math.abs(to - from) < 1) return;
+      if (anim) cancelAnimationFrame(anim);
+      var t0 = performance.now(), dur = 380;
+      (function step(now) {
+        var k = Math.min(1, (now - t0) / dur);
+        var e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;   // плавный вход и выход
+        track.scrollLeft = from + (to - from) * e;
+        if (k < 1) anim = requestAnimationFrame(step); else anim = null;
+      })(t0);
     }
 
     function paint() {
