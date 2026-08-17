@@ -35,6 +35,11 @@ PAGE = '''<!doctype html>
   <!-- Onest обязателен: именно он объявлен основным в typography.css. Раньше здесь
        стоял Manrope, которого в стилях нет вовсе, — страница молча уезжала на Helvetica -->
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Unbounded:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Аналитика: один файл на весь сайт, номера счётчиков живут только в нём. Путь
+       АБСОЛЮТНЫЙ — страница может лежать на любой глубине. Считает только боевые
+       домены, локальные проверки в статистику не попадают. Цели отправлять так:
+       pdGoal('название'). Внутрь iframe-сцен не подключать — визит посчитается дважды. -->
+  <script src="/analytics.js" defer></script>
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="{up}kit/css/layout.css">
   <link rel="stylesheet" href="{up}kit/css/typography.css">

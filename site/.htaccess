@@ -74,10 +74,28 @@ AddType font/woff2 .woff2
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
+# ---------- один адрес сайта ----------
+# playdisplay.ru, www.playdisplay.ru и www.playdisplay.com отдавали содержание САМИ,
+# а не перенаправляли: у поисковиков это три копии сайта, у аналитики — рваная сессия
+# при переходе между доменами. Один canonical в разметке проблему не решает: canonical
+# лишь подсказка, а 301 — указание.
+#
+# Условие написано «всё, кроме playdisplay.com», а не перечислением доменов: перечисление
+# надо пополнять при каждом новом алиасе, а забыть его легко. Правило стоит ПЕРВЫМ:
+# иначе адреса старого вордпресса сначала уедут на нужную страницу, а потом их ещё раз
+# перебросит уже с другого домена — две 301-и подряд поисковики не любят.
+# Флаг NE обязателен: без него Apache экранирует служебные знаки в цели.
+RewriteCond %{HTTP_HOST} !^playdisplay\.com$ [NC]
+RewriteCond %{HTTP_HOST} !^$
+RewriteRule ^(.*)$ https://playdisplay.com/$1 [R=301,L,NE]
+
 # ---------- разделы старого сайта на вордпрессе ----------
-RewriteRule ^projects/?$ /#work [R=301,L]
-RewriteRule ^about/?$ /#studio [R=301,L]
-RewriteRule ^contact/?$ /#contact [R=301,L]
+# ФЛАГ NE ЗДЕСЬ КРИТИЧЕН. Без него Apache превращает решётку в %23, и вместо
+# playdisplay.com/#work посетитель попадал на playdisplay.com/%23work — то есть в 404.
+# Проверено на боевом 17.08.2026: все три адреса отдавали «404 Not Found».
+RewriteRule ^projects/?$ /#work [R=301,L,NE]
+RewriteRule ^about/?$ /#studio [R=301,L,NE]
+RewriteRule ^contact/?$ /#contact [R=301,L,NE]
 
 # ---------- кейсы, у которых сменился адрес ----------
 # Слева — как было на вордпрессе, справа — как стало на новом сайте.
