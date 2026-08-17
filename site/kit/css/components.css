@@ -1343,33 +1343,33 @@ html.deck { scroll-snap-type: y mandatory; }
   .gallery__item::after { inset: 25% 0 0 0; }
 }
 
-/* КНОПКА «ВО ВЕСЬ ЭКРАН». Стоит рядом с кнопкой «в начало» и выглядит так же:
-   две кнопки в одном углу должны читаться как пара, а не как случайные элементы.
-   Показывается всегда – в отличие от «в начало», она нужна с первого экрана. */
-.to-full {
-  position: fixed;
-  right: clamp(14px, 2vw, 28px);
-  bottom: calc(clamp(14px, 2vw, 28px) + 52px);
-  z-index: 120;
+/* КНОПКА «ВО ВЕСЬ ЭКРАН» ЖИВЁТ В ШАПКЕ, рядом с меткой документа.
+   Место выбрано не по вкусу: у нижнего правого угла уже есть житель – «в начало», и две
+   кнопки там читались как пара равных действий, хотя это разные вещи (одна возвращает
+   по документу, другая меняет режим показа). В шапке она стоит там, где человек ищет
+   управление документом, и не спорит с содержанием слайда. */
+.masthead .to-full {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 13px 16px;
+  gap: 8px;
+  padding: 8px 12px;
   border: 1px solid rgba(159, 180, 200, .28);
-  background: rgba(6, 8, 12, .72);
-  backdrop-filter: blur(10px);
+  border-radius: 3px;
+  background: transparent;
   color: var(--muted);
-  font: 500 10px/1 "Roboto Mono", monospace;
+  font: 500 9.5px/1 "Roboto Mono", monospace;
   letter-spacing: .14em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: color .2s ease, border-color .2s ease;
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
 }
-.to-full:hover { color: var(--paper); border-color: rgba(159, 180, 200, .55); }
-.to-full i { display: block; width: 13px; height: 13px; border: 1px solid currentColor; border-radius: 2px; position: relative; }
-.to-full i::after { content: ""; position: absolute; inset: 3px; border: 1px solid currentColor; opacity: .5; }
-.to-full.is-on i::after { inset: 4px; opacity: 1; }
-@media (max-width: 680px) { .to-full span { display: none; } .to-full { padding: 13px; } }
+.masthead .to-full:hover { color: var(--paper); border-color: rgba(159, 180, 200, .6); background: rgba(255,255,255,.05); }
+.masthead .to-full i { display: block; width: 12px; height: 12px; border: 1px solid currentColor; border-radius: 2px; position: relative; }
+.masthead .to-full i::after { content: ""; position: absolute; inset: 3px; border: 1px solid currentColor; opacity: .45; }
+.masthead .to-full.is-on i::after { inset: 4px; opacity: 1; }
+/* Метка документа и кнопка стоят одной группой у правого края */
+.masthead .book-mark { align-items: center; }
+@media (max-width: 680px) { .masthead .to-full span { display: none; } .masthead .to-full { padding: 8px; } }
 @media print { .to-full { display: none; } }
 
 /* ПЛИТКИ ПЛОЩАДОК. Ряд мелких плашек читался как служебная строка; здесь это
