@@ -1550,35 +1550,88 @@ html.deck { scroll-snap-type: y mandatory; }
 .reviews .review:hover { transform: scale(1.035); box-shadow: 0 14px 30px rgba(0,0,0,.45); }
 .reviews--light .review:hover { border-color: rgba(23,20,15,.4); }
 
-/* Вылет вправо до края окна. Значение считает скрипт (--bleed): в CSS его не вывести –
-   колонка не центрирована в окне, слева боковая полоса разделов. */
-.reviews--bleed { margin-right: calc(-1 * var(--bleed, 0px)); }
+/* ВЫЛЕТ ЗА ОБА КРАЯ, СТРЕЛКИ ПОВЕРХ КАРТОЧЕК, РАСТВОРЕНИЕ У КРАЁВ.
+   Обёртка нужна потому, что три эти вещи не живут на одном элементе: маска растворения
+   гасит всё, что внутри, – значит стрелки обязаны лежать СНАРУЖИ маски, но внутри общей
+   коробки, иначе их не к чему прижать.
+   Оба вылета считает скрипт (--bleed-l / --bleed-r). В CSS их не вывести: колонка не
+   центрирована в окне, слева боковая полоса разделов. Влево вылет идёт до края области
+   содержания, а не до края окна: под полосой разделов карточки оказались бы под меню. */
+.strip-wrap {
+  position: relative;
+  margin-left: calc(-1 * var(--bleed-l, 0px));
+  margin-right: calc(-1 * var(--bleed-r, 0px));
+}
+/* Крайние карточки растворяются – так видно, что лента продолжается за краем.
+   Маска, а не градиентная накладка: накладка перехватывала бы курсор и мешала тянуть. */
+.strip-wrap > [data-strip] {
+  --fade: clamp(40px, 7vw, 110px);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+}
+/* Лента тянется курсором (js/strip.js). Курсор-рука обязателен: без него человек
+   не пробует тащить, а колесо на этом месте крутит страницу. */
+.strip-wrap > [data-strip] { cursor: grab; }
+.strip-wrap > [data-strip].is-dragging { cursor: grabbing; scroll-snap-type: none; }
+.strip-wrap > [data-strip].is-dragging .review { transform: none; }
 
-/* Полоса над лентой: слева ссылка, справа стрелки */
-.strip-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  flex-wrap: wrap;
-  /* Воздух здесь скупой: полоса стоит между плиткой цифр и лентой, и каждый её
-     пиксель уходит из бюджета высоты слайда (замер: с полосой слайд вылезал на 51 px) */
-  margin: clamp(10px, 1.1vw, 14px) 0 0;
-}
-.strip-nav { display: flex; gap: 8px; }
-.strip-nav button {
-  width: 32px; height: 32px;
+.strip-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 46px; height: 46px;
   display: grid; place-items: center;
-  border: 1px solid rgba(255,255,255,.3);
+  transform: translateY(-50%);
+  border: 1px solid rgba(255,255,255,.6);
   border-radius: 50%;
-  background: rgba(255,255,255,.05);
-  color: var(--paper);
-  font-size: 15px; line-height: 1;
+  /* Тёмный диск, а не стекло: стрелка лежит ПОВЕРХ светлых карточек, и полупрозрачная
+     на них не читалась вовсе */
+  background: #14151a;
+  box-shadow: 0 8px 26px rgba(0,0,0,.6);
+  color: #fff;
+  font-size: 20px; line-height: 1;
   cursor: pointer;
-  transition: background .2s ease, border-color .2s ease, opacity .2s ease;
+  transition: background .18s ease, border-color .18s ease, opacity .18s ease, transform .18s ease;
 }
-.strip-nav button:hover { background: rgba(255,255,255,.14); border-color: var(--paper); }
-.strip-nav button[disabled] { opacity: .25; cursor: default; }
+.strip-arrow:hover { background: var(--ultra, #c0432f); border-color: #fff; transform: translateY(-50%) scale(1.06); }
+.strip-arrow[disabled] { opacity: .2; cursor: default; }
+.strip-arrow--prev { left: 12px; }
+.strip-arrow--next { right: 12px; }
+@media (max-width: 680px) { .strip-arrow { width: 38px; height: 38px; font-size: 17px; } }
+
+/* Заголовок над лентой. Появился после прямого замечания: без него лента, стоявшая
+   рядом с кнопкой телеграм-группы, читалась как «отзывы из нашего телеграма». */
+.strip-title { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: clamp(12px, 1.4vw, 18px) 0 8px; }
+.strip-title b { color: var(--paper); font: 600 13px/1.2 "Roboto Mono", monospace; letter-spacing: .14em; text-transform: uppercase; }
+.strip-title i { color: var(--muted); font-style: normal; font-size: 12.5px; }
+
+/* ── ШАПКА СЛАЙДА С ПРИСТАВКОЙ СПРАВА ────────────────────────────────────
+   Ряд «текст слева, карточка справа». Нужен, когда на слайде есть сквозное действие
+   (зайти в сообщество, скачать) – ему нельзя стоять рядом с содержанием, к которому
+   оно не относится. */
+.head-row { display: flex; align-items: flex-end; justify-content: space-between; gap: clamp(18px, 2.4vw, 40px); flex-wrap: wrap; }
+.head-row > .slide-head { flex: 1 1 440px; min-width: 0; margin-bottom: 0; }
+.slide--packed .head-row { margin-bottom: clamp(12px, 1.4vw, 20px); }
+.slide--packed .head-row > .slide-head { margin-bottom: 0; }
+
+/* Карточка сообщества: не кнопка в ряду ссылок, а отдельное приглашение */
+.community-card {
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 18px 12px 14px;
+  border: 1px solid rgba(42,166,235,.45);
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(42,166,235,.16), rgba(42,166,235,.04));
+  color: var(--paper);
+  text-decoration: none;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.community-card:hover { border-color: #2aa6eb; background: linear-gradient(135deg, rgba(42,166,235,.28), rgba(42,166,235,.08)); transform: translateY(-2px); }
+.community-card__mark { flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: #2aa6eb; }
+.community-card__mark svg { width: 19px; height: 19px; fill: #fff; }
+.community-card__text { display: grid; gap: 3px; }
+.community-card__text b { font: 600 13px/1.2 Onest, sans-serif; letter-spacing: .01em; }
+.community-card__text i { color: #9fd4f2; font-style: normal; font: 500 11px/1 "Roboto Mono", monospace; letter-spacing: .06em; }
 
 /* ── КНОПКА-ССЫЛКА ───────────────────────────────────────────────────────
    Обычная ссылка в теле слайда не читается как действие. Здесь нужна именно кнопка:

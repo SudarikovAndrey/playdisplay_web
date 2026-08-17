@@ -1,45 +1,65 @@
-/* ГОРИЗОНТАЛЬНАЯ ЛЕНТА: стрелки и вылет за колонку.
+/* ГОРИЗОНТАЛЬНАЯ ЛЕНТА: стрелки, вылет за края экрана, листание тягой.
  *
- * Зачем: лента карточек (отзывы, кадры, что угодно) листается пальцем и тачпадом сама,
- * но на компьютере с мышью человек не догадывается, что её можно двигать – колесо крутит
- * страницу, а не ленту. Стрелки делают возможность видимой.
+ * Зачем: лента карточек листается пальцем сама, но на компьютере с мышью человек не
+ * догадывается, что её можно двигать – колесо крутит страницу, а не ленту. Поэтому здесь
+ * три вещи, и каждая требует замера, поэтому живёт в скрипте, а не в стилях.
  *
- * Два дела, оба требуют замера, поэтому живут в скрипте, а не в стилях:
+ *  1. ВЫЛЕТ ЗА ОБА КРАЯ. Лента должна уходить за края экрана, а не обрываться по краю
+ *     текстовой колонки – так видно, что карточек больше, чем видно. В чистом CSS это
+ *     не считается: колонка не центрирована в окне (слева боковая полоса разделов),
+ *     поэтому приёмы вида calc(50% - 50vw) дают промах на половину полосы и заодно
+ *     растягивают документ по горизонтали.
+ *     Влево вылет идёт до края ОБЛАСТИ СОДЕРЖАНИЯ, а не до края окна: под полосой
+ *     разделов карточки оказались бы под меню.
+ *     Замеряем РОДИТЕЛЯ обёртки: у него нет наших отрицательных полей, и замер не
+ *     начинает гоняться за собственным результатом.
  *
- *  1. ЛИСТАНИЕ. Прокрутка внутри ленты идёт СВОИМ ЦИКЛОМ, а не behavior: 'smooth'.
+ *  2. СТРЕЛКИ. Прокрутка внутри ленты идёт СВОИМ ЦИКЛОМ, а не behavior: 'smooth'.
  *     Причина та же, что у полноэкранной галереи: страница в режиме слайдов гасит
  *     вложенную плавную прокрутку, и лента остаётся на месте.
  *
- *  2. ВЫЛЕТ ВПРАВО. Лента должна уходить за край экрана, а не обрываться по краю
- *     текстовой колонки – так видно, что карточек больше, чем видно. В чистом CSS это
- *     не считается: колонка не центрирована в окне (слева боковая полоса разделов,
- *     она сдвигает всю колонку), поэтому приёмы вида calc(50% - 50vw) дают промах на
- *     половину полосы и заодно растягивают документ по горизонтали.
- *     Замеряем расстояние от правого края РОДИТЕЛЯ до края окна и отдаём его в CSS
- *     переменной --bleed. Родитель, а не сама лента: отрицательное поле у ребёнка
- *     не меняет коробку родителя, и замер не начинает гоняться за собственным
- *     результатом.
+ *  3. ЛИСТАНИЕ ТЯГОЙ. Указатель тянет ленту, как палец. Три подвоха:
+ *     • прилипание (scroll-snap) на время тяги СНИМАЕТСЯ – иначе лента дёргается к
+ *       ближайшей карточке при каждом движении и за курсором не идёт;
+ *     • после тяги на карточках гасится отклик на курсор, иначе они прыгают под рукой;
+ *     • щелчок по ссылке внутри карточки нельзя терять: клик отменяем только если
+ *       рука реально уехала (больше шести пикселей).
  */
 (function () {
   'use strict';
 
   function setup(strip) {
-    var host = strip.parentNode;
-    var bar = document.querySelector('[data-strip-nav="' + (strip.getAttribute('data-strip') || '') + '"]')
-           || strip.parentNode.querySelector('[data-strip-nav]');
-    var prev = bar ? bar.querySelector('[data-strip-prev]') : null;
-    var next = bar ? bar.querySelector('[data-strip-next]') : null;
+    var wrap = strip.closest('[data-strip-wrap]') || strip.parentNode;
+    var host = wrap.parentNode;
+    var main = document.querySelector('main') || document.body;
+    var prev = wrap.querySelector('[data-strip-prev]');
+    var next = wrap.querySelector('[data-strip-next]');
     var anim = null;
 
     function bleed() {
-      /* Мерим родителя: у него нет нашего отрицательного поля, поэтому число не плывёт */
       var r = host.getBoundingClientRect();
-      var gap = Math.max(0, Math.round(window.innerWidth - r.right));
-      strip.style.setProperty('--bleed', gap + 'px');
+      /* Левая граница – НЕ край окна и не край main. Полоса разделов лежит поверх
+         страницы (position: fixed) и в раскладке места не занимает: замер по main давал
+         ноль, и карточки уезжали под меню. Считаем от правого края полосы.
+         Но только пока она СТОЛБИК: на узком экране та же полоса разворачивается в
+         горизонтальную ленту во всю ширину, и её правый край – это край окна. По нему
+         вылет получался нулевым, лента упиралась в текстовую колонку. Отличаем по форме:
+         столбик выше, чем шире. */
+      var nav = document.querySelector('.chapter-nav');
+      var safe = 0;
+      if (nav) {
+        var nr = nav.getBoundingClientRect();
+        var column = nr.height > nr.width;
+        if (nr.width > 0 && nr.height > 0 && column && getComputedStyle(nav).position === 'fixed') safe = nr.right + 10;
+      }
+      var left = Math.max(0, Math.round(r.left - Math.max(safe, main.getBoundingClientRect().left)));
+      var right = Math.max(0, Math.round(window.innerWidth - r.right));
+      wrap.style.setProperty('--bleed-l', left + 'px');
+      wrap.style.setProperty('--bleed-r', right + 'px');
     }
 
     function step() {
-      /* Шаг – 85 % видимой ширины: полный экран карточек за раз теряет ориентир,
+      /* Шаг – 85 % видимой ширины: целый экран карточек за раз теряет ориентир,
          человек не понимает, где он остановился */
       return Math.max(160, Math.round(strip.clientWidth * 0.85));
     }
@@ -67,6 +87,49 @@
 
     if (prev) prev.addEventListener('click', function () { to(strip.scrollLeft - step()); });
     if (next) next.addEventListener('click', function () { to(strip.scrollLeft + step()); });
+
+    /* ── ЛИСТАНИЕ ТЯГОЙ ─────────────────────────────────────────────────── */
+    var dragging = false, startX = 0, startLeft = 0, moved = 0, lastX = 0, lastT = 0, speed = 0;
+
+    strip.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'touch') return;      // на телефоне тянет сам браузер, и лучше
+      if (e.button !== 0) return;
+      dragging = true; moved = 0; speed = 0;
+      startX = lastX = e.clientX;
+      startLeft = strip.scrollLeft;
+      lastT = performance.now();
+      if (anim) { cancelAnimationFrame(anim); anim = null; }
+      strip.classList.add('is-dragging');
+      strip.setPointerCapture(e.pointerId);
+    });
+
+    strip.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var dx = e.clientX - startX;
+      moved = Math.max(moved, Math.abs(dx));
+      strip.scrollLeft = startLeft - dx;
+      var now = performance.now(), dt = now - lastT;
+      if (dt > 0) speed = (e.clientX - lastX) / dt;   // пикселей на миллисекунду
+      lastX = e.clientX; lastT = now;
+      e.preventDefault();
+    });
+
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      strip.classList.remove('is-dragging');
+      /* Инерция короткая и только на заметном броске: длинный выбег на ленте из карточек
+         читается как «уехало само», а не как продолжение движения руки */
+      if (Math.abs(speed) > 0.35) to(strip.scrollLeft - speed * 220);
+      else paint();
+    }
+    strip.addEventListener('pointerup', endDrag);
+    strip.addEventListener('pointercancel', endDrag);
+    strip.addEventListener('lostpointercapture', endDrag);
+    /* Клик отменяем только если рука реально уехала: иначе ссылки внутри карточек
+       перестали бы нажиматься */
+    strip.addEventListener('click', function (e) { if (moved > 6) { e.preventDefault(); e.stopPropagation(); } }, true);
+    strip.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
     var ticking = false;
     strip.addEventListener('scroll', function () {
