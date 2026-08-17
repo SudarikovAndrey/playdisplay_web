@@ -45,7 +45,11 @@
 
     function go(n) {
       n = Math.max(0, Math.min(items.length - 1, n));
-      track.scrollTo({ left: items[n].offsetLeft, behavior: 'smooth' });
+      /* Цель считаем как «номер × ширина кадра», а НЕ по offsetLeft элемента.
+         offsetLeft отсчитывается от ближайшего позиционированного предка (у нас это
+         сама галерея, а не лента), и после первой же прокрутки он показывает положение
+         кадра НА ЭКРАНЕ: стрелки жали, а лента стояла на месте. */
+      track.scrollTo({ left: n * track.clientWidth, behavior: 'smooth' });
     }
 
     function paint() {

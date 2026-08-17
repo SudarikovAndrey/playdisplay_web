@@ -1334,3 +1334,52 @@ html.deck { scroll-snap-type: y mandatory; }
   .gallery__nav { top: auto; bottom: clamp(18px, 3vh, 30px); transform: none; }
   .gallery__item::after { inset: 25% 0 0 0; }
 }
+
+/* КНОПКА «ВО ВЕСЬ ЭКРАН». Стоит рядом с кнопкой «в начало» и выглядит так же:
+   две кнопки в одном углу должны читаться как пара, а не как случайные элементы.
+   Показывается всегда – в отличие от «в начало», она нужна с первого экрана. */
+.to-full {
+  position: fixed;
+  right: clamp(14px, 2vw, 28px);
+  bottom: calc(clamp(14px, 2vw, 28px) + 52px);
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  border: 1px solid rgba(159, 180, 200, .28);
+  background: rgba(6, 8, 12, .72);
+  backdrop-filter: blur(10px);
+  color: var(--muted);
+  font: 500 10px/1 "Roboto Mono", monospace;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease;
+}
+.to-full:hover { color: var(--paper); border-color: rgba(159, 180, 200, .55); }
+.to-full i { display: block; width: 13px; height: 13px; border: 1px solid currentColor; border-radius: 2px; position: relative; }
+.to-full i::after { content: ""; position: absolute; inset: 3px; border: 1px solid currentColor; opacity: .5; }
+.to-full.is-on i::after { inset: 4px; opacity: 1; }
+@media (max-width: 680px) { .to-full span { display: none; } .to-full { padding: 13px; } }
+@media print { .to-full { display: none; } }
+
+/* ПЛИТКИ ПЛОЩАДОК. Ряд мелких плашек читался как служебная строка; здесь это
+   призыв «скачай и посмотри сам», поэтому знаки крупные, глиф в свою строку,
+   название под ним. Плитка – цель для пальца и для курсора одинаково. */
+.stores--tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 10px; width: min(100%, 780px); }
+.stores--tiles li { padding: 0; border-radius: 4px; }
+.stores--tiles a {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 20px 12px 16px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 12.5px;
+  letter-spacing: .06em;
+}
+.stores--tiles svg { width: 34px; height: 34px; }
+.stores--tiles a::after { content: "Скачать ↗"; color: var(--muted); font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; }
+.stores--tiles li:not(:has(a)) { display: grid; justify-items: center; gap: 10px; padding: 20px 12px 16px; font-size: 12.5px; }
+@media (max-width: 680px) { .stores--tiles { grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); } .stores--tiles svg { width: 26px; height: 26px; } }
