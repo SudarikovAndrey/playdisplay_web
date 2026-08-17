@@ -88,7 +88,22 @@
     }
 
     var ticking = false;
+    /* ФИКСАЦИЯ КАДРА ПОСЛЕ СВАЙПА. Прилипание у ленты нарочно нежёсткое (proximity) –
+       жёсткое ломает нашу плавную прокрутку от стрелок. Расплата: короткий свайп
+       оставляет ленту МЕЖДУ кадрами, и она там застревает. Поэтому доводим сами: как
+       только человек перестал двигать ленту, идём к ближайшему кадру.
+       Порог в 2 px обязателен – иначе доводка срабатывает на собственном приезде и
+       начинает гоняться сама за собой. */
+    var settleTimer = null;
+    function settle() {
+      if (anim) return;                       // своя анимация ещё идёт – не мешаем
+      var w = track.clientWidth || 1;
+      var target = Math.round(track.scrollLeft / w) * w;
+      if (Math.abs(target - track.scrollLeft) > 2) go(Math.round(target / w));
+    }
     track.addEventListener('scroll', function () {
+      if (settleTimer) clearTimeout(settleTimer);
+      settleTimer = setTimeout(settle, 140);
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(function () { ticking = false; paint(); });

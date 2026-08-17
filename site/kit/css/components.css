@@ -1418,15 +1418,29 @@ html.deck { scroll-snap-type: y mandatory; }
 .gallery__facts span { color: #cfd3da; font-size: clamp(11.5px, .88vw, 13.5px); line-height: 1.38; text-shadow: 0 1px 14px rgba(0,0,0,.7); }
 @media (max-width: 720px) { .gallery__facts { grid-template-columns: 1fr; gap: 8px; } .gallery__facts li { padding-top: 6px; } }
 
-/* ── КУРСОР ОСВЕЩАЕТ КАДР (js/spotlight.js) ───────────────────────────────
-   Затемнение кадра нужно для читаемости подписей, но кадр от него глохнет. Пятно света
-   под курсором возвращает ему глубину: человек сам наводит фонарь и разглядывает.
-   ОСВЕТЛЯЕТ НЕ НАКЛАДКА, А ВТОРАЯ КОПИЯ КАДРА с поднятой яркостью, проявленная сквозь
-   маску. Белая полупрозрачная накладка поднимала бы и тени — кадр становится молочным,
-   а подписи выцветают. У копии тени остаются тенями, а свет фар и блики разгораются
-   сами: у ярких пикселей запас яркости больше.
-   Размер пятна согласован с синим пятном курсора страницы (.cursor-glow, min(46vw,640px)),
-   чтобы на экране был один источник света, а не два разных. */
+/* ── КУРСОР СНИМАЕТ ЗАТЕМНЕНИЕ (js/spotlight.js) ──────────────────────────
+   ГЛАВНОЕ ДЕЙСТВИЕ — НЕ ЗАСВЕТКА, А ДЫРА В ЗАТЕМНЕНИИ. Кадр приглушён ради читаемости
+   подписей; под курсором это приглушение снимается, и человек видит кадр таким, какой он
+   есть. Осветлять поверх было бы неправдой: свет добавляется там, где его в кадре нет.
+   Дыра пробивается маской у самого слоя затемнения: в центре маска прозрачна, к краю
+   становится плотной, поэтому затемнение остаётся везде, кроме пятна под курсором.
+   Глубину дыры задаёт та же сила --lit-k, что и у подсветки.
+
+   Вторым слоем — слабая засветка осветлённой копией кадра. Она нужна ровно для одного:
+   свет фар и блики при снятом затемнении разгораются, а тени остаются тенями. Сила у неё
+   вполовину меньше, чем у дыры: ведущее действие — снятие приглушения.
+   Размер пятна согласован с синим пятном курсора страницы (.cursor-glow). */
+.gallery__item[data-spotlight] { --lit-r: min(23vw, 320px); }
+.gallery__item[data-spotlight]::after {
+  -webkit-mask-image: radial-gradient(circle var(--lit-r) at var(--mx, 50%) var(--my, 50%),
+                      rgba(0,0,0, calc(1 - var(--lit-k, 0))) 0%,
+                      rgba(0,0,0, calc(1 - var(--lit-k, 0) * .58)) 44%,
+                      #000 84%);
+  mask-image: radial-gradient(circle var(--lit-r) at var(--mx, 50%) var(--my, 50%),
+              rgba(0,0,0, calc(1 - var(--lit-k, 0))) 0%,
+              rgba(0,0,0, calc(1 - var(--lit-k, 0) * .58)) 44%,
+              #000 84%);
+}
 .gallery__lit {
   position: absolute;
   inset: 0;
@@ -1435,11 +1449,10 @@ html.deck { scroll-snap-type: y mandatory; }
   height: 100%;
   object-fit: cover;
   pointer-events: none;
-  opacity: var(--lit-k, 0);
-  filter: brightness(1.62) saturate(1.06) contrast(1.02);
+  opacity: calc(var(--lit-k, 0) * .5);
+  filter: brightness(1.34) saturate(1.04);
   /* Маска – радиальный градиент, а не clip-path: у clip-path край всегда резкий.
      Три ступени, а не две: на двух пятно читается как круглая заплатка. */
-  --lit-r: min(23vw, 320px);
   -webkit-mask-image: radial-gradient(circle var(--lit-r) at var(--mx, 50%) var(--my, 50%),
                       #000 0%, rgba(0,0,0,.72) 38%, rgba(0,0,0,.28) 66%, transparent 100%);
   mask-image: radial-gradient(circle var(--lit-r) at var(--mx, 50%) var(--my, 50%),
@@ -1828,41 +1841,83 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    съедало то самое светлое пятно под колёсами. */
 .gallery__item--stage::after { display: none; }
 .gallery__item--stage .stages { position: absolute; inset: 0; display: block; }
+/* Машина стоит ПОСЕРЕДИНЕ кадра и крупно: это главный предмет экрана, а не иллюстрация
+   к тексту. Панель сборок уходит под неё, подпись — под панель. */
 .gallery__item--stage .stages__stage {
   position: absolute;
-  right: 4%;
-  top: 6%;
-  height: 50%;
+  left: 50%;
+  top: 4%;
+  height: 60%;
   width: auto;
   margin: 0;
+  transform: translateX(-50%);
 }
-/* Текст кадра здесь УЖЕ обычного: справа стоят машина, панель сборок и подпись, и
-   стандартная колонка в 760 px заезжала под них (замер: перекрытие по горизонтали
-   157 px, по вертикали текст доходил до панели). */
-.gallery__item--stage .gallery__copy { right: auto; width: min(42%, 500px); max-width: none; }
 .gallery__item--stage .stages__switch {
   position: absolute;
-  right: 4%;
-  top: 68%;
+  left: 50%;
+  top: 66%;
+  transform: translateX(-50%);
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: flex-end;
-  max-width: 54%;
+  justify-content: center;
+  max-width: 86%;
   z-index: 2;
 }
 .gallery__item--stage .stages__note {
   position: absolute;
-  right: 4%;
-  top: 84%;
-  max-width: 46%;
+  left: 50%;
+  top: 74%;
+  transform: translateX(-50%);
+  max-width: 52%;
   min-height: 0;
-  text-align: right;
+  text-align: center;
   font-size: clamp(12px, .95vw, 14.5px);
   z-index: 2;
 }
+/* Текст кадра здесь без заголовка и УЖЕ обычного: посередине стоит машина, и колонка в
+   760 px заезжала бы под панель сборок. */
+.gallery__item--stage .gallery__copy { right: auto; width: min(42%, 500px); max-width: none; }
+
+/* ── ВОЛНА СВЕТА ПО КУЗОВУ ПРИ СМЕНЕ СБОРКИ ───────────────────────────────
+   Смена деталей должна ощущаться как событие. Волна идёт ПО СИЛУЭТУ МАШИНЫ, а не по
+   прямоугольнику кадра: маской служит сама картинка сборки (её альфа), поэтому свет
+   бежит по кузову и не задевает фон. Адрес картинки подставляет скрипт.
+   mask-size: contain и центр — ровно так же выведена сама машина (object-fit: contain),
+   поэтому маска совпадает с ней пиксель в пиксель при любом размере кадра. */
+.stages__wave {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(104deg,
+              transparent 38%, rgba(255,255,255,.10) 46%, rgba(255,255,255,.62) 50%,
+              rgba(255,255,255,.10) 54%, transparent 62%);
+  background-size: 260% 100%;
+  background-repeat: no-repeat;
+  -webkit-mask-image: var(--car, none);
+  mask-image: var(--car, none);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.stages__wave.is-running { animation: stage-wave .62s cubic-bezier(.32,.06,.32,1) 1; }
+@keyframes stage-wave {
+  0%   { opacity: 0;  background-position-x: 118%; }
+  18%  { opacity: 1; }
+  82%  { opacity: 1; }
+  100% { opacity: 0;  background-position-x: -42%; }
+}
+@media (prefers-reduced-motion: reduce) { .stages__wave { display: none; } }
+
 @media (max-width: 900px) {
-  /* На узком экране машина уходит наверх, панель под неё, текст кадра остаётся внизу */
-  .gallery__item--stage .stages__stage { right: auto; left: 50%; transform: translateX(-50%); top: 7%; height: 34%; }
-  .gallery__item--stage .stages__switch { right: auto; left: 50%; transform: translateX(-50%); top: 44%; max-width: 92%; justify-content: center; }
-  .gallery__item--stage .stages__note { right: auto; left: 50%; transform: translateX(-50%); top: 60%; max-width: 88%; text-align: center; }
+  /* На узком экране машина мельче, панель и подпись поднимаются: внизу остаётся место
+     под текст кадра, который на телефоне занимает больше высоты */
+  .gallery__item--stage .stages__stage { top: 6%; height: 34%; }
+  .gallery__item--stage .stages__switch { top: 42%; max-width: 94%; }
+  .gallery__item--stage .stages__note { top: 55%; max-width: 90%; }
+  .gallery__item--stage .gallery__copy { width: auto; right: clamp(20px, 4vw, 64px); }
 }

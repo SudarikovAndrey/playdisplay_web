@@ -28,6 +28,7 @@
        своим текстом. Атрибуты у данных и у места вывода обязаны различаться. */
     var note = root.querySelector('[data-stage-caption]');
     var shadow = root.querySelector('.stages__shadow');
+    var wave = root.querySelector('.stages__wave');
     if (!cars.length || !buttons.length) return;
 
     // Доля ширины кадра, которую занимает пятно контакта. Из замера альфы: у стока
@@ -43,13 +44,27 @@
          в фоновой вкладке браузер не обновляет отрисовку, и наблюдатель молчит. Тогда
          нажатие показывало бы пустое место. Один лишний вызов setAttribute дешевле
          сломанного переключателя. */
-      var want = cars[n].getAttribute('data-src');
+      var want = cars[n].getAttribute('data-src') || cars[n].getAttribute('src');
       if (want && !cars[n].getAttribute('src')) cars[n].setAttribute('src', want);
       for (var i = 0; i < cars.length; i++) cars[i].classList.toggle('is-on', i === n);
       for (var j = 0; j < buttons.length; j++) buttons[j].setAttribute('aria-pressed', j === n ? 'true' : 'false');
       /* setProperty ждёт СТРОКУ: число уходило в пустоту молча, и тень не менялась. */
       if (shadow) shadow.style.setProperty('--shadow-w', String(WIDTH[n] || 0.7));
       if (note) note.textContent = buttons[n].getAttribute('data-stage-note') || '';
+      /* ВОЛНА СВЕТА ПО КУЗОВУ. Маской служит сама картинка новой сборки, поэтому свет
+         бежит по силуэту машины, а не по прямоугольнику кадра.
+         Класс снимается и ставится заново с принудительным чтением offsetWidth: без него
+         браузер не считает это новой анимацией, и при быстрых нажатиях волна проходила
+         один раз, а дальше не показывалась вовсе. */
+      if (wave && want !== null) {
+        var url = cars[n].getAttribute('src') || want;
+        if (url) {
+          wave.style.setProperty('--car', 'url("' + url + '")');
+          wave.classList.remove('is-running');
+          void wave.offsetWidth;
+          wave.classList.add('is-running');
+        }
+      }
     }
 
     for (var i = 0; i < buttons.length; i++) {
