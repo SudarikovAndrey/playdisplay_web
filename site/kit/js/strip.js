@@ -172,7 +172,10 @@
       lastT = performance.now();
       if (anim) { cancelAnimationFrame(anim); anim = null; }
       strip.classList.add('is-dragging');
-      strip.setPointerCapture(e.pointerId);
+      /* Захват указателя в try: браузер отказывает, если указателя с таким номером уже
+         нет (так падали синтетические события в проверках). Тяга без захвата работает
+         хуже — теряется за пределами ленты, — но падать на первом же нажатии нельзя. */
+      try { strip.setPointerCapture(e.pointerId); } catch (err) { /* пусть тянет без захвата */ }
     });
 
     strip.addEventListener('pointermove', function (e) {

@@ -1724,3 +1724,82 @@ html.deck { scroll-snap-type: y mandatory; }
    лежит вне main и точкой привязки не был, поэтому жёсткое прилипание тянуло страницу
    обратно к последнему слайду, и до контактов нельзя было доскроллить. */
 html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
+
+/* ═══ ПЯТЬ СБОРОК ОДНОЙ МАШИНЫ (js/stages.js) ═════════════════════════════════
+   Показывает прокачку так, как её видит игрок: одна и та же машина, пять состояний,
+   переключаются кнопками. Кадры — вырезанные рендеры на прозрачном фоне.
+
+   КАДРЫ УЖЕ СВЕДЕНЫ ПО ЗЕМЛЕ. У всех пяти низ колёс приходится на 97,2 % высоты кадра
+   (замерено по альфе), поэтому тень — ОДИН элемент на общей линии, а не своя у каждой
+   сборки. Если придут новые кадры с другой линией земли, замер надо повторить: тень
+   поедет, и это будет видно сразу.
+
+   ТЕНЬ ЖЁСТКАЯ, и это не экономия на размытии. У игры изометрия с резким солнцем: мягкая
+   тень читалась бы как ошибка рендера, а не как земля под машиной. Небольшое размытие
+   есть только по краю, чтобы кромка не выглядела вырезанной ножницами. */
+/* ДВЕ КОЛОНКИ: машина и панель сборок рядом, как в гараже. Столбиком не влезает —
+   замер: слайд вылезал за экран на 264 px. И высоту задаёт ВЫСОТА, а не ширина: в режиме
+   слайдов дефицитна именно она, а ширину досчитает пропорция кадра. */
+.stages { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: clamp(14px, 2vw, 32px); }
+.stages__stage {
+  position: relative;
+  aspect-ratio: 1200 / 943;
+  height: clamp(190px, 44vh, 430px);
+  width: auto;
+  margin: 0 auto;
+}
+.stages__car {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  /* Смена сборки – это установка деталей, а не проявка фотографии: кадры сменяются
+     быстро и без сдвига. Долгий кроссфейд превращал две машины в одну размазанную. */
+  transition: opacity .22s ease;
+}
+.stages__car.is-on { opacity: 1; }
+.stages__shadow {
+  position: absolute;
+  left: 50%;
+  /* Линия земли: 97,2 % высоты кадра, из замера альфы */
+  top: 97.2%;
+  z-index: -1;
+  width: calc(var(--shadow-w, .7) * 100%);
+  height: 4.6%;
+  transform: translate(-50%, -62%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0,0,0,.72) 0 72%, rgba(0,0,0,.5) 86%, transparent 100%);
+  filter: blur(2px);
+  transition: width .22s ease;
+}
+.stages__switch { display: flex; flex-direction: column; gap: 8px; }
+.stages__switch button {
+  display: grid;
+  gap: 3px;
+  padding: 9px 15px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--glass);
+  color: var(--paper);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.stages__switch button:hover { border-color: rgba(255,255,255,.5); transform: translateY(-1px); }
+.stages__switch b { font: 600 13px/1.1 Oswald, "Arial Narrow", sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.stages__switch i { font: 500 9.5px/1 "Roboto Mono", monospace; font-style: normal; letter-spacing: .14em; color: var(--muted); }
+.stages__switch button[aria-pressed="true"] {
+  border-color: var(--electric);
+  background: rgba(226,105,75,.16);
+}
+.stages__switch button[aria-pressed="true"] i { color: var(--electric); }
+.stages__note { grid-column: 1 / -1; margin: 0; color: #cdc7bb; font-size: clamp(13.5px, 1.05vw, 16px); line-height: 1.45; min-height: 2.9em; }
+@media (max-width: 760px) {
+  /* На узком экране панель уходит под машину и раскладывается в строку */
+  .stages { grid-template-columns: minmax(0, 1fr); }
+  .stages__switch { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .stages__switch button { padding: 8px 11px; }
+  .stages__switch b { font-size: 12px; }
+  .stages__note { text-align: center; }
+}

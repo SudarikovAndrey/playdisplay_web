@@ -1,0 +1,93 @@
+/* ПЯТЬ СБОРОК ОДНОЙ МАШИНЫ: переключение кнопками.
+ *
+ * Зачем блок: прокачку нельзя объяснить словами так, как показывает один взгляд —
+ * одна и та же машина в пяти состояниях, и человек сам щёлкает по ним туда-обратно.
+ *
+ * Что здесь важно и проверено:
+ *
+ *  • КАДРЫ ГРУЗЯТСЯ ЗАРАНЕЕ. Без этого первое переключение показывает пустое место:
+ *    кадр весит сотню килобайт, а смена идёт за 0,22 с. Предзагрузка запускается, когда
+ *    блок попал в кадр, а не при загрузке страницы: в презентации двадцать экранов, и
+ *    тянуть полмегабайта заранее ради слайда, до которого могут не дойти, незачем.
+ *
+ *  • ТЕНЬ ШИРЕ У ТЯЖЁЛЫХ СБОРОК. Мелочь, но именно она делает переключение физическим:
+ *    у «Легенды» колёса шире, чем у «Стока», и пятно контакта обязано это показать.
+ *    Числа взяты замером габарита по альфе каждого кадра, а не на глаз.
+ *
+ *  • Кнопки — настоящие <button> с aria-pressed, и переключение работает стрелками:
+ *    это ряд из пяти состояний одного предмета, по нему естественно ходить с клавиатуры.
+ */
+(function () {
+  'use strict';
+
+  function setup(root) {
+    var cars = root.querySelectorAll('[data-stage-car]');
+    var buttons = root.querySelectorAll('[data-stage]');
+    /* ПОДПИСЬ ИЩЕМ ПО СВОЕМУ АТРИБУТУ. Сначала и у кнопок, и у подписи стоял один
+       data-stage-note: querySelector находил первую КНОПКУ, и show() затирал её разметку
+       своим текстом. Атрибуты у данных и у места вывода обязаны различаться. */
+    var note = root.querySelector('[data-stage-caption]');
+    var shadow = root.querySelector('.stages__shadow');
+    if (!cars.length || !buttons.length) return;
+
+    // Доля ширины кадра, которую занимает пятно контакта. Из замера альфы: у стока
+    // колёса стоят уже, у экспедиционных сборок шире.
+    var WIDTH = [0.62, 0.66, 0.70, 0.73, 0.74];
+    var current = 0;
+
+    function show(n) {
+      n = Math.max(0, Math.min(cars.length - 1, n));
+      current = n;
+      /* Кадр запрошенной сборки подставляем ЗДЕСЬ, а не только в предзагрузке. Предзагрузка
+         висит на появлении блока в кадре, а это событие может не прийти вовсе — например
+         в фоновой вкладке браузер не обновляет отрисовку, и наблюдатель молчит. Тогда
+         нажатие показывало бы пустое место. Один лишний вызов setAttribute дешевле
+         сломанного переключателя. */
+      var want = cars[n].getAttribute('data-src');
+      if (want && !cars[n].getAttribute('src')) cars[n].setAttribute('src', want);
+      for (var i = 0; i < cars.length; i++) cars[i].classList.toggle('is-on', i === n);
+      for (var j = 0; j < buttons.length; j++) buttons[j].setAttribute('aria-pressed', j === n ? 'true' : 'false');
+      /* setProperty ждёт СТРОКУ: число уходило в пустоту молча, и тень не менялась. */
+      if (shadow) shadow.style.setProperty('--shadow-w', String(WIDTH[n] || 0.7));
+      if (note) note.textContent = buttons[n].getAttribute('data-stage-note') || '';
+    }
+
+    for (var i = 0; i < buttons.length; i++) {
+      (function (n) {
+        buttons[n].addEventListener('click', function () { show(n); });
+        buttons[n].addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowRight') { e.preventDefault(); show(current + 1); buttons[Math.min(buttons.length - 1, current)].focus(); }
+          if (e.key === 'ArrowLeft') { e.preventDefault(); show(current - 1); buttons[Math.max(0, current)].focus(); }
+        });
+      })(i);
+    }
+
+    /* Предзагрузка по появлению блока в кадре: рано — лишние полмегабайта, поздно —
+       первое переключение покажет пустое место. */
+    function preload() {
+      for (var i = 0; i < cars.length; i++) {
+        var src = cars[i].getAttribute('data-src');
+        if (src && !cars[i].getAttribute('src')) cars[i].setAttribute('src', src);
+      }
+    }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) {
+        if (es[0].isIntersecting) { preload(); io.disconnect(); }
+      }, { rootMargin: '600px' });
+      io.observe(root);
+    } else {
+      preload();
+    }
+
+    show(0);
+  }
+
+  function init(scope) {
+    var list = (scope || document).querySelectorAll('[data-stages]');
+    for (var i = 0; i < list.length; i++) setup(list[i]);
+  }
+
+  window.kitStages = init;
+  if (document.readyState !== 'loading') init(document);
+  else addEventListener('DOMContentLoaded', function () { init(document); });
+})();
