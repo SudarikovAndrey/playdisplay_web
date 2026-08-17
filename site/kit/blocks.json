@@ -612,6 +612,32 @@
       "inCatalog": true
     },
     {
+      "id": "gallery",
+      "group": "content",
+      "title": "Полноэкранная галерея с листанием",
+      "what": "Рассказ из нескольких кадров на ОДНОМ экране слайда: листается стрелками, точками, клавишами и пальцем. Нужна, когда пять кадров про одно не должны занимать пять экранов прокрутки.",
+      "css": [
+        "components.css"
+      ],
+      "js": [
+        "gallery.js"
+      ],
+      "markup": "<section class=\"slide slide--gallery\"><div class=\"slide-shell\"><div class=\"gallery\" data-gallery><p class=\"gallery__label\"><span>ИМЯ</span><img src=\"знак.png\" alt=\"\"></p><div class=\"gallery__track\" data-gallery-track><figure class=\"gallery__item\"><img src=\"кадр.jpg\" alt=\"\" style=\"object-position:50% 38%\"><div class=\"gallery__copy\"><p class=\"overline\">Тема · 01 / 05</p><h2>Заголовок</h2><p>Текст</p></div></figure>…</div><button class=\"gallery__nav gallery__nav--prev\" data-gallery-prev>‹</button><button class=\"gallery__nav gallery__nav--next\" data-gallery-next>›</button><div class=\"gallery__pager\"><div class=\"gallery__dots\" data-gallery-dots></div><span class=\"gallery__counter\" data-gallery-counter>01 / 05</span></div></div></div></section>",
+      "options": [
+        "gallery__label – общее имя галереи со знаком в верхнем углу",
+        "object-position на каждом кадре – своя точка обрезки"
+      ],
+      "traps": [
+        "КАРТИНКА ВАЖНЕЕ ТЕКСТА: подпись не кладётся плашкой поверх кадра (закрывала лицо героя на первой сборке), а уходит в нижнюю полосу с растяжкой затемнения от нижнего края.",
+        "Прилипание ленты – proximity, а НЕ mandatory: при жёстком прилипании плавная прокрутка от стрелок гасится на первом же кадре, scrollLeft оставался нулём и галерея не листалась вовсе.",
+        "Листаем СВОИМ циклом, а не behavior:'smooth': страница в режиме слайдов гасит вложенную плавную прокрутку.",
+        "Цель считаем как «номер × ширина кадра». offsetLeft отсчитывается от ближайшего позиционированного предка (это сама галерея, а не лента) и после первой прокрутки показывает положение кадра НА ЭКРАНЕ.",
+        "overflow-anchor: none обязателен: браузер придерживал содержимое и возвращал ленту в ноль – первый щелчок по стрелке не срабатывал, второй работал.",
+        "Клавиши работают только когда галерея в кадре, иначе она крадёт стрелки у страницы.",
+        "Отступ метки gallery__label считается ОТ ШАПКИ, а не от края кадра: шапка зафиксирована поверх страницы (78 px на широком экране), и метка в 20 px от верха ложилась бы прямо на логотип студии."
+      ]
+    },
+    {
       "id": "final-credits",
       "title": "Финал с портретом",
       "what": "Последний экран: портрет, роль, имя и служебная метка.",

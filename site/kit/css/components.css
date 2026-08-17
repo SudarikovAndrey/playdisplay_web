@@ -1314,6 +1314,37 @@ html.deck { scroll-snap-type: y mandatory; }
   text-shadow: 0 1px 18px rgba(0,0,0,.6);
 }
 
+/* ОБЩЕЕ ИМЯ ГАЛЕРЕИ в верхнем углу. У каждого кадра есть своя подпись, но у остановки
+   целиком имени не было – и пять кадров читались как пять несвязанных тем.
+   Стоит СВЕРХУ, потому что весь низ кадра занят затемнением, подписями и точками.
+   Своя тёмная подложка обязательна: верх кадра ничем не затемнён, и на светлом небе
+   или белой стене надпись пропадала бы.
+   Отступ сверху считается от ШАПКИ, а не от края: шапка зафиксирована поверх страницы
+   (78 px на широком экране), и метка, поставленная в 20 px от верха, ложилась бы прямо
+   на логотип студии. */
+.gallery__label {
+  position: absolute;
+  z-index: 3;
+  margin: 0;
+  top: clamp(84px, 10vh, 104px);
+  left: clamp(20px, 4vw, 64px);
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.1vw, 15px);
+  padding: 8px 15px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 3px;
+  background: rgba(10,10,11,.5);
+  backdrop-filter: blur(10px);
+}
+.gallery__label span {
+  color: var(--paper);
+  font: 600 clamp(10.5px, .9vw, 12.5px)/1 "Roboto Mono", monospace;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.gallery__label img { display: block; width: auto; height: clamp(16px, 1.8vw, 24px); }
+
 /* Стрелки по бокам: крупные зоны нажатия, но visually тихие – кадр важнее */
 .gallery__nav {
   position: absolute;
