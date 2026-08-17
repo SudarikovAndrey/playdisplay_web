@@ -263,7 +263,10 @@ cmd_init() {
   Из папки спутника:
       cd "$SHARE_DIR"
       gh repo create $REPO_NAME --private --source=. --push
-      gh repo add-collaborator $REPO_NAME <ник-партнёра> --permission push
+
+  Пригласить партнёра. Подкоманды add-collaborator у gh НЕТ (проверено на 2.92) —
+  приглашение отправляется через api:
+      gh api -X PUT repos/<ваш-ник>/$REPO_NAME/collaborators/<ник-партнёра> -f permission=push
 
   Дальше партнёру нужна одна команда:
       git clone https://github.com/<ваш-ник>/$REPO_NAME.git
