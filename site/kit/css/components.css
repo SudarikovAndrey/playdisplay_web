@@ -1415,6 +1415,39 @@ html.deck { scroll-snap-type: y mandatory; }
 .gallery__facts span { color: #cfd3da; font-size: clamp(11.5px, .88vw, 13.5px); line-height: 1.38; text-shadow: 0 1px 14px rgba(0,0,0,.7); }
 @media (max-width: 720px) { .gallery__facts { grid-template-columns: 1fr; gap: 8px; } .gallery__facts li { padding-top: 6px; } }
 
+/* ── КУРСОР ОСВЕЩАЕТ КАДР (js/spotlight.js) ───────────────────────────────
+   Затемнение кадра нужно для читаемости подписей, но кадр от него глохнет. Пятно света
+   под курсором возвращает ему глубину: человек сам наводит фонарь и разглядывает.
+   ОСВЕТЛЯЕТ НЕ НАКЛАДКА, А ВТОРАЯ КОПИЯ КАДРА с поднятой яркостью, проявленная сквозь
+   маску. Белая полупрозрачная накладка поднимала бы и тени — кадр становится молочным,
+   а подписи выцветают. У копии тени остаются тенями, а свет фар и блики разгораются
+   сами: у ярких пикселей запас яркости больше.
+   Размер пятна согласован с синим пятном курсора страницы (.cursor-glow, min(46vw,640px)),
+   чтобы на экране был один источник света, а не два разных. */
+.gallery__lit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;                 /* над базовым кадром, ПОД затемнением и подписями */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  opacity: var(--lit-k, 0);
+  filter: brightness(1.62) saturate(1.06) contrast(1.02);
+  /* Маска – радиальный градиент, а не clip-path: у clip-path край всегда резкий.
+     Три ступени, а не две: на двух пятно читается как круглая заплатка. */
+  --lit-r: min(23vw, 320px);
+  -webkit-mask-image: radial-gradient(circle var(--lit-r) at var(--mx, 50%) var(--my, 50%),
+                      #000 0%, rgba(0,0,0,.72) 38%, rgba(0,0,0,.28) 66%, transparent 100%);
+  mask-image: radial-gradient(circle var(--lit-r) at var(--mx, 50%) var(--my, 50%),
+              #000 0%, rgba(0,0,0,.72) 38%, rgba(0,0,0,.28) 66%, transparent 100%);
+  transition: opacity .3s ease;
+}
+/* Затемнение и подписи остаются НАД светом: иначе пятно засвечивало бы текст,
+   ради читаемости которого затемнение и сделано. */
+.gallery__item::after { z-index: 1; }
+.gallery__copy { z-index: 2; }
+
 /* Стрелки по бокам: крупные зоны нажатия, но visually тихие – кадр важнее */
 .gallery__nav {
   position: absolute;
