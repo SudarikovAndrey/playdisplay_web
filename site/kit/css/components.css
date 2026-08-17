@@ -1530,7 +1530,10 @@ html.deck { scroll-snap-type: y mandatory; }
    против асфальта разделяет их без единой разделительной линии.
    Цвета текста здесь заданы явно и с запасом по контрасту: базовые правила ленты
    рассчитаны на тёмный фон, и светло-серый текст на бумаге пропадал бы. */
-.reviews--light .review { border-color: rgba(23,20,15,.16); background: #ece5d8; }
+/* Тень у бумажной карточки – единственное украшение, которое здесь заработано: без неё
+   светлые прямоугольники лежат В асфальте, а не НА нём, и поворот краёв читается как
+   ошибка отрисовки, а не как повёрнутый предмет. */
+.reviews--light .review { border-color: rgba(23,20,15,.16); background: #ece5d8; box-shadow: 0 10px 22px rgba(0,0,0,.42); }
 .reviews--light .review b { color: #17140f; }
 .slide .reviews--light .review p,
 .reviews--light .review p { color: #4a4438; }
@@ -1562,18 +1565,41 @@ html.deck { scroll-snap-type: y mandatory; }
   margin-left: calc(-1 * var(--bleed-l, 0px));
   margin-right: calc(-1 * var(--bleed-r, 0px));
 }
-/* Крайние карточки растворяются – так видно, что лента продолжается за краем.
-   Маска, а не градиентная накладка: накладка перехватывала бы курсор и мешала тянуть. */
+/* КАРТОЧКИ КАК ФИЗИЧЕСКАЯ КОЛОДА.
+   Первая сборка гасила края маской – и это была ошибка по смыслу: маска стоит на месте,
+   а карточки едут, поэтому при нулевой прокрутке первая карточка (самая важная, с
+   просьбой про машины) была растворена наполовину, хотя никуда не уехала.
+   Теперь работает не маска, а сама карточка: пока она видна целиком – стоит ровно и в
+   полном цвете; как только край ленты начинает её резать, она ОТВОРАЧИВАЕТСЯ в глубину,
+   темнеет и уходит из фокуса. Читается как стопка карточек, которую листают, а не как
+   список под дымкой. Углы считает скрипт по доле обрезки (js/strip.js).
+   Перспектива живёт на самой ленте: без неё поворот по Y – это просто сжатие по ширине. */
 .strip-wrap > [data-strip] {
-  --fade: clamp(40px, 7vw, 110px);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  perspective: 1500px;
+  perspective-origin: 50% 45%;
+  cursor: grab;
 }
-/* Лента тянется курсором (js/strip.js). Курсор-рука обязателен: без него человек
-   не пробует тащить, а колесо на этом месте крутит страницу. */
-.strip-wrap > [data-strip] { cursor: grab; }
+.strip-wrap > [data-strip] .review {
+  transform-origin: 50% 50%;
+  /* Плавность нужна ТОЛЬКО когда карточку двигает не рука: во время тяги и прокрутки
+     скрипт ставит новое положение каждый кадр, и переход превратил бы точное движение
+     в вязкое запаздывание. */
+  transition: filter .28s ease, box-shadow .28s ease, border-color .2s ease;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+}
+/* НА ВРЕМЯ ТЯГИ ПРИЛИПАНИЕ СНИМАЕТСЯ, и это не удобство, а условие работы: при
+   включённом прилипании браузер сам подтягивает ленту к ближайшей карточке на каждое
+   изменение scrollLeft. Замер показывал ступени вместо движения – угол поворота шёл
+   0°, 0°, 0°, 26°, 26° вместо плавного роста, и колода дёргалась под рукой. */
 .strip-wrap > [data-strip].is-dragging { cursor: grabbing; scroll-snap-type: none; }
-.strip-wrap > [data-strip].is-dragging .review { transform: none; }
+/* Отклик на курсор без масштаба: масштаб спорил бы с поворотом, который каждый кадр
+   ставит скрипт. Поднимаем не размером, а светом и тенью. */
+.reviews--light .review:hover { box-shadow: 0 18px 38px rgba(0,0,0,.5); border-color: rgba(23,20,15,.42); }
+@media (prefers-reduced-motion: reduce) {
+  .strip-wrap > [data-strip] { perspective: none; }
+  .strip-wrap > [data-strip] .review { transform: none !important; }
+}
 
 .strip-arrow {
   position: absolute;
@@ -1594,7 +1620,9 @@ html.deck { scroll-snap-type: y mandatory; }
   transition: background .18s ease, border-color .18s ease, opacity .18s ease, transform .18s ease;
 }
 .strip-arrow:hover { background: var(--ultra, #c0432f); border-color: #fff; transform: translateY(-50%) scale(1.06); }
-.strip-arrow[disabled] { opacity: .2; cursor: default; }
+/* В конце ленты стрелка УХОДИТ СОВСЕМ, а не тускнеет: полупрозрачный круг поверх
+   карточки читался как мусор на кадре, а не как выключенная кнопка. */
+.strip-arrow[disabled] { opacity: 0; pointer-events: none; }
 .strip-arrow--prev { left: 12px; }
 .strip-arrow--next { right: 12px; }
 @media (max-width: 680px) { .strip-arrow { width: 38px; height: 38px; font-size: 17px; } }
