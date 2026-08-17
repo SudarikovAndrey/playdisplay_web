@@ -625,7 +625,8 @@
       "markup": "<section class=\"slide slide--gallery\"><div class=\"slide-shell\"><div class=\"gallery\" data-gallery><p class=\"gallery__label\"><span>ИМЯ</span><img src=\"знак.png\" alt=\"\"></p><div class=\"gallery__track\" data-gallery-track><figure class=\"gallery__item\"><img src=\"кадр.jpg\" alt=\"\" style=\"object-position:50% 38%\"><div class=\"gallery__copy\"><p class=\"overline\">Тема · 01 / 05</p><h2>Заголовок</h2><p>Текст</p></div></figure>…</div><button class=\"gallery__nav gallery__nav--prev\" data-gallery-prev>‹</button><button class=\"gallery__nav gallery__nav--next\" data-gallery-next>›</button><div class=\"gallery__pager\"><div class=\"gallery__dots\" data-gallery-dots></div><span class=\"gallery__counter\" data-gallery-counter>01 / 05</span></div></div></div></section>",
       "options": [
         "gallery__label – общее имя галереи со знаком в верхнем углу",
-        "object-position на каждом кадре – своя точка обрезки"
+        "object-position на каждом кадре – своя точка обрезки",
+        "gallery__facts – три довода строкой под текстом кадра"
       ],
       "traps": [
         "КАРТИНКА ВАЖНЕЕ ТЕКСТА: подпись не кладётся плашкой поверх кадра (закрывала лицо героя на первой сборке), а уходит в нижнюю полосу с растяжкой затемнения от нижнего края.",
@@ -905,12 +906,14 @@
       "options": [
         "collection-diagram--tight – плитка цифр в полтора раза ниже",
         "reviews--tight – карточки отзывов ниже, текст обрезан по пяти строкам",
-        "reviews-lead – строка-переход к ленте"
+        "reviews-lead – строка-переход к ленте",
+        "reviews--light – светлые карточки отзывов (бумага против асфальта)"
       ],
       "traps": [
         "БЮДЖЕТ ВЫСОТЫ – НЕ 100svh, А МЕНЬШЕ НА ПАДДИНГИ СЛАЙДА. У .slide есть свои отступы (на 1440 это 81+63 = 144 px), и сравнивать высоту .slide-shell надо с innerHeight МИНУС они. Сверка с полным экраном врёт: слайд, который «влезает», на деле уезжает вниз на полтораста пикселей.",
         "Высоту ленты отзывов задаёт САМЫЙ ДЛИННЫЙ отзыв: карточки лежат в строке грида и тянутся до её высоты. Один разговорчивый автор поднимал ленту с 230 до 320 px. Лечится обрезкой текста по строкам (-webkit-line-clamp), а не подбором карточек.",
-        "У .collection-diagram обёртка с паддингом 64 px – в плотном варианте это 128 px впустую, больше самой плитки. Паддинг обёртки ужимать обязательно, одного уменьшения плиток мало."
+        "У .collection-diagram обёртка с паддингом 64 px – в плотном варианте это 128 px впустую, больше самой плитки. Паддинг обёртки ужимать обязательно, одного уменьшения плиток мало.",
+        "Текст отзыва НЕ обрезаем по строкам. Первая сборка глушила его многоточием, и карточка выглядела сломанной: человек видит оборванную на полуслове чужую речь и ищет, где дочитать. Высоту держим кеглем и отступами."
       ]
     }
   ]

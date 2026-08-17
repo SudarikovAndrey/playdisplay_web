@@ -1228,12 +1228,15 @@ html.deck { scroll-snap-type: y mandatory; }
 .reviews-lead { margin: clamp(14px, 1.7vw, 24px) 0 10px; max-width: 78ch; color: #b9bcc4; font-size: clamp(13.5px, 1.05vw, 16px); line-height: 1.5; }
 /* Плотная лента – для того же случая: карточки ниже ростом, чтобы влезть под цифрами.
    ВЫСОТУ ЛЕНТЫ ЗАДАЁТ САМЫЙ ДЛИННЫЙ ОТЗЫВ: карточки лежат в строке грида и тянутся до
-   его высоты, поэтому один разговорчивый автор поднимал всю ленту на 320 px и выталкивал
-   её за нижний край экрана. Обрезаем текст по шести строкам – остальное человек дочитает
-   в магазине, а ровный ряд карточек читается как «их много», ради чего лента и нужна. */
+   его высоты, поэтому один разговорчивый автор поднимает всю ленту.
+   ТЕКСТ ОТЗЫВА НЕ ОБРЕЗАЕМ. Первая сборка глушила его по пяти строкам с многоточием –
+   и карточка выглядела сломанной: человек видит оборванную на полуслове чужую речь и
+   ищет, где дочитать. Высоту вместо этого держим кеглем и плотными отступами. */
 .reviews--tight { grid-auto-columns: minmax(220px, 268px); }
 .reviews--tight .review { padding: 14px 15px 13px; gap: 6px; }
-.reviews--tight .review p { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.reviews--tight .review b { font-size: 14px; }
+.slide .reviews--tight .review p,
+.reviews--tight .review p { font-size: 12.5px; line-height: 1.4; }
 /* ПЛОТНЫЙ СЛАЙД: когда на экране два блока подряд, воздух между ними приходится ужимать.
    Отдельным классом, а не правкой .slide-head: в обычном слайде этот воздух нужен. */
 .slide--packed .slide-head { margin-bottom: clamp(16px, 2vw, 30px); }
@@ -1345,6 +1348,30 @@ html.deck { scroll-snap-type: y mandatory; }
 }
 .gallery__label img { display: block; width: auto; height: clamp(16px, 1.8vw, 24px); }
 
+/* ТРИ ДОВОДА ВНУТРИ КАДРА. Нужны, когда в галерею переезжает слайд с несколькими
+   опорами – например тремя эффектами из исследований. Ставим их СТРОКОЙ под текстом,
+   а не карточками: карточки закрыли бы кадр, ради которого галерея и сделана.
+   Ширина колонок ограничена: на широком экране три коротких довода растягивались бы
+   через весь кадр и переставали читаться как перечисление. */
+.gallery__facts {
+  margin: clamp(8px, 1.2vh, 14px) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 26px);
+  max-width: 900px;
+}
+.gallery__facts li { display: grid; gap: 4px; border-top: 1px solid rgba(255,255,255,.26); padding-top: 8px; }
+.gallery__facts b {
+  color: var(--paper);
+  font: 600 clamp(11px, .95vw, 13px)/1.2 "Roboto Mono", monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.gallery__facts span { color: #cfd3da; font-size: clamp(11.5px, .88vw, 13.5px); line-height: 1.38; text-shadow: 0 1px 14px rgba(0,0,0,.7); }
+@media (max-width: 720px) { .gallery__facts { grid-template-columns: 1fr; gap: 8px; } .gallery__facts li { padding-top: 6px; } }
+
 /* Стрелки по бокам: крупные зоны нажатия, но visually тихие – кадр важнее */
 .gallery__nav {
   position: absolute;
@@ -1453,6 +1480,21 @@ html.deck { scroll-snap-type: y mandatory; }
 /* Отзыв, в котором игрок сам просит машины, – главный аргумент слайда, поэтому
    выделен рамкой и стоит первым. */
 .review--car { border-color: rgba(226, 105, 75, .55); background: rgba(226, 105, 75, .08); }
+
+/* СВЕТЛЫЕ КАРТОЧКИ ОТЗЫВОВ.
+   Нужны, когда лента стоит под тёмными плашками цифр: две тёмные поверхности подряд
+   сливаются в одну, и прямая речь игроков читается как продолжение таблицы. Бумага
+   против асфальта разделяет их без единой разделительной линии.
+   Цвета текста здесь заданы явно и с запасом по контрасту: базовые правила ленты
+   рассчитаны на тёмный фон, и светло-серый текст на бумаге пропадал бы. */
+.reviews--light .review { border-color: rgba(23,20,15,.16); background: #ece5d8; }
+.reviews--light .review b { color: #17140f; }
+.slide .reviews--light .review p,
+.reviews--light .review p { color: #4a4438; }
+.reviews--light .review figcaption { color: #8d8474; }
+.reviews--light .review__store { fill: rgba(23,20,15,.4); }
+.reviews--light .review__stars { color: #c0432f; }
+.reviews--light .review--car { border-color: #c0432f; background: #f7ede1; box-shadow: inset 0 0 0 1px rgba(192,67,47,.32); }
 
 /* ПОДВАЛ ТОЖЕ ТОЧКА ПРИВЯЗКИ. Без этого последний экран «отскакивал назад»: подвал
    лежит вне main и точкой привязки не был, поэтому жёсткое прилипание тянуло страницу
