@@ -1391,3 +1391,16 @@ html.deck { scroll-snap-type: y mandatory; }
 .stores--tiles a::after { content: "Скачать ↗"; color: var(--muted); font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; }
 .stores--tiles li:not(:has(a)) { display: grid; justify-items: center; gap: 10px; padding: 20px 12px 16px; font-size: 12.5px; }
 @media (max-width: 680px) { .stores--tiles { grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); } .stores--tiles svg { width: 26px; height: 26px; } }
+
+/* Значок магазина в углу карточки: сразу видно, откуда отзыв. Тихий, не спорит со
+   звёздами – это пометка источника, а не украшение. */
+.review { position: relative; }
+.review__store { position: absolute; right: 14px; top: 14px; width: 15px; height: 15px; fill: rgba(255,255,255,.34); }
+/* Отзыв, в котором игрок сам просит машины, – главный аргумент слайда, поэтому
+   выделен рамкой и стоит первым. */
+.review--car { border-color: rgba(226, 105, 75, .55); background: rgba(226, 105, 75, .08); }
+
+/* ПОДВАЛ ТОЖЕ ТОЧКА ПРИВЯЗКИ. Без этого последний экран «отскакивал назад»: подвал
+   лежит вне main и точкой привязки не был, поэтому жёсткое прилипание тянуло страницу
+   обратно к последнему слайду, и до контактов нельзя было доскроллить. */
+html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
