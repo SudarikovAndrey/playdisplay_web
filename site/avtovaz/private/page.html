@@ -45,16 +45,16 @@
   <!-- Полоса ведёт по УЗЛОВЫМ слайдам, а не по всем двадцати: список из двадцати строк
        не помещается по высоте и перестаёт быть навигацией -->
   <nav class="chapter-nav" aria-label="Навигация по разделам">
-    <a href="#s02" data-section="s02"><span>01</span><small>Направления</small></a>
-    <a href="#s03" data-section="s03"><span>02</span><small>Площадка</small></a>
+    <a href="#s03" data-section="s03"><span>01</span><small>Площадка</small></a>
+    <a href="#s02" data-section="s02"><span>02</span><small>Направления</small></a>
     <a href="#g01" data-section="g01"><span>03</span><small>Про игру</small></a>
     <a href="#s05" data-section="s05"><span>04</span><small>Кто играет</small></a>
     <a href="#s06b" data-section="s06b"><span>05</span><small>Отзывы</small></a>
-    <a href="#s08" data-section="s08"><span>06</span><small>Язык и юмор</small></a>
-    <a href="#s09" data-section="s09"><span>07</span><small>Не хватает тачек</small></a>
-    <a href="#s10b" data-section="s10b"><span>08</span><small>Границы</small></a>
-    <a href="#s13" data-section="s13"><span>09</span><small>Что получает LADA</small></a>
-    <a href="#s14b" data-section="s14b"><span>10</span><small>Экономика</small></a>
+    <a href="#s07" data-section="s07"><span>06</span><small>Портрет</small></a>
+    <a href="#s08" data-section="s08"><span>07</span><small>Язык и юмор</small></a>
+    <a href="#s09" data-section="s09"><span>08</span><small>Не хватает тачек</small></a>
+    <a href="#s10b" data-section="s10b"><span>09</span><small>Границы</small></a>
+    <a href="#s13" data-section="s13"><span>10</span><small>Что получает LADA</small></a>
     <a href="#s15" data-section="s15"><span>11</span><small>NIVA 50</small></a>
     <a href="#s18b" data-section="s18b"><span>12</span><small>Сроки</small></a>
     <a href="#s19b" data-section="s19b"><span>13</span><small>Почему мы</small></a>
@@ -103,33 +103,8 @@
       </div>
     </section>
 
-    <!-- ═══ 02. ДВА НАПРАВЛЕНИЯ ═══ -->
-    <section class="slide slide--dark" id="s02" data-slide="02">
-      <div class="slide-shell">
-        <div class="slide-head reveal">
-          <p class="overline">Программа 2027</p>
-          <h2>Два направления</h2>
-          <p>Первое создаёт автомобильную платформу внутри игры. Второе превращает её в большую юбилейную кампанию года.</p>
-        </div>
-        <div class="concept-grid">
-          <article class="concept-card concept-card--art">
-            <img src="assets/car-devyatka.jpg" alt="Заряженная «девятка» в игровом исполнении">
-            <span>01</span>
-            <h4>LADA × Рынок Пацана</h4>
-            <p>Новый автомобильный слой внутри игры: гараж, коллекционирование, тюнинг, турниры.</p>
-          </article>
-          <article class="concept-card concept-card--art">
-            <img src="assets/car-niva.jpg" alt="NIVA в игровом исполнении">
-            <span>02</span>
-            <h4>NIVA 50</h4>
-            <p>Серия специальных игровых событий к 50-летию легендарной модели.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <!-- ═══ 03. ПЛОЩАДКА ═══ -->
-    <section class="slide" id="s03" data-slide="03">
+    <section class="slide" id="s03" data-slide="02">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Площадка</p>
@@ -153,84 +128,92 @@
       </div>
     </section>
 
+    <!-- ═══ 02. ДВА НАПРАВЛЕНИЯ ═══ -->
+    <section class="slide slide--dark" id="s02" data-slide="03">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Программа 2027</p>
+          <h2>Два направления</h2>
+          <p>В&nbsp;нашей игре есть всё, что нужно для&nbsp;каждого пацана, но&nbsp;пока нет тачек!</p>
+        </div>
+        <div class="concept-grid">
+          <article class="concept-card concept-card--art">
+            <img src="assets/car-devyatka.jpg" alt="Заряженная «девятка» в игровом исполнении">
+            <span>01</span>
+            <h4>LADA × Рынок Пацана</h4>
+            <p>Новый автомобильный слой внутри игры: гараж, коллекционирование, тюнинг, турниры.</p>
+          </article>
+          <article class="concept-card concept-card--art">
+            <img src="assets/car-niva.jpg" alt="NIVA в игровом исполнении">
+            <span>02</span>
+            <h4>NIVA 50</h4>
+            <p>Серия специальных игровых событий к 50-летию легендарной модели.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- ═══ ГАЛЕРЕЯ «ЧТО ЭТО ЗА ИГРА» ═══════════════════════════════════════
-         Пять полноэкранных кадров подряд: партнёр листает и за минуту понимает игру.
-         Каждый слайд – один кадр и одна мысль; текст в плашке, потому что кадры яркие. -->
-
-    <section class="slide slide--cover slide--cover-wide" id="g01" data-slide="04">
-      <img class="slide-cover-art" src="assets/wide2.jpg" alt="Ход по клеткам на карте района">
+         Пять кадров на ОДНОМ экране: листается стрелками, точками и пальцем.
+         Текст живёт в нижней полосе, а не плашкой поверх кадра: плашка закрывала лицо
+         героя, а здесь картинка – главный аргумент. -->
+    <section class="slide slide--gallery" id="g01" data-slide="04">
       <div class="slide-shell">
-        <div class="slide-head reveal">
-          <p class="overline">Игра · 01 / 05</p>
-          <h2>Монополия, где вместо фишек&nbsp;– пацаны</h2>
-          <p>Бросок кубика и&nbsp;ход по&nbsp;клеткам, как в&nbsp;настольной игре. Клетка чужого района&nbsp;– драка: пошаговый баттлер с&nbsp;командой, ударами и&nbsp;способностями. Две проверенные механики в&nbsp;одной игре.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide slide--cover slide--cover-wide" id="g02" data-slide="05">
-      <img class="slide-cover-art" src="assets/world-map.jpg" alt="Игровая карта района: панельки, гаражи, река, дачи">
-      <div class="slide-shell">
-        <div class="slide-head reveal">
-          <p class="overline">Игра · 02 / 05</p>
-          <h2>Около 70 локаций отрисовано. В&nbsp;плане&nbsp;– ещё сотни</h2>
-          <p>Панельки, гаражи, рынки, заводы, дачи, теплотрассы. Каждый район собран вручную и&nbsp;узнаётся с&nbsp;первого взгляда&nbsp;– это не&nbsp;процедурная генерация.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide slide--cover slide--cover-wide slide--cover-light" id="g03" data-slide="06">
-      <img class="slide-cover-art" src="assets/wide1.jpg" alt="Экран выбора персонажа">
-      <div class="slide-shell">
-        <div class="slide-head reveal">
-          <p class="overline">Игра · 03 / 05</p>
-          <h2>У&nbsp;каждого пацана своя история</h2>
-          <p>Уникальные герои со&nbsp;своими характерами, сквозной нарратив и&nbsp;последовательная история района. Не&nbsp;набор случайных заданий, а&nbsp;единая линия, по&nbsp;которой игрок идёт месяцами.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide slide--cover slide--cover-wide" id="g04" data-slide="07">
-      <img class="slide-cover-art" src="assets/wide6.jpg" alt="Банда игрока: карточки бойцов">
-      <div class="slide-shell">
-        <div class="slide-head reveal">
-          <p class="overline">Игра · 04 / 05</p>
-          <h2>Прокачал своих&nbsp;– взял район</h2>
-          <p>Собрать команду, прокачать бойцов, выиграть сражение, поднять авторитет. Успех здесь измеряется тем, что видят другие игроки&nbsp;– и&nbsp;ради этого возвращаются каждый день.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide slide--cover slide--cover-wide" id="g05" data-slide="08">
-      <img class="slide-cover-art" src="assets/wide3.jpg" alt="Точка «Техноюра»: качественный китайский электроника">
-      <div class="slide-shell">
-        <div class="slide-head reveal">
-          <p class="overline">Игра · 05 / 05</p>
-          <h2>«Качественный китайский электроника»</h2>
-          <p>Пацанский юмор в&nbsp;каждой детали: вывески, названия точек, реплики героев. Отсылки, которые узнаёт каждый, кто застал девяностые&nbsp;– и&nbsp;которые пересказывают те, кто не&nbsp;застал.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ═══ 04. ЭКРАНЫ ИГРЫ ═══ -->
-    <section class="slide slide--dark" id="s04" data-slide="09">
-      <div class="slide-shell">
-        <div class="slide-head reveal">
-          <p class="overline">Как это выглядит</p>
-          <h2>Как это выглядит на&nbsp;телефоне</h2>
-          <p>Кадры из&nbsp;магазинов приложений, версия 1.42: ход по&nbsp;району, покупка точки, хата игрока и&nbsp;разборка во&nbsp;дворе.</p>
-        </div>
-        <div class="phone-strip" style="--phone-ratio:0.72">
-          <figure><img src="assets/shot2.jpg" alt="Ход по району: кубики и деньги"><figcaption>Ход по району</figcaption></figure>
-          <figure><img src="assets/shot4.jpg" alt="Покупка бизнеса и доход за крышу"><figcaption>Бизнес</figcaption></figure>
-          <figure><img src="assets/shot3.jpg" alt="Хата игрока и обстановка"><figcaption>Хата</figcaption></figure>
-          <figure><img src="assets/shot5.jpg" alt="Разборка у авторазборки"><figcaption>Разборка</figcaption></figure>
+        <div class="gallery" data-gallery>
+          <div class="gallery__track" data-gallery-track>
+          <figure class="gallery__item">
+            <img src="assets/wide2.jpg" alt="Ход по клеткам на карте района" style="object-position:50% 42%">
+            <div class="gallery__copy">
+              <p class="overline">Игра · 01 / 05</p>
+              <h2>Монополия, где вместо фишек&nbsp;– пацаны</h2>
+              <p>Бросок кубика и&nbsp;ход по&nbsp;клеткам, как в&nbsp;настольной игре. Клетка чужого района&nbsp;– драка: пошаговый баттлер с&nbsp;командой, ударами и&nbsp;способностями.</p>
+            </div>
+          </figure>
+          <figure class="gallery__item">
+            <img src="assets/world-map.jpg" alt="Игровая карта района" style="object-position:50% 45%">
+            <div class="gallery__copy">
+              <p class="overline">Игра · 02 / 05</p>
+              <h2>Около 70 локаций отрисовано. В&nbsp;плане&nbsp;– ещё сотни</h2>
+              <p>Панельки, гаражи, рынки, заводы, дачи, теплотрассы. Каждый район собран вручную и&nbsp;узнаётся с&nbsp;первого взгляда.</p>
+            </div>
+          </figure>
+          <figure class="gallery__item">
+            <img src="assets/wide1.jpg" alt="Экран выбора персонажа" style="object-position:50% 30%">
+            <div class="gallery__copy">
+              <p class="overline">Игра · 03 / 05</p>
+              <h2>У&nbsp;каждого пацана своя история</h2>
+              <p>Уникальные герои со&nbsp;своими характерами, сквозной нарратив и&nbsp;последовательная история района, а&nbsp;не&nbsp;набор случайных заданий.</p>
+            </div>
+          </figure>
+          <figure class="gallery__item">
+            <img src="assets/wide6.jpg" alt="Банда игрока: карточки бойцов" style="object-position:50% 34%">
+            <div class="gallery__copy">
+              <p class="overline">Игра · 04 / 05</p>
+              <h2>Прокачал своих&nbsp;– взял район</h2>
+              <p>Собрать команду, прокачать бойцов, выиграть сражение, поднять авторитет. Успех измеряется тем, что видят другие игроки.</p>
+            </div>
+          </figure>
+          <figure class="gallery__item">
+            <img src="assets/wide3.jpg" alt="Точка «Техноюра»" style="object-position:50% 38%">
+            <div class="gallery__copy">
+              <p class="overline">Игра · 05 / 05</p>
+              <h2>«Качественный китайский электроника»</h2>
+              <p>Пацанский юмор в&nbsp;каждой детали: вывески, названия точек, реплики героев. Отсылки, которые узнаёт каждый, кто застал девяностые.</p>
+            </div>
+          </figure>
+          </div>
+          <button class="gallery__nav gallery__nav--prev" type="button" data-gallery-prev aria-label="Предыдущий кадр">‹</button>
+          <button class="gallery__nav gallery__nav--next" type="button" data-gallery-next aria-label="Следующий кадр">›</button>
+          <div class="gallery__pager">
+            <div class="gallery__dots" data-gallery-dots></div>
+            <span class="gallery__counter" data-gallery-counter>01 / 05</span>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ═══ 05. АУДИТОРИЯ: КТО ═══ -->
-    <section class="slide" id="s05" data-slide="10">
+    <section class="slide" id="s05" data-slide="05">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Аудитория</p>
@@ -249,7 +232,176 @@
     <!-- ═══ ОТЗЫВЫ ═══
          Настоящие отзывы из App Store, забраны через RSS магазина. Показываем те, что
          с четырьмя и пятью звёздами, и честно пишем рядом средний рейтинг по всем: 4,4. -->
-    <section class="slide slide--dark" id="s06b" data-slide="11">
+    <section class="slide slide--dark" id="s06b" data-slide="06">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Голос игроков</p>
+          <h2>Что пишут в&nbsp;магазинах приложений</h2>
+          <p>Двадцать отзывов с&nbsp;пятью звёздами из&nbsp;App&nbsp;Store. Общая оценка игры&nbsp;– 4,4 по&nbsp;10&nbsp;000 отзывов на&nbsp;всех площадках.</p>
+        </div>
+        <div class="reviews">
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Лучшая игра в стиле 90-х!</b>
+            <p>Самая крутая игра в стиле монополии, которая сочетает в себе элементы rpg, idle, юмор и крутую картинку! Рекомендую к скачиванию!</p>
+            <figcaption>JulShilova</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Очень крутая настольная игра!</b>
+            <p>Классная настолка в стиле монополия!</p>
+            <figcaption>Алексей Журкин</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Классно</b>
+            <p>Прикольная игра,что то вроде монополии,но с драками и сюжетом)Рекомендую</p>
+            <figcaption>Dante01r</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Прошел полностью</b>
+            <p>Добрый вечер. Давайте новые районы</p>
+            <figcaption>Аллиссултан</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Когда появятся новые уровни</b>
+            <p>Дошел и до 48 уровня и что дальше?</p>
+            <figcaption>АйфоДим</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Не хватает пацанов</b>
+            <p>Братва, игра затянула! Надо бы сделать больше квестов с призом «дел пацанов». А то звездочки прокачать невозможно.</p>
+            <figcaption>Др. Зло</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Онлайн</b>
+            <p>Будет ли когда нибудь онлайн? Хотелось бы отжимать точки у игроков</p>
+            <figcaption>Albertosss123</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Топовая игра</b>
+            <p>Игра незамысловатая, но очень хорошо сделанная и даже ии не портит)) потому что сделано всё равно людьми, хоть и с использованием нейронки для артов персонажей. Но игра реально затягивает! Премиум абсолютно оправдывает все деньги, слава богу цена адекватная, СПАСИБО</p>
+            <figcaption>ppizisa</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Игра</b>
+            <p>Очень хорошо 👌 игра</p>
+            <figcaption>Алик Моро</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Лучшая игра на телефон</b>
+            <p>Спасибо огромное разработчикам! Очень весело и интересно играть, рекомендую всем подружкам Особенно понравилась тема с семками и газетами в хате, прямо с теплом окунает в детские воспоминания</p>
+            <figcaption>Олишнааа</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Рынок пацана</b>
+            <p>Игра норм. Прошел ее без проблем,занятно увлекает.карточек на пацанов тяжело получать .жду обновлений для следующего этапа</p>
+            <figcaption>Что если бы</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>.</b>
+            <p>Крутая игра но было бы неплохо если бы добавили покупку оружия для своей банды</p>
+            <figcaption>Артём КОВБОЙ</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>это 10/10?</b>
+            <p>Игра - пушка. Спасибо разрабам за тг-чат. Другие игроки помогают разобраться со всем в игре</p>
+            <figcaption>MaxHoonigan</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Понравилось</b>
+            <p>Очень очень очень классная монка Играем с девушкой, очень затянуло, ждем обнову)</p>
+            <figcaption>Mona15999</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>ОПГ</b>
+            <p>Игра класс !! А будут автомобили ? Виллы коттеджи было б круто</p>
+            <figcaption>116Татарин116</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Вообще огонь!</b>
+            <p>Не знаю кому как читая старые отзывы, мне зашла и даже очень, уже неделю в ней, с драками кто то писал да есть проблема вроде уровень больше но проигрываешь, с другой стороны как в жизни реалистично авось повезёт или не повезёт 😅</p>
+            <figcaption>Dashka2505</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Интересная игрушка</b>
+            <p>Поиграть можно на самом деле интересная игрушка</p>
+            <figcaption>Анатолий.,</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Вопрос</b>
+            <p>Крутая игра, но как отключить премиум? Написано, что автоматически спишутся средства в определенную дату, а кнопки прекратить подписку нет?!</p>
+            <figcaption>Jackdaniels04</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Гуд</b>
+            <p>Пока всё нравится. Атмосфера прикольная. Игра затянула до трёх часов ночи 😄 Только начала играть. Может позже будут пожелания потом дополню. Возможно было бы прикольно сделать её онлайн. Если есть то возможно я просто не нашла эту функцию 😁</p>
+            <figcaption>FantaNiphilim</figcaption>
+          </figure>
+          <figure class="review">
+            <span class="review__stars" aria-label="Оценка 5 из 5">★★★★★</span>
+            <b>Сбой в игре</b>
+            <p>Игра отличная, но уже сутки назад зависла на одном месте и ничего не могу сделать. Уже удаляла игру и восстанавливала, но опять стоит на том же месте. Помогите пожалуйста.</p>
+            <figcaption>Nasty2803</figcaption>
+          </figure>
+        </div>
+        <p class="slide-note">Листайте вбок. Отзывы приведены дословно, орфография авторов сохранена.</p>
+      </div>
+    </section>
+
+    <!-- ═══ ЧТО ЭТО ДАЁТ БРЕНДУ ═══
+         Слайд про вовлечённость переписан в маркетинговый аргумент: не «сколько минут»,
+         а «почему эти минуты меняют отношение к марке». Эффекты названы настоящие, с
+         авторами; конкретные цифры замера оставлены пропусками – их даёт исследование,
+         а не мы. -->
+    <section class="slide slide--dark chapter--wide" id="s06" data-slide="07">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Что это даёт бренду</p>
+          <h2>Собранное своими руками ценят дороже</h2>
+          <p>Игровой слой не&nbsp;показывает автомобиль&nbsp;– он&nbsp;заставляет его заработать, собрать и&nbsp;показать другим. Работают три эффекта из&nbsp;поведенческой экономики, и&nbsp;все три играют на&nbsp;образ марки.</p>
+        </div>
+        <div class="concept-grid">
+          <article class="concept-card">
+            <span>Эффект владения</span>
+            <h4>Своё дороже чужого</h4>
+            <p>Вещь, которая уже принадлежит человеку, оценивается им&nbsp;выше такой&nbsp;же чужой (Талер, 1980). В&nbsp;игре LADA становится «своей» через десятки часов, и&nbsp;это отношение переносится на&nbsp;марку.</p>
+          </article>
+          <article class="concept-card">
+            <span>Эффект ИКЕА</span>
+            <h4>Собрал сам&nbsp;– полюбил</h4>
+            <p>Собранное своими руками нравится больше готового (Нортон, Мочон, Ариели, 2011). Игрок сам ищет детали, красит, доводит сборку&nbsp;– и&nbsp;защищает её&nbsp;перед другими.</p>
+          </article>
+          <article class="concept-card">
+            <span>Простое предъявление</span>
+            <h4>Знакомое кажется лучше</h4>
+            <p>Чем чаще человек видит объект, тем теплее к&nbsp;нему относится (Зайонц, 1968). 50 минут в&nbsp;день месяцами&nbsp;– принципиально другая частота, чем три секунды баннера.</p>
+          </article>
+        </div>
+        <p class="slide-note">Замер знания марки и&nbsp;отношения к&nbsp;ней на&nbsp;панели игроков до&nbsp;старта и&nbsp;после сезона: рост узнаваемости&nbsp;– <span class="blank" aria-label="уточняется"></span>, рост намерения рассмотреть LADA&nbsp;– <span class="blank" aria-label="уточняется"></span>.</p>
+      </div>
+    </section>
+
+    <!-- ═══ ОТЗЫВЫ ═══
+         Настоящие отзывы из App Store, забраны через RSS магазина. Показываем те, что
+         с четырьмя и пятью звёздами, и честно пишем рядом средний рейтинг по всем: 4,4. -->
+    <section class="slide slide--dark" id="s06b" data-slide="08">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Голос игроков</p>
@@ -383,7 +535,7 @@
     </section>
 
     <!-- ═══ 06. АУДИТОРИЯ: КАК ═══ -->
-    <section class="slide slide--dark" id="s06" data-slide="12">
+    <section class="slide slide--dark" id="s06" data-slide="09">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Вовлечённость</p>
@@ -403,7 +555,7 @@
     <!-- ═══ ПЕРЕСЕЧЕНИЕ АУДИТОРИЙ ═══
          Появился после прогона компреда «глазами заказчика»: аудитория игры и покупатель
          автомобиля – пересекающиеся, но разные множества, и молчать об этом нельзя. -->
-    <section class="slide chapter--wide" id="s07" data-slide="12">
+    <section class="slide chapter--wide" id="s07" data-slide="10">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Портрет и&nbsp;допущение</p>
@@ -419,7 +571,7 @@
           <div class="compare-col compare-col--strong">
             <span>Что мы предполагаем</span>
             <b>Это тот&nbsp;же человек, который выбирает LADA</b>
-            <p>Мужчина этого возраста и&nbsp;достатка&nbsp;– ядро покупателей массовых моделей: первая машина была отечественной, вторую выбирают по&nbsp;цене обслуживания и&nbsp;доверию к&nbsp;марке. Доля владельцев LADA среди игроков&nbsp;– <span class="blank" aria-label="уточняется"></span>, планирующих покупку&nbsp;– <span class="blank" aria-label="уточняется"></span>.</p>
+            <p>Мужчина этого возраста и&nbsp;достатка&nbsp;– ядро покупателей массовых моделей: первая машина была отечественной, вторую выбирают по&nbsp;цене обслуживания. Доля владельцев LADA среди игроков&nbsp;– <span class="blank" aria-label="уточняется"></span>, планирующих покупку&nbsp;– <span class="blank" aria-label="уточняется"></span>.</p>
           </div>
         </div>
         <p class="slide-note">Проверяем опросом внутри игры и&nbsp;сверкой с&nbsp;вашими данными&nbsp;– до&nbsp;второго этапа.</p>
@@ -427,7 +579,7 @@
     </section>
 
     <!-- ═══ 07. ЯЗЫК ═══ -->
-    <section class="slide" id="s08" data-slide="14">
+    <section class="slide" id="s08" data-slide="11">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Тональность</p>
@@ -453,7 +605,7 @@
     <!-- ═══ 08. ПУСТОЕ МЕСТО ═══
          Мысль и пояснение стоят на ОДНОМ экране: раньше фраза занимала отдельный
          слайд, пояснение уезжало на следующий, и между ними получалась пустота. -->
-    <section class="slide slide--cover slide--cover-wide" id="s09" data-slide="15">
+    <section class="slide slide--cover slide--cover-wide" id="s09" data-slide="12">
       <img class="slide-cover-art" src="assets/wide4.jpg" alt="Разборка у гаражей во дворе">
       <div class="slide-shell">
         <p class="slide-punch reveal">В&nbsp;мире 90-х<br>не&nbsp;хватает <em>тачек</em>.</p>
@@ -464,7 +616,7 @@
     </section>
 
     <!-- ═══ 09. НЕ РЕКЛАМА ═══ -->
-    <section class="slide slide--cover slide--cover-wide slide--cover-light" id="s10" data-slide="16">
+    <section class="slide slide--cover slide--cover-wide slide--cover-light" id="s10" data-slide="13">
       <img class="slide-cover-art" src="assets/wide5.jpg" alt="Персонаж игры: босс района">
       <div class="slide-shell">
         <div class="slide-head reveal">
@@ -480,7 +632,7 @@
     <!-- ═══ КРАСНЫЕ ЛИНИИ ═══
          Главный риск этой интеграции – усилить клише «Жигули = братва 90-х».
          Партнёр обязан увидеть границы раньше, чем задаст вопрос. -->
-    <section class="slide" id="s10b" data-slide="17">
+    <section class="slide" id="s10b" data-slide="14">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Границы</p>
@@ -488,7 +640,6 @@
           <p>Мир игры криминальный – автомобиль в нём остаётся ценностью, а не участником криминала. Границы записываются в договор и проверяются на каждом релизе.</p>
         </div>
         <ul class="clean-list">
-          <li>Не участвует в сценах насилия и погонь от милиции.</li>
           <li>Не отнимается у игрока и не «отжимается» у других.</li>
           <li>Не связана с наркотиками, оружием и рэкетом ни одной механикой.</li>
           <li>Не показывается разбитой, горящей или брошенной.</li>
@@ -500,7 +651,7 @@
     </section>
 
     <!-- ═══ 10. ПУТЬ ИГРОКА ═══ -->
-    <section class="slide slide--dark" id="s11" data-slide="18">
+    <section class="slide slide--dark" id="s11" data-slide="15">
       <div class="slide-shell steps-2col">
         <div class="slide-head reveal">
           <p class="overline">Механика</p>
@@ -521,7 +672,7 @@
     </section>
 
     <!-- ═══ 11. ГАРАЖ ═══ -->
-    <section class="slide" id="s12" data-slide="19">
+    <section class="slide" id="s12" data-slide="16">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Гараж</p>
@@ -533,7 +684,7 @@
     </section>
 
     <!-- ═══ 12. ЧТО ПОЛУЧАЕТ LADA ═══ -->
-    <section class="slide slide--dark" id="s13" data-slide="20">
+    <section class="slide slide--dark" id="s13" data-slide="17">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Результат</p>
@@ -556,7 +707,7 @@
     </section>
 
     <!-- ═══ 13. МЕТРИКИ ═══ -->
-    <section class="slide" id="s14" data-slide="21">
+    <section class="slide" id="s14" data-slide="18">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Измерение</p>
@@ -574,7 +725,7 @@
     </section>
 
     <!-- ═══ ЭКОНОМИКА КОНТАКТА ═══ -->
-    <section class="slide slide--dark" id="s14b" data-slide="22">
+    <section class="slide slide--dark" id="s14b" data-slide="19">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Экономика</p>
@@ -598,7 +749,7 @@
     </section>
 
     <!-- ═══ 14. NIVA 50 ═══ -->
-    <section class="slide slide--dark" id="s15" data-slide="23">
+    <section class="slide slide--dark" id="s15" data-slide="20">
       <div class="slide-shell">
         <p class="slide-punch reveal">Там, где&nbsp;заканчивается дорога,<br>начинается <em>игра NIVA</em>.</p>
         <div class="slide-head">
@@ -608,7 +759,7 @@
     </section>
 
     <!-- ═══ 15. МОДЕЛЬ ═══ -->
-    <section class="slide" id="s16" data-slide="24">
+    <section class="slide" id="s16" data-slide="21">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Модель в игре</p>
@@ -625,7 +776,7 @@
          3D-модель – это модель, а не игровой экран. Партнёр должен увидеть предмет
          внутри интерфейса игры, иначе ему приходится верить на слово. Мокап собран
          вёрсткой: правится текстом, пока идёт согласование. -->
-    <section class="slide slide--dark" id="s16b" data-slide="25">
+    <section class="slide slide--dark" id="s16b" data-slide="22">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">В интерфейсе игры</p>
@@ -660,7 +811,7 @@
     </section>
 
     <!-- ═══ 16. СЕЗОН ═══ -->
-    <section class="slide slide--dark" id="s17" data-slide="26">
+    <section class="slide slide--dark" id="s17" data-slide="23">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Юбилейный сезон</p>
@@ -676,7 +827,7 @@
     </section>
 
     <!-- ═══ 17. КОЛЛЕКЦИЯ ═══ -->
-    <section class="slide" id="s18" data-slide="27">
+    <section class="slide" id="s18" data-slide="24">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Награды сезона</p>
@@ -695,7 +846,7 @@
     <!-- ═══ КАЛЕНДАРЬ ═══
          «2027 год» без дат – это не план. У юбилея NIVA жёсткая привязка к весне
          (первая товарная партия – апрель 1977), и контент должен быть готов раньше. -->
-    <section class="slide" id="s18b" data-slide="28">
+    <section class="slide" id="s18b" data-slide="25">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Сроки</p>
@@ -713,7 +864,7 @@
     </section>
 
     <!-- ═══ 18. ПРОДУКТ И МЕДИА ═══ -->
-    <section class="slide slide--dark" id="s19" data-slide="29">
+    <section class="slide slide--dark" id="s19" data-slide="26">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Как работает бюджет</p>
@@ -736,7 +887,7 @@
     </section>
 
     <!-- ═══ 19. РОСТ ═══ -->
-    <section class="slide" id="s20" data-slide="30">
+    <section class="slide" id="s20" data-slide="27">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Масштаб</p>
@@ -761,7 +912,7 @@
          За тридцать миллионов партнёр обязан спросить «кто исполнитель». Главный
          аргумент здесь не портфолио, а то, что подрядчик и владелец площадки – одни
          и те же люди: согласование механик не уходит на сторону. -->
-    <section class="slide" id="s19b" data-slide="31">
+    <section class="slide" id="s19b" data-slide="28">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Исполнитель</p>
@@ -792,7 +943,7 @@
     <!-- ═══ ПРЕДЛОЖЕНИЕ: ТРИ УРОВНЯ ═══
          Один вариант – это «да или нет». Три уровня превращают решение в выбор,
          и разговор продолжается даже при отказе от большого бюджета. -->
-    <section class="slide slide--dark" id="s21" data-slide="32">
+    <section class="slide slide--dark" id="s21" data-slide="29">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Предложение</p>
@@ -823,7 +974,7 @@
     </section>
 
     <!-- ═══ СМЕТА ═══ -->
-    <section class="slide" id="s21b" data-slide="33">
+    <section class="slide" id="s21b" data-slide="30">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Из чего складывается</p>
@@ -843,7 +994,7 @@
     </section>
 
     <!-- ═══ ПРАВОВАЯ РАМКА ═══ -->
-    <section class="slide slide--dark" id="s21c" data-slide="34">
+    <section class="slide slide--dark" id="s21c" data-slide="31">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Условия</p>
@@ -861,7 +1012,7 @@
     </section>
 
     <!-- ═══ 21. ИТОГ ═══ -->
-    <section class="slide" id="s22" data-slide="35">
+    <section class="slide" id="s22" data-slide="32">
       <div class="slide-shell">
         <p class="slide-punch reveal">Механики и&nbsp;аудитория<br>остаются в&nbsp;игре <em>после кампании</em>.</p>
         <div class="slide-head">
@@ -895,6 +1046,7 @@
   <script defer src="../../kit/js/parallax.js"></script>
   <script defer src="../../kit/js/lists.js"></script>
   <script defer src="../../kit/js/hotspots.js"></script>
+  <script defer src="../../kit/js/gallery.js"></script>
   <script defer src="../../kit/js/ui.js"></script>
 </body>
 </html>
