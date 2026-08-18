@@ -59,7 +59,14 @@
       if (wave && want !== null) {
         var url = cars[n].getAttribute('src') || want;
         if (url) {
-          wave.style.setProperty('--car', 'url("' + url + '")');
+          /* АДРЕС ДЛЯ МАСКИ ОБЯЗАН БЫТЬ АБСОЛЮТНЫМ. url() внутри пользовательской
+             переменной браузер разрешает относительно ФАЙЛА СТИЛЕЙ, в котором переменная
+             подставляется, а не относительно страницы: относительный
+             assets/tuning/stage-1.webp превращался в /kit/css/assets/tuning/stage-1.webp
+             и давал 404 на каждое переключение — в консоли их набралось больше тысячи.
+             Та же грабля уже описана в theme-street.css про фактуру картона. */
+          var abs = new URL(url, document.baseURI).href;
+          wave.style.setProperty('--car', 'url("' + abs + '")');
           wave.classList.remove('is-running');
           void wave.offsetWidth;
           wave.classList.add('is-running');
