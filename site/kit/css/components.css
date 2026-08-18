@@ -1550,20 +1550,45 @@ html.deck { scroll-snap-type: y mandatory; }
    название под ним. Плитка – цель для пальца и для курсора одинаково. */
 .stores--tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 10px; width: min(100%, 780px); }
 .stores--tiles li { padding: 0; border-radius: 4px; }
-.stores--tiles a {
+/* РЯДЫ У ПЛИТОК ЖЁСТКИЕ, и это единственный способ выровнять знаки. Глифы у площадок
+   разной формы: у Apple высокий, у VK низкий и широкий, у OK узкий. В свободной сетке
+   каждый занимал столько, сколько ему нужно, и названия под ними расходились по высоте.
+   Три ряда фиксированной высоты — знак, название, действие — ставят их на одну линию.
+   Ряд действия остаётся пустым у площадок без ссылки, иначе плитки снова разъедутся. */
+.stores--tiles a,
+.stores--tiles li:not(:has(a)) {
   display: grid;
+  grid-template-rows: 38px auto 12px;
+  align-items: center;
   justify-items: center;
   gap: 10px;
-  padding: 20px 12px 16px;
+  padding: 18px 12px 14px;
   color: inherit;
   text-decoration: none;
   font-size: 12.5px;
   letter-spacing: .06em;
 }
 .stores--tiles svg { width: 34px; height: 34px; }
-.stores--tiles a::after { content: "Скачать ↗"; color: var(--muted); font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; }
-.stores--tiles li:not(:has(a)) { display: grid; justify-items: center; gap: 10px; padding: 20px 12px 16px; font-size: 12.5px; }
-@media (max-width: 680px) { .stores--tiles { grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); } .stores--tiles svg { width: 26px; height: 26px; } }
+/* Оптическая подгонка по каждому знаку: одинаковая коробка не значит одинаковый вид,
+   потому что путь внутри заполняет её по-разному. Числа подобраны замером на экране. */
+.stores--tiles .ico--vk svg { width: 40px; height: 40px; }
+.stores--tiles .ico--ok svg { width: 33px; height: 33px; }
+.stores--tiles .ico--ya svg { width: 32px; height: 32px; }
+/* Подпись действия берётся из разметки: у магазинов «скачать», у веб-площадок «играть». */
+.stores--tiles a::after {
+  content: attr(data-action);
+  color: var(--muted);
+  font-size: 9.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  align-self: start;
+}
+@media (max-width: 680px) {
+  .stores--tiles { grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); }
+  .stores--tiles a, .stores--tiles li:not(:has(a)) { grid-template-rows: 30px auto 12px; }
+  .stores--tiles svg { width: 26px; height: 26px; }
+  .stores--tiles .ico--vk svg { width: 31px; height: 31px; }
+}
 
 /* Значок магазина в углу карточки: сразу видно, откуда отзыв. Тихий, не спорит со
    звёздами – это пометка источника, а не украшение. */
