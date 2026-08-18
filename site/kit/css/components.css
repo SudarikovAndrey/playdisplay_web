@@ -2112,8 +2112,12 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    при 300 px их было три, и стена читалась как три полосы, а не как набор. */
 .gallery__item--wall .signwall {
   position: absolute;
-  inset: 0;
-  height: 100% !important;
+  /* Верхний ряд начинается НИЖЕ ШАПКИ. Шапка зафиксирована поверх страницы и места в
+     раскладке не занимает, поэтому первый ряд вывесок уезжал под неё и читался обрезанным.
+     Отступ считается от той же высоты, что и метка галереи. */
+  inset: clamp(86px, 10.5vh, 108px) 0 0 0;
+  height: auto !important;
+  max-height: none;
   overflow: hidden;
   /* ЧИСЛО, А НЕ clamp(). Пользовательские свойства не вычисляются: скрипт читает
      значение через parseFloat, и от строки «clamp(150px, 15vw, 215px)» получал NaN,
