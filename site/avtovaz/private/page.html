@@ -14,7 +14,7 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=30f2d7d1">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=8356d51f">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
@@ -167,7 +167,19 @@
             </div>
           </figure>
           <figure class="gallery__item">
-            <img src="assets/world-map.jpg" alt="Игровая карта района" style="object-position:50% 45%">
+            <!-- Ролик, а не кадр: облёт карты объясняет масштаб мира лучше любой картинки.
+                 poster нужен обязательно — файл тяжёлый, и без него кадр стоял бы пустым,
+                 пока ролик докачивается. Управление своё (kit/js/videoctl.js?v=02752b7b): штатная
+                 панель браузера светит серым на всю ширину и рвёт вид презентации. -->
+            <video muted loop playsinline preload="metadata"
+                   poster="assets/world-tour-poster.jpg" style="object-position:50% 50%">
+              <source src="assets/world-tour.mp4" type="video/mp4">
+            </video>
+            <div class="vctl" data-vctl>
+              <button class="vctl__play" type="button" data-vctl-play aria-pressed="false" aria-label="Пуск"><i aria-hidden="true"></i></button>
+              <input class="vctl__bar" type="range" min="0" max="1000" value="0" step="1" data-vctl-bar aria-label="Перемотка ролика">
+              <span class="vctl__time" data-vctl-time>0:00 / 0:00</span>
+            </div>
             <div class="gallery__copy">
               <p class="overline">Игра · 02 / 05</p>
               <h2>Около 70 локаций отрисовано. В&nbsp;плане&nbsp;– ещё сотни</h2>
@@ -720,6 +732,7 @@
   <script defer src="../../kit/js/gallery.js?v=129df3a0"></script>
   <script defer src="../../kit/js/spotlight.js?v=593c767d"></script>
   <script defer src="../../kit/js/stages.js?v=2f50be9a"></script>
+  <script defer src="../../kit/js/videoctl.js?v=02752b7b"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>
   <script defer src="../../kit/js/ui.js?v=0c011b9f"></script>
 </body>
