@@ -495,8 +495,6 @@
               <p>В&nbsp;игре есть деньги, бизнесы, районы, бойцы и&nbsp;статус. Нет главного символа успеха той эпохи&nbsp;– автомобиля. Мы&nbsp;создаём новый игровой слой: ТАЧКИ.</p>
             </div>
           </figure>
-          <!-- Кадр-предмет: заезд пришёл вырезом на прозрачном фоне, поэтому выводится
-               целиком (contain), а не обрезкой. -->
           <figure class="gallery__item gallery__item--object">
             <img src="assets/race.png" alt="Заезд на LADA: две машины на трассе">
             <div class="gallery__copy">
@@ -505,8 +503,19 @@
               <p>Ни&nbsp;баннеров, ни&nbsp;персонажей, рассказывающих, какая LADA хорошая. Для игрока это выглядит иначе: «наконец-то в&nbsp;игру добавили тачки».</p>
             </div>
           </figure>
-          <!-- Кадр-переключатель: пять сборок одной машины. Фон здесь свой, светлеющий
-               к низу: на ровном чёрном пропадал низ машины вместе с тенью. -->
+          <figure class="gallery__item gallery__item--object">
+            <img src="assets/garage-tuning.png" alt="Гараж игрока: девятка на подъёмнике, диски, инструмент, плакаты">
+            <div class="gallery__copy">
+              <p class="overline">Тачки в игре · 03 / 06</p>
+              <h2>Собранное своими руками ценят дороже</h2>
+              <p>Игровой слой не&nbsp;показывает автомобиль&nbsp;– он&nbsp;заставляет его заработать, собрать и&nbsp;показать другим. Работают три эффекта из&nbsp;поведенческой экономики, и&nbsp;все три играют на&nbsp;образ марки.</p>
+              <ul class="gallery__facts">
+                <li><b>Своё дороже чужого</b><span>Вещь, которая уже принадлежит человеку, оценивается им&nbsp;выше такой&nbsp;же чужой (Талер, 1980).</span></li>
+                <li><b>Собрал сам&nbsp;– полюбил</b><span>Собранное своими руками нравится больше готового (Нортон, Мочон, Ариели, 2011).</span></li>
+                <li><b>Знакомое кажется лучше</b><span>Чем чаще человек видит объект, тем теплее к&nbsp;нему относится (Зайонц, 1968).</span></li>
+              </ul>
+            </div>
+          </figure>
           <figure class="gallery__item gallery__item--stage">
           <div class="stages" data-stages>
             <div class="stages__stage">
@@ -528,39 +537,57 @@
             <p class="stages__note" data-stage-caption>Заводская машина: то, с чего начинает каждый игрок.</p>
           </div>
             <div class="gallery__copy">
-              <p class="overline">Тачки в игре · 03 / 06</p>
+              <p class="overline">Тачки в игре · 04 / 06</p>
               <p>Автомобиль становится игровым активом: заработать, найти редкие детали, собрать своё. Каждая деталь видна со&nbsp;стороны&nbsp;– именно поэтому её&nbsp;хочется добыть.</p>
             </div>
           </figure>
-          <figure class="gallery__item">
-            <img src="assets/car-niva.jpg" alt="NIVA в игровом исполнении" style="object-position:50% 50%">
+          <!-- Переключатель версий NIVA. Кадры приведены к ОДНОМУ масштабу и к одной линии
+               земли (замер по альфе: ширина машины 830 из 1000, низ колёс на 96,5 % полотна),
+               иначе при переключении машина прыгает.
+               ВАЖНО: и кадры, и кнопки, и подпись лежат ВНУТРИ .stages — скрипт ищет их от
+               этого узла, снаружи он их не найдёт и переключатель окажется мёртвым. -->
+          <figure class="gallery__item gallery__item--stage">
+            <div class="stages" data-stages>
+              <div class="stages__stage">
+                <i class="stages__shadow" aria-hidden="true"></i>
+                <i class="stages__wave" aria-hidden="true"></i>
+                <img class="stages__car is-on" data-stage-car src="assets/niva/01-stock.png" alt="NIVA, версия «Белая»">
+                <img class="stages__car" data-stage-car data-src="assets/niva/02-blue.png" alt="NIVA, версия «Синяя»">
+                <img class="stages__car" data-stage-car data-src="assets/niva/03-low.png" alt="NIVA, версия «Заниженная»">
+                <img class="stages__car" data-stage-car data-src="assets/niva/04-guard.png" alt="NIVA, версия «Защита»">
+                <img class="stages__car" data-stage-car data-src="assets/niva/05-dark.png" alt="NIVA, версия «Чёрная»">
+                <img class="stages__car" data-stage-car data-src="assets/niva/06-exped.png" alt="NIVA, версия «Экспедиция»">
+                <img class="stages__car" data-stage-car data-src="assets/niva/07-art.png" alt="NIVA, версия «Граффити»">
+              </div>
+              <div class="stages__switch">
+                <button type="button" data-stage="0" aria-pressed="true" data-stage-note="Заводская NIVA: то, с чего начинает каждый игрок."><b>Белая</b><i>STOCK 01</i></button>
+                <button type="button" data-stage="1" aria-pressed="false" data-stage-note="Своя окраска: цвет видно и в гараже, и на трассе."><b>Синяя</b><i>BLUE 02</i></button>
+                <button type="button" data-stage="2" aria-pressed="false" data-stage-note="Заниженная посадка и лёгкие диски."><b>Заниженная</b><i>LOW 03</i></button>
+                <button type="button" data-stage="3" aria-pressed="false" data-stage-note="Силовой бампер, защита картера, внедорожная резина."><b>Защита</b><i>GUARD 04</i></button>
+                <button type="button" data-stage="4" aria-pressed="false" data-stage-note="Тёмная сборка с люстрой на крыше."><b>Чёрная</b><i>DARK 05</i></button>
+                <button type="button" data-stage="5" aria-pressed="false" data-stage-note="Багажник, запаска и канистры на крыше."><b>Экспедиция</b><i>EXPED 06</i></button>
+                <button type="button" data-stage="6" aria-pressed="false" data-stage-note="Роспись кузова: такую машину узнают в лицо."><b>Граффити</b><i>ART 07</i></button>
+              </div>
+              <p class="stages__note" data-stage-caption>Заводская NIVA: то, с чего начинает каждый игрок.</p>
+            </div>
             <div class="gallery__copy">
-              <p class="overline">Тачки в игре · 04 / 06</p>
-              <h2>Две одинаковые машины становятся разными</h2>
+              <p class="overline">Тачки в игре · 05 / 06</p>
+              <h2>Уникальная кастомизация машин для&nbsp;игроков</h2>
               <p>У&nbsp;каждого игрока свой гараж. Редкие детали невозможно просто купить&nbsp;– их&nbsp;нужно заработать. LADA становится не&nbsp;объектом просмотра, а&nbsp;главным предметом желания.</p>
             </div>
           </figure>
           <figure class="gallery__item gallery__item--object">
             <img src="assets/niva-offroad.png" alt="NIVA на бездорожье: шноркель, багажник, запаска на крыше">
             <div class="gallery__copy">
-              <p class="overline">Тачки в игре · 05 / 06</p>
+              <p class="overline">Тачки в игре · 06 / 06</p>
               <h2>NIVA 50: там, где заканчивается дорога</h2>
               <p>К&nbsp;юбилею&nbsp;– серия игровых событий: экспедиции, бездорожье, редкие версии, коллекции. Характер настоящей машины превращается в&nbsp;игровые механики.</p>
             </div>
           </figure>
-          <figure class="gallery__item gallery__item--object">
-            <img src="assets/garage-tuning.png" alt="Гараж игрока: девятка на подъёмнике, диски, инструмент, плакаты">
-            <div class="gallery__copy">
-              <p class="overline">Тачки в игре · 06 / 06</p>
-              <h2>Собранное своими руками ценят дороже</h2>
-              <p>Игровой слой не&nbsp;показывает автомобиль&nbsp;– он&nbsp;заставляет его заработать, собрать и&nbsp;показать другим. Работают три эффекта из&nbsp;поведенческой экономики, и&nbsp;все три играют на&nbsp;образ марки.</p>
-              <ul class="gallery__facts">
-                <li><b>Своё дороже чужого</b><span>Вещь, которая уже принадлежит человеку, оценивается им&nbsp;выше такой&nbsp;же чужой (Талер, 1980).</span></li>
-                <li><b>Собрал сам&nbsp;– полюбил</b><span>Собранное своими руками нравится больше готового (Нортон, Мочон, Ариели, 2011).</span></li>
-                <li><b>Знакомое кажется лучше</b><span>Чем чаще человек видит объект, тем теплее к&nbsp;нему относится (Зайонц, 1968).</span></li>
-              </ul>
-            </div>
-          </figure>
+          <!-- Кадр-предмет: заезд пришёл вырезом на прозрачном фоне, поэтому выводится
+               целиком (contain), а не обрезкой. -->
+          <!-- Кадр-переключатель: пять сборок одной машины. Фон здесь свой, светлеющий
+               к низу: на ровном чёрном пропадал низ машины вместе с тенью. -->
           </div>
           <button class="gallery__nav gallery__nav--prev" type="button" data-gallery-prev aria-label="Предыдущий кадр">‹</button>
           <button class="gallery__nav gallery__nav--next" type="button" data-gallery-next aria-label="Следующий кадр">›</button>
