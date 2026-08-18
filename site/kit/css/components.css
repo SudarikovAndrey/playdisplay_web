@@ -2058,6 +2058,7 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    и он должен читаться как поле для заполнения. */
 .metric-rows .blank { flex: 0 0 auto; width: clamp(62px, 7vw, 96px); }
 @media (max-width: 900px) {
+  .gallery__item--wall .signwall { --sw-card: 132px; --sw-pad: 14px; }
   .split-media { grid-template-columns: minmax(0, 1fr); }
   .split-media__film { margin: 0 auto; max-width: 420px; }
 }
@@ -2065,4 +2066,22 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 /* КАДР СО СТЕНОЙ ВЫВЕСОК. Стена сама тёмная и живая, поэтому затемнение здесь только
    под подписью — иначе гаснут те самые вывески, ради которых кадр и сделан. */
 .gallery__item--wall::after { inset: 62% 0 0 0; background: linear-gradient(180deg, rgba(8,8,9,0), rgba(8,8,9,.62) 55%, rgba(8,8,9,.9)); }
-.gallery__item--wall .signwall { position: absolute; inset: 0; }
+/* Стена ЗАПОЛНЯЕТ КАДР И ОБРЕЗАЕТСЯ ИМ. Скрипт раскладывает вывески рядами и ставит
+   собственную высоту inline (57 штук в три ряда — это под две тысячи пикселей). Здесь
+   нужна не вся стена, а её кусок во весь экран: настоящая стена и в жизни продолжается
+   за краем кадра. Поэтому высота перебивается через !important — иначе inline-значение
+   скрипта побеждает, и кадр вырастает вдвое выше экрана.
+   Вывеска делается мельче (--sw-card), чтобы в кадр попадало пять-шесть штук в ряд:
+   при 300 px их было три, и стена читалась как три полосы, а не как набор. */
+.gallery__item--wall .signwall {
+  position: absolute;
+  inset: 0;
+  height: 100% !important;
+  overflow: hidden;
+  /* ЧИСЛО, А НЕ clamp(). Пользовательские свойства не вычисляются: скрипт читает
+     значение через parseFloat, и от строки «clamp(150px, 15vw, 215px)» получал NaN,
+     после чего брал своё стандартное 300 px — стена оставалась в три вывески в ряд.
+     Проверено замером: ширина карточки была 307 вместо ожидаемых 180. */
+  --sw-card: 186px;
+  --sw-pad: 24px;
+}

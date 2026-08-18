@@ -14,10 +14,12 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=46eea527">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=8f6ce6cd">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
+  <!-- Стена вывесок: свой блок кита, подключается после темы -->
+  <link rel="stylesheet" href="../../kit/css/signwall.css?v=31b3c37d">
   <!-- Стили страницы: правки, которые не относятся к киту, живут здесь, а не в kit/css -->
   <style>
     /* Иконки соц.сетей в шапке слайда "Кто наши игроки" – замена карточки-приглашения
@@ -202,12 +204,72 @@
               <p>Собрать команду, прокачать бойцов, выиграть сражение, поднять авторитет. Успех измеряется тем, что видят другие игроки.</p>
             </div>
           </figure>
-          <figure class="gallery__item">
-            <img src="assets/wide3.jpg" alt="Точка «Техноюра»" style="object-position:50% 38%">
+          <figure class="gallery__item gallery__item--wall">
+            <!-- Стена вывесок вместо кадра с персонажем: набор показывает то, что одна
+                 вывеска показать не может. Курсор работает как внимание — вывеска под ним
+                 растёт и загорается, остальные притушены. -->
+            <div class="signwall" data-signwall aria-label="Вывески магазинов из игры">
+              <img src="assets/shops/01.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/02.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/03.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/04.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/05.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/06.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/07.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/08.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/09.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/10.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/11.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/12.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/13.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/14.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/15.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/16.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/17.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/18.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/19.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/20.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/21.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/22.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/23.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/24.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/25.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/26.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/27.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/28.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/29.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/30.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/31.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/32.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/33.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/34.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/35.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/36.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/37.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/38.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/39.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/40.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/41.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/42.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/43.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/44.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/45.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/46.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/47.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/48.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/49.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/50.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/51.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/52.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/53.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/54.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/55.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/56.jpg" alt="" loading="lazy" width="1024" height="261">
+              <img src="assets/shops/57.jpg" alt="" loading="lazy" width="1024" height="261">
+            </div>
             <div class="gallery__copy">
               <p class="overline">Игра · 05 / 05</p>
-              <h2>«Качественный китайский электроника»</h2>
-              <p>Пацанский юмор в&nbsp;каждой детали: вывески, названия точек, реплики героев. Отсылки, которые узнаёт каждый, кто застал девяностые.</p>
+              <h2>Более 1500 уникальных вывесок с&nbsp;приколами из&nbsp;90-х!</h2>
             </div>
           </figure>
           </div>
@@ -434,7 +496,7 @@
             </div>
           </figure>
           <figure class="gallery__item">
-            <img src="assets/wide5.jpg" alt="Босс района" style="object-position:72% 26%">
+            <img src="assets/race.jpg" alt="Заезд на LADA в игровом мире" style="object-position:50% 42%">
             <div class="gallery__copy">
               <p class="overline">Тачки в игре · 02 / 06</p>
               <h2>Не&nbsp;реклама. Игра.</h2>
@@ -748,6 +810,7 @@
   <script defer src="../../kit/js/spotlight.js?v=593c767d"></script>
   <script defer src="../../kit/js/stages.js?v=0c3cab06"></script>
   <script defer src="../../kit/js/videoctl.js?v=eff3221d"></script>
+  <script defer src="../../kit/js/signwall.js?v=054e0040"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>
   <script defer src="../../kit/js/ui.js?v=0c011b9f"></script>
 </body>
