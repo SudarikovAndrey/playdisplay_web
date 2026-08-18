@@ -27,7 +27,16 @@
   }
 
   function setup(box) {
+    /* РОЛИК ИЩЕМ НЕ ТОЛЬКО ВНУТРИ ПАНЕЛИ. Панель стоит СОСЕДОМ видео, а не оборачивает
+       его: она лежит поверх кадра абсолютом. Поиск только внутри давал null, setup молча
+       выходил, и ни кнопка, ни полоса перемотки не были подключены вовсе — ролик при этом
+       шёл, потому что запуск держит атрибут autoplay, и поломка выглядела как «полоса не
+       работает», хотя не работало всё управление. */
     var video = box.querySelector('video');
+    if (!video) {
+      var host = box.closest('figure, .split-media__film, .art-frame, section') || box.parentNode;
+      if (host) video = host.querySelector('video');
+    }
     var play = box.querySelector('[data-vctl-play]');
     var bar = box.querySelector('[data-vctl-bar]');
     var time = box.querySelector('[data-vctl-time]');
@@ -61,6 +70,9 @@
       video.addEventListener('loadedmetadata', function () {
         if (time) time.textContent = fmt(0) + ' / ' + fmt(video.duration);
       });
+      /* Длительность могла прийти ДО подключения скрипта: файл в кэше, а скрипты с defer.
+         Тогда loadedmetadata уже не сработает, и панель осталась бы с «0:00 / 0:00». */
+      if (video.readyState >= 1 && time) time.textContent = fmt(video.currentTime) + ' / ' + fmt(video.duration);
       var seek = function () {
         if (!video.duration) return;
         video.currentTime = (Number(bar.value) / 1000) * video.duration;

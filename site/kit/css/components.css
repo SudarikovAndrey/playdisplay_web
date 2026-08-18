@@ -1800,6 +1800,28 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   transition: opacity .22s ease;
 }
 .stages__car.is-on { opacity: 1; }
+/* МАШИНА ДОЛЖНА СТОЯТЬ, А НЕ ВИСЕТЬ. Одной мягкой эллиптической тени для этого мало:
+   она читается как пятно под предметом, а не как опора. Здесь три слоя, и каждый делает
+   свою работу:
+     • ПОЛ — широкое светлое пятно, уходящее в перспективу: даёт поверхность, на которой
+       вообще возможно стоять (::before у сцены, за машиной);
+     • КОНТАКТ — узкая плотная тень ровно по линии колёс, почти без размытия: она и
+       «прижимает» машину к полу;
+     • РАСТУШЁВКА — та же тень шире и слабее, чтобы контакт не выглядел наклейкой.
+   Линия земли у всех кадров одна (97,2 % высоты, замер по альфе), поэтому оба слоя
+   привязаны к ней. */
+.stages__stage::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 97.2%;
+  width: 150%;
+  height: 34%;
+  transform: translate(-50%, -46%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(226,214,192,.13), rgba(226,214,192,.05) 55%, transparent 78%);
+  pointer-events: none;
+}
 .stages__shadow {
   position: absolute;
   left: 50%;
@@ -1807,12 +1829,27 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   top: 97.2%;
   z-index: -1;
   width: calc(var(--shadow-w, .7) * 100%);
-  height: 4.6%;
-  transform: translate(-50%, -62%);
+  height: 3.4%;
+  transform: translate(-50%, -64%);
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(0,0,0,.72) 0 72%, rgba(0,0,0,.5) 86%, transparent 100%);
-  filter: blur(2px);
+  background:
+    radial-gradient(closest-side, rgba(0,0,0,.85) 0 58%, rgba(0,0,0,.42) 82%, transparent 100%);
+  filter: blur(1.5px);
   transition: width .22s ease;
+}
+/* Растушёвка под контактом: шире и слабее, гасит эффект наклейки */
+.stages__shadow::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 168%;
+  height: 340%;
+  transform: translate(-50%, -34%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0,0,0,.5), rgba(0,0,0,.16) 58%, transparent 82%);
+  filter: blur(7px);
+  z-index: -1;
 }
 .stages__switch { display: flex; flex-direction: column; gap: 8px; }
 .stages__switch button {
@@ -2084,4 +2121,33 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
      Проверено замером: ширина карточки была 307 вместо ожидаемых 180. */
   --sw-card: 186px;
   --sw-pad: 24px;
+}
+
+/* ФОН СЛАЙДА ПОД ФОН РОЛИКА. У промо своя подложка – замер по углам кадра дал
+   rgb(22,22,24), у страницы асфальт темнее (#0b0b0c), и края ролика читались рамкой.
+   Красим не весь слайд, а пятно вокруг ролика: ровный светлый прямоугольник разошёлся бы
+   с соседними слайдами в режиме прокрутки, а пятно с уходом в прозрачность – нет. */
+.slide--film-bg {
+  background:
+    radial-gradient(64% 68% at 72% 50%, #161618 0%, rgba(22,22,24,.72) 44%, rgba(22,22,24,0) 78%),
+    linear-gradient(180deg, #0b0b0c, #0e0e10 60%, #0b0b0c);
+}
+
+/* ── ПОСЛЕДНИЙ ЭКРАН: КОМАНДА ИГРЫ ───────────────────────────────────────
+   Компред заканчивается не выводом, а людьми: за автомобильный слой отвечает та же
+   команда, что делает саму игру. Знак стоит крупно и первым – он здесь подпись автора. */
+.team-final { display: grid; justify-items: center; text-align: center; gap: clamp(16px, 2.4vw, 32px); }
+.team-final__mark { width: auto; height: clamp(56px, 8.4vw, 132px); }
+.team-final h2 { max-width: 22ch; }
+.slide .team-final p { max-width: 62ch; margin: 0 auto; }
+.team-final__facts { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(10px, 1.6vw, 26px); }
+.team-final__facts span {
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--glass);
+  color: var(--paper);
+  font: 600 11px/1.2 "Roboto Mono", monospace;
+  letter-spacing: .13em;
+  text-transform: uppercase;
 }
