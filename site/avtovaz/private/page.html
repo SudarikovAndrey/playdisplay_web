@@ -18,6 +18,24 @@
   <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
+  <!-- Стили страницы: правки, которые не относятся к киту, живут здесь, а не в kit/css -->
+  <style>
+    /* Иконки соц.сетей в шапке слайда "Кто наши игроки" – замена карточки-приглашения
+       с текстом на пару кружков-ссылок без подписи (see slide s05) */
+    .social-icons { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 0 0 auto; }
+    .social-icons__item { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; transition: transform .2s ease, box-shadow .2s ease; }
+    .social-icons__item:hover { transform: translateY(-2px); }
+    .social-icons__item svg { width: 20px; height: 20px; fill: #fff; }
+    .social-icons__item--tg { background: #2aa6eb; }
+    .social-icons__item--vk { background: #0077ff; }
+
+    /* Кит задаёт .slide-head p max-width:780px (components.css) – узко для абзацев
+       с длинным текстом. Кит не трогаем, перекрываем здесь. Обложку (.slide--cover)
+       не трогаем – там текст уже без ограничения ширины отдельным правилом кита. */
+    .slide:not(.slide--cover) .slide-head p {
+      max-width: 1024px;
+    }
+  </style>
 </head>
 <!-- deck – режим презентации: прокрутка прилипает к слайдам. theme-street – оформление
      под мир игры; фактуру картона даёт страница, у кита своей нет -->
@@ -51,9 +69,10 @@
     <a href="#s07" data-section="s07"><span>04</span><small>Портрет</small></a>
     <a href="#g02" data-section="g02"><span>05</span><small>Тачки в игре</small></a>
     <a href="#s13" data-section="s13"><span>06</span><small>Что получает LADA</small></a>
-    <a href="#s10b" data-section="s10b"><span>07</span><small>Границы</small></a>
-    <a href="#s18b" data-section="s18b"><span>08</span><small>Сроки</small></a>
-    <a href="#s21" data-section="s21"><span>09</span><small>Предложение</small></a>
+    <a href="#s14" data-section="s14"><span>07</span><small>KPI</small></a>
+    <a href="#s10b" data-section="s10b"><span>08</span><small>Границы</small></a>
+    <a href="#s18b" data-section="s18b"><span>09</span><small>Сроки</small></a>
+    <a href="#s21" data-section="s21"><span>10</span><small>Предложение</small></a>
     <p class="nav-legal">© Playdisplay · для АвтоВАЗ</p>
   </nav>
 
@@ -84,6 +103,7 @@
             <li><b>750 000+</b><span>установок</span></li>
             <li><b>130 000</b><span>игроков в месяц</span></li>
             <li><b>18 000</b><span>игроков в день</span></li>
+            <li><b>160</b><span>минут в игре</span></li>
             <li><b>4,4</b><span>рейтинг, 10 000 оценок</span></li>
           </ul>
         </div>
@@ -197,12 +217,16 @@
           <div class="slide-head reveal">
             <p class="overline">Аудитория</p>
             <h2>Кто наши игроки</h2>
-            <p>Мужчина 18–44, ядро 35–44. В&nbsp;мобильных играх выбирает настолки, экономические симуляторы, файтинги и&nbsp;<b>гонки</b>: автомобильная тема этой аудитории не&nbsp;чужая, её&nbsp;там просто пока нет.</p>
+            <p>Мужчины 18–44, ядро 35–44. Испытывают лёгкую ностальгию по&nbsp;шальным 90-м из-за ярких воспоминаний детства и юношества, множества возможностей и безграничных перспектив. В&nbsp;мобильных играх выбирает казуальные игры: настолки, экономические симуляторы, файтинги и&nbsp;<b>гонки</b>.</p>
           </div>
-          <a class="community-card" href="https://t.me/market_bros_chat" target="_blank" rel="noopener">
-            <span class="community-card__mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.9 19c-.2 1-.8 1.2-1.7.8l-4.6-3.4-2.2 2.1c-.2.2-.4.4-.9.4l.3-4.6 8.4-7.6c.4-.3-.1-.5-.6-.2L7.3 13l-4.4-1.4c-1-.3-1-1 .2-1.4l17.2-6.6c.8-.3 1.5.2 1.2 1.4z"/></svg></span>
-            <span class="community-card__text"><b>Живое сообщество игроков</b><i>t.me/market_bros_chat</i></span>
-          </a>
+          <div class="social-icons">
+            <a class="social-icons__item social-icons__item--tg" href="https://t.me/market_bros_chat" target="_blank" rel="noopener" aria-label="Телеграм-сообщество игроков">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.9 19c-.2 1-.8 1.2-1.7.8l-4.6-3.4-2.2 2.1c-.2.2-.4.4-.9.4l.3-4.6 8.4-7.6c.4-.3-.1-.5-.6-.2L7.3 13l-4.4-1.4c-1-.3-1-1 .2-1.4l17.2-6.6c.8-.3 1.5.2 1.2 1.4z"/></svg>
+            </a>
+            <a class="social-icons__item social-icons__item--vk" href="https://vk.ru/patsanmarket" target="_blank" rel="noopener" aria-label="Группа ВКонтакте">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.2 17.9c-6.4 0-10.4-4.4-10.5-11.7h3.3c.1 5.2 2.4 7.5 4.1 7.9v-7.9h3.1v4.6c1.7-.2 3.5-2.3 4.1-4.6h3.1c-.5 2.8-2.6 4.9-4.1 5.8 1.5.7 3.9 2.5 4.8 5.9h-3.4c-.7-2.2-2.3-3.9-4.5-4.1v4.1z"/></svg>
+            </a>
+          </div>
         </div>
         <div class="diagram collection-diagram collection-diagram--tight">
           <div><b>33,5 млн</b><span>целевых игроков: мужчины 18–44, любители настолок, симуляторов и&nbsp;гонок</span></div>
@@ -414,7 +438,7 @@
             </div>
             <div class="stages__switch">
               <button type="button" data-stage="0" aria-pressed="true" data-stage-note="Заводская машина: то, с чего начинает каждый игрок."><b>Сток</b><i>BASE 01</i></button>
-              <button type="button" data-stage="1" aria-pressed="false" data-stage-note="Багажник и уверенная резина — первые детали, которые видно со стороны."><b>Турист</b><i>ROUTE 02</i></button>
+              <button type="button" data-stage="1" aria-pressed="false" data-stage-note="Багажник и уверенная резина – первые детали, которые видно со стороны."><b>Турист</b><i>ROUTE 02</i></button>
               <button type="button" data-stage="2" aria-pressed="false" data-stage-note="Лифт, силовая защита и колёса под сложный рельеф."><b>Трейл</b><i>TRAIL 03</i></button>
               <button type="button" data-stage="3" aria-pressed="false" data-stage-note="Полная автономность: топливо, защита, экспедиционный сетап."><b>Экспедиция</b><i>EXPED 04</i></button>
               <button type="button" data-stage="4" aria-pressed="false" data-stage-note="Предельная сборка. Её видят все, и собрать её можно только временем."><b>Легенда</b><i>MAX 05</i></button>
@@ -512,8 +536,8 @@
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Границы</p>
-          <h2>Чего LADA в&nbsp;игре не&nbsp;делает</h2>
-          <p>Мир игры криминальный – автомобиль в нём остаётся ценностью, а не участником криминала. Границы записываются в договор и проверяются на каждом релизе.</p>
+          <h2>Как LADA представлена в&nbsp;игре</h2>
+          <p>Мир игры пацанский – автомобиль в нём остаётся ценностью, а не участником разборок.</p>
         </div>
         <ul class="clean-list">
           <li>Не отнимается у игрока и не «отжимается» у других.</li>
@@ -523,7 +547,7 @@
           <li>Не участвует в шутках про качество и надёжность.</li>
           <li>Любые пользовательские сборки проходят модерацию до публикации.</li>
         </ul>
-        <p class="slide-note">Право вето на каждый материал с автомобилем остаётся за АвтоВАЗом: согласование за 5 рабочих дней до релиза обновления.</p>
+        <p class="slide-note">Право вето на каждый материал с автомобилем остаётся за АвтоВАЗом: согласование за 15 рабочих дней до релиза обновления.</p>
       </div>
     </section>
     <!-- ═══ 16. СЕЗОН ═══ -->
@@ -531,7 +555,7 @@
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Юбилейный сезон</p>
-          <h2>Серия связанных событий на <span class="blank" aria-label="уточняется"></span> месяцев</h2>
+          <h2>Серия связанных событий на&nbsp;3–5 месяцев</h2>
           <p>Каждое событие – отдельная механика со своей наградой. Названия и содержание согласуем вместе.</p>
         </div>
         <div class="concept-grid">
@@ -552,12 +576,12 @@
           <p>Юбилей NIVA привязан к весне 2027 года, поэтому автомобильный слой должен выйти в игру заранее и успеть набрать игроков до старта сезона.</p>
         </div>
         <div class="timeline">
-          <div><em>1 квартал</em><b>Договор и данные</b><span>Границы бренда, список моделей, сверка аудиторий, фиксация KPI.</span></div>
-          <div><em>2 квартал</em><b>Разработка слоя</b><span>Гараж, карточки автомобилей, тюнинг, экономика. Согласование каждого материала.</span></div>
-          <div><em>3 квартал</em><b>Релиз и разгон</b><span>Автомобильный слой в игре, закупка аудитории, первые отчёты по метрикам.</span></div>
+          <div><em>Q3 2026</em><b>Договор и данные</b><span>Границы бренда, список моделей, сверка аудиторий, фиксация KPI.</span></div>
+          <div><em>Q4 2026</em><b>Разработка слоя</b><span>Гараж, карточки автомобилей, тюнинг, экономика. Согласование каждого материала.</span></div>
+          <div><em>Q1 2027</em><b>Релиз и разгон</b><span>Автомобильный слой в игре, закупка аудитории, первые отчёты по метрикам.</span></div>
           <div><em>Весна 2027</em><b>Сезон NIVA 50</b><span>Юбилейные события, коллекция, соревнования, публичный итог кампании.</span></div>
         </div>
-        <p class="slide-note">Точные даты выставляем от даты подписания: разработка слоя – <span class="blank" aria-label="уточняется"></span> недель с момента старта.</p>
+        <p class="slide-note">Точные даты выставляем от даты подписания: разработка слоя – 6 недель с момента старта.</p>
       </div>
     </section>
     <!-- ═══ 18. ПРОДУКТ И МЕДИА ═══ -->
@@ -625,7 +649,7 @@
           </div>
           <div class="compare-col compare-col--strong">
             <span>Игровой контакт</span>
-            <b>30 млн ₽ ÷ часы взаимодействия = <span class="blank" aria-label="уточняется"></span> ₽ за час</b>
+            <b>30 млн ₽ ÷ часы взаимодействия = 10–15 ₽ за час</b>
             <p>Считается по фактическим часам в автомобильном слое, а не по показам. Прогноз и методику расчёта фиксируем в приложении к договору.</p>
           </div>
         </div>
@@ -642,7 +666,7 @@
         <div class="compare">
           <div class="compare-col">
             <span>Сегодня</span>
-            <b>750 000+ установок · 130 000 игроков в&nbsp;месяц · 18 000 в&nbsp;день · рейтинг 4,4</b>
+            <b>750 000+ установок · 130 000 игроков в&nbsp;месяц · 18 000 в&nbsp;день · 160 минут в&nbsp;игре · рейтинг 4,4</b>
             <p>Google Play · App Store · Яндекс Игры · VK · OK · собственные сообщества.</p>
           </div>
           <div class="compare-col compare-col--strong">
