@@ -1,0 +1,62 @@
+/* СТЕНА ВЫВЕСОК (signwall)
+   Много однотипных вывесок разом. Курсор работает как внимание: вывеска под ним
+   растёт и загорается, остальные притушены. Читать стену иначе нельзя – полсотни
+   равных плашек глаз воспринимает как таблицу и не задерживается ни на одной.
+
+   Раскладку и движение считает signwall.js: рядов и высоты в разметке нет,
+   потому что и то и другое зависит от фактической ширины колонки. */
+
+.signwall {
+  position: relative;
+  /* Поле по краям – это место, куда растёт крайняя вывеска. Без него рост
+     у края обрезается контейнером, и стена кажется сломанной именно с краю. */
+  padding: var(--sw-pad, 42px) var(--sw-pad, 42px);
+  /* Ширина вывески – опора всей раскладки, скрипт читает её отсюда,
+     чтобы размер правился в одном месте и вместе с темой страницы. */
+  --sw-card: 300px;
+  --sw-gap: 10px;
+}
+
+/* Пока скрипт не разложил карточки, показывать поток картинок нельзя:
+   57 штук в столбик растянут страницу на десятки экранов и дёрнут её вниз. */
+.signwall:not(.is-ready) { height: 320px; overflow: hidden; }
+.signwall:not(.is-ready) img { opacity: 0; }
+
+.signwall__card {
+  position: absolute;
+  transform-origin: 50% 50%;
+  border-radius: 3px;
+  overflow: hidden;
+  will-change: transform;
+  box-shadow: 0 6px 18px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.06) inset;
+}
+.signwall__card img {
+  display: block; width: 100%; height: 100%;
+  object-fit: cover; pointer-events: none;
+}
+
+/* Приглушение – отдельный слой, а не filter на карточке: filter заставляет
+   браузер перерисовывать картинку, а прозрачность слоя он двигает на видеокарте.
+   На полусотне карточек в каждом кадре разница решающая. */
+.signwall__dim {
+  position: absolute; inset: 0;
+  background: var(--sw-dim-color, #0a0c10);
+  opacity: 0; pointer-events: none; will-change: opacity;
+}
+.signwall__glow {
+  position: absolute; inset: -1px; border-radius: 4px;
+  opacity: 0; pointer-events: none; will-change: opacity;
+  box-shadow: 0 0 0 1px rgba(255,232,180,.55), 0 10px 40px rgba(255,190,90,.28);
+}
+
+/* Указателя нет – наводить внимание нечем, и постоянное приглушение читалось бы
+   как дефект картинки. Стена остаётся, эффект снимается целиком. */
+@media (hover: none), (pointer: coarse) {
+  .signwall__dim, .signwall__glow { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signwall__dim, .signwall__glow { display: none; }
+}
+
+@media (max-width: 900px) { .signwall { --sw-card: 210px; --sw-pad: 20px; } }
+@media (max-width: 560px) { .signwall { --sw-card: 150px; --sw-pad: 12px; } }
