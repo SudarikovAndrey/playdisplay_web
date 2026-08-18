@@ -71,14 +71,25 @@
       bar.addEventListener('pointerup', function () { dragging = false; });
     }
 
-    /* Пуск и пауза по видимости кадра. Порог половины: у галереи кадры сменяются
-       прокруткой ленты, и на середине хода видны сразу два. */
+    /* ПУСК ПРИ ПОЯВЛЕНИИ КАДРА. Наблюдаем САМ КАДР, а не панель управления: панель
+       маленькая и живёт в углу, её доля видимости ничего не говорит о том, дошёл ли
+       человек до этого кадра.
+       Порог невысокий (0.35): у галереи кадры сменяются прокруткой ленты, и на середине
+       хода видны сразу два — ждать полной видимости значит запускать с опозданием. */
+    var frame = box.closest('.gallery__item, .slide, figure') || box;
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (es) {
-        var vis = es[0].isIntersecting && es[0].intersectionRatio > 0.5;
-        if (vis) { if (!pausedByHand) video.play().catch(function () {}); }
-        else if (!video.paused) video.pause();
-      }, { threshold: [0, 0.5, 1] }).observe(box);
+        var vis = es[0].isIntersecting && es[0].intersectionRatio > 0.35;
+        if (vis) {
+          if (pausedByHand) return;
+          var p = video.play();
+          /* Отказ не глотаем: браузер может запретить автопуск, и тогда кнопка обязана
+             остаться в положении «пуск», а не врать, что ролик идёт. */
+          if (p && p.catch) p.catch(paint);
+        } else if (!video.paused) {
+          video.pause();
+        }
+      }, { threshold: [0, 0.35, 0.7, 1] }).observe(frame);
     }
 
     paint();

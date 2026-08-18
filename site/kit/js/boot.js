@@ -5,11 +5,14 @@
  * рывками приходящие куски. Здесь мы держим слой поверх, пока не пришло главное, и
  * снимаем его одним плавным уходом.
  *
- * Что считается «главным». Ждать `window.load` целиком нельзя: в книге двенадцать
- * тяжёлых кадров и два ролика, и заставка висела бы десятки секунд. Ждём:
- *   • шрифты (document.fonts.ready) — без них текст перескакивает;
- *   • картинки ПЕРВОГО ЭКРАНА, то есть те, что попадают в первые два экрана прокрутки.
- * Остальное догружается уже за открытой книгой.
+ * Что считается «главным» — ЗАВИСИТ ОТ ДОКУМЕНТА, и это выбор разметки:
+ *   • по умолчанию ждём шрифты и картинки ПЕРВЫХ ДВУХ ЭКРАНОВ. Так сделана книга: в ней
+ *     двенадцать тяжёлых кадров и два ролика, и полное ожидание держало бы заставку
+ *     десятки секунд;
+ *   • атрибут data-boot-all на слое заставки означает «ждать ВСЁ»: картинки, отложенные
+ *     кадры и первые кадры роликов. Так сделана презентация: её листают на защите, и
+ *     догрузка посреди показа выглядит как поломка. Прокрутка на это время заблокирована
+ *     (html.booting), поэтому пролистать недогруженное нельзя физически.
  *
  * Полоса показывает НАСТОЯЩУЮ долю загруженного, а не бегает туда-сюда: пустая полоса
  * с абстрактной анимацией не даёт понять, ждать ли ещё.
@@ -36,15 +39,38 @@
     setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 800);
   }
 
-  // картинки первых двух экранов
+  var all = boot.hasAttribute('data-boot-all');
+
+  // картинки: либо все, либо только первых двух экранов
   var need = [];
-  var imgs = document.querySelectorAll('main img, .hero-visual img');
+  var imgs = document.querySelectorAll('main img, .hero-visual img, footer img');
   Array.prototype.forEach.call(imgs, function (im) {
+    if (all) {
+      /* Отложенная загрузка на время заставки снимается: браузер не тронул бы картинку,
+         пока она далеко от экрана, и ожидание висело бы до предохранителя. */
+      if (im.getAttribute('loading') === 'lazy') im.setAttribute('loading', 'eager');
+      need.push(im);
+      return;
+    }
     var top = im.getBoundingClientRect().top + (window.scrollY || 0);
     if (top < innerHeight * 2) need.push(im);
   });
 
-  var total = need.length + 1;                  // +1 — шрифты
+  /* Кадры, отложенные до нажатия (сборки машины), при полном ожидании грузим сразу:
+     иначе первое переключение на защите показало бы пустое место. */
+  if (all) {
+    Array.prototype.forEach.call(document.querySelectorAll('img[data-src]'), function (im) {
+      if (!im.getAttribute('src')) im.setAttribute('src', im.getAttribute('data-src'));
+      need.push(im);
+    });
+  }
+
+  /* Ролики: ждём ПЕРВЫЕ КАДРЫ (loadeddata), а не полную загрузку. Полная — это десятки
+     мегабайт и минуты ожидания; первых кадров хватает, чтобы кадр не был пустым, а
+     дальше браузер догружает сам. */
+  var vids = all ? document.querySelectorAll('video') : [];
+
+  var total = need.length + vids.length + 1;    // +1 — шрифты
   var ready = 0;
   function step() {
     ready++;
@@ -61,6 +87,18 @@
     im.addEventListener('error', step, { once: true });
   });
 
-  if (!need.length) step();                     // считать нечего — открываем по шрифтам
-  setTimeout(open, 8000);                       // предохранитель
+  Array.prototype.forEach.call(vids, function (v) {
+    // preload="metadata" не тянет кадры: для ожидания нужен хотя бы первый кадр
+    if (v.getAttribute('preload') !== 'auto') v.setAttribute('preload', 'auto');
+    if (v.readyState >= 2) { step(); return; }
+    v.addEventListener('loadeddata', step, { once: true });
+    v.addEventListener('error', step, { once: true });
+  });
+
+  if (!need.length && !vids.length) step();     // считать нечего — открываем по шрифтам
+  /* Предохранитель. При полном ожидании он длиннее: там десятки мегабайт, и обрыв на
+     восьмой секунде показал бы недогруженную презентацию — то самое, от чего уходим.
+     Но он обязателен в любом случае: документ, отправленный партнёру, не должен
+     остаться чёрным экраном из-за одного недошедшего файла. */
+  setTimeout(open, all ? 30000 : 8000);
 })();
