@@ -2155,3 +2155,23 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   letter-spacing: .13em;
   text-transform: uppercase;
 }
+
+/* ── СМЕНА КАДРОВ НА ОДНОМ МЕСТЕ (js/crossfade.js) ────────────────────────
+   Переход ДОЛГИЙ (1,2 с) намеренно: быстрый кроссфейд между двумя пейзажами читается
+   как рывок или сбой загрузки, а медленный — как дыхание кадра. */
+.gallery__item [data-fade-shot] { opacity: 0; transition: opacity 1.2s ease; }
+.gallery__item [data-fade-shot].is-on { opacity: 1; }
+
+/* Предмет ПОЛУТОРА-ДВУХКРАТНО крупнее: у широких плоских диорам (заезд, стена) запас по
+   ширине есть, а текст кадра стоит в нижнем левом углу, где у выреза прозрачно. */
+.gallery__item--object-xl img {
+  inset: 0 0 auto auto;
+  width: 88%;
+  height: 82%;
+  object-position: 100% 34%;
+}
+.gallery__item--object-xl .gallery__copy { width: min(38%, 460px); }
+@media (max-width: 900px) {
+  .gallery__item--object-xl img { inset: 4% 0 auto 0; width: 100%; height: 44%; object-position: 50% 50%; }
+  .gallery__item--object-xl .gallery__copy { width: auto; }
+}
