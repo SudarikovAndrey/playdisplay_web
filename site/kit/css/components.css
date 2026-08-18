@@ -2012,29 +2012,52 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    под друга нельзя – в режиме слайдов высота дефицитна, и второй блок уезжает за край.
    Ролик стоит справа КВАДРАТОМ по центру колонки: исходник квадратный (4096×4096), и
    растягивать его на всю высоту значило бы обрезать половину кадра. */
-.split-media { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .82fr); align-items: center; gap: clamp(18px, 3vw, 46px); }
+/* Пропорции в пользу ролика: содержание слева ужато до строк, а не плашек, и место
+   отдано картинке — так же, как на кадрах галереи, где предмет главнее подписи. */
+.split-media { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); align-items: center; gap: clamp(18px, 3vw, 44px); }
+/* РАМКИ У РОЛИКА НЕТ СОЗНАТЕЛЬНО. У него свой тёмный фон, и рамка с закруглением
+   превращала кадр в «окошко на слайде»: видно было контейнер, а не сцену. Без рамки
+   ролик сливается с асфальтом страницы и читается как предмет, лежащий на ней.
+   contain, а не cover: исходник квадратный, и обрезка съедала бы края комнаты. */
 .split-media__film {
   position: relative;
   aspect-ratio: 1;
   width: 100%;
-  max-width: 520px;
+  max-width: 640px;
   margin-left: auto;
-  border: 1px solid var(--line);
-  border-radius: 5px;
-  overflow: hidden;
-  background: #0c0c0e;
 }
-.split-media__film video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.split-media__film video { display: block; width: 100%; height: 100%; object-fit: contain; }
 /* Панель управления внутри рамки ролика: общий отступ снизу считается от кнопки
    «в начало», а здесь рамка до неё не доходит, и поднимать панель не нужно. */
-.split-media__film .vctl { right: 10px; bottom: 10px; padding: 6px 12px 6px 6px; }
+.split-media__film .vctl { right: 6%; bottom: 4%; padding: 6px 12px 6px 6px; }
 .split-media__film .vctl__play { width: 30px; height: 30px; }
 .split-media__film .vctl__time { display: none; }
-/* Цифры в узкой колонке идут парами: пять плиток в один ряд здесь ужимаются до
-   нечитаемых полосок. Последняя занимает всю ширину, иначе ряд выглядит обрубленным. */
-.collection-diagram--pairs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.collection-diagram--pairs > div:last-child { grid-column: 1 / -1; }
+
+/* ── ЦИФРЫ СТРОКАМИ, А НЕ ПЛАШКАМИ ────────────────────────────────────────
+   Плашки под пустые значения занимали пол-экрана и ничего не сообщали: в них нечего
+   читать, пока цифру не подставили. Строка с тонкой чертой держит тот же смысл в пятой
+   части высоты, и освободившееся место уходит картинке. */
+.metric-rows { display: grid; }
+.metric-rows > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: clamp(12px, 2vw, 28px);
+  padding: clamp(8px, 1.1vh, 12px) 0;
+  border-bottom: 1px solid var(--line);
+}
+.metric-rows > div:first-child { border-top: 1px solid var(--line); }
+.metric-rows i {
+  font-style: normal;
+  color: var(--paper);
+  font: 600 clamp(10.5px, .88vw, 12.5px)/1.2 "Roboto Mono", monospace;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+/* Пропуск в строке шире, чем в тексте: это не пробел в предложении, а место под число,
+   и он должен читаться как поле для заполнения. */
+.metric-rows .blank { flex: 0 0 auto; width: clamp(62px, 7vw, 96px); }
 @media (max-width: 900px) {
   .split-media { grid-template-columns: minmax(0, 1fr); }
-  .split-media__film { margin: 0 auto; max-width: 380px; }
+  .split-media__film { margin: 0 auto; max-width: 420px; }
 }

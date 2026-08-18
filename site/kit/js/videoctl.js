@@ -96,6 +96,25 @@
       vio.observe(video);
     }
 
+    /* ЗАПАСНОЙ ПУСК ПО ПЕРВОМУ КАСАНИЮ СТРАНИЦЫ. Некоторые браузеры отказывают в
+       автозапуске даже приглушённому ролику — настройка сайта, экономия батареи, режим
+       чтения. Тогда первое же действие человека на странице считается разрешением, и
+       ролик, который должен идти, запускается. Слушатель одноразовый и на всё окно:
+       ждать касания именно по ролику нельзя, до него ещё нужно доскроллить. */
+    if (video.paused && !pausedByHand) {
+      var kick = function () {
+        if (!pausedByHand && video.paused) {
+          var r = video.getBoundingClientRect();
+          if (r.bottom > 0 && r.top < innerHeight) {
+            var q = video.play();
+            if (q && q.catch) q.catch(function () {});
+          }
+        }
+      };
+      addEventListener('pointerdown', kick, { once: true, passive: true });
+      addEventListener('keydown', kick, { once: true });
+    }
+
     paint();
   }
 
