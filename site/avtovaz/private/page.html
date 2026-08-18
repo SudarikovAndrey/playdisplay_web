@@ -14,7 +14,7 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=f965d313">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=ae2bacb3">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
@@ -196,8 +196,10 @@
               <p>Сотни уникальных персонажей, у&nbsp;каждого свой характер и&nbsp;судьба. История пронизана юмором и&nbsp;отсылками на&nbsp;культовые произведения про&nbsp;эпоху 90-х.</p>
             </div>
           </figure>
-          <figure class="gallery__item">
-            <img src="assets/wide6.jpg" alt="Банда игрока: карточки бойцов" style="object-position:50% 34%">
+          <figure class="gallery__item" data-fade data-fade-hold="3000">
+            <!-- Два кадра на одном месте, смена раз в три секунды (kit/js/crossfade.js?v=030680e1) -->
+            <img class="is-on" data-fade-shot src="assets/wide6.jpg" alt="Банда игрока: карточки бойцов" style="object-position:50% 34%">
+            <img data-fade-shot data-src="assets/fight.jpg" alt="Гаражи района" style="object-position:50% 46%">
             <div class="gallery__copy">
               <p class="overline">Игра · 04 / 05</p>
               <h2>Прокачал своих&nbsp;– взял район</h2>
@@ -495,7 +497,7 @@
               <p>В&nbsp;игре есть деньги, бизнесы, районы, бойцы и&nbsp;статус. Нет главного символа успеха той эпохи&nbsp;– автомобиля. Мы&nbsp;создаём новый игровой слой: ТАЧКИ.</p>
             </div>
           </figure>
-          <figure class="gallery__item gallery__item--object">
+          <figure class="gallery__item gallery__item--object gallery__item--object-xl">
             <img src="assets/race.png" alt="Заезд на LADA: две машины на трассе">
             <div class="gallery__copy">
               <p class="overline">Тачки в игре · 02 / 06</p>
@@ -806,13 +808,13 @@
       <div class="slide-shell">
         <div class="team-final reveal">
           <img class="team-final__mark" src="assets/market-logo.png" alt="Рынок Пацана">
-          <h2>Автомобильный слой сделает та&nbsp;же команда, что делает игру</h2>
-          <p>Разработка, арт, гейм-дизайн и&nbsp;продвижение внутри одной команды: механику не&nbsp;нужно согласовывать с&nbsp;посторонним издателем. Первая программа создаёт автомобильную платформу, NIVA&nbsp;50 превращает её&nbsp;в&nbsp;юбилейную кампанию 2027 года&nbsp;– и&nbsp;дальше платформа работает без дополнительных вложений.</p>
-          <div class="team-final__facts">
-            <span>750 000+ установок</span>
-            <span>130 000 игроков в месяц</span>
-            <span>Издатель Roll to Rule</span>
-          </div>
+          <p class="overline">Играть сейчас</p>
+          <ul class="stores stores--links stores--tiles">
+            <li class="ico--play"><a href="https://play.google.com/store/apps/details?id=com.r2rstudio.blockboss" target="_blank" rel="noopener" data-action="Скачать ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2.6v18.8c0 .6.6 1 1.1.7l14.4-8.7c.5-.3.5-1.1 0-1.4L5.1 1.9C4.6 1.6 4 2 4 2.6z"/></svg>Google Play</a></li>
+            <li class="ico--apple"><a href="https://apps.apple.com/ru/app/id6740486705" target="_blank" rel="noopener" data-action="Скачать ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.5zM14.2 5.3c.6-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.8-1.3z"/></svg>App Store</a></li>
+            <li class="ico--ya"><a href="https://yandex.ru/games/search?query=%D1%80%D1%8B%D0%BD%D0%BE%D0%BA%20%D0%BF%D0%B0%D1%86%D0%B0%D0%BD%D0%B0" target="_blank" rel="noopener" data-action="Играть ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><mask id="yaFinal" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><path fill="#000" d="M14.9 5.4h2.6v13.2h-2.6v-5.1h-1.2l-2.6 5.1H7.9l3.2-6c-1.6-.6-2.5-1.9-2.5-3.6 0-2.3 1.7-3.6 4.3-3.6h2zm0 2.1h-1.7c-1.3 0-2 .6-2 1.7 0 1.1.7 1.7 2 1.7h1.7z"/></mask><circle cx="12" cy="12" r="11" mask="url(#yaFinal)"/></svg>Яндекс Игры</a></li>
+          </ul>
+        </div>
         </div>
       </div>
     </section>
@@ -820,10 +822,6 @@
 
   <footer class="final-credits" id="contacts">
     <div class="final-credits__main">
-      <div class="final-credits__director">
-        <img src="assets/andrey-sudarikov.webp" alt="Андрей Судариков">
-        <p><span>Команда «Рынок Пацана»</span><strong>Андрей Судариков</strong></p>
-      </div>
       <div class="lockup">
         <img class="on-dark lockup-mark--wide" src="assets/lada-lockup.png" alt="LADA">
         <span class="lockup-x">×</span>
@@ -844,6 +842,7 @@
   <script defer src="../../kit/js/gallery.js?v=129df3a0"></script>
   <script defer src="../../kit/js/spotlight.js?v=593c767d"></script>
   <script defer src="../../kit/js/stages.js?v=0c3cab06"></script>
+  <script defer src="../../kit/js/crossfade.js?v=030680e1"></script>
   <script defer src="../../kit/js/videoctl.js?v=c4567837"></script>
   <script defer src="../../kit/js/signwall.js?v=054e0040"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>
