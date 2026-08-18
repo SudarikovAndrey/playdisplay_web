@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b0b0c">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="description" content="LADA × Рынок Пацана – игровая программа на 2027 год. Коммерческое предложение Playdisplay.">
+  <meta name="description" content="LADA × Рынок Пацана – игровая программа на 2027 год. Коммерческое предложение команды «Рынок Пацана».">
   <title>LADA × Рынок Пацана · коммерческое предложение</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +29,15 @@
     .social-icons__item--tg { background: #2aa6eb; }
     .social-icons__item--vk { background: #0077ff; }
 
+    /* ЗНАК ИГРЫ УЖЕ СВЕТЛЫЙ, поэтому инверсию кита для него снимаем. Кит красит знак
+       студии фильтром invert(1): тот приходит тёмным и на асфальте не читается. С нашим
+       кремовым знаком тот же фильтр давал бы тёмное пятно на тёмном фоне. */
+    .playdisplay-logo--top img,
+    .boot-logo { filter: none; }
+    /* Горизонтальный знак шире прежнего: держим его по высоте, а не по ширине */
+    .playdisplay-logo--top img { width: auto; height: clamp(20px, 1.9vw, 27px); }
+    .boot-logo { width: auto; height: clamp(26px, 3vw, 40px); }
+
     /* Кит задаёт .slide-head p max-width:780px (components.css) – узко для абзацев
        с длинным текстом. Кит не трогаем, перекрываем здесь. Обложку (.slide--cover)
        не трогаем – там текст уже без ограничения ширины отдельным правилом кита. */
@@ -44,7 +53,7 @@
        и запуском скрипта мигает недогруженная вёрстка -->
   <div class="boot" id="boot">
     <div class="boot-inner">
-      <img class="boot-logo" src="assets/playdisplay-logo.webp" alt="Playdisplay">
+      <img class="boot-logo" src="assets/market-logo.png" alt="Рынок Пацана">
       <div class="boot-bar"><i id="bootBar"></i></div>
       <p class="boot-note">LADA × Рынок Пацана · компред</p>
     </div>
@@ -56,7 +65,7 @@
   <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
 
   <header class="masthead">
-    <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="assets/playdisplay-logo.webp" alt="Playdisplay"></a>
+    <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="assets/market-logo.png" alt="Рынок Пацана"></a>
     <div class="book-mark"><span>LADA × Рынок Пацана</span><span>Компред · 0.4</span><button class="to-full" id="toFull" type="button" aria-pressed="false" aria-label="Во весь экран"><i aria-hidden="true"></i><span>Во весь экран</span></button></div>
   </header>
 
@@ -73,7 +82,7 @@
     <a href="#s10b" data-section="s10b"><span>08</span><small>Границы</small></a>
     <a href="#s18b" data-section="s18b"><span>09</span><small>Сроки</small></a>
     <a href="#s21" data-section="s21"><span>10</span><small>Предложение</small></a>
-    <p class="nav-legal">© Playdisplay · для АвтоВАЗ</p>
+    <p class="nav-legal">© Рынок Пацана · для АвтоВАЗ</p>
   </nav>
 
   <main id="top">
@@ -113,7 +122,7 @@
         <figure class="hero-phone" data-parallax="0.08">
           <img src="assets/shot2.jpg" alt="Экран игры: ход по району, кубики и деньги">
         </figure>
-        <p class="hero-status" data-parallax="0.02">Коммерческое предложение Playdisplay. Оранжевой чертой отмечены цифры, которые предстоит подставить.</p>
+        <p class="hero-status" data-parallax="0.02">Коммерческое предложение команды «Рынок Пацана». Оранжевой чертой отмечены цифры, которые предстоит подставить.</p>
         <a class="scroll-cue" href="#s02"><span>Смотреть</span><i></i></a>
       </div>
     </section>
@@ -517,7 +526,7 @@
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Измерение</p>
-          <h2>Что&nbsp;считаем по&nbsp;итогам</h2>
+          <h2>Целевые метрики</h2>
           <p>Метрики фиксируются до старта – оранжевым отмечены значения, которые подставим вместе с вашей командой.</p>
         </div>
         <div class="diagram collection-diagram collection-diagram--five">
@@ -559,9 +568,9 @@
           <p>Каждое событие – отдельная механика со своей наградой. Названия и содержание согласуем вместе.</p>
         </div>
         <div class="concept-grid">
-          <article class="concept-card"><span>EVENT 01</span><h4><span class="blank blank--wide" aria-label="уточняется"></span></h4><p>Название и механика события.</p></article>
-          <article class="concept-card"><span>EVENT 02</span><h4><span class="blank blank--wide" aria-label="уточняется"></span></h4><p>Название и механика события.</p></article>
-          <article class="concept-card"><span>EVENT 03</span><h4><span class="blank blank--wide" aria-label="уточняется"></span></h4><p>Название и механика события.</p></article>
+          <article class="concept-card"><span>EVENT 01</span><h4>Сбор тачки</h4><p>Детали выпадают в событии: машина собирается из добытого, а не покупается.</p></article>
+          <article class="concept-card"><span>EVENT 02</span><h4>Драг-рейсинг</h4><p>Заезд по прямой один на один. Ставка — деталь из гаража.</p></article>
+          <article class="concept-card"><span>EVENT 03</span><h4>Tunnel Run</h4><p>Проезд по туннелю на время, с препятствиями и общей таблицей.</p></article>
         </div>
       </div>
     </section>
@@ -692,7 +701,7 @@
     <div class="final-credits__main">
       <div class="final-credits__director">
         <img src="assets/andrey-sudarikov.webp" alt="Андрей Судариков">
-        <p><span>Креативный директор Playdisplay</span><strong>Андрей Судариков</strong></p>
+        <p><span>Команда «Рынок Пацана»</span><strong>Андрей Судариков</strong></p>
       </div>
       <div class="lockup">
         <img class="on-dark lockup-mark--wide" src="assets/lada-lockup.png" alt="LADA">
