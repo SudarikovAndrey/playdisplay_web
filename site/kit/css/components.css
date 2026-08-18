@@ -2229,3 +2229,27 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 /* Кубик и подпись в кадре галереи стоят там же, где стоял ряд кнопок */
 .gallery__item--stage .stages__dice { position: absolute; left: 50%; top: 66%; transform: translateX(-50%); z-index: 2; }
 .gallery__item--stage .stages__dice:active { transform: translateX(-50%) scale(.97); }
+
+/* ── КРУПНЫЙ ПЕРСОНАЖ В УГЛУ ЭКРАНА ──────────────────────────────────────
+   Финал держат знак и кнопки магазинов, а персонаж стоит справа и смотрит на них: он
+   доводит экран до сцены из игры, но не спорит с содержанием. Поэтому он ЗА текстом по
+   слою и обрезан краем экрана — фигура, заходящая в кадр, читается живее вписанной
+   целиком. Снизу уходит в прозрачность, иначе выглядит наклейкой, положенной на асфальт. */
+.corner-hero {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  width: auto;
+  height: min(86%, 720px);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 76%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 76%, transparent 100%);
+}
+/* Содержание финала остаётся выше персонажа */
+.slide--hero-corner .slide-shell { position: relative; z-index: 1; }
+.slide--hero-corner { overflow: hidden; }
+@media (max-width: 900px) {
+  /* На телефоне фигура во всю высоту забивает экран: оставляем её силуэтом за текстом */
+  .corner-hero { height: 46%; opacity: .5; }
+}
