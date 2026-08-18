@@ -14,7 +14,7 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=8356d51f">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=073dbc55">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
@@ -171,7 +171,7 @@
                  poster нужен обязательно — файл тяжёлый, и без него кадр стоял бы пустым,
                  пока ролик докачивается. Управление своё (kit/js/videoctl.js?v=da5548ae): штатная
                  панель браузера светит серым на всю ширину и рвёт вид презентации. -->
-            <video muted loop playsinline preload="auto"
+            <video autoplay muted loop playsinline preload="auto"
                    poster="assets/world-tour-poster.jpg" style="object-position:50% 50%">
               <source src="assets/world-tour.mp4" type="video/mp4">
             </video>
