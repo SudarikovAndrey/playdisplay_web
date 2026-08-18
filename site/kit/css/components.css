@@ -1955,7 +1955,11 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 .vctl {
   position: absolute;
   right: clamp(14px, 2vw, 26px);
-  bottom: clamp(16px, 2.4vh, 30px);
+  /* ПОДНЯТА НАД КНОПКОЙ «В НАЧАЛО». Та кнопка зафиксирована в правом нижнем углу окна и
+     в раскладке места не занимает, поэтому панель ролика попадала прямо под неё (замер:
+     кнопка занимает y 846–882 при окне 900, панель стояла на 827–879). Отступ считается
+     так, чтобы низ панели проходил выше кнопки. */
+  bottom: clamp(66px, 8.5vh, 92px);
   z-index: 3;
   display: flex;
   align-items: center;
@@ -1992,4 +1996,13 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   .vctl { gap: 8px; padding: 6px 10px 6px 6px; }
   .vctl__play { width: 30px; height: 30px; }
   .vctl__time { display: none; }
+}
+
+/* КАДР С РОЛИКОМ ЗАТЕМНЯЕМ СЛАБЕЕ. Обычному кадру растяжка нужна, чтобы читались три
+   строки подписи поверх фотографии. У ролика в кадре видно движение, и та же плотность
+   съедала детали в нижней половине – ради читаемости текста терялось само содержание.
+   Здесь растяжка начинается ниже и не доходит до глухого чёрного. */
+.gallery__item--film::after {
+  inset: 52% 0 0 0;
+  background: linear-gradient(180deg, rgba(8,8,9,0) 0%, rgba(8,8,9,.34) 46%, rgba(8,8,9,.72) 100%);
 }
