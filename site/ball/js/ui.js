@@ -68,6 +68,29 @@
     Array.prototype.forEach.call(motion, function (v) { io.observe(v); });
   }
 
+  /* ---------- 1.5. полный экран ----------
+     Компред показывают с ноутбука на переговорах: панель браузера и вкладки съедают
+     верх слайда и выдают, что это «страница», а не презентация. Кнопка переводит
+     документ в полноэкранный режим и обратно.
+     Состояние читаем из события fullscreenchange, а не из своей переменной: выйти
+     можно клавишей Esc мимо нашей кнопки, и подпись разошлась бы с реальностью. */
+  var full = document.getElementById('toFull');
+  if (full && document.documentElement.requestFullscreen) {
+    full.addEventListener('click', function () {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen().catch(function () {});
+    });
+    document.addEventListener('fullscreenchange', function () {
+      var on = !!document.fullscreenElement;
+      full.classList.toggle('is-on', on);
+      var label = full.querySelector('span');
+      if (label) label.textContent = on ? 'Свернуть' : 'Во весь экран';
+      full.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  } else if (full) {
+    full.hidden = true;                      // браузер без полноэкранного режима: кнопки нет
+  }
+
   // ---------- 2. кнопка «в начало» ----------
   var top = document.getElementById('toTop');
   if (top) {

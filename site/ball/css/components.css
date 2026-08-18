@@ -511,3 +511,32 @@
   color: var(--electric);
   transform: translateY(-.35em);
 }
+
+/* КНОПКА «ВО ВЕСЬ ЭКРАН» ЖИВЁТ В ШАПКЕ, рядом с меткой документа.
+   Место выбрано не по вкусу: у нижнего правого угла уже есть житель – «в начало», и две
+   кнопки там читались как пара равных действий, хотя это разные вещи (одна возвращает
+   по документу, другая меняет режим показа). В шапке она стоит там, где человек ищет
+   управление документом, и не спорит с содержанием слайда. */
+.masthead .to-full {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(159, 180, 200, .28);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+  font: 500 9.5px/1 "Roboto Mono", monospace;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
+}
+.masthead .to-full:hover { color: var(--paper); border-color: rgba(159, 180, 200, .6); background: rgba(255,255,255,.05); }
+.masthead .to-full i { display: block; width: 12px; height: 12px; border: 1px solid currentColor; border-radius: 2px; position: relative; }
+.masthead .to-full i::after { content: ""; position: absolute; inset: 3px; border: 1px solid currentColor; opacity: .45; }
+.masthead .to-full.is-on i::after { inset: 4px; opacity: 1; }
+/* Метка документа и кнопка стоят одной группой у правого края */
+.masthead .book-mark { align-items: center; }
+@media (max-width: 680px) { .masthead .to-full span { display: none; } .masthead .to-full { padding: 8px; } }
+@media print { .to-full { display: none; } }

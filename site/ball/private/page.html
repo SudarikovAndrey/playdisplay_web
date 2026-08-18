@@ -30,7 +30,10 @@
   </div>
   <header class="masthead">
     <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="Playdisplay – в начало"><img src="assets/logo/playdisplay-logo.webp" alt="Playdisplay"></a>
-    <div class="book-mark"><span>Museum of Ball</span><span>Vision Book · 0.1</span></div>
+    <!-- Кнопка «во весь экран» стоит в ШАПКЕ, а не в нижнем углу: там уже живёт
+         «в начало», и две кнопки рядом читались бы как пара равных действий, хотя одна
+         двигает по документу, а другая меняет режим показа. Блок `fullscreen` из кита. -->
+    <div class="book-mark"><span>Museum of Ball</span><span>Vision Book · 0.1</span><button class="to-full" id="toFull" type="button" aria-pressed="false"><i></i><span>Во весь экран</span></button></div>
   </header>
   <nav class="chapter-nav" aria-label="Навигация по главам">
     <a href="#s01" data-section="s01"><span>01</span><small>Большая идея</small></a>
