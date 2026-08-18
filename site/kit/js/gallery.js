@@ -1,20 +1,20 @@
 /* ПОЛНОЭКРАННАЯ ГАЛЕРЕЯ: один экран, листание стрелками, точками и пальцем.
  *
- * Зачем блок: рассказ из пяти кадров не обязан занимать пять экранов прокрутки. В
- * презентации это отдельная остановка — «посмотрите, что это за игра» — и человек листает
- * её сам, в своём темпе, не теряя места в документе.
+ * ДВИЖОК — ТРЕК НА ТРАНСФОРМАЦИИ, А НЕ КОНТЕЙНЕР ПРОКРУТКИ. Так сделана карусель кейсов
+ * на главной сайта, и причина именно в надёжности: у прокрутки есть промежуточные
+ * положения, и лента застревает между кадрами. Мы прошли этот путь целиком —
+ * proximity-прилипание, своя доводка по остановке, снятие прилипания на время анимации, —
+ * и каждый раз оставалась щель, в которой лента «не листается». Здесь щели нет вовсе:
+ * положение задаётся индексом, промежуточных состояний не существует, а плавность даёт
+ * один переход CSS.
  *
- * ЛЕНТА ДВИЖЕТСЯ ШТАТНОЙ ПРОКРУТКОЙ, а не transform: так бесплатно работают палец на
- * телефоне, тачпад, колесо с Shift и клавиши, а браузер сам доводит кадр до места
- * (scroll-snap). Своя реализация «перелистывания» неизбежно теряет один из этих способов.
- *
- * Что здесь важно и проверено:
- *  • Точки и стрелки СЛЕДЯТ за прокруткой, а не наоборот: если человек листает пальцем,
- *    подсветка обязана переехать сама.
+ * Что осталось важным:
+ *  • ПАЛЕЦ И МЫШЬ ТЯНУТ ТРЕК. На время тяги переход снимается, иначе кадр идёт за рукой
+ *    с запаздыванием. Порог смены — 15 % ширины: меньше читается как случайное движение.
  *  • Клавиши работают, только когда галерея в кадре: иначе стрелки крадут управление у
- *    страницы, и документ перестаёт листаться с клавиатуры.
- *  • Обработчик прокрутки пассивный и через requestAnimationFrame: без этого на длинной
- *    ленте подсветка дёргается.
+ *    страницы, и по документу становится нельзя ходить с клавиатуры.
+ *  • Колесо перехватывается только при ГОРИЗОНТАЛЬНОМ движении (тачпад): вертикальное
+ *    принадлежит странице, и красть его нельзя.
  */
 (function () {
   'use strict';
@@ -30,6 +30,7 @@
     var counter = root.querySelector('[data-gallery-counter]');
     var dots = [];
     var index = 0;
+    var last = items.length - 1;
 
     if (dotsHost) {
       for (var i = 0; i < items.length; i++) {
@@ -43,77 +44,79 @@
       }
     }
 
-    /* ЛИСТАЕМ СВОИМ ЦИКЛОМ, А НЕ behavior: 'smooth'.
-       Штатная плавная прокрутка внутри этой ленты не работает: страница сама живёт в
-       режиме слайдов с прилипанием, и её механика гасит вложенную плавную прокрутку –
-       замер показывал scrollLeft = 0 после нажатия на стрелку. Свой цикл с мгновенными
-       шагами доезжает всегда и заодно даёт одинаковую скорость во всех браузерах.
-       Цель считаем как «номер × ширина кадра»: offsetLeft отсчитывается от ближайшего
-       позиционированного предка (это сама галерея, а не лента) и после первой прокрутки
-       показывает положение кадра НА ЭКРАНЕ, а не в ленте. */
-    var anim = null;
-    function go(n) {
-      n = Math.max(0, Math.min(items.length - 1, n));
-      var from = track.scrollLeft;
-      var to = n * track.clientWidth;
-      if (Math.abs(to - from) < 1) return;
-      if (anim) cancelAnimationFrame(anim);
-      /* ПРИЛИПАНИЕ НА ВРЕМЯ ХОДА СНИМАЕМ. Без этого браузер сам подтягивает ленту к
-         ближайшему кадру, и наша плавная дорожка обрывается рывком в самом конце —
-         именно это читалось как «галерея листается резко». */
-      track.classList.add('is-animating');
-      var t0 = performance.now(), dur = 460;
-      (function step(now) {
-        var k = Math.min(1, (now - t0) / dur);
-        /* Выезд с торможением: кадр стартует живо и мягко встаёт на место. Симметричная
-           кривая на ходу в один экран читается вяло в начале и всё равно резко в конце. */
-        var e = 1 - Math.pow(1 - k, 3);
-        track.scrollLeft = from + (to - from) * e;
-        if (k < 1) anim = requestAnimationFrame(step);
-        else { anim = null; track.classList.remove('is-animating'); }
-      })(t0);
+    function place(px, animate) {
+      track.style.transition = animate ? '' : 'none';
+      track.style.transform = 'translate3d(' + px + 'px,0,0)';
     }
 
-    function paint() {
-      /* Текущий кадр считаем ПО ПОЛОЖЕНИЮ ЛЕНТЫ, а не по счётчику нажатий: палец и
-         тачпад двигают ленту мимо наших кнопок, и счётчик разошёлся бы с картинкой. */
-      var w = track.clientWidth || 1;
-      var n = Math.round(track.scrollLeft / w);
-      if (n === index) return;
-      index = n;
+    function go(n, animate) {
+      index = Math.max(0, Math.min(last, n));
+      place(-index * root.clientWidth, animate !== false);
       for (var i = 0; i < dots.length; i++) dots[i].setAttribute('aria-current', i === index ? 'true' : 'false');
       if (counter) counter.textContent = ('0' + (index + 1)).slice(-2) + ' / ' + ('0' + items.length).slice(-2);
       if (prev) prev.disabled = index === 0;
-      if (next) next.disabled = index === items.length - 1;
+      if (next) next.disabled = index === last;
     }
-
-    var ticking = false;
-    /* ФИКСАЦИЯ КАДРА ПОСЛЕ СВАЙПА. Прилипание у ленты нарочно нежёсткое (proximity) –
-       жёсткое ломает нашу плавную прокрутку от стрелок. Расплата: короткий свайп
-       оставляет ленту МЕЖДУ кадрами, и она там застревает. Поэтому доводим сами: как
-       только человек перестал двигать ленту, идём к ближайшему кадру.
-       Порог в 2 px обязателен – иначе доводка срабатывает на собственном приезде и
-       начинает гоняться сама за собой. */
-    var settleTimer = null;
-    function settle() {
-      if (anim) return;                       // своя анимация ещё идёт – не мешаем
-      var w = track.clientWidth || 1;
-      var target = Math.round(track.scrollLeft / w) * w;
-      if (Math.abs(target - track.scrollLeft) > 2) go(Math.round(target / w));
-    }
-    track.addEventListener('scroll', function () {
-      if (settleTimer) clearTimeout(settleTimer);
-      settleTimer = setTimeout(settle, 140);
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () { ticking = false; paint(); });
-    }, { passive: true });
 
     if (prev) prev.addEventListener('click', function () { go(index - 1); });
     if (next) next.addEventListener('click', function () { go(index + 1); });
 
-    /* Клавиши — только пока галерея на экране: иначе она перехватывает стрелки у
-       страницы, и по документу становится нельзя ходить с клавиатуры. */
+    /* ── ТЯГА ПАЛЬЦЕМ И МЫШЬЮ ──────────────────────────────────────────── */
+    var dragging = false, startX = 0, startY = 0, dx = 0, decided = false, horizontal = false;
+
+    track.addEventListener('pointerdown', function (e) {
+      if (e.button !== undefined && e.button !== 0) return;
+      dragging = true; decided = false; horizontal = false; dx = 0;
+      startX = e.clientX; startY = e.clientY;
+      track.style.transition = 'none';
+    });
+
+    track.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var mx = e.clientX - startX, my = e.clientY - startY;
+      /* НАПРАВЛЕНИЕ РЕШАЕТСЯ ОДИН РАЗ. Без этого вертикальный свайп по кадру уводил и
+         страницу, и трек одновременно, и оба движения выглядели рваными. */
+      if (!decided && (Math.abs(mx) > 6 || Math.abs(my) > 6)) {
+        decided = true;
+        horizontal = Math.abs(mx) > Math.abs(my);
+      }
+      if (!horizontal) return;
+      dx = mx;
+      /* У краёв тянется вдвое туже: это подсказка «дальше кадров нет», привычная по
+         нативным листалкам. */
+      if ((index === 0 && dx > 0) || (index === last && dx < 0)) dx *= 0.45;
+      place(-index * root.clientWidth + dx, false);
+      if (e.cancelable) e.preventDefault();
+    }, { passive: false });
+
+    function release() {
+      if (!dragging) return;
+      dragging = false;
+      var w = root.clientWidth || 1;
+      if (horizontal && Math.abs(dx) > w * 0.15) go(index + (dx < 0 ? 1 : -1));
+      else go(index);
+      dx = 0;
+    }
+    track.addEventListener('pointerup', release);
+    track.addEventListener('pointercancel', release);
+    track.addEventListener('pointerleave', release);
+    /* Клик по ссылке внутри кадра нельзя терять: отменяем только после настоящей тяги */
+    track.addEventListener('click', function (e) { if (Math.abs(dx) > 6) { e.preventDefault(); e.stopPropagation(); } }, true);
+    track.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+    /* Колесо: только горизонтальное движение тачпада, и с паузой между шагами —
+       иначе одно движение пальцами пролистывает всю галерею. */
+    var wheelLock = 0;
+    root.addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      var now = Date.now();
+      if (now - wheelLock < 420) { e.preventDefault(); return; }
+      wheelLock = now;
+      go(index + (e.deltaX > 0 ? 1 : -1));
+      e.preventDefault();
+    }, { passive: false });
+
+    /* Клавиши — только пока галерея на экране */
     var visible = false;
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (es) {
@@ -126,9 +129,10 @@
       if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1); }
     });
 
-    // первичная отрисовка состояния
-    index = -1;
-    paint();
+    /* Ширина кадра меняется вместе с окном: положение пересчитываем без анимации,
+       иначе трек «переезжает» сам при повороте телефона. */
+    addEventListener('resize', function () { go(index, false); });
+    go(0, false);
   }
 
   function init(scope) {
@@ -136,7 +140,7 @@
     for (var i = 0; i < list.length; i++) setup(list[i]);
   }
 
-  window.kitGallery = init;          // страницы, где галерея приходит позже, зовут сами
+  window.kitGallery = init;
   if (document.readyState !== 'loading') init(document);
   else addEventListener('DOMContentLoaded', function () { init(document); });
 })();

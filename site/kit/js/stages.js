@@ -27,9 +27,12 @@
        data-stage-note: querySelector находил первую КНОПКУ, и show() затирал её разметку
        своим текстом. Атрибуты у данных и у места вывода обязаны различаться. */
     var note = root.querySelector('[data-stage-caption]');
+    var dice = root.querySelector('[data-stage-dice]');
+    var sndClick = root.getAttribute('data-snd-click');
+    var sndSwap = root.getAttribute('data-snd-swap');
     var shadow = root.querySelector('.stages__shadow');
     var wave = root.querySelector('.stages__wave');
-    if (!cars.length || !buttons.length) return;
+    if (!cars.length) return;
 
     // Доля ширины кадра, которую занимает пятно контакта. Из замера альфы: у стока
     // колёса стоят уже, у экспедиционных сборок шире.
@@ -48,14 +51,28 @@
       if (want && !cars[n].getAttribute('src')) cars[n].setAttribute('src', want);
       for (var i = 0; i < cars.length; i++) cars[i].classList.toggle('is-on', i === n);
       for (var j = 0; j < buttons.length; j++) buttons[j].setAttribute('aria-pressed', j === n ? 'true' : 'false');
+      /* Подпись версии живёт в data-атрибуте самого кадра, когда кнопок нет */
+      var own = cars[n].getAttribute('data-stage-note');
       /* setProperty ждёт СТРОКУ: число уходило в пустоту молча, и тень не менялась. */
       if (shadow) shadow.style.setProperty('--shadow-w', String(WIDTH[n] || 0.7));
-      if (note) note.textContent = buttons[n].getAttribute('data-stage-note') || '';
+      if (note) note.textContent = own || (buttons[n] ? buttons[n].getAttribute('data-stage-note') : '') || '';
       /* ВОЛНА СВЕТА ПО КУЗОВУ. Маской служит сама картинка новой сборки, поэтому свет
          бежит по силуэту машины, а не по прямоугольнику кадра.
          Класс снимается и ставится заново с принудительным чтением offsetWidth: без него
          браузер не считает это новой анимацией, и при быстрых нажатиях волна проходила
          один раз, а дальше не показывалась вовсе. */
+      /* ЗРЕЛИЩНАЯ СМЕНА. Машина снята в три четверти спереди-слева, поэтому поворот
+         идёт вокруг вертикальной оси и опирается на КОЛЁСА (transform-origin у земли):
+         так предмет разворачивается, а не крутится вокруг своей середины. Перспектива
+         на сцене — иначе rotateY читается как сжатие по ширине.
+         Класс снимается и ставится заново с чтением offsetWidth: без него браузер не
+         считает это новой анимацией, и при быстрых нажатиях эффект проходит один раз. */
+      var box = root.querySelector('.stages__stage');
+      if (box) {
+        box.classList.remove('is-swapping');
+        void box.offsetWidth;
+        box.classList.add('is-swapping');
+      }
       if (wave && want !== null) {
         var url = cars[n].getAttribute('src') || want;
         if (url) {
@@ -82,6 +99,34 @@
           if (e.key === 'ArrowLeft') { e.preventDefault(); show(current - 1); buttons[Math.max(0, current)].focus(); }
         });
       })(i);
+    }
+
+    /* ── КУБИК: СЛУЧАЙНАЯ ВЕРСИЯ ─────────────────────────────────────────
+       Двенадцать кнопок с названиями версий читаются как таблица настроек, а не как
+       игра. Кубик превращает выбор в бросок: одно действие, каждый раз другой результат.
+       ПОВТОР НЕ ДОПУСКАЕМ: выпавшая та же машина выглядит как «кнопка не сработала». */
+    function playSound(src) {
+      if (!src) return;
+      try {
+        var a = new Audio(src);
+        a.volume = 0.42;                 // тише голоса на защите: звук здесь — акцент, а не событие
+        var p = a.play();
+        if (p && p.catch) p.catch(function () {});   // браузер вправе отказать до первого касания
+      } catch (e) { /* без звука эффект всё равно работает */ }
+    }
+
+    if (dice) {
+      dice.addEventListener('click', function () {
+        var n = current;
+        if (cars.length > 1) { while (n === current) n = Math.floor(Math.random() * cars.length); }
+        dice.classList.remove('is-rolling');
+        void dice.offsetWidth;
+        dice.classList.add('is-rolling');
+        playSound(sndClick);
+        /* Машина меняется НЕ мгновенно, а на середине броска кубика: сначала слышно и
+           видно бросок, потом появляется результат. */
+        setTimeout(function () { show(n); playSound(sndSwap); }, 210);
+      });
     }
 
     /* Предзагрузка по появлению блока в кадре: рано — лишние полмегабайта, поздно —
