@@ -43,17 +43,24 @@
 
   // картинки: либо все, либо только первых двух экранов
   var need = [];
+  /* СПИСОК БЕЗ ПОВТОРОВ, и это не аккуратность, а условие работы. Отложенные кадры
+     (img[data-src]) лежат внутри main, то есть попадают в список ДВАЖДЫ. Счётчик тогда
+     ждёт два события, а addEventListener на одну и ту же пару «событие + обработчик»
+     регистрируется ОДИН раз — второго шага не приходит никогда, и заставка застревает
+     на девяноста процентах. Ровно это и случилось. */
+  function add(el) { if (need.indexOf(el) < 0) need.push(el); }
+
   var imgs = document.querySelectorAll('main img, .hero-visual img, footer img');
   Array.prototype.forEach.call(imgs, function (im) {
     if (all) {
       /* Отложенная загрузка на время заставки снимается: браузер не тронул бы картинку,
          пока она далеко от экрана, и ожидание висело бы до предохранителя. */
       if (im.getAttribute('loading') === 'lazy') im.setAttribute('loading', 'eager');
-      need.push(im);
+      add(im);
       return;
     }
     var top = im.getBoundingClientRect().top + (window.scrollY || 0);
-    if (top < innerHeight * 2) need.push(im);
+    if (top < innerHeight * 2) add(im);
   });
 
   /* Кадры, отложенные до нажатия (сборки машины), при полном ожидании грузим сразу:
@@ -61,7 +68,7 @@
   if (all) {
     Array.prototype.forEach.call(document.querySelectorAll('img[data-src]'), function (im) {
       if (!im.getAttribute('src')) im.setAttribute('src', im.getAttribute('data-src'));
-      need.push(im);
+      add(im);
     });
   }
 
@@ -82,17 +89,28 @@
   else step();
 
   need.forEach(function (im) {
-    if (im.complete && im.naturalWidth) { step(); return; }
-    im.addEventListener('load', step, { once: true });
-    im.addEventListener('error', step, { once: true });
+    /* Шаг по каждому элементу считаем ОДИН раз: и «загрузилась», и «не смогла» ведут к
+       одному шагу, иначе доля загруженного перевалит за сто процентов и заставка уйдёт
+       раньше времени. */
+    var counted = false;
+    function once() { if (counted) return; counted = true; step(); }
+    if (im.complete && im.naturalWidth) { once(); return; }
+    im.addEventListener('load', once, { once: true });
+    im.addEventListener('error', once, { once: true });
   });
 
   Array.prototype.forEach.call(vids, function (v) {
     // preload="metadata" не тянет кадры: для ожидания нужен хотя бы первый кадр
     if (v.getAttribute('preload') !== 'auto') v.setAttribute('preload', 'auto');
-    if (v.readyState >= 2) { step(); return; }
-    v.addEventListener('loadeddata', step, { once: true });
-    v.addEventListener('error', step, { once: true });
+    var counted = false;
+    function once() { if (counted) return; counted = true; step(); }
+    if (v.readyState >= 2) { once(); return; }
+    v.addEventListener('loadeddata', once, { once: true });
+    v.addEventListener('error', once, { once: true });
+    /* Ролик может застрять на буферизации, а не на ошибке: тогда события не будет вовсе.
+       Свой предел на ролик короче общего предохранителя — презентация не должна ждать
+       двадцать секунд из-за одного тяжёлого файла. */
+    setTimeout(once, 12000);
   });
 
   if (!need.length && !vids.length) step();     // считать нечего — открываем по шрифтам
