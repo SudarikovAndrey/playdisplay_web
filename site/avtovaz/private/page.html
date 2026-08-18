@@ -14,7 +14,7 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=073dbc55">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=b3c01859">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
@@ -532,18 +532,31 @@
     </section>
     <!-- ═══ 13. МЕТРИКИ ═══ -->
     <section class="slide" id="s14" data-slide="07">
-      <div class="slide-shell">
-        <div class="slide-head reveal">
-          <p class="overline">Измерение</p>
-          <h2>Целевые метрики</h2>
-          <p>Метрики фиксируются до старта – оранжевым отмечены значения, которые подставим вместе с вашей командой.</p>
+      <!-- Две половины: цифры слева, ролик справа. Столбиком не влезает — в режиме
+           слайдов высота дефицитна. Ролик квадратный, поэтому стоит квадратом. -->
+      <div class="slide-shell split-media">
+        <div>
+          <div class="slide-head reveal">
+            <p class="overline">Измерение</p>
+            <h2>Целевые метрики</h2>
+          </div>
+          <div class="diagram collection-diagram collection-diagram--tight collection-diagram--pairs">
+            <div><b><span class="blank" aria-label="уточняется"></span></b><span>игроков</span></div>
+            <div><b><span class="blank" aria-label="уточняется"></span></b><span>полученных автомобилей</span></div>
+            <div><b><span class="blank" aria-label="уточняется"></span></b><span>взаимодействий с LADA</span></div>
+            <div><b><span class="blank" aria-label="уточняется"></span></b><span>часов взаимодействия</span></div>
+            <div><b><span class="blank" aria-label="уточняется"></span></b><span>созданных сборок</span></div>
+          </div>
         </div>
-        <div class="diagram collection-diagram collection-diagram--five">
-          <div><b><span class="blank" aria-label="уточняется"></span></b><span>игроков</span></div>
-          <div><b><span class="blank" aria-label="уточняется"></span></b><span>полученных автомобилей</span></div>
-          <div><b><span class="blank" aria-label="уточняется"></span></b><span>взаимодействий с LADA</span></div>
-          <div><b><span class="blank" aria-label="уточняется"></span></b><span>часов взаимодействия</span></div>
-          <div><b><span class="blank" aria-label="уточняется"></span></b><span>созданных сборок</span></div>
+        <div class="split-media__film">
+          <video autoplay muted loop playsinline preload="auto" poster="assets/game-promo-poster.jpg">
+            <source src="assets/game-promo.mp4" type="video/mp4">
+          </video>
+          <div class="vctl" data-vctl>
+            <button class="vctl__play" type="button" data-vctl-play aria-pressed="false" aria-label="Пуск"><i aria-hidden="true"></i></button>
+            <input class="vctl__bar" type="range" min="0" max="1000" value="0" step="1" data-vctl-bar aria-label="Перемотка ролика">
+            <span class="vctl__time" data-vctl-time>0:00 / 0:00</span>
+          </div>
         </div>
       </div>
     </section>
