@@ -2174,29 +2174,56 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    Двенадцать кнопок с названиями читаются как таблица настроек. Кубик превращает выбор
    в бросок: одно действие — и каждый раз другая машина. */
 .stages__dice {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 20px 10px 12px;
-  border: 1px solid var(--line);
+  /* Промежуток крупный: кубик большой, и при малом зазоре он наезжал на подпись */
+  gap: 18px;
+  padding: 12px 26px 12px 16px;
+  border: 1px solid rgba(226,105,75,.5);
   border-radius: 99px;
-  background: var(--glass);
+  background: rgba(226,105,75,.10);
   color: var(--paper);
-  font: 600 11.5px/1 "Roboto Mono", monospace;
-  letter-spacing: .16em;
+  font: 600 13px/1 "Roboto Mono", monospace;
+  letter-spacing: .18em;
   text-transform: uppercase;
   cursor: pointer;
   transition: border-color .2s ease, background .2s ease, transform .16s ease;
 }
-.stages__dice:hover { border-color: var(--electric); background: rgba(226,105,75,.14); }
+.stages__dice:hover { border-color: var(--electric); background: rgba(226,105,75,.2); }
 .stages__dice:active { transform: scale(.97); }
-.stages__dice img { width: 30px; height: 34px; display: block; }
+/* Кубик КРУПНЫЙ: он здесь главный призыв к действию, а не значок у надписи */
+.stages__dice img { position: relative; z-index: 1; width: 52px; height: 58px; display: block; flex: none; }
+
+/* ВОЛНЫ ОТ КУБИКА. Без них кнопка выглядит подписью: человек не понимает, что её
+   нажимают. Волны идут от самого кубика, а не от кнопки, и не мешают курсору
+   (pointer-events: none) — иначе они перехватывали бы нажатие. */
+.stages__dice::before,
+.stages__dice::after {
+  content: "";
+  position: absolute;
+  left: 42px;                       /* центр кубика: 16 padding + 52/2 */
+  top: 50%;
+  width: 58px;
+  height: 58px;
+  margin: -29px 0 0 -29px;
+  border: 1px solid rgba(226,105,75,.55);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: dice-pulse 2.6s ease-out infinite;
+}
+.stages__dice::after { animation-delay: 1.3s; }
+@keyframes dice-pulse {
+  0%   { transform: scale(.6); opacity: .8; }
+  70%  { opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
 /* Бросок: кубик подпрыгивает и проворачивается. Короткий — это щелчок, а не мультфильм. */
 .stages__dice.is-rolling img { animation: dice-roll .46s cubic-bezier(.3,-0.2,.4,1.4) 1; }
 @keyframes dice-roll {
   0%   { transform: translateY(0) rotate(0deg) scale(1); }
-  35%  { transform: translateY(-12px) rotate(140deg) scale(1.1); }
-  70%  { transform: translateY(-3px) rotate(300deg) scale(1.02); }
+  35%  { transform: translateY(-16px) rotate(140deg) scale(1.12); }
+  70%  { transform: translateY(-4px) rotate(300deg) scale(1.02); }
   100% { transform: translateY(0) rotate(360deg) scale(1); }
 }
 
@@ -2224,7 +2251,8 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 @media (prefers-reduced-motion: reduce) {
   .stages__stage.is-swapping .stages__car.is-on,
   .stages__stage.is-swapping .stages__shadow,
-  .stages__dice.is-rolling img { animation: none; }
+  .stages__dice.is-rolling img,
+  .stages__dice::before, .stages__dice::after { animation: none; }
 }
 /* Кубик и подпись в кадре галереи стоят там же, где стоял ряд кнопок */
 .gallery__item--stage .stages__dice { position: absolute; left: 50%; top: 66%; transform: translateX(-50%); z-index: 2; }
@@ -2252,4 +2280,19 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 @media (max-width: 900px) {
   /* На телефоне фигура во всю высоту забивает экран: оставляем её силуэтом за текстом */
   .corner-hero { height: 46%; opacity: .5; }
+}
+
+/* Кадр «Не реклама»: предмет по ЦЕНТРУ ВЫСОТЫ и на треть крупнее. Прижатый к верху он
+   читался как случайно вставленная картинка, а не как кадр из игры. */
+.gallery__item--object-mid img {
+  inset: 0 0 0 24%;
+  width: 76%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 60% 50%;
+}
+.gallery__item--object-mid .gallery__copy { width: min(34%, 430px); }
+@media (max-width: 900px) {
+  .gallery__item--object-mid img { inset: 6% 0 auto 0; width: 100%; height: 46%; object-position: 50% 50%; }
+  .gallery__item--object-mid .gallery__copy { width: auto; }
 }

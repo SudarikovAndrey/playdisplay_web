@@ -116,16 +116,41 @@
     }
 
     if (dice) {
-      dice.addEventListener('click', function () {
+      /* АВТОБРОСОК ПОСЛЕ ПРОСТОЯ. На защите слайд показывают молча, и если кубик никто не
+         нажал, экран остаётся статичным: зритель не понимает, что здесь есть механика.
+         Через пять секунд после появления кадра кубик бросается сам — один раз, дальше
+         только по нажатию: сам себя крутящий экран читается как реклама, а не как
+         инструмент. Отсчёт идёт от появления кадра, а не от загрузки страницы. */
+      var idle = null;
+      function armIdle() {
+        clearTimeout(idle);
+        idle = setTimeout(function () { if (!touched) roll(); }, 5000);
+      }
+      var touched = false;
+
+      function roll() {
         var n = current;
         if (cars.length > 1) { while (n === current) n = Math.floor(Math.random() * cars.length); }
         dice.classList.remove('is-rolling');
         void dice.offsetWidth;
         dice.classList.add('is-rolling');
         playSound(sndClick);
+        setTimeout(function () { show(n); playSound(sndSwap); }, 210);
+      }
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          if (es[0].isIntersecting && es[0].intersectionRatio > 0.5) armIdle();
+          else clearTimeout(idle);
+        }, { threshold: [0, 0.5, 1] }).observe(root);
+      }
+
+      dice.addEventListener('click', function () {
+        touched = true;          // человек взялся сам — автобросок больше не нужен
+        clearTimeout(idle);
         /* Машина меняется НЕ мгновенно, а на середине броска кубика: сначала слышно и
            видно бросок, потом появляется результат. */
-        setTimeout(function () { show(n); playSound(sndSwap); }, 210);
+        roll();
       });
     }
 
