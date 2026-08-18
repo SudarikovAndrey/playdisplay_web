@@ -51,7 +51,7 @@
 <body class="theme-street">
   <!-- Заставка лежит В РАЗМЕТКЕ, а не создаётся скриптом: иначе между показом страницы
        и запуском скрипта мигает недогруженная вёрстка -->
-  <div class="boot" id="boot">
+  <div class="boot" id="boot" data-boot-all>
     <div class="boot-inner">
       <img class="boot-logo" src="assets/market-logo.png" alt="Рынок Пацана">
       <div class="boot-bar"><i id="bootBar"></i></div>
@@ -169,9 +169,9 @@
           <figure class="gallery__item">
             <!-- Ролик, а не кадр: облёт карты объясняет масштаб мира лучше любой картинки.
                  poster нужен обязательно — файл тяжёлый, и без него кадр стоял бы пустым,
-                 пока ролик докачивается. Управление своё (kit/js/videoctl.js?v=02752b7b): штатная
+                 пока ролик докачивается. Управление своё (kit/js/videoctl.js?v=301189f4): штатная
                  панель браузера светит серым на всю ширину и рвёт вид презентации. -->
-            <video muted loop playsinline preload="metadata"
+            <video muted loop playsinline preload="auto"
                    poster="assets/world-tour-poster.jpg" style="object-position:50% 50%">
               <source src="assets/world-tour.mp4" type="video/mp4">
             </video>
@@ -723,7 +723,7 @@
 
   <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
 
-  <script defer src="../../kit/js/boot.js?v=cc0cec82"></script>
+  <script defer src="../../kit/js/boot.js?v=e86cddf7"></script>
   <script defer src="../../kit/js/reveal-cursor.js?v=fc2f75e6"></script>
   <script defer src="../../kit/js/nav.js?v=c1ea1b64"></script>
   <script defer src="../../kit/js/parallax.js?v=aae347d9"></script>
@@ -732,7 +732,7 @@
   <script defer src="../../kit/js/gallery.js?v=129df3a0"></script>
   <script defer src="../../kit/js/spotlight.js?v=593c767d"></script>
   <script defer src="../../kit/js/stages.js?v=2f50be9a"></script>
-  <script defer src="../../kit/js/videoctl.js?v=02752b7b"></script>
+  <script defer src="../../kit/js/videoctl.js?v=301189f4"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>
   <script defer src="../../kit/js/ui.js?v=0c011b9f"></script>
 </body>
