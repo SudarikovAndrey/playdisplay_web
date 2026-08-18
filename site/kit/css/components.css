@@ -1946,3 +1946,50 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   .gallery__item--stage .stages__note { top: 55%; max-width: 90%; }
   .gallery__item--stage .gallery__copy { width: auto; right: clamp(20px, 4vw, 64px); }
 }
+
+/* ── УПРАВЛЕНИЕ РОЛИКОМ В КАДРЕ (js/videoctl.js) ──────────────────────────
+   Штатная панель браузера занимает всю ширину кадра и светит серым поверх презентации.
+   Здесь два элемента, оформленные как стрелки галереи: круглая кнопка и тонкая полоса.
+   Стоят в НИЖНЕМ ПРАВОМ углу: слева внизу подпись кадра, по центру точки пагинатора,
+   сверху слева имя галереи – свободен только правый низ. */
+.vctl {
+  position: absolute;
+  right: clamp(14px, 2vw, 26px);
+  bottom: clamp(16px, 2.4vh, 30px);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 99px;
+  background: rgba(10,10,11,.62);
+  backdrop-filter: blur(10px);
+}
+.vctl__play {
+  flex: none;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: 1px solid rgba(255,255,255,.5);
+  border-radius: 50%;
+  background: #14151a;
+  color: #fff;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease;
+}
+.vctl__play:hover { background: var(--ultra, #c0432f); border-color: #fff; }
+/* Пуск и пауза рисуем сами: символы в тексте не встают по центру круга, а два <i> с
+   рамками ведут себя одинаково в любом браузере. */
+.vctl__play i { display: block; width: 0; height: 0; margin-left: 2px; border: 6px solid transparent; border-left-color: currentColor; border-right: 0; }
+.vctl.is-playing .vctl__play i { width: 9px; height: 11px; margin: 0; border: 0; border-left: 3px solid currentColor; border-right: 3px solid currentColor; }
+/* Полоса перемотки – настоящий input[type=range]: он даёт клавиатуру, стрелки и роль
+   ползунка для скринридера. Своя разметка всё это пришлось бы изобретать заново. */
+.vctl__bar { -webkit-appearance: none; appearance: none; width: clamp(90px, 13vw, 190px); height: 3px; border-radius: 99px; background: rgba(255,255,255,.28); cursor: pointer; }
+.vctl__bar::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--paper, #f3ece0); border: 0; cursor: grab; }
+.vctl__bar::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--paper, #f3ece0); border: 0; }
+.vctl__time { color: #cfd3da; font: 500 10.5px/1 "Roboto Mono", monospace; letter-spacing: .08em; min-width: 74px; text-align: right; }
+@media (max-width: 680px) {
+  .vctl { gap: 8px; padding: 6px 10px 6px 6px; }
+  .vctl__play { width: 30px; height: 30px; }
+  .vctl__time { display: none; }
+}
