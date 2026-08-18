@@ -14,7 +14,7 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=b3c01859">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=46eea527">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
@@ -169,7 +169,7 @@
           <figure class="gallery__item gallery__item--film">
             <!-- Ролик, а не кадр: облёт карты объясняет масштаб мира лучше любой картинки.
                  poster нужен обязательно — файл тяжёлый, и без него кадр стоял бы пустым,
-                 пока ролик докачивается. Управление своё (kit/js/videoctl.js?v=da5548ae): штатная
+                 пока ролик докачивается. Управление своё (kit/js/videoctl.js?v=eff3221d): штатная
                  панель браузера светит серым на всю ширину и рвёт вид презентации. -->
             <video autoplay muted loop playsinline preload="auto"
                    poster="assets/world-tour-poster.jpg" style="object-position:50% 50%">
@@ -540,12 +540,14 @@
             <p class="overline">Измерение</p>
             <h2>Целевые метрики</h2>
           </div>
-          <div class="diagram collection-diagram collection-diagram--tight collection-diagram--pairs">
-            <div><b><span class="blank" aria-label="уточняется"></span></b><span>игроков</span></div>
-            <div><b><span class="blank" aria-label="уточняется"></span></b><span>полученных автомобилей</span></div>
-            <div><b><span class="blank" aria-label="уточняется"></span></b><span>взаимодействий с LADA</span></div>
-            <div><b><span class="blank" aria-label="уточняется"></span></b><span>часов взаимодействия</span></div>
-            <div><b><span class="blank" aria-label="уточняется"></span></b><span>созданных сборок</span></div>
+          <!-- Строками, а не плашками: под пустым значением плашка занимает пол-экрана
+               и ничего не сообщает. Место отдано ролику. -->
+          <div class="metric-rows">
+            <div><i>игроков</i><span class="blank" aria-label="уточняется"></span></div>
+            <div><i>полученных автомобилей</i><span class="blank" aria-label="уточняется"></span></div>
+            <div><i>взаимодействий с LADA</i><span class="blank" aria-label="уточняется"></span></div>
+            <div><i>часов взаимодействия</i><span class="blank" aria-label="уточняется"></span></div>
+            <div><i>созданных сборок</i><span class="blank" aria-label="уточняется"></span></div>
           </div>
         </div>
         <div class="split-media__film">
@@ -745,7 +747,7 @@
   <script defer src="../../kit/js/gallery.js?v=129df3a0"></script>
   <script defer src="../../kit/js/spotlight.js?v=593c767d"></script>
   <script defer src="../../kit/js/stages.js?v=0c3cab06"></script>
-  <script defer src="../../kit/js/videoctl.js?v=da5548ae"></script>
+  <script defer src="../../kit/js/videoctl.js?v=eff3221d"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>
   <script defer src="../../kit/js/ui.js?v=0c011b9f"></script>
 </body>
