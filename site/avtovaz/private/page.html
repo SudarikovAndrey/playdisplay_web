@@ -121,8 +121,19 @@
         <!-- Кадр игры стоит справа ЦЕЛИКОМ и не срезается краем экрана. Когда придёт
              нарезка геймплея, тег меняется на <video autoplay muted loop playsinline>,
              стили у картинки и ролика одни и те же. -->
+        <!-- Стопка экранов игры вместо одного скриншота: шесть кадров, передний уходит
+             поворотом каждые несколько секунд, стопка наклоняется за курсором. -->
         <figure class="hero-phone" data-parallax="0.08">
-          <img src="assets/shot2.jpg" alt="Экран игры: ход по району, кубики и деньги">
+          <div class="phone-deck" data-phone-deck data-hold="3600">
+            <div class="phone-deck__inner">
+            <img data-deck-card src="assets/start/01.jpg" alt="Магазин электроники: покупка точки">
+            <img data-deck-card data-src="assets/start/02.jpg" alt="Босс района">
+            <img data-deck-card data-src="assets/start/03.jpg" alt="Район сверху: ход по клеткам">
+            <img data-deck-card data-src="assets/start/04.jpg" alt="Гараж: мебель и обстановка">
+            <img data-deck-card data-src="assets/start/05.jpg" alt="Авторазборка: драка команда на команду">
+            <img data-deck-card data-src="assets/start/06.jpg" alt="Банда игрока: карточки бойцов">
+            </div>
+          </div>
         </figure>
       </div>
     </section>
@@ -810,6 +821,7 @@
   <script defer src="../../kit/js/spotlight.js?v=593c767d"></script>
   <script defer src="../../kit/js/stages.js?v=84f38a49"></script>
   <script defer src="../../kit/js/crossfade.js?v=030680e1"></script>
+  <script defer src="../../kit/js/phonedeck.js?v=9fb191b5"></script>
   <script defer src="../../kit/js/videoctl.js?v=c4567837"></script>
   <script defer src="../../kit/js/signwall.js?v=054e0040"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>
