@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SPICE RUN — конструктор лука</title>
+<!--
+  КОНСТРУКТОР ЛУКА, ВТОРОЕ ПОКОЛЕНИЕ (05.08). Первый (site/enemy-lab.html) оброс
+  полусотней ручек, и лук стал непредсказуемым: три места рисовали три картинки.
+  Здесь другой принцип:
+
+  1. РИСУЕТ МОДУЛЬ, А НЕ СТРАНИЦА. Весь шейдер живёт в look-render.js (PD_LOOK),
+     и его же подключает игра. Конструктор только собирает данные и крутит ручки.
+  2. РУЧЕК ДЕСЯТЬ, и каждая делает одну видимую вещь. Цвет — ОДИН ползунок.
+  3. ЛУК ПРОВЕРЯЕТСЯ НА ИГРОВЫХ ДИСТАНЦИЯХ: пресеты камеры «Полёт» и «Ангар»
+     ставят её туда, где она стоит в игре. Прошлый лук казался «другим» в ангаре
+     ровно потому, что ангарная камера вдвое ближе — точки честно крупнее.
+
+  Живёт в play/ (не в site/): site самодостаточна и наружу не ссылается, а этому
+  файлу нужны player-points.js и enemy-points.js игры. Открывается с диска.
+-->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0a0710;
+    font-family: 'Roboto Mono', ui-monospace, Menlo, monospace; color: #e8e2ea; }
+  #stage { position: fixed; inset: 0; }
+  #ui { position: fixed; left: 0; top: 0; bottom: auto; height: 100%; width: 396px; z-index: 10;
+    background: rgba(10,7,16,.94); backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(200,140,160,.2);
+    padding: 18px 16px 30px; overflow-y: auto; }
+  #ui h1 { font-size: 13px; letter-spacing: .2em; text-transform: uppercase;
+    color: #ffb27f; margin: 0 0 4px; font-weight: 700; }
+  #ui .sub { font-size: 10.5px; letter-spacing: .06em; opacity: .45; margin-bottom: 14px; line-height: 1.6; }
+  .lbl { font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    opacity: .55; margin: 14px 0 8px; }
+  .seg { display: flex; gap: 5px; flex-wrap: wrap; }
+  .seg button { flex: 1 1 auto; min-width: 60px; font: 600 10.5px inherit; letter-spacing: .04em;
+    color: #cbb2a6; background: rgba(255,255,255,.04); border: 1px solid rgba(230,190,170,.18);
+    border-radius: 4px; padding: 10px 6px; cursor: pointer; }
+  .seg button:hover { border-color: rgba(255,178,127,.5); color: #fff3ea; }
+  .seg button.on { background: rgba(255,178,127,.18); border-color: #ffb27f; color: #fff3ea; }
+  .row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .row > label { flex: 0 0 132px; font-size: 10.5px; opacity: .74; line-height: 1.25; }
+  .row input[type=range] { flex: 1; min-width: 40px; height: 5px; -webkit-appearance: none; appearance: none;
+    background: rgba(230,200,180,.22); border-radius: 3px; outline: none; cursor: pointer; }
+  .row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px;
+    border-radius: 50%; background: #ffb27f; cursor: pointer; box-shadow: 0 0 0 3px rgba(255,178,127,.18); }
+  .row input[type=range]::-moz-range-thumb { width: 15px; height: 15px; border: 0;
+    border-radius: 50%; background: #ffb27f; cursor: pointer; }
+  .row .pm { flex: 0 0 22px; height: 22px; padding: 0; font: 700 13px/1 inherit; color: #ffc9a4;
+    background: rgba(255,178,127,.1); border: 1px solid rgba(255,178,127,.3);
+    border-radius: 3px; cursor: pointer; }
+  .row .pm:hover { background: rgba(255,178,127,.26); color: #fff; }
+  .row .val { flex: 0 0 50px; text-align: right; font-size: 10.5px; color: #ffb27f;
+    font-variant-numeric: tabular-nums; }
+  /* ползунок оттенка — радуга прямо на дорожке, значение видно без цифр */
+  .row input.hue { background: linear-gradient(90deg,
+    hsl(0,70%,50%), hsl(60,70%,50%), hsl(120,70%,50%), hsl(180,70%,50%),
+    hsl(240,70%,50%), hsl(300,70%,50%), hsl(360,70%,50%)); }
+  .chk { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 10.5px; opacity: .85; cursor: pointer; }
+  .chk input { accent-color: #ffb27f; width: 15px; height: 15px; margin: 0; cursor: pointer; }
+  .btns { display: flex; gap: 6px; margin-top: 14px; }
+  .btns button { flex: 1; font: 700 10.5px inherit; letter-spacing: .08em; text-transform: uppercase;
+    color: #ffb27f; background: transparent; border: 1px solid rgba(255,178,127,.5);
+    border-radius: 3px; padding: 11px 8px; cursor: pointer; }
+  .btns button:hover { background: rgba(255,178,127,.14); }
+  .btns button.alt { color: #b8aca4; border-color: rgba(200,185,175,.32); }
+  #note { font-size: 9.5px; line-height: 1.6; opacity: .4; margin-top: 14px;
+    border-top: 1px solid rgba(200,140,160,.16); padding-top: 10px; }
+  #hud { position: fixed; right: 18px; top: 16px; z-index: 10; text-align: right;
+    font-size: 11px; letter-spacing: .12em; line-height: 2; opacity: .6; pointer-events: none; }
+  #hud b { color: #ffb27f; font-weight: 700; }
+  #busy { position: fixed; inset: 0; z-index: 35; display: none; align-items: center; justify-content: center;
+    background: rgba(10,7,16,.7); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; }
+  #busy.on { display: flex; }
+  #toast { position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(14px);
+    z-index: 50; background: rgba(255,178,127,.16); border: 1px solid #ffb27f; color: #fff3ea;
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 11px 20px;
+    border-radius: 3px; opacity: 0; transition: opacity .3s, transform .3s; pointer-events: none; }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<div id="hud">
+  <div>FPS <b id="mFps">—</b></div>
+  <div>ТОЧЕК <b id="mPts">—</b></div>
+  <div>ЛИНИЙ <b id="mLin">—</b></div>
+  <div>КАМЕРА <b id="mCam">СВОБОДНО</b></div>
+</div>
+
+<div id="ui">
+  <h1>Конструктор лука</h1>
+  <div class="sub">Десять ручек, один модуль рендера на лабу и игру.<br>
+    Тащи мышью — облёт, колёсико — зум.</div>
+
+  <div class="lbl">Объект</div>
+  <div class="seg" id="objBtns"></div>
+
+  <div class="lbl">Камера — дистанции игры</div>
+  <div class="seg" id="camBtns"></div>
+
+  <div class="lbl">Точки</div>
+  <div id="ptBox"></div>
+
+  <div class="lbl">Свет и форма</div>
+  <div id="fxBox"></div>
+
+  <div class="lbl">Цвет</div>
+  <div id="colBox"></div>
+
+  <label class="chk"><input type="checkbox" id="cOccl" checked>
+    Не просвечивать насквозь (заслон по глубине)</label>
+
+  <div class="btns">
+    <button id="bCopy">Пресет в JSON</button>
+    <button id="bReset" class="alt">Сбросить</button>
+  </div>
+
+  <div id="note">
+    Пресет — это ровно параметры PD_LOOK: игра применит их без пересчёта.
+    Корабли берутся из player-points.js и enemy-points.js как есть; земля и
+    астероид генерируются на месте. «Стягивание» тянет каждую точку к её
+    ближайшей грани; на земле гранями работают горизонтали высоты.
+  </div>
+</div>
+
+<div id="busy"><div>Собираю точки…</div></div>
+<div id="toast">Скопировано</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="look-render.js"></script>
+<script src="player-points.js"></script>
+<script src="enemy-points.js"></script>
+<script>
+'use strict';
+const g = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const hash = (x, y) => { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); };
+function toast(t) { const el = g('toast'); el.textContent = t; el.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove('on'), 1800); }
+
+// ── ПАРАМЕТРЫ: ровно ручки PD_LOOK плюс плотность (плотность требует пересборки) ──
+const P = Object.assign({}, PD_LOOK.DEFAULTS);
+const S = {
+  dens:   { box: 'ptBox', label: 'Плотность точек', min: 5, max: 100, step: 1, v: 30, rebuild: true, fmt: v => v + '%' },
+  sizePm: { box: 'ptBox', label: 'Размер, ‰ габарита', min: 0.5, max: 30, step: 0.25, v: P.sizePm },
+  pxMin:  { box: 'ptBox', label: 'Мин размер, px', min: 0.5, max: 8, step: 0.25, v: P.pxMin },
+  pxMax:  { box: 'ptBox', label: 'Макс размер, px', min: 2, max: 60, step: 1, v: P.pxMax },
+  pull:   { box: 'ptBox', label: 'Стягивание к граням', min: 0, max: 1, step: 0.02, v: P.pull },
+  xray:   { box: 'fxBox', label: 'Изнанка (просвет)', min: 0, max: 1, step: 0.02, v: P.xray },
+  light:  { box: 'fxBox', label: 'Свет по граням', min: 0, max: 1, step: 0.02, v: P.light },
+  fres:   { box: 'fxBox', label: 'Fresnel-кромка', min: 0, max: 2, step: 0.05, v: P.fres },
+  lineOp: { box: 'fxBox', label: 'Линии граней', min: 0, max: 0.9, step: 0.01, v: P.lineOp },
+  edgeBright: { box: 'fxBox', label: 'Грани ярче', min: 1, max: 4, step: 0.05, v: P.edgeBright },
+  hue:    { box: 'colBox', label: 'Гамма', min: 0, max: 360, step: 1, v: P.hue, hue: true, fmt: v => v + '°' },
+  expo:   { box: 'colBox', label: 'Экспозиция', min: 0.2, max: 3, step: 0.05, v: P.expo }
+};
+
+// ── сцена ───────────────────────────────────────────────────────────────────
+const cv = g('stage');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 9000);
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(4000, 24, 16), new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false,
+  uniforms: { uTop: { value: new THREE.Color(0x0a0710) }, uBot: { value: new THREE.Color(0x1d1420) } },
+  vertexShader: 'varying float vY; void main(){ vY=normalize(position).y; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);} ',
+  fragmentShader: 'varying float vY; uniform vec3 uTop,uBot; void main(){ gl_FragColor=vec4(mix(uBot,uTop,smoothstep(-0.35,0.75,vY)),1.0);} '
+})));
+
+// ── ОБЪЕКТЫ ─────────────────────────────────────────────────────────────────
+// У каждого одна обязанность: отдать buildData(dens) → буферы для PD_LOOK.
+
+// быстрая сетка соседей: индексы точек по ячейкам
+function grid3(pos, idxList, cell) {
+  const m = new Map();
+  const key = (a, b, c) => a * 73856093 ^ b * 19349663 ^ c * 83492791;
+  for (let q = 0; q < idxList.length; q++) {
+    const i = idxList[q];
+    const k = key(Math.floor(pos[i * 3] / cell), Math.floor(pos[i * 3 + 1] / cell), Math.floor(pos[i * 3 + 2] / cell));
+    let arr = m.get(k); if (!arr) { arr = []; m.set(k, arr); }
+    arr.push(i);
+  }
+  return { m: m, key: key, cell: cell };
+}
+function nearestIn(gr, pos, x, y, z, rings) {
+  const gx = Math.floor(x / gr.cell), gy = Math.floor(y / gr.cell), gz = Math.floor(z / gr.cell);
+  let best = -1, bd = 1e18;
+  for (let r = 0; r <= (rings || 2); r++) {
+    for (let a = -r; a <= r; a++) for (let b = -r; b <= r; b++) for (let c = -r; c <= r; c++) {
+      if (Math.max(Math.abs(a), Math.abs(b), Math.abs(c)) !== r) continue;
+      const arr = gr.m.get(gr.key(gx + a, gy + b, gz + c));
+      if (!arr) continue;
+      for (let q = 0; q < arr.length; q++) {
+        const j = arr[q];
+        const d = (pos[j * 3] - x) ** 2 + (pos[j * 3 + 1] - y) ** 2 + (pos[j * 3 + 2] - z) ** 2;
+        if (d < bd) { bd = d; best = j; }
+      }
+    }
+    if (best >= 0 && r >= 1) break;   // нашли в ближних кольцах — дальше не ходим
+  }
+  return best;
+}
+
+// корабль из файла-выгрузки (player-points / enemy-points, формат v2)
+function shipData(E, dens) {
+  const raw = atob(E.B64), nor = E.NOR ? atob(E.NOR) : null;
+  const nAll = E.COUNT, half = (E.SPAN || E.SCALE * 2) / 2;
+  const cell = E.CELL || half / 60;
+  // прореживание: контур и заливка своим шагом, доли сохраняем
+  const eStr = Math.max(1, Math.round(1 / dens / 0.9));
+  const fStr = Math.max(1, Math.round(1 / dens));
+  const keep = [];
+  for (let i = 0; i < nAll; i++)
+    if (i < E.EDGE_N ? (i % eStr === 0) : ((i - E.EDGE_N) % fStr === 0)) keep.push(i);
+  const n = keep.length;
+  const pos = new Float32Array(n * 3), nrm = new Float32Array(n * 3);
+  const role = new Float32Array(n), rand = new Float32Array(n);
+  const edgeIdx = [];
+  for (let k = 0; k < n; k++) {
+    const i = keep[k];
+    for (let a = 0; a < 3; a++) {
+      let v = raw.charCodeAt(i * 3 + a); if (v > 127) v -= 256;
+      pos[k * 3 + a] = v / 127 * E.SCALE;
+      if (nor) { let w = nor.charCodeAt(i * 3 + a); if (w > 127) w -= 256; nrm[k * 3 + a] = w / 127; }
+    }
+    role[k] = i < E.EDGE_N ? 1 : 0;
+    rand[k] = hash(i, 13);
+    if (role[k]) edgeIdx.push(k);
+  }
+  // СТЯГИВАНИЕ: у файла нет полигонов, но есть цепочки точек на рёбрах (EDGE_N
+  // первых). «Грань» для точки заливки — ближайшая рёберная точка.
+  const edge = new Float32Array(n * 3);
+  const gr = grid3(pos, edgeIdx, cell * 6);
+  for (let k = 0; k < n; k++) {
+    if (role[k]) { edge[k * 3] = pos[k * 3]; edge[k * 3 + 1] = pos[k * 3 + 1]; edge[k * 3 + 2] = pos[k * 3 + 2]; continue; }
+    const j = nearestIn(gr, pos, pos[k * 3], pos[k * 3 + 1], pos[k * 3 + 2], 2);
+    if (j >= 0) { edge[k * 3] = pos[j * 3]; edge[k * 3 + 1] = pos[j * 3 + 1]; edge[k * 3 + 2] = pos[j * 3 + 2]; }
+    else { edge[k * 3] = pos[k * 3]; edge[k * 3 + 1] = pos[k * 3 + 1]; edge[k * 3 + 2] = pos[k * 3 + 2]; }
+  }
+  // ЛИНИИ: соединяем каждую рёберную точку (прореженную) с ближайшей соседкой —
+  // цепочки рёбер собираются в штриховой каркас без данных меша
+  const lines = [];
+  const liIdx = edgeIdx.filter((_, q) => q % Math.max(1, Math.round(edgeIdx.length / 7000)) === 0);
+  const gr2 = grid3(pos, liIdx, cell * 5);
+  const rr = (cell * 7) * (cell * 7);
+  for (let q = 0; q < liIdx.length; q++) {
+    const i = liIdx[q];
+    let best = -1, bd = 1e18;
+    const gx = Math.floor(pos[i * 3] / gr2.cell), gy = Math.floor(pos[i * 3 + 1] / gr2.cell), gz = Math.floor(pos[i * 3 + 2] / gr2.cell);
+    for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
+      const arr = gr2.m.get(gr2.key(gx + a, gy + b, gz + c));
+      if (!arr) continue;
+      for (let w = 0; w < arr.length; w++) {
+        const j = arr[w]; if (j <= i) continue;      // каждый отрезок один раз
+        const d = (pos[j * 3] - pos[i * 3]) ** 2 + (pos[j * 3 + 1] - pos[i * 3 + 1]) ** 2 + (pos[j * 3 + 2] - pos[i * 3 + 2]) ** 2;
+        if (d < bd && d > 1e-9) { bd = d; best = j; }
+      }
+    }
+    if (best >= 0 && bd < rr)
+      lines.push(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2], pos[best * 3], pos[best * 3 + 1], pos[best * 3 + 2]);
+  }
+  return { pos: pos, edge: edge, nor: nrm, role: role, rand: rand,
+           lines: new Float32Array(lines), half: half, cell: cell };
+}
+
+// шум для земли и астероида
+function fbm(x, z, oct) {
+  let a = 0, amp = 1, f = 1, norm = 0;
+  for (let o = 0; o < oct; o++) {
+    const xi = Math.floor(x * f), zi = Math.floor(z * f);
+    const fx = x * f - xi, fz = z * f - zi;
+    const s = (i2, j2) => hash(xi + i2, zi + j2);
+    const u = fx * fx * (3 - 2 * fx), w = fz * fz * (3 - 2 * fz);
+    const v2 = s(0, 0) * (1 - u) * (1 - w) + s(1, 0) * u * (1 - w) + s(0, 1) * (1 - u) * w + s(1, 1) * u * w;
+    a += v2 * amp; norm += amp; amp *= 0.5; f *= 2.1;
+  }
+  return a / norm;
+}
+
+// ЗЕМЛЯ: кусок рельефа. Полигональных граней нет — гранями работают ГОРИЗОНТАЛИ:
+// точки у линий уровня получают роль контура, стягивание тянет к ближайшей
+// горизонтали, а слой линий рисует сами изолинии.
+function terrainData(dens) {
+  const HALF = 200, AMP = 46, LEVELS = 12;
+  const step = 2.2 / Math.sqrt(dens);
+  const H = (x, z) => (fbm(x * 0.006 + 7.3, z * 0.006 + 2.1, 5) - 0.42) * AMP
+                    + Math.max(0, fbm(x * 0.002, z * 0.002, 2) - 0.55) * AMP * 2.2;
+  const lvl = AMP / LEVELS * 1.35;
+  const pos = [], nrm = [], role = [], rand = [], edge = [];
+  let k = 0;
+  for (let x = -HALF; x <= HALF; x += step) {
+    for (let z = -HALF; z <= HALF; z += step) {
+      const h = H(x, z);
+      // нормаль из градиента
+      const e = step * 0.6;
+      const gx = (H(x + e, z) - H(x - e, z)) / (2 * e), gz = (H(x, z + e) - H(x, z - e)) / (2 * e);
+      let nx = -gx, ny = 1, nz = -gz;
+      const nl = Math.hypot(nx, ny, nz); nx /= nl; ny /= nl; nz /= nl;
+      const f = ((h / lvl) % 1 + 1) % 1;
+      const nearLine = f < 0.16 || f > 0.84;
+      pos.push(x, h, z); nrm.push(nx, ny, nz);
+      role.push(nearLine ? 1 : 0); rand.push(hash(k, 13));
+      // стягивание: сдвиг к ближайшей горизонтали — вниз/вверх по высоте вдоль склона
+      const target = Math.round(h / lvl) * lvl;
+      const gl2 = gx * gx + gz * gz;
+      if (gl2 > 1e-6) {
+        const t = (h - target) / gl2;
+        edge.push(x - gx * t, target, z - gz * t);
+      } else edge.push(x, target, z);
+      k++;
+    }
+  }
+  // изолинии: лёгкий marching — между соседями с разным уровнем ставим отрезок
+  const lines = [];
+  const cols = Math.floor(2 * HALF / step) + 1;
+  const idOf = (ix, iz) => ix * cols + iz;
+  const lv = i => Math.round(pos[i * 3 + 1] / lvl);
+  for (let ix = 0; ix < cols - 1; ix++) for (let iz = 0; iz < cols - 1; iz++) {
+    const a = idOf(ix, iz), b = idOf(ix + 1, iz), c = idOf(ix, iz + 1);
+    if (b * 3 + 2 < pos.length && lv(a) !== lv(b))
+      lines.push(pos[a * 3], (pos[a * 3 + 1] + pos[b * 3 + 1]) / 2, pos[a * 3 + 2],
+                 pos[b * 3], (pos[a * 3 + 1] + pos[b * 3 + 1]) / 2, pos[b * 3 + 2]);
+    if (c * 3 + 2 < pos.length && lv(a) !== lv(c))
+      lines.push(pos[a * 3], (pos[a * 3 + 1] + pos[c * 3 + 1]) / 2, pos[a * 3 + 2],
+                 pos[c * 3], (pos[a * 3 + 1] + pos[c * 3 + 1]) / 2, pos[c * 3 + 2]);
+  }
+  return { pos: new Float32Array(pos), edge: new Float32Array(edge), nor: new Float32Array(nrm),
+           role: new Float32Array(role), rand: new Float32Array(rand),
+           lines: new Float32Array(lines), half: HALF, cell: step };
+}
+
+// АСТЕРОИД: икосфера, раздутая шумом. Настоящий меш — настоящие рёбра:
+// EdgesGeometry по двугранному углу, стягивание проецирует точку на отрезок.
+function asteroidData(dens) {
+  const R = 34;
+  // detail 2, а не 3: крупные грани — крупные рёбра. На detail 3 шум почти
+  // сглаживал двугранные углы и EdgesGeometry находил полторы сотни отрезков.
+  const geo = new THREE.IcosahedronGeometry(R, 2);
+  const p = geo.attributes.position;
+  const v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    const d = 1 + (fbm(v.x * 0.03 + 3, v.y * 0.03 + v.z * 0.02, 4) - 0.5) * 0.8;
+    p.setXYZ(i, v.x * d, v.y * d, v.z * d);
+  }
+  geo.computeVertexNormals();
+  // сэмплинг по площади треугольников — детерминированный
+  const nog = geo.toNonIndexed(), pp = nog.attributes.position;
+  const A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
+  const ab = new THREE.Vector3(), ac = new THREE.Vector3(), N = new THREE.Vector3(), Pt = new THREE.Vector3();
+  const want = 26000 * dens;
+  let area = 0;
+  for (let t = 0; t + 2 < pp.count; t += 3) {
+    A.fromBufferAttribute(pp, t); B.fromBufferAttribute(pp, t + 1); C.fromBufferAttribute(pp, t + 2);
+    area += ab.subVectors(B, A).cross(ac.subVectors(C, A)).length() * 0.5;
+  }
+  const dpa = want / area;
+  const pos = [], nrm = [], role = [], rand = [];
+  let seed = 0;
+  for (let t = 0; t + 2 < pp.count; t += 3) {
+    A.fromBufferAttribute(pp, t); B.fromBufferAttribute(pp, t + 1); C.fromBufferAttribute(pp, t + 2);
+    ab.subVectors(B, A); ac.subVectors(C, A);
+    N.crossVectors(ab, ac);
+    const ar = N.length() * 0.5; N.normalize();
+    let cnt = Math.floor(ar * dpa) + (hash(t, 1) < (ar * dpa) % 1 ? 1 : 0);
+    for (let q = 0; q < cnt; q++) {
+      let u = hash(seed, 3), w = hash(seed, 7); seed++;
+      if (u + w > 1) { u = 1 - u; w = 1 - w; }
+      Pt.copy(A).addScaledVector(ab, u).addScaledVector(ac, w);
+      pos.push(Pt.x, Pt.y, Pt.z); nrm.push(N.x, N.y, N.z);
+      role.push(0); rand.push(hash(seed, 13));
+    }
+  }
+  // рёбра меша
+  const eg = new THREE.EdgesGeometry(geo, 7);
+  const ep = eg.attributes.position;
+  const lines = new Float32Array(ep.array);
+  // стягивание: ближайший отрезок через сетку середин отрезков
+  const segMid = new Float32Array(ep.count / 2 * 3);
+  const segIdx = [];
+  for (let s2 = 0; s2 < ep.count; s2 += 2) {
+    segMid[(s2 / 2) * 3] = (ep.getX(s2) + ep.getX(s2 + 1)) / 2;
+    segMid[(s2 / 2) * 3 + 1] = (ep.getY(s2) + ep.getY(s2 + 1)) / 2;
+    segMid[(s2 / 2) * 3 + 2] = (ep.getZ(s2) + ep.getZ(s2 + 1)) / 2;
+    segIdx.push(s2 / 2);
+  }
+  const gr = grid3(segMid, segIdx, R * 0.25);
+  const n = pos.length / 3;
+  const edge = new Float32Array(n * 3);
+  const a3 = new THREE.Vector3(), b3 = new THREE.Vector3(), p3 = new THREE.Vector3(), t3 = new THREE.Vector3();
+  for (let i = 0; i < n; i++) {
+    p3.set(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]);
+    const s2 = nearestIn(gr, segMid, p3.x, p3.y, p3.z, 2);
+    if (s2 < 0) { edge[i * 3] = p3.x; edge[i * 3 + 1] = p3.y; edge[i * 3 + 2] = p3.z; continue; }
+    a3.set(ep.getX(s2 * 2), ep.getY(s2 * 2), ep.getZ(s2 * 2));
+    b3.set(ep.getX(s2 * 2 + 1), ep.getY(s2 * 2 + 1), ep.getZ(s2 * 2 + 1));
+    t3.subVectors(b3, a3);
+    const tt = clamp(p3.clone().sub(a3).dot(t3) / Math.max(1e-9, t3.lengthSq()), 0, 1);
+    t3.multiplyScalar(tt).add(a3);
+    edge[i * 3] = t3.x; edge[i * 3 + 1] = t3.y; edge[i * 3 + 2] = t3.z;
+    // точки, оказавшиеся почти на ребре, играют роль контура
+    if (t3.distanceToSquared(p3) < (R * 0.045) ** 2) role[i] = 1;
+  }
+  return { pos: new Float32Array(pos), edge: edge, nor: new Float32Array(nrm),
+           role: new Float32Array(role), rand: new Float32Array(rand),
+           lines: lines, half: R * 1.4, cell: R / 40 };
+}
+
+const OBJECTS = {
+  player: { name: 'Корабль игрока', build: d => shipData(window.PD_PLAYER, d), ok: () => window.PD_PLAYER && PD_PLAYER.B64 },
+  enemy:  { name: 'Вражеский корабль', build: d => shipData(window.PD_ENEMY, d), ok: () => window.PD_ENEMY && PD_ENEMY.B64 },
+  terra:  { name: 'Земля', build: terrainData, ok: () => true },
+  aster:  { name: 'Астероид', build: asteroidData, ok: () => true }
+};
+let objKey = 'player';
+let look = null;
+
+// ── камера: пресеты дистанций игры ─────────────────────────────────────────
+// «Полёт»: игрок в игре виден с ~3 полугабаритов, чуть сверху-сзади.
+// «Ангар»: витрина стоит на 1.9 полугабарита — вдвое ближе; прошлое «в ангаре
+// другая настройка» было ровно этой разницей. «Свободно» — руки.
+const CAMS = { flight: ['ПОЛЁТ', 3.0, 0.34], hangar: ['АНГАР', 1.9, 0.26], free: ['СВОБОДНО', 4.1, 0.42] };
+let camKey = 'free', camYaw = 0.72, camPitch = 0.36, camDist = 100;
+function applyCam(k) {
+  camKey = k;
+  const c = CAMS[k];
+  camDist = (look ? look.half : 50) * c[1];
+  camPitch = c[2];
+  g('mCam').textContent = c[0];
+}
+
+// ── сборка ──────────────────────────────────────────────────────────────────
+function rebuild() {
+  g('busy').classList.add('on');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const t0 = performance.now();
+    const O = OBJECTS[objKey];
+    if (!O.ok()) { g('busy').classList.remove('on'); toast('Нет файла для этого объекта'); return; }
+    const data = O.build(S.dens.v / 100);
+    if (look) { scene.remove(look.group); look.geometry.dispose(); }
+    look = PD_LOOK.make(data, currentParams());
+    scene.add(look.group);
+    applyCam(camKey);
+    g('mPts').textContent = (look.count / 1000).toFixed(1) + 'k';
+    g('mLin').textContent = data.lines ? (data.lines.length / 6 | 0) : 0;
+    g('busy').classList.remove('on');
+    if (performance.now() - t0 > 1200) console.log('сборка', Math.round(performance.now() - t0), 'мс');
+  }));
+}
+function currentParams() {
+  return { hue: S.hue.v, sizePm: S.sizePm.v, pxMin: S.pxMin.v, pxMax: S.pxMax.v,
+    pull: S.pull.v, xray: S.xray.v, fres: S.fres.v, light: S.light.v,
+    lineOp: S.lineOp.v, expo: S.expo.v, edgeBright: S.edgeBright.v,
+    occl: g('cOccl').checked };
+}
+function apply() { if (look) look.set(currentParams()); }
+
+// ── панель ──────────────────────────────────────────────────────────────────
+Object.keys(S).forEach(k => {
+  const d = S[k], box = g(d.box);
+  const row = document.createElement('div'); row.className = 'row';
+  const lab = document.createElement('label'); lab.textContent = d.label;
+  const minus = document.createElement('button'); minus.className = 'pm'; minus.textContent = '−';
+  const plus = document.createElement('button'); plus.className = 'pm'; plus.textContent = '+';
+  const inp = document.createElement('input');
+  inp.type = 'range'; inp.min = d.min; inp.max = d.max; inp.step = d.step; inp.value = d.v;
+  if (d.hue) inp.className = 'hue';
+  const val = document.createElement('div'); val.className = 'val';
+  const fmt = d.fmt || (v => d.step >= 1 ? String(v | 0) : (+v).toFixed(2));
+  const show = () => { if (+inp.value !== d.v) inp.value = d.v; val.textContent = fmt(d.v); };
+  show();
+  inp.oninput = () => { d.v = +inp.value; val.textContent = fmt(d.v); if (!d.rebuild) apply(); };
+  if (d.rebuild) inp.onchange = () => rebuild();
+  const nudge = (dir, ev) => {
+    d.v = clamp(+(d.v + dir * d.step * (ev && ev.shiftKey ? 10 : 1)).toFixed(4), d.min, d.max);
+    show(); if (d.rebuild) rebuild(); else apply();
+  };
+  minus.onclick = e => nudge(-1, e);
+  plus.onclick = e => nudge(1, e);
+  d.show = show;
+  row.append(lab, minus, inp, plus, val);
+  box.appendChild(row);
+});
+g('cOccl').onchange = apply;
+
+function seg(boxId, items, get, set) {
+  const box = g(boxId);
+  items.forEach(([k, t]) => {
+    const b = document.createElement('button');
+    b.textContent = t; b.dataset.k = k;
+    b.className = get() === k ? 'on' : '';
+    b.onclick = () => { set(k); [].forEach.call(box.children, c => c.classList.toggle('on', c.dataset.k === get())); };
+    box.appendChild(b);
+  });
+}
+seg('objBtns', Object.keys(OBJECTS).map(k => [k, OBJECTS[k].name]), () => objKey,
+  k => { objKey = k; rebuild(); });
+seg('camBtns', Object.keys(CAMS).map(k => [k, CAMS[k][0]]), () => camKey, applyCam);
+
+g('bCopy').onclick = () => {
+  const out = JSON.stringify({ object: objKey, dens: S.dens.v, look: currentParams() }, null, 2);
+  const done = () => toast('Пресет скопирован');
+  if (navigator.clipboard) navigator.clipboard.writeText(out).then(done, () => { console.log(out); done(); });
+  else { console.log(out); done(); }
+};
+g('bReset').onclick = () => {
+  const D = PD_LOOK.DEFAULTS;
+  S.dens.v = 30; S.sizePm.v = D.sizePm; S.pxMin.v = D.pxMin; S.pxMax.v = D.pxMax;
+  S.pull.v = D.pull; S.xray.v = D.xray; S.fres.v = D.fres; S.light.v = D.light;
+  S.lineOp.v = D.lineOp; S.hue.v = D.hue; S.expo.v = D.expo; S.edgeBright.v = D.edgeBright;
+  Object.keys(S).forEach(k => S[k].show());
+  g('cOccl').checked = true;
+  rebuild();
+  toast('Сброшено');
+};
+
+// ── управление камерой ──────────────────────────────────────────────────────
+let dragging = false, lx = 0, ly = 0;
+cv.addEventListener('pointerdown', e => { dragging = true; lx = e.clientX; ly = e.clientY; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointerup', e => { dragging = false; try { cv.releasePointerCapture(e.pointerId); } catch (_) {} });
+cv.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  camYaw -= (e.clientX - lx) * 0.006;
+  camPitch = clamp(camPitch + (e.clientY - ly) * 0.005, -1.45, 1.45);
+  lx = e.clientX; ly = e.clientY;
+});
+cv.addEventListener('wheel', e => { e.preventDefault(); camDist = clamp(camDist * (1 + Math.sign(e.deltaY) * 0.08), 2, 8000); }, { passive: false });
+addEventListener('resize', () => {
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+});
+
+// панель слева — центр сцены сдвигаем в свободную часть экрана (проекцией, не камерой)
+function viewOffset() {
+  const w = g('ui').getBoundingClientRect().width;
+  camera.setViewOffset(innerWidth, innerHeight, -w / 2, 0, innerWidth, innerHeight);
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', viewOffset);
+
+// ── цикл ────────────────────────────────────────────────────────────────────
+const clock = new THREE.Clock();
+let fps = 60, acc = 0;
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, clock.getDelta());
+  if (look) look.uniforms.uPx.value = innerHeight;
+  camera.position.set(
+    Math.sin(camYaw) * Math.cos(camPitch) * camDist,
+    Math.sin(camPitch) * camDist,
+    Math.cos(camYaw) * Math.cos(camPitch) * camDist);
+  camera.lookAt(0, 0, 0);
+  renderer.render(scene, camera);
+  const f = dt > 0 ? 1 / dt : 60;
+  fps += (f - fps) * 0.08; acc += dt;
+  if (acc > 0.25) { acc = 0; g('mFps').textContent = Math.round(fps); }
+}
+
+viewOffset();
+rebuild();
+loop();
+</script>
+</body>
+</html>
