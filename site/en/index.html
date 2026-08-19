@@ -2919,17 +2919,66 @@
     var fr = document.querySelector('iframe.hero-scene');
     var hero = document.getElementById('start');
     if (!fr || !hero || !window.IntersectionObserver) return;
-    var heroVis = true;
-    function send(){
-      var on = heroVis && !document.hidden && document.hasFocus();
-      try { fr.contentWindow.postMessage({ pdVisible: on }, '*'); } catch (err) {}
+    var heroVis = true, lastOn = null, heal = 0;
+
+    // ПОЧЕМУ ГАЛЕРЕЯ ЗАСТРЕВАЛА (найдено 16.08.2026, замер записан ниже).
+    // Управление галереей живёт ВНУТРИ iframe: краевые стрелки #pluscursor, точки
+    // #dots и ползунок #scrub (настоящий input type=range). Клик по любому из них
+    // уводит фокус в iframe, и родитель получает blur. Прежний send() читал
+    // document.hasFocus() ПРЯМО В ЭТОТ МОМЕНТ, получал false и отправлял в сцену
+    // pdVisible:false. Сцена по этому флагу выходит из кадрового цикла целиком
+    // (hero-scene.html, «if (!sceneVisible && !engaged) return») — то есть замирала.
+    //
+    // Насмерть её убивало не это, а отсутствие возврата: событий у родителя больше
+    // не возникало, а прокрутка вниз и обратно проверяла ТО ЖЕ САМОЕ условие с тем
+    // же hasFocus() === false. Замер последовательности: focus → true, клик в
+    // сцену → false, 700 мс тишины → ни одного сообщения, вниз → false, обратно
+    // наверх при полностью видимом герое → false. Ровно то, что видел владелец.
+    //
+    // Грабль в этом файле УЖЕ был описан двумя абзацами выше («blur при клике в
+    // iframe — не считается уходом», обойдён таймаутом для pdActive) и ещё раз в
+    // самой сцене, где ради него сделано исключение engaged для игры и архива.
+    // Обычной галереи ни то, ни другое не касалось.
+
+    // Фокус внутри НАШЕГО iframe — это работа со сценой, а не уход со страницы.
+    // У родителя в этот момент activeElement равен самому элементу iframe, и это
+    // надёжнее hasFocus(): та в момент blur читается по-разному в разных браузерах.
+    function active(){
+      return document.hasFocus() || document.activeElement === fr;
     }
+    function send(){
+      var on = heroVis && !document.hidden && active();
+      if (on !== lastOn) {
+        lastOn = on;
+        // Отправляем только на СМЕНЕ состояния. Раньше сообщение уходило на каждый
+        // вызов наблюдателя и на каждое событие — сцене приходила одна и та же
+        // правда десятки раз за прокрутку.
+        try { fr.contentWindow.postMessage({ pdVisible: on }, '*'); } catch (err) {}
+      }
+      // САМОЛЕЧЕНИЕ. Главная беда была не в неверном false, а в том, что он
+      // оставался навсегда. Пока герой в кадре и вкладка видима, а сцена почему-то
+      // выключена, перепроверяем себя раз в полсекунды: любая будущая ошибка в
+      // определении фокуса перестаёт быть смертельной и живёт максимум полсекунды.
+      // В нормальной работе таймера НЕТ вовсе — он поднимается только в этом
+      // подозрительном состоянии, и внутри всего два чтения свойств, без рендера.
+      // Фоновое окно с видимой вкладкой держит его вхолостую, и это правильно:
+      // сцена там остаётся выключенной, кулер молчит.
+      var suspect = !on && heroVis && !document.hidden;
+      if (suspect && !heal) heal = setInterval(send, 500);
+      else if (!suspect && heal) { clearInterval(heal); heal = 0; }
+    }
+
     new IntersectionObserver(function(es){
       es.forEach(function(e){ heroVis = e.isIntersecting; send(); });
     }, { threshold: 0.05 }).observe(hero);
     addEventListener('visibilitychange', send);
-    addEventListener('blur', send);
+    // Таймаут на blur — тот же приём, что этажом выше у pdActive: даём фокусу осесть
+    // и только потом читаем, где он. Без задержки мы читаем его в момент перехода.
+    addEventListener('blur', function(){ setTimeout(send, 150); });
     addEventListener('focus', send);
+    // Клик по самой сцене: фокус только что ушёл в iframe, состояние надо пересчитать
+    // уже с новым activeElement, а не с тем, что был до клика.
+    fr.addEventListener('pointerdown', function(){ setTimeout(send, 0); });
   })();
 
   // вертикальная прокрутка из 3D-сцены (iframe): свайп по герою листает сайт.
