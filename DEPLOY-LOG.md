@@ -8,6 +8,60 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-19 14:59 — hybrid-v8 @ 31a38d5
+
+**Коммиты в этой поставке**
+```
+31a38d5 Паспорт: раздел про домен .com как единую точку отказа
+28601fd Временно канонический домен .ru: регистратор увёл NS у .com на свою парковку
+c66b728 Канонический домен снова playdisplay.com, как было
+f78c269 Временно: канонический домен .ru — A-записи .com ведут не на наш хостинг, и сайт был недоступен целиком
+adb18b0 Журнал деплоя: 1e73b65
+```
+
+**На сервер отправлено файлов:** 38, удалено: 0
+```
+.htaccess
+index.html
+llms.txt
+privacy.html
+robots.txt
+sitemap.xml
+digital/index.html
+en/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+work/airports/index.html
+work/bmwx5/index.html
+work/coalco/index.html
+work/industry-rf/index.html
+work/mig2019/index.html
+work/odk-oak/index.html
+work/pano360/index.html
+work/proryv/index.html
+work/ptk-group/index.html
+work/rostec/index.html
+work/sinara/index.html
+work/stalingrad/index.html
+work/urban-forum-2018/index.html
+work/vdnh-space-center/index.html
+work/vdnh-space/index.html
+```
+
+
 ## 2026-08-19 10:49 — hybrid-v8 @ 1e73b65
 
 **Коммиты в этой поставке**
