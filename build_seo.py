@@ -19,7 +19,12 @@ import json, os, re, html, hashlib
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(ROOT, 'site')
-BASE = 'https://playdisplay.com'
+# КАНОНИЧЕСКИЙ ДОМЕН — одна строка на весь SEO: canonical, hreflang, og:url, sitemap,
+# robots, llms, JSON-LD и 30 страниц работ считаются от него.
+# ВРЕМЕННО .ru (19.08.2026): истёкший playdisplay.com регистратор увёл на парковку
+# dnsproxy1/2.fm.nic.ru, и пока каноническим был .com, живой .ru перебрасывал на мёртвый
+# домен — лежал весь сайт. Вернуть на .com, когда NS у .com снова покажут timeweb.
+BASE = 'https://playdisplay.ru'
 
 
 # ---------- отпечаток общих файлов: styles.css и analytics.js ----------
@@ -558,14 +563,14 @@ en = re.sub(r'<title>.*?</title>', '<title>%s</title>' % esc(EN_TITLE), en, coun
 en = re.sub(r'<meta name="description" content="[^"]*">', '<meta name="description" content="%s">' % esc(EN_DESC), en, count=1)
 en = re.sub(r'<meta name="keywords" content="[^"]*">', '<meta name="keywords" content="%s">' % esc(EN_KEYS), en, count=1)
 en = re.sub(r'\n?<link rel="alternate" hreflang="[^"]*" href="[^"]*">', '', en)   # чужие/русские — долой
-en = en.replace('<link rel="canonical" href="https://playdisplay.com/">',
+en = en.replace('<link rel="canonical" href="%s/">' % BASE,
                 '<link rel="canonical" href="%s/en/">\n%s' % (BASE, alternates('')), 1)
 en = en.replace('<meta property="og:locale" content="ru_RU">', '<meta property="og:locale" content="en_US">', 1)
 en = re.sub(r'<meta property="og:title" content="[^"]*">',
             '<meta property="og:title" content="playdisplay — spaces people remember">', en, count=1)
 en = re.sub(r'<meta property="og:description" content="[^"]*">',
             '<meta property="og:description" content="%s">' % esc(EN_DESC), en, count=1)
-en = en.replace('<meta property="og:url" content="https://playdisplay.com/">',
+en = en.replace('<meta property="og:url" content="%s/">' % BASE,
                 '<meta property="og:url" content="%s/en/">' % BASE, 1)
 en = re.sub(r'<meta name="twitter:title" content="[^"]*">',
             '<meta name="twitter:title" content="playdisplay — spaces people remember">', en, count=1)
