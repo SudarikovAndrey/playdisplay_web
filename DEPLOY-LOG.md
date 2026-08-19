@@ -8,6 +8,63 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-19 17:15 — hybrid-v8 @ 7a54fa8
+
+**Коммиты в этой поставке**
+```
+7a54fa8 Компред отдавал калитку чужого проекта: RewriteBase остался /ball/
+a9db4ef Конструктор лука SPICE RUN, второе поколение (в hybrid-v8 по просьбе владельца)
+5a85591 Компред: прямая ссылка в Яндекс Игры, крупный призыв, персонаж +20%, искры и параллакс слоями
+4a6256e Галерея героя застревала: pdVisible:false прилипал навсегда
+1454ba2 Журнал деплоя: 31a38d5
+```
+
+**На сервер отправлено файлов:** 43, удалено: 0
+```
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+avtovaz/.htaccess
+avtovaz/private/page.html
+digital/index.html
+en/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+kit/blocks.json
+kit/catalog.html
+kit/css/components.css
+kit/js/embers.js
+kit/js/parallax.js
+work/airports/index.html
+work/bmwx5/index.html
+work/coalco/index.html
+work/industry-rf/index.html
+work/mig2019/index.html
+work/odk-oak/index.html
+work/pano360/index.html
+work/proryv/index.html
+work/ptk-group/index.html
+work/rostec/index.html
+work/sinara/index.html
+work/stalingrad/index.html
+…и ещё 3
+```
+
+
 ## 2026-08-19 14:59 — hybrid-v8 @ 31a38d5
 
 **Коммиты в этой поставке**
