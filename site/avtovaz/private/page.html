@@ -14,7 +14,7 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=e1522e81">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=5bb2f3c1">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
@@ -50,7 +50,7 @@
 </head>
 <!-- deck – режим презентации: прокрутка прилипает к слайдам. theme-street – оформление
      под мир игры; фактуру картона даёт страница, у кита своей нет -->
-<body class="theme-street">
+<body class="theme-street" data-embers>
   <!-- Заставка лежит В РАЗМЕТКЕ, а не создаётся скриптом: иначе между показом страницы
        и запуском скрипта мигает недогруженная вёрстка -->
   <div class="boot" id="boot" data-boot-all>
@@ -155,7 +155,7 @@
         <ul class="stores stores--links stores--tiles" style="margin-top:22px">
           <li class="ico--play"><a href="https://play.google.com/store/apps/details?id=com.r2rstudio.blockboss" target="_blank" rel="noopener" data-action="Скачать ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2.6v18.8c0 .6.6 1 1.1.7l14.4-8.7c.5-.3.5-1.1 0-1.4L5.1 1.9C4.6 1.6 4 2 4 2.6z"/></svg>Google Play</a></li>
           <li class="ico--apple"><a href="https://apps.apple.com/ru/app/id6740486705" target="_blank" rel="noopener" data-action="Скачать ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.5zM14.2 5.3c.6-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.8-1.3z"/></svg>App Store</a></li>
-          <li class="ico--ya"><a href="https://yandex.ru/games/search?query=%D1%80%D1%8B%D0%BD%D0%BE%D0%BA%20%D0%BF%D0%B0%D1%86%D0%B0%D0%BD%D0%B0" target="_blank" rel="noopener" data-action="Играть ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><mask id="yaMark" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><path fill="#000" d="M14.9 5.4h2.6v13.2h-2.6v-5.1h-1.2l-2.6 5.1H7.9l3.2-6c-1.6-.6-2.5-1.9-2.5-3.6 0-2.3 1.7-3.6 4.3-3.6h2zm0 2.1h-1.7c-1.3 0-2 .6-2 1.7 0 1.1.7 1.7 2 1.7h1.7z"/></mask><circle cx="12" cy="12" r="11" mask="url(#yaMark)"/></svg>Яндекс Игры</a></li>
+          <li class="ico--ya"><a href="https://yandex.ru/games/app/rynok-patsana-karton-na-asfalte-ulichnyi-magnat-536610" target="_blank" rel="noopener" data-action="Играть ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><mask id="yaMark" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><path fill="#000" d="M14.9 5.4h2.6v13.2h-2.6v-5.1h-1.2l-2.6 5.1H7.9l3.2-6c-1.6-.6-2.5-1.9-2.5-3.6 0-2.3 1.7-3.6 4.3-3.6h2zm0 2.1h-1.7c-1.3 0-2 .6-2 1.7 0 1.1.7 1.7 2 1.7h1.7z"/></mask><circle cx="12" cy="12" r="11" mask="url(#yaMark)"/></svg>Яндекс Игры</a></li>
           <li class="ico--vk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.4 6.5h3.2c.3 3.1 1.7 5.6 3 6.5V6.5h3v4.8c1.2-.2 2.5-2 2.9-4.8h3c-.3 2.6-1.5 4.5-2.7 5.3 1.2.6 2.7 2.3 3.3 5.2h-3.3c-.5-2-1.7-3.6-3.2-3.8v3.8h-.4c-4.6 0-7.6-3.4-8.8-10.5z"/></svg>VK</li>
           <li class="ico--ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6a4.5 4.5 0 100 9 4.5 4.5 0 000-9zm0 2.6a1.9 1.9 0 110 3.8 1.9 1.9 0 010-3.8zM8 13.2c-.6-.5-1.5-.4-2 .3-.4.7-.2 1.6.5 2 1 .6 2.1 1 3.2 1.2l-2.6 2.6c-.6.6-.6 1.5 0 2 .6.6 1.5.6 2 0l2.9-2.8 2.8 2.8c.6.6 1.5.6 2 0 .6-.5.6-1.4 0-2l-2.5-2.6c1.1-.2 2.2-.6 3.1-1.2.7-.4.9-1.3.5-2-.5-.7-1.4-.8-2-.3-2 1.3-4.4 1.3-6.4 0z"/></svg>OK</li>
         </ul>
@@ -796,11 +796,11 @@
       <div class="slide-shell">
         <div class="team-final reveal">
           <img class="team-final__mark" src="assets/market-logo.png" alt="Рынок Пацана">
-          <p class="overline">Играть сейчас</p>
+          <p class="play-call">Играть сейчас</p>
           <ul class="stores stores--links stores--tiles">
             <li class="ico--play"><a href="https://play.google.com/store/apps/details?id=com.r2rstudio.blockboss" target="_blank" rel="noopener" data-action="Скачать ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2.6v18.8c0 .6.6 1 1.1.7l14.4-8.7c.5-.3.5-1.1 0-1.4L5.1 1.9C4.6 1.6 4 2 4 2.6z"/></svg>Google Play</a></li>
             <li class="ico--apple"><a href="https://apps.apple.com/ru/app/id6740486705" target="_blank" rel="noopener" data-action="Скачать ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.5zM14.2 5.3c.6-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.8-1.3z"/></svg>App Store</a></li>
-            <li class="ico--ya"><a href="https://yandex.ru/games/search?query=%D1%80%D1%8B%D0%BD%D0%BE%D0%BA%20%D0%BF%D0%B0%D1%86%D0%B0%D0%BD%D0%B0" target="_blank" rel="noopener" data-action="Играть ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><mask id="yaFinal" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><path fill="#000" d="M14.9 5.4h2.6v13.2h-2.6v-5.1h-1.2l-2.6 5.1H7.9l3.2-6c-1.6-.6-2.5-1.9-2.5-3.6 0-2.3 1.7-3.6 4.3-3.6h2zm0 2.1h-1.7c-1.3 0-2 .6-2 1.7 0 1.1.7 1.7 2 1.7h1.7z"/></mask><circle cx="12" cy="12" r="11" mask="url(#yaFinal)"/></svg>Яндекс Игры</a></li>
+            <li class="ico--ya"><a href="https://yandex.ru/games/app/rynok-patsana-karton-na-asfalte-ulichnyi-magnat-536610" target="_blank" rel="noopener" data-action="Играть ↗"><svg viewBox="0 0 24 24" aria-hidden="true"><mask id="yaFinal" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><path fill="#000" d="M14.9 5.4h2.6v13.2h-2.6v-5.1h-1.2l-2.6 5.1H7.9l3.2-6c-1.6-.6-2.5-1.9-2.5-3.6 0-2.3 1.7-3.6 4.3-3.6h2zm0 2.1h-1.7c-1.3 0-2 .6-2 1.7 0 1.1.7 1.7 2 1.7h1.7z"/></mask><circle cx="12" cy="12" r="11" mask="url(#yaFinal)"/></svg>Яндекс Игры</a></li>
           </ul>
         </div>
         </div>
@@ -814,7 +814,7 @@
   <script defer src="../../kit/js/boot.js?v=6879978b"></script>
   <script defer src="../../kit/js/reveal-cursor.js?v=fc2f75e6"></script>
   <script defer src="../../kit/js/nav.js?v=c1ea1b64"></script>
-  <script defer src="../../kit/js/parallax.js?v=aae347d9"></script>
+  <script defer src="../../kit/js/parallax.js?v=cf3b0f2e"></script>
   <script defer src="../../kit/js/lists.js?v=8493dc93"></script>
   <script defer src="../../kit/js/hotspots.js?v=5b3c99e7"></script>
   <script defer src="../../kit/js/gallery.js?v=9be70a23"></script>
@@ -825,6 +825,7 @@
   <script defer src="../../kit/js/videoctl.js?v=c4567837"></script>
   <script defer src="../../kit/js/signwall.js?v=054e0040"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>
+  <script defer src="../../kit/js/embers.js?v=a4e1f209"></script>
   <script defer src="../../kit/js/ui.js?v=0c011b9f"></script>
 </body>
 </html>

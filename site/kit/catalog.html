@@ -51,7 +51,7 @@
     @media (max-width: 680px) { .kb-shell { width: calc(100vw - 40px); padding-top: 92px; } .kb-stage { padding: 18px 14px; } }
   </style>
 </head>
-<body>
+<body data-embers>
   <!-- Каркасные блоки (шапка, полоса разделов, прогресс, курсор, кнопка «в начало»)
        живут не в карточках, а работают на самой странице каталога: увидеть их можно
        прямо сейчас, а разметку взять из карточки. -->
@@ -108,6 +108,12 @@
     <div data-block="cursor-ball" data-live="Живой пример — в книге «Музей Мяча» на экранах «Мяч — проводник» и «Контакты»."></div>
     <div data-block="hero-3d" data-live="Живой пример — первый экран playdisplay.com."></div>
     <div data-block="flygl" data-live="Живой пример — переход в кейс на playdisplay.com."></div>
+
+    <div data-block="embers" data-live="Работает на этой странице — тёплые искры всплывают на фоне. Слой лежит позади содержания и не перехватывает щелчки."></div>
+
+    <div data-block="play-call">
+      <p class="play-call">Играть сейчас</p>
+    </div>
 
     <div data-block="sound">
       <button class="sound-toggle is-playing" type="button" aria-pressed="true"><i aria-hidden="true"></i><span>Звук / вкл</span></button>
@@ -386,5 +392,6 @@
   <script defer src="js/ball.js"></script>
   <script defer src="js/ui.js"></script>
   <script defer src="js/scrub.js"></script>
+  <script defer src="js/embers.js"></script>
 </body>
 </html>
