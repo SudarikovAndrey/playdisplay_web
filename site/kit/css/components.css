@@ -2127,7 +2127,9 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    с соседними слайдами в режиме прокрутки, а пятно с уходом в прозрачность – нет. */
 .slide--film-bg {
   background:
-    radial-gradient(64% 68% at 72% 50%, #161618 0%, rgba(22,22,24,.72) 44%, rgba(22,22,24,0) 78%),
+    /* Цвет взят из самого ролика (замер по углам кадра): #18181b. Пятно вокруг него, а
+       не сплошная заливка — сплошная разошлась бы с соседними слайдами при прокрутке. */
+    radial-gradient(70% 74% at 72% 50%, #18181b 0%, rgba(24,24,27,.82) 46%, rgba(24,24,27,0) 82%),
     linear-gradient(180deg, #0b0b0c, #0e0e10 60%, #0b0b0c);
 }
 
@@ -2296,3 +2298,41 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   .gallery__item--object-mid img { inset: 6% 0 auto 0; width: 100%; height: 46%; object-position: 50% 50%; }
   .gallery__item--object-mid .gallery__copy { width: auto; }
 }
+
+/* Кадр без затемнения: у вырезанного предмета на тёмном фоне гасить нечего, а растяжка
+   съедала кузов машин. Текст здесь и так на пустом углу. */
+.gallery__item--clear::after { display: none; }
+
+/* ФИНАЛ: ПЕРСОНАЖ СПРАВА, СОДЕРЖАНИЕ СЛЕВА. Раньше он стоял поверх центра и закрывал знак
+   и плитку магазинов. Теперь экран поделён: содержание живёт в левых двух третях и
+   выровнено по левому краю, персонаж занимает правую треть и обрезан краем экрана. */
+.slide--hero-corner .slide-shell { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 34%); align-items: center; }
+.slide--hero-corner .team-final { justify-items: start; text-align: left; }
+.slide--hero-corner .team-final .stores--tiles { margin-left: 0; }
+.slide--hero-corner .corner-hero { height: min(94%, 780px); right: -2%; }
+@media (max-width: 900px) {
+  .slide--hero-corner .slide-shell { grid-template-columns: minmax(0, 1fr); }
+  .slide--hero-corner .team-final { justify-items: center; text-align: center; }
+}
+
+/* ── ПАРАЛЛАКС КОНТРАСТНЕЕ ────────────────────────────────────────────────
+   Кадры галереи двигались вместе со слайдом, то есть не двигались вовсе. Здесь предмет
+   и фон идут с разной скоростью: сдвиг небольшой (до 6 % высоты), но именно он даёт
+   ощущение глубины. Считает parallax.js по атрибуту data-parallax. */
+.gallery__item--object img[data-parallax],
+.gallery__item--object-mid img[data-parallax],
+/* Сцене со сборками параллакс не даём: у неё своё центрирование через transform,
+   и два правила на одно свойство гасят друг друга. */
+
+/* ── ПЕРВЫЙ ЭКРАН: АКЦЕНТ ВМЕСТО РОВНОГО СПИСКА ───────────────────────────
+   Пять одинаковых чисел читаются как таблица: глазу не за что зацепиться. Главное здесь
+   одно — сколько человек уже установили игру. Оно и становится крупным, остальные уходят
+   на второй план, а между блоками добавляется воздух. */
+.hero-facts--accent { gap: clamp(18px, 2.6vw, 44px) clamp(22px, 3.4vw, 58px); margin-top: clamp(18px, 2.4vw, 34px); }
+.hero-facts--accent li:first-child b { font-size: clamp(38px, 5vw, 82px); line-height: .9; }
+.hero-facts--accent li:first-child span { font-size: 12px; letter-spacing: .16em; }
+.hero-facts--accent li:not(:first-child) b { font-size: clamp(20px, 2.1vw, 34px); opacity: .82; }
+.hero-facts--accent li:not(:first-child) span { opacity: .7; }
+/* Абзац уже заголовка: одинаковая ширина у крупного и мелкого текста делает экран плоским */
+.hero-copy--narrow .hero-statement { max-width: 30ch; }
+.hero-facts-title { margin-top: clamp(20px, 3vw, 40px); }
