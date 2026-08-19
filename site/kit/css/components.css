@@ -1277,11 +1277,17 @@ html.deck { scroll-snap-type: y mandatory; }
 .gallery__item img,
 .gallery__item video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 38%; }
 /* Затемнение только снизу и только настолько, чтобы читались три строки */
+/* ЗАТЕМНЕНИЕ ТОЛЬКО ТАМ, ГДЕ ТЕКСТ. Раньше растяжка шла ровно по всей ширине, и правый
+   нижний угол — где ни строчки нет — оказывался самым тёмным местом кадра: картинку там
+   просто не видно. Маска гасит саму растяжку к правому краю, поэтому подписи слева
+   читаются, а кадр справа остаётся открытым. */
 .gallery__item::after {
   content: "";
   position: absolute;
-  inset: 40% 0 0 0;
-  background: linear-gradient(180deg, rgba(8,8,9,0) 0%, rgba(8,8,9,.55) 45%, rgba(8,8,9,.92) 100%);
+  inset: 46% 0 0 0;
+  background: linear-gradient(180deg, rgba(8,8,9,0) 0%, rgba(8,8,9,.5) 46%, rgba(8,8,9,.88) 100%);
+  -webkit-mask-image: linear-gradient(90deg, #000 0 44%, rgba(0,0,0,.42) 72%, rgba(0,0,0,.08) 100%);
+  mask-image: linear-gradient(90deg, #000 0 44%, rgba(0,0,0,.42) 72%, rgba(0,0,0,.08) 100%);
 }
 .gallery__copy {
   position: absolute;
@@ -1372,7 +1378,9 @@ html.deck { scroll-snap-type: y mandatory; }
   object-position: 100% 50%;
 }
 /* Затемнение – слева направо, чтобы держать текст, и не гасить пятно света под предметом */
-.gallery__item--object::after { inset: 0; background: linear-gradient(90deg, rgba(8,8,9,.9) 0%, rgba(8,8,9,.72) 38%, rgba(8,8,9,0) 62%); }
+/* Растяжка кончается РАНЬШЕ предмета: при 62 % она доходила до кузова, и у машины
+   темнел бок. Текст стоит в левых 37 %, значит и гасить нужно только их. */
+.gallery__item--object::after { inset: 0; background: linear-gradient(90deg, rgba(8,8,9,.9) 0%, rgba(8,8,9,.62) 30%, rgba(8,8,9,0) 46%); -webkit-mask-image: none; mask-image: none; }
 /* Колонка текста УЖЕ половины кадра: у изометрической сцены левый угол опускается к
    середине высоты, и колонка в 46 % заезжала под него (замер: 82 px). 37 % оставляют
    зазор при любой высоте текста. */
@@ -1476,7 +1484,37 @@ html.deck { scroll-snap-type: y mandatory; }
   cursor: pointer;
   transition: background .2s ease, border-color .2s ease, opacity .2s ease;
 }
-.gallery__nav:hover { background: rgba(10,10,11,.72); border-color: #fff; }
+.gallery__nav:hover { background: var(--ultra, #c0432f); border-color: #fff; transform: translateY(-50%) scale(1.08); }
+/* ПРИВЛЕЧЕНИЕ ВНИМАНИЯ. Тихая стрелка на краю кадра теряется: человек не понимает, что
+   галерею листают, и уходит со слайда. При появлении галереи стрелка «дышит» кольцом и
+   подталкивается в сторону листания — три раза, потом успокаивается: постоянная
+   анимация превращается в мигающий баннер. */
+.gallery__nav { border-color: rgba(255,255,255,.6); background: rgba(10,10,11,.62); }
+.gallery__nav::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(226,105,75,.85);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.gallery.is-hinting .gallery__nav--next { animation: nav-nudge 1.4s ease-in-out 3; }
+.gallery.is-hinting .gallery__nav--next::after { animation: nav-ring 1.4s ease-out 3; }
+@keyframes nav-nudge {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  35%      { transform: translateY(-50%) translateX(7px); }
+  60%      { transform: translateY(-50%) translateX(0); }
+}
+@keyframes nav-ring {
+  0%   { opacity: .9; transform: scale(.86); }
+  70%  { opacity: 0;  transform: scale(1.7); }
+  100% { opacity: 0;  transform: scale(1.7); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery.is-hinting .gallery__nav--next,
+  .gallery.is-hinting .gallery__nav--next::after { animation: none; }
+}
 .gallery__nav[disabled] { opacity: .25; cursor: default; }
 .gallery__nav--prev { left: clamp(12px, 2vw, 26px); }
 .gallery__nav--next { right: clamp(12px, 2vw, 26px); }
@@ -2332,14 +2370,19 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    Пять одинаковых чисел читаются как таблица: глазу не за что зацепиться. Главное здесь
    одно — сколько человек уже установили игру. Оно и становится крупным, остальные уходят
    на второй план, а между блоками добавляется воздух. */
-.hero-facts--accent { gap: clamp(18px, 2.6vw, 44px) clamp(22px, 3.4vw, 58px); margin-top: clamp(18px, 2.4vw, 34px); }
-.hero-facts--accent li:first-child b { font-size: clamp(38px, 5vw, 82px); line-height: .9; }
-.hero-facts--accent li:first-child span { font-size: 12px; letter-spacing: .16em; }
-.hero-facts--accent li:not(:first-child) b { font-size: clamp(20px, 2.1vw, 34px); opacity: .82; }
-.hero-facts--accent li:not(:first-child) span { opacity: .7; }
-/* Абзац уже заголовка: одинаковая ширина у крупного и мелкого текста делает экран плоским */
-.hero-copy--narrow .hero-statement { max-width: 30ch; }
-.hero-facts-title { margin-top: clamp(20px, 3vw, 40px); }
+/* РАЗМЕРЫ ЗДЕСЬ — РЕЗУЛЬТАТ ЗАМЕРА, а не вкуса. С крупной первой цифрой и щедрым воздухом
+   первый экран вырастал до 1008 px при окне 900: цифры 18 000, 160 и 4,4 уезжали за край.
+   Считали по частям — заголовок 133, абзац 143, цифры 239 — и ужимали то, что дороже
+   всего стоит по высоте: абзац стал шире (меньше строк), а ряд цифр — плотнее. */
+.hero-facts--accent { gap: clamp(10px, 1.3vw, 20px) clamp(16px, 2.4vw, 40px); margin-top: clamp(12px, 1.6vw, 22px); }
+.hero-facts--accent li:first-child b { font-size: clamp(34px, 4vw, 62px); line-height: .88; }
+.hero-facts--accent li:first-child span { font-size: 11.5px; letter-spacing: .16em; }
+.hero-facts--accent li:not(:first-child) b { font-size: clamp(18px, 1.8vw, 27px); opacity: .82; }
+.hero-facts--accent li:not(:first-child) span { opacity: .7; font-size: 10.5px; }
+/* Абзац шире заголовка НЕ делаем, но и слишком узким тоже: на 30ch он занимал четыре
+   строки вместо трёх и стоил лишних 36 px высоты. */
+.hero-copy--narrow .hero-statement { max-width: 40ch; }
+.hero-facts-title { margin-top: clamp(12px, 1.8vw, 24px); }
 
 /* ── СТОПКА ЭКРАНОВ ИГРЫ НА ПЕРВОМ ЭКРАНЕ (js/phonedeck.js) ───────────────
    Вместо одного скриншота — шесть экранов игры стопкой: магазин, босс, район, гараж,
@@ -2349,8 +2392,10 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    на один элемент, наклон начинает искажать перспективу, и стопка «плывёт». */
 .phone-deck {
   position: relative;
-  /* Размер тот же, что у одиночного кадра телефона: стопка заменяет его, а не добавляется */
-  height: min(66svh, 600px);
+  /* Крупнее одиночного кадра: стопка — главный предмет первого экрана, и мелкой она
+     не читается. Предел по высоте окна оставляем: иначе на низком экране она вылезает
+     под шапку. */
+  height: min(78svh, 720px);
   aspect-ratio: 1290 / 2796;
   perspective: 1400px;
   perspective-origin: 50% 46%;
@@ -2387,4 +2432,19 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 @media (prefers-reduced-motion: reduce) {
   .phone-deck img { transition: opacity .3s ease; }
   .phone-deck img.is-leaving { transform: none !important; }
+}
+
+/* ── НИЗКИЙ ЭКРАН: ПЕРВЫЙ ЭКРАН УЖИМАЕТСЯ ────────────────────────────────
+   Замер на 1280×800: содержание первого экрана занимало 835 px при 800 доступных, а
+   стопка налезала на текст на 78 px. Высота здесь дефицитнее ширины, поэтому правило
+   привязано к ВЫСОТЕ окна, а не к его ширине: на широком, но низком ноутбуке ужимать
+   надо ровно так же. */
+@media (min-width: 1000px) and (max-height: 880px) {
+  body.theme-street h1 { font-size: clamp(28px, 3.6vw, 58px); }
+  .hero-copy--narrow { width: min(560px, 46vw); }
+  .hero-copy--narrow .hero-statement { font-size: clamp(14px, 1.15vw, 17px); max-width: 42ch; }
+  .hero-facts--accent { gap: 8px 22px; margin-top: 10px; }
+  .hero-facts--accent li:first-child b { font-size: clamp(30px, 3.2vw, 46px); }
+  .hero-facts--accent li:not(:first-child) b { font-size: clamp(16px, 1.5vw, 22px); }
+  .phone-deck { height: min(70svh, 560px); }
 }

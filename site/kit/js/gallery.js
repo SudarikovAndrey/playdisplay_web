@@ -58,8 +58,8 @@
       if (next) next.disabled = index === last;
     }
 
-    if (prev) prev.addEventListener('click', function () { go(index - 1); });
-    if (next) next.addEventListener('click', function () { go(index + 1); });
+    if (prev) prev.addEventListener('click', function () { hinted = true; go(index - 1); });
+    if (next) next.addEventListener('click', function () { hinted = true; go(index + 1); });
 
     /* ── ТЯГА ПАЛЬЦЕМ И МЫШЬЮ ──────────────────────────────────────────── */
     var dragging = false, startX = 0, startY = 0, dx = 0, decided = false, horizontal = false;
@@ -116,11 +116,21 @@
       e.preventDefault();
     }, { passive: false });
 
-    /* Клавиши — только пока галерея на экране */
-    var visible = false;
+    /* Клавиши — только пока галерея на экране.
+       Заодно ПОДСКАЗКА: при первом появлении стрелка «вперёд» подталкивается и обводится
+       кольцом. Тихая стрелка на краю кадра теряется, и человек уходит со слайда, не поняв,
+       что здесь ещё несколько кадров. Играет один раз и только пока он не листал сам. */
+    var visible = false, hinted = false;
+    function hint() {
+      if (hinted || index > 0) return;
+      hinted = true;
+      root.classList.add('is-hinting');
+      setTimeout(function () { root.classList.remove('is-hinting'); }, 4400);
+    }
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (es) {
         visible = es[0].isIntersecting && es[0].intersectionRatio > 0.55;
+        if (visible) hint();
       }, { threshold: [0, 0.55, 1] }).observe(root);
     }
     addEventListener('keydown', function (e) {
