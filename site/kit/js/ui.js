@@ -56,7 +56,11 @@
   /* ---------- Движущиеся иллюстрации ----------
    * Ролики без звука играют только пока в кадре: книга длинная, и десяток видео,
    * крутящихся за экраном, съедает батарею впустую. Ставим на паузу за кадром. */
-  var motion = document.querySelectorAll('.art-surface--video video');
+  /* Захват геймплея в рамке телефона — сюда же: он висит на первом экране, и когда
+     презентацию пролистали дальше, крутить его незачем. Обратный ход тоже полезен —
+     вернувшись на первый экран, ролик запускается сам, даже если браузер поставил его
+     на паузу, пока вкладка была в фоне. */
+  var motion = document.querySelectorAll('.art-surface--video video, .phone-film video');
   if (motion.length && window.IntersectionObserver) {
     var io = new IntersectionObserver(function (es) {
       es.forEach(function (e) {

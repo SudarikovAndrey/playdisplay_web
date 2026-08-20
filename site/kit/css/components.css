@@ -2556,6 +2556,30 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   .phone-deck img.is-leaving { transform: none !important; }
 }
 
+/* ── ЖИВАЯ ИГРА В РАМКЕ ТЕЛЕФОНА (первый экран) ───────────────────────────
+   То же место и та же рамка, что у стопки экранов, но внутри — захват геймплея.
+   ПРОПОРЦИЯ СОВПАДАЕТ ПОЧТИ ТОЧНО: у рамки 1290/2796 = 0,4614, у записи с телефона
+   886/1920 = 0,4615, разница 0,02 % — то есть `cover` ничего не срезает. Если однажды
+   придёт запись с другого телефона, `cover` подрежет её по краям, а не растянет.
+   Размер записи выбран по размеру показа: рамка максимум 720 px в высоту, при двойной
+   плотности это 1440 — в такое разрешение ролик и сжат, выше смысла нет. */
+.phone-film {
+  position: relative;
+  height: min(78svh, 720px);
+  aspect-ratio: 1290 / 2796;
+}
+.phone-film video {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 26px;
+  box-shadow: 0 30px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06);
+  background: #0c0c0e;
+}
+
 /* ── НИЗКИЙ ЭКРАН: ПЕРВЫЙ ЭКРАН УЖИМАЕТСЯ ────────────────────────────────
    Замер на 1280×800: содержание первого экрана занимало 835 px при 800 доступных, а
    стопка налезала на текст на 78 px. Высота здесь дефицитнее ширины, поэтому правило
@@ -2568,7 +2592,8 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   .hero-facts--accent { gap: 8px 22px; margin-top: 10px; }
   .hero-facts--accent li:first-child b { font-size: clamp(30px, 3.2vw, 46px); }
   .hero-facts--accent li:not(:first-child) b { font-size: clamp(16px, 1.5vw, 22px); }
-  .phone-deck { height: min(70svh, 560px); }
+  .phone-deck,
+  .phone-film { height: min(70svh, 560px); }
 }
 
 /* ── ПРИЗЫВ «ИГРАТЬ СЕЙЧАС» ───────────────────────────────────────────────

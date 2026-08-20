@@ -14,7 +14,7 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=345e266b">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=ba83c0e0">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=8019a710">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
@@ -118,21 +118,15 @@
             <li><b>4,4</b><span>рейтинг, 10 000 оценок</span></li>
           </ul>
         </div>
-        <!-- Кадр игры стоит справа ЦЕЛИКОМ и не срезается краем экрана. Когда придёт
-             нарезка геймплея, тег меняется на <video autoplay muted loop playsinline>,
-             стили у картинки и ролика одни и те же. -->
-        <!-- Стопка экранов игры вместо одного скриншота: шесть кадров, передний уходит
-             поворотом каждые несколько секунд, стопка наклоняется за курсором. -->
+        <!-- ЖИВАЯ ИГРА В РАМКЕ ТЕЛЕФОНА вместо стопки скриншотов. Скриншот показывает, что
+             игра существует; захват экрана показывает, КАК В НЕЁ ИГРАЮТ, — а это и есть
+             первый вопрос партнёра. Рамка, тень и радиус те же, что были у стопки.
+             Звука нет намеренно: без muted браузер не разрешит автозапуск. -->
         <figure class="hero-phone" data-parallax="0.08">
-          <div class="phone-deck" data-phone-deck data-hold="3600">
-            <div class="phone-deck__inner">
-            <img data-deck-card src="assets/start/01.jpg" alt="Магазин электроники: покупка точки">
-            <img data-deck-card data-src="assets/start/02.jpg" alt="Босс района">
-            <img data-deck-card data-src="assets/start/03.jpg" alt="Район сверху: ход по клеткам">
-            <img data-deck-card data-src="assets/start/04.jpg" alt="Гараж: мебель и обстановка">
-            <img data-deck-card data-src="assets/start/05.jpg" alt="Авторазборка: драка команда на команду">
-            <img data-deck-card data-src="assets/start/06.jpg" alt="Банда игрока: карточки бойцов">
-            </div>
+          <div class="phone-film">
+            <video autoplay muted loop playsinline preload="metadata" poster="assets/hero-gameplay-poster.jpg">
+              <source src="assets/hero-gameplay.mp4" type="video/mp4">
+            </video>
           </div>
         </figure>
       </div>
@@ -832,6 +826,6 @@
   <script defer src="../../kit/js/signwall.js?v=054e0040"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>
   <script defer src="../../kit/js/embers.js?v=a4e1f209"></script>
-  <script defer src="../../kit/js/ui.js?v=0c011b9f"></script>
+  <script defer src="../../kit/js/ui.js?v=a37ebc4f"></script>
 </body>
 </html>
