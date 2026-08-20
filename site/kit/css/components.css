@@ -2126,6 +2126,33 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 /* Пропуск в строке шире, чем в тексте: это не пробел в предложении, а место под число,
    и он должен читаться как поле для заполнения. */
 .metric-rows .blank { flex: 0 0 auto; width: clamp(62px, 7vw, 96px); }
+/* ЗАПОЛНЕННОЕ ЗНАЧЕНИЕ. Числом строка и держится, поэтому оно набрано тем же шрифтом,
+   что заголовки, и прижато к правому краю: колонка чисел читается сверху вниз одним
+   взглядом, а подписи слева — своим.
+   Значение — СЕТКА, а не строка: под числом может стоять оговорка («в среднем три на
+   игрока»), и она обязана прижаться к тому же правому краю. У элемента сетки базовая
+   линия берётся у первой строки, поэтому выравнивание по базовой линии в строке
+   сохраняется — число и подпись слева стоят на одной линии. */
+.metric-rows b {
+  display: grid;
+  justify-items: end;
+  text-align: right;
+  gap: 2px;
+  font: 600 clamp(15px, 1.55vw, 23px)/1 Unbounded, "Arial Black", sans-serif;
+  color: var(--ink, #f2f5ff);
+  /* Число не переносится: «18–48 млн» на двух строках ломает ритм строк таблицы */
+  white-space: nowrap;
+}
+.metric-rows b em {
+  font: 400 clamp(9.5px, .78vw, 11px)/1.25 "Roboto Mono", monospace;
+  font-style: normal;
+  letter-spacing: .06em;
+  text-transform: none;
+  color: var(--paper);
+  opacity: .62;
+  white-space: normal;
+  max-width: 22ch;
+}
 @media (max-width: 900px) {
   .gallery__item--wall .signwall { --sw-card: 132px; --sw-pad: 14px; }
   .split-media { grid-template-columns: minmax(0, 1fr); }
@@ -2430,7 +2457,19 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    первый экран вырастал до 1008 px при окне 900: цифры 18 000, 160 и 4,4 уезжали за край.
    Считали по частям — заголовок 133, абзац 143, цифры 239 — и ужимали то, что дороже
    всего стоит по высоте: абзац стал шире (меньше строк), а ряд цифр — плотнее. */
-.hero-facts--accent { gap: clamp(10px, 1.3vw, 20px) clamp(16px, 2.4vw, 40px); margin-top: clamp(12px, 1.6vw, 22px); }
+/* ЧИСЛА СЪЕХАЛИ — И ВИНОВАТ БЫЛ ПОТОЛОК ШИРИНЫ У ЯЧЕЙКИ (найдено 19.08.2026).
+   Базовое правило держит `.hero-facts li { max-width: 250px }`, а акцентное число набрано
+   кеглем clamp(34px, 4vw, 62px): «750 000+» при 4vw просит около 330 px и не влезало —
+   переносилось на вторую строку прямо на подпись «установок». Дальше ломался и весь ряд:
+   первая ячейка становилась вдвое выше, а ячейки — это сетки, растянутые по высоте строки,
+   поэтому подписи соседних чисел уезжали к её низу («130 000» наверху, «игроков в месяц»
+   через полэкрана).
+   Лечится двумя правилами: у первой ячейки потолка ширины нет, а число не переносится.
+   Выравнивание по БАЗОВОЙ ЛИНИИ, а не по растяжке: в ряду числа разного кегля, и они
+   обязаны стоять на одной линии, а подпись — сразу под своим числом. */
+.hero-facts--accent { gap: clamp(10px, 1.3vw, 20px) clamp(16px, 2.4vw, 40px); margin-top: clamp(12px, 1.6vw, 22px); align-items: baseline; align-content: start; }
+.hero-facts--accent li:first-child { max-width: none; }
+.hero-facts--accent li:first-child b { white-space: nowrap; }
 .hero-facts--accent li:first-child b { font-size: clamp(34px, 4vw, 62px); line-height: .88; }
 .hero-facts--accent li:first-child span { font-size: 11.5px; letter-spacing: .16em; }
 .hero-facts--accent li:not(:first-child) b { font-size: clamp(18px, 1.8vw, 27px); opacity: .82; }
