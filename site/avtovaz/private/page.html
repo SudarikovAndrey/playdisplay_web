@@ -14,7 +14,7 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=ba83c0e0">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=732b9506">
   <link rel="stylesheet" href="../../kit/css/animations.css?v=8019a710">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
@@ -66,9 +66,14 @@
   <div class="brand-particles" id="brandParticles" aria-hidden="true"></div>
   <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
 
+  <!-- Фоновая музыка. preload="none" не косметика: файл 3,3 МБ, и качать его тем,
+       кто музыку не включал, незачем. Загрузка начинается по первому нажатию. -->
+  <audio id="bgMusic" loop preload="none">
+    <source src="assets/music-bg.mp3" type="audio/mpeg">
+  </audio>
   <header class="masthead">
     <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="assets/market-logo.png" alt="Рынок Пацана"></a>
-    <div class="book-mark"><span>LADA × Рынок Пацана</span><span>Компред · 0.4</span><button class="to-full" id="toFull" type="button" aria-pressed="false" aria-label="Во весь экран"><i aria-hidden="true"></i><span>Во весь экран</span></button></div>
+    <div class="book-mark"><span>LADA × Рынок Пацана</span><span>Компред · 0.4</span><button class="music-toggle" type="button" data-music="bgMusic" data-volume="0.3" aria-pressed="false" aria-label="Включить музыку"><i aria-hidden="true"><b></b></i><span data-music-label>Музыка</span></button><button class="to-full" id="toFull" type="button" aria-pressed="false" aria-label="Во весь экран"><i aria-hidden="true"></i><span>Во весь экран</span></button></div>
   </header>
 
   <!-- Полоса ведёт по УЗЛОВЫМ слайдам, а не по всем двадцати: список из двадцати строк
@@ -788,10 +793,10 @@
       <!-- ТРИ СЛОЯ ГЛУБИНЫ: дальний куб — фигура — ближний куб. Кубики вырезаны из общей
            картинки по связным областям альфы, поэтому доли в стилях совпадают с исходником
            точка в точку. Каждый слой едет со своей скоростью, кубики ещё и покачиваются. -->
-      <div class="corner-cast" aria-hidden="true">
-        <span class="corner-cast__layer corner-cast__layer--far" data-parallax="-0.05" data-parallax-cap="130"><img src="assets/hero-die-far.png" alt=""></span>
-        <span class="corner-cast__layer corner-cast__layer--body" data-parallax="-0.12" data-parallax-cap="96"><img src="assets/hero-body.png" alt=""></span>
-        <span class="corner-cast__layer corner-cast__layer--near" data-parallax="-0.2" data-parallax-cap="150"><img src="assets/hero-die-near.png" alt=""></span>
+      <div class="corner-cast" data-cast aria-hidden="true">
+        <span class="corner-cast__layer corner-cast__layer--far" data-parallax="-0.05" data-parallax-cap="130"><span class="corner-cast__hover"><img src="assets/hero-die-far.png" alt=""></span></span>
+        <span class="corner-cast__layer corner-cast__layer--body" data-parallax="-0.12" data-parallax-cap="96"><span class="corner-cast__hover"><img src="assets/hero-body.png" alt=""></span></span>
+        <span class="corner-cast__layer corner-cast__layer--near" data-parallax="-0.2" data-parallax-cap="150"><span class="corner-cast__hover"><img src="assets/hero-die-near.png" alt=""></span></span>
       </div>
       <div class="slide-shell">
         <div class="team-final reveal">
@@ -817,7 +822,7 @@
   <script defer src="../../kit/js/parallax.js?v=cf3b0f2e"></script>
   <script defer src="../../kit/js/lists.js?v=8493dc93"></script>
   <script defer src="../../kit/js/hotspots.js?v=5b3c99e7"></script>
-  <script defer src="../../kit/js/gallery.js?v=9be70a23"></script>
+  <script defer src="../../kit/js/gallery.js?v=7e557bb7"></script>
   <script defer src="../../kit/js/spotlight.js?v=593c767d"></script>
   <script defer src="../../kit/js/stages.js?v=84f38a49"></script>
   <script defer src="../../kit/js/crossfade.js?v=030680e1"></script>
@@ -825,6 +830,8 @@
   <script defer src="../../kit/js/videoctl.js?v=c4567837"></script>
   <script defer src="../../kit/js/signwall.js?v=054e0040"></script>
   <script defer src="../../kit/js/strip.js?v=c078b46f"></script>
+  <script defer src="../../kit/js/music.js?v=f510825a"></script>
+  <script defer src="../../kit/js/cast.js?v=1cd6a1ee"></script>
   <script defer src="../../kit/js/embers.js?v=a4e1f209"></script>
   <script defer src="../../kit/js/ui.js?v=a37ebc4f"></script>
 </body>

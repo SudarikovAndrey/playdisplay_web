@@ -1577,6 +1577,74 @@ html.deck { scroll-snap-type: y mandatory; }
 @media (max-width: 680px) { .masthead .to-full span { display: none; } .masthead .to-full { padding: 8px; } }
 @media print { .to-full { display: none; } }
 
+/* ── ВЫКЛЮЧАТЕЛЬ ФОНОВОЙ МУЗЫКИ ───────────────────────────────────────────
+   Стоит рядом с кнопкой полного экрана: звук — такое же свойство показа, и искать его
+   человек будет там же, где остальное управление.
+   ВЫКЛЮЧЕННОЕ состояние выглядит как соседняя кнопка — приглушённая рамка, ровный текст.
+   ВКЛЮЧЁННОЕ — тёплая заливка, светлый текст и прыгающий эквалайзер. Разница нарочно
+   грубая: звук единственное, чего человек не ждёт, и он должен с первого взгляда видеть,
+   что источник здесь, и куда нажать, чтобы стало тихо. Тихая иконка в углу не годится —
+   человек ищет источник, не находит и закрывает вкладку. */
+.masthead .music-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px;
+  border: 1px solid rgba(159, 180, 200, .28);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+  font: 500 9.5px/1 "Roboto Mono", monospace;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.masthead .music-toggle:hover { color: var(--paper); border-color: rgba(159,180,200,.6); background: rgba(255,255,255,.05); }
+/* Эквалайзер — три полосы. В покое они ровные и приглушённые: кнопка не должна
+   притворяться играющей. */
+.music-toggle i {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  width: 13px;
+  height: 12px;
+}
+.music-toggle i::before,
+.music-toggle i::after,
+.music-toggle i > b {
+  content: "";
+  display: block;
+  width: 3px;
+  height: 40%;
+  background: currentColor;
+  border-radius: 1px;
+  transform-origin: 50% 100%;
+}
+.music-toggle i > b { height: 62%; }
+/* ВКЛЮЧЕНО: тёплая заливка того же семейства, что искры и знак игры */
+.masthead .music-toggle.is-on {
+  color: #1a1206;
+  border-color: #ffc678;
+  background: linear-gradient(180deg, #ffd79b, #ffb455);
+  box-shadow: 0 0 0 3px rgba(255, 198, 120, .18), 0 6px 18px rgba(255, 160, 60, .28);
+}
+.music-toggle.is-on i::before { animation: eq-bar .62s ease-in-out infinite alternate; }
+.music-toggle.is-on i > b     { animation: eq-bar .48s ease-in-out .12s infinite alternate; }
+.music-toggle.is-on i::after  { animation: eq-bar .74s ease-in-out .24s infinite alternate; }
+@keyframes eq-bar { from { height: 26%; } to { height: 100%; } }
+@media (prefers-reduced-motion: reduce) {
+  .music-toggle.is-on i::before,
+  .music-toggle.is-on i > b,
+  .music-toggle.is-on i::after { animation: none; height: 100%; }
+}
+/* На узком экране остаётся эквалайзер: он и есть состояние, а слово подсказкой */
+@media (max-width: 680px) {
+  .masthead .music-toggle span { display: none; }
+  .masthead .music-toggle { padding: 8px; }
+}
+@media print { .music-toggle { display: none; } }
+
 /* ПЛИТКИ ПЛОЩАДОК. Ряд мелких плашек читался как служебная строка; здесь это
    призыв «скачай и посмотри сам», поэтому знаки крупные, глиф в свою строку,
    название под ним. Плитка – цель для пальца и для курсора одинаково. */
@@ -2671,6 +2739,32 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 .corner-cast { aspect-ratio: 1080 / 1250; }
 .corner-cast__layer { position: absolute; }
 .corner-cast__layer img { display: block; width: 100%; height: 100%; }
+/* РЕАКЦИЯ НА КУРСОР — на своей обёртке, третьим слоем преобразований: прокрутка двигает
+   .corner-cast__layer, курсор — .corner-cast__hover, покачивание — саму картинку. Любые
+   два из них на одном элементе затирают друг друга, потому что все пишут в transform.
+   Скрипт даёт только два числа на контейнер (--mx и --my, от −1 до 1), а насколько
+   сдвинуть слой — решает его амплитуда здесь. Держать таблицу амплитуд в скрипте нельзя:
+   она разойдётся со стилями при первой правке.
+   АМПЛИТУДЫ РАЗНЫЕ И НАРОЧНО КОНТРАСТНЫЕ. Фигура почти не шевелится, кубики отвечают
+   заметно — именно разница и читается как глубина. Одинаковый отклик выглядел бы наклоном
+   плоской картинки. По вертикали берём 60 % от горизонтали: экран шире, чем выше, и при
+   равных числах вертикальный отклик кажется резче. */
+.corner-cast__hover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform:
+    translate3d(calc(var(--mx, 0) * var(--amp, 0px)), calc(var(--my, 0) * var(--amp, 0px) * .6), 0)
+    rotate(calc(var(--mx, 0) * var(--spin, 0deg)));
+  transition: transform .16s ease-out;
+  will-change: transform;
+}
+.corner-cast__layer--far  .corner-cast__hover { --amp: 16px; --spin: 2.4deg; }
+.corner-cast__layer--body .corner-cast__hover { --amp: 5px;  --spin: 0.4deg; }
+.corner-cast__layer--near .corner-cast__hover { --amp: 34px; --spin: 4.6deg; }
+@media (prefers-reduced-motion: reduce) {
+  .corner-cast__hover { transform: none; }
+}
 .corner-cast__layer--body { inset: 0; z-index: 1; }
 .corner-cast__layer--far  { left: 18.519%; top: 24.400%; width: 21.019%; height: 17.440%; z-index: 0; }
 .corner-cast__layer--near { left: 9.167%;  top: 42.640%; width: 21.852%; height: 18.400%; z-index: 2; }
