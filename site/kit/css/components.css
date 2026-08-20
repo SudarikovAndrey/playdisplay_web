@@ -2185,16 +2185,38 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    Плашки под пустые значения занимали пол-экрана и ничего не сообщали: в них нечего
    читать, пока цифру не подставили. Строка с тонкой чертой держит тот же смысл в пятой
    части высоты, и освободившееся место уходит картинке. */
+/* ЧИСЛО — ГЛАВНОЕ НА ЭТОМ СЛАЙДЕ, поэтому оно набрано в четыре раза крупнее подписи и
+   стоит ОТДЕЛЬНОЙ СТРОКОЙ, а не в правом краю таблички. Прежняя раскладка (подпись слева,
+   значение справа мелким) читалась как строка бюджета: глаз шёл по подписям, а числа
+   оставались служебной колонкой. Ради них клиент и входит в проект, значит они и должны
+   держать экран.
+   Оговорка ушла В СТРОКУ ПОДПИСИ, к правому краю: под числом она отнимала бы высоту у
+   каждой второй строки, и четыре строки перестали бы умещаться рядом с роликом. */
 .metric-rows { display: grid; }
 .metric-rows > div {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "label note" "value value";
   align-items: baseline;
-  justify-content: space-between;
-  gap: clamp(12px, 2vw, 28px);
-  padding: clamp(8px, 1.1vh, 12px) 0;
+  column-gap: clamp(10px, 1.6vw, 22px);
+  row-gap: 2px;
+  padding: clamp(7px, 1vh, 11px) 0 clamp(9px, 1.2vh, 14px);
   border-bottom: 1px solid var(--line);
 }
 .metric-rows > div:first-child { border-top: 1px solid var(--line); }
+.metric-rows i { grid-area: label; }
+.metric-rows b { grid-area: value; }
+.metric-rows em {
+  grid-area: note;
+  justify-self: end;
+  text-align: right;
+  font: 400 clamp(9.5px, .78vw, 11px)/1.25 "Roboto Mono", monospace;
+  font-style: normal;
+  letter-spacing: .06em;
+  color: var(--paper);
+  opacity: .55;
+  max-width: 26ch;
+}
 .metric-rows i {
   font-style: normal;
   color: var(--paper);
@@ -2217,20 +2239,19 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   justify-items: end;
   text-align: right;
   gap: 2px;
-  font: 600 clamp(15px, 1.55vw, 23px)/1 Unbounded, "Arial Black", sans-serif;
-  color: var(--ink, #f2f5ff);
-  /* Число не переносится: «18–48 млн» на двух строках ломает ритм строк таблицы */
-  white-space: nowrap;
-}
-.metric-rows b em {
-  font: 400 clamp(9.5px, .78vw, 11px)/1.25 "Roboto Mono", monospace;
-  font-style: normal;
-  letter-spacing: .06em;
-  text-transform: none;
+  /* КОЭФФИЦИЕНТ ПОДОБРАН ПО САМОМУ ДЛИННОМУ ЧИСЛУ. Колонка метрик — половина слайда:
+     310 px при окне 1150. При 4.2vw «18–48 млн» занимало там 307 px, то есть зазор
+     3 px — и любое расхождение в метриках шрифта выбрасывало число за край. На 3.9vw
+     остаётся 25 px, а на широком экране число всё равно 56 px высотой. */
+  font: 600 clamp(30px, 3.9vw, 62px)/.95 Unbounded, "Arial Black", sans-serif;
+  letter-spacing: -.03em;
+  /* ЦВЕТ БЕРЁМ У --paper, А НЕ У --ink. В теме «асфальт и картон» --ink это #121213,
+     то есть почти чёрный: он для краски по светлому. Числа на тёмном слайде выходили
+     невидимыми, и запасное значение в var() тут не помогает — переменная ЗАДАНА, просто
+     не та. Правило простое: на этой теме светлый текст — всегда --paper. */
   color: var(--paper);
-  opacity: .62;
-  white-space: normal;
-  max-width: 22ch;
+  /* Число не переносится: «18–48 млн» на двух строках ломает ритм строк */
+  white-space: nowrap;
 }
 @media (max-width: 900px) {
   .gallery__item--wall .signwall { --sw-card: 132px; --sw-pad: 14px; }
@@ -2676,7 +2697,9 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   display: flex;
   align-items: center;
   gap: .6em;
-  color: var(--ink, #f2f5ff);
+  /* --paper, а не --ink: в теме «асфальт и картон» --ink почти чёрный, и призыв на тёмном
+     финале был не «ярким», а невидимым. Та же ошибка была у чисел на слайде метрик. */
+  color: var(--paper);
   font: 800 clamp(22px, 2.5vw, 38px)/1.05 Unbounded, "Arial Black", sans-serif;
   letter-spacing: .04em;
   text-transform: uppercase;
