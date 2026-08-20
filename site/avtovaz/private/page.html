@@ -14,8 +14,8 @@
   <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
   <link rel="stylesheet" href="../../kit/css/layout.css?v=74ee8427">
   <link rel="stylesheet" href="../../kit/css/typography.css?v=720384aa">
-  <link rel="stylesheet" href="../../kit/css/components.css?v=bdf25234">
-  <link rel="stylesheet" href="../../kit/css/animations.css?v=48f092ce">
+  <link rel="stylesheet" href="../../kit/css/components.css?v=86ca1a92">
+  <link rel="stylesheet" href="../../kit/css/animations.css?v=8019a710">
   <!-- Тема подключается ПОСЛЕ кита: она перекрывает токены и поверхности -->
   <link rel="stylesheet" href="../../kit/css/theme-street.css?v=d9b3361c">
   <!-- Стена вывесок: свой блок кита, подключается после темы -->
@@ -791,7 +791,14 @@
     </section>
     <!-- ═══ 21. ИТОГ ═══ -->
     <section class="slide slide--hero-corner" id="s22" data-slide="15">
-      <img class="corner-hero" src="assets/hero-dice.png" alt="" aria-hidden="true">
+      <!-- ТРИ СЛОЯ ГЛУБИНЫ: дальний куб — фигура — ближний куб. Кубики вырезаны из общей
+           картинки по связным областям альфы, поэтому доли в стилях совпадают с исходником
+           точка в точку. Каждый слой едет со своей скоростью, кубики ещё и покачиваются. -->
+      <div class="corner-cast" aria-hidden="true">
+        <span class="corner-cast__layer corner-cast__layer--far" data-parallax="-0.05" data-parallax-cap="130"><img src="assets/hero-die-far.png" alt=""></span>
+        <span class="corner-cast__layer corner-cast__layer--body" data-parallax="-0.12" data-parallax-cap="96"><img src="assets/hero-body.png" alt=""></span>
+        <span class="corner-cast__layer corner-cast__layer--near" data-parallax="-0.2" data-parallax-cap="150"><img src="assets/hero-die-near.png" alt=""></span>
+      </div>
       <div class="slide-shell">
         <div class="team-final reveal">
           <img class="team-final__mark" src="assets/market-logo.png" alt="Рынок Пацана">

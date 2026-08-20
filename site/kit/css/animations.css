@@ -1,16 +1,24 @@
 .reveal, .chapter-copy > *, .diagram, .art-frame {
   --reveal-y: 0px;
   opacity: 1;
-  transform: translate3d(0, var(--reveal-y), 0);
+  transform: translate3d(0, var(--reveal-y, 0px), 0);
   filter: none;
   transition: opacity .68s ease, transform .9s cubic-bezier(.16,1,.3,1), filter .68s ease;
 }
 .js .reveal, .js .chapter-copy > *, .js .diagram, .js .art-frame { opacity: 0; --reveal-y: 46px; filter: blur(5px); }
 .reveal.is-visible, .chapter-copy > *.is-visible, .diagram.is-visible, .art-frame.is-visible { opacity: 1; --reveal-y: 0px; filter: none; }
-[data-parallax] { --parallax-y: 0px; --parallax-x: 0px; transform: translate3d(var(--parallax-x), calc(var(--reveal-y) + var(--parallax-y)), 0); will-change: transform; }
-.art-frame[data-parallax] { transform: translate3d(var(--parallax-x), calc(var(--reveal-y) + var(--parallax-y)), 0); }
-.art-frame[data-parallax].is-visible { transform: translate3d(var(--parallax-x), calc(var(--reveal-y) + var(--parallax-y)), 0); }
-.hero-copy.parallax-copy, .chapter-copy > .parallax-copy { --parallax-y: 0px; --parallax-x: 0px; transform: translate3d(var(--parallax-x), calc(var(--reveal-y) + var(--parallax-y)), 0); will-change: transform; }
+/* ЗАПАСНОЕ ЗНАЧЕНИЕ У --reveal-y ОБЯЗАТЕЛЬНО, и это не перестраховка (найдено 19.08.2026).
+   Переменную задают только блоки с проявлением (.reveal и родня). У элемента с
+   data-parallax, который проявлением не охвачен — персонаж в углу финала, слои кубиков,
+   отдельные плитки внутри слайдов, — она не задана НИГДЕ по цепочке наследования, и тогда
+   весь calc() становится недействительным: браузер выбрасывает объявление целиком и
+   transform остаётся none. Внешне это обманчиво: скрипт исправно считает --parallax-y и
+   пишет его в стиль, в отладчике видны честные 48 px, а элемент не двигается ни на пиксель.
+   Проверять параллакс надо по ВЫЧИСЛЕННОМУ transform, а не по значению переменной. */
+[data-parallax] { --parallax-y: 0px; --parallax-x: 0px; transform: translate3d(var(--parallax-x, 0px), calc(var(--reveal-y, 0px) + var(--parallax-y)), 0); will-change: transform; }
+.art-frame[data-parallax] { transform: translate3d(var(--parallax-x, 0px), calc(var(--reveal-y, 0px) + var(--parallax-y)), 0); }
+.art-frame[data-parallax].is-visible { transform: translate3d(var(--parallax-x, 0px), calc(var(--reveal-y, 0px) + var(--parallax-y)), 0); }
+.hero-copy.parallax-copy, .chapter-copy > .parallax-copy { --parallax-y: 0px; --parallax-x: 0px; transform: translate3d(var(--parallax-x, 0px), calc(var(--reveal-y, 0px) + var(--parallax-y)), 0); will-change: transform; }
 .hero-overline, .hero-copy h1, .hero-statement--float { transition: transform .7s cubic-bezier(.16,1,.3,1); }
 .art-surface--image img { --image-x: 0px; --image-y: 0px; transform: translate3d(var(--image-x), var(--image-y), 0) scale(1.035); will-change: transform; }
 .art-frame:hover .art-surface--image img { transform: translate3d(var(--image-x), var(--image-y), 0) scale(1.045); }

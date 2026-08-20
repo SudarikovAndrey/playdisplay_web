@@ -2095,7 +2095,23 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   max-width: 760px;
   margin-left: auto;
 }
-.split-media__film video { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* КРАЙ РОЛИКА НЕ ДОЛЖЕН ЧИТАТЬСЯ КВАДРАТОМ. Файл ровно 1000×1000, и на тёмном фоне
+   слайда его граница видна прямой линией со всех четырёх сторон — кадр выглядит вставленным
+   в страницу, а не частью её. Убираем маской: к краям кадр уходит в прозрачность и
+   растворяется в фоне.
+   МАСКА ЭЛЛИПТИЧЕСКАЯ, А НЕ ЧЕТЫРЕ ЛИНЕЙНЫХ ГРАДИЕНТА: пересечение линейных пришлось бы
+   собирать через mask-composite, у которого в WebKit своё имя и своё значение, и на Safari
+   такие сборки регулярно рассыпаются. Эллипс — одно свойство и один результат везде.
+   Плотное ядро до 62 %: дальше начинается растворение, поэтому середина кадра, где и
+   происходит игра, остаётся нетронутой, а гаснут только поля и углы. */
+.split-media__film video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-mask-image: radial-gradient(115% 115% at 50% 48%, #000 62%, rgba(0,0,0,.55) 84%, transparent 100%);
+  mask-image: radial-gradient(115% 115% at 50% 48%, #000 62%, rgba(0,0,0,.55) 84%, transparent 100%);
+}
 /* Панель управления внутри рамки ролика: общий отступ снизу считается от кнопки
    «в начало», а здесь рамка до неё не доходит, и поднимать панель не нужно. */
 .split-media__film .vctl { right: 6%; bottom: 4%; padding: 6px 12px 6px 6px; }
@@ -2330,7 +2346,8 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    доводит экран до сцены из игры, но не спорит с содержанием. Поэтому он ЗА текстом по
    слою и обрезан краем экрана — фигура, заходящая в кадр, читается живее вписанной
    целиком. Снизу уходит в прозрачность, иначе выглядит наклейкой, положенной на асфальт. */
-.corner-hero {
+.corner-hero,
+.corner-cast {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -2346,7 +2363,8 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 .slide--hero-corner { overflow: hidden; }
 @media (max-width: 900px) {
   /* На телефоне фигура во всю высоту забивает экран: оставляем её силуэтом за текстом */
-  .corner-hero { height: 46%; opacity: .5; }
+  .corner-hero,
+  .corner-cast { height: 46%; opacity: .5; }
 }
 
 /* Кадр «Не реклама»: предмет по ЦЕНТРУ ВЫСОТЫ и на треть крупнее. Прижатый к верху он
@@ -2391,8 +2409,9 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 /* КРУПНЕЕ НА 20 % (19.08.2026): 620 → 744 по высоте, то есть ≈643 в ширину вместо 536.
    Зазор до содержания пересчитан замером в браузере, а не арифметикой по прошлым числам:
    у знака своя пропорция, и его ширину задаёт высота, а не колонка. */
-/* СДВИГ ВПРАВО ПОДОБРАН ЗАМЕРОМ: у hero-dice.png прозрачного поля справа НЕТ вовсе
-   (замер альфы: непрозрачное с 71-го по 1079-й столбец из 1080), поэтому каждый процент
+/* СДВИГ ВПРАВО ПОДОБРАН ЗАМЕРОМ: у исходной картинки прозрачного поля справа НЕТ вовсе
+   (замер альфы: непрозрачное с 71-го по 1079-й столбец из 1080; исходник лежит в
+   avtovaz/material/hero-dice-source.png, из него нарезаны слои), поэтому каждый процент
    сдвига режет саму фигуру. −3 % уносит за край 36 px из 643 — это край плеча, фигура
    по-прежнему «заходит в кадр». Дальше нельзя: на −8 % теряется рука.
 
@@ -2405,7 +2424,8 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    Третий предел — 80vh: на низком и широком окне фигура иначе вылезает под шапку.
    Высота при этом `auto`: если задать и ширину, и предел по высоте, браузер сожмёт
    картинку по одной оси и пропорция сломается. */
-.slide--hero-corner .corner-hero {
+.slide--hero-corner .corner-hero,
+.slide--hero-corner .corner-cast {
   width: min(calc(100vw - 800px), 643px, 80vh);
   height: auto;
   right: -3%;
@@ -2417,7 +2437,8 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    телефонного (max-width: 900px) и перебивало его: на 375×812 фигура вырастала с 46 %
    высоты до 69 %. Телефонную раскладку задаёт своё правило, и лезть в неё отсюда нельзя. */
 @media (min-width: 901px) and (max-width: 1150px) {
-  .slide--hero-corner .corner-hero { width: auto; height: min(74%, 560px); right: -6%; opacity: .5; }
+  .slide--hero-corner .corner-hero,
+  .slide--hero-corner .corner-cast { width: auto; height: min(74%, 560px); right: -6%; opacity: .5; }
 }
 @media (max-width: 900px) {
   .slide--hero-corner .slide-shell { grid-template-columns: minmax(0, 1fr); }
@@ -2426,7 +2447,8 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
      `100vw - 800px`: на телефоне это отрицательное число, min() берёт его, браузер
      обрезает до нуля — и фигура исчезала совсем (замер: 0×0 при 375×812).
      Высоту здесь задаёт телефонное правило выше, поэтому ширина должна следовать за ней. */
-  .slide--hero-corner .corner-hero { width: auto; }
+  .slide--hero-corner .corner-hero,
+  .slide--hero-corner .corner-cast { width: auto; }
 }
 
 /* ── ПАРАЛЛАКС КОНТРАСТНЕЕ ────────────────────────────────────────────────
@@ -2604,4 +2626,37 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
    как на резинке и отстаёт от слайда, к которому принадлежит. */
 .parallax-deck {
   transition: opacity .68s ease, transform .42s cubic-bezier(.22, 1, .36, 1), filter .68s ease;
+}
+
+/* ── ТРИ СЛОЯ ГЛУБИНЫ В УГЛУ: КУБ — ФИГУРА — КУБ ──────────────────────────
+   Одна картинка не даёт глубины: персонаж с кубиками едет одним куском, и вся сцена
+   читается наклейкой. Кубики вырезаны из неё по СВЯЗНЫМ ОБЛАСТЯМ АЛЬФЫ — они висят в
+   воздухе и не касаются руки, поэтому разделение вышло точным и без ручного обвода
+   (фигура 749 664 точки, кубы 227×218 и 236×230). Дальний куб уходит за фигуру, ближний
+   выходит перед ней, и каждый слой едет со своей скоростью.
+
+   КОНТЕЙНЕР ДЕРЖИТ ПРОПОРЦИЮ ИСХОДНИКА, а доли слоёв взяты из замера — тогда при любом
+   размере кубики стоят там же, где были в исходной картинке, точка в точку. Задавать их
+   в пикселях нельзя: группа масштабируется вместе с окном. */
+.corner-cast { aspect-ratio: 1080 / 1250; }
+.corner-cast__layer { position: absolute; }
+.corner-cast__layer img { display: block; width: 100%; height: 100%; }
+.corner-cast__layer--body { inset: 0; z-index: 1; }
+.corner-cast__layer--far  { left: 18.519%; top: 24.400%; width: 21.019%; height: 17.440%; z-index: 0; }
+.corner-cast__layer--near { left: 9.167%;  top: 42.640%; width: 21.852%; height: 18.400%; z-index: 2; }
+
+/* ПОКАЧИВАНИЕ ЖИВЁТ НА ВЛОЖЕННОЙ КАРТИНКЕ, А ПАРАЛЛАКС — НА ОБЁРТКЕ. Оба двигают
+   transform, и на одном элементе анимация просто затирает параллакс: слой перестаёт
+   реагировать на прокрутку, а качание становится единственным движением.
+   Размах крошечный — 4 px и градус с небольшим: кубик должен казаться висящим в воздухе,
+   а не подпрыгивающим. Разные длительности и обратный ход у второго куба обязательны,
+   иначе оба качаются в такт и видно, что это одна формула. */
+@keyframes die-sway {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-1.1deg); }
+  50%      { transform: translate3d(2px, -4px, 0) rotate(1.1deg); }
+}
+.corner-cast__layer--far img  { animation: die-sway 7.4s ease-in-out infinite; }
+.corner-cast__layer--near img { animation: die-sway 9.1s ease-in-out infinite reverse; animation-delay: -2.3s; }
+@media (prefers-reduced-motion: reduce) {
+  .corner-cast__layer img { animation: none; }
 }
