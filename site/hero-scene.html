@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PLAYDISPLAY — воксельное портфолио (прототип)</title>
+<!-- Из поиска убрана 21.08.2026: страница техническая (встраивается в лендинг /
+     прототип), но Яндекс обходил её как самостоятельную — и каждый ?v=<версия>
+     считался отдельным адресом с тем же title. Отсюда «дублирующиеся title»
+     в Вебмастере. Лечится noindex, а не Disallow: Disallow запретил бы читать
+     сам noindex, и уже проиндексированное осталось бы в выдаче. -->
+<meta name="robots" content="noindex, nofollow">
 <!-- Шрифты у нас, не с fonts.googleapis.com (15.08.2026) — описание в assets/fonts/fonts.css.
      Путь без ведущего слэша: сцена открывается и как страница сайта, и с диска. -->
 <link rel="stylesheet" href="assets/fonts/fonts.css">

@@ -243,12 +243,37 @@ class Lang:
     def url(self, tail=''):
         return '%s/%s%s' % (BASE, self.prefix, tail)
 
+    # Обрыв описания посреди слова — 21.08.2026. Резали ровно по 157 знаков, и в
+    # сниппете выдачи выходило «раскрыл свою уникальную архитектуру и х…». Так было на
+    # всех 30 страницах работ: описание — единственный текст, который человек читает
+    # ДО перехода, и обрубок в нём стоит клика. Режем по границе слова, а висящий
+    # предлог или союз в конце отбрасываем — «и…» не несёт смысла, но занимает место.
+    HANGING = {'и', 'а', 'но', 'в', 'во', 'на', 'с', 'со', 'для', 'по', 'из', 'от', 'к',
+               'о', 'об', 'у', 'за', 'до', 'при', 'над', 'под', 'что', 'как', 'чтобы',
+               'the', 'a', 'an', 'and', 'or', 'of', 'to', 'in', 'on', 'at', 'for',
+               'with', 'by', 'from', 'that', 'as'}
+
+    @classmethod
+    def _clip(cls, d, limit=158):
+        """описание не длиннее limit, обрыв — по границе слова"""
+        if len(d) <= limit:
+            return d
+        cut = d[:limit - 1]
+        sp = cut.rfind(' ')
+        if sp > 0:
+            cut = cut[:sp]
+        words = cut.split()
+        while words and words[-1].strip('.,;:!?()«»"\'').lower() in cls.HANGING:
+            words.pop()
+        cut = ' '.join(words).rstrip(' ,;:.–—-')
+        return (cut + '…') if cut else d[:limit - 1] + '…'
+
     def meta_desc(self, slug):
         c = cases.get(slug, {}); p = self.pmap.get(slug, {})
         parts = [self.t(c.get('punch')), p.get('goal') or self.t(c.get('desc'))]
         d = ' '.join(x for x in parts if x)
         d = re.sub(r'\s+', ' ', d).strip()
-        return (d[:157] + '…') if len(d) > 158 else d
+        return self._clip(d)
 
 
 def cover_url(slug, pmap):
