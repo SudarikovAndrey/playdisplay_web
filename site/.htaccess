@@ -119,23 +119,34 @@ RewriteCond %{HTTP_HOST} !^playdisplay\.com$ [NC]
 RewriteCond %{HTTP_HOST} !^$
 RewriteRule ^(.*)$ https://playdisplay.com/$1 [R=301,L,NE]
 
+# ---------- ПОЧЕМУ ДАЛЬШЕ ВЕЗДЕ АБСОЛЮТНЫЙ https:// (21.08.2026) ----------
+# Относительная подстановка с флагом R=301 отдаёт Location со схемой, которую видит
+# САМ Apache, а TLS здесь терминирует прокси — Apache видит http. Проверено на боевом:
+# /projects отдавал «301 -> http://playdisplay.com/#work», после чего срабатывал ещё
+# один редирект http->https. Два хопа вместо одного и незащищённый промежуточный
+# адрес — для поисковика это размытый сигнал, для посетителя лишняя задержка.
+# Схему в .htaccess не подменить, поэтому адрес пишем целиком.
+#
+# ЦЕНА: канонический домен теперь упомянут и здесь. Меняете канон — правьте и эти
+# строки; список всех мест есть в CLAUDE.md, раздел «Домен .com — единая точка отказа».
+
 # ---------- разделы старого сайта на вордпрессе ----------
 # ФЛАГ NE ЗДЕСЬ КРИТИЧЕН. Без него Apache превращает решётку в %23, и вместо
 # playdisplay.com/#work посетитель попадал на playdisplay.com/%23work — то есть в 404.
 # Проверено на боевом 17.08.2026: все три адреса отдавали «404 Not Found».
-RewriteRule ^projects/?$ /#work [R=301,L,NE]
-RewriteRule ^about/?$ /#studio [R=301,L,NE]
-RewriteRule ^contact/?$ /#contact [R=301,L,NE]
+RewriteRule ^projects/?$ https://playdisplay.com/#work [R=301,L,NE]
+RewriteRule ^about/?$ https://playdisplay.com/#studio [R=301,L,NE]
+RewriteRule ^contact/?$ https://playdisplay.com/#contact [R=301,L,NE]
 
 # ---------- кейсы, у которых сменился адрес ----------
 # Слева — как было на вордпрессе, справа — как стало на новом сайте.
-RewriteRule ^work/аэропорты-россии/?$ /work/airports/ [R=301,L]
-RewriteRule ^work/одк-оак/?$ /work/odk-oak/ [R=301,L]
-RewriteRule ^work/ростех-экспо/?$ /work/rostec/ [R=301,L]
-RewriteRule ^work/судостроение/?$ /work/industry-rf/ [R=301,L]
-RewriteRule ^work/vdnh_space/?$ /work/vdnh-space/ [R=301,L]
-RewriteRule ^work/vdnh_space-2/?$ /work/vdnh-space-center/ [R=301,L]
-RewriteRule ^work/stallingrad/?$ /work/stalingrad/ [R=301,L]
+RewriteRule ^work/аэропорты-россии/?$ https://playdisplay.com/work/airports/ [R=301,L]
+RewriteRule ^work/одк-оак/?$ https://playdisplay.com/work/odk-oak/ [R=301,L]
+RewriteRule ^work/ростех-экспо/?$ https://playdisplay.com/work/rostec/ [R=301,L]
+RewriteRule ^work/судостроение/?$ https://playdisplay.com/work/industry-rf/ [R=301,L]
+RewriteRule ^work/vdnh_space/?$ https://playdisplay.com/work/vdnh-space/ [R=301,L]
+RewriteRule ^work/vdnh_space-2/?$ https://playdisplay.com/work/vdnh-space-center/ [R=301,L]
+RewriteRule ^work/stallingrad/?$ https://playdisplay.com/work/stalingrad/ [R=301,L]
 
 # ---------- работы, которых на новом сайте нет ----------
 # jihi-studio-lamp, holocube_s, petrol-bowl, summer-17, changi2016, оживайка —
@@ -143,12 +154,12 @@ RewriteRule ^work/stallingrad/?$ /work/stalingrad/ [R=301,L]
 # существует, правило не срабатывает и отдаётся она.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^work/(.+?)/?$ /old/work/$1/ [R=302,L]
+RewriteRule ^work/(.+?)/?$ https://playdisplay.com/old/work/$1/ [R=302,L]
 
 # ---------- остатки вордпресса ----------
-RewriteRule ^(feed|comments/feed)/?$ / [R=301,L]
-RewriteRule ^xmlrpc\.php$ / [R=301,L]
-RewriteRule ^wp-(login|admin|content|includes|json)(/.*)?$ / [R=301,L]
+RewriteRule ^(feed|comments/feed)/?$ https://playdisplay.com/ [R=301,L]
+RewriteRule ^xmlrpc\.php$ https://playdisplay.com/ [R=301,L]
+RewriteRule ^wp-(login|admin|content|includes|json)(/.*)?$ https://playdisplay.com/ [R=301,L]
 
 # ---------- магазин и блог старого сайта (21.08.2026) ----------
 # Найдено в журнале обхода Яндекс Вебмастера: робот ходит по /products/,
@@ -161,7 +172,7 @@ RewriteRule ^wp-(login|admin|content|includes|json)(/.*)?$ / [R=301,L]
 # Знак ? в конце подстановки ОБЯЗАТЕЛЕН — он отбрасывает исходную строку запроса.
 # Без него /shop/?add-to-cart=551 уехало бы на /?add-to-cart=551, и мусорный
 # параметр остался бы жить в индексе как отдельный адрес главной.
-RewriteRule ^(shop|products?|cart|checkout|my-account)(/.*)?$ /? [R=301,L]
-RewriteRule ^en/blog(/.*)?$ /en/? [R=301,L]
-RewriteRule ^blog(/.*)?$ /? [R=301,L]
+RewriteRule ^(shop|products?|cart|checkout|my-account)(/.*)?$ https://playdisplay.com/? [R=301,L]
+RewriteRule ^en/blog(/.*)?$ https://playdisplay.com/en/? [R=301,L]
+RewriteRule ^blog(/.*)?$ https://playdisplay.com/? [R=301,L]
 </IfModule>
