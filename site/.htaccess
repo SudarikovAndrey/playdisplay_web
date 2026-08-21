@@ -140,4 +140,19 @@ RewriteRule ^work/(.+?)/?$ /old/work/$1/ [R=302,L]
 RewriteRule ^(feed|comments/feed)/?$ / [R=301,L]
 RewriteRule ^xmlrpc\.php$ / [R=301,L]
 RewriteRule ^wp-(login|admin|content|includes|json)(/.*)?$ / [R=301,L]
+
+# ---------- магазин и блог старого сайта (21.08.2026) ----------
+# Найдено в журнале обхода Яндекс Вебмастера: робот ходит по /products/,
+# /shop/?add-to-cart=551, /product/normus-family/, /product/one-style/ и
+# /en/blog/wsj-vypustila-vr-infografiku-po-istorii-nasdaq/ — все отдают 404.
+# То есть на вордпрессе были магазин и блог, их адреса до сих пор в индексе, и
+# каждый заход робота (и человека из выдачи) заканчивается пустой страницей.
+# 404 не передаёт ничего: ни посетителя, ни накопленный вес адреса. 301 передаёт оба.
+#
+# Знак ? в конце подстановки ОБЯЗАТЕЛЕН — он отбрасывает исходную строку запроса.
+# Без него /shop/?add-to-cart=551 уехало бы на /?add-to-cart=551, и мусорный
+# параметр остался бы жить в индексе как отдельный адрес главной.
+RewriteRule ^(shop|products?|cart|checkout|my-account)(/.*)?$ /? [R=301,L]
+RewriteRule ^en/blog(/.*)?$ /en/? [R=301,L]
+RewriteRule ^blog(/.*)?$ /? [R=301,L]
 </IfModule>
