@@ -106,9 +106,18 @@ RewriteEngine On
 RewriteCond %{REQUEST_URI} ^/(ball|avtovaz)(/|$) [NC]
 RewriteRule ^ - [L]
 
-RewriteCond %{HTTP_HOST} !^playdisplay\.ru$ [NC]
+# Канон вернулся на .com 21.08.2026 (решение владельца). Условие написано как
+# «всё, кроме канонического домена», а не перечислением алиасов: перечисление надо
+# пополнять и его легко забыть. Сертификаты на playdisplay.com, www.playdisplay.com,
+# playdisplay.ru и www.playdisplay.ru действуют — TLS до редиректа не рвётся.
+#
+# ПОМНИТЬ: пока это правило стоит, живой .ru перебрасывает на .com, и смерть .com
+# роняет сайт целиком — так уже было 18–19.08.2026. Защита не в конфиге, а в
+# автопродлении домена. Если от зависимости надо избавиться, снимать надо ЭТО
+# правило (оставив canonical в разметке), а не менять BASE в build_seo.py.
+RewriteCond %{HTTP_HOST} !^playdisplay\.com$ [NC]
 RewriteCond %{HTTP_HOST} !^$
-RewriteRule ^(.*)$ https://playdisplay.ru/$1 [R=301,L,NE]
+RewriteRule ^(.*)$ https://playdisplay.com/$1 [R=301,L,NE]
 
 # ---------- разделы старого сайта на вордпрессе ----------
 # ФЛАГ NE ЗДЕСЬ КРИТИЧЕН. Без него Apache превращает решётку в %23, и вместо
