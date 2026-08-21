@@ -385,5 +385,11 @@ window.PD_I18N = {
  "— не касайся · бреющий полёт даёт бонус": "— do not touch · flying low pays a bonus",
  "— пролетай насквозь: ускорение": "— fly through it: boost",
  "— собирай сериями: множитель растёт": "— collect in streaks: the multiplier grows",
- "полёт": "flight"
+ "полёт": "flight",
+ "Услуги": "Services",
+ "Услуги playdisplay": "playdisplay services",
+ "Проекты, где это сделано": "Projects where we have done this",
+ "Другие направления": "Other directions",
+ "Частые вопросы": "Frequently asked questions",
+ "Забронировать креативную сессию →": "Book a 30-minute call →"
 };
