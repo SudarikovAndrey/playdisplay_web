@@ -408,7 +408,7 @@ PAGE = '''<!DOCTYPE html>
   </article>
   <footer>
     <p>{footer}</p>
-    <p><a href="{home}">{f_home}</a> · <a href="{home}#work">{f_all}</a></p>
+    <p><a href="{home}">{f_home}</a> · <a href="{home}#work">{f_all}</a>{srv_foot}</p>
   </footer>
 </main>
 </body>
@@ -432,6 +432,28 @@ FOOT_EN = ('playdisplay — spaces people remember: museums, interactive exhibit
 
 langs = [Lang(spec) for spec in LANGS]
 
+def load_services(L):
+    p = os.path.join(SITE, L.data, 'services.json')
+    if not os.path.exists(p):
+        return []
+    return json.load(open(p, encoding='utf-8'))['services']
+
+
+for L in langs:
+    L.services = load_services(L)
+    L.smap = {s['slug']: s for s in L.services}
+
+# языки, у которых услуги есть: только они попадают в hreflang и в sitemap
+SRV_LANGS = [L for L in langs if L.services]
+SRV_ORDER = [s['slug'] for s in SRV_LANGS[0].services] if SRV_LANGS else []
+
+# ссылка на услуги в подвале страниц работ — только у языка, где услуги существуют
+for L in langs:
+    L.up_srv = L.up
+    L.srv_foot = ('' if not L.services else
+                  ' · <a href="%sservices/">%s</a>' % (L.up + L.prefix, esc(L.t('Услуги'))))
+
+
 for L in langs:
     n = 0
     for slug in ORDER:
@@ -446,9 +468,286 @@ for L in langs:
             jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p, slug), up=L.up,
             work=L.t('Проекты'), cta=L.t('Открыть интерактивную версию →'),
             footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
-            f_home=L.t('На главную'), f_all=L.t('Все проекты'))))
+            f_home=L.t('На главную'), f_all=L.t('Все проекты'), srv_foot=L.srv_foot)))
         n += 1
     print('project pages [%s]: %d' % (L.code, n))
+
+
+# ---------- посадочные страницы услуг /services/<slug>/ ----------
+# Зачем они появились (21.08.2026). Замер Вебмастера и GA4: за 30 дней 3 клика из
+# поиска, видимость по популярным запросам 7 %, ВСЕ запросы брендовые («playdisplay»,
+# «плей дисплей»). Небрендовый был ровно один — «интерактивный макет территории с
+# отображением информации через проектор», один показ и один клик. То есть спрос
+# существует, а страницы, которая на него отвечает, на сайте нет: ключевые запросы
+# жили только в <meta keywords> главной — теге, который поисковики игнорируют с 2009-го.
+# Кейс на такой запрос не отвечает: он про конкретного заказчика, а человек ищет услугу.
+#
+# Устройство намеренно повторяет страницы работ: статика, оба языка, своя разметка,
+# перелинковка. Содержание — в site/data/services.json (и data/en/services.json),
+# чтобы правка текста не требовала трогать генератор. Языка без файла просто нет:
+# hreflang не должен обещать страницу, которой не существует.
+
+
+def srv_alternates(tail):
+    # hreflang только по языкам, где страница РЕАЛЬНО есть
+    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.code, BASE, L.prefix, tail)
+           for L in SRV_LANGS]
+    if SRV_LANGS:
+        out.append('<link rel="alternate" hreflang="x-default" href="%s/%s%s">'
+                   % (BASE, SRV_LANGS[0].prefix, tail))
+    return '\n'.join(out)
+
+
+def render_blocks(blocks):
+    # те же типы блоков, что у кейсов: h, p, steps, notes, stats
+    out = []
+    for b in blocks:
+        t = b['t']
+        if t == 'h':
+            out.append('<h2>%s</h2>' % esc(b['text']))
+        elif t == 'p':
+            out.append('<p>%s</p>' % esc(b['text']))
+        elif t == 'steps':
+            out.append('<ol class="steps">' + ''.join('<li>%s</li>' % esc(i) for i in b['items']) + '</ol>')
+        elif t == 'notes':
+            out.append('<ul class="notes">' + ''.join('<li>%s</li>' % esc(i) for i in b['items']) + '</ul>')
+        elif t == 'stats':
+            out.append('<ul class="stats">' + ''.join('<li><b>%s</b> %s</li>'
+                       % (esc(i['n']), esc(i['label'])) for i in b['items']) + '</ul>')
+        else:
+            raise SystemExit('неизвестный тип блока услуги: %r' % t)
+    return '\n'.join(out)
+
+
+def render_cases(L, slugs):
+    # связанные проекты — та самая перелинковка, которой между разделами не было
+    li = []
+    for slug in slugs:
+        p = L.pmap.get(slug)
+        if not p:
+            raise SystemExit('в услуге указан проект %r, которого нет в projects.json' % slug)
+        li.append('<li><a href="%swork/%s/"><b>%s</b></a> — %s</li>'
+                  % (L.up_srv + L.prefix, slug, esc(p['title']), esc(p.get('subtitle') or L.meta_desc(slug))))
+    return '<ul class="cases">' + ''.join(li) + '</ul>'
+
+
+def render_faq(items):
+    return ''.join('<div class="qa"><h3>%s</h3><p>%s</p></div>' % (esc(q['q']), esc(q['a']))
+                   for q in items)
+
+
+def service_jsonld(L, s):
+    svc = {
+        "@context": "https://schema.org", "@type": "Service",
+        "name": s['title'],
+        "description": s['subtitle'],
+        "url": L.url('services/%s/' % s['slug']),
+        "serviceType": s['title'],
+        "provider": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'},
+        "areaServed": "Worldwide",
+        "inLanguage": L.code,
+        "keywords": ", ".join(s.get('keywords') or []),
+    }
+    crumbs = {
+        "@context": "https://schema.org", "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
+            {"@type": "ListItem", "position": 2, "name": L.t('Услуги'), "item": L.url('services/')},
+            {"@type": "ListItem", "position": 3, "name": s['title'],
+             "item": L.url('services/%s/' % s['slug'])},
+        ],
+    }
+    # FAQPage прямо на странице услуги, а не отдельной свалкой вопросов: вопрос
+    # цитируется вместе со страницей, которая на него отвечает
+    faq = {
+        "@context": "https://schema.org", "@type": "FAQPage",
+        "mainEntity": [{"@type": "Question", "name": q['q'],
+                        "acceptedAnswer": {"@type": "Answer", "text": q['a']}}
+                       for q in s.get('faq') or []],
+    }
+    out = [svc, crumbs]
+    if faq["mainEntity"]:
+        out.append(faq)
+    return json.dumps(out, ensure_ascii=False, indent=0)
+
+
+SRV_CSS = '''
+  body { margin:0; background:#040c10; color:#e9f4f6; font:400 18px/1.7 -apple-system,'Segoe UI',Roboto,sans-serif; }
+  .wrap { max-width:1000px; margin:0 auto; padding:64px 24px 100px; }
+  a { color:#2be0c6; }
+  h1 { font-size:clamp(34px,6vw,64px); line-height:1.05; margin:0 0 10px; letter-spacing:-.02em; }
+  h2 { font-size:clamp(22px,3vw,32px); margin:52px 0 14px; }
+  h3 { font-size:20px; margin:28px 0 6px; color:#fff; }
+  .lead { color:#9fb4c8; font-size:22px; line-height:1.5; margin:0 0 8px; }
+  ol.steps { padding-left:1.3em; } li { margin:10px 0; }
+  ul.notes { list-style:none; padding-left:0; }
+  ul.notes li { padding-left:1.2em; position:relative; }
+  ul.notes li:before { content:"\\2014"; position:absolute; left:0; color:#2be0c6; }
+  ul.stats { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:30px; }
+  ul.stats b { font-size:34px; color:#2be0c6; display:block; }
+  ul.cases { list-style:none; padding:0; }
+  ul.cases li { margin:16px 0; padding-left:1.2em; position:relative; }
+  ul.cases li:before { content:"\\2192"; position:absolute; left:0; color:#2be0c6; }
+  ul.cases b { color:#fff; }
+  .qa { border-top:1px solid rgba(159,180,200,.22); padding-top:6px; }
+  .qa p { color:#c8d8e2; }
+  .other { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:10px 18px; font-size:16px; }
+  .cta { display:inline-block; margin-top:44px; padding:15px 26px; border:1px solid #2be0c6; color:#2be0c6; text-decoration:none; font-weight:600; }
+  .crumbs { font:500 13px monospace; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin-bottom:40px; }
+  footer { margin-top:80px; color:#9fb4c8; font-size:14px; border-top:1px solid rgba(159,180,200,.22); padding-top:22px; }
+'''
+
+SERVICE_PAGE = '''<!DOCTYPE html>
+<html lang="{lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — playdisplay</title>
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{canon}">
+{alts}
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{title} — playdisplay">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{canon}">
+<meta property="og:image" content="{cover}">
+<meta property="og:locale" content="{locale}">
+<meta property="og:site_name" content="playdisplay">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{title} — playdisplay">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{cover}">
+<script type="application/ld+json">{jsonld}</script>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/assets/logos/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/logos/favicon-180.png">
+<script src="{up}analytics.js" defer></script>
+<style>{css}</style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="crumbs"><a href="{home}">playdisplay</a> / <a href="{srvhome}">{t_services}</a> / {title}</nav>
+  <article>
+    <h1>{title}</h1>
+    <p class="lead">{subtitle}</p>
+    {flow}
+    <h2>{t_cases}</h2>
+    {cases}
+    {faqblock}
+    <a class="cta" href="{home}">{cta}</a>
+  </article>
+  <footer>
+    <p>{footer}</p>
+    <h3 style="margin-top:26px">{t_other}</h3>
+    <ul class="other">{other}</ul>
+    <p style="margin-top:22px"><a href="{home}">{f_home}</a> · <a href="{home}#work">{f_all}</a> · <a href="{srvhome}">{t_services}</a></p>
+  </footer>
+</main>
+</body>
+</html>
+'''
+
+HUB_PAGE = '''<!DOCTYPE html>
+<html lang="{lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — playdisplay</title>
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{canon}">
+{alts}
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{title} — playdisplay">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{canon}">
+<meta property="og:image" content="{cover}">
+<meta property="og:locale" content="{locale}">
+<meta property="og:site_name" content="playdisplay">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{cover}">
+<script type="application/ld+json">{jsonld}</script>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/assets/logos/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/logos/favicon-180.png">
+<script src="{up}analytics.js" defer></script>
+<style>{css}</style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="crumbs"><a href="{home}">playdisplay</a> / {title}</nav>
+  <article>
+    <h1>{title}</h1>
+    <p class="lead">{lead}</p>
+    <ul class="cases">{items}</ul>
+    <a class="cta" href="{home}">{cta}</a>
+  </article>
+  <footer>
+    <p>{footer}</p>
+    <p><a href="{home}">{f_home}</a> · <a href="{home}#work">{f_all}</a></p>
+  </footer>
+</main>
+</body>
+</html>
+'''
+
+HUB_LEAD_RU = ('Пять направлений, в которых мы работаем с 2011 года. Внутри каждого — что входит, '
+               'как идёт работа, что определяет срок и стоимость, и проекты, на которых это уже сделано.')
+HUB_LEAD_EN = ('Five directions we have been working in since 2011. Each page covers what is included, '
+               'how the work goes, what drives cost and schedule, and the projects where we have done it.')
+
+for L in SRV_LANGS:
+    # со страницы services/<slug>/ до корня столько же уровней, сколько с work/<slug>/
+    L.up_srv = L.up
+    for s in L.services:
+        tail = 'services/%s/' % s['slug']
+        d = os.path.join(SITE, L.prefix, 'services', s['slug'])
+        os.makedirs(d, exist_ok=True)
+        others = ''.join('<li><a href="%s%s/">%s</a></li>'
+                         % (L.up_srv + L.prefix + 'services/', o['slug'], esc(o.get('nav') or o['title']))
+                         for o in L.services if o['slug'] != s['slug'])
+        faqblock = ('<h2>%s</h2>%s' % (esc(L.t('Частые вопросы')), render_faq(s['faq']))) if s.get('faq') else ''
+        open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(SERVICE_PAGE.format(
+            lang=L.code, title=esc(s['title']), subtitle=esc(s['subtitle']),
+            desc=esc(Lang._clip(s['subtitle'])), canon=L.url(tail), alts=srv_alternates(tail),
+            cover=esc(cover_url(s['cases'][0], L.pmap)), locale=L.locale, css=SRV_CSS,
+            jsonld=service_jsonld(L, s), up=L.up_srv, home=L.up_srv + L.prefix,
+            srvhome=L.up_srv + L.prefix + 'services/',
+            flow=render_blocks(s['flow']), cases=render_cases(L, s['cases']), faqblock=faqblock,
+            t_services=esc(L.t('Услуги')), t_cases=esc(L.t('Проекты, где это сделано')),
+            t_other=esc(L.t('Другие направления')), other=others,
+            cta=esc(L.t('Забронировать креативную сессию →')),
+            footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+            f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
+    # хаб /services/: без него страницы услуг — сироты, на которые ведёт только sitemap
+    hub_items = ''.join('<li><a href="%s/"><b>%s</b></a> — %s</li>'
+                        % (s['slug'], esc(s['title']), esc(s['subtitle'])) for s in L.services)
+    hub_ld = json.dumps([
+        {"@context": "https://schema.org", "@type": "ItemList",
+         "name": L.t('Услуги playdisplay'),
+         "itemListElement": [{"@type": "ListItem", "position": i + 1,
+                              "url": L.url('services/%s/' % s['slug']), "name": s['title']}
+                             for i, s in enumerate(L.services)]},
+        {"@context": "https://schema.org", "@type": "BreadcrumbList",
+         "itemListElement": [
+             {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
+             {"@type": "ListItem", "position": 2, "name": L.t('Услуги'), "item": L.url('services/')}]},
+    ], ensure_ascii=False, indent=0)
+    dh = os.path.join(SITE, L.prefix, 'services')
+    os.makedirs(dh, exist_ok=True)
+    up_hub = '../' if L.code == 'ru' else '../../'
+    open(os.path.join(dh, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(HUB_PAGE.format(
+        lang=L.code, title=esc(L.t('Услуги')),
+        desc=esc(Lang._clip(HUB_LEAD_EN if L.code == 'en' else HUB_LEAD_RU)),
+        canon=L.url('services/'), alts=srv_alternates('services/'), locale=L.locale, css=SRV_CSS,
+        cover=esc(cover_url(L.services[0]['cases'][0], L.pmap)),
+        jsonld=hub_ld, up=up_hub, home=up_hub + L.prefix,
+        lead=esc(HUB_LEAD_EN if L.code == 'en' else HUB_LEAD_RU), items=hub_items,
+        cta=esc(L.t('Забронировать креативную сессию →')),
+        footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+        f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
+    print('service pages [%s]: %d + хаб' % (L.code, len(L.services)))
 
 # ---------- sitemap.xml: обе версии + перекрёстные hreflang ----------
 XH = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"'
@@ -463,6 +762,14 @@ for tail, prio in [('', '1.0')] + [('work/%s/' % s, '0.8') for s in ORDER]:
 # Самостоятельная русская продуктовая страница без английского дубля. Держим её здесь,
 # а не только в готовом sitemap: генератор запускается перед деплоем и иначе удалит URL.
 urls.append('<url><loc>%s/digital/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>' % BASE)
+# услуги: hreflang перечисляем только по языкам, где страница есть
+def sm_srv_alts(tail):
+    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.code, BASE, L.prefix, tail)
+                   for L in SRV_LANGS)
+for tail, prio in [('services/', '0.9')] + [('services/%s/' % s, '0.9') for s in SRV_ORDER]:
+    for L in SRV_LANGS:
+        urls.append('<url><loc>%s/%s%s</loc>%s<changefreq>monthly</changefreq><priority>%s</priority></url>'
+                    % (BASE, L.prefix, tail, sm_srv_alts(tail), prio))
 open(os.path.join(SITE, 'sitemap.xml'), 'w', encoding='utf-8').write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" %s>\n' % XH +
     '\n'.join(urls) + '\n</urlset>\n')
@@ -491,14 +798,12 @@ lines = ['# playdisplay', '', '> ' + ORG_DESC, '',
          'О студии рассказывал Discovery Channel. Среди клиентов — BMW, Ростех, '
          'Росатом, ОДК, аэропорты и национальные музеи России.', '',
          'English version: %s/en/' % BASE, '',
-         '## Услуги / Services', '',
-         '- Разработка концепции музея и экспозиции (museum & exhibition concept design)',
-         '- Дизайн интерактивных экспозиций и visitor centre (interactive exhibits, visitor centres)',
-         '- Мультимедийные и иммерсивные инсталляции (multimedia & immersive installations)',
-         '- Проекционный маппинг, AR/VR (projection mapping, augmented & virtual reality)',
-         '- Интерактивные шоурумы и брендовые пространства (interactive showrooms, brand spaces)',
-         '- Полный цикл: от идеи до запуска (full cycle: concept to launch)', '',
-         '## Проекты', '']
+         '## Услуги / Services', '']
+# ссылками, а не плоским перечнем: модель цитирует то, на что может сослаться
+for _s in RU.services:
+    lines.append('- [%s](%s/services/%s/): %s' % (_s['title'], BASE, _s['slug'], _s['subtitle']))
+lines.append('- Полный цикл: от идеи до запуска (full cycle: concept to launch)')
+lines += ['', '## Проекты', '']
 for slug in ORDER:
     p = RU.pmap.get(slug, {})
     lines.append('- [%s](%s/work/%s/): %s' % (p.get('title'), BASE, slug, RU.meta_desc(slug)))
