@@ -395,5 +395,15 @@ window.PD_I18N = {
  "Забронировать креативную сессию →": "Book a 30-minute call →",
  "Направление:": "Part of:",
  "Сколько людей это увидело": "How many people saw it",
- "Результаты": "Results"
+ "Результаты": "Results",
+ "Концепции": "Concepts",
+ "Концепции playdisplay": "playdisplay concepts",
+ "Что это решает": "What it solves",
+ "Механики": "Mechanics",
+ "Почему так": "Why this way",
+ "Где применимо": "Where it applies",
+ "Что можно показать": "What it can show",
+ "Ещё концепции этого типа": "More concepts of this kind",
+ "концепция экспозиции": "exhibition concept",
+ "интерактивная инсталляция": "interactive installation"
 };

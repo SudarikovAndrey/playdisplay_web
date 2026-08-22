@@ -501,6 +501,11 @@ def load_services(L):
 for L in langs:
     L.services = load_services(L)
     L.smap = {s['slug']: s for s in L.services}
+    # Ссылка на концепции нужна в подвале страниц услуг, а сами концепции читаются ниже.
+    # Проверяем наличие файла данных, а не загруженный список: порядок загрузки менять
+    # ради одной строки дороже, чем один os.path.exists.
+    L.cnc_foot = (' · <a href="%sconcepts/">%s</a>' % (L.up + L.prefix, esc(L.t('Концепции')))
+                  if os.path.exists(os.path.join(SITE, L.data, 'concepts.json')) else '')
 
 # языки, у которых услуги есть: только они попадают в hreflang и в sitemap
 SRV_LANGS = [L for L in langs if L.services]
@@ -533,6 +538,8 @@ for L in langs:
     L.up_srv = L.up
     L.srv_foot = ('' if not L.services else
                   ' · <a href="%sservices/">%s</a>' % (L.up + L.prefix, esc(L.t('Услуги'))))
+    # ссылка на концепции добавляется той же строкой; список концепций читается ниже,
+    # поэтому дособерём srv_foot после их загрузки
 
 
 for L in langs:
@@ -758,7 +765,7 @@ SERVICE_PAGE = '''<!DOCTYPE html>
     <p>{footer}</p>
     <h3 style="margin-top:26px">{t_other}</h3>
     <ul class="other">{other}</ul>
-    <p style="margin-top:22px"><a href="{home}">{f_home}</a> · <a href="{home}#work">{f_all}</a> · <a href="{srvhome}">{t_services}</a></p>
+    <p style="margin-top:22px"><a href="{home}">{f_home}</a> · <a href="{home}#work">{f_all}</a> · <a href="{srvhome}">{t_services}</a>{cnc_foot}</p>
   </footer>
 </main>
 </body>
@@ -833,6 +840,7 @@ for L in SRV_LANGS:
             srvhome=L.up_srv + L.prefix + 'services/',
             flow=render_blocks(s['flow']), cases=render_cases(L, s['cases']), faqblock=faqblock,
             figures=srv_figures(L, s['cases']),
+            cnc_foot=L.cnc_foot,
             t_services=esc(L.t('Услуги')), t_cases=esc(L.t('Проекты, где это сделано')),
             t_other=esc(L.t('Другие направления')), other=others,
             cta=esc(L.t('Забронировать креативную сессию →')),
@@ -867,6 +875,269 @@ for L in SRV_LANGS:
         f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
     print('service pages [%s]: %d + хаб' % (L.code, len(L.services)))
 
+# ---------- страницы концепций /concepts/<id>/ ----------
+# Зачем (22.08.2026). В site/data/concepts.json лежат 28 концепций, заполненных
+# студией целиком: у каждой есть замысел, что решает, как устроено, что чувствует
+# человек, механики, объяснение «почему так» и где применимо — около 32 000 знаков
+# на обеих локалях, плюс обложки и галереи. И всё это жило ТОЛЬКО внутри SPA:
+# концепции открываются оверлеем без собственного адреса, то есть для поиска их
+# не существовало. Главная при этом обещает «Авторские концепции. Сценарии.
+# Форматы. Готовые к реализации» — обещание было, страниц не было.
+#
+# Каждая концепция — свой длинный запрос («AR-портал в музее», «фасад, который
+# реагирует на людей»), и таких запросов у конкурентов нет вовсе. Ничего не
+# придумывается: текст берётся как есть, генератор только раскладывает поля.
+#
+# line и need в данных совпадают у всех 28 — печатаем один раз, иначе на странице
+# был бы дословный повтор в двух местах.
+def load_concepts(L):
+    p = os.path.join(SITE, L.data, 'concepts.json')
+    if not os.path.exists(p):
+        return [], {}
+    d = json.load(open(p, encoding='utf-8'))
+    labels = {c['id']: c['label'] for c in (d.get('cats') or []) if c.get('id') != 'all'}
+    return d.get('concepts') or [], labels
+
+
+for L in langs:
+    L.concepts, L.cat_labels = load_concepts(L)
+
+CNC_LANGS = [L for L in langs if L.concepts]
+# Дособерём подвал страниц работ: concepts загружаются позже services, а ссылка нужна
+# в одной строке с услугами. Страницы работ уже отрисованы к этому моменту, поэтому
+# ниже они перерисовываются — дешевле, чем тасовать порядок загрузки данных.
+for L in langs:
+    if L.concepts:
+        L.srv_foot += ' · <a href="%sconcepts/">%s</a>' % (L.up + L.prefix, esc(L.t('Концепции')))
+CNC_ORDER = [c['id'] for c in CNC_LANGS[0].concepts] if CNC_LANGS else []
+
+# Страницы работ отрисованы до загрузки концепций, а их подвал теперь содержит и
+# ссылку на /concepts/. Перерисовываем — это тот же цикл, что выше, и он дешевле,
+# чем переставлять порядок загрузки данных ради одной строки в подвале.
+for L in langs:
+    if not L.concepts:
+        continue
+    for slug in ORDER:
+        p_ = L.pmap.get(slug)
+        if not p_:
+            continue
+        d_ = os.path.join(SITE, L.prefix, 'work', slug)
+        open(os.path.join(d_, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(PAGE.format(
+            lang=L.code, title=esc(p_['title']), subtitle=esc(p_.get('subtitle') or ''),
+            desc=esc(L.meta_desc(slug)), canon=L.url('work/%s/' % slug), alts=alternates('work/%s/' % slug),
+            slug=slug, cover=esc(cover_url(slug, L.pmap)), locale=L.locale, home=L.up + L.prefix,
+            jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p_, slug), up=L.up,
+            work=L.t('Проекты'), cta=L.t('Открыть интерактивную версию →'),
+            footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+            f_home=L.t('На главную'), f_all=L.t('Все проекты'), srv_foot=L.srv_foot,
+            srvline=srv_of_case(L, slug))))
+    print('work pages footer [%s]: обновлён' % L.code)
+
+
+
+def cnc_alternates(tail):
+    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.code, BASE, L.prefix, tail)
+           for L in CNC_LANGS]
+    if CNC_LANGS:
+        out.append('<link rel="alternate" hreflang="x-default" href="%s/%s%s">'
+                   % (BASE, CNC_LANGS[0].prefix, tail))
+    return '\n'.join(out)
+
+
+def cnc_gallery(L, c):
+    # только картинки: видео на статической странице потребовало бы плеера и веса,
+    # а задача страницы — быть читаемой и попадать в поиск, а не заменять SPA
+    out = []
+    for item in (c.get('gallery') or []):
+        if item.get('type') != 'image':
+            continue
+        src = item.get('src') or ''
+        if not src or not os.path.exists(os.path.join(SITE, src)):
+            MISSING.append('%s/concept %s: %s' % (L.code, c['id'], src))
+            continue
+        out.append('<img src="%s%s" alt="%s" loading="lazy">' % (L.up_srv, src, esc(c.get('title') or '')))
+    return '\n'.join(out)
+
+
+def cnc_body(L, c):
+    out = []
+
+    def block(title, value, kind='p'):
+        if not value:
+            return
+        out.append('<h2>%s</h2>' % esc(L.t(title)))
+        if kind == 'ul':
+            out.append('<ul class="notes">' + ''.join('<li>%s</li>' % esc(i) for i in value) + '</ul>')
+        else:
+            out.append('<p>%s</p>' % esc(value))
+
+    block('Что это решает', c.get('solves'), 'ul')
+    block('Как это устроено', c.get('essence'))
+    if c.get('feel'):
+        out.append('<blockquote class="feel">%s</blockquote>' % esc(c['feel']))
+    block('Механики', c.get('mechanics'), 'ul')
+    block('Почему так', c.get('comment'))
+    block('Где применимо', c.get('spaces'))
+    block('Что можно показать', c.get('adapt'))
+    return '\n'.join(out)
+
+
+def cnc_jsonld(L, c):
+    data = {
+        "@context": "https://schema.org", "@type": "CreativeWork",
+        "name": c.get('title'), "headline": c.get('title'),
+        "description": Lang._clip(c.get('line') or ''),
+        "url": L.url('concepts/%s/' % c['id']),
+        "inLanguage": L.code,
+        "creator": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'},
+        "genre": c.get('catLabel') or '',
+        "keywords": ", ".join(x for x in [(c.get('catLabel') or ''), L.t('концепция экспозиции'),
+                                          L.t('интерактивная инсталляция')] if x),
+    }
+    cov = c.get('cover')
+    if cov and os.path.exists(os.path.join(SITE, cov)):
+        data["image"] = BASE + '/' + cov.lstrip('/')
+    crumbs = {
+        "@context": "https://schema.org", "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
+            {"@type": "ListItem", "position": 2, "name": L.t('Концепции'), "item": L.url('concepts/')},
+            {"@type": "ListItem", "position": 3, "name": c.get('title'),
+             "item": L.url('concepts/%s/' % c['id'])},
+        ],
+    }
+    return json.dumps([data, crumbs], ensure_ascii=False, indent=0)
+
+
+CNC_CSS = SRV_CSS + '''
+  blockquote.feel { margin:26px 0 0; padding:18px 22px; border-left:2px solid #2be0c6;
+                    background:rgba(43,224,198,.06); color:#fff; font-size:21px; line-height:1.5; }
+  .catline { font:500 13px monospace; letter-spacing:.14em; text-transform:uppercase; color:#2be0c6; margin:0 0 14px; }
+  ul.cncs { list-style:none; padding:0; }
+  ul.cncs li { margin:14px 0; padding-left:1.2em; position:relative; }
+  ul.cncs li:before { content:"\\2192"; position:absolute; left:0; color:#2be0c6; }
+  ul.cncs b { color:#fff; }
+  h3.cat { font-size:15px; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin:38px 0 10px; }
+'''
+
+CONCEPT_PAGE = '''<!DOCTYPE html>
+<html lang="{lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — playdisplay</title>
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{canon}">
+{alts}
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{title} — playdisplay">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{canon}">
+<meta property="og:image" content="{cover}">
+<meta property="og:locale" content="{locale}">
+<meta property="og:site_name" content="playdisplay">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{title} — playdisplay">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{cover}">
+<script type="application/ld+json">{jsonld}</script>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/assets/logos/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/logos/favicon-180.png">
+<script src="{up}analytics.js" defer></script>
+<style>{css}</style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="crumbs"><a href="{home}">playdisplay</a> / <a href="{cnchome}">{t_concepts}</a> / {title}</nav>
+  <article>
+    <p class="catline">{catlabel}</p>
+    <h1>{title}</h1>
+    <p class="lead">{lead}</p>
+    {body}
+    {gallery}
+    <a class="cta" href="{home}">{cta}</a>
+  </article>
+  <footer>
+    <p>{footer}</p>
+    <h3 style="margin-top:26px">{t_more}</h3>
+    <ul class="other">{siblings}</ul>
+    <p style="margin-top:22px"><a href="{home}">{f_home}</a> · <a href="{cnchome}">{t_concepts}</a> · <a href="{srvhome}">{t_services}</a> · <a href="{home}#work">{f_all}</a></p>
+  </footer>
+</main>
+</body>
+</html>
+'''
+
+# Хаб концепций берёт общий шаблон, но список у него сгруппирован по категориям:
+# <h3>+<ul> нельзя вкладывать в <ul class="cases"> — получилась бы невалидная разметка.
+CNC_HUB_PAGE = HUB_PAGE.replace('<ul class="cases">{items}</ul>', '{items}')
+
+CNC_HUB_LEAD_RU = ('Двадцать восемь готовых к реализации концепций: замысел, что он решает, как устроен '
+                   'и где применим. Это не портфолио — это форматы, которые можно взять в проект.')
+CNC_HUB_LEAD_EN = ('Twenty-eight concepts ready to be built: the idea, what it solves, how it works and '
+                   'where it applies. Not a portfolio — formats you can take into a project.')
+
+for L in CNC_LANGS:
+    by_cat = {}
+    for c in L.concepts:
+        by_cat.setdefault(c.get('cat') or 'other', []).append(c)
+    for c in L.concepts:
+        tail = 'concepts/%s/' % c['id']
+        d = os.path.join(SITE, L.prefix, 'concepts', c['id'])
+        os.makedirs(d, exist_ok=True)
+        # соседи по той же категории: перелинковка внутри раздела, а не только в хаб
+        sib = [o for o in by_cat.get(c.get('cat'), []) if o['id'] != c['id']][:5]
+        siblings = ''.join('<li><a href="%s%s/">%s</a></li>' % (L.up_srv + L.prefix + 'concepts/', o['id'], esc(o.get('title')))
+                           for o in sib)
+        cov = c.get('cover') or ''
+        cover = (BASE + '/' + cov.lstrip('/')) if cov and os.path.exists(os.path.join(SITE, cov)) else esc(cover_url(ORDER[0], L.pmap))
+        open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(CONCEPT_PAGE.format(
+            lang=L.code, title=esc(c.get('title')), lead=esc(c.get('line') or ''),
+            desc=esc(Lang._clip(c.get('line') or '')), canon=L.url(tail), alts=cnc_alternates(tail),
+            cover=esc(cover), locale=L.locale, css=CNC_CSS, jsonld=cnc_jsonld(L, c),
+            up=L.up_srv, home=L.up_srv + L.prefix, cnchome=L.up_srv + L.prefix + 'concepts/',
+            srvhome=L.up_srv + L.prefix + 'services/',
+            catlabel=esc(c.get('catLabel') or ''), body=cnc_body(L, c), gallery=cnc_gallery(L, c),
+            t_concepts=esc(L.t('Концепции')), t_services=esc(L.t('Услуги')),
+            t_more=esc(L.t('Ещё концепции этого типа')), siblings=siblings,
+            cta=esc(L.t('Забронировать креативную сессию →')),
+            footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+            f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
+    # хаб /concepts/: группируем по категориям — так список из 28 читается
+    groups = []
+    for cat in [x['id'] for x in [{'id': k} for k in ('museum', 'brand', 'public', 'future')] if x['id'] in by_cat]:
+        items = ''.join('<li><a href="%s/"><b>%s</b></a> — %s</li>' % (o['id'], esc(o.get('title')), esc(o.get('line') or ''))
+                        for o in by_cat[cat])
+        groups.append('<h3 class="cat">%s</h3><ul class="cncs">%s</ul>' % (esc(L.cat_labels.get(cat, cat)), items))
+    hub_ld = json.dumps([
+        {"@context": "https://schema.org", "@type": "ItemList",
+         "name": L.t('Концепции playdisplay'),
+         "itemListElement": [{"@type": "ListItem", "position": i + 1,
+                              "url": L.url('concepts/%s/' % c['id']), "name": c.get('title')}
+                             for i, c in enumerate(L.concepts)]},
+        {"@context": "https://schema.org", "@type": "BreadcrumbList",
+         "itemListElement": [
+             {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
+             {"@type": "ListItem", "position": 2, "name": L.t('Концепции'), "item": L.url('concepts/')}]},
+    ], ensure_ascii=False, indent=0)
+    dh = os.path.join(SITE, L.prefix, 'concepts')
+    os.makedirs(dh, exist_ok=True)
+    up_hub = '../' if L.code == 'ru' else '../../'
+    open(os.path.join(dh, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(CNC_HUB_PAGE.format(
+        lang=L.code, title=esc(L.t('Концепции')),
+        desc=esc(Lang._clip(CNC_HUB_LEAD_EN if L.code == 'en' else CNC_HUB_LEAD_RU)),
+        canon=L.url('concepts/'), alts=cnc_alternates('concepts/'), locale=L.locale, css=CNC_CSS,
+        cover=esc(cover_url(ORDER[0], L.pmap)),
+        jsonld=hub_ld, up=up_hub, home=up_hub + L.prefix,
+        lead=esc(CNC_HUB_LEAD_EN if L.code == 'en' else CNC_HUB_LEAD_RU), items=''.join(groups),
+        cta=esc(L.t('Забронировать креативную сессию →')),
+        footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+        f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
+    print('concept pages [%s]: %d + хаб' % (L.code, len(L.concepts)))
+
+
 # ---------- sitemap.xml: обе версии + перекрёстные hreflang ----------
 XH = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"'
 def sm_alts(tail):
@@ -888,6 +1159,14 @@ for tail, prio in [('services/', '0.9')] + [('services/%s/' % s, '0.9') for s in
     for L in SRV_LANGS:
         urls.append('<url><loc>%s/%s%s</loc>%s<changefreq>monthly</changefreq><priority>%s</priority></url>'
                     % (BASE, L.prefix, tail, sm_srv_alts(tail), prio))
+# концепции: та же логика, свой список языков
+def sm_cnc_alts(tail):
+    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.code, BASE, L.prefix, tail)
+                   for L in CNC_LANGS)
+for tail, prio in [('concepts/', '0.8')] + [('concepts/%s/' % c, '0.7') for c in CNC_ORDER]:
+    for L in CNC_LANGS:
+        urls.append('<url><loc>%s/%s%s</loc>%s<changefreq>monthly</changefreq><priority>%s</priority></url>'
+                    % (BASE, L.prefix, tail, sm_cnc_alts(tail), prio))
 open(os.path.join(SITE, 'sitemap.xml'), 'w', encoding='utf-8').write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" %s>\n' % XH +
     '\n'.join(urls) + '\n</urlset>\n')
@@ -946,6 +1225,14 @@ if _res:
         for para in (r.get('text') or [])[:1]:
             lines.append('  %s' % re.sub(r'\s+', ' ', para).strip())
 
+# ---- Концепции: 28 готовых форматов, у каждого свой адрес ----
+if RU.concepts:
+    lines += ['', '## Концепции / Concepts', '',
+              'Готовые к реализации форматы. У каждого своя страница с разбором: что решает, '
+              'как устроено, где применимо.', '']
+    for _c in RU.concepts:
+        lines.append('- [%s](%s/concepts/%s/): %s' % (_c.get('title'), BASE, _c['id'], _c.get('line') or ''))
+
 lines += ['', '## Контакт / Contact', '',
           '- Сайт: %s/' % BASE,
           '- Email: info@playdisplay.com',
@@ -1002,8 +1289,19 @@ def home_block(L):
                        % ('' if L.code == 'ru' else '/' + L.prefix, slug,
                           esc(L.pmap[slug].get('title')), esc(L.meta_desc(slug)))
                        for slug in ORDER if slug in L.pmap)
-    noscript = ('<noscript><section><h2>%s</h2><ul>%s</ul></section></noscript>'
-                % (('playdisplay projects' if L.code == 'en' else 'Проекты playdisplay'), ns_items))
+    # В noscript кладём и концепции: у страниц /concepts/ нет входа из разметки SPA
+    # (концепции открываются оверлеем без адреса), а обходчику нужен путь. Ссылки
+    # в noscript краулеры читают — это дешевле и безопаснее, чем править живой SPA.
+    ns_cnc = ''
+    if getattr(L, 'concepts', None):
+        ns_cnc = ('<section><h2>%s</h2><ul>%s</ul></section>'
+                  % (esc(L.t('Концепции')),
+                     ''.join('<li><a href="%sconcepts/%s/">%s</a> — %s</li>'
+                             % ('' if L.code == 'ru' else '/' + L.prefix, c['id'],
+                                esc(c.get('title')), esc(c.get('line') or ''))
+                             for c in L.concepts)))
+    noscript = ('<noscript><section><h2>%s</h2><ul>%s</ul></section>%s</noscript>'
+                % (('playdisplay projects' if L.code == 'en' else 'Проекты playdisplay'), ns_items, ns_cnc))
     return '<!--SEO-->\n' + ld_block + '\n' + noscript + '\n<!--/SEO-->'
 
 # ---------- SEO-блок русской главной вставляем САМИ ----------
@@ -1082,7 +1380,11 @@ open(os.path.join(SITE, 'en/index.html'), 'w', encoding='utf-8').write(en)
 print('en/index.html: %.0f КБ, словарь %d строк' % (len(en) / 1024, len(EN.dic)))
 print('sitemap/robots/llms + home JSON-LD ready; noscript items:', len(ORDER))
 if MISSING:
-    print('ПРОПУЩЕНЫ КАРТИНКИ (файла нет на диске), %d шт.:' % len(MISSING))
-    for m in MISSING:
+    # без dict.fromkeys список удваивался: страницы работ рисуются дважды (второй раз —
+    # чтобы в подвал попала ссылка на концепции), и одна и та же пропажа попадала в отчёт
+    # два раза. Дубли в отчёте заставляют искать проблему там, где её нет.
+    uniq = list(dict.fromkeys(MISSING))
+    print('ПРОПУЩЕНЫ КАРТИНКИ (файла нет на диске), %d шт.:' % len(uniq))
+    for m in uniq:
         print('   ', m)
 
