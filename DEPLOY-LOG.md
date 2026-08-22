@@ -8,6 +8,62 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-22 11:34 — hybrid-v8 @ 2601cc4
+
+**Коммиты в этой поставке**
+```
+2601cc4 Результат Ростех Экспо: 5 кейсов из 15, первый — без цифр
+d81f630 Результаты ОДК и «Прорыва»: 4 кейса из 15
+e0e1618 Блок «Результат» в кейсах: третий акт, которого не было ни у одного из 15
+84e5a56 Журнал деплоя: a2fa0ea
+```
+
+**На сервер отправлено файлов:** 50, удалено: 0
+```
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+data/projects.json
+data/en/projects.json
+data/i18n/en.js
+en/index.html
+en/services/index.html
+en/services/exhibition-stand/index.html
+en/services/interactive-exhibition/index.html
+en/services/museum-concept/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+services/index.html
+services/exhibition-stand/index.html
+services/interactive-exhibition/index.html
+services/museum-concept/index.html
+services/projection-mapping/index.html
+services/showroom/index.html
+work/airports/index.html
+work/bmwx5/index.html
+work/coalco/index.html
+work/industry-rf/index.html
+work/mig2019/index.html
+…и ещё 10
+```
+
+
 ## 2026-08-22 09:02 — hybrid-v8 @ a2fa0ea
 
 **Коммиты в этой поставке**
