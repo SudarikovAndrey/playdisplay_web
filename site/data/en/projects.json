@@ -210,6 +210,12 @@
    "cover": "https://playdisplay.com/wp-content/uploads/2021/06/01_logo_v03-960x960.jpg",
    "goal": "Create the centerpiece exhibit at the entrance to the Rostec Expo pavilion and bring the products of every company in the Rostec group together in one holographic space.",
    "solution": "A holographic installation shaped like the Rostec logo. The transparent screen keeps the hall visible through it, while a control console opens the group’s full product catalog — all inside a single holographic space.",
+   "result": {
+    "text": [
+     "The holographic cube became the centrepiece of Rostec Expo and is still in service years after launch. It presents the work of the corporation’s enterprises, hosts presentations for partners and introduces visiting delegations to Rostec’s technological capabilities.",
+     "The installation turned from an exhibition piece into a permanent communication tool: presentations and important meetings begin here, and complex technology takes on a form that is both striking and clear. One object keeps working across different companies, products and scenarios — the content changes while the system itself remains part of the pavilion’s infrastructure."
+    ]
+   },
    "flow": [
     {
      "t": "steps",
