@@ -119,6 +119,10 @@
   ul.notes li:before { content:"\2014"; position:absolute; left:0; color:#2be0c6; }
   ul.stats { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:30px; }
   ul.stats b { font-size:34px; color:#2be0c6; display:block; }
+  ul.stats.figures { gap:34px 40px; }
+  ul.stats.figures li { max-width:250px; }
+  ul.stats.figures b { color:#ff6a3d; font-size:40px; line-height:1.05; }
+  ul.stats.figures a { font-size:14px; }
   ul.cases { list-style:none; padding:0; }
   ul.cases li { margin:16px 0; padding-left:1.2em; position:relative; }
   ul.cases li:before { content:"\2192"; position:absolute; left:0; color:#2be0c6; }
@@ -147,6 +151,7 @@
 <h2>What drives cost</h2>
 <ul class="notes"><li>One room or a network: a solution meant to be replicated is designed differently, and that is settled at the start.</li><li>Whether it needs to talk to your data — stock, prices, configurations, CRM.</li><li>The volume of 3D content: product models are usually the largest part of the work, and they get reused afterwards in advertising and at trade fairs.</li><li>Who maintains and updates it: a one-off delivery, or a system you add new products to yourself.</li></ul>
 <p>That last point often decides all the others. A showroom whose content cannot be updated without the contractor goes out of date with the first change of model range.</p>
+    
     <h2>Projects where we have done this</h2>
     <ul class="cases"><li><a href="../../../en/work/bmwx5/"><b>BMW X5</b></a> — Car configurator</li><li><a href="../../../en/work/sinara/"><b>Sinara Transport Machines</b></a> — Holographic cubes · machinery manufacturing</li><li><a href="../../../en/work/pano360/"><b>Panorama 360</b></a> — Mobile guide in augmented reality</li><li><a href="../../../en/work/ptk-group/"><b>PTK Group</b></a> — Exhibition installation</li></ul>
     <h2>Frequently asked questions</h2><div class="qa"><h3>Can a configurator be fitted into an existing showroom?</h3><p>Yes, and usually that is the task. We start by watching the room: where people linger, where they walk past, at what moment a salesperson joins the conversation. The location follows from that, not from which wall happens to be free.</p></div><div class="qa"><h3>Do we need integration with our systems?</h3><p>It depends on what you are showing. Product demonstration works standalone; live prices, availability and delivery dates need a connection to your data. Standalone is cheaper and more robust, integrated is more accurate. Choose at the start: moving from the first to the second costs more than building the second outright.</p></div><div class="qa"><h3>What about the content a year from now?</h3><p>If the model range changes, the system has to let you add new items yourselves. That is an architectural decision, and it has to be taken at the beginning rather than when the new model ships.</p></div><div class="qa"><h3>Does this work in B2B, where no single person decides?</h3><p>It works differently. In B2B the interactive is not there for emotion but as a shared object to talk around: a group gathers at a model or a configurator and the discussion follows the object rather than the slides. Our projects for industry and rolling stock are built exactly that way.</p></div>

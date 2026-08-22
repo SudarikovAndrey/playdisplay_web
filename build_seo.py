@@ -283,7 +283,14 @@ class Lang:
 
     def meta_desc(self, slug):
         c = cases.get(slug, {}); p = self.pmap.get(slug, {})
-        parts = [self.t(c.get('punch')), p.get('goal') or self.t(c.get('desc'))]
+        # ЦИФРА ПЕРВОЙ, если она есть (22.08.2026). Описание — единственный текст,
+        # который человек читает ДО перехода, и в выдаче его сканируют, а не читают.
+        # «2 млн посетителей за восемь месяцев» останавливает взгляд, «Отрасль, которую
+        # можно рассмотреть вблизи» — нет. Берём главную цифру из result.figures: она
+        # про аудиторию заказчика, а не про нашу производительность.
+        fig = ((p.get('result') or {}).get('figures') or [])
+        head = ('%s %s.' % (fig[0]['n'], fig[0]['label'])) if fig else ''
+        parts = [head, self.t(c.get('punch')), p.get('goal') or self.t(c.get('desc'))]
         d = ' '.join(x for x in parts if x)
         d = re.sub(r'\s+', ' ', d).strip()
         return self._clip(d)
@@ -606,6 +613,28 @@ def render_cases(L, slugs):
     return '<ul class="cases">' + ''.join(li) + '</ul>'
 
 
+def srv_figures(L, slugs):
+    """цифры аудитории из связанных кейсов — на страницу услуги
+
+    Аудит 15.08.2026 писал: «Цифры про нас, а не про клиента» — «3 нед. самый быстрый
+    стенд», «115 инсталляций». Это про нашу производительность, а покупателя интересует
+    его выгода. Теперь у части кейсов есть result.figures — числа про аудиторию
+    заказчика, и они собираются сюда автоматически. Ничего не придумывается: если у
+    связанных кейсов цифр нет, блока нет.
+    """
+    rows = []
+    for slug in slugs:
+        p = L.pmap.get(slug) or {}
+        for f in ((p.get('result') or {}).get('figures') or [])[:1]:
+            rows.append((f['n'], f['label'], p.get('title'), slug))
+    if not rows:
+        return ''
+    li = ''.join('<li><b>%s</b> %s<br><a href="%swork/%s/">%s</a></li>'
+                 % (esc(n), esc(label), L.up_srv + L.prefix, slug, esc(title))
+                 for n, label, title, slug in rows)
+    return '<h2>%s</h2><ul class="stats figures">%s</ul>' % (esc(L.t('Сколько людей это увидело')), li)
+
+
 def render_faq(items):
     return ''.join('<div class="qa"><h3>%s</h3><p>%s</p></div>' % (esc(q['q']), esc(q['a']))
                    for q in items)
@@ -668,6 +697,10 @@ SRV_CSS = '''
   ul.notes li:before { content:"\\2014"; position:absolute; left:0; color:#2be0c6; }
   ul.stats { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:30px; }
   ul.stats b { font-size:34px; color:#2be0c6; display:block; }
+  ul.stats.figures { gap:34px 40px; }
+  ul.stats.figures li { max-width:250px; }
+  ul.stats.figures b { color:#ff6a3d; font-size:40px; line-height:1.05; }
+  ul.stats.figures a { font-size:14px; }
   ul.cases { list-style:none; padding:0; }
   ul.cases li { margin:16px 0; padding-left:1.2em; position:relative; }
   ul.cases li:before { content:"\\2192"; position:absolute; left:0; color:#2be0c6; }
@@ -715,6 +748,7 @@ SERVICE_PAGE = '''<!DOCTYPE html>
     <h1>{title}</h1>
     <p class="lead">{subtitle}</p>
     {flow}
+    {figures}
     <h2>{t_cases}</h2>
     {cases}
     {faqblock}
@@ -798,6 +832,7 @@ for L in SRV_LANGS:
             jsonld=service_jsonld(L, s), up=L.up_srv, home=L.up_srv + L.prefix,
             srvhome=L.up_srv + L.prefix + 'services/',
             flow=render_blocks(s['flow']), cases=render_cases(L, s['cases']), faqblock=faqblock,
+            figures=srv_figures(L, s['cases']),
             t_services=esc(L.t('Услуги')), t_cases=esc(L.t('Проекты, где это сделано')),
             t_other=esc(L.t('Другие направления')), other=others,
             cta=esc(L.t('Забронировать креативную сессию →')),
@@ -894,6 +929,23 @@ lines += ['', '## Projects (English)', '']
 for slug in ORDER:
     p = EN.pmap.get(slug, {})
     lines.append('- [%s](%s/en/work/%s/): %s' % (p.get('title'), BASE, slug, EN.meta_desc(slug)))
+# ---- Результаты: цифры отдельным разделом (22.08.2026) ----
+# Языковой модели нужен не рассказ о процессе, а «сколько людей прошло и что
+# изменилось». Такой фрагмент она цитирует целиком, поэтому даём его списком с
+# адресом кейса рядом: сослаться модель может только на то, у чего есть URL.
+# Печатаем ТОЛЬКО заполненное — у 10 кейсов из 15 результата пока нет.
+_res = [(slug, RU.pmap.get(slug, {})) for slug in ORDER]
+_res = [(s, p) for s, p in _res if (p.get('result') or {}).get('figures') or (p.get('result') or {}).get('text')]
+if _res:
+    lines += ['', '## Результаты проектов / Project outcomes', '']
+    for slug, p in _res:
+        r = p.get('result') or {}
+        figs = '; '.join('%s — %s' % (f['n'], f['label']) for f in (r.get('figures') or []))
+        head = '- [%s](%s/work/%s/)' % (p.get('title'), BASE, slug)
+        lines.append('%s: %s' % (head, figs) if figs else head + ':')
+        for para in (r.get('text') or [])[:1]:
+            lines.append('  %s' % re.sub(r'\s+', ' ', para).strip())
+
 lines += ['', '## Контакт / Contact', '',
           '- Сайт: %s/' % BASE,
           '- Email: info@playdisplay.com',
