@@ -898,7 +898,20 @@ def home_block(L):
          "contactPoint": {"@type": "ContactPoint", "contactType": "sales",
                           "email": "info@playdisplay.com",
                           "availableLanguage": ["Russian", "English", "Portuguese"]},
-         "founder": {"@type": "Person", "name": L.t('Андрей Судариков')}},
+         "founder": {"@type": "Person", "name": L.t('Андрей Судариков')},
+         # Каталог услуг ссылками (21.08.2026). knowsAbout выше — это слова, по которым
+         # нас можно опознать; hasOfferCatalog — адреса, на которые можно сослаться.
+         # Разница важна для поисковых ИИ: процитировать они могут только то, у чего
+         # есть URL. Список берётся из services.json, руками ничего не дублируется.
+         **({"hasOfferCatalog": {
+             "@type": "OfferCatalog",
+             "name": L.t('Услуги playdisplay'),
+             "itemListElement": [
+                 {"@type": "Offer",
+                  "itemOffered": {"@type": "Service", "name": s['title'],
+                                  "description": s['subtitle'],
+                                  "url": L.url('services/%s/' % s['slug'])}}
+                 for s in L.services]}} if L.services else {})},
         {"@context": "https://schema.org", "@type": "WebSite", "name": "playdisplay",
          "url": L.url(), "inLanguage": L.code},
         {"@context": "https://schema.org", "@type": "ItemList",
