@@ -506,6 +506,8 @@ for L in langs:
     # ради одной строки дороже, чем один os.path.exists.
     L.cnc_foot = (' · <a href="%sconcepts/">%s</a>' % (L.up + L.prefix, esc(L.t('Концепции')))
                   if os.path.exists(os.path.join(SITE, L.data, 'concepts.json')) else '')
+    if os.path.exists(os.path.join(SITE, L.data, 'atlas.json')):
+        L.cnc_foot += ' · <a href="%satlas/">%s</a>' % (L.up + L.prefix, esc(L.t('Атлас')))
 
 # языки, у которых услуги есть: только они попадают в hreflang и в sitemap
 SRV_LANGS = [L for L in langs if L.services]
@@ -909,6 +911,8 @@ CNC_LANGS = [L for L in langs if L.concepts]
 for L in langs:
     if L.concepts:
         L.srv_foot += ' · <a href="%sconcepts/">%s</a>' % (L.up + L.prefix, esc(L.t('Концепции')))
+    if os.path.exists(os.path.join(SITE, L.data, 'atlas.json')):
+        L.srv_foot += ' · <a href="%satlas/">%s</a>' % (L.up + L.prefix, esc(L.t('Атлас')))
 CNC_ORDER = [c['id'] for c in CNC_LANGS[0].concepts] if CNC_LANGS else []
 
 # Страницы работ отрисованы до загрузки концепций, а их подвал теперь содержит и
@@ -1063,7 +1067,7 @@ CONCEPT_PAGE = '''<!DOCTYPE html>
     <p>{footer}</p>
     <h3 style="margin-top:26px">{t_more}</h3>
     <ul class="other">{siblings}</ul>
-    <p style="margin-top:22px"><a href="{home}">{f_home}</a> · <a href="{cnchome}">{t_concepts}</a> · <a href="{srvhome}">{t_services}</a> · <a href="{home}#work">{f_all}</a></p>
+    <p style="margin-top:22px"><a href="{home}">{f_home}</a> · <a href="{cnchome}">{t_concepts}</a> · <a href="{srvhome}">{t_services}</a> · <a href="{atlashome}">{t_atlas}</a> · <a href="{home}#work">{f_all}</a></p>
   </footer>
 </main>
 </body>
@@ -1098,6 +1102,7 @@ for L in CNC_LANGS:
             desc=esc(Lang._clip(c.get('line') or '')), canon=L.url(tail), alts=cnc_alternates(tail),
             cover=esc(cover), locale=L.locale, css=CNC_CSS, jsonld=cnc_jsonld(L, c),
             up=L.up_srv, home=L.up_srv + L.prefix, cnchome=L.up_srv + L.prefix + 'concepts/',
+            atlashome=L.up_srv + L.prefix + 'atlas/', t_atlas=esc(L.t('Атлас')),
             srvhome=L.up_srv + L.prefix + 'services/',
             catlabel=esc(c.get('catLabel') or ''), body=cnc_body(L, c), gallery=cnc_gallery(L, c),
             t_concepts=esc(L.t('Концепции')), t_services=esc(L.t('Услуги')),
@@ -1138,6 +1143,133 @@ for L in CNC_LANGS:
     print('concept pages [%s]: %d + хаб' % (L.code, len(L.concepts)))
 
 
+ATLAS_PAGE = '''<!DOCTYPE html>
+<html lang="{lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — playdisplay</title>
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{canon}">
+{alts}
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{h1}">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{canon}">
+<meta property="og:image" content="{cover}">
+<meta property="og:locale" content="{locale}">
+<meta property="og:site_name" content="playdisplay">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{h1}">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{cover}">
+<script type="application/ld+json">{jsonld}</script>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/assets/logos/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/logos/favicon-180.png">
+<script src="{up}analytics.js" defer></script>
+<style>{css}</style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="crumbs"><a href="{home}">playdisplay</a> / {title}</nav>
+  <article>
+    <h1>{h1}</h1>
+    <p class="lead">{lead}</p>
+    {groups}
+    <a class="cta" href="{home}">{cta}</a>
+  </article>
+  <footer>
+    <p>{footer}</p>
+    <p style="margin-top:22px"><a href="{home}">{f_home}</a> · <a href="{cnchome}">{t_concepts}</a> · <a href="{srvhome}">{t_services}</a> · <a href="{home}#work">{f_all}</a></p>
+  </footer>
+</main>
+</body>
+</html>
+'''
+
+
+def atlas_alternates(tail):
+    ls = [L for L in langs if getattr(L, 'has_atlas', False) or os.path.exists(os.path.join(SITE, L.data, 'atlas.json'))]
+    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.code, BASE, L.prefix, tail) for L in ls]
+    if ls:
+        out.append('<link rel="alternate" hreflang="x-default" href="%s/%s%s">' % (BASE, ls[0].prefix, tail))
+    return '\n'.join(out)
+
+
+# ---------- /atlas/ — 50 принципов ОДНОЙ страницей ----------
+# Почему одной, а не пятьюдесятью (22.08.2026). У элементов «Атласа» есть только
+# title (~35 знаков) и desc (~110). Пятьдесят страниц по 140 знаков — это ровно то
+# тонкое содержание, за которое поисковики понижают САЙТ ЦЕЛИКОМ, а не отдельные
+# страницы. Собранные вместе те же данные дают ~7 000 знаков связного текста:
+# это манифест студии, законная сильная страница и естественный повод сослаться.
+#
+# Заодно снимается находка аудита: «Атлас — витрина без содержимого», раздел
+# выглядит интерактивным и не открывается. Теперь у него есть настоящий адрес.
+def load_atlas(L):
+    p = os.path.join(SITE, L.data, 'atlas.json')
+    if not os.path.exists(p):
+        return None
+    return json.load(open(p, encoding='utf-8'))
+
+
+ATLAS_LEAD_RU = ('Пятьдесят принципов, приёмов и наблюдений, по которым студия работает. Не манифест '
+                 'ради манифеста: это то, на что мы опираемся, когда решаем, каким будет объект.')
+ATLAS_LEAD_EN = ('Fifty principles, techniques and observations the studio works by. Not a manifesto for '
+                 'its own sake: this is what we lean on when deciding what an object will be.')
+
+for L in langs:
+    a = load_atlas(L)
+    L.has_atlas = bool(a)
+    if not a:
+        continue
+    items, labels = a['items'], (a.get('catLabels') or {})
+    groups = []
+    for cat in (a.get('cats') or []):
+        rows = [x for x in items if x.get('cat') == cat]
+        if not rows:
+            continue
+        li = ''.join('<li id="%s"><b>%s</b><span>%s</span></li>' % (esc(x['id']), esc(x['title']), esc(x['desc']))
+                     for x in rows)
+        groups.append('<h2>%s</h2><ol class="atlas">%s</ol>' % (esc(labels.get(cat, cat)), li))
+    tail = 'atlas/'
+    ld = json.dumps([
+        {"@context": "https://schema.org", "@type": "Article",
+         "headline": L.t('Атлас: принципы студии playdisplay'),
+         "description": Lang._clip(ATLAS_LEAD_EN if L.code == 'en' else ATLAS_LEAD_RU),
+         "url": L.url(tail), "inLanguage": L.code,
+         "author": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'},
+         "publisher": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'}},
+        {"@context": "https://schema.org", "@type": "BreadcrumbList",
+         "itemListElement": [
+             {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
+             {"@type": "ListItem", "position": 2, "name": L.t('Атлас'), "item": L.url(tail)}]},
+    ], ensure_ascii=False, indent=0)
+    d = os.path.join(SITE, L.prefix, 'atlas')
+    os.makedirs(d, exist_ok=True)
+    up = '../' if L.code == 'ru' else '../../'
+    css = CNC_CSS + '''
+  ol.atlas { counter-reset:none; padding-left:0; list-style:none; }
+  ol.atlas li { margin:22px 0; padding-left:0; }
+  ol.atlas b { display:block; color:#fff; font-size:20px; line-height:1.35; margin-bottom:5px; }
+  ol.atlas span { color:#c8d8e2; }
+'''
+    open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(ATLAS_PAGE.format(
+        lang=L.code, title=esc(L.t('Атлас')),
+        h1=esc(L.t('Атлас: как мы думаем о пространстве')),
+        desc=esc(Lang._clip(ATLAS_LEAD_EN if L.code == 'en' else ATLAS_LEAD_RU)),
+        canon=L.url(tail), alts=atlas_alternates(tail), locale=L.locale, css=css, jsonld=ld,
+        cover=esc(cover_url(ORDER[0], L.pmap)), up=up, home=up + L.prefix,
+        cnchome=up + L.prefix + 'concepts/', srvhome=up + L.prefix + 'services/',
+        lead=esc(ATLAS_LEAD_EN if L.code == 'en' else ATLAS_LEAD_RU), groups=''.join(groups),
+        t_concepts=esc(L.t('Концепции')), t_services=esc(L.t('Услуги')),
+        cta=esc(L.t('Забронировать креативную сессию →')),
+        footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+        f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
+    print('atlas page [%s]: %d принципов' % (L.code, len(items)))
+
+
 # ---------- sitemap.xml: обе версии + перекрёстные hreflang ----------
 XH = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"'
 def sm_alts(tail):
@@ -1167,6 +1299,12 @@ for tail, prio in [('concepts/', '0.8')] + [('concepts/%s/' % c, '0.7') for c in
     for L in CNC_LANGS:
         urls.append('<url><loc>%s/%s%s</loc>%s<changefreq>monthly</changefreq><priority>%s</priority></url>'
                     % (BASE, L.prefix, tail, sm_cnc_alts(tail), prio))
+# атлас — одна страница на язык
+_atl = [L for L in langs if getattr(L, 'has_atlas', False)]
+for L in _atl:
+    urls.append('<url><loc>%s/%satlas/</loc>%s<changefreq>monthly</changefreq><priority>0.8</priority></url>'
+                % (BASE, L.prefix,
+                   ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%satlas/"/>' % (x.code, BASE, x.prefix) for x in _atl)))
 open(os.path.join(SITE, 'sitemap.xml'), 'w', encoding='utf-8').write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" %s>\n' % XH +
     '\n'.join(urls) + '\n</urlset>\n')
@@ -1232,6 +1370,11 @@ if RU.concepts:
               'как устроено, где применимо.', '']
     for _c in RU.concepts:
         lines.append('- [%s](%s/concepts/%s/): %s' % (_c.get('title'), BASE, _c['id'], _c.get('line') or ''))
+
+if os.path.exists(os.path.join(SITE, RU.data, 'atlas.json')):
+    lines += ['', '## Атлас — принципы студии / Studio principles', '',
+              '- [%s](%s/atlas/): 50 принципов, приёмов и наблюдений, по которым студия работает.'
+              % (RU.t('Атлас: как мы думаем о пространстве'), BASE)]
 
 lines += ['', '## Контакт / Contact', '',
           '- Сайт: %s/' % BASE,
@@ -1300,8 +1443,12 @@ def home_block(L):
                              % ('' if L.code == 'ru' else '/' + L.prefix, c['id'],
                                 esc(c.get('title')), esc(c.get('line') or ''))
                              for c in L.concepts)))
-    noscript = ('<noscript><section><h2>%s</h2><ul>%s</ul></section>%s</noscript>'
-                % (('playdisplay projects' if L.code == 'en' else 'Проекты playdisplay'), ns_items, ns_cnc))
+    ns_atl = ''
+    if os.path.exists(os.path.join(SITE, L.data, 'atlas.json')):
+        ns_atl = '<p><a href="%satlas/">%s</a></p>' % ('' if L.code == 'ru' else '/' + L.prefix,
+                                                       esc(L.t('Атлас: как мы думаем о пространстве')))
+    noscript = ('<noscript><section><h2>%s</h2><ul>%s</ul></section>%s%s</noscript>'
+                % (('playdisplay projects' if L.code == 'en' else 'Проекты playdisplay'), ns_items, ns_cnc, ns_atl))
     return '<!--SEO-->\n' + ld_block + '\n' + noscript + '\n<!--/SEO-->'
 
 # ---------- SEO-блок русской главной вставляем САМИ ----------

@@ -405,5 +405,7 @@ window.PD_I18N = {
  "Что можно показать": "What it can show",
  "Ещё концепции этого типа": "More concepts of this kind",
  "концепция экспозиции": "exhibition concept",
- "интерактивная инсталляция": "interactive installation"
+ "интерактивная инсталляция": "interactive installation",
+ "Атлас: как мы думаем о пространстве": "Atlas: how we think about space",
+ "Атлас: принципы студии playdisplay": "Atlas: the playdisplay studio principles"
 };
