@@ -8,6 +8,64 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-22 09:02 — hybrid-v8 @ a2fa0ea
+
+**Коммиты в этой поставке**
+```
+a2fa0ea Журнал продвижения: кабинеты подключены, что осталось за владельцем
+06b2dc8 Поправка: Google убрал FAQ-сниппеты 7 мая 2026
+436f955 Каталог услуг в разметке главной: hasOfferCatalog
+c205378 «Услуги» в меню, связь кейс→услуга, битые картинки убраны
+2ae592a Редиректы .htaccess отдают https, а не http
+ce227fd Журнал деплоя: e4080e9
+```
+
+**На сервер отправлено файлов:** 49, удалено: 0
+```
+.htaccess
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+data/i18n/en.js
+en/index.html
+en/services/index.html
+en/services/exhibition-stand/index.html
+en/services/interactive-exhibition/index.html
+en/services/museum-concept/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+services/index.html
+services/exhibition-stand/index.html
+services/interactive-exhibition/index.html
+services/museum-concept/index.html
+services/projection-mapping/index.html
+services/showroom/index.html
+work/airports/index.html
+work/bmwx5/index.html
+work/coalco/index.html
+work/industry-rf/index.html
+work/mig2019/index.html
+work/odk-oak/index.html
+…и ещё 9
+```
+
+
 ## 2026-08-21 20:36 — hybrid-v8 @ e4080e9
 
 **Коммиты в этой поставке**
