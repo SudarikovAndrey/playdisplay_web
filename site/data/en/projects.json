@@ -111,6 +111,22 @@
    "cover": "https://playdisplay.com/wp-content/uploads/2026/01/site_odk_21_2-960x960.png",
    "goal": "MAKS, the International Aviation and Space Salon, is one of the world’s major aerospace events. United Engine Corporation (UEC), Russia’s leading developer of aircraft engines, was presenting its pavilion there.",
    "solution": "For the UEC booth we built a multimedia immersion into the world of aircraft engine manufacturing. A complex screen setup, one shared rhythm across every image and a set of interactive experiences turn the pavilion into a single living space where the technology reads at a glance.",
+   "result": {
+    "figures": [
+     {
+      "n": "135,000",
+      "label": "visitors to MAKS-2021 over six days"
+     },
+     {
+      "n": "Award",
+      "label": "Best Pavilion at the air show"
+     }
+    ],
+    "text": [
+     "The multimedia exhibition put UEC’s most demanding engineering into a language that is clear and worth watching — from the PD-14 and the forthcoming PD-35 to a new generation of aero engines. Over six days MAKS-2021 drew more than 135,000 visitors, and the UEC exhibition itself won the air show’s special award for Best Pavilion.",
+     "Technology normally reserved for engineers and industry specialists became legible to a broad audience through visual storytelling and multimedia experience. The exhibition worked on three fronts at once: demonstrating technological leadership, making Russian engine-building known beyond the industry, and drawing a new generation towards aviation and engineering professions."
+    ]
+   },
    "flow": [
     {
      "t": "steps",
@@ -138,6 +154,26 @@
    "cover": "https://playdisplay.com/wp-content/uploads/2026/01/site_ra_24-1-960x960.png",
    "goal": "Build an installation that shows in plain visual terms how a nuclear power platform with a closed nuclear fuel cycle based on fast neutrons actually works.",
    "solution": "An informational multimedia installation about the Proryv technologies. A complex screen setup and the tunnel effect create the sensation of moving through space and pull the viewer bodily into the story. The piece works as a visual ride and becomes the spot everyone photographs and films.",
+   "result": {
+    "figures": [
+     {
+      "n": "7,000",
+      "label": "delegates over three days"
+     },
+     {
+      "n": "62",
+      "label": "countries represented"
+     },
+     {
+      "n": "6",
+      "label": "TV companies filmed the installation"
+     }
+    ],
+    "text": [
+     "At the IV Congress of Young Scientists the “Perpetual Motion” installation became one of the focal points for delegates and press alike. Over three days the Congress gathered more than 7,000 people from 62 countries, and the intricate principles of next-generation nuclear power found a form that was both clear and striking.",
+     "The space, drawn from the geometry of a nuclear fuel assembly, worked as an educational instrument and a strong visual image at the same time. Visitors got to know the closed nuclear fuel cycle, examined the technology at engineering level, and photographed and filmed the installation. Six television companies used it in their reports, and the photographs and video carried the story of the Proryv project on well beyond the Congress."
+    ]
+   },
    "flow": [
     {
      "t": "steps",
