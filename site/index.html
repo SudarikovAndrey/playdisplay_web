@@ -242,6 +242,9 @@
   .mnav.open .mnav-links a:nth-child(3) { transition-delay: .15s; }
   .mnav.open .mnav-links a:nth-child(4) { transition-delay: .20s; }
   .mnav.open .mnav-links a:nth-child(5) { transition-delay: .25s; }
+  /* шестой пункт появился вместе с «Услугами» (21.08.2026): без своей задержки он
+     выезжал раньше первого и цепочка появления ломалась */
+  .mnav.open .mnav-links a:nth-child(6) { transition-delay: .30s; }
   .mnav-foot { margin-top: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .mnav .cta-play { flex: 1; justify-content: center; padding: 15px 20px; }
   .mnav .lang { margin-left: 0; }
@@ -1904,6 +1907,13 @@
   <div class="nav-inner">
     <a href="#start" class="logo-home" aria-label="playdisplay — на главную"><img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="playdisplay"></a>
     <nav class="links">
+      <!-- Услуги — единственный пункт меню, ведущий НЕ на хэш, а на отдельные статические
+           страницы /services/*. Появился 21.08.2026: страницы под запросы об услугах уже
+           были, но попасть на них с главной было нельзя — человек из поиска приходил на
+           /services/museum-concept/, а посетитель главной о разделе не узнавал вовсе.
+           На /en/ адрес подменяется на /en/services/ в build_seo.py: <base href="/">
+           у английской копии иначе увёл бы на русскую версию. -->
+      <a href="/services/">Услуги</a>
       <a href="#work">Проекты</a>
       <a href="#concepts">Библиотека</a>
       <a href="#atlas">Атлас</a>
@@ -1928,6 +1938,7 @@
      при правке разделов менять оба списка. -->
 <div class="mnav" id="mnav">
   <nav class="mnav-links">
+    <a href="/services/">Услуги</a>
     <a href="#work">Проекты</a>
     <a href="#concepts">Библиотека</a>
     <a href="#atlas">Атлас</a>

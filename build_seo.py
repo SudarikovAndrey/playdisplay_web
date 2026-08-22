@@ -300,6 +300,9 @@ def cover_url(slug, pmap):
 
 
 # ---------- статические страницы проектов ----------
+MISSING = []   # картинки, которых нет на диске: печатаем списком в конце сборки
+
+
 def render_flow(L, p, slug):
     out = []
     if p.get('goal'): out.append('<section><h2>%s</h2><p>%s</p></section>' % (L.t('Цель проекта'), esc(p['goal'])))
@@ -318,10 +321,25 @@ def render_flow(L, p, slug):
             for u in b['src']:
                 fn = u.split('/')[-1]
                 local = 'assets/work/%s/%s' % (slug, fn)
-                # png мог быть пережат в jpg
                 cand = os.path.join(SITE, local)
+                # png мог быть пережат в jpg
                 if not os.path.exists(cand) and local.endswith('.png') and os.path.exists(cand[:-4] + '.jpg'):
                     local = local[:-4] + '.jpg'
+                    cand = os.path.join(SITE, local)
+                # gif из Behance у нас лежит как mp4 с кадром-постером: в данных остался
+                # .gif, на диске — <имя>.mp4 и <имя>_poster.jpg. Замер 21.08.2026 показал
+                # 8 таких битых картинок на страницах vdnh-space (русской и английской).
+                if not os.path.exists(cand) and local.endswith('.gif'):
+                    poster = local[:-4] + '_poster.jpg'
+                    if os.path.exists(os.path.join(SITE, poster)):
+                        local, cand = poster, os.path.join(SITE, poster)
+                # ЧЕГО НЕТ НА ДИСКЕ — НЕ ВЫВОДИМ. Раньше <img> печатался всегда, и на
+                # mig2019 уезжало пять ссылок на файлы, которых нет ни у нас, ни в
+                # источнике (проверено: 404 и на боевом). Битая картинка хуже
+                # отсутствующей: она видна посетителю и портит оценку страницы.
+                if not os.path.exists(cand):
+                    MISSING.append('%s/%s: %s' % (L.code, slug, fn))
+                    continue
                 out.append('<img src="%s%s" alt="%s — %s" loading="lazy">' % (L.up, local, esc(p['title']), esc(p.get('subtitle') or '')))
         elif t in ('yt', 'vimeo'):
             url = ('https://www.youtube.com/watch?v=' + b['id']) if t == 'yt' else ('https://vimeo.com/' + b['id'])
@@ -406,6 +424,7 @@ PAGE = '''<!DOCTYPE html>
   ul.stats b {{ font-size:34px; color:#2be0c6; display:block; }}
   .cta {{ display:inline-block; margin-top:44px; padding:15px 26px; border:1px solid #2be0c6; color:#2be0c6; text-decoration:none; font-weight:600; }}
   .crumbs {{ font:500 13px monospace; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin-bottom:40px; }}
+  .srvline {{ margin-top:44px; padding-top:22px; border-top:1px solid rgba(159,180,200,.22); color:#9fb4c8; font-size:16px; }}
   footer {{ margin-top:80px; color:#9fb4c8; font-size:14px; }}
 </style>
 </head>
@@ -417,6 +436,7 @@ PAGE = '''<!DOCTYPE html>
     <p style="color:#9fb4c8;font-size:20px">{subtitle}</p>
     <div class="meta">{metablk}</div>
     {flow}
+    {srvline}
     <a class="cta" href="{home}#/work/{slug}">{cta}</a>
   </article>
   <footer>
@@ -460,6 +480,28 @@ for L in langs:
 SRV_LANGS = [L for L in langs if L.services]
 SRV_ORDER = [s['slug'] for s in SRV_LANGS[0].services] if SRV_LANGS else []
 
+# Обратный указатель кейс → услуги (21.08.2026). Связь до этого была только в одну
+# сторону: со страницы услуги в кейсы. Человек, пришедший из поиска на кейс, не узнавал,
+# что у студии есть направление, в которое этот кейс входит, — и уходил, не увидев, что
+# ещё мы делаем. Считаем из тех же services.json, отдельного списка не держим: второй
+# список рассинхронизируется с первым.
+for L in langs:
+    L.case_srv = {}
+    for s in L.services:
+        for slug in s['cases']:
+            L.case_srv.setdefault(slug, []).append(s)
+
+
+def srv_of_case(L, slug):
+    """строка «Направление: <ссылки>» для страницы работы; пусто, если услуг нет"""
+    items = (L.case_srv.get(slug) or [])[:2]
+    if not items:
+        return ''
+    links = ' · '.join('<a href="%sservices/%s/">%s</a>' % (L.up + L.prefix, s['slug'], esc(s.get('nav') or s['title']))
+                       for s in items)
+    return '<p class="srvline">%s %s</p>' % (esc(L.t('Направление:')), links)
+
+
 # ссылка на услуги в подвале страниц работ — только у языка, где услуги существуют
 for L in langs:
     L.up_srv = L.up
@@ -481,7 +523,8 @@ for L in langs:
             jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p, slug), up=L.up,
             work=L.t('Проекты'), cta=L.t('Открыть интерактивную версию →'),
             footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
-            f_home=L.t('На главную'), f_all=L.t('Все проекты'), srv_foot=L.srv_foot)))
+            f_home=L.t('На главную'), f_all=L.t('Все проекты'), srv_foot=L.srv_foot,
+            srvline=srv_of_case(L, slug))))
         n += 1
     print('project pages [%s]: %d' % (L.code, n))
 
@@ -932,9 +975,22 @@ en = en.replace('</head>', "<script>window.PD_LANG='en';</script>\n"
                            '<script src="data/i18n/en.js?v=%s"></script>\n</head>' % dic_ver, 1)
 # SEO-блок русской главной меняем на английский
 en = re.sub(r'<!--SEO-->.*?<!--/SEO-->', lambda m: home_block(EN), en, count=1, flags=re.S)
+# ссылка «Услуги» в меню: на английской копии ведёт в английский раздел.
+# У /en/index.html стоит <base href="/">, поэтому и относительный путь, и абсолютный
+# без префикса увели бы посетителя на русские страницы. Подписи переводит словарь
+# на клиенте, адрес словарь не трогает — его меняем здесь.
+_n_srv = en.count('href="/services/"')
+if _n_srv != 2:
+    raise SystemExit('в главной ожидались 2 ссылки на /services/ (шапка и мобильное меню), найдено %d' % _n_srv)
+en = en.replace('href="/services/"', 'href="/en/services/"')
 en = en.replace('name="Landing — Spatial Capture (RU)"', 'name="Landing — Spatial Capture (EN)"', 1)
 en = en.replace('PlayDisplay long-form landing (RU)', 'PlayDisplay long-form landing (EN)', 1)
 os.makedirs(os.path.join(SITE, 'en'), exist_ok=True)
 open(os.path.join(SITE, 'en/index.html'), 'w', encoding='utf-8').write(en)
 print('en/index.html: %.0f КБ, словарь %d строк' % (len(en) / 1024, len(EN.dic)))
 print('sitemap/robots/llms + home JSON-LD ready; noscript items:', len(ORDER))
+if MISSING:
+    print('ПРОПУЩЕНЫ КАРТИНКИ (файла нет на диске), %d шт.:' % len(MISSING))
+    for m in MISSING:
+        print('   ', m)
+

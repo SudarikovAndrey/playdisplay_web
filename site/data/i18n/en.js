@@ -391,5 +391,6 @@ window.PD_I18N = {
  "Проекты, где это сделано": "Projects where we have done this",
  "Другие направления": "Other directions",
  "Частые вопросы": "Frequently asked questions",
- "Забронировать креативную сессию →": "Book a 30-minute call →"
+ "Забронировать креативную сессию →": "Book a 30-minute call →",
+ "Направление:": "Part of:"
 };
