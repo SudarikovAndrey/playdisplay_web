@@ -81,6 +81,10 @@
   ol.steps, ol.notes { padding-left:1.3em; } ol li { margin:10px 0; }
   ul.stats { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:30px; }
   ul.stats b { font-size:34px; color:#2be0c6; display:block; }
+  /* Результат — итог страницы, отделён линией. Цифры янтарные, а не бирюзовые:
+     бирюза в кейсе означает «как мы это делали», янтарь — «что из этого вышло». */
+  section.result { margin-top:56px; padding-top:40px; border-top:1px solid #1d2b31; }
+  section.result ul.stats b { color:#ff6a3d; font-size:42px; }
   .cta { display:inline-block; margin-top:44px; padding:15px 26px; border:1px solid #2be0c6; color:#2be0c6; text-decoration:none; font-weight:600; }
   .crumbs { font:500 13px monospace; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin-bottom:40px; }
   .srvline { margin-top:44px; padding-top:22px; border-top:1px solid rgba(159,180,200,.22); color:#9fb4c8; font-size:16px; }
@@ -102,6 +106,7 @@
 <p>An interactive game, Paper Plane Flight. The visitor steps up to the booth, reaches out a hand — and a paper plane appears on the screen. Steering the flight with gestures, the player crosses the space of the terminal, collects bonuses and completes in-game tasks. The terminal is rendered in realistic graphics on Unreal Engine 5.</p>
 <h2>[3] Gelendzhik Airport</h2>
 <p>The interactive zone of Gelendzhik Airport. The visitor steps into a ring of light and sees the airport interiors from a range of angles on the screen ahead. Waving their arms, they drive the visual environment and watch the terminal’s living LED ceiling — an intricate color-lighting system — change in real time.</p>
+<section class="result"><h2>Outcome</h2><ul class="stats"><li><b>600,000</b> visitors to the exhibition</li><li><b>40,000</b> take-offs at virtual Yelizovo</li></ul><p>“Russia in Motion” was seen by more than 600,000 visitors. Three interactive installations introduced a vast audience to the airports of Yelizovo, Gelendzhik and Simferopol — their architecture, their development and their place in the country’s transport system.</p><p>Instead of being told about the airports, visitors engaged with them directly: building and launching aircraft, controlling the architectural lighting, exploring the space through game mechanics. From the virtual Yelizovo airport alone guests performed 40,000 take-offs. Infrastructure projects became a personal experience, and the airports gained live contact with an audience — including through a period when some of them were temporarily closed to passengers.</p></section>
     <p class="srvline">Part of: <a href="../../../en/services/interactive-exhibition/">Interactive exhibition</a> · <a href="../../../en/services/projection-mapping/">Mapping and models</a></p>
     <a class="cta" href="../../../en/#/work/airports">Open the interactive version →</a>
   </article>

@@ -344,6 +344,21 @@ def render_flow(L, p, slug):
         elif t in ('yt', 'vimeo'):
             url = ('https://www.youtube.com/watch?v=' + b['id']) if t == 'yt' else ('https://vimeo.com/' + b['id'])
             out.append('<p><a href="%s" rel="noopener">%s</a></p>' % (url, L.t('Смотреть видео проекта →')))
+    # РЕЗУЛЬТАТ — последним разделом страницы. Аудит 15.08.2026: блока результата не
+    # было ни в одном из 15 кейсов, а для продажи музея это главный отсутствующий
+    # текст. Он же самый цитируемый фрагмент: и поисковик, и языковая модель ищут
+    # «сколько людей прошло и что изменилось», а не описание процесса.
+    # Цифры печатаем списком ПЕРЕД прозой: числа находят выборкой, проза объясняет.
+    r = p.get('result') or {}
+    if r.get('text') or r.get('figures'):
+        sec = ['<section class="result"><h2>%s</h2>' % L.t('Результат')]
+        if r.get('figures'):
+            sec.append('<ul class="stats">' + ''.join(
+                '<li><b>%s</b> %s</li>' % (esc(i['n']), esc(i['label'])) for i in r['figures']) + '</ul>')
+        for para in (r.get('text') or []):
+            sec.append('<p>%s</p>' % esc(para))
+        sec.append('</section>')
+        out.append(''.join(sec))
     return '\n'.join(out)
 
 
@@ -422,6 +437,10 @@ PAGE = '''<!DOCTYPE html>
   ol.steps, ol.notes {{ padding-left:1.3em; }} ol li {{ margin:10px 0; }}
   ul.stats {{ list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:30px; }}
   ul.stats b {{ font-size:34px; color:#2be0c6; display:block; }}
+  /* Результат — итог страницы, отделён линией. Цифры янтарные, а не бирюзовые:
+     бирюза в кейсе означает «как мы это делали», янтарь — «что из этого вышло». */
+  section.result {{ margin-top:56px; padding-top:40px; border-top:1px solid #1d2b31; }}
+  section.result ul.stats b {{ color:#ff6a3d; font-size:42px; }}
   .cta {{ display:inline-block; margin-top:44px; padding:15px 26px; border:1px solid #2be0c6; color:#2be0c6; text-decoration:none; font-weight:600; }}
   .crumbs {{ font:500 13px monospace; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin-bottom:40px; }}
   .srvline {{ margin-top:44px; padding-top:22px; border-top:1px solid rgba(159,180,200,.22); color:#9fb4c8; font-size:16px; }}

@@ -1595,6 +1595,26 @@
   .v-panel { background: rgba(16,30,37,0.5); border: 1px solid rgba(159,180,200,0.13);
     padding: 36px 40px 40px; }
   .v-panel p { max-width: none; }
+  /* РЕЗУЛЬТАТ — итог кейса, а не ещё один абзац. Отделён сверху линией и
+     подсвечен слева бирюзовой чертой: глаз должен зацепиться за него, даже если
+     страницу пролистывают. Фон чуть светлее фона страницы — тот же приём, что у
+     .v-panel, но во всю ширину: результат не делится на колонки. */
+  .v-result { border-top: 1px solid var(--space-line); padding-top: 44px; }
+  .v-result .v-goal-k { color: var(--signal-amber); }
+  .v-result p { max-width: 68ch; }
+  .v-result p + p { margin-top: 18px; }
+  /* Цифры результата: рамка снизу, а не со всех сторон — они читаются как шапка
+     блока, а не как отдельная таблица. Цвет янтарный, под стать заголовку:
+     бирюза в кейсе означает «как мы это делали», янтарь — «что из этого вышло». */
+  .v-res-fig { border: none; border-bottom: 1px solid var(--space-line); margin-bottom: 30px; }
+  .v-res-fig .s { padding: 0 24px 26px 0; }
+  .v-res-fig .sv { color: var(--signal-amber); font-size: clamp(28px, 3.4vw, 52px); }
+  @media (max-width: 700px) {
+    /* на телефоне цифры встают в одну колонку: два крупных числа в ряд не влезают */
+    .v-res-fig { grid-template-columns: 1fr !important; }
+    .v-res-fig .s { border-right: none; padding-bottom: 18px; }
+    .v-result { padding-top: 32px; }
+  }
   /* дети плашек/этапов/аннотаций всплывают каскадом (задержки проставляет JS) */
   .v-panel, .v-steps .st, .v-notes .nt { opacity: 0; transform: translateY(20px);
     transition: opacity .65s ease, transform .65s ease; }
@@ -1885,7 +1905,7 @@
 <!-- Аналитика: GA4 + Яндекс.Метрика + события воронки. Один файл на все страницы. -->
 <script src="analytics.js?v=5473d1d7" defer></script>
 <script>window.PD_LANG='en';</script>
-<script src="data/i18n/en.js?v=a45a76c7"></script>
+<script src="data/i18n/en.js?v=3c1a96e1"></script>
 </head>
 <body class="booting">
 
@@ -4928,6 +4948,28 @@
         }).join('') + '</div></div>';
       }
     });
+    // РЕЗУЛЬТАТ — в самом конце, и это осознанно. Цель и решение стоят двумя
+    // панелями наверху: это рамка, её читают до работы. Результат — расплата, он
+    // весит только после того, как человек посмотрел, что именно сделано.
+    // Аудит 15.08.2026 показал, что блока результата не было ни в одном из 15
+    // кейсов: для продажи музея за десятки миллионов это главный отсутствующий
+    // текст — сколько людей прошло и что изменилось у заказчика.
+    // Цифры вынесены крупно ОТДЕЛЬНО от прозы: они сканируются взглядом, проза
+    // объясняет. Числа те же, что в тексте, — повтор здесь работает, а не мешает.
+    if (p.result && (p.result.text || p.result.figures)) {
+      var R = p.result, rh = '';
+      if (R.figures && R.figures.length) {
+        // Колонок столько, сколько цифр, но не больше четырёх: две цифры в жёсткой
+        // сетке repeat(4,1fr) прижались бы к левому краю и повисли.
+        var cols = Math.min(R.figures.length, 4);
+        rh += '<div class="v-stats v-res-fig" style="grid-template-columns:repeat(' + cols + ',1fr)">' +
+          R.figures.map(function(it){
+            return '<div class="s"><div class="sv">' + it.n + '</div><div class="sl">' + it.label + '</div></div>';
+          }).join('') + '</div>';
+      }
+      (R.text || []).forEach(function(t){ rh += '<p>' + t + '</p>'; });
+      html += '<div class="vb v-result"><div class="v-goal-k">' + T('Результат') + '</div>' + rh + '</div>';
+    }
     // сквозная навигация: следующий проект в конце каждой страницы
     var idx = CASES.indexOf(c);
     if (idx >= 0) {

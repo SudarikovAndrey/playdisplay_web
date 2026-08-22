@@ -98,6 +98,7 @@ window.PD_I18N = {
  "Примеры применения": "Examples",
  "смотреть": "watch",
  "Цель проекта": "The goal",
+ "Результат": "Outcome",
  "Решение": "The solution",
  "Заказчик": "Client",
  "Срок реализации": "Timeline",
