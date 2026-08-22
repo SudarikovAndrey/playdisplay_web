@@ -6,225 +6,643 @@
       "title": "Museum concept design",
       "nav": "Museum concept",
       "subtitle": "From “why does this museum exist” to an exhibition design ready to be built.",
-      "keywords": ["museum concept design", "exhibition concept", "museum design", "turnkey museum", "exhibition master plan", "museum narrative design"],
-      "cases": ["stalingrad", "vdnh-space", "vdnh-space-center", "proryv"],
+      "keywords": [
+        "museum concept design",
+        "exhibition concept",
+        "museum design",
+        "turnkey museum",
+        "exhibition master plan",
+        "museum narrative design"
+      ],
+      "cases": [
+        "stalingrad",
+        "vdnh-space",
+        "vdnh-space-center",
+        "proryv"
+      ],
       "flow": [
-        {"t": "p", "text": "A museum does not begin with display cases or equipment. It begins with an answer to why it exists and what a person carries out of the door with them. Until that answer exists, every decision — about light, route, screen, vitrine — is made blind, and the argument about it can run forever."},
-        {"t": "p", "text": "A concept is the document that ends the argument. It states what the visitor should feel, how they move, what they do with their hands, where they stop and why. Everything else — layout, technology, budget — follows from it."},
-        {"t": "h", "text": "What the concept contains"},
-        {"t": "steps", "items": [
-          "The core idea: why the museum is needed, for whom, and what it changes in a person.",
-          "Visitor portraits: a schoolchild, a family, a specialist, a foreign guest — each with their own route and their own depth.",
-          "Route scenario: the sequence of halls and meaning points, and the rhythm — where the tension is, where the pause, where the discovery.",
-          "Exhibition inventory: every exhibit and interactive object described by what it does and why it stands exactly there.",
-          "Spatial decisions: layouts, zoning, sketches of key objects, material and lighting references.",
-          "The technical part: which technologies are needed, which are not, how it is serviced and what to do when it breaks.",
-          "Phasing and budget ranges — so the concept can be defended, not only presented."
-        ]},
-        {"t": "h", "text": "The five seconds and five minutes rule"},
-        {"t": "p", "text": "Every object in the exhibition reads in five seconds and opens up over five minutes. In five seconds a child understands what to do — with no instructions on a label. In five minutes a specialist finds the depth they came for. One object works for every visitor at once, and we hold that constraint on each exhibit: if it can only be understood after reading the rules, the exhibit gets redesigned."},
-        {"t": "h", "text": "How the work goes"},
-        {"t": "steps", "items": [
-          "Immersion. We read what already exists: the scholarly concept, the collection, research, earlier projects. We talk to curators and researchers — they hold material that is in no document.",
-          "The meaning frame. We put into words what a person should feel. It is the shortest part of the document and the most expensive in consequences: everything else is derived from it.",
-          "Scenario and route. We lay the meanings out across the halls and check the rhythm — and what happens to a person in the fortieth minute, when attention is already spent.",
-          "Exhibition decisions. Every object gets a description: what the visitor does, what they see, what they take away.",
-          "Defence. We assemble the document so it can be shown to a board, a ministry or an investor and produce a decision rather than another round of discussion."
-        ]},
-        {"t": "h", "text": "What we work with"},
-        {"t": "p", "text": "National museums, corporate and institutional museums, heritage sites, visitor centres at industrial facilities, science centres. A separate story is exhibitions about difficult subjects: technology, production, science, history that cannot be reduced to a slogan. The best way to explain something complex is to let people play with it, and we do that without losing accuracy: content is agreed with academic advisers rather than retold freely."},
-        {"t": "h", "text": "What drives cost and schedule"},
-        {"t": "notes", "items": [
-          "Floor area and the number of meaning zones — a concept for one hall and for a twenty-hall museum differ in kind, not in proportion.",
-          "The state of the source material: with a scholarly concept and a catalogued collection the work moves faster; without them, collecting comes first.",
-          "How many parties have to approve. One client and an interdepartmental board mean different schedules for the same amount of work.",
-          "Whether you need a concept for defence, or design documentation ready for construction."
-        ]},
-        {"t": "p", "text": "Honestly about time: our museum projects have taken six months and more end to end. The concept is the first part of that. The conversation makes sense a year before opening, not three months before."}
+        {
+          "t": "p",
+          "text": "A museum does not begin with display cases or equipment. It begins with an answer to why it exists and what a person carries out of the door with them. Until that answer exists, every decision — about light, route, screen, vitrine — is made blind, and the argument about it can run forever."
+        },
+        {
+          "t": "p",
+          "text": "A concept is the document that ends the argument. It states what the visitor should feel, how they move, what they do with their hands, where they stop and why. Everything else — layout, technology, budget — follows from it."
+        },
+        {
+          "t": "h",
+          "text": "What the concept contains"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "The core idea: why the museum is needed, for whom, and what it changes in a person.",
+            "Visitor portraits: a schoolchild, a family, a specialist, a foreign guest — each with their own route and their own depth.",
+            "Route scenario: the sequence of halls and meaning points, and the rhythm — where the tension is, where the pause, where the discovery.",
+            "Exhibition inventory: every exhibit and interactive object described by what it does and why it stands exactly there.",
+            "Spatial decisions: layouts, zoning, sketches of key objects, material and lighting references.",
+            "The technical part: which technologies are needed, which are not, how it is serviced and what to do when it breaks.",
+            "Phasing and budget ranges — so the concept can be defended, not only presented."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "The five seconds and five minutes rule"
+        },
+        {
+          "t": "p",
+          "text": "Every object in the exhibition reads in five seconds and opens up over five minutes. In five seconds a child understands what to do — with no instructions on a label. In five minutes a specialist finds the depth they came for. One object works for every visitor at once, and we hold that constraint on each exhibit: if it can only be understood after reading the rules, the exhibit gets redesigned."
+        },
+        {
+          "t": "h",
+          "text": "How the work goes"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "Immersion. We read what already exists: the scholarly concept, the collection, research, earlier projects. We talk to curators and researchers — they hold material that is in no document.",
+            "The meaning frame. We put into words what a person should feel. It is the shortest part of the document and the most expensive in consequences: everything else is derived from it.",
+            "Scenario and route. We lay the meanings out across the halls and check the rhythm — and what happens to a person in the fortieth minute, when attention is already spent.",
+            "Exhibition decisions. Every object gets a description: what the visitor does, what they see, what they take away.",
+            "Defence. We assemble the document so it can be shown to a board, a ministry or an investor and produce a decision rather than another round of discussion."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "What we work with"
+        },
+        {
+          "t": "p",
+          "text": "National museums, corporate and institutional museums, heritage sites, visitor centres at industrial facilities, science centres. A separate story is exhibitions about difficult subjects: technology, production, science, history that cannot be reduced to a slogan. The best way to explain something complex is to let people play with it, and we do that without losing accuracy: content is agreed with academic advisers rather than retold freely."
+        },
+        {
+          "t": "h",
+          "text": "What drives cost and schedule"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Floor area and the number of meaning zones — a concept for one hall and for a twenty-hall museum differ in kind, not in proportion.",
+            "The state of the source material: with a scholarly concept and a catalogued collection the work moves faster; without them, collecting comes first.",
+            "How many parties have to approve. One client and an interdepartmental board mean different schedules for the same amount of work.",
+            "Whether you need a concept for defence, or design documentation ready for construction."
+          ]
+        },
+        {
+          "t": "p",
+          "text": "Honestly about time: our museum projects have taken six months and more end to end. The concept is the first part of that. The conversation makes sense a year before opening, not three months before."
+        }
       ],
       "faq": [
-        {"q": "How is a concept different from a design project?", "a": "A concept answers what and why; a design project answers how to build it. The concept defines what the visitor does and feels; the design project turns that into drawings, specifications and costings. A design project without a concept is a handsome room with nothing to do in it."},
-        {"q": "Can we order only the concept, without delivery?", "a": "Yes, and it is a common arrangement. The concept is a standalone document: you can defend it, seek funding with it and run a tender for delivery. We work both this way and full cycle through to opening."},
-        {"q": "Do you work with an existing museum?", "a": "Yes. Renewing an exhibition is a distinct kind of task: the building, the collection, the established route and a visitor who is used to it are all already there. The work is less about building something new and more about finding what stops the existing thing from working."},
-        {"q": "Who writes the scholarly content?", "a": "The scholarly content stays with the museum and its specialists — they know the material. Our part is turning that content into an experience: scenario, route, objects, interaction. Accuracy is verified by the client’s academic advisers."}
+        {
+          "q": "How is a concept different from a design project?",
+          "a": "A concept answers what and why; a design project answers how to build it. The concept defines what the visitor does and feels; the design project turns that into drawings, specifications and costings. A design project without a concept is a handsome room with nothing to do in it."
+        },
+        {
+          "q": "Can we order only the concept, without delivery?",
+          "a": "Yes, and it is a common arrangement. The concept is a standalone document: you can defend it, seek funding with it and run a tender for delivery. We work both this way and full cycle through to opening."
+        },
+        {
+          "q": "Do you work with an existing museum?",
+          "a": "Yes. Renewing an exhibition is a distinct kind of task: the building, the collection, the established route and a visitor who is used to it are all already there. The work is less about building something new and more about finding what stops the existing thing from working."
+        },
+        {
+          "q": "Who writes the scholarly content?",
+          "a": "The scholarly content stays with the museum and its specialists — they know the material. Our part is turning that content into an experience: scenario, route, objects, interaction. Accuracy is verified by the client’s academic advisers."
+        }
       ]
     },
-
     {
       "slug": "interactive-exhibition",
       "title": "Interactive exhibition design",
       "nav": "Interactive exhibition",
       "subtitle": "An exhibition the visitor does not read but explores.",
-      "keywords": ["interactive exhibition design", "interactive exhibits", "multimedia exhibition", "visitor centre", "science centre exhibits", "interactive museum"],
-      "cases": ["vdnh-space", "industry-rf", "airports", "proryv"],
+      "keywords": [
+        "interactive exhibition design",
+        "interactive exhibits",
+        "multimedia exhibition",
+        "visitor centre",
+        "science centre exhibits",
+        "interactive museum"
+      ],
+      "cases": [
+        "vdnh-space",
+        "industry-rf",
+        "airports",
+        "proryv"
+      ],
       "flow": [
-        {"t": "p", "text": "A visitor does not read an exhibition — they explore it. The difference shows in behaviour: at a text panel a person stands for four seconds and walks on; at an object that answers an action, for minutes. Interactivity is not there to look contemporary. It is there where the content is more complex than a paragraph on a wall can carry."},
-        {"t": "h", "text": "When interactivity is justified"},
-        {"t": "steps", "items": [
-          "The content cannot be shown — a process, a working principle, a scale, something that happens inside and is invisible in reality.",
-          "The audience is mixed. One object has to work for a schoolchild and for a domain specialist; a static case cannot do that, an interactive object can, through depth.",
-          "There is more material than the walls will hold. Interactivity compresses: one object can carry what would otherwise need a whole hall.",
-          "You need the person to do something. Understanding through action lasts longer than understanding through reading."
-        ]},
-        {"t": "p", "text": "And the reverse: where the content is an authentic object and the story around it, interactivity next to it usually gets in the way. We drop it in those places, and that is part of the job too."},
-        {"t": "h", "text": "Formats we build"},
-        {"t": "notes", "items": [
-          "Interactive scale models of territories and objects — with projection, zone highlighting and information layers on top of physical form.",
-          "Multimedia installations: large screens, multitouch surfaces, objects that respond to approach and gesture.",
-          "Playable exhibitions — a single system in which the visitor walks a scenario rather than a set of stands.",
-          "Holographic showcases and volumetric exhibits for equipment that cannot be brought in.",
-          "Augmented and virtual reality, where you need to be inside a space you cannot enter.",
-          "Mechanism exhibits: physical action with your hands, not a tap on a screen."
-        ]},
-        {"t": "h", "text": "How it works inside"},
-        {"t": "p", "text": "One rule: reads in five seconds, opens up over five minutes. In five seconds a person understands what to do, with no instructions. In five minutes they find depth, if they stayed. Rules without manuals, discoveries the visitor makes themselves, and enough content in reserve for whoever wants to go further."},
-        {"t": "p", "text": "The second rule is about operation. An exhibition lives for years, and it is maintained not by its developer but by the person who looks after the hall. So objects are designed to restart with one button, to survive rough handling, and to expect that one day the network drops or a projector dies. An exhibit that only works in ideal conditions does not work in a museum at all."},
-        {"t": "h", "text": "How the work goes"},
-        {"t": "steps", "items": [
-          "Interaction scenario: what the visitor does, what happens in response, how it ends.",
-          "Prototype. We test the mechanic on people before any equipment is ordered. A cheap prototype now saves an expensive rebuild later.",
-          "Production: design, 3D, development, assembly, content.",
-          "Installation and commissioning on site — light, sound, projection calibration, a maintenance routine.",
-          "Support after opening: the first weeks show what no prototype does."
-        ]},
-        {"t": "h", "text": "Scale"},
-        {"t": "stats", "items": [
-          {"n": "115", "label": "exhibits in a single exhibition — Cosmonautics and Aviation Centre, VDNH"},
-          {"n": "2011", "label": "studio founded; we work worldwide"},
-          {"n": "3 wks", "label": "our fastest turnkey interactive project"}
-        ]}
+        {
+          "t": "p",
+          "text": "A visitor does not read an exhibition — they explore it. The difference shows in behaviour: at a text panel a person stands for four seconds and walks on; at an object that answers an action, for minutes. Interactivity is not there to look contemporary. It is there where the content is more complex than a paragraph on a wall can carry."
+        },
+        {
+          "t": "h",
+          "text": "When interactivity is justified"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "The content cannot be shown — a process, a working principle, a scale, something that happens inside and is invisible in reality.",
+            "The audience is mixed. One object has to work for a schoolchild and for a domain specialist; a static case cannot do that, an interactive object can, through depth.",
+            "There is more material than the walls will hold. Interactivity compresses: one object can carry what would otherwise need a whole hall.",
+            "You need the person to do something. Understanding through action lasts longer than understanding through reading."
+          ]
+        },
+        {
+          "t": "p",
+          "text": "And the reverse: where the content is an authentic object and the story around it, interactivity next to it usually gets in the way. We drop it in those places, and that is part of the job too."
+        },
+        {
+          "t": "h",
+          "text": "Formats we build"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Interactive scale models of territories and objects — with projection, zone highlighting and information layers on top of physical form.",
+            "Multimedia installations: large screens, multitouch surfaces, objects that respond to approach and gesture.",
+            "Playable exhibitions — a single system in which the visitor walks a scenario rather than a set of stands.",
+            "Holographic showcases and volumetric exhibits for equipment that cannot be brought in.",
+            "Augmented and virtual reality, where you need to be inside a space you cannot enter.",
+            "Mechanism exhibits: physical action with your hands, not a tap on a screen."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "How it works inside"
+        },
+        {
+          "t": "p",
+          "text": "One rule: reads in five seconds, opens up over five minutes. In five seconds a person understands what to do, with no instructions. In five minutes they find depth, if they stayed. Rules without manuals, discoveries the visitor makes themselves, and enough content in reserve for whoever wants to go further."
+        },
+        {
+          "t": "p",
+          "text": "The second rule is about operation. An exhibition lives for years, and it is maintained not by its developer but by the person who looks after the hall. So objects are designed to restart with one button, to survive rough handling, and to expect that one day the network drops or a projector dies. An exhibit that only works in ideal conditions does not work in a museum at all."
+        },
+        {
+          "t": "h",
+          "text": "How the work goes"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "Interaction scenario: what the visitor does, what happens in response, how it ends.",
+            "Prototype. We test the mechanic on people before any equipment is ordered. A cheap prototype now saves an expensive rebuild later.",
+            "Production: design, 3D, development, assembly, content.",
+            "Installation and commissioning on site — light, sound, projection calibration, a maintenance routine.",
+            "Support after opening: the first weeks show what no prototype does."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "Scale"
+        },
+        {
+          "t": "stats",
+          "items": [
+            {
+              "n": "115",
+              "label": "exhibits in a single exhibition — Cosmonautics and Aviation Centre, VDNH"
+            },
+            {
+              "n": "2011",
+              "label": "studio founded; we work worldwide"
+            },
+            {
+              "n": "3 wks",
+              "label": "our fastest turnkey interactive project"
+            }
+          ]
+        }
       ],
       "faq": [
-        {"q": "How long does an interactive exhibit last?", "a": "The mechanical and enclosure parts last years with routine servicing. The vulnerable items are projectors (lamps and filters) and touch surfaces in places of heavy contact. We build consumable replacement into the maintenance routine and choose equipment that will still be purchasable in five years."},
-        {"q": "What happens when an exhibit fails on a weekend?", "a": "Nothing, if it was planned for. Objects are designed to restart automatically and to look safe when idle — a guest should never see a desktop. The hall attendant gets a one-page instruction."},
-        {"q": "Do we need dedicated staff to run it?", "a": "For a typical exhibition, no: daily operation comes down to switching on and off. For large systems with many objects it is worth training one member of museum staff, and we run that training."},
-        {"q": "Can interactivity be added to an existing exhibition?", "a": "Yes. It is often better value than rebuilding the hall: one strong object in the right place changes the whole route. We start by watching how people actually move now."}
+        {
+          "q": "How long does an interactive exhibit last?",
+          "a": "The mechanical and enclosure parts last years with routine servicing. The vulnerable items are projectors (lamps and filters) and touch surfaces in places of heavy contact. We build consumable replacement into the maintenance routine and choose equipment that will still be purchasable in five years."
+        },
+        {
+          "q": "What happens when an exhibit fails on a weekend?",
+          "a": "Nothing, if it was planned for. Objects are designed to restart automatically and to look safe when idle — a guest should never see a desktop. The hall attendant gets a one-page instruction."
+        },
+        {
+          "q": "Do we need dedicated staff to run it?",
+          "a": "For a typical exhibition, no: daily operation comes down to switching on and off. For large systems with many objects it is worth training one member of museum staff, and we run that training."
+        },
+        {
+          "q": "Can interactivity be added to an existing exhibition?",
+          "a": "Yes. It is often better value than rebuilding the hall: one strong object in the right place changes the whole route. We start by watching how people actually move now."
+        }
       ]
     },
-
     {
       "slug": "exhibition-stand",
       "title": "Interactive exhibition stand",
       "nav": "Exhibition stand",
       "subtitle": "A stand people stop at — and stay at long enough for someone to talk to them.",
-      "keywords": ["interactive exhibition stand", "turnkey trade show stand", "trade fair stand design", "multimedia booth", "interactive booth", "trade show exhibit"],
-      "cases": ["mig2019", "odk-oak", "rostec", "sinara", "ptk-group", "urban-forum-2018"],
+      "keywords": [
+        "interactive exhibition stand",
+        "turnkey trade show stand",
+        "trade fair stand design",
+        "multimedia booth",
+        "interactive booth",
+        "trade show exhibit"
+      ],
+      "cases": [
+        "mig2019",
+        "odk-oak",
+        "rostec",
+        "sinara",
+        "ptk-group",
+        "urban-forum-2018"
+      ],
       "flow": [
-        {"t": "p", "text": "At a trade fair you have three seconds while someone walks past. After that they have either stopped or not, and there will be no second chance that day. The job of a stand is not to look expensive. The job is to give a passer-by a reason to come over and a reason to stay long enough for your team to reach them."},
-        {"t": "p", "text": "A queue at the installation is the best metric a stand has. It is visible from the far end of the hall and works better than any signage."},
-        {"t": "h", "text": "What we build on stands"},
-        {"t": "notes", "items": [
-          "A centrepiece exhibit — the object everything else gathers around. Usually it is what makes the stand memorable.",
-          "Interactive product demonstration: a complex machine can be taken apart, turned, looked into — something no model or video will give you.",
-          "Demonstration tools for the sales team: not a slide deck, but a script for a conversation with a client.",
-          "Holographic showcases and volumetric displays for equipment that physically cannot be shipped to the hall.",
-          "Interactive scale models of territories, plants and logistics.",
-          "Game mechanics — short, ninety seconds, with a clear result and a reason to start talking."
-        ]},
-        {"t": "h", "text": "A complex product is sold by whoever lets you touch it"},
-        {"t": "p", "text": "This is about industry, aviation, energy, rolling stock — anything where the product will not fit on a table. An exhibit that lets someone look inside an engine or assemble a train does half the sales conversation: the visitor asks the next question themselves, and that is a different conversation from “take a brochure”."},
-        {"t": "h", "text": "Schedule — the thing that decides everything at a fair"},
-        {"t": "p", "text": "An opening date does not move. Our fastest turnkey interactive stand took three weeks, and it was not a one-off — three weeks from brief to a working exhibit in the hall has happened more than once. But that schedule means hard limits on scope: not everything imagined can be built in three weeks, and we say so before signing rather than after."},
-        {"t": "steps", "items": [
-          "Week one — scenario, mechanic, equipment specification, and ordering whatever has a long lead time.",
-          "Week two — fabrication, development, content. In parallel, not in sequence.",
-          "Week three — assembly, a full run-through, installation on site, tuning in place.",
-          "Show days — being present on day one is not optional: a fair hall always behaves differently from a workshop."
-        ]},
-        {"t": "h", "text": "What happens to the stand after the show"},
-        {"t": "p", "text": "Usually nothing, and that is money thrown away. An exhibit designed for a second life travels to the next fair, moves into a sales office or into a corporate museum. It is decided at the engineering stage: demountability, transport cases, independence from one particular room. Slightly more expensive up front and noticeably cheaper per showing."},
-        {"t": "h", "text": "Who we have worked with"},
-        {"t": "p", "text": "Rostec, United Engine Corporation, RSK MiG, Sinara Transport Machines, PTK Group, the Moscow City Government, BMW. Fairs: MAKS International Aviation and Space Salon, Rostec Expo, Moscow Urban Forum, Russia Expo."}
+        {
+          "t": "p",
+          "text": "At a trade fair you have three seconds while someone walks past. After that they have either stopped or not, and there will be no second chance that day. The job of a stand is not to look expensive. The job is to give a passer-by a reason to come over and a reason to stay long enough for your team to reach them."
+        },
+        {
+          "t": "p",
+          "text": "A queue at the installation is the best metric a stand has. It is visible from the far end of the hall and works better than any signage."
+        },
+        {
+          "t": "h",
+          "text": "What we build on stands"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "A centrepiece exhibit — the object everything else gathers around. Usually it is what makes the stand memorable.",
+            "Interactive product demonstration: a complex machine can be taken apart, turned, looked into — something no model or video will give you.",
+            "Demonstration tools for the sales team: not a slide deck, but a script for a conversation with a client.",
+            "Holographic showcases and volumetric displays for equipment that physically cannot be shipped to the hall.",
+            "Interactive scale models of territories, plants and logistics.",
+            "Game mechanics — short, ninety seconds, with a clear result and a reason to start talking."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "A complex product is sold by whoever lets you touch it"
+        },
+        {
+          "t": "p",
+          "text": "This is about industry, aviation, energy, rolling stock — anything where the product will not fit on a table. An exhibit that lets someone look inside an engine or assemble a train does half the sales conversation: the visitor asks the next question themselves, and that is a different conversation from “take a brochure”."
+        },
+        {
+          "t": "h",
+          "text": "Schedule — the thing that decides everything at a fair"
+        },
+        {
+          "t": "p",
+          "text": "An opening date does not move. Our fastest turnkey interactive stand took three weeks, and it was not a one-off — three weeks from brief to a working exhibit in the hall has happened more than once. But that schedule means hard limits on scope: not everything imagined can be built in three weeks, and we say so before signing rather than after."
+        },
+        {
+          "t": "steps",
+          "items": [
+            "Week one — scenario, mechanic, equipment specification, and ordering whatever has a long lead time.",
+            "Week two — fabrication, development, content. In parallel, not in sequence.",
+            "Week three — assembly, a full run-through, installation on site, tuning in place.",
+            "Show days — being present on day one is not optional: a fair hall always behaves differently from a workshop."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "What happens to the stand after the show"
+        },
+        {
+          "t": "p",
+          "text": "Usually nothing, and that is money thrown away. An exhibit designed for a second life travels to the next fair, moves into a sales office or into a corporate museum. It is decided at the engineering stage: demountability, transport cases, independence from one particular room. Slightly more expensive up front and noticeably cheaper per showing."
+        },
+        {
+          "t": "h",
+          "text": "Who we have worked with"
+        },
+        {
+          "t": "p",
+          "text": "Rostec, United Engine Corporation, RSK MiG, Sinara Transport Machines, PTK Group, the Moscow City Government, BMW. Fairs: MAKS International Aviation and Space Salon, Rostec Expo, Moscow Urban Forum, Russia Expo."
+        }
       ],
       "faq": [
-        {"q": "What is the minimum lead time for an interactive stand?", "a": "Three weeks is our real turnkey minimum, proven on several projects. It is possible when decisions are made quickly and the scope stays tight: one strong exhibit instead of five average ones."},
-        {"q": "Do you build the stand itself or only the interactive part?", "a": "Both ways. Often the structure is built by an exhibition contractor while we make the exhibits and the content — then it matters that we align at the layout stage, because an interactive object needs space, light, power and a viewing distance."},
-        {"q": "What if equipment does not arrive in time?", "a": "That is why equipment is ordered in week one and the scenario is written around what is actually available. We do not design a mechanic around a single instrument with a three-month lead time — that is experience, not caution."},
-        {"q": "Can an exhibit be reused at another fair?", "a": "Yes, if the engineering allows for it: demountability, cases, independence from a particular layout. Say so at the start — converting a finished exhibit for travel costs more than building it that way."}
+        {
+          "q": "What is the minimum lead time for an interactive stand?",
+          "a": "Three weeks is our real turnkey minimum, proven on several projects. It is possible when decisions are made quickly and the scope stays tight: one strong exhibit instead of five average ones."
+        },
+        {
+          "q": "Do you build the stand itself or only the interactive part?",
+          "a": "Both ways. Often the structure is built by an exhibition contractor while we make the exhibits and the content — then it matters that we align at the layout stage, because an interactive object needs space, light, power and a viewing distance."
+        },
+        {
+          "q": "What if equipment does not arrive in time?",
+          "a": "That is why equipment is ordered in week one and the scenario is written around what is actually available. We do not design a mechanic around a single instrument with a three-month lead time — that is experience, not caution."
+        },
+        {
+          "q": "Can an exhibit be reused at another fair?",
+          "a": "Yes, if the engineering allows for it: demountability, cases, independence from a particular layout. Say so at the start — converting a finished exhibit for travel costs more than building it that way."
+        }
       ]
     },
-
+    {
+      "slug": "holographic-showcase",
+      "title": "Holographic showcases and volumetric displays",
+      "nav": "Holographic showcases",
+      "subtitle": "An object that looks impossible — and therefore stops the crowd.",
+      "keywords": [
+        "holographic showcase",
+        "holographic cube",
+        "holocube",
+        "volumetric display",
+        "hologram for exhibition",
+        "transparent display",
+        "holographic installation",
+        "3D showcase"
+      ],
+      "cases": [
+        "rostec",
+        "sinara"
+      ],
+      "flow": [
+        {
+          "t": "p",
+          "text": "There is one device that works in a noisy exhibition hall better than any other: an object that looks impossible. An image hangs in the air, the hall is visible behind it, you can walk around it — and a person stops before understanding what they are looking at. This is not about technology, it is about the physics of attention: the eye catches on whatever ordinary experience cannot explain."
+        },
+        {
+          "t": "p",
+          "text": "Then the work begins. Stopping someone is half of it; the other half is that in those seconds they grasp the subject and want to stay."
+        },
+        {
+          "t": "h",
+          "text": "What we mean by it"
+        },
+        {
+          "t": "p",
+          "text": "In everyday speech “hologram” means almost anything, so let us be precise. True holography is an interference recording, and in exhibition work it is almost never used. Other solutions do the job, and each gives a different effect:"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "A transparent display or showcase: an image over a real object or the space behind the glass. The object stays real while data, cutaways and animation are laid over it.",
+            "A volumetric cube with the image on several planes: the object reads as three-dimensional from any side, and a group gathers around it.",
+            "A pseudo-holographic pyramid or “floating” image: cheaper, more compact, striking on a small object — and noticeably weaker on a large one.",
+            "Fan and LED volumetric displays: very bright, they hold up in ambient light, and they are limited in resolution and subject matter.",
+            "Augmented reality over a showcase: the image appears on the guest’s own screen and the object is untouched — the only route when the exhibit cannot be handled."
+          ]
+        },
+        {
+          "t": "p",
+          "text": "The choice is decided not by how impressive it looks but by three things: viewing distance, the lighting in the room, and how many people must see the object at once."
+        },
+        {
+          "t": "h",
+          "text": "A holographic catalogue: one object instead of a stand"
+        },
+        {
+          "t": "p",
+          "text": "The most practical task in this genre is showing what is physically not in the room. A corporation has hundreds of products across dozens of plants; you cannot ship them, and a slide carousel does not work. A volumetric showcase with a console turns this into a catalogue you can page through together with a guest: the product rotates, comes apart, shows its insides. For Rostec Expo we built such an object in the shape of the group’s logo — a transparent screen kept the view of the hall while the console opened access to the products of every enterprise."
+        },
+        {
+          "t": "p",
+          "text": "This solution has a property that is not obvious at first: it outlives the exhibition. Rostec’s holographic cube still works years after launch — the content changes while the system itself has become part of the pavilion’s infrastructure. One object keeps working for different companies, products and scenarios."
+        },
+        {
+          "t": "h",
+          "text": "Where a hologram loses — and we say so before the quote"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "A bright room. Almost all volumetric solutions rely on glowing in the dark; in direct sunlight nothing of the effect survives. Controlled light around the object is essential.",
+            "A large group. Many schemes have a narrow angle within which the illusion holds. If the object must work for a delegation of twenty, a different scheme is chosen — and it costs more.",
+            "Small text. Volumetric displays resolve less than an ordinary screen: figures and captions go on a companion screen, not into the volume.",
+            "An authentic object nearby. If the heart of the exhibition is the artefact itself, a glowing showcase beside it competes for attention and usually does harm."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "How the work goes"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "We take the task apart: what is shown, to whom, from what distance and in what light. The scheme is chosen here, not from reference pictures.",
+            "Concept and design of the object: a form that belongs in the space. For Rostec it was the group’s logo — the object is recognisable before it is switched on.",
+            "Engineering, specification and procurement. The longest stage by schedule: some components take months, and the scenario is written around what is actually available.",
+            "Structure and control console: whoever runs the presentation needs an instrument, not a TV remote.",
+            "Software, commissioning, staff training and a maintenance routine."
+          ]
+        },
+        {
+          "t": "p",
+          "text": "Our project of this class took six months from brief to launch. That is an honest benchmark for an object built once and working for years."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Is it a real hologram?",
+          "a": "No, and almost nothing at trade fairs is. True holography is an interference recording and is practically never used in exhibition work. What works are transparent displays, volumetric cubes, pseudo-holographic schemes and volumetric displays. We call things by their names and pick the scheme for the room, not for the word."
+        },
+        {
+          "q": "Does it need darkness?",
+          "a": "It needs controlled light around the object and no direct glare. A fully blacked-out hall is not required, but no amount of brightness saves an object placed under a shop window. Lighting is calculated before equipment is ordered."
+        },
+        {
+          "q": "How many people can watch at once?",
+          "a": "It depends on the scheme: for some the illusion holds only within a narrow angle, while a volumetric cube reads from any side. Tell us at the start whether the object serves one guest at a console or a delegation — the choice and the price change substantially."
+        },
+        {
+          "q": "Can the content be changed later?",
+          "a": "Yes, and that is the main reason to build such an object. Rostec’s holographic cube has been working for years: the content changes, the system stays. Separating content from structure is decided at the design stage."
+        }
+      ]
+    },
     {
       "slug": "projection-mapping",
       "title": "Projection mapping and interactive scale models",
       "nav": "Mapping and models",
       "subtitle": "Physical form with information laid over it: a territory, a plant, an object.",
-      "keywords": ["projection mapping", "interactive scale model", "projection mapped model", "video mapping", "territory model", "3D mapping on model", "masterplan model"],
-      "cases": ["coalco", "industry-rf", "airports", "urban-forum-2018"],
+      "keywords": [
+        "projection mapping",
+        "interactive scale model",
+        "projection mapped model",
+        "video mapping",
+        "territory model",
+        "3D mapping on model",
+        "masterplan model"
+      ],
+      "cases": [
+        "coalco",
+        "industry-rf",
+        "airports",
+        "urban-forum-2018"
+      ],
       "flow": [
-        {"t": "p", "text": "Logistics you can see instead of reading about it in a brochure. There is a class of problems where explaining in words always loses: the scale of a territory, how a plant is laid out, the sequence of a construction programme, the flows inside a hub. A slide simplifies it beyond recognition, and an honest diagram becomes unreadable. A physical model with projection solves exactly this: the form gives the scale, the projection gives the layers of meaning on top."},
-        {"t": "h", "text": "What an interactive model is"},
-        {"t": "p", "text": "A relief or an object built to scale, with an image projected onto it registered precisely to the geometry. The projection does not “show a picture” — it highlights zones, traces routes, switches layers: construction phases, transport, utilities, time of day, a ten-year development scenario. The visitor switches layers themselves, and in that moment the territory becomes legible."},
-        {"t": "h", "text": "Where it works"},
-        {"t": "notes", "items": [
-          "Development territories, industrial sites, logistics hubs, ports — anywhere the decision turns on scale.",
-          "Cities and urban planning: what changes, where and in what order.",
-          "Plants and process chains: how a process works when you cannot see all of it at once.",
-          "Large facilities — airports, stations, stadiums: architecture and the flow of people inside.",
-          "Object mapping: projection onto a product, a façade or an architectural form, when the whole object comes alive."
-        ]},
-        {"t": "h", "text": "What is decided at the design stage"},
-        {"t": "p", "text": "Mapping is a discipline where almost everything is settled before the projector is switched on. Model geometry and optics are calculated together: distance and angle decide whether there will be shadows in the recesses and whether there is enough brightness on the light surfaces. Room lighting is half the result — a model placed under a shop window will not be saved by any hardware. So we ask for the room plan and section before we discuss content."},
-        {"t": "steps", "items": [
-          "Geometry: what is actually modelled in three dimensions and what stays flat. Not everything is worth building as relief.",
-          "Projection calculation: how many projectors, mounting positions, overlaps, brightness headroom for the real ambient light.",
-          "Content layers: which stories live on the model and how you move between them.",
-          "Control: an operator console, buttons at the model, a tablet, presence sensors or voice — chosen for whoever will actually use it.",
-          "On-site calibration. Registering projection to form happens only on location, and it is a stage of its own, not the last half hour of installation."
-        ]},
-        {"t": "h", "text": "On reliability"},
-        {"t": "p", "text": "Projection drifts from vibration, from a lamp change, from the model being nudged during cleaning. We fix the geometry, keep calibration profiles and leave a restoration instruction on site — so realigning does not require flying in the developer."}
+        {
+          "t": "p",
+          "text": "Logistics you can see instead of reading about it in a brochure. There is a class of problems where explaining in words always loses: the scale of a territory, how a plant is laid out, the sequence of a construction programme, the flows inside a hub. A slide simplifies it beyond recognition, and an honest diagram becomes unreadable. A physical model with projection solves exactly this: the form gives the scale, the projection gives the layers of meaning on top."
+        },
+        {
+          "t": "h",
+          "text": "What an interactive model is"
+        },
+        {
+          "t": "p",
+          "text": "A relief or an object built to scale, with an image projected onto it registered precisely to the geometry. The projection does not “show a picture” — it highlights zones, traces routes, switches layers: construction phases, transport, utilities, time of day, a ten-year development scenario. The visitor switches layers themselves, and in that moment the territory becomes legible."
+        },
+        {
+          "t": "h",
+          "text": "Where it works"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Development territories, industrial sites, logistics hubs, ports — anywhere the decision turns on scale.",
+            "Cities and urban planning: what changes, where and in what order.",
+            "Plants and process chains: how a process works when you cannot see all of it at once.",
+            "Large facilities — airports, stations, stadiums: architecture and the flow of people inside.",
+            "Object mapping: projection onto a product, a façade or an architectural form, when the whole object comes alive."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "What is decided at the design stage"
+        },
+        {
+          "t": "p",
+          "text": "Mapping is a discipline where almost everything is settled before the projector is switched on. Model geometry and optics are calculated together: distance and angle decide whether there will be shadows in the recesses and whether there is enough brightness on the light surfaces. Room lighting is half the result — a model placed under a shop window will not be saved by any hardware. So we ask for the room plan and section before we discuss content."
+        },
+        {
+          "t": "steps",
+          "items": [
+            "Geometry: what is actually modelled in three dimensions and what stays flat. Not everything is worth building as relief.",
+            "Projection calculation: how many projectors, mounting positions, overlaps, brightness headroom for the real ambient light.",
+            "Content layers: which stories live on the model and how you move between them.",
+            "Control: an operator console, buttons at the model, a tablet, presence sensors or voice — chosen for whoever will actually use it.",
+            "On-site calibration. Registering projection to form happens only on location, and it is a stage of its own, not the last half hour of installation."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "On reliability"
+        },
+        {
+          "t": "p",
+          "text": "Projection drifts from vibration, from a lamp change, from the model being nudged during cleaning. We fix the geometry, keep calibration profiles and leave a restoration instruction on site — so realigning does not require flying in the developer."
+        }
       ],
       "faq": [
-        {"q": "Does the room need to be fully dark?", "a": "No, but lighting has to be planned. Controlled light in the model zone and no direct daylight on it are essential; a fully blacked-out hall is not. If the room is bright it is solved with brightness and surface material — but it must be solved before equipment is ordered."},
-        {"q": "Why is an interactive model better than a large screen?", "a": "Scale and physicality. A screen shows an image of a territory; a model gives you the territory — you can walk around it, point at it, discuss it two or three people at a time. For a group conversation, and decisions about territories are made by groups, that difference is fundamental."},
-        {"q": "Can the content be updated later?", "a": "Yes, if it is designed that way: layers and data are kept separate from geometry. A development programme changes, and the model’s content has to change with it without rebuilding the relief."},
-        {"q": "How long does it take?", "a": "Our projects of this class have taken two to three months. The long pole is not the projection but the fabrication of the model itself, which money cannot compress the way it can compress development."}
+        {
+          "q": "Does the room need to be fully dark?",
+          "a": "No, but lighting has to be planned. Controlled light in the model zone and no direct daylight on it are essential; a fully blacked-out hall is not. If the room is bright it is solved with brightness and surface material — but it must be solved before equipment is ordered."
+        },
+        {
+          "q": "Why is an interactive model better than a large screen?",
+          "a": "Scale and physicality. A screen shows an image of a territory; a model gives you the territory — you can walk around it, point at it, discuss it two or three people at a time. For a group conversation, and decisions about territories are made by groups, that difference is fundamental."
+        },
+        {
+          "q": "Can the content be updated later?",
+          "a": "Yes, if it is designed that way: layers and data are kept separate from geometry. A development programme changes, and the model’s content has to change with it without rebuilding the relief."
+        },
+        {
+          "q": "How long does it take?",
+          "a": "Our projects of this class have taken two to three months. The long pole is not the projection but the fabrication of the model itself, which money cannot compress the way it can compress development."
+        }
       ]
     },
-
     {
       "slug": "showroom",
       "title": "Interactive showroom and brand space",
       "nav": "Showroom",
       "subtitle": "A space where the product is shown through action, not through a brochure.",
-      "keywords": ["interactive showroom", "brand space", "digital showroom", "in-store configurator", "turnkey showroom", "corporate museum"],
-      "cases": ["bmwx5", "sinara", "pano360", "ptk-group"],
+      "keywords": [
+        "interactive showroom",
+        "brand space",
+        "digital showroom",
+        "in-store configurator",
+        "turnkey showroom",
+        "corporate museum"
+      ],
+      "cases": [
+        "bmwx5",
+        "sinara",
+        "pano360",
+        "ptk-group"
+      ],
       "flow": [
-        {"t": "p", "text": "The car you built yourself is the one you want to buy. This is not about technology, it is about ownership: a person who made the choice with their hands already treats the result as theirs. In a showroom it works more sharply than anywhere else, because the decision is made here and now rather than a month later."},
-        {"t": "h", "text": "What we build in showrooms and brand spaces"},
-        {"t": "notes", "items": [
-          "Product configurators: trim, materials and colour, with a result you can see in volume and at scale.",
-          "Showing what cannot be brought in: heavy machinery, large equipment, a whole facility — in volume, as a hologram or in augmented reality.",
-          "Brand spaces: company history, values and technology as an experience rather than a wall of text.",
-          "Corporate museums and meeting rooms with content — where a client is walked towards a deal.",
-          "Augmented reality on observation decks and in public spaces.",
-          "Tools for the floor team: not a presentation, but a script for a conversation."
-        ]},
-        {"t": "h", "text": "The difference between putting up a screen and making a showroom"},
-        {"t": "p", "text": "A screen in a salesroom almost always sits idle. Not because it is a bad screen, but because nobody decided at which point in the conversation it comes on and what the salesperson does while the client is busy with it. We design a scene, not a device: where the person stands, what they see first, who starts the interaction, how it ends, and what happens to the salesperson and the client afterwards. Without that scene any equipment becomes furniture."},
-        {"t": "h", "text": "How the work goes"},
-        {"t": "steps", "items": [
-          "Observation. We watch how people move and talk in the room as it is — before any ideas. Almost nobody does this, and this is where the important things are found.",
-          "Scenario: at what moment the interactive comes on, what the client does, what the staff member does.",
-          "Prototype with real people. Tested on visitors, not on the project team — the team knows how it is supposed to work and therefore notices nothing.",
-          "Production and installation.",
-          "Staff training. The most underrated stage: a tool the salesperson cannot use goes unused, however good it is."
-        ]},
-        {"t": "h", "text": "What drives cost"},
-        {"t": "notes", "items": [
-          "One room or a network: a solution meant to be replicated is designed differently, and that is settled at the start.",
-          "Whether it needs to talk to your data — stock, prices, configurations, CRM.",
-          "The volume of 3D content: product models are usually the largest part of the work, and they get reused afterwards in advertising and at trade fairs.",
-          "Who maintains and updates it: a one-off delivery, or a system you add new products to yourself."
-        ]},
-        {"t": "p", "text": "That last point often decides all the others. A showroom whose content cannot be updated without the contractor goes out of date with the first change of model range."}
+        {
+          "t": "p",
+          "text": "The car you built yourself is the one you want to buy. This is not about technology, it is about ownership: a person who made the choice with their hands already treats the result as theirs. In a showroom it works more sharply than anywhere else, because the decision is made here and now rather than a month later."
+        },
+        {
+          "t": "h",
+          "text": "What we build in showrooms and brand spaces"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Product configurators: trim, materials and colour, with a result you can see in volume and at scale.",
+            "Showing what cannot be brought in: heavy machinery, large equipment, a whole facility — in volume, as a hologram or in augmented reality.",
+            "Brand spaces: company history, values and technology as an experience rather than a wall of text.",
+            "Corporate museums and meeting rooms with content — where a client is walked towards a deal.",
+            "Augmented reality on observation decks and in public spaces.",
+            "Tools for the floor team: not a presentation, but a script for a conversation."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "The difference between putting up a screen and making a showroom"
+        },
+        {
+          "t": "p",
+          "text": "A screen in a salesroom almost always sits idle. Not because it is a bad screen, but because nobody decided at which point in the conversation it comes on and what the salesperson does while the client is busy with it. We design a scene, not a device: where the person stands, what they see first, who starts the interaction, how it ends, and what happens to the salesperson and the client afterwards. Without that scene any equipment becomes furniture."
+        },
+        {
+          "t": "h",
+          "text": "How the work goes"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "Observation. We watch how people move and talk in the room as it is — before any ideas. Almost nobody does this, and this is where the important things are found.",
+            "Scenario: at what moment the interactive comes on, what the client does, what the staff member does.",
+            "Prototype with real people. Tested on visitors, not on the project team — the team knows how it is supposed to work and therefore notices nothing.",
+            "Production and installation.",
+            "Staff training. The most underrated stage: a tool the salesperson cannot use goes unused, however good it is."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "What drives cost"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "One room or a network: a solution meant to be replicated is designed differently, and that is settled at the start.",
+            "Whether it needs to talk to your data — stock, prices, configurations, CRM.",
+            "The volume of 3D content: product models are usually the largest part of the work, and they get reused afterwards in advertising and at trade fairs.",
+            "Who maintains and updates it: a one-off delivery, or a system you add new products to yourself."
+          ]
+        },
+        {
+          "t": "p",
+          "text": "That last point often decides all the others. A showroom whose content cannot be updated without the contractor goes out of date with the first change of model range."
+        }
       ],
       "faq": [
-        {"q": "Can a configurator be fitted into an existing showroom?", "a": "Yes, and usually that is the task. We start by watching the room: where people linger, where they walk past, at what moment a salesperson joins the conversation. The location follows from that, not from which wall happens to be free."},
-        {"q": "Do we need integration with our systems?", "a": "It depends on what you are showing. Product demonstration works standalone; live prices, availability and delivery dates need a connection to your data. Standalone is cheaper and more robust, integrated is more accurate. Choose at the start: moving from the first to the second costs more than building the second outright."},
-        {"q": "What about the content a year from now?", "a": "If the model range changes, the system has to let you add new items yourselves. That is an architectural decision, and it has to be taken at the beginning rather than when the new model ships."},
-        {"q": "Does this work in B2B, where no single person decides?", "a": "It works differently. In B2B the interactive is not there for emotion but as a shared object to talk around: a group gathers at a model or a configurator and the discussion follows the object rather than the slides. Our projects for industry and rolling stock are built exactly that way."}
+        {
+          "q": "Can a configurator be fitted into an existing showroom?",
+          "a": "Yes, and usually that is the task. We start by watching the room: where people linger, where they walk past, at what moment a salesperson joins the conversation. The location follows from that, not from which wall happens to be free."
+        },
+        {
+          "q": "Do we need integration with our systems?",
+          "a": "It depends on what you are showing. Product demonstration works standalone; live prices, availability and delivery dates need a connection to your data. Standalone is cheaper and more robust, integrated is more accurate. Choose at the start: moving from the first to the second costs more than building the second outright."
+        },
+        {
+          "q": "What about the content a year from now?",
+          "a": "If the model range changes, the system has to let you add new items yourselves. That is an architectural decision, and it has to be taken at the beginning rather than when the new model ships."
+        },
+        {
+          "q": "Does this work in B2B, where no single person decides?",
+          "a": "It works differently. In B2B the interactive is not there for emotion but as a shared object to talk around: a group gathers at a model or a configurator and the discussion follows the object rather than the slides. Our projects for industry and rolling stock are built exactly that way."
+        }
       ]
     }
   ]
