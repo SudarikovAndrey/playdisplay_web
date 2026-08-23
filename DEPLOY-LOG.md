@@ -8,6 +8,65 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-23 09:18 — hybrid-v8 @ 028012d
+
+**Коммиты в этой поставке**
+```
+028012d Журнал: день 22.08, 62 новые страницы и чего сознательно не делал
+9d7386d CLAUDE.md: разделы про концепции, Атлас и цифры результата
+a15ccfa Атлас: 50 принципов ОДНОЙ страницей, а не пятьюдесятью
+878289b Концепции стали страницами: 28 разборов, которых поиск не видел
+0aa8401 Шестая посадочная: голографические витрины и объёмные показы
+9f388c0 Цифры из «Результата» работают на трёх экранах, а не на одном
+6a5eca1 Журнал деплоя: 2601cc4
+```
+
+**На сервер отправлено файлов:** 174, удалено: 0
+```
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+atlas/
+atlas/index.html
+concepts/
+concepts/index.html
+concepts/ar-portal/
+concepts/ar-portal/index.html
+concepts/ar-xray/
+concepts/ar-xray/index.html
+concepts/art-portrait/
+concepts/art-portrait/index.html
+concepts/cabin-hologram/
+concepts/cabin-hologram/index.html
+concepts/city-flight/
+concepts/city-flight/index.html
+concepts/control-center/
+concepts/control-center/index.html
+concepts/cubic-expo/
+concepts/cubic-expo/index.html
+concepts/floating-object/
+concepts/floating-object/index.html
+concepts/form-library/
+concepts/form-library/index.html
+concepts/heli-model/
+concepts/heli-model/index.html
+concepts/living-interior/
+concepts/living-interior/index.html
+concepts/living-lines/
+concepts/living-lines/index.html
+concepts/living-model/
+concepts/living-model/index.html
+concepts/living-monolith/
+concepts/living-monolith/index.html
+concepts/living-panorama/
+concepts/living-panorama/index.html
+concepts/living-ship/
+concepts/living-ship/index.html
+…и ещё 134
+```
+
+
 ## 2026-08-22 11:34 — hybrid-v8 @ 2601cc4
 
 **Коммиты в этой поставке**
