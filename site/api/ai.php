@@ -268,16 +268,16 @@ function pd_action_book($in) {
   $subject = 'Креативная сессия: ' . ($company !== '' ? $company . ' — ' . $name : $name);
   $replyTo = filter_var($contact, FILTER_VALIDATE_EMAIL) ? $contact : '';
 
-  /* Адрес продублирован ЗДЕСЬ, хотя mail_to указывает туда же. Это страховка, а не
-     разные потоки: боевой конфиг лежит ТОЛЬКО на сервере (api/config.php в
-     .gitignore и в исключениях deploy.sh, либо ~/wordpress_2/pd-ai-config.php выше
-     веб-корня), деплой его не трогает, и заглянуть в него отсюда нельзя —
-     selftest.php на боевом закрыт. Если там остался прежний личный адрес, брифы
-     ассистента уедут на него, а заявки формы всё равно придут на общий ящик.
-     Ключ mail_to_book переопределяет это с сервера, если адреса должны разойтись. */
+  /* Адрес продублирован ЗДЕСЬ, хотя mail_to указывает туда же, и это страховка, а не
+     разные потоки. Боевой конфиг лежит ТОЛЬКО на сервере (~/wordpress_2/pd-ai-config.php
+     выше веб-корня либо api/config.php, оба вне репозитория и вне rsync), деплой его
+     не трогает. Ровно на этом 23.08.2026 бриф ушёл на прежний адрес: правку сделали
+     в коде, а решает сервер. Заявка формы благодаря этой строке дойдёт куда надо
+     даже при устаревшем конфиге.
+     Ключ mail_to_book переопределяет адрес с сервера, если он должен разойтись с mail_to. */
   $cfgBook = pd_config();
   $bookTo = (isset($cfgBook['mail_to_book']) && filter_var($cfgBook['mail_to_book'], FILTER_VALIDATE_EMAIL))
-    ? $cfgBook['mail_to_book'] : 'info@playdisplay.com';
+    ? $cfgBook['mail_to_book'] : 'a.sudarikov@playdisplay.ru';
 
   list($mailLive, $mailWhy) = pd_mail_ready();
   list($ok, $info) = pd_send_mail($subject, $html, $text, $replyTo, $html, array(), $bookTo);
