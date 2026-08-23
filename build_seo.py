@@ -411,20 +411,20 @@ PAGE = '''<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{title} — playdisplay</title>
+<title>{pagetitle} — playdisplay</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{canon}">
 {alts}
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:type" content="article">
-<meta property="og:title" content="{title} — playdisplay">
+<meta property="og:title" content="{pagetitle} — playdisplay">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{canon}">
 <meta property="og:image" content="{cover}">
 <meta property="og:locale" content="{locale}">
 <meta property="og:site_name" content="playdisplay">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{title} — playdisplay">
+<meta name="twitter:title" content="{pagetitle} — playdisplay">
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{cover}">
 <script type="application/ld+json">{jsonld}</script>
@@ -513,6 +513,26 @@ for L in langs:
 SRV_LANGS = [L for L in langs if L.services]
 SRV_ORDER = [s['slug'] for s in SRV_LANGS[0].services] if SRV_LANGS else []
 
+# Кейсы, название которых СОВПАДАЕТ во всех языках (23.08.2026). Вебмастер считает
+# такую пару дублем заголовков и держит это ошибкой: hreflang связывает страницы, но
+# title у них буквально один и тот же. Нашлось три — BMW X5, PTK Group, Urban Forum 2018:
+# у них название языконезависимое, переводить нечего.
+#
+# Лечим не «дописать что-нибудь разное», а добавлением направления: «BMW X5 — шоурум»
+# и «BMW X5 — showroom». Дубль расходится, и в заголовок попадает фраза, которую люди
+# действительно ищут. Правило самоподдерживающееся: появится ещё один кейс с
+# языконезависимым именем — он попадёт сюда сам, руками ничего не вписывать.
+#
+# Меняется ТОЛЬКО <title> и og/twitter. <h1> и хлебные крошки остаются с чистым
+# названием проекта: там уточнение только мешает.
+SAME_TITLE = set()
+if len(langs) > 1:
+    for slug in ORDER:
+        names = {(L.pmap.get(slug) or {}).get('title') for L in langs if L.pmap.get(slug)}
+        if len(names) == 1 and len(names & {None}) == 0:
+            SAME_TITLE.add(slug)
+
+
 # Обратный указатель кейс → услуги (21.08.2026). Связь до этого была только в одну
 # сторону: со страницы услуги в кейсы. Человек, пришедший из поиска на кейс, не узнавал,
 # что у студии есть направление, в которое этот кейс входит, — и уходил, не увидев, что
@@ -523,6 +543,20 @@ for L in langs:
     for s in L.services:
         for slug in s['cases']:
             L.case_srv.setdefault(slug, []).append(s)
+
+
+def page_title(L, slug):
+    """<title> страницы работы: с направлением, если название одинаково во всех языках"""
+    t = (L.pmap.get(slug) or {}).get('title') or ''
+    if slug not in SAME_TITLE:
+        return t
+    items = L.case_srv.get(slug) or []
+    if not items:
+        return t
+    nav = (items[0].get('nav') or items[0].get('title') or '').strip()
+    if not nav:
+        return t
+    return '%s — %s' % (t, nav[0].lower() + nav[1:])
 
 
 def srv_of_case(L, slug):
@@ -552,7 +586,7 @@ for L in langs:
         d = os.path.join(SITE, L.prefix, 'work', slug)
         os.makedirs(d, exist_ok=True)
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(PAGE.format(
-            lang=L.code, title=esc(p['title']), subtitle=esc(p.get('subtitle') or ''),
+            lang=L.code, title=esc(p['title']), pagetitle=esc(page_title(L, slug)), subtitle=esc(p.get('subtitle') or ''),
             desc=esc(L.meta_desc(slug)), canon=L.url('work/%s/' % slug), alts=alternates('work/%s/' % slug),
             slug=slug, cover=esc(cover_url(slug, L.pmap)), locale=L.locale, home=L.up + L.prefix,
             jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p, slug), up=L.up,
@@ -927,7 +961,7 @@ for L in langs:
             continue
         d_ = os.path.join(SITE, L.prefix, 'work', slug)
         open(os.path.join(d_, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(PAGE.format(
-            lang=L.code, title=esc(p_['title']), subtitle=esc(p_.get('subtitle') or ''),
+            lang=L.code, title=esc(p_['title']), pagetitle=esc(page_title(L, slug)), subtitle=esc(p_.get('subtitle') or ''),
             desc=esc(L.meta_desc(slug)), canon=L.url('work/%s/' % slug), alts=alternates('work/%s/' % slug),
             slug=slug, cover=esc(cover_url(slug, L.pmap)), locale=L.locale, home=L.up + L.prefix,
             jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p_, slug), up=L.up,
