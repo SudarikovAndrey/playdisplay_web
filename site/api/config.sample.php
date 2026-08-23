@@ -17,7 +17,7 @@
 return array(
 
   // ============ КУДА ПРИСЫЛАТЬ БРИФ ============
-  'mail_to'       => 'info@playdisplay.com',
+  'mail_to'       => 'a.sudarikov@playdisplay.ru',
   'mail_from'     => 'ai@playdisplay.com',
   'mail_fromname' => 'PlayDisplay AI',
   // Заявки формы брони идут туда же, но адрес продублирован в коде
