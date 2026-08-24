@@ -58,6 +58,7 @@ STATE="$GITDIR/pd-last-deploy"
 # --------------------------------------------------------------------- разбор --
 DRY=0
 IGNORE_BUSY=0
+NO_SMOKE=0
 BACKUP=1
 YES=0
 MSG=""
@@ -65,6 +66,7 @@ for arg in "$@"; do
   case "$arg" in
     --dry-run|-n) DRY=1 ;;
     --ignore-busy) IGNORE_BUSY=1 ;;   # начинать, даже если на сервере идёт чужой rsync
+    --no-smoke)   NO_SMOKE=1 ;;       # не запускать smoke.py перед поставкой
     --no-backup)  BACKUP=0 ;;
     --yes|-y)     YES=1 ;;
     -h|--help)    sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
@@ -167,6 +169,21 @@ else
   warn "site/kit/stamp.py не найден — версии на файлах конструктора не обновлены"
 fi
 
+# ---------------------------------------------------------------- смоук --
+# Проверка ПЕРЕД коммитом и заливкой: смысл в том, чтобы остановить поставку, а не
+# рассказать о поломке после неё. Ключ --no-smoke оставлен для случая, когда чинишь
+# сам смоук или надо срочно поставить заплатку, зная о красном.
+if [ -f "$REPO/smoke.py" ] && [ "$NO_SMOKE" = 0 ]; then
+  step "Смоук-проверка сайта"
+  if SMOKE=$(cd "$REPO" && python3 smoke.py 2>&1); then
+    printf '%s\n' "$SMOKE" | tail -1 | sed 's/^/  /'
+  else
+    printf '%s\n' "$SMOKE" | sed 's/^/  /'
+    die "смоук-проверка не прошла — деплой отменён.
+     Починить и запустить снова, либо ./deploy.sh --no-smoke, если знаешь, что делаешь."
+  fi
+fi
+
 step "Смотрю, что не закоммичено"
 # bash 3.2 на macOS не знает mapfile — читаем в массив вручную.
 DIRTY=()
@@ -185,7 +202,7 @@ else
   for line in "${DIRTY[@]}"; do
     f="${line:3}"; f="${f%\"}"; f="${f#\"}"
     case "$f" in
-      site/*|*.md|deploy.sh|deploy.conf|build_seo.py|.gitignore) ;;
+      site/*|*.md|deploy.sh|deploy.conf|build_seo.py|smoke.py|.gitignore) ;;
       *) SUSPECT+=("$f") ;;
     esac
   done
@@ -210,7 +227,7 @@ else
       for line in "${DIRTY[@]}"; do
         f="${line:3}"; f="${f%\"}"; f="${f#\"}"
         case "$f" in
-          site/*|*.md|deploy.sh|build_seo.py|.gitignore)
+          site/*|*.md|deploy.sh|build_seo.py|smoke.py|.gitignore)
             git add -- "$f" && ADDED=$((ADDED+1)) ;;
         esac
       done
