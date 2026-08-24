@@ -1403,9 +1403,24 @@ LIB_CSS = CNC_CSS + '''
               margin-top:18px; padding-top:14px; border-top:1px solid rgba(159,180,200,.16);
               text-decoration:none; font:500 12px/1 monospace; letter-spacing:.14em;
               text-transform:uppercase; color:#9fb4c8; }
-  .libcat u:after { content:"→"; color:#2be0c6; font-size:16px; opacity:.45;
-                    transition:opacity .2s, transform .2s; }
-  .libcat:hover u:after { opacity:1; transform:translateX(4px); }
+  /* Карточки не читались как нажимаемые (правка владельца 24.08). Счётчик слева
+     остаётся справкой, а справа появляется настоящий призыв — обведённый, цветной,
+     со стрелкой. Прямоугольник с текстом внутри ссылки читается как кнопка,
+     подсветка рамки при наведении этого не давала. */
+  .libcat .act { display:inline-flex; align-items:center; gap:9px; white-space:nowrap;
+                 padding:9px 15px; border:1px solid rgba(43,224,198,.5); color:#2be0c6;
+                 transition:background .2s, border-color .2s; }
+  .libcat .act:after { content:"→"; font-size:15px; transition:transform .2s; }
+  .libcat:hover .act { background:rgba(43,224,198,.14); border-color:#2be0c6; }
+  .libcat:hover .act:after { transform:translateX(4px); }
+  .libcat .cnt { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+
+  /* Слой пыли: иконка рассыпается в точки и они летят к курсору. Лежит ПОД текстом,
+     чтобы поток не мешал читать, и не ловит указатель — иначе ссылка перестала бы
+     нажиматься там, где холст поверх неё. */
+  .libcat .libfx { position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .libcat .ico, .libcat .body { position:relative; z-index:1; }
+  .libcat .ico { transition:border-color .2s, background .2s; }
 
   /* --- Знак категории над заголовком страницы категории --- */
   .libmark { display:flex; align-items:center; gap:14px; margin:0 0 4px; }
@@ -1416,6 +1431,8 @@ LIB_CSS = CNC_CSS + '''
 
   @media (max-width:640px) {
     .libcat { grid-template-columns:1fr; gap:16px 0; padding:22px 20px; }
+    .libcat u { flex-direction:column; align-items:flex-start; gap:12px; }
+    .libcat .act { width:100%; justify-content:center; }
   }
 
   /* --- Навигация внутри категории: липкая, чтобы не терять место в длинном тексте --- */
@@ -1641,6 +1658,156 @@ LIB_TAIL_EN = (
  'no strings.</p>')
 
 
+LIB_FX_JS = '''/* Карточки категорий: иконка рассыпается в точки, точки магнитятся к курсору.
+   Тот же приём, что на выборе проектов, но источник другой. Там облако собирается
+   из ПИКСЕЛЕЙ обложки; здесь обложек нет, поэтому иконка рисуется в канвас кодом
+   и облако снимается с собственного рисунка. Растеризовать <svg> через data-URI
+   было бы короче, но чтение такого канваса капризничает в части браузеров —
+   а свой рисунок читается везде и всегда. */
+(function () {
+  var cards = document.querySelectorAll('.libcat');
+  if (!cards.length || !window.requestAnimationFrame) return;
+  // мелкий экран: пыль летит К КУРСОРУ, а курсора на телефоне нет
+  if (!window.matchMedia || !matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  var DPR = Math.min(2, window.devicePixelRatio || 1);
+
+  function seg(c, pts) {
+    c.beginPath(); c.moveTo(pts[0][0], pts[0][1]);
+    for (var i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]);
+    c.stroke();
+  }
+  function rr(c, x, y, w, h, r) {
+    c.beginPath();
+    c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r);
+    c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r);
+    c.arcTo(x, y, x + w, y, r); c.closePath(); c.stroke();
+  }
+  var TAU = Math.PI * 2;
+  // геометрия ровно та же, что в LIB_ICONS: система координат 32×32
+  var DRAW = {
+    output: function (c) {
+      rr(c, 2.5, 12.5, 7, 7, 1.5);
+      c.beginPath(); c.arc(6, 16, 1.15, 0, TAU); c.fill();
+      seg(c, [[9.5, 14.2], [26.5, 6.5]]);
+      seg(c, [[9.5, 17.8], [26.5, 25.5]]);
+      seg(c, [[26.5, 6.5], [26.5, 25.5]]);
+    },
+    input: function (c) {
+      seg(c, [[4.5, 25.5], [27.5, 25.5]]);
+      c.beginPath(); c.arc(16, 19.5, 3, 0, TAU); c.stroke();
+      seg(c, [[16, 4], [16, 11.5]]);
+      seg(c, [[13.6, 8.9], [16, 11.5], [18.4, 8.9]]);
+      c.beginPath(); c.arc(16, 19.5, 6.5, Math.PI * 0.75, Math.PI * 1.25); c.stroke();
+      c.beginPath(); c.arc(16, 19.5, 6.5, -Math.PI * 0.25, Math.PI * 0.25); c.stroke();
+    },
+    processing: function (c) {
+      rr(c, 9, 9, 14, 14, 2.5);
+      rr(c, 13.75, 13.75, 4.5, 4.5, 1);
+      var pins = [[13, 9, 13, 5], [19, 9, 19, 5], [13, 23, 13, 27], [19, 23, 19, 27],
+                  [9, 13, 5, 13], [9, 19, 5, 19], [23, 13, 27, 13], [23, 19, 27, 19]];
+      for (var i = 0; i < pins.length; i++) seg(c, [[pins[i][0], pins[i][1]], [pins[i][2], pins[i][3]]]);
+    }
+  };
+
+  for (var i = 0; i < cards.length; i++) setup(cards[i]);
+
+  function setup(card) {
+    var fx = card.querySelector('.libfx'), ico = card.querySelector('.ico');
+    var kind = card.getAttribute('data-cat');
+    if (!fx || !ico || !DRAW[kind]) return;
+    var ctx = fx.getContext('2d');
+    var cloud = null, raf = null, lastT = 0, W = 0, H = 0;
+    var hover = false, mx = 0, my = 0, p = 0;
+
+    function build() {
+      var cr = card.getBoundingClientRect(), ir = ico.getBoundingClientRect();
+      var w = Math.round(cr.width), h = Math.round(cr.height);
+      if (!w || !h || !ir.width) return null;
+      W = w; H = h;
+      fx.width = Math.round(w * DPR); fx.height = Math.round(h * DPR);
+      fx.style.width = w + 'px'; fx.style.height = h + 'px';
+
+      // иконка рисуется в отдельный канвас размером с её рамку — оттуда снимаем точки
+      var s = Math.max(24, Math.round(ir.width * DPR));
+      var t = document.createElement('canvas'); t.width = t.height = s;
+      var tc = t.getContext('2d');
+      var pad = s * 0.20, k = (s - pad * 2) / 32;
+      tc.translate(pad, pad); tc.scale(k, k);
+      tc.strokeStyle = '#fff'; tc.fillStyle = '#fff';
+      tc.lineWidth = 1.6; tc.lineCap = 'round'; tc.lineJoin = 'round';
+      DRAW[kind](tc);
+      var d;
+      try { d = tc.getImageData(0, 0, s, s).data; } catch (e) { return null; }
+
+      // шаг подобран так, чтобы облако было около тысячи точек при любом DPR
+      // шаг 1 при обычном экране: облако около полутора тысяч точек. Меньше —
+      // и на просвет видно решётку вместо пыли
+      var step = Math.max(1, Math.round(s / 110));
+      var ox = ir.left - cr.left, oy = ir.top - cr.top, sc = ir.width / s;
+      var hx = [], hy = [];
+      for (var y = 0; y < s; y += step) for (var x = 0; x < s; x += step) {
+        if (d[(y * s + x) * 4 + 3] > 70) { hx.push(ox + x * sc); hy.push(oy + y * sc); }
+      }
+      var n = hx.length;
+      if (!n) return null;
+      var ph = new Float32Array(n), sp = new Float32Array(n);
+      for (var m = 0; m < n; m++) { ph[m] = Math.random(); sp[m] = 0.45 + Math.random() * 0.75; }
+      return { n: n, hx: new Float32Array(hx), hy: new Float32Array(hy), ph: ph, sp: sp };
+    }
+
+    function tick(now) {
+      raf = null;
+      var dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0.016;
+      lastT = now;
+      p = Math.max(0, Math.min(1, p + (hover ? dt * 2.6 : -dt * 3.2)));
+      if (!cloud) cloud = build();
+      if (!cloud) { ico.style.opacity = ''; return; }
+
+      // иконка уступает место точкам: рисунок один, а не два наложенных
+      ico.style.opacity = String(1 - Math.min(1, p * 1.6));
+
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      if (p <= 0.001) { lastT = 0; return; }   // ушли с карточки — цикл останавливается
+
+      // цель — курсор, ограниченный рамкой карточки, как на сетке проектов
+      var tx = Math.max(8, Math.min(W - 8, mx)), ty = Math.max(8, Math.min(H - 8, my));
+      var T = now / 1000;
+      ctx.globalCompositeOperation = 'lighter';
+      for (var i = 0; i < cloud.n; i++) {
+        var f = (T * cloud.sp[i] + cloud.ph[i]) % 1;      // непрерывный поток
+        var k = p * f * f * (3 - 2 * f);                  // мягкий разгон
+        var x = cloud.hx[i] + (tx - cloud.hx[i]) * k;
+        var y = cloud.hy[i] + (ty - cloud.hy[i]) * k;
+        // Яркость по дуге, а не по спаду. Со спадом точка гасла на первой трети
+        // пути, и вместо потока к курсору было облачко у иконки — поток не читался.
+        // Теперь дома точка тусклая, в полёте разгорается, у цели исчезает.
+        var a = p * (0.28 + 0.72 * Math.sin(Math.PI * f)) * (1 - f * f * f * f);
+        if (a <= 0.012) continue;
+        ctx.fillStyle = 'rgba(43,224,198,' + a.toFixed(3) + ')';
+        ctx.fillRect(x, y, 1.6, 1.6);
+      }
+      ctx.globalCompositeOperation = 'source-over';
+      raf = requestAnimationFrame(tick);
+    }
+    function wake() { if (!raf) raf = requestAnimationFrame(tick); }
+
+    card.addEventListener('pointerenter', function (e) {
+      hover = true;
+      var r = card.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top;
+      wake();
+    });
+    card.addEventListener('pointermove', function (e) {
+      var r = card.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top;
+    });
+    card.addEventListener('pointerleave', function () { hover = false; wake(); });
+    // размеры карточки меняются при перевёрстке — облако считается заново
+    addEventListener('resize', function () { cloud = null; }, { passive: true });
+  }
+})();
+'''
+
+
 # Подписи библиотеки. Отдельным словарём, а не через L.t(): в site/data/i18n
 # лежат строки интерфейса лендинга, и подмешивать туда служебные заголовки раздела
 # значит связать два независимых файла. Ключ — код языка.
@@ -1650,7 +1817,7 @@ LIB_T = {
   'compare': 'Два принципа', 'hw': 'Важно для спецификации', 'spec': 'Как считать',
   'warn': 'Наше мнение', 'principle': 'Принцип категории', 'other': 'Другие категории',
   'ourcase': 'Как это сделано у нас: ', 'hub': 'Библиотека оборудования',
-  'cta': 'Прислать спецификацию на проверку →',
+  'cta': 'Прислать спецификацию на проверку →', 'open': 'Открыть раздел',
   'concepts': 'Концепции', 'services': 'Услуги', 'home': 'На главную', 'all': 'Все проекты',
   'h1': 'Библиотека оборудования интерактивных экспозиций',
   'pos': ('позиция', 'позиции', 'позиций'),
@@ -1662,7 +1829,7 @@ LIB_T = {
   'compare': 'Two principles', 'hw': 'Watch out in the spec', 'spec': 'How to size it',
   'warn': 'Our take', 'principle': 'The principle here', 'other': 'Other categories',
   'ourcase': 'How we built it: ', 'hub': 'Equipment library',
-  'cta': 'Send us your specification for a free review →',
+  'cta': 'Send us your specification for a free review →', 'open': 'Open the section',
   'concepts': 'Concepts', 'services': 'Services', 'home': 'Home', 'all': 'All projects',
   'h1': 'An equipment library for interactive exhibitions',
   'pos': ('entry', 'entries', 'entries'),
@@ -1746,12 +1913,14 @@ for L in langs:
     # Хаб лежит В /library/, поэтому до категории путь короткий: output/, а не ../output/.
     # Разница с up1 из страниц категорий — оттуда до соседа действительно нужен ../
     li = ''.join(
-        '<li><a class="libcat" href="%s/"><span class="ico">%s</span><span class="body">'
+        '<li><a class="libcat" data-cat="%s" href="%s/"><canvas class="libfx" aria-hidden="true"></canvas>'
+        '<span class="ico">%s</span><span class="body">'
         '<i>%s</i><b>%s</b><em>%s</em><span class="lead">%s</span>'
-        '<u>%d %s · %d %s</u></span></a></li>'
-        % (c['id'], LIB_ICONS.get(c['id'], ''), esc(c['num']), esc(c['full']),
+        '<u><span class="cnt">%d %s · %d %s</span><span class="act">%s</span></u>'
+        '</span></a></li>'
+        % (c['id'], c['id'], LIB_ICONS.get(c['id'], ''), esc(c['num']), esc(c['full']),
            esc(c['line']), esc(c['lead']),
-           _n(c), plural(_n(c), *T['pos']), _b(c), plural(_b(c), *T['man']))
+           _n(c), plural(_n(c), *T['pos']), _b(c), plural(_b(c), *T['man']), esc(T['open']))
         for c in cats)
     lib_lead = LIB_LEAD_T[L.code] % (total, plural(total, *T['kind']))
     ld = json.dumps([
@@ -1775,7 +1944,8 @@ for L in langs:
         up=up1, home=up1 + L.prefix,
         cnchome=up1 + L.prefix + 'concepts/', srvhome=up1 + L.prefix + 'services/',
         lead=esc(lib_lead),
-        groups=LIB_INTRO_T[L.code] + '<ul class="libcats">%s</ul>' % li + LIB_TAIL_T[L.code],
+        groups=(LIB_INTRO_T[L.code] + '<ul class="libcats">%s</ul>' % li
+                + LIB_TAIL_T[L.code] + '<script>%s</script>' % LIB_FX_JS),
         t_concepts=esc(T['concepts']), t_services=esc(T['services']), cta=esc(T['cta']),
         footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
         f_home=esc(T['home']), f_all=esc(T['all']))))
@@ -2054,6 +2224,11 @@ _n_srv = en.count('href="/services/"')
 if _n_srv != 2:
     raise SystemExit('в главной ожидались 2 ссылки на /services/ (шапка и мобильное меню), найдено %d' % _n_srv)
 en = en.replace('href="/services/"', 'href="/en/services/"')
+# то же для библиотеки оборудования: шапка, мобильное меню и кнопка в полосе
+_n_lib = en.count('href="/library/"')
+if _n_lib != 3:
+    raise SystemExit('в главной ожидались 3 ссылки на /library/ (шапка, мобильное меню, полоса), найдено %d' % _n_lib)
+en = en.replace('href="/library/"', 'href="/en/library/"')
 en = en.replace('name="Landing — Spatial Capture (RU)"', 'name="Landing — Spatial Capture (EN)"', 1)
 en = en.replace('PlayDisplay long-form landing (RU)', 'PlayDisplay long-form landing (EN)', 1)
 os.makedirs(os.path.join(SITE, 'en'), exist_ok=True)

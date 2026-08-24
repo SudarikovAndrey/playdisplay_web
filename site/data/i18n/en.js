@@ -130,7 +130,6 @@ window.PD_I18N = {
  "Если кажется, что проекту нужен нестандартный подход — давайте обсудим его вместе.": "Tell us what you’re planning. In 30 minutes, we’ll help frame the challenge, identify the strongest direction and decide whether PlayDisplay is the right partner.",
  "▶︎ Забронировать креативную сессию": "▶︎ Book a 30-minute call",
  "Говорим по-русски, по-английски и по-португальски.": "We work in Russian, English and Portuguese.",
-
  "Как вас зовут": "Your name",
  "Компания или проект": "Company or project",
  "Как связаться": "How to reach you",
@@ -151,7 +150,7 @@ window.PD_I18N = {
  "Нужен способ связи — почта, телефон или телеграм.": "We need a way to reach you — email, phone or Telegram.",
  "Без согласия на обработку данных мы не сможем ответить.": "Without your consent we can’t get back to you.",
  "Сервер долго не отвечает.": "The server is taking too long to respond.",
- "Что-то не сошлось.": "Something didn’t go through.",
+ "Что-то не сошлось.": "Something did not add up.",
  "Форма сейчас недоступна. Напишите на info@playdisplay.com — ответим так же быстро.": "The form is unavailable right now. Write to info@playdisplay.com — we answer just as fast.",
  "Пространства, которые люди запоминают. Работаем по всему миру с 2011 года.": "Spaces people remember. Working worldwide since 2011.",
  "Сайт создан в": "This site was made at",
@@ -209,7 +208,6 @@ window.PD_I18N = {
  "Имя": "Name",
  "Email или телефон": "Email or phone",
  "Компания (необязательно)": "Company (optional)",
- "Что-то не сошлось.": "Something did not add up.",
  "Ассистент долго не отвечает — попробуйте ещё раз.": "The assistant is taking too long — please try again.",
  "Что должно случиться с человеком внутри?": "What should happen to a person inside?",
  "смысл, а не оборудование": "meaning, not equipment",
@@ -252,7 +250,6 @@ window.PD_I18N = {
  "Распознавание речи прервалось — напишите текстом.": "Speech recognition stopped — please type instead.",
  "Ассистент недоступен. Напишите нам через раздел «Контакты».": "The assistant is unavailable. Please write to us from the contact section.",
  "Ассистент недоступен — бриф собрать не получилось.": "The assistant is unavailable — the brief could not be built.",
- "Отправляем…": "Sending…",
  "Демо-режим: письмо не отправлено.": "Demo mode: no email was sent.",
  "Бриф собран, но ассистент не подключён к почте — напишите нам через раздел «Контакты».": "The brief is ready, but the assistant has no mail connection — please write to us from the contact section.",
  "Отправка недоступна. Напишите нам через раздел «Контакты».": "Sending is unavailable. Please write to us from the contact section.",
@@ -369,6 +366,7 @@ window.PD_I18N = {
  "Контакты": "Contact",
  "Полёт сквозь облако точек": "A flight through the point cloud",
  "Показать все 15 проектов": "Show all 15 projects",
+ "Отзывы и благодарности": "Letters and awards",
  "Наши клиенты": "Our clients",
  "АС": "AS",
  "РАЗВЕДАНО 00/15": "EXPLORED 00/15",
@@ -407,5 +405,10 @@ window.PD_I18N = {
  "концепция экспозиции": "exhibition concept",
  "интерактивная инсталляция": "interactive installation",
  "Атлас: как мы думаем о пространстве": "Atlas: how we think about space",
- "Атлас: принципы студии playdisplay": "Atlas: the playdisplay studio principles"
+ "Атлас: принципы студии playdisplay": "Atlas: the playdisplay studio principles",
+ "Оборудование": "Equipment",
+ "Библиотека оборудования": "Equipment library",
+ "Чем это делается.": "What it is built from.",
+ "63 типа оборудования, из которых собирается интерактивная экспозиция: чем она показывает, чем слышит посетителя и что считает между этим. У каждого — когда работает, когда не работает и кто это выпускает.": "63 types of equipment an interactive exhibition is built from: what it shows with, what it hears the visitor with, and what does the thinking in between. For each: when it works, when it does not, and who makes it.",
+ "Открыть библиотеку": "Open the library"
 };

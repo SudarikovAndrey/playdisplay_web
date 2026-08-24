@@ -128,9 +128,24 @@
               margin-top:18px; padding-top:14px; border-top:1px solid rgba(159,180,200,.16);
               text-decoration:none; font:500 12px/1 monospace; letter-spacing:.14em;
               text-transform:uppercase; color:#9fb4c8; }
-  .libcat u:after { content:"→"; color:#2be0c6; font-size:16px; opacity:.45;
-                    transition:opacity .2s, transform .2s; }
-  .libcat:hover u:after { opacity:1; transform:translateX(4px); }
+  /* Карточки не читались как нажимаемые (правка владельца 24.08). Счётчик слева
+     остаётся справкой, а справа появляется настоящий призыв — обведённый, цветной,
+     со стрелкой. Прямоугольник с текстом внутри ссылки читается как кнопка,
+     подсветка рамки при наведении этого не давала. */
+  .libcat .act { display:inline-flex; align-items:center; gap:9px; white-space:nowrap;
+                 padding:9px 15px; border:1px solid rgba(43,224,198,.5); color:#2be0c6;
+                 transition:background .2s, border-color .2s; }
+  .libcat .act:after { content:"→"; font-size:15px; transition:transform .2s; }
+  .libcat:hover .act { background:rgba(43,224,198,.14); border-color:#2be0c6; }
+  .libcat:hover .act:after { transform:translateX(4px); }
+  .libcat .cnt { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+
+  /* Слой пыли: иконка рассыпается в точки и они летят к курсору. Лежит ПОД текстом,
+     чтобы поток не мешал читать, и не ловит указатель — иначе ссылка перестала бы
+     нажиматься там, где холст поверх неё. */
+  .libcat .libfx { position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .libcat .ico, .libcat .body { position:relative; z-index:1; }
+  .libcat .ico { transition:border-color .2s, background .2s; }
 
   /* --- Знак категории над заголовком страницы категории --- */
   .libmark { display:flex; align-items:center; gap:14px; margin:0 0 4px; }
@@ -141,6 +156,8 @@
 
   @media (max-width:640px) {
     .libcat { grid-template-columns:1fr; gap:16px 0; padding:22px 20px; }
+    .libcat u { flex-direction:column; align-items:flex-start; gap:12px; }
+    .libcat .act { width:100%; justify-content:center; }
   }
 
   /* --- Навигация внутри категории: липкая, чтобы не терять место в длинном тексте --- */
@@ -211,7 +228,154 @@
   <article>
     <h1>Библиотека оборудования интерактивных экспозиций</h1>
     <p class="lead">63 типа оборудования, из которых собирается интерактивная экспозиция, — разложенные по тому, что они делают: показывают человеку, слушают человека или считают между этими двумя. У каждого: когда работает, когда не работает и кто это выпускает.</p>
-    <p>Библиотека устроена не по прайс-листу, а по роли в системе. Любой интерактивный экспонат — это замкнутый круг: человек что-то делает, машина это считает, экспозиция отвечает. Три категории ниже — три четверти этого круга, и слабое звено определяет всё остальное.</p><p>Сквозной принцип, который стоит держать в голове на каждой странице: <b>оборудование выбирается последним</b>. Сначала сценарий — что человек должен унести с собой; потом взаимодействие — что он для этого делает руками; и только потом железо, которое это выдержит. Спецификация, составленная в обратном порядке, узнаётся по выключенным экранам на второй год.</p><ul class="libcats"><li><a class="libcat" href="output/"><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="12.5" width="7" height="7" rx="1.5"/><circle cx="6" cy="16" r="1.15" fill="currentColor" stroke="none"/><path d="M9.5 14.2 L26.5 6.5"/><path d="M9.5 17.8 L26.5 25.5"/><path d="M26.5 6.5 L26.5 25.5"/></svg></span><span class="body"><i>01</i><b>Оборудование вывода</b><em>Чем экспозиция говорит с человеком</em><span class="lead">Всё, что доходит до органов чувств: свет, изображение, звук, воздух, вибрация. Самая заметная часть бюджета и самая обманчивая. Заметность не равна силе: экран в четыре метра, мимо которого идут не останавливаясь, проигрывает подзорной трубе, в которую очередь.</span><u>24 позиции · 68 производителей</u></span></a></li><li><a class="libcat" href="input/"><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 25.5 H27.5"/><circle cx="16" cy="19.5" r="3"/><path d="M16 4 V11.5 m-2.4 -2.6 L16 11.5 l2.4 -2.6"/><path d="M10 22.5 a8 8 0 0 1 0 -6"/><path d="M22 16.5 a8 8 0 0 1 0 6"/></svg></span><span class="body"><i>02</i><b>Оборудование ввода</b><em>Чем человек отвечает экспозиции</em><span class="lead">Всё, чем посетитель действует: пальцы, руки, тело, голос, само его присутствие. Самая дешёвая часть спецификации и та, что решает, будет экспонат работать или станет мебелью. Разница между «интерактивным» и «включённым» — здесь.</span><u>20 позиций · 51 производитель</u></span></a></li><li><a class="libcat" href="processing/"><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="14" height="14" rx="2.5"/><rect x="13.75" y="13.75" width="4.5" height="4.5" rx="1"/><path d="M13 9 V5 M19 9 V5 M13 23 V27 M19 23 V27 M9 13 H5 M9 19 H5 M23 13 H27 M23 19 H27"/></svg></span><span class="body"><i>03</i><b>Обработка и управление</b><em>То, чего посетитель не видит и на чём всё держится</em><span class="lead">Между тем, что человек сделал, и тем, что он увидел, лежит слой, которого нет ни на одной фотографии экспозиции: машины, движки, сеть и система управления залом. В спецификациях эту часть режут первой, потому что её не показать начальству. Через год именно она определяет, работает экспозиция или стоит.</span><u>19 позиций · 46 производителей</u></span></a></li></ul><h2>Чем мы в этом занимаемся</h2><p>Работая над проектом, мы отталкиваемся от желаемого эффекта, а не от конкретной технологии. Сначала — что человек должен унести с собой, и только потом чем это сделать. Мы не привязаны ни к одному производителю, поэтому под задачу подбирается лучшее решение, а не то, что привычнее или уже лежит на складе. Отсюда и библиотека: она написана как разбор ограничений — чтобы было видно, где технология действительно сильна, а где её берут по инерции.</p><p>Поставку берут на себя наши партнёры: любое оборудование из этой библиотеки на лучших для клиента условиях. Наша часть — сценарий, содержание, интерактив, программная часть и интеграция. Мы умеем строить сложные программно-аппаратные комплексы и отвечаем за то, чтобы это работало как одно целое, а не как набор коробок от разных поставщиков.</p><p>Если у вас на руках спецификация — пришлите, посмотрим и скажем, что в ней лишнее, чего не хватает и что не переживёт первый год. Бесплатно и без обязательств.</p>
+    <p>Библиотека устроена не по прайс-листу, а по роли в системе. Любой интерактивный экспонат — это замкнутый круг: человек что-то делает, машина это считает, экспозиция отвечает. Три категории ниже — три четверти этого круга, и слабое звено определяет всё остальное.</p><p>Сквозной принцип, который стоит держать в голове на каждой странице: <b>оборудование выбирается последним</b>. Сначала сценарий — что человек должен унести с собой; потом взаимодействие — что он для этого делает руками; и только потом железо, которое это выдержит. Спецификация, составленная в обратном порядке, узнаётся по выключенным экранам на второй год.</p><ul class="libcats"><li><a class="libcat" data-cat="output" href="output/"><canvas class="libfx" aria-hidden="true"></canvas><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="12.5" width="7" height="7" rx="1.5"/><circle cx="6" cy="16" r="1.15" fill="currentColor" stroke="none"/><path d="M9.5 14.2 L26.5 6.5"/><path d="M9.5 17.8 L26.5 25.5"/><path d="M26.5 6.5 L26.5 25.5"/></svg></span><span class="body"><i>01</i><b>Оборудование вывода</b><em>Чем экспозиция говорит с человеком</em><span class="lead">Всё, что доходит до органов чувств: свет, изображение, звук, воздух, вибрация. Самая заметная часть бюджета и самая обманчивая. Заметность не равна силе: экран в четыре метра, мимо которого идут не останавливаясь, проигрывает подзорной трубе, в которую очередь.</span><u><span class="cnt">24 позиции · 68 производителей</span><span class="act">Открыть раздел</span></u></span></a></li><li><a class="libcat" data-cat="input" href="input/"><canvas class="libfx" aria-hidden="true"></canvas><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 25.5 H27.5"/><circle cx="16" cy="19.5" r="3"/><path d="M16 4 V11.5 m-2.4 -2.6 L16 11.5 l2.4 -2.6"/><path d="M10 22.5 a8 8 0 0 1 0 -6"/><path d="M22 16.5 a8 8 0 0 1 0 6"/></svg></span><span class="body"><i>02</i><b>Оборудование ввода</b><em>Чем человек отвечает экспозиции</em><span class="lead">Всё, чем посетитель действует: пальцы, руки, тело, голос, само его присутствие. Самая дешёвая часть спецификации и та, что решает, будет экспонат работать или станет мебелью. Разница между «интерактивным» и «включённым» — здесь.</span><u><span class="cnt">20 позиций · 51 производитель</span><span class="act">Открыть раздел</span></u></span></a></li><li><a class="libcat" data-cat="processing" href="processing/"><canvas class="libfx" aria-hidden="true"></canvas><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="14" height="14" rx="2.5"/><rect x="13.75" y="13.75" width="4.5" height="4.5" rx="1"/><path d="M13 9 V5 M19 9 V5 M13 23 V27 M19 23 V27 M9 13 H5 M9 19 H5 M23 13 H27 M23 19 H27"/></svg></span><span class="body"><i>03</i><b>Обработка и управление</b><em>То, чего посетитель не видит и на чём всё держится</em><span class="lead">Между тем, что человек сделал, и тем, что он увидел, лежит слой, которого нет ни на одной фотографии экспозиции: машины, движки, сеть и система управления залом. В спецификациях эту часть режут первой, потому что её не показать начальству. Через год именно она определяет, работает экспозиция или стоит.</span><u><span class="cnt">19 позиций · 46 производителей</span><span class="act">Открыть раздел</span></u></span></a></li></ul><h2>Чем мы в этом занимаемся</h2><p>Работая над проектом, мы отталкиваемся от желаемого эффекта, а не от конкретной технологии. Сначала — что человек должен унести с собой, и только потом чем это сделать. Мы не привязаны ни к одному производителю, поэтому под задачу подбирается лучшее решение, а не то, что привычнее или уже лежит на складе. Отсюда и библиотека: она написана как разбор ограничений — чтобы было видно, где технология действительно сильна, а где её берут по инерции.</p><p>Поставку берут на себя наши партнёры: любое оборудование из этой библиотеки на лучших для клиента условиях. Наша часть — сценарий, содержание, интерактив, программная часть и интеграция. Мы умеем строить сложные программно-аппаратные комплексы и отвечаем за то, чтобы это работало как одно целое, а не как набор коробок от разных поставщиков.</p><p>Если у вас на руках спецификация — пришлите, посмотрим и скажем, что в ней лишнее, чего не хватает и что не переживёт первый год. Бесплатно и без обязательств.</p><script>/* Карточки категорий: иконка рассыпается в точки, точки магнитятся к курсору.
+   Тот же приём, что на выборе проектов, но источник другой. Там облако собирается
+   из ПИКСЕЛЕЙ обложки; здесь обложек нет, поэтому иконка рисуется в канвас кодом
+   и облако снимается с собственного рисунка. Растеризовать <svg> через data-URI
+   было бы короче, но чтение такого канваса капризничает в части браузеров —
+   а свой рисунок читается везде и всегда. */
+(function () {
+  var cards = document.querySelectorAll('.libcat');
+  if (!cards.length || !window.requestAnimationFrame) return;
+  // мелкий экран: пыль летит К КУРСОРУ, а курсора на телефоне нет
+  if (!window.matchMedia || !matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  var DPR = Math.min(2, window.devicePixelRatio || 1);
+
+  function seg(c, pts) {
+    c.beginPath(); c.moveTo(pts[0][0], pts[0][1]);
+    for (var i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]);
+    c.stroke();
+  }
+  function rr(c, x, y, w, h, r) {
+    c.beginPath();
+    c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r);
+    c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r);
+    c.arcTo(x, y, x + w, y, r); c.closePath(); c.stroke();
+  }
+  var TAU = Math.PI * 2;
+  // геометрия ровно та же, что в LIB_ICONS: система координат 32×32
+  var DRAW = {
+    output: function (c) {
+      rr(c, 2.5, 12.5, 7, 7, 1.5);
+      c.beginPath(); c.arc(6, 16, 1.15, 0, TAU); c.fill();
+      seg(c, [[9.5, 14.2], [26.5, 6.5]]);
+      seg(c, [[9.5, 17.8], [26.5, 25.5]]);
+      seg(c, [[26.5, 6.5], [26.5, 25.5]]);
+    },
+    input: function (c) {
+      seg(c, [[4.5, 25.5], [27.5, 25.5]]);
+      c.beginPath(); c.arc(16, 19.5, 3, 0, TAU); c.stroke();
+      seg(c, [[16, 4], [16, 11.5]]);
+      seg(c, [[13.6, 8.9], [16, 11.5], [18.4, 8.9]]);
+      c.beginPath(); c.arc(16, 19.5, 6.5, Math.PI * 0.75, Math.PI * 1.25); c.stroke();
+      c.beginPath(); c.arc(16, 19.5, 6.5, -Math.PI * 0.25, Math.PI * 0.25); c.stroke();
+    },
+    processing: function (c) {
+      rr(c, 9, 9, 14, 14, 2.5);
+      rr(c, 13.75, 13.75, 4.5, 4.5, 1);
+      var pins = [[13, 9, 13, 5], [19, 9, 19, 5], [13, 23, 13, 27], [19, 23, 19, 27],
+                  [9, 13, 5, 13], [9, 19, 5, 19], [23, 13, 27, 13], [23, 19, 27, 19]];
+      for (var i = 0; i < pins.length; i++) seg(c, [[pins[i][0], pins[i][1]], [pins[i][2], pins[i][3]]]);
+    }
+  };
+
+  for (var i = 0; i < cards.length; i++) setup(cards[i]);
+
+  function setup(card) {
+    var fx = card.querySelector('.libfx'), ico = card.querySelector('.ico');
+    var kind = card.getAttribute('data-cat');
+    if (!fx || !ico || !DRAW[kind]) return;
+    var ctx = fx.getContext('2d');
+    var cloud = null, raf = null, lastT = 0, W = 0, H = 0;
+    var hover = false, mx = 0, my = 0, p = 0;
+
+    function build() {
+      var cr = card.getBoundingClientRect(), ir = ico.getBoundingClientRect();
+      var w = Math.round(cr.width), h = Math.round(cr.height);
+      if (!w || !h || !ir.width) return null;
+      W = w; H = h;
+      fx.width = Math.round(w * DPR); fx.height = Math.round(h * DPR);
+      fx.style.width = w + 'px'; fx.style.height = h + 'px';
+
+      // иконка рисуется в отдельный канвас размером с её рамку — оттуда снимаем точки
+      var s = Math.max(24, Math.round(ir.width * DPR));
+      var t = document.createElement('canvas'); t.width = t.height = s;
+      var tc = t.getContext('2d');
+      var pad = s * 0.20, k = (s - pad * 2) / 32;
+      tc.translate(pad, pad); tc.scale(k, k);
+      tc.strokeStyle = '#fff'; tc.fillStyle = '#fff';
+      tc.lineWidth = 1.6; tc.lineCap = 'round'; tc.lineJoin = 'round';
+      DRAW[kind](tc);
+      var d;
+      try { d = tc.getImageData(0, 0, s, s).data; } catch (e) { return null; }
+
+      // шаг подобран так, чтобы облако было около тысячи точек при любом DPR
+      // шаг 1 при обычном экране: облако около полутора тысяч точек. Меньше —
+      // и на просвет видно решётку вместо пыли
+      var step = Math.max(1, Math.round(s / 110));
+      var ox = ir.left - cr.left, oy = ir.top - cr.top, sc = ir.width / s;
+      var hx = [], hy = [];
+      for (var y = 0; y < s; y += step) for (var x = 0; x < s; x += step) {
+        if (d[(y * s + x) * 4 + 3] > 70) { hx.push(ox + x * sc); hy.push(oy + y * sc); }
+      }
+      var n = hx.length;
+      if (!n) return null;
+      var ph = new Float32Array(n), sp = new Float32Array(n);
+      for (var m = 0; m < n; m++) { ph[m] = Math.random(); sp[m] = 0.45 + Math.random() * 0.75; }
+      return { n: n, hx: new Float32Array(hx), hy: new Float32Array(hy), ph: ph, sp: sp };
+    }
+
+    function tick(now) {
+      raf = null;
+      var dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0.016;
+      lastT = now;
+      p = Math.max(0, Math.min(1, p + (hover ? dt * 2.6 : -dt * 3.2)));
+      if (!cloud) cloud = build();
+      if (!cloud) { ico.style.opacity = ''; return; }
+
+      // иконка уступает место точкам: рисунок один, а не два наложенных
+      ico.style.opacity = String(1 - Math.min(1, p * 1.6));
+
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      if (p <= 0.001) { lastT = 0; return; }   // ушли с карточки — цикл останавливается
+
+      // цель — курсор, ограниченный рамкой карточки, как на сетке проектов
+      var tx = Math.max(8, Math.min(W - 8, mx)), ty = Math.max(8, Math.min(H - 8, my));
+      var T = now / 1000;
+      ctx.globalCompositeOperation = 'lighter';
+      for (var i = 0; i < cloud.n; i++) {
+        var f = (T * cloud.sp[i] + cloud.ph[i]) % 1;      // непрерывный поток
+        var k = p * f * f * (3 - 2 * f);                  // мягкий разгон
+        var x = cloud.hx[i] + (tx - cloud.hx[i]) * k;
+        var y = cloud.hy[i] + (ty - cloud.hy[i]) * k;
+        // Яркость по дуге, а не по спаду. Со спадом точка гасла на первой трети
+        // пути, и вместо потока к курсору было облачко у иконки — поток не читался.
+        // Теперь дома точка тусклая, в полёте разгорается, у цели исчезает.
+        var a = p * (0.28 + 0.72 * Math.sin(Math.PI * f)) * (1 - f * f * f * f);
+        if (a <= 0.012) continue;
+        ctx.fillStyle = 'rgba(43,224,198,' + a.toFixed(3) + ')';
+        ctx.fillRect(x, y, 1.6, 1.6);
+      }
+      ctx.globalCompositeOperation = 'source-over';
+      raf = requestAnimationFrame(tick);
+    }
+    function wake() { if (!raf) raf = requestAnimationFrame(tick); }
+
+    card.addEventListener('pointerenter', function (e) {
+      hover = true;
+      var r = card.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top;
+      wake();
+    });
+    card.addEventListener('pointermove', function (e) {
+      var r = card.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top;
+    });
+    card.addEventListener('pointerleave', function () { hover = false; wake(); });
+    // размеры карточки меняются при перевёрстке — облако считается заново
+    addEventListener('resize', function () { cloud = null; }, { passive: true });
+  }
+})();
+</script>
     <a class="cta" href="../">Прислать спецификацию на проверку →</a>
   </article>
   <footer>

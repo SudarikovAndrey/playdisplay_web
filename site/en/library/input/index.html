@@ -262,9 +262,24 @@
               margin-top:18px; padding-top:14px; border-top:1px solid rgba(159,180,200,.16);
               text-decoration:none; font:500 12px/1 monospace; letter-spacing:.14em;
               text-transform:uppercase; color:#9fb4c8; }
-  .libcat u:after { content:"→"; color:#2be0c6; font-size:16px; opacity:.45;
-                    transition:opacity .2s, transform .2s; }
-  .libcat:hover u:after { opacity:1; transform:translateX(4px); }
+  /* Карточки не читались как нажимаемые (правка владельца 24.08). Счётчик слева
+     остаётся справкой, а справа появляется настоящий призыв — обведённый, цветной,
+     со стрелкой. Прямоугольник с текстом внутри ссылки читается как кнопка,
+     подсветка рамки при наведении этого не давала. */
+  .libcat .act { display:inline-flex; align-items:center; gap:9px; white-space:nowrap;
+                 padding:9px 15px; border:1px solid rgba(43,224,198,.5); color:#2be0c6;
+                 transition:background .2s, border-color .2s; }
+  .libcat .act:after { content:"→"; font-size:15px; transition:transform .2s; }
+  .libcat:hover .act { background:rgba(43,224,198,.14); border-color:#2be0c6; }
+  .libcat:hover .act:after { transform:translateX(4px); }
+  .libcat .cnt { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+
+  /* Слой пыли: иконка рассыпается в точки и они летят к курсору. Лежит ПОД текстом,
+     чтобы поток не мешал читать, и не ловит указатель — иначе ссылка перестала бы
+     нажиматься там, где холст поверх неё. */
+  .libcat .libfx { position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .libcat .ico, .libcat .body { position:relative; z-index:1; }
+  .libcat .ico { transition:border-color .2s, background .2s; }
 
   /* --- Знак категории над заголовком страницы категории --- */
   .libmark { display:flex; align-items:center; gap:14px; margin:0 0 4px; }
@@ -275,6 +290,8 @@
 
   @media (max-width:640px) {
     .libcat { grid-template-columns:1fr; gap:16px 0; padding:22px 20px; }
+    .libcat u { flex-direction:column; align-items:flex-start; gap:12px; }
+    .libcat .act { width:100%; justify-content:center; }
   }
 
   /* --- Навигация внутри категории: липкая, чтобы не терять место в длинном тексте --- */

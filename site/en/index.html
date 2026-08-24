@@ -246,6 +246,8 @@
   /* шестой пункт появился вместе с «Услугами» (21.08.2026): без своей задержки он
      выезжал раньше первого и цепочка появления ломалась */
   .mnav.open .mnav-links a:nth-child(6) { transition-delay: .30s; }
+  /* седьмой — «Оборудование» (24.08.2026), библиотека железа */
+  .mnav.open .mnav-links a:nth-child(7) { transition-delay: .35s; }
   .mnav-foot { margin-top: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .mnav .cta-play { flex: 1; justify-content: center; padding: 15px 20px; }
   .mnav .lang { margin-left: 0; }
@@ -1453,6 +1455,62 @@
     .book-form { transition: none; }
   }
 
+  /* ---------- отзывы и благодарности ----------
+     Живут внутри секции «Доверие», между абзацем и стеной логотипов: сначала
+     читатель узнаёт, КТО и ЗА ЧТО благодарил, и только потом видит знаки этих же
+     организаций. Раньше логотипы стояли без слов и читались как случайный набор.
+
+     ВИД НАМЕРЕННО ПРОТИВОПОЛОЖЕН АТЛАСУ. Там высокие вертикальные плитки с
+     бирюзовой чертой сверху; здесь широкие и низкие, с янтарной чертой слева.
+     Иначе два блока карточек на одной странице читались бы как повтор одного
+     приёма — та же беда, что уже случилась с «Библиотекой» и «Атласом».
+     Янтарь выбран не для разнообразия: в этом проекте бирюза означает «как мы это
+     делали», янтарь — «что из этого вышло», и благодарность заказчика — второе. */
+  .tr-block { margin: 44px 0 8px; }
+  .tr-cap { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--scan-white-faint); margin-bottom: 20px; }
+  .tr-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    perspective: 1200px; }
+  .tr-card { position: relative; background: rgba(16,30,37,0.42);
+    border: 1px solid var(--space-line); border-left: 2px solid var(--signal-amber);
+    padding: 18px 20px 16px; display: flex; flex-direction: column; gap: 7px;
+    transition: border-color .35s, background .35s, transform .4s var(--ease-overshoot); }
+  .tr-card:hover { background: rgba(16,30,37,0.66); border-color: rgba(255,106,61,0.45);
+    border-left-color: var(--signal-amber); transform: translateY(-3px); }
+  .tr-kind { font: 600 9px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--signal-amber); opacity: .85; }
+  .tr-org { font: 700 clamp(15px,1.15vw,18px)/1.25 var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
+  .tr-full { font: 400 11.5px/1.45 var(--font-body); color: var(--scan-white-faint); }
+  .tr-for { font: 400 13.5px/1.55 var(--font-body); color: var(--scan-white-dim); }
+  /* Цитата есть только у писем-благодарностей; у дипломов её нет, и карточка
+     обходится без неё — пустых кавычек не рисуем. */
+  .tr-quote { font: 400 italic 14px/1.5 var(--font-body); color: rgba(233,244,246,0.9);
+    padding-left: 12px; border-left: 1px solid rgba(255,106,61,0.35); }
+  .tr-who { margin-top: auto; padding-top: 8px; font: 400 10.5px var(--font-mono);
+    letter-spacing: 0.08em; color: var(--scan-white-faint); }
+  .tr-who .tr-year { color: var(--signal-amber); opacity: .8; }
+
+  /* Вылет из глубины — тот же приём, что у плиток Атласа, но ЗЕРКАЛЬНЫЙ: там
+     карточки приходят справа с поворотом -42°, здесь слева с +38°. Механика общая
+     (.tile-in ставит дальнюю точку, .on возвращает), поэтому каскад и уважение к
+     prefers-reduced-motion достаются даром. */
+  .tr-card.tile-in { opacity: 0;
+    transform: translate3d(-70px, 22px, -480px) rotateY(38deg) rotateX(6deg);
+    transform-origin: 100% 50%;
+    box-shadow: 0 34px 70px rgba(0,0,0,0.5);
+    transition: opacity .5s ease,
+                transform 1s cubic-bezier(.18,.9,.22,1),
+                box-shadow 1s ease; }
+  .tr-card.tile-in.on { opacity: 1; transform: none; box-shadow: 0 0 0 rgba(0,0,0,0); }
+  @media (max-width: 700px) {
+    /* Одна колонка, а не лента: горизонтальная полоса стояла бы прямо над такой же
+       полосой логотипов, и секция превратилась бы в два одинаковых свайпа подряд. */
+    .tr-grid { grid-template-columns: 1fr; gap: 10px; }
+    .tr-card { padding: 15px 16px 13px; }
+    .tr-block { margin: 32px 0 4px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .tr-card { transition: none; } }
+
   footer { background: var(--space-void); border-top: 1px solid var(--space-line); }
   /* справа снизу висит виджет ассистента (68px + отступ) — подпись подвала
      заканчивается раньше, иначе текст читается сквозь микрофон */
@@ -1885,6 +1943,38 @@
        шумом без причины. Каскадное появление карточек делает revealGrid. */
     #cards-fx { display: none; }
   }
+  /* ---------- ПОЛОСА «ОБОРУДОВАНИЕ»: вход в /library/ (24.08.2026) ----------
+     Раздел статический и живёт вне лендинга, поэтому с главной на него не было
+     ни одного перехода, кроме пункта меню. Полоса стоит сразу за концепциями:
+     человек, который только что смотрел, ЧТО можно сделать, здесь узнаёт, ЧЕМ.
+     Иконки те же три, что на самой странице раздела, — узнавание при переходе. */
+  .equip { border-top: 1px solid var(--space-line); border-bottom: 1px solid var(--space-line); }
+  .equip .eq-in { display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
+  .equip .eq-txt { flex: 1 1 380px; min-width: 0; }
+  .equip h2 { margin: 6px 0 10px; }
+  .equip .eq-icons { display: flex; gap: 14px; flex: 0 0 auto; }
+  .equip .eq-icons span {
+    width: 60px; height: 60px; padding: 12px; box-sizing: border-box;
+    border: 1px solid rgba(43,224,198,0.3); color: #2be0c6;
+    transition: border-color var(--duration-base), background var(--duration-base), transform var(--duration-base);
+  }
+  .equip .eq-icons span svg { display: block; width: 100%; height: 100%; }
+  .equip:hover .eq-icons span { border-color: #2be0c6; background: rgba(43,224,198,0.1); }
+  .equip:hover .eq-icons span:nth-child(2) { transform: translateY(-4px); }
+  .equip:hover .eq-icons span:nth-child(3) { transform: translateY(-8px); }
+  .equip .eq-go {
+    display: inline-flex; align-items: center; gap: 10px; margin-top: 8px;
+    font: 700 13px "Blender Pro", var(--font-body); letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--signal-amber); color: var(--space-void); padding: 13px 22px; text-decoration: none;
+    clip-path: polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+    transition: transform var(--duration-base) var(--ease-overshoot), box-shadow var(--duration-base);
+  }
+  .equip .eq-go:hover { transform: translateY(-2px); box-shadow: var(--glow-amber-soft); }
+  @media (max-width: 720px) {
+    .equip .eq-in { gap: 26px; }
+    .equip .eq-icons { order: -1; }
+    .equip .eq-icons span { width: 50px; height: 50px; padding: 10px; }
+  }
 </style>
 <script>
 /* Выбор подачи проектов на мобиле: ?mob=lenta | grid | more. Ставится на <html> ДО отрисовки,
@@ -1905,7 +1995,7 @@
 <!-- Аналитика: GA4 + Яндекс.Метрика + события воронки. Один файл на все страницы. -->
 <script src="analytics.js?v=7fe9358a" defer></script>
 <script>window.PD_LANG='en';</script>
-<script src="data/i18n/en.js?v=c0ed4392"></script>
+<script src="data/i18n/en.js?v=cf4f8259"></script>
 </head>
 <body class="booting">
 
@@ -1939,6 +2029,10 @@
       <a href="/en/services/">Услуги</a>
       <a href="#work">Проекты</a>
       <a href="#concepts">Библиотека</a>
+      <!-- «Оборудование», а не «Библиотека»: слово выше уже занято разделом концепций,
+           и два одинаковых пункта в меню читаются как ошибка. Ведёт на /library/ —
+           справочник по 63 типам железа. -->
+      <a href="/en/library/">Оборудование</a>
       <a href="#atlas">Атлас</a>
       <a href="#studio">Студия</a>
     </nav>
@@ -1964,6 +2058,7 @@
     <a href="/en/services/">Услуги</a>
     <a href="#work">Проекты</a>
     <a href="#concepts">Библиотека</a>
+    <a href="/en/library/">Оборудование</a>
     <a href="#atlas">Атлас</a>
     <a href="#studio">Студия</a>
     <a href="#contact">Контакты</a>
@@ -2095,6 +2190,18 @@
   <div class="wrap">
     <div class="kicker eyebrow">Доверие</div>
     <p>Наши работы показывал канал <b>Discovery</b>. <b>Среди клиентов</b> — автопроизводители, международные аэропорты, национальные музеи и промышленные корпорации.</p>
+    <!-- ===== ОТЗЫВЫ И БЛАГОДАРНОСТИ =====
+         Стоят ПЕРЕД стеной логотипов сознательно: сначала кто и за что благодарил,
+         потом знаки тех же организаций. Логотипы наконец получают смысл.
+         Содержание — data/trust.json (и data/en/trust.json), а не разметка:
+         девять карточек здесь означали бы девять наборов строк в словаре переводов,
+         и английская версия однажды отстала бы. Сканы не публикуем — в письмах
+         подписи, печати и внутренние телефоны исполнителей. -->
+    <div class="tr-block" id="trBlock" hidden>
+      <div class="tr-cap">Отзывы и благодарности</div>
+      <div class="tr-grid" id="trGrid"></div>
+    </div>
+
     <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
     <!-- без reveal-up: этот класс держит opacity:0 до появления класса in,
          а логотипы проявляются своим каскадом -->
@@ -2156,6 +2263,21 @@
       <div class="csn-bar"><span id="cStripFill"></span></div>
       <button class="csn-btn" id="cStripNext" aria-label="Вперёд">›</button>
     </div>
+  </div>
+</section>
+
+<!-- ===== ОБОРУДОВАНИЕ: вход в справочник /library/ ===== -->
+<section class="equip sec-pad">
+  <div class="wrap eq-in">
+    <div class="eq-txt">
+      <div class="kicker teal eyebrow">Библиотека оборудования</div>
+      <h2>Чем это делается.</h2>
+      <p class="intro-sub">63 типа оборудования, из которых собирается интерактивная экспозиция:
+        чем она показывает, чем слышит посетителя и что считает между этим. У каждого — когда
+        работает, когда не работает и кто это выпускает.</p>
+      <a class="eq-go" href="/en/library/">Открыть библиотеку <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="eq-icons" aria-hidden="true"><span><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="12.5" width="7" height="7" rx="1.5"/><circle cx="6" cy="16" r="1.15" fill="currentColor" stroke="none"/><path d="M9.5 14.2 L26.5 6.5"/><path d="M9.5 17.8 L26.5 25.5"/><path d="M26.5 6.5 L26.5 25.5"/></svg></span><span><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 25.5 H27.5"/><circle cx="16" cy="19.5" r="3"/><path d="M16 4 V11.5 m-2.4 -2.6 L16 11.5 l2.4 -2.6"/><path d="M10 22.5 a8 8 0 0 1 0 -6"/><path d="M22 16.5 a8 8 0 0 1 0 6"/></svg></span><span><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="14" height="14" rx="2.5"/><rect x="13.75" y="13.75" width="4.5" height="4.5" rx="1"/><path d="M13 9 V5 M19 9 V5 M13 23 V27 M19 23 V27 M9 13 H5 M9 19 H5 M23 13 H27 M23 19 H27"/></svg></span></div>
   </div>
 </section>
 
@@ -5800,6 +5922,77 @@
   });
 </script>
 <script>
+  // ===== Отзывы и благодарности: контент в data/trust.json =====
+  // Живут в секции «Доверие», перед стеной логотипов. Карточек девять, они короткие
+  // и не открываются — это не каталог, а доказательство. Клик никуда не ведёт
+  // сознательно: показывать нечего, сканы мы не публикуем.
+  (function(){
+    var grid = document.getElementById('trGrid');
+    var block = document.getElementById('trBlock');
+    if (!grid || !block) return;
+
+    // Своя экранировка, а не соседская: обе функции esc() в этом файле объявлены
+    // ВНУТРИ чужих замыканий (концепции и Атлас) и отсюда не видны — обращение к
+    // ним упало бы на первой же карточке. Данные наши и безобидные, но текст из
+    // json всё равно попадает в innerHTML, и пропускать его сырым нельзя.
+    function esc(t){
+      return String(t == null ? '' : t)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // hidden снимаем ТОЛЬКО после успешной загрузки. Если файла нет (или он битый),
+    // блок так и останется скрытым, и секция «Доверие» выглядит как раньше —
+    // пустой заголовок над пустотой хуже, чем отсутствие блока.
+    fetch(DATA + 'trust.json', { cache: 'no-cache' }).then(function(r){ return r.json(); }).then(function(json){
+      var items = (json && json.items) || [];
+      if (!items.length) return;
+      grid.innerHTML = items.map(function(it){
+        return '<article class="tr-card">'
+          + (it.kind ? '<div class="tr-kind">' + esc(it.kind) + '</div>' : '')
+          + '<div class="tr-org">' + esc(it.org) + '</div>'
+          + (it.full ? '<div class="tr-full">' + esc(it.full) + '</div>' : '')
+          + (it.for ? '<div class="tr-for">' + esc(it.for) + '</div>' : '')
+          + (it.quote ? '<div class="tr-quote">«' + esc(it.quote) + '»</div>' : '')
+          + '<div class="tr-who">' + esc(it.who || '')
+          + (it.year ? ' · <span class="tr-year">' + esc(it.year) + '</span>' : '')
+          + '</div></article>';
+      }).join('');
+      block.hidden = false;
+      dropInTrust();
+    }).catch(function(){ /* данных нет — блок остаётся скрытым, секция цела */ });
+
+    // Каскадный вылет из глубины. Приём тот же, что у плиток Атласа: .tile-in ставит
+    // дальнюю точку, .on возвращает на место, задержка растёт по номеру карточки.
+    // Классы СНИМАЮТСЯ после каскада — иначе .tile-in.on перебивает ховер-трансформ
+    // по специфичности, и карточка перестаёт приподниматься под курсором.
+    function dropInTrust(){
+      var tiles = [].slice.call(grid.querySelectorAll('.tr-card'));
+      tiles.forEach(function(el){ el.classList.add('tile-in'); });
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) { tiles.forEach(function(el){ el.classList.add('on'); }); return; }
+      function run(){
+        tiles.forEach(function(el, i){ setTimeout(function(){ el.classList.add('on'); }, 40 + i * 55); });
+        setTimeout(function(){ tiles.forEach(function(el){ el.classList.remove('tile-in', 'on'); }); },
+          40 + tiles.length * 55 + 800);
+      }
+      // СТРАХОВКА ОТ ПОТЕРИ СОДЕРЖАНИЯ. Анимация начинается с opacity: 0, значит
+      // несработавший наблюдатель прячет раздел НАВСЕГДА — а это доказательства,
+      // ради которых блок и сделан. Поймано при проверке: в фоновой вкладке
+      // IntersectionObserver молчит, даже когда блок целиком в кадре.
+      // Поэтому запуск идёт от того, что случится раньше: наблюдатель или таймер.
+      // Двойного запуска не будет — done снимает оба пути.
+      var done = false;
+      function once(){ if (done) return; done = true; run(); }
+      if (!window.IntersectionObserver) { requestAnimationFrame(once); return; }
+      var io = new IntersectionObserver(function(es){
+        es.forEach(function(e){ if (e.isIntersecting) { io.disconnect(); once(); } });
+      }, { threshold: 0.12 });
+      io.observe(grid);
+      setTimeout(function(){ try { io.disconnect(); } catch (e) {} once(); }, 4000);
+    }
+  })();
+
   // ===== Авторские концепции: контент в data/concepts.json, карточки в стиле Work =====
   // Открытие/закрытие переиспользует общий движок частиц FlyGL (harvest/rasterTexts/coverArgs/
   // boxDist/busyLock — определены в скрипте кейсов проектов и доступны здесь как глобальные var).
