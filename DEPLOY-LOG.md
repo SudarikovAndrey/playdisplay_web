@@ -8,6 +8,60 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-24 16:41 — hybrid-v8 @ 00fbbd4
+
+**Коммиты в этой поставке**
+```
+00fbbd4 новая посадочная: оборудование для музея (RU+EN), под запрос 602/мес
+72874ce Журнал деплоя: d2a9b3b
+```
+
+**На сервер отправлено файлов:** 115, удалено: 0
+```
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+data/services.json
+data/en/services.json
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/concepts/ar-portal/index.html
+…и ещё 75
+```
+
+
 ## 2026-08-24 12:30 — hybrid-v8 @ d2a9b3b
 
 **Коммиты в этой поставке**
