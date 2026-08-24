@@ -105,6 +105,11 @@
         return;
       }
       if (el.id === 'bookCall') { track('book_click', {}); return; }
+      /* Вход в сцену. Раньше не измерялся вовсе: событий было восемь, и игры
+         среди них не было — на вопрос «сколько человек играло» ответа не
+         существовало в принципе. Кнопок две: на первом экране и в мобильном
+         меню, поэтому источник кладём в параметр. */
+      if (el.id === 'bootPlay' || el.id === 'mnavGame') { track('game_start', { source: el.id }); return; }
       var href = (el.tagName === 'A' && el.getAttribute('href')) || '';
       if (href.indexOf('mailto:') === 0) { track('contact_click', { channel: 'email' }); return; }
       if (href.indexOf('tel:') === 0) { track('contact_click', { channel: 'phone' }); return; }
@@ -157,13 +162,41 @@
     return sendOrig.apply(this, arguments);
   };
 
-  /* ---- какие кейсы смотрят: SPA-роутинг по хешу GA4 сам не видит ---- */
-  window.addEventListener('hashchange', function () {
+  /* ---- какие кейсы смотрят: SPA-роутинг по хешу GA4 сам не видит ----
+
+     ПОЧЕМУ ОДНОГО hashchange МАЛО (найдено 23.08.2026 по нулю событий за 28 дней).
+     Кейс открывается не присваиванием location.hash, а history.pushState —
+     см. setRoute() в index.html. pushState адрес меняет, а СОБЫТИЕ hashchange
+     НЕ ПОРОЖДАЕТ, это поведение по стандарту. Слушатель висел, выглядел рабочим
+     и не срабатывал ни разу: за 28 дней при 89 посетителях ровно 0 case_view.
+     Заодно молчал и ручной хит Метрики — значит и она кейсы не считала.
+
+     Поэтому подменяем pushState и replaceState: событие берём из самого перехода,
+     а не надеемся, что браузер о нём сообщит. hashchange оставляем — он ловит
+     переходы «назад/вперёд» и запасной путь в catch у setRoute. */
+  var lastSlug = null;
+  function onRoute() {
     var m = location.hash.match(/^#\/work\/([\w-]+)/);
-    if (!m) return;
+    if (!m) { lastSlug = null; return; }
+    if (m[1] === lastSlug) return;   // pushState и hashchange могут прийти оба
+    lastSlug = m[1];
     track('case_view', { slug: m[1] });
     if (LIVE) try { window.ym(YM_ID, 'hit', location.href); } catch (e) {}
+  }
+  window.addEventListener('hashchange', onRoute);
+  window.addEventListener('popstate', onRoute);
+  ['pushState', 'replaceState'].forEach(function (name) {
+    var orig = history[name];
+    if (typeof orig !== 'function') return;
+    history[name] = function () {
+      var r = orig.apply(this, arguments);
+      // setTimeout(0): к моменту вызова адрес уже сменился, но пусть SPA
+      // сначала закончит свой обработчик — иначе ловим промежуточное состояние
+      setTimeout(onRoute, 0);
+      return r;
+    };
   });
+  onRoute();   // заход сразу по ссылке вида /#/work/<slug>
 
   /* ---- сколько времени проводят в каждой секции ----
      IntersectionObserver копит секунды, пока секция занимает половину экрана.
