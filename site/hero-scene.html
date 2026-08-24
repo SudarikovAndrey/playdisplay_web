@@ -334,6 +334,22 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     background: rgba(0,0,0,.4); color: #fff; font-size: 16px; cursor: pointer;
     backdrop-filter: blur(4px); }
   #player-close:hover { background: rgba(0,0,0,.65); }
+  /* Стрелки-подсказки: на компе их роль играет курсор, поэтому показываем только тачу.
+     Прозрачность малая — это подсказка на краю кадра, а не кнопка интерфейса. */
+  #side-hints { display: none; }
+  body.is-mobile #side-hints { display: block; }
+  body.game #side-hints, body.archive #side-hints { display: none !important; }
+  #side-hints button { position: fixed; top: 50%; z-index: 13; width: 44px; height: 64px;
+    transform: translateY(-50%); border: 0; padding: 0; background: none; color: var(--ink);
+    opacity: 0; transition: opacity .45s; -webkit-tap-highlight-color: transparent;
+    display: flex; align-items: center; justify-content: center; }
+  #side-hints.on button { opacity: .45; }
+  #hint-prev { left: 0; }
+  #hint-next { right: 0; }
+  #side-hints button svg { width: 23px; height: 23px; fill: none; stroke: currentColor;
+    stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+    /* тень: кадры бывают и светлые, и тёмные, а стрелка одна */
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,.5)); }
   #lensring { position: fixed; left: 0; top: 0; width: 510px; height: 510px;
     margin: -255px 0 0 -255px; z-index: 12; pointer-events: none; border-radius: 50%;
     border: 1px solid rgba(255,255,255,.32); box-shadow: 0 0 24px rgba(255,255,255,.08) inset;
@@ -613,6 +629,14 @@ addEventListener('DOMContentLoaded', function(){
 <div id="grain"></div>
 <div id="frame"></div>
 <div id="lensring"></div>
+<!-- СТРЕЛКИ-ПОДСКАЗКИ ПО БОКАМ — только на тач-экранах. У мыши для этого есть курсор:
+     у краёв он превращается в стрелку (#pluscursor.edge-l/.edge-r). Пальцу подсказать
+     было нечем, и галерея на телефоне выглядела единственным кадром — что рядом есть
+     ещё четырнадцать проектов, посетитель не узнавал. Нажатие листает на соседний. -->
+<div id="side-hints" aria-hidden="true">
+  <button id="hint-prev" type="button" aria-label="Предыдущий проект"><svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/></svg></button>
+  <button id="hint-next" type="button" aria-label="Следующий проект"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/></svg></button>
+</div>
 <div id="pluscursor"><svg viewBox="0 0 48 48">
   <circle class="cur-ring-bg" cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="2" opacity=".28"/>
   <!-- кольцо-прогресс автоплея: заполняется по кругу до перехода на следующий проект -->
@@ -756,6 +780,10 @@ addEventListener('DOMContentLoaded', function(){
     <div class="set-row">
       <div class="set-label"><span>Стягивание к граням</span><b id="v-edge">0</b></div>
       <input type="range" id="s-edge" min="-1" max="1" step="0.05">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Линза чёткости</span><b id="v-lensr">0.50</b></div>
+      <input type="range" id="s-lensr" min="0.1" max="1.5" step="0.02">
     </div>
     <h4 class="set-sub">Вихрь</h4>
     <div class="set-row">
@@ -908,7 +936,16 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 // «-m» (вдвое-втрое легче), у остальных пяти её нет — они и так по 7-19 МБ.
 // Подменяем ТОЛЬКО там, где копия точно существует: иначе вместо ролика будет 404,
 // а витрина молча останется на точках. Появятся новые «-m» — дописать сюда.
-const LIGHT_OK = { 'videos/bmw.mp4': 1, 'videos/mig.mp4': 1, 'videos/coalco.mp4': 1 };
+// Белый список: только те ролики, у которых лёгкая копия «-m» РЕАЛЬНО существует.
+// Список, а не «подставляй -m всегда», потому что отсутствующий файл дал бы на
+// телефоне пустой кадр вместо видео, и молча.
+// 24.08.2026 дополнен пятью: замер показал, что карусель тянула с телефона 71 МБ,
+// из них 58 — полноразмерные ролики без лёгких копий. Копии сделаны (1280, 1.2 Мбит,
+// как у соседей), стало около 35 МБ. При добавлении нового ролика в LOCAL_VIDEO
+// сюда его вписывать ТОЛЬКО вместе с готовым файлом «-m».
+const LIGHT_OK = { 'videos/bmw.mp4': 1, 'videos/mig.mp4': 1, 'videos/coalco.mp4': 1,
+                   'videos/VDNH.mp4': 1, 'videos/ODK.mp4': 1, 'videos/ra.mp4': 1,
+                   'videos/VDNH_airports.mp4': 1, 'videos/rostec.mp4': 1 };
 function vLight(p){ return (isMobile && LIGHT_OK[p]) ? p.replace(/\.mp4$/, '-m.mp4') : p; }
 
 // СТАРТОВАЯ КАРУСЕЛЬ = только проекты с подготовленными клипами. Привязываем локальный
@@ -927,7 +964,7 @@ console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
 // авто-качество само снизит нагрузку на слабом железе.
-const SETTINGS_DEFAULTS = { height: 26, viewy: 0, fov: 41, dist: 46, sizemin: 0.5, sizemax: 8, count: 1, spread: 0, edge: -0.7, sizevar: 1, projscale: 1.5, objscale: 2.15, envscale: 1, morph: 1.7, vortspeed: 0.08, vortamp: 0.14, vortpct: 0.01, rubber: 0.06, stickx: 0.85, sticky: 1.25, stickexpo: 0.4, envon: true, sound: true, autoq: true, projfit: true, model: 'original' }; // подобрано вручную (экспорт панели 27.07)
+const SETTINGS_DEFAULTS = { height: 26, viewy: 0, fov: 41, dist: 46, sizemin: 0.5, sizemax: 8, count: 1, spread: 0, edge: -0.7, sizevar: 1, projscale: 1.5, objscale: 2.15, envscale: 1, morph: 1.7, vortspeed: 0.08, vortamp: 0.14, vortpct: 0.01, rubber: 0.06, lensr: 0.5, stickx: 0.85, sticky: 1.25, stickexpo: 0.4, envon: true, sound: true, autoq: true, projfit: true, model: 'original' }; // подобрано вручную (экспорт панели 27.07)
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -945,8 +982,14 @@ const _ua = navigator.userAgent;
 const _iPadOS = /Macintosh/.test(_ua) && (navigator.maxTouchPoints || 0) > 1;
 const isMobile = /Mobi|Android|iPhone|iPad/i.test(_ua) || _iPadOS || Math.min(innerWidth, innerHeight) < 620;
 if (isMobile) document.body.classList.add('is-mobile'); // хук для мобильных-ТОЛЬКО стилей, комп его не получает
-// ОТДЕЛЬНЫЙ профиль настроек для мобилы: тюнинг «под телефон» НЕ трогает десктопный профиль
-const SETTINGS_KEY_ACTIVE = isMobile ? SETTINGS_KEY + '_m' : SETTINGS_KEY;
+// ТРИ ПРОФИЛЯ НАСТРОЕК, И У ПЛАНШЕТА СВОЙ (24.08.2026). Сначала планшет делил профиль с
+// телефоном, но общего у них мало: экран втрое крупнее, пропорции другие, железо мощнее —
+// подбор, годный для телефона, на iPad выглядит редким и мелким. Признак планшета — тач
+// при узкой стороне экрана от 620 px (или iPad с десктопным UA, см. выше).
+// Ключи в localStorage: pd_proto_settings (комп), …_t (планшет), …_m (телефон).
+const _tablet = isMobile && (_iPadOS || Math.min(innerWidth, innerHeight) >= 620);
+const PROFILE = !isMobile ? 'desktop' : (_tablet ? 'tablet' : 'mobile');
+const SETTINGS_KEY_ACTIVE = SETTINGS_KEY + (PROFILE === 'desktop' ? '' : (PROFILE === 'tablet' ? '_t' : '_m'));
 // режим настройки камеры под мобилу (панель + ручной FOV); включается сообщением pdCam от лендинга (ссылка ?cam=1)
 let camMode = false, _syncPanel = null;
 let _hadSaved = false;
@@ -960,14 +1003,17 @@ try { const raw = localStorage.getItem(SETTINGS_KEY_ACTIVE); if (raw) { Object.a
 // разбор падает, обещание гасится .catch, сцена открывается на заводских. Это норма.
 let _sharedWait = null;
 try {
-  _sharedWait = fetch('api/scene.php?p=' + (isMobile ? 'mobile' : 'desktop'), { cache: 'no-store' })
+  _sharedWait = fetch('api/scene.php?p=' + PROFILE, { cache: 'no-store' })
     .then(r => (r.ok ? r.json() : null)).catch(() => null);
 } catch (e) {}
-// Заводская плотность точек для тач-устройств. У планшета (сюда же попал iPad, см. выше)
-// экран втрое крупнее телефонного и железо мощнее — на телефонной доле 0.12 сцена
-// выглядела бы редкой. Свой набор, сохранённый из панели, это правило не трогает.
-const _tablet = isMobile && Math.min(innerWidth, innerHeight) >= 620;
-if (isMobile && !_hadSaved) S.count = Math.min(S.count, _tablet ? 0.3 : 0.12);
+// Заводские значения для тач-устройств, пока свой набор не сохранён. Плотность точек у
+// планшета выше телефонной (экран крупнее, на 0.12 сцена выглядит редкой), а линза
+// чёткости — уже: на узком экране широкая линза покрывает его целиком, и «зона внимания»
+// в центре не читается вовсе (см. lensr ниже).
+if (isMobile && !_hadSaved) {
+  S.count = Math.min(S.count, _tablet ? 0.3 : 0.12);
+  S.lensr = _tablet ? 0.42 : 0.36;
+}
 // потолок генерации точек: сцена сэмплируется в PT_MUL раз плотнее, слайдер «Кол-во» показывает долю
 // на мобильных потолок ниже: меньше памяти и вершинной нагрузки, глазу незаметно
 const PT_MUL = isMobile ? 8 : 20, GEN_LIN = Math.sqrt(PT_MUL);
@@ -2252,6 +2298,9 @@ addEventListener('message', e => {
     if (play.state === 0) { if (lastWMax > 0.5) startPlay(); }
     else stopPlay();
   }
+  // тап у левого/правого края героя на мобиле: лендинг ловит его сам (сцена там не
+  // получает касаний вовсе) и просит перелистнуть галерею
+  if (typeof e.data.pdStep === 'number') stepGallery(e.data.pdStep);
   // режим настройки камеры под мобилу (ссылка ?cam=1 на лендинге): открыть панель
   if (e.data.pdCam) openCamPanel();
   if (typeof e.data.pdVisible === 'boolean') {
@@ -2297,6 +2346,28 @@ addEventListener('pointerup', e => {
     if (lastWMax > 0.6) startPlay();                    // клик по центру на кадре = зум в видео
   }
 });
+// ШАГ ГАЛЕРЕИ НА СОСЕДНИЙ ПРОЕКТ — одна дверь для всех, кто листает не свайпом:
+// краевые стрелки на тач-экране (кнопки ниже) и тап у края экрана на лендинге
+// (там сцена не ловит касаний — приходит сообщением pdStep).
+function stepGallery(dir) {
+  if (GAME.on) return;
+  if (typeof ARCHIVE !== 'undefined' && ARCHIVE.on) return;
+  if (play.state !== 0) { stopPlay(); return; }   // открыт ролик — сначала закрываем его
+  navTarget = Math.round(navTarget) + (dir < 0 ? -1 : 1);
+  lastInput = performance.now();
+  navigated = true;
+  autoT = 0;                                       // ручное действие снимает автоплей
+}
+const sideHints = document.getElementById('side-hints');
+if (sideHints) ['hint-prev', 'hint-next'].forEach((id, i) => {
+  const b = document.getElementById(id);
+  // Касание гасим на месте: window-обработчики свайпа и «клика по сцене» ниже приняли бы
+  // этот же тап за поворот облака или за запуск видео.
+  b.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+  b.addEventListener('pointerdown', e => e.stopPropagation());
+  b.addEventListener('click', e => { e.stopPropagation(); stepGallery(i === 0 ? -1 : 1); });
+});
+
 // слайдер: прямое скольжение по спирали (магнит на время перетаскивания отключён)
 const scrub = document.getElementById('scrub');
 const autobar = document.getElementById('autobar');
@@ -2468,6 +2539,16 @@ function updateDynamics(dt, time, wMax) {
   const hFrac = Math.tan(THREE.MathUtils.degToRad(PROJ_FOV / 2))
               / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   const hPx = hFrac * innerHeight;
+  // ТАЧ: НАВОДИТЬ НЕЧЕМ, ПОЭТОМУ «КУРСОР» СТОИТ В ЦЕНТРЕ ЭКРАНА (24.08.2026).
+  // Линза чёткости — главный инструмент рассматривания: под курсором точки собираются
+  // в истинные позиции и рисуются ВСЕ, минуя ограничение «Кол-ва» (см. eff в шейдере).
+  // На телефоне мыши нет, и линза оставалась там, где её застало открытие страницы:
+  // формально в центре, но после поворота экрана — уже нет, а на узком экране радиуса
+  // 450 px хватало на весь кадр, поэтому «зоны внимания» не было видно вовсе.
+  // Теперь центр пересчитывается каждый кадр (переживает поворот и панели браузера),
+  // а радиус линзы задаётся долей меньшей стороны экрана — ползунок «Линза чёткости».
+  if (isMobile) { mousePX = innerWidth / 2; mousePY = innerHeight / 2; }
+  voxUniforms.uLensR.value = S.lensr * Math.min(innerWidth, innerHeight);
   MOUSE_UV.value.set(
     0.5 + (mousePX - innerWidth / 2) / (hPx * (16 / 9)),
     0.5 - (mousePY - innerHeight / 2) / hPx);
@@ -2478,6 +2559,8 @@ function updateDynamics(dt, time, wMax) {
   const edgeR = play.state === 0 && mousePX > innerWidth * 0.87;
   plusCursor.classList.toggle('edge-l', edgeL);
   plusCursor.classList.toggle('edge-r', edgeR);
+  // стрелки-подсказки на тач-экране: только в режиме галереи (в ролике и в игре мешают)
+  if (sideHints) sideHints.classList.toggle('on', play.state === 0 && !GAME.on);
   // шлейф линзы: [0] — текущая позиция; каждые ~70мс/24px пишем «призрак» в историю,
   // призраки затухают за ~0.45с → прояснение тянется хвостом за курсором
   const nowMs = performance.now();
@@ -6158,8 +6241,8 @@ addEventListener('resize', () => {
 // ---------- Панель настроек ----------
 (function () {
   const g = id => document.getElementById(id);
-  const el  = { height: g('s-height'), viewy: g('s-viewy'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), morph: g('s-morph'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale'), envscale: g('s-envscale'), vortspeed: g('s-vortspeed'), vortamp: g('s-vortamp'), vortpct: g('s-vortpct'), rubber: g('s-rubber'), stickx: g('s-stickx'), sticky: g('s-sticky'), stickexpo: g('s-stickexpo') };
-  const lbl = { height: g('v-height'), viewy: g('v-viewy'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), morph: g('v-morph'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale'), envscale: g('v-envscale'), vortspeed: g('v-vortspeed'), vortamp: g('v-vortamp'), vortpct: g('v-vortpct'), rubber: g('v-rubber'), stickx: g('v-stickx'), sticky: g('v-sticky'), stickexpo: g('v-stickexpo') };
+  const el  = { height: g('s-height'), viewy: g('s-viewy'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), morph: g('s-morph'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale'), envscale: g('s-envscale'), vortspeed: g('s-vortspeed'), vortamp: g('s-vortamp'), vortpct: g('s-vortpct'), rubber: g('s-rubber'), lensr: g('s-lensr'), stickx: g('s-stickx'), sticky: g('s-sticky'), stickexpo: g('s-stickexpo') };
+  const lbl = { height: g('v-height'), viewy: g('v-viewy'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), morph: g('v-morph'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale'), envscale: g('v-envscale'), vortspeed: g('v-vortspeed'), vortamp: g('v-vortamp'), vortpct: g('v-vortpct'), rubber: g('v-rubber'), lensr: g('v-lensr'), stickx: g('v-stickx'), sticky: g('v-sticky'), stickexpo: g('v-stickexpo') };
   const fmt = {
     height:  v => (v > 0 ? '+' : '') + (+v).toFixed(1),
     viewy:   v => (v > 0 ? '+' : '') + (+v).toFixed(1),
@@ -6179,6 +6262,7 @@ addEventListener('resize', () => {
     vortamp: v => (+v).toFixed(2),
     vortpct: v => Math.round(v * 100) + '%',
     rubber: v => (+v).toFixed(2) + '\u00d7',
+    lensr:  v => (+v).toFixed(2) + ' экр',
     stickx: v => (+v).toFixed(2) + ' экр/с',
     sticky: v => (+v).toFixed(2) + ' экр/с',
     stickexpo: v => Math.round(v * 100) + '%',
@@ -6242,7 +6326,7 @@ addEventListener('resize', () => {
   projfitBtn.addEventListener('click', () => { S.projfit = !S.projfit; syncProjfit(); });
   syncProjfit();
 
-  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, rubber: S.rubber, stickx: S.stickx, sticky: S.sticky, stickexpo: S.stickexpo, envon: S.envon, sound: S.sound, autoq: S.autoq, projfit: S.projfit, model: S.model });
+  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, rubber: S.rubber, lensr: S.lensr, stickx: S.stickx, sticky: S.sticky, stickexpo: S.stickexpo, envon: S.envon, sound: S.sound, autoq: S.autoq, projfit: S.projfit, model: S.model });
   // применить весь набор настроек к сцене (после сброса/импорта)
   function applyAll() {
     sync(); updateProjectors(); rebuildGrids();
