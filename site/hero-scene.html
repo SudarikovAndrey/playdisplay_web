@@ -556,6 +556,8 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   .set-row input[type=range]::-moz-range-thumb { width: 13px; height: 13px; border-radius: 50%;
     background: var(--ink); border: 2px solid rgba(255,255,255,.8); }
   #settings-actions { display: flex; gap: 8px; margin-top: 16px; }
+  /* подпись под кнопкой «для всех»: когда и что уехало на сервер */
+  #s-cloud-note { margin-top: 8px; font-size: 10px; line-height: 1.5; opacity: .6; letter-spacing: .04em; }
   #settings-actions button { flex: 1; padding: 9px 0; border-radius: 9px; cursor: pointer;
     font: inherit; font-weight: 600; letter-spacing: .04em; transition: all .2s; }
   #s-save { background: var(--ink); color: #d9d9db; border: 1px solid var(--ink); }
@@ -814,14 +816,36 @@ addEventListener('DOMContentLoaded', function(){
     <div class="set-row">
       <button id="s-projfit">Картинка на весь экран: вкл</button>
     </div>
+    <!-- Руль игры. Раньше эти числа были константами в коде, и каждая правка «на глаз»
+         уезжала на сайт целым деплоем. Подбирать их можно только пальцем на живом
+         телефоне — значит, им место здесь. -->
+    <h4 class="set-sub">Управление на телефоне</h4>
+    <div class="set-row">
+      <div class="set-label"><span>Скорость руля · вбок</span><b id="v-stickx">0.85</b></div>
+      <input type="range" id="s-stickx" min="0.2" max="3" step="0.05">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Скорость руля · вверх-вниз</span><b id="v-sticky">1.25</b></div>
+      <input type="range" id="s-sticky" min="0.2" max="3" step="0.05">
+    </div>
+    <div class="set-row">
+      <div class="set-label"><span>Мягкость у центра</span><b id="v-stickexpo">40%</b></div>
+      <input type="range" id="s-stickexpo" min="0" max="1" step="0.05">
+    </div>
     <div id="settings-actions">
       <button id="s-export">Экспорт</button>
       <button id="s-import">Импорт</button>
     </div>
     <div id="settings-actions">
       <button id="s-reset">Сброс</button>
-      <button id="s-save">Сохранить</button>
+      <button id="s-save">Сохранить себе</button>
     </div>
+    <!-- Сохранение на сервер: вид сцены меняется у ВСЕХ посетителей, поэтому кнопка
+         отдельная и спрашивает пароль (проверяет его api/scene.php, здесь его нет). -->
+    <div id="settings-actions">
+      <button id="s-cloud" class="wide">Сохранить для всех</button>
+    </div>
+    <div id="s-cloud-note"></div>
   </div>
 </div>
 
@@ -840,7 +864,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2807-game43';</script>
+<script>window.PD_V = 'b2308-stick5';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -903,12 +927,23 @@ console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
 // авто-качество само снизит нагрузку на слабом железе.
-const SETTINGS_DEFAULTS = { height: 26, viewy: 0, fov: 41, dist: 46, sizemin: 0.5, sizemax: 8, count: 1, spread: 0, edge: -0.7, sizevar: 1, projscale: 1.5, objscale: 2.15, envscale: 1, morph: 1.7, vortspeed: 0.08, vortamp: 0.14, vortpct: 0.01, rubber: 0.06, envon: true, sound: true, autoq: true, projfit: true, model: 'original' }; // подобрано вручную (экспорт панели 27.07)
+const SETTINGS_DEFAULTS = { height: 26, viewy: 0, fov: 41, dist: 46, sizemin: 0.5, sizemax: 8, count: 1, spread: 0, edge: -0.7, sizevar: 1, projscale: 1.5, objscale: 2.15, envscale: 1, morph: 1.7, vortspeed: 0.08, vortamp: 0.14, vortpct: 0.01, rubber: 0.06, stickx: 0.85, sticky: 1.25, stickexpo: 0.4, envon: true, sound: true, autoq: true, projfit: true, model: 'original' }; // подобрано вручную (экспорт панели 27.07)
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
 // мобильный режим определяем ДО загрузки: тач-устройство или узкий/портретный экран (в т.ч. сжатое окно на десктопе)
-const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || Math.min(innerWidth, innerHeight) < 620;
+//
+// IPAD ПРОХОДИЛ КАК ДЕСКТОП, И ИЗ-ЗА ЭТОГО В ИГРЕ НЕ ПОЯВЛЯЛСЯ ДЖОЙСТИК (23.08.2026).
+// Safari на iPadOS 13+ представляется строкой «Macintosh»: слова iPad в UA больше нет
+// вовсе, а узкая сторона экрана у планшета 768–834 px, то есть выше порога 620. Оба
+// условия мимо — isMobile=false, блок руля ниже не выполнялся, а прицел брался от мыши,
+// которой на планшете нет: корабль стоял колом. Признак настоящего планшета — «Macintosh»
+// С ТАЧЕМ: у всамделишного Мака maxTouchPoints равен нулю, тачскринов у них не бывает.
+// Проверять просто «есть тач» нельзя — под это подпадают ноутбуки с сенсорным экраном,
+// у которых есть и мышь, и им мобильный профиль качества ни к чему.
+const _ua = navigator.userAgent;
+const _iPadOS = /Macintosh/.test(_ua) && (navigator.maxTouchPoints || 0) > 1;
+const isMobile = /Mobi|Android|iPhone|iPad/i.test(_ua) || _iPadOS || Math.min(innerWidth, innerHeight) < 620;
 if (isMobile) document.body.classList.add('is-mobile'); // хук для мобильных-ТОЛЬКО стилей, комп его не получает
 // ОТДЕЛЬНЫЙ профиль настроек для мобилы: тюнинг «под телефон» НЕ трогает десктопный профиль
 const SETTINGS_KEY_ACTIVE = isMobile ? SETTINGS_KEY + '_m' : SETTINGS_KEY;
@@ -916,7 +951,23 @@ const SETTINGS_KEY_ACTIVE = isMobile ? SETTINGS_KEY + '_m' : SETTINGS_KEY;
 let camMode = false, _syncPanel = null;
 let _hadSaved = false;
 try { const raw = localStorage.getItem(SETTINGS_KEY_ACTIVE); if (raw) { Object.assign(S, JSON.parse(raw)); _hadSaved = true; } } catch (e) {}
-if (isMobile && !_hadSaved) S.count = Math.min(S.count, 0.12);
+// ОБЩИЕ НАСТРОЙКИ, ОДНИ НА ВСЕХ ПОСЕТИТЕЛЕЙ (23.08.2026). Панель умеет положить подбор
+// на сервер (api/scene.php), и оттуда его получает каждый — а не только тот браузер, где
+// крутили ползунки. Запрос уходит ЗДЕСЬ, до сборки сцены, а применяется, когда придёт
+// ответ: ждать его нельзя, первый экран сайта не должен зависеть от чужой сети.
+// Свой сохранённый профиль сильнее общего: настроил у себя — видишь своё.
+// На превью GitHub Pages и на serve.py php не исполняется, ответ приходит не-JSON —
+// разбор падает, обещание гасится .catch, сцена открывается на заводских. Это норма.
+let _sharedWait = null;
+try {
+  _sharedWait = fetch('api/scene.php?p=' + (isMobile ? 'mobile' : 'desktop'), { cache: 'no-store' })
+    .then(r => (r.ok ? r.json() : null)).catch(() => null);
+} catch (e) {}
+// Заводская плотность точек для тач-устройств. У планшета (сюда же попал iPad, см. выше)
+// экран втрое крупнее телефонного и железо мощнее — на телефонной доле 0.12 сцена
+// выглядела бы редкой. Свой набор, сохранённый из панели, это правило не трогает.
+const _tablet = isMobile && Math.min(innerWidth, innerHeight) >= 620;
+if (isMobile && !_hadSaved) S.count = Math.min(S.count, _tablet ? 0.3 : 0.12);
 // потолок генерации точек: сцена сэмплируется в PT_MUL раз плотнее, слайдер «Кол-во» показывает долю
 // на мобильных потолок ниже: меньше памяти и вершинной нагрузки, глазу незаметно
 const PT_MUL = isMobile ? 8 : 20, GEN_LIN = Math.sqrt(PT_MUL);
@@ -5049,9 +5100,9 @@ function updateGame(dt, time) {
   // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной;
   // на мобиле вместо курсора мыши — палец на экране (touchPX/Y), комп это ветвление не задействует
   if (isMobile && (stickVX || stickVY)) {
-    // ЭКСПО-КРИВАЯ ОТКЛИКА (16.08, v4). Полный ход ручки = экран за ~2.4с по X и
-    // ~1.6с по Y; вертикальный диапазон прицела вдвое уже горизонтального, поэтому
-    // по Y скорость выше.
+    // ЭКСПО-КРИВАЯ ОТКЛИКА (16.08, v4; числа с 23.08 живут в настройках). Полный ход
+    // ручки = экран примерно за 1.2с по X и 0.8с по Y; вертикальный диапазон прицела
+    // вдвое уже горизонтального, поэтому по Y скорость выше.
     //
     // История, чтобы не пойти по третьему кругу. Линейный отклик (v1) «швырял»:
     // чуть тронул ручку — корабль уже разогнан. Лечение квадратом (v3, v·|v|) цель
@@ -5069,10 +5120,16 @@ function updateGame(dt, time) {
     // отклонение равно линейному ровно (0.6·1 + 0.4·1 = 1).
     // Усиление возвращено к значениям v1: они были подобраны замером и описаны
     // как «ведёт, а не швыряет».
-    const EXPO = 0.4;
+    //
+    // 23.08.2026, v5: усиление и кривая ПЕРЕЕХАЛИ В НАСТРОЙКИ (ползунки «Управление на
+    // телефоне» в панели, сохраняются на сервер для всех). Четвёртый заход вслепую этот
+    // код не переживёт: подбирать надо пальцем на живом телефоне, а не числом в файле.
+    // Заводские значения подняты вдвое (0.42 → 0.85 и 0.62 → 1.25): при прежних полный
+    // ход ручки вёз прицел через экран 2,4 секунды, и это и читалось как «очень медленно».
+    const EXPO = S.stickexpo;
     const curve = v => (1 - EXPO) * v + EXPO * v * Math.abs(v);
-    touchPX = Math.max(0, Math.min(innerWidth,  touchPX + curve(stickVX) * innerWidth  * 0.42 * dt));
-    touchPY = Math.max(0, Math.min(innerHeight, touchPY + curve(stickVY) * innerHeight * 0.62 * dt));
+    touchPX = Math.max(0, Math.min(innerWidth,  touchPX + curve(stickVX) * innerWidth  * S.stickx * dt));
+    touchPY = Math.max(0, Math.min(innerHeight, touchPY + curve(stickVY) * innerHeight * S.sticky * dt));
   }
   const aimX = isMobile ? touchPX : mousePX, aimY = isMobile ? touchPY : mousePY;
   const tx = (aimX / innerWidth - 0.5) * 120;
@@ -6101,8 +6158,8 @@ addEventListener('resize', () => {
 // ---------- Панель настроек ----------
 (function () {
   const g = id => document.getElementById(id);
-  const el  = { height: g('s-height'), viewy: g('s-viewy'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), morph: g('s-morph'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale'), envscale: g('s-envscale'), vortspeed: g('s-vortspeed'), vortamp: g('s-vortamp'), vortpct: g('s-vortpct'), rubber: g('s-rubber') };
-  const lbl = { height: g('v-height'), viewy: g('v-viewy'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), morph: g('v-morph'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale'), envscale: g('v-envscale'), vortspeed: g('v-vortspeed'), vortamp: g('v-vortamp'), vortpct: g('v-vortpct'), rubber: g('v-rubber') };
+  const el  = { height: g('s-height'), viewy: g('s-viewy'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), morph: g('s-morph'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale'), envscale: g('s-envscale'), vortspeed: g('s-vortspeed'), vortamp: g('s-vortamp'), vortpct: g('s-vortpct'), rubber: g('s-rubber'), stickx: g('s-stickx'), sticky: g('s-sticky'), stickexpo: g('s-stickexpo') };
+  const lbl = { height: g('v-height'), viewy: g('v-viewy'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), morph: g('v-morph'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale'), envscale: g('v-envscale'), vortspeed: g('v-vortspeed'), vortamp: g('v-vortamp'), vortpct: g('v-vortpct'), rubber: g('v-rubber'), stickx: g('v-stickx'), sticky: g('v-sticky'), stickexpo: g('v-stickexpo') };
   const fmt = {
     height:  v => (v > 0 ? '+' : '') + (+v).toFixed(1),
     viewy:   v => (v > 0 ? '+' : '') + (+v).toFixed(1),
@@ -6122,6 +6179,9 @@ addEventListener('resize', () => {
     vortamp: v => (+v).toFixed(2),
     vortpct: v => Math.round(v * 100) + '%',
     rubber: v => (+v).toFixed(2) + '\u00d7',
+    stickx: v => (+v).toFixed(2) + ' экр/с',
+    sticky: v => (+v).toFixed(2) + ' экр/с',
+    stickexpo: v => Math.round(v * 100) + '%',
   };
   const uni = { sizemin: voxUniforms.uSizeMin, sizemax: voxUniforms.uSizeMax, sizevar: voxUniforms.uSizeVar, projscale: voxUniforms.uProjScale, morph: voxUniforms.uMorphAmp, count: voxUniforms.uCount, spread: voxUniforms.uSpread, edge: voxUniforms.uEdgeBias, vortspeed: voxUniforms.uVortSpeed, vortamp: voxUniforms.uVortAmp, vortpct: voxUniforms.uVortPct, rubber: voxUniforms.uRubber };
   function pushUniforms() { voxUniforms.uSizeMin.value = S.sizemin; voxUniforms.uSizeMax.value = S.sizemax; voxUniforms.uSizeVar.value = S.sizevar; voxUniforms.uProjScale.value = S.projscale; voxUniforms.uMorphAmp.value = S.morph; voxUniforms.uCount.value = S.count; voxUniforms.uSpread.value = S.spread; voxUniforms.uEdgeBias.value = S.edge; voxUniforms.uVortSpeed.value = S.vortspeed; voxUniforms.uVortAmp.value = S.vortamp; voxUniforms.uVortPct.value = S.vortpct; voxUniforms.uRubber.value = S.rubber; }
@@ -6182,7 +6242,7 @@ addEventListener('resize', () => {
   projfitBtn.addEventListener('click', () => { S.projfit = !S.projfit; syncProjfit(); });
   syncProjfit();
 
-  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, rubber: S.rubber, envon: S.envon, sound: S.sound, autoq: S.autoq, projfit: S.projfit, model: S.model });
+  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, rubber: S.rubber, stickx: S.stickx, sticky: S.sticky, stickexpo: S.stickexpo, envon: S.envon, sound: S.sound, autoq: S.autoq, projfit: S.projfit, model: S.model });
   // применить весь набор настроек к сцене (после сброса/импорта)
   function applyAll() {
     sync(); updateProjectors(); rebuildGrids();
@@ -6199,7 +6259,58 @@ addEventListener('resize', () => {
   });
   document.getElementById('s-reset').addEventListener('click', () => {
     Object.assign(S, SETTINGS_DEFAULTS); applyAll();
+    // черновик этого браузера снимаем: он сильнее общего, и без этого «Сброс» держался бы
+    // ровно до перезагрузки, после которой из localStorage вернулось бы прежнее
+    try { localStorage.removeItem(SETTINGS_KEY_ACTIVE); } catch (e) {}
+    _hadSaved = false;
   });
+
+  // ---------- «Сохранить для всех»: подбор уезжает на сервер ----------
+  // Три кнопки сохранения различаются по смыслу, и разница важна:
+  //   «Сохранить»          — черновик в ЭТОМ браузере. Сильнее общего: пока он есть,
+  //                          человек за этим экраном видит своё.
+  //   «Сохранить для всех» — набор в api/scene.php. Его получают все посетители; черновик
+  //                          при этом снимается, чтобы автор сразу видел то же, что и они.
+  //   «Сброс»              — заводские значения и снятый черновик.
+  const cloudBtn = g('s-cloud'), cloudNote = g('s-cloud-note');
+  const profName = isMobile ? 'mobile' : 'desktop';
+  const profRu = isMobile ? 'мобильный' : 'десктопный';
+  let _cloudPass = '';   // пароль держим в памяти вкладки: подбор идёт в несколько заходов
+  const note = t => { if (cloudNote) cloudNote.textContent = t; };
+  // сразу показываем, что сейчас лежит на сервере: панель и открывают, чтобы это узнать
+  if (_sharedWait) _sharedWait.then(d => {
+    if (!d || !d.ok) { note('Сервер не отвечает: «для всех» работает только на боевом сайте (нужен php).'); return; }
+    note(d.data ? ('На сервере (' + profRu + '): набор от ' + (d.saved || '—'))
+                : ('На сервере (' + profRu + ') пусто — у всех заводские значения.'));
+  });
+  cloudBtn.addEventListener('click', () => {
+    if (!_cloudPass) _cloudPass = prompt('Пароль. Настройки увидят ВСЕ посетители сайта:') || '';
+    if (!_cloudPass) return;
+    cloudBtn.disabled = true;
+    cloudBtn.textContent = 'Отправляю…';
+    fetch('api/scene.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'save', profile: profName, pass: _cloudPass, data: persistObj() })
+    })
+      .then(r => r.json().catch(() => null).then(o => ({ ok: r.ok, o })))
+      .then(res => {
+        cloudBtn.disabled = false;
+        if (res.ok && res.o && res.o.ok) {
+          cloudBtn.textContent = 'Сохранено всем ✓';
+          // черновик этого браузера убираем: иначе автор видел бы своё, а сайт — общее
+          try { localStorage.removeItem(SETTINGS_KEY_ACTIVE); } catch (e) {}
+          note('На сервере (' + profRu + '): набор только что, правка ' + ((res.o.rev | 0)) + '.');
+        } else {
+          cloudBtn.textContent = 'Сохранить для всех';
+          const err = res.o && res.o.error ? res.o.error : 'сервер не ответил (нужен php на боевом сайте)';
+          if (/парол/i.test(err)) _cloudPass = '';   // ошиблись — спросим заново
+          note('Не сохранилось: ' + err);
+        }
+        setTimeout(() => (cloudBtn.textContent = 'Сохранить для всех'), 2200);
+      });
+  });
+  window.pdApplySettings = applyAll;   // общими настройками пользуется код за пределами панели
   // экспорт/импорт: перенос связки настроек между браузерами/устройствами
   const expBtn = g('s-export'), impBtn = g('s-import');
   expBtn.addEventListener('click', () => {
@@ -6228,6 +6339,84 @@ addEventListener('resize', () => {
     upd();
   });
 })();
+
+// ---------- СЕКРЕТНЫЙ ВХОД В ПАНЕЛЬ: удержать правый верхний угол 3 секунды ----------
+// Панель настроек на боевом сайте скрыта (её показывает только класс dbg), а ссылка ?cam=1
+// требует помнить адрес и открывать сайт заново. Жест никому не мешает: три секунды без
+// движения в углу экрана случайно не выходит, а во время полёта он выключен вовсе — там
+// палец на руле, и удержание в углу как раз нормальный способ рулить.
+//
+// Тот же жест продублирован в лендинге (index.html): на мобиле iframe сцены не ловит
+// касания (pointer-events: none), и там пальца в углу этот документ не увидит вовсе.
+// На десктопе, наоборот, всё поверх страницы занимает iframe — работает эта копия.
+(function () {
+  const ZONE = 108;        // сторона угловой зоны, px — попасть легко, задеть случайно трудно
+  const HOLD = 3000;       // столько держать, мс
+  const SLIP = 16;         // допустимый увод пальца, px: живая рука дрожит
+  let t0 = 0, sx = 0, sy = 0, id = null, raf = 0, tmr = 0, ring = null;
+
+  function mkRing() {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:14px;right:14px;width:46px;height:46px;border-radius:50%;' +
+      'z-index:200;pointer-events:none;opacity:0;transition:opacity .18s;' +
+      'background:conic-gradient(rgba(255,255,255,.9) 0deg, rgba(255,255,255,.9) 0deg, rgba(255,255,255,.12) 0deg);' +
+      '-webkit-mask:radial-gradient(circle, transparent 15px, #000 16px);mask:radial-gradient(circle, transparent 15px, #000 16px)';
+    document.body.appendChild(d);
+    return d;
+  }
+  function draw(k) {
+    if (!ring) ring = mkRing();
+    const a = (k * 360).toFixed(1) + 'deg';
+    ring.style.background = 'conic-gradient(rgba(255,255,255,.9) 0deg, rgba(255,255,255,.9) ' + a +
+      ', rgba(255,255,255,.12) ' + a + ')';
+    ring.style.opacity = k > 0 ? 1 : 0;
+  }
+  function stop() {
+    id = null;
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    if (tmr) { clearTimeout(tmr); tmr = 0; }
+    draw(0);
+  }
+  // Отсчёт ведёт таймер, а кадры только рисуют кольцо. Держать срок на requestAnimationFrame
+  // нельзя: браузер не выдаёт кадры свёрнутой или невидимой странице, и жест бы не досчитывал.
+  function done() {
+    stop();
+    openCamPanel();
+    try { parent.postMessage({ pdPanel: true }, '*'); } catch (e) {}
+  }
+  function tick() {
+    if (id === null) return;
+    const k = Math.min(1, (Date.now() - t0) / HOLD);
+    // кольцо показываем не сразу: полсекунды случайного касания не должны мигать в углу
+    draw(Date.now() - t0 > 500 ? k : 0);
+    raf = requestAnimationFrame(tick);
+  }
+  addEventListener('pointerdown', e => {
+    if (typeof GAME !== 'undefined' && GAME.on) return;          // в полёте угол держит руль
+    if (e.clientX < innerWidth - ZONE || e.clientY > ZONE) return;
+    stop();
+    id = e.pointerId; sx = e.clientX; sy = e.clientY; t0 = Date.now();
+    tmr = setTimeout(done, HOLD);
+    raf = requestAnimationFrame(tick);
+  }, true);
+  addEventListener('pointermove', e => {
+    if (id === null || e.pointerId !== id) return;
+    if (Math.abs(e.clientX - sx) > SLIP || Math.abs(e.clientY - sy) > SLIP) stop();
+  }, true);
+  addEventListener('pointerup', stop, true);
+  addEventListener('pointercancel', stop, true);
+})();
+
+// ОБЩИЕ НАСТРОЙКИ ПРИШЛИ (запрос ушёл в самом начале, рядом с чтением localStorage).
+// Применяем тем же путём, что и «Импорт»: панель уже собрана, applyAll пересобирает сетки,
+// двигает проекторы и подтягивает ползунки. Черновик этого браузера сильнее — если он есть,
+// общий набор молча пропускаем.
+if (_sharedWait) _sharedWait.then(d => {
+  if (!d || !d.ok || !d.data || _hadSaved) return;
+  Object.assign(S, d.data);
+  _hadSaved = true;               // сцена настроена: ручной FOV и заданное кол-во точек, как у сохранённого профиля
+  if (window.pdApplySettings) window.pdApplySettings();
+});
 
 // Открыть панель настройки камеры под мобилу (вызов по сообщению pdCam от лендинга — ссылка ?cam=1).
 // Включает ручной FOV (camMode) и подставляет стартовый FOV = авто-фит, чтобы слайдер отражал картинку.

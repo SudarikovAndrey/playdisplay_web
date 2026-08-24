@@ -1985,7 +1985,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b1608-stick4" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2308-stick5" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -3126,18 +3126,79 @@
     }, { passive: true });
   })();
 
-  // режим настройки камеры под мобилу: ссылка ?cam=1 (или #cam) включает тач-взаимодействие
-  // со сценой и открывает в ней панель настроек. Изменения пишутся в ОТДЕЛЬНЫЙ мобильный профиль.
+  // Панель настроек 3D-сцены. Открывается двумя путями: ссылкой ?cam=1 (или #cam) и
+  // СЕКРЕТНЫМ ЖЕСТОМ — удержать правый верхний угол экрана три секунды. Изменения пишутся
+  // в профиль своего устройства (мобильный отдельно от десктопного), а кнопка «Сохранить
+  // для всех» внутри панели кладёт их на сервер, откуда их получают все посетители.
   (function(){
-    if (!/[?&]cam=1\b/.test(location.search) && location.hash.indexOf('cam') < 0) return;
     var fr = document.querySelector('iframe.hero-scene');
     if (!fr) return;
-    fr.style.pointerEvents = 'auto';   // на мобиле iframe заблокирован (pointer-events:none) — иначе тап по панели не дойдёт
-    fr.style.zIndex = '95';
-    var tell = function(){ try { fr.contentWindow.postMessage({ pdCam: true }, '*'); } catch(e){} };
-    if (fr.contentWindow) tell();
-    fr.addEventListener('load', tell);
-    setTimeout(tell, 1400);
+    var opened = false;
+    function unlock(){
+      fr.style.pointerEvents = 'auto';   // на мобиле iframe заблокирован (pointer-events:none) — иначе тап по панели не дойдёт
+      fr.style.zIndex = '95';
+      var tell = function(){ try { fr.contentWindow.postMessage({ pdCam: true }, '*'); } catch(e){} };
+      if (fr.contentWindow) tell();
+      if (!opened) { fr.addEventListener('load', tell); opened = true; }
+      setTimeout(tell, 1400);
+    }
+    if (/[?&]cam=1\b/.test(location.search) || location.hash.indexOf('cam') >= 0) unlock();
+
+    // ЖЕСТ ЖИВЁТ И ЗДЕСЬ, И В САМОЙ СЦЕНЕ, и обе копии нужны. На мобиле iframe сцены не
+    // ловит касания (pointer-events: none — иначе палец крутил бы облако вместо страницы),
+    // поэтому палец в углу видит только этот документ. На десктопе всё наоборот: первый
+    // экран целиком занят iframe, и pointerdown достаётся ему — там работает копия внутри
+    // hero-scene.html. Кто первым досчитает до трёх секунд, тот панель и откроет.
+    var ZONE = 108, HOLD = 3000, SLIP = 16;   // угол 108 px, три секунды, допустимый увод руки
+    var t0 = 0, sx = 0, sy = 0, id = null, raf = 0, tmr = 0, ring = null;
+    function draw(k){
+      if (!ring) {
+        ring = document.createElement('div');
+        ring.style.cssText = 'position:fixed;top:14px;right:14px;width:46px;height:46px;border-radius:50%;' +
+          'z-index:200;pointer-events:none;opacity:0;transition:opacity .18s;' +
+          '-webkit-mask:radial-gradient(circle, transparent 15px, #000 16px);mask:radial-gradient(circle, transparent 15px, #000 16px)';
+        document.body.appendChild(ring);
+      }
+      var a = (k * 360).toFixed(1) + 'deg';
+      ring.style.background = 'conic-gradient(rgba(255,255,255,.9) 0deg, rgba(255,255,255,.9) ' + a + ', rgba(255,255,255,.12) ' + a + ')';
+      ring.style.opacity = k > 0 ? 1 : 0;
+    }
+    function stop(){
+      id = null;
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (tmr) { clearTimeout(tmr); tmr = 0; }
+      draw(0);
+    }
+    // Срок держит таймер, кадры только рисуют кольцо: браузер не выдаёт кадры невидимой
+    // странице, и отсчёт на requestAnimationFrame мог бы не досчитать никогда.
+    function done(){
+      stop();
+      unlock();
+      // Угол на телефоне занят кнопкой меню: клик после удержания открыл бы его поверх
+      // панели. Гасим ровно один следующий клик, и только сразу после жеста.
+      var eat = function(e){ e.preventDefault(); e.stopPropagation(); };
+      addEventListener('click', eat, true);
+      setTimeout(function(){ removeEventListener('click', eat, true); }, 700);
+    }
+    function tick(){
+      if (id === null) return;
+      draw(Date.now() - t0 > 500 ? Math.min(1, (Date.now() - t0) / HOLD) : 0);   // полсекунды не мигаем: случайное касание угла бывает у всех
+      raf = requestAnimationFrame(tick);
+    }
+    addEventListener('pointerdown', function(e){
+      if (document.body.classList.contains('game-live')) return;   // в полёте угол держит руль
+      if (e.clientX < innerWidth - ZONE || e.clientY > ZONE) return;
+      stop();
+      id = e.pointerId; sx = e.clientX; sy = e.clientY; t0 = Date.now();
+      tmr = setTimeout(done, HOLD);
+      raf = requestAnimationFrame(tick);
+    }, true);
+    addEventListener('pointermove', function(e){
+      if (id === null || e.pointerId !== id) return;
+      if (Math.abs(e.clientX - sx) > SLIP || Math.abs(e.clientY - sy) > SLIP) stop();
+    }, true);
+    addEventListener('pointerup', stop, true);
+    addEventListener('pointercancel', stop, true);
   })();
 
   // manifesto line reveal
