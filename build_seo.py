@@ -310,6 +310,31 @@ def cover_url(slug, pmap):
 MISSING = []   # картинки, которых нет на диске: печатаем списком в конце сборки
 
 
+def img_tag(up, local, alt):
+    """<picture> с webp, если он рядом есть; иначе обычный <img>
+
+    Замер 23.08.2026: на 179 картинках статических страниц webp даёт −33 % веса
+    (35,0 -> 23,6 МБ), а на странице кейса это 1,6 МБ картинок вместо 1,1 МБ.
+    Страницы кейсов и концепций — ровно те, которые мы продвигаем, поэтому вес
+    здесь стоит денег через Core Web Vitals.
+
+    Почему <picture>, а не подмена по Accept на сервере: статику отдаёт nginx
+    напрямую, и .htaccess для неё НЕ исполняется — это уже выяснено на mod_expires.
+    Договориться с браузером можно только в разметке.
+
+    Исходный jpeg/png остаётся вторым источником: браузер без webp получит его.
+    Файла webp нет — печатаем обычный <img>, и это не сбой: конвертер выбрасывает
+    webp там, где он получился тяжелее оригинала (нашлось три такие картинки).
+    Список webp делает _tools/make_webp.py, запускать ПЕРЕД build_seo.py.
+    """
+    webp = os.path.splitext(local)[0] + '.webp'
+    img = '<img src="%s%s" alt="%s" loading="lazy">' % (up, local, alt)
+    if not os.path.exists(os.path.join(SITE, webp)):
+        return img
+    return ('<picture><source srcset="%s%s" type="image/webp">%s</picture>'
+            % (up, webp, img))
+
+
 def render_flow(L, p, slug):
     out = []
     if p.get('goal'): out.append('<section><h2>%s</h2><p>%s</p></section>' % (L.t('Цель проекта'), esc(p['goal'])))
@@ -347,7 +372,7 @@ def render_flow(L, p, slug):
                 if not os.path.exists(cand):
                     MISSING.append('%s/%s: %s' % (L.code, slug, fn))
                     continue
-                out.append('<img src="%s%s" alt="%s — %s" loading="lazy">' % (L.up, local, esc(p['title']), esc(p.get('subtitle') or '')))
+                out.append(img_tag(L.up, local, '%s — %s' % (esc(p['title']), esc(p.get('subtitle') or ''))))
         elif t in ('yt', 'vimeo'):
             url = ('https://www.youtube.com/watch?v=' + b['id']) if t == 'yt' else ('https://vimeo.com/' + b['id'])
             out.append('<p><a href="%s" rel="noopener">%s</a></p>' % (url, L.t('Смотреть видео проекта →')))
@@ -993,7 +1018,7 @@ def cnc_gallery(L, c):
         if not src or not os.path.exists(os.path.join(SITE, src)):
             MISSING.append('%s/concept %s: %s' % (L.code, c['id'], src))
             continue
-        out.append('<img src="%s%s" alt="%s" loading="lazy">' % (L.up_srv, src, esc(c.get('title') or '')))
+        out.append(img_tag(L.up_srv, src, esc(c.get('title') or '')))
     return '\n'.join(out)
 
 
