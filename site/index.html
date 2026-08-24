@@ -127,6 +127,12 @@
     background: radial-gradient(closest-side, rgba(190,255,247,0.5), rgba(43,224,198,0.16) 46%, transparent 72%);
     filter: blur(7px); opacity: 0; transition: opacity .5s ease; }
   #boot .bl.lighting .flare { opacity: .6; }
+  /* Слой частиц. screen — как у остальных слоёв свечения: точки ДОБАВЛЯЮТ свет,
+     а не перекрывают буквы. pointer-events отключены, чтобы канвас не съедал
+     движение курсора: именно от него частицы и вылетают. */
+  #boot .bl .dust { position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; mix-blend-mode: screen; }
+  @media (prefers-reduced-motion: reduce) { #boot .bl .dust { display: none; } }
   @media (prefers-reduced-motion: reduce) { #boot .bl .flare { display: none; } }
   /* НА ТЕЛЕФОНЕ СВЕЧЕНИЕ ЛОГОТИПА ЛОМАЛОСЬ. Слои .tint и .b1 — это размытые копии
      надписи, обрезанные clip-path. Мобильные браузеры считают blur ДО обрезки и по
@@ -1263,6 +1269,16 @@
   /* Движением ленты управляет скрипт, а не CSS-анимация: у animation-play-state
      нет плавности — лента вставала бы за один кадр. Скрипт гасит скорость мягко. */
   .cl-track { will-change: transform; }
+  /* Лента берётся рукой. cursor: grab говорит об этом до первого касания —
+     без него никто не догадается, что её можно тащить.
+     touch-action: pan-y обязателен: горизонтальный жест забираем себе, а
+     вертикальный оставляем странице, иначе на телефоне лента заблокирует прокрутку.
+     user-select и user-drag снимают браузерное «выделить текст» и «утащить
+     картинку как файл» — оба перебивают наш жест на полпути. */
+  .cl-strip { cursor: grab; touch-action: pan-y; }
+  .cl-strip.cl-grab { cursor: grabbing; }
+  .cl-strip .cl-logo { user-select: none; -webkit-user-select: none;
+    -webkit-user-drag: none; pointer-events: auto; }
   /* по умолчанию логотипы ВИДНЫ: скрывает их только скрипт, добавив ленте класс cl-anim.
      Если скрипт не выполнится или наблюдатель не сработает, стена клиентов всё равно на месте */
   .cl-logo { flex: 0 0 auto; display: block; height: auto; margin-right: clamp(34px, 3.6vw, 72px);
@@ -2008,6 +2024,9 @@
     <img class="b1" src="assets/logos/playdisplay-logo-white.png" alt="" aria-hidden="true">
     <img class="lit" src="assets/logos/playdisplay-logo-white.png" alt="playdisplay">
     <div class="flare" aria-hidden="true"></div>
+    <!-- Частицы, слетающиеся от курсора и заполняющие логотип. Канвас последним
+         слоем: он ПОДСВЕЧИВАЕТ надпись, а не закрывает её (mix-blend-mode: screen). -->
+    <canvas class="dust" id="bootDust" aria-hidden="true"></canvas>
   </div>
   <button id="bootPlay" type="button">▶︎ Сыграть в пространство</button>
 </div>
@@ -3020,6 +3039,101 @@
       try { frame.contentWindow.postMessage({ pdGame: true }, '*'); } catch (err) {}
       dismiss();                              // оверлей уходит — под ним уже идёт влёт в игру
     });
+
+    // ===== ЧАСТИЦЫ, ЗАПОЛНЯЮЩИЕ ЛОГОТИП =====
+    // Тем же приёмом, что пыль обложек в разделе проектов: картинка разбирается в
+    // сетку точек, точки рисуются напрямую в ImageData (сотни arc() в кадр канвас
+    // не тянет), у каждой есть «дом» — её место в надписи.
+    //
+    // Отличие от карточек: там точки ЖИВУТ дома и разлетаются к курсору, здесь
+    // наоборот — вылетают ИЗ курсора и собираются домой. Поэтому логотип не просто
+    // заливается светом, а именно складывается из частиц.
+    //
+    // Точки включаются СЛЕВА НАПРАВО по мере загрузки, в том же направлении, что и
+    // световая заливка: два эффекта идут одним фронтом, а не спорят друг с другом.
+    var dust = (function(){
+      var cv = document.getElementById('bootDust');
+      if (!cv) return null;
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return null;
+      var c2 = cv.getContext('2d');
+      var W = 0, H = 0, img32 = null, imgData = null;
+      var hx = null, hy = null, sx = null, sy = null, ord = null, prog = null, N = 0;
+      var px = -1, py = -1, ready = false;
+
+      // курсор в координатах канваса; до первого движения частицы летят снизу по центру
+      function setSrc(cx, cy){
+        var r = cv.getBoundingClientRect();
+        if (!r.width) return;
+        px = (cx - r.left) / r.width * W;
+        py = (cy - r.top) / r.height * H;
+      }
+      boot.addEventListener('pointermove', function(e){ setSrc(e.clientX, e.clientY); });
+      boot.addEventListener('pointerdown', function(e){ setSrc(e.clientX, e.clientY); });
+
+      function build(){
+        var r = cv.getBoundingClientRect();
+        if (!r.width || !r.height) return false;
+        // Считаем в собственных пикселях канваса, без devicePixelRatio: точки и так
+        // размером в пиксель, а буфер вчетверо больше стоил бы кадров на слабом железе.
+        W = cv.width = Math.round(r.width);
+        H = cv.height = Math.round(r.height);
+        var src = document.querySelector('#boot .bl .lit');
+        if (!src || !src.complete || !src.naturalWidth) return false;
+        var t = document.createElement('canvas'); t.width = W; t.height = H;
+        var tc = t.getContext('2d');
+        var d;
+        try { tc.drawImage(src, 0, 0, W, H); d = tc.getImageData(0, 0, W, H).data; }
+        catch (e) { return false; }   // логотип свой, но если канвас закрыт — просто без частиц
+        // Берём каждый второй пиксель: шаг 2 даёт различимое зерно и вчетверо
+        // меньше точек. Порог по альфе отсекает мягкий край буквы.
+        var xs = [], ys = [];
+        for (var y = 0; y < H; y += 2) {
+          for (var x = 0; x < W; x += 2) {
+            if (d[(y * W + x) * 4 + 3] > 140) { xs.push(x); ys.push(y); }
+          }
+        }
+        N = xs.length;
+        if (!N) return false;
+        hx = new Float32Array(xs); hy = new Float32Array(ys);
+        sx = new Float32Array(N); sy = new Float32Array(N);
+        prog = new Float32Array(N);
+        // порядок включения — по X, чтобы фронт частиц совпадал с фронтом света
+        ord = new Uint32Array(N);
+        for (var i2 = 0; i2 < N; i2++) ord[i2] = i2;
+        Array.prototype.sort.call(ord, function(a, b2){ return hx[a] - hx[b2]; });
+        imgData = c2.createImageData(W, H);
+        img32 = new Uint32Array(imgData.data.buffer);
+        ready = true;
+        return true;
+      }
+
+      return {
+        paint: function(p){
+          if (!ready && !build()) return;
+          if (px < 0) { px = W / 2; py = H * 2.2; }   // курсора ещё не было — снизу по центру
+          img32.fill(0);
+          var live = Math.floor(N * Math.min(1, Math.max(0, p)));
+          for (var k = 0; k < live; k++) {
+            var i3 = ord[k];
+            if (prog[i3] === 0) { sx[i3] = px; sy[i3] = py; prog[i3] = 0.001; }
+            // подтягиваем к дому: та же мягкость, что у пыли карточек
+            prog[i3] += (1 - prog[i3]) * 0.06;
+            var t2 = prog[i3];
+            var x2 = sx[i3] + (hx[i3] - sx[i3]) * t2;
+            var y2 = sy[i3] + (hy[i3] - sy[i3]) * t2;
+            var xi = x2 | 0, yi = y2 | 0;
+            if (xi < 0 || yi < 0 || xi >= W || yi >= H) continue;
+            // чем ближе к дому, тем ярче и белее: в полёте частица тиловая и тусклая
+            var a = 90 + (t2 * 165) | 0;
+            var g2 = 200 + (t2 * 55) | 0;
+            img32[yi * W + xi] = (a << 24) | (246 << 16) | (g2 << 8) | (140 + (t2 * 115) | 0);
+          }
+          c2.putImageData(imgData, 0, 0);
+        }
+      };
+    })();
+
     // плавная заливка: догоняем цель + медленно ползём, чтобы не выглядело зависшим
     (function anim(){
       if (!boot.parentNode) return;
@@ -3027,6 +3141,8 @@
       cur += (tgt - cur) * 0.07;
       // одна переменная ведёт все слои свечения сразу
       bl.style.setProperty('--p', (Math.min(1, Math.max(0, cur)) * 100).toFixed(2) + '%');
+      // частицы идут тем же фронтом, что и свет — по той же величине cur
+      if (dust) dust.paint(cur);
       // блик показываем, пока заливка реально идёт, и гасим в самом конце
       bl.classList.toggle('lighting', cur > 0.02 && cur < 0.985);
       requestAnimationFrame(anim);
@@ -3584,6 +3700,66 @@
     return api;
   };
 
+  // ===== мягкое потрескивание при перетаскивании ленты =====
+  // Синтезируем, а не грузим файл: сайт самодостаточен, и ради щелчка заводить
+  // звуковой ассет незачем — шум генерируется на месте.
+  //
+  // Что делает звук приятным, а не раздражающим:
+  //   • очень короткий (35 мс) ОТФИЛЬТРОВАННЫЙ шум, а не «клик» из синуса;
+  //   • полосовой фильтр около 2 кГц со случайным разбросом — два подряд щелчка
+  //     никогда не звучат одинаково, поэтому нет ощущения зацикленной записи;
+  //   • громкость 0.045 и мгновенное затухание: слышно, но не назойливо;
+  //   • отмеряется ПУТЁМ пальца, а не таймером.
+  //
+  // Контекст создаётся ЛЕНИВО, при первом жесте: браузер не даёт завести звук без
+  // действия человека, а перетаскивание как раз им и является.
+  var pdCrackle = (function(){
+    var ctx = null, noise = null, lastAt = 0;
+    function ensure(){
+      if (ctx) return ctx;
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      try { ctx = new AC(); } catch (e) { return null; }
+      // Один буфер шума на всё время: генерировать его на каждый щелчок
+      // расточительно, а звучит одинаково — разброс дают фильтр и скорость.
+      var n = Math.floor(ctx.sampleRate * 0.05);
+      noise = ctx.createBuffer(1, n, ctx.sampleRate);
+      var d = noise.getChannelData(0);
+      for (var k = 0; k < n; k++) d[k] = Math.random() * 2 - 1;
+      return ctx;
+    }
+    function tick(){
+      if (!soundOn()) return;               // выключатель в шапке главнее
+      var c = ensure(); if (!c) return;
+      if (c.state === 'suspended') { try { c.resume(); } catch (e) {} }
+      var t = c.currentTime;
+      var src = c.createBufferSource(); src.buffer = noise;
+      src.playbackRate.value = 0.8 + Math.random() * 0.7;
+      var bp = c.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = 1500 + Math.random() * 1400;
+      bp.Q.value = 0.9;
+      var g = c.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.045, t + 0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
+      src.connect(bp); bp.connect(g); g.connect(c.destination);
+      src.start(t); src.stop(t + 0.05);
+    }
+    return {
+      reset: function(){ lastAt = 0; },
+      // step — сколько пикселей пути на один щелчок. Мелкий разброс убирает
+      // машинную ровность: без него звук читается как метроном.
+      by: function(dist){
+        var step = 26 + Math.random() * 10;
+        if (Math.abs(dist - lastAt) < step) return;
+        lastAt = dist; tick();
+      }
+    };
+  })();
+  function crackleReset(){ pdCrackle.reset(); }
+  function crackleBy(d){ pdCrackle.by(d); }
+
   // ===== клиенты: логотипы проявляются по очереди, потом лента едет =====
   (function(){
     var strip = document.getElementById('clStrip'), track = document.getElementById('clTrack');
@@ -3643,6 +3819,60 @@
       if (rolling && live && !document.hidden) raf = requestAnimationFrame(step);
     }
     function kick(){ if (!raf) raf = requestAnimationFrame(step); }
+
+    // ===== ПЕРЕТАСКИВАНИЕ ЛЕНТЫ РУКОЙ =====
+    // Лента и так едет сама, но разглядеть конкретный знак было нельзя: под курсором
+    // она лишь замедлялась. Теперь её можно взять и протащить.
+    //
+    // Инерцию НЕ пишем отдельно — она уже есть в step(): скорость подтягивается к want
+    // через (want - speed) * 0.045. Достаточно на отпускании присвоить speed скорость
+    // броска, и лента сама плавно вернётся к своему ходу. Знак минус потому, что цикл
+    // делает x -= speed: тащим вправо (x растёт) — это отрицательная speed.
+    var dragging = false, dStartX = 0, dStartOff = 0, dLastX = 0, dLastT = 0, dVel = 0;
+
+    function wrapX(){
+      half = track.scrollWidth / 2;
+      if (half > 0) { if (-x >= half) x += half; else if (x > 0) x -= half; }
+    }
+
+    strip.addEventListener('pointerdown', function(e){
+      if (e.button && e.button !== 0) return;
+      dragging = true; dVel = 0;
+      dStartX = dLastX = e.clientX; dStartOff = x; dLastT = performance.now();
+      strip.classList.add('cl-grab');
+      crackleReset();
+      try { strip.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+
+    strip.addEventListener('pointermove', function(e){
+      if (!dragging) return;
+      var dx = e.clientX - dStartX;
+      x = dStartOff + dx;
+      wrapX();
+      track.style.transform = 'translateX(' + x.toFixed(2) + 'px)';
+      // мгновенная скорость в пикселях за кадр — для броска после отпускания
+      var now = performance.now(), dt = Math.max(1, now - dLastT);
+      dVel = (e.clientX - dLastX) / dt * 16.7;
+      dLastX = e.clientX; dLastT = now;
+      // Потрескивание отмеряем ПУТЁМ, а не временем: тащишь быстро — трещит чаще,
+      // ведёшь медленно — реже. Звук привязан к движению руки, а не к часам.
+      crackleBy(Math.abs(dx));
+    });
+
+    function endDrag(e){
+      if (!dragging) return;
+      dragging = false;
+      strip.classList.remove('cl-grab');
+      try { strip.releasePointerCapture(e.pointerId); } catch (err) {}
+      // Бросок ограничиваем: резкий рывок мышью иначе швыряет ленту через пол-экрана.
+      speed = Math.max(-42, Math.min(42, -dVel));
+      rolling = true; kick();
+    }
+    strip.addEventListener('pointerup', endDrag);
+    strip.addEventListener('pointercancel', endDrag);
+    // Картинки браузер по умолчанию таскает как файлы — это перебивало бы наш жест.
+    strip.addEventListener('dragstart', function(e){ e.preventDefault(); });
+
     document.addEventListener('visibilitychange', function(){ if (!document.hidden && live && rolling) kick(); });
     if (window.IntersectionObserver) {
       new IntersectionObserver(function(es){
