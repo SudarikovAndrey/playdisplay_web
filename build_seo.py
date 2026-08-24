@@ -534,7 +534,8 @@ for L in langs:
     if os.path.exists(os.path.join(SITE, L.data, 'atlas.json')):
         L.cnc_foot += ' · <a href="%satlas/">%s</a>' % (L.up + L.prefix, esc(L.t('Атлас')))
     if os.path.exists(os.path.join(SITE, L.data, 'library.json')):
-        L.cnc_foot += ' · <a href="%slibrary/">%s</a>' % (L.up + L.prefix, esc(L.t('Библиотека оборудования')))
+        L.cnc_foot += ' · <a href="%slibrary/">%s</a>' % (
+            L.up + L.prefix, esc('Equipment library' if L.code == 'en' else 'Библиотека оборудования'))
 
 # языки, у которых услуги есть: только они попадают в hreflang и в sitemap
 SRV_LANGS = [L for L in langs if L.services]
@@ -1489,7 +1490,7 @@ def lib_md(t):
     return re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', esc(t))
 
 
-def lib_brands(item):
+def lib_brands(L, item):
     if not item.get('brands'):
         return ''
     li = ''.join(
@@ -1499,7 +1500,7 @@ def lib_brands(item):
         '<li><a href="%s" target="_blank" rel="noopener">%s</a><span>%s</span></li>'
         % (esc(b['u']), esc(b['n']), esc(b.get('note', '')))
         for b in item['brands'])
-    return '<div class="brands"><h4>Производители</h4><ul>%s</ul></div>' % li
+    return '<div class="brands"><h4>%s</h4><ul>%s</ul></div>' % (LIB_T[L.code]['brands'], li)
 
 
 def lib_item(L, item, idx):
@@ -1508,24 +1509,27 @@ def lib_item(L, item, idx):
     out.append('<h3>%s</h3>' % esc(item['name']))
     out.append('<p class="line">%s</p>' % esc(item['line']))
     out.append('<p class="what">%s</p>' % esc(item['what']))
+    T = LIB_T[L.code]
     if item.get('compare'):
-        out.append('<div class="call"><b>Два принципа</b>%s</div>' % lib_md(item['compare']))
+        out.append('<div class="call"><b>%s</b>%s</div>' % (T['compare'], lib_md(item['compare'])))
     if item.get('note_hw'):
-        out.append('<div class="call hw"><b>Важно для спецификации</b>%s</div>' % lib_md(item['note_hw']))
+        out.append('<div class="call hw"><b>%s</b>%s</div>' % (T['hw'], lib_md(item['note_hw'])))
     good = ''.join('<li>%s</li>' % esc(x) for x in item.get('good', []))
     bad = ''.join('<li>%s</li>' % esc(x) for x in item.get('bad', []))
     if good or bad:
-        out.append('<div class="gb"><div class="good"><h4>Когда работает</h4><ul>%s</ul></div>'
-                   '<div class="bad"><h4>Когда не работает</h4><ul>%s</ul></div></div>' % (good, bad))
+        out.append('<div class="gb"><div class="good"><h4>%s</h4><ul>%s</ul></div>'
+                   '<div class="bad"><h4>%s</h4><ul>%s</ul></div></div>'
+                   % (T['good'], good, T['bad'], bad))
     if item.get('spec'):
-        out.append('<div class="call"><b>Как считать</b>%s</div>' % lib_md(item['spec']))
+        out.append('<div class="call"><b>%s</b>%s</div>' % (T['spec'], lib_md(item['spec'])))
     if item.get('warn'):
-        out.append('<div class="call warn"><b>Наше мнение</b>%s</div>' % lib_md(item['warn']))
-    out.append(lib_brands(item))
+        out.append('<div class="call warn"><b>%s</b>%s</div>' % (T['warn'], lib_md(item['warn'])))
+    out.append(lib_brands(L, item))
     if item.get('case') and item['case'] in L.pmap:
         p = L.pmap[item['case']]
-        out.append('<p class="libcase">Как это сделано у нас: <a href="../../work/%s/">%s</a></p>'
-                   % (esc(item['case']), esc(p.get('title') or item['case'])))
+        out.append('<p class="libcase">%s<a href="%swork/%s/">%s</a></p>'
+                   % (T['ourcase'], '../../' if L.code == 'ru' else '../../../',
+                      esc(item['case']), esc(p.get('title') or item['case'])))
     out.append('</div>')
     return ''.join(out)
 
@@ -1534,7 +1538,7 @@ def lib_jsonld(L, cat, tail, n):
     items = [i for s in cat['sections'] for i in s['items']]
     return json.dumps([
         {"@context": "https://schema.org", "@type": "Article",
-         "headline": '%s для интерактивной экспозиции' % cat['full'],
+         "headline": cat['full'],
          "description": Lang._clip(cat['lead']),
          "url": L.url(tail), "inLanguage": L.code,
          "author": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'},
@@ -1547,17 +1551,30 @@ def lib_jsonld(L, cat, tail, n):
         {"@context": "https://schema.org", "@type": "BreadcrumbList",
          "itemListElement": [
              {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
-             {"@type": "ListItem", "position": 2, "name": "Библиотека оборудования", "item": L.url('library/')},
+             {"@type": "ListItem", "position": 2, "name": LIB_T[L.code]['hub'], "item": L.url('library/')},
              {"@type": "ListItem", "position": 3, "name": cat['full'], "item": L.url(tail)}]},
     ], ensure_ascii=False, indent=0)
 
 
-LIB_LEAD = ('Пятьдесят типов оборудования, из которых собирается интерактивная экспозиция, — '
+def plural(n, one, few, many):
+    """склонение существительного при числе: 1 тип, 2 типа, 5 типов"""
+    n = abs(n) % 100
+    if 11 <= n <= 14:
+        return many
+    n %= 10
+    if n == 1:
+        return one
+    if 2 <= n <= 4:
+        return few
+    return many
+
+
+LIB_LEAD_RU = ('%d %s оборудования, из которых собирается интерактивная экспозиция, — '
             'разложенные по тому, что они делают: показывают человеку, слушают человека или '
             'считают между этими двумя. У каждого: когда работает, когда не работает и кто '
             'это выпускает.')
 
-LIB_INTRO = (
+LIB_INTRO_RU = (
  '<p>Библиотека устроена не по прайс-листу, а по роли в системе. Любой интерактивный '
  'экспонат — это замкнутый круг: человек что-то делает, машина это считает, экспозиция '
  'отвечает. Три категории ниже — три четверти этого круга, и слабое звено определяет '
@@ -1568,7 +1585,7 @@ LIB_INTRO = (
  'которое это выдержит. Спецификация, составленная в обратном порядке, узнаётся по '
  'выключенным экранам на второй год.</p>')
 
-LIB_TAIL = (
+LIB_TAIL_RU = (
  '<h2>Чем мы в этом занимаемся</h2>'
  '<p>Работая над проектом, мы отталкиваемся от желаемого эффекта, а не от конкретной '
  'технологии. Сначала — что человек должен унести с собой, и только потом чем это сделать. '
@@ -1593,6 +1610,75 @@ def lib_alternates(tail):
     return '\n'.join(out)
 
 
+LIB_LEAD_EN = ('%d %s of equipment an interactive exhibition is built from, sorted by what they '
+               'actually do: show something to a person, listen to a person, or do the thinking '
+               'in between. For each one: when it works, when it does not, and who makes it.')
+
+LIB_INTRO_EN = (
+ '<p>This library is organised by role in the system rather than by price list. Every '
+ 'interactive exhibit is a closed loop: a person does something, a machine reads it, the '
+ 'exhibition answers. The three categories below are three quarters of that loop, and the '
+ 'weakest link decides everything else.</p>'
+ '<p>One principle runs through every page: <b>the equipment is chosen last</b>. First the '
+ 'story — what the visitor should walk out with; then the interaction — what they do with '
+ 'their hands to get there; and only then the hardware that has to survive it. A '
+ 'specification written in the opposite order is recognisable a couple of years later by '
+ 'its switched-off screens.</p>')
+
+LIB_TAIL_EN = (
+ '<h2>What we do in all this</h2>'
+ '<p>We start from the effect we want, not from a particular technology. First we settle what '
+ 'the visitor should walk out with, and only then what to build it from. We are tied to no '
+ 'manufacturer, so the solution gets picked for the job rather than for what is familiar or '
+ 'already sitting in a warehouse. Hence a library written as a catalogue of limits — so you '
+ 'can see where a technology is genuinely strong and where it gets specified out of habit.</p>'
+ '<p>Supply is handled by our partners: any equipment in this library, on the best terms for '
+ 'the client. Our part is the story, the content, the interaction, the software and the '
+ 'integration. We build complex hardware-and-software systems and answer for the whole thing '
+ 'working as one, rather than as a pile of boxes from different vendors.</p>'
+ '<p>If you already have a specification in hand, send it over. We will tell you what is '
+ 'redundant in it, what is missing, and what will not survive the first year. Free, '
+ 'no strings.</p>')
+
+
+# Подписи библиотеки. Отдельным словарём, а не через L.t(): в site/data/i18n
+# лежат строки интерфейса лендинга, и подмешивать туда служебные заголовки раздела
+# значит связать два независимых файла. Ключ — код языка.
+LIB_T = {
+ 'ru': {
+  'brands': 'Производители', 'good': 'Когда работает', 'bad': 'Когда не работает',
+  'compare': 'Два принципа', 'hw': 'Важно для спецификации', 'spec': 'Как считать',
+  'warn': 'Наше мнение', 'principle': 'Принцип категории', 'other': 'Другие категории',
+  'ourcase': 'Как это сделано у нас: ', 'hub': 'Библиотека оборудования',
+  'cta': 'Прислать спецификацию на проверку →',
+  'concepts': 'Концепции', 'services': 'Услуги', 'home': 'На главную', 'all': 'Все проекты',
+  'h1': 'Библиотека оборудования интерактивных экспозиций',
+  'pos': ('позиция', 'позиции', 'позиций'),
+  'man': ('производитель', 'производителя', 'производителей'),
+  'kind': ('тип', 'типа', 'типов'),
+ },
+ 'en': {
+  'brands': 'Manufacturers', 'good': 'Works when', 'bad': 'Falls short when',
+  'compare': 'Two principles', 'hw': 'Watch out in the spec', 'spec': 'How to size it',
+  'warn': 'Our take', 'principle': 'The principle here', 'other': 'Other categories',
+  'ourcase': 'How we built it: ', 'hub': 'Equipment library',
+  'cta': 'Send us your specification for a free review →',
+  'concepts': 'Concepts', 'services': 'Services', 'home': 'Home', 'all': 'All projects',
+  'h1': 'An equipment library for interactive exhibitions',
+  'pos': ('entry', 'entries', 'entries'),
+  'man': ('manufacturer', 'manufacturers', 'manufacturers'),
+  'kind': ('type', 'types', 'types'),
+ },
+}
+
+LIB_INTRO_T = {
+ 'ru': LIB_INTRO_RU,
+ 'en': LIB_INTRO_EN,
+}
+LIB_TAIL_T = {'ru': LIB_TAIL_RU, 'en': LIB_TAIL_EN}
+LIB_LEAD_T = {'ru': LIB_LEAD_RU, 'en': LIB_LEAD_EN}
+
+
 def load_library(L):
     p = os.path.join(SITE, L.data, 'library.json')
     if not os.path.exists(p):
@@ -1613,6 +1699,7 @@ for L in langs:
     up2 = '../../' if L.code == 'ru' else '../../../'
     up1 = '../' if L.code == 'ru' else '../../'
     total = sum(len(s['items']) for c in cats for s in c['sections'])
+    T = LIB_T[L.code]
 
     # --- страницы категорий ---
     for cat in cats:
@@ -1627,13 +1714,14 @@ for L in langs:
                 i += 1
                 body.append(lib_item(L, it, '%s.%02d' % (cat['num'], i)))
             body.append('</div>')
-        other = ' · '.join('<a href="%s%s/">%s</a>' % (up1, c['id'], esc(c['full']))
+        up_cat = '../'   # от /<lang>/library/<id>/ до /<lang>/library/ — всегда один уровень
+        other = ' · '.join('<a href="%s%s/">%s</a>' % (up_cat, c['id'], esc(c['full']))
                            for c in cats if c['id'] != cat['id'])
         groups = ('<div class="libmark"><span>%s</span><i>%s</i></div>'
                   % (LIB_ICONS.get(cat['id'], ''), esc(cat['num']))
-                  + '<div class="call"><b>Принцип категории</b>%s</div>' % esc(cat['principle'])
+                  + '<div class="call"><b>%s</b>%s</div>' % (T['principle'], esc(cat['principle']))
                   + '<nav class="libnav">%s</nav>' % nav + ''.join(body)
-                  + '<h2>Другие категории</h2><p>%s</p>' % other + LIB_TAIL)
+                  + '<h2>%s</h2><p>%s</p>' % (T['other'], other) + LIB_TAIL_T[L.code])
         d = os.path.join(SITE, L.prefix, 'library', cat['id'])
         os.makedirs(d, exist_ok=True)
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
@@ -1643,52 +1731,54 @@ for L in langs:
             canon=L.url(tail), alts=lib_alternates(tail), locale=L.locale, css=LIB_CSS,
             jsonld=lib_jsonld(L, cat, tail, n),
             cover=esc(cover_url(ORDER[0], L.pmap)), up=up2, home=up2 + L.prefix,
-            crumb='<a href="%s">Библиотека оборудования</a> /' % (up1),
+            crumb='<a href="%s">%s</a> /' % (up_cat, esc(T['hub'])),
             cnchome=up2 + L.prefix + 'concepts/', srvhome=up2 + L.prefix + 'services/',
             lead=esc(cat['lead']), groups=groups,
-            t_concepts=esc('Концепции'), t_services=esc('Услуги'),
-            cta=esc('Прислать спецификацию на проверку →'),
-            footer=FOOT_RU, f_home=esc('На главную'), f_all=esc('Все проекты'))), )
+            t_concepts=esc(T['concepts']), t_services=esc(T['services']), cta=esc(T['cta']),
+            footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+            f_home=esc(T['home']), f_all=esc(T['all']))), )
         print('library [%s/%s]: %d позиций, %d брендов'
               % (L.code, cat['id'], n, sum(len(x['brands']) for s in cat['sections'] for x in s['items'])))
 
     # --- хаб ---
+    _n = lambda c: sum(len(s['items']) for s in c['sections'])
+    _b = lambda c: len(set(b['n'] for s in c['sections'] for x in s['items'] for b in x['brands']))
     # Хаб лежит В /library/, поэтому до категории путь короткий: output/, а не ../output/.
     # Разница с up1 из страниц категорий — оттуда до соседа действительно нужен ../
     li = ''.join(
         '<li><a class="libcat" href="%s/"><span class="ico">%s</span><span class="body">'
         '<i>%s</i><b>%s</b><em>%s</em><span class="lead">%s</span>'
-        '<u>%d позиций · %d производителей</u></span></a></li>'
+        '<u>%d %s · %d %s</u></span></a></li>'
         % (c['id'], LIB_ICONS.get(c['id'], ''), esc(c['num']), esc(c['full']),
            esc(c['line']), esc(c['lead']),
-           sum(len(s['items']) for s in c['sections']),
-           len(set(b['n'] for s in c['sections'] for x in s['items'] for b in x['brands'])))
+           _n(c), plural(_n(c), *T['pos']), _b(c), plural(_b(c), *T['man']))
         for c in cats)
+    lib_lead = LIB_LEAD_T[L.code] % (total, plural(total, *T['kind']))
     ld = json.dumps([
         {"@context": "https://schema.org", "@type": "Article",
-         "headline": "Библиотека оборудования интерактивных экспозиций",
-         "description": Lang._clip(LIB_LEAD), "url": L.url('library/'), "inLanguage": L.code,
+         "headline": T['h1'],
+         "description": Lang._clip(lib_lead), "url": L.url('library/'), "inLanguage": L.code,
          "author": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'},
          "publisher": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'}},
         {"@context": "https://schema.org", "@type": "BreadcrumbList",
          "itemListElement": [
              {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
-             {"@type": "ListItem", "position": 2, "name": "Библиотека оборудования", "item": L.url('library/')}]},
+             {"@type": "ListItem", "position": 2, "name": T['hub'], "item": L.url('library/')}]},
     ], ensure_ascii=False, indent=0)
     d = os.path.join(SITE, L.prefix, 'library')
     os.makedirs(d, exist_ok=True)
     open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
-        lang=L.code, title=esc('Библиотека оборудования'), crumb='',
-        h1=esc('Библиотека оборудования интерактивных экспозиций'),
-        desc=esc(Lang._clip(LIB_LEAD)),
+        lang=L.code, title=esc(T['hub']), crumb='', h1=esc(T['h1']),
+        desc=esc(Lang._clip(lib_lead)),
         canon=L.url('library/'), alts=lib_alternates('library/'), locale=L.locale,
         css=LIB_CSS, jsonld=ld, cover=esc(cover_url(ORDER[0], L.pmap)),
         up=up1, home=up1 + L.prefix,
         cnchome=up1 + L.prefix + 'concepts/', srvhome=up1 + L.prefix + 'services/',
-        lead=esc(LIB_LEAD), groups=LIB_INTRO + '<ul class="libcats">%s</ul>' % li + LIB_TAIL,
-        t_concepts=esc('Концепции'), t_services=esc('Услуги'),
-        cta=esc('Прислать спецификацию на проверку →'),
-        footer=FOOT_RU, f_home=esc('На главную'), f_all=esc('Все проекты'))))
+        lead=esc(lib_lead),
+        groups=LIB_INTRO_T[L.code] + '<ul class="libcats">%s</ul>' % li + LIB_TAIL_T[L.code],
+        t_concepts=esc(T['concepts']), t_services=esc(T['services']), cta=esc(T['cta']),
+        footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+        f_home=esc(T['home']), f_all=esc(T['all']))))
     print('library hub [%s]: %d категорий, %d позиций' % (L.code, len(cats), total))
 
 
@@ -1814,7 +1904,8 @@ if LIB_LANGS and LIB_LANGS[0].code == 'ru':
     _n = sum(len(s['items']) for c in _lib['categories'] for s in c['sections'])
     lines += ['', '## Библиотека оборудования / Equipment library', '',
               '- [Библиотека оборудования интерактивных экспозиций](%s/library/): '
-              '%d типов оборудования — что каждый умеет, когда не работает и кто выпускает.' % (BASE, _n)]
+              '%d %s оборудования — что каждый умеет, когда не работает и кто выпускает.'
+              % (BASE, _n, plural(_n, 'тип', 'типа', 'типов'))]
     for _c in _lib['categories']:
         lines.append('- [%s](%s/library/%s/): %s. %s'
                      % (_c['full'], BASE, _c['id'], _c['line'], _c['lead']))
