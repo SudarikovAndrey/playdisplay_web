@@ -1350,18 +1350,72 @@ for L in langs:
 # выделения текста. Библиотеку ищут, копируют и цитируют, поэтому она собирается
 # обычным генератором и остаётся выделяемой и индексируемой.
 
+# Иконки категорий. Рисуем штрихом в currentColor, чтобы они брали цвет от карточки
+# и подсвечивались вместе с ней при наведении — без второго набора файлов и без
+# запроса к серверу. Метафоры намеренно разные, а не зеркальные: «вывод» и «ввод»
+# в виде отражённых дуг на 44 пикселях путались между собой при проверке.
+LIB_ICONS = {
+ # проектор и экран: луч уходит от прибора наружу
+ 'output': '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"'
+           ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+           '<rect x="2.5" y="12.5" width="7" height="7" rx="1.5"/>'
+           '<circle cx="6" cy="16" r="1.15" fill="currentColor" stroke="none"/>'
+           '<path d="M9.5 14.2 L26.5 6.5"/><path d="M9.5 17.8 L26.5 25.5"/>'
+           '<path d="M26.5 6.5 L26.5 25.5"/></svg>',
+ # касание поверхности: сигнал приходит снаружи и расходится рябью
+ 'input':  '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"'
+           ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+           '<path d="M4.5 25.5 H27.5"/><circle cx="16" cy="19.5" r="3"/>'
+           '<path d="M16 4 V11.5 m-2.4 -2.6 L16 11.5 l2.4 -2.6"/>'
+           '<path d="M10 22.5 a8 8 0 0 1 0 -6"/><path d="M22 16.5 a8 8 0 0 1 0 6"/></svg>',
+ # микросхема с выводами: вычисление между входом и выходом
+ 'processing': '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"'
+           ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+           '<rect x="9" y="9" width="14" height="14" rx="2.5"/>'
+           '<rect x="13.75" y="13.75" width="4.5" height="4.5" rx="1"/>'
+           '<path d="M13 9 V5 M19 9 V5 M13 23 V27 M19 23 V27'
+           ' M9 13 H5 M9 19 H5 M23 13 H27 M23 19 H27"/></svg>',
+}
+
 LIB_CSS = CNC_CSS + '''
   /* --- Библиотека: хаб --- */
-  .libcats { list-style:none; padding:0; margin:44px 0 0; display:grid; gap:18px; }
-  .libcat { display:block; border:1px solid rgba(159,180,200,.24); padding:26px 28px 24px;
-            text-decoration:none; color:inherit; transition:border-color .18s, background .18s; }
-  .libcat:hover { border-color:#2be0c6; background:rgba(43,224,198,.045); }
+  .libcats { list-style:none; padding:0; margin:44px 0 0; display:grid; gap:16px; }
+  /* Иконка отдельной колонкой, а не над текстом: три карточки подряд читаются
+     как список, и общий вертикальный ритм важнее крупной картинки */
+  .libcat { display:grid; grid-template-columns:auto 1fr; gap:0 26px; align-items:start;
+            position:relative; overflow:hidden; text-decoration:none; color:inherit;
+            border:1px solid rgba(159,180,200,.22); padding:28px 30px 26px;
+            background:linear-gradient(135deg, rgba(43,224,198,.035), transparent 55%);
+            transition:border-color .2s, background .2s, transform .2s; }
+  .libcat:hover { border-color:#2be0c6; transform:translateY(-2px);
+                  background:linear-gradient(135deg, rgba(43,224,198,.10), transparent 60%); }
+  .libcat .ico { display:block; width:52px; height:52px; color:#2be0c6;
+                 border:1px solid rgba(43,224,198,.32); padding:9px; box-sizing:border-box;
+                 transition:border-color .2s, background .2s; }
+  .libcat .ico svg { display:block; width:100%; height:100%; }
+  .libcat:hover .ico { background:rgba(43,224,198,.10); border-color:#2be0c6; }
   .libcat i { font:500 12px/1 monospace; letter-spacing:.18em; color:#ff6a3d; font-style:normal; }
-  .libcat b { display:block; font-size:clamp(24px,3.4vw,34px); color:#fff; margin:10px 0 4px; letter-spacing:-.01em; }
+  .libcat b { display:block; font-size:clamp(23px,3.2vw,32px); color:#fff; margin:9px 0 4px; letter-spacing:-.01em; }
   .libcat em { display:block; font-style:normal; color:#2be0c6; font-size:17px; margin-bottom:12px; }
-  .libcat span { display:block; color:#9fb4c8; font-size:16px; line-height:1.6; }
-  .libcat u { display:block; margin-top:14px; text-decoration:none; font:500 12px/1 monospace;
-              letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; }
+  .libcat .lead { display:block; color:#9fb4c8; font-size:16px; line-height:1.6; max-width:60ch; }
+  .libcat u { display:flex; justify-content:space-between; align-items:center; gap:16px;
+              margin-top:18px; padding-top:14px; border-top:1px solid rgba(159,180,200,.16);
+              text-decoration:none; font:500 12px/1 monospace; letter-spacing:.14em;
+              text-transform:uppercase; color:#9fb4c8; }
+  .libcat u:after { content:"→"; color:#2be0c6; font-size:16px; opacity:.45;
+                    transition:opacity .2s, transform .2s; }
+  .libcat:hover u:after { opacity:1; transform:translateX(4px); }
+
+  /* --- Знак категории над заголовком страницы категории --- */
+  .libmark { display:flex; align-items:center; gap:14px; margin:0 0 4px; }
+  .libmark span { display:block; width:44px; height:44px; color:#2be0c6; padding:8px;
+                  box-sizing:border-box; border:1px solid rgba(43,224,198,.32); }
+  .libmark span svg { display:block; width:100%; height:100%; }
+  .libmark i { font:500 12px/1 monospace; letter-spacing:.18em; color:#ff6a3d; font-style:normal; }
+
+  @media (max-width:640px) {
+    .libcat { grid-template-columns:1fr; gap:16px 0; padding:22px 20px; }
+  }
 
   /* --- Навигация внутри категории: липкая, чтобы не терять место в длинном тексте --- */
   .libnav { position:sticky; top:0; z-index:5; margin:36px 0 8px; padding:12px 0;
@@ -1516,14 +1570,19 @@ LIB_INTRO = (
 
 LIB_TAIL = (
  '<h2>Чем мы в этом занимаемся</h2>'
- '<p>Мы не поставщики оборудования и ничего из перечисленного не продаём. Витрины, '
- 'фондовое и климатическое оборудование, хранение, охрана и общий свет — это вообще '
- 'другие компании. Мы отвечаем за то, что происходит на экранах и вокруг них: сценарий, '
- 'содержание, интерактив, программную часть и интеграцию.</p>'
- '<p>Отсюда и библиотека: она написана с той стороны, с которой видно, что из железа '
- 'потом действительно работает, а что через год стоит выключенным. Если у вас на руках '
- 'спецификация — пришлите, посмотрим и скажем, что в ней лишнее, чего не хватает и что '
- 'не переживёт первый год. Бесплатно и без обязательств.</p>')
+ '<p>Работая над проектом, мы отталкиваемся от желаемого эффекта, а не от конкретной '
+ 'технологии. Сначала — что человек должен унести с собой, и только потом чем это сделать. '
+ 'Мы не привязаны ни к одному производителю, поэтому под задачу подбирается лучшее '
+ 'решение, а не то, что привычнее или уже лежит на складе. Отсюда и библиотека: она '
+ 'написана как разбор ограничений — чтобы было видно, где технология действительно '
+ 'сильна, а где её берут по инерции.</p>'
+ '<p>Поставку берут на себя наши партнёры: любое оборудование из этой библиотеки '
+ 'на лучших для клиента условиях. Наша часть — сценарий, содержание, интерактив, '
+ 'программная часть и интеграция. Мы умеем строить сложные программно-аппаратные '
+ 'комплексы и отвечаем за то, чтобы это работало как одно целое, а не как набор '
+ 'коробок от разных поставщиков.</p>'
+ '<p>Если у вас на руках спецификация — пришлите, посмотрим и скажем, что в ней лишнее, '
+ 'чего не хватает и что не переживёт первый год. Бесплатно и без обязательств.</p>')
 
 
 def lib_alternates(tail):
@@ -1570,7 +1629,9 @@ for L in langs:
             body.append('</div>')
         other = ' · '.join('<a href="%s%s/">%s</a>' % (up1, c['id'], esc(c['full']))
                            for c in cats if c['id'] != cat['id'])
-        groups = ('<div class="call"><b>Принцип категории</b>%s</div>' % esc(cat['principle'])
+        groups = ('<div class="libmark"><span>%s</span><i>%s</i></div>'
+                  % (LIB_ICONS.get(cat['id'], ''), esc(cat['num']))
+                  + '<div class="call"><b>Принцип категории</b>%s</div>' % esc(cat['principle'])
                   + '<nav class="libnav">%s</nav>' % nav + ''.join(body)
                   + '<h2>Другие категории</h2><p>%s</p>' % other + LIB_TAIL)
         d = os.path.join(SITE, L.prefix, 'library', cat['id'])
@@ -1595,9 +1656,11 @@ for L in langs:
     # Хаб лежит В /library/, поэтому до категории путь короткий: output/, а не ../output/.
     # Разница с up1 из страниц категорий — оттуда до соседа действительно нужен ../
     li = ''.join(
-        '<li><a class="libcat" href="%s/"><i>%s</i><b>%s</b><em>%s</em><span>%s</span>'
-        '<u>%d позиций · %d производителей</u></a></li>'
-        % (c['id'], esc(c['num']), esc(c['full']), esc(c['line']), esc(c['lead']),
+        '<li><a class="libcat" href="%s/"><span class="ico">%s</span><span class="body">'
+        '<i>%s</i><b>%s</b><em>%s</em><span class="lead">%s</span>'
+        '<u>%d позиций · %d производителей</u></span></a></li>'
+        % (c['id'], LIB_ICONS.get(c['id'], ''), esc(c['num']), esc(c['full']),
+           esc(c['line']), esc(c['lead']),
            sum(len(s['items']) for s in c['sections']),
            len(set(b['n'] for s in c['sections'] for x in s['items'] for b in x['brands'])))
         for c in cats)
