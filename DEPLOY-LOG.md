@@ -8,6 +8,63 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-24 12:02 — hybrid-v8 @ 03f37b0
+
+**Коммиты в этой поставке**
+```
+03f37b0 Планшету свой профиль, стрелки-подсказки по бокам на таче, линза чёткости в центре экрана
+3930161 Аудит: дополнение за 24.08 и две моих ошибки, снятые замером
+70481e8 Стартовая карусель на телефоне: 71 МБ → 35 МБ
+57ee741 Смоук-проверка сайта: 107 адресов, и deploy.sh без неё не стартует
+8dcea36 Журнал деплоя: d903589
+```
+
+**На сервер отправлено файлов:** 117, удалено: 0
+```
+hero-scene.html
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+api/README.md
+api/scene.php
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+…и ещё 77
+```
+
+
 ## 2026-08-23 22:31 — hybrid-v8 @ d903589
 
 **Коммиты в этой поставке**
