@@ -2,7 +2,7 @@
 /**
  * Настройки 3D-сцены главной, ОБЩИЕ ДЛЯ ВСЕХ ПОСЕТИТЕЛЕЙ.
  *
- *   GET  /api/scene.php?p=mobile      → {ok, rev, profile, data|null, saved}
+ *   GET  /api/scene.php?p=mobile|tablet|desktop → {ok, rev, profile, data|null, saved}
  *   POST {action:'save',  profile, pass, data}  → {ok, rev}
  *   POST {action:'clear', profile, pass}        → {ok, rev}      вернуть заводские
  *
@@ -46,6 +46,7 @@ function pd_scene_spec() {
     'vortamp'   => array(0, 3),
     'vortpct'   => array(0, 1),
     'rubber'    => array(0, 1.2),
+    'lensr'     => array(0.1, 1.5),    // радиус линзы чёткости, долей меньшей стороны экрана
     'stickx'    => array(0.2, 3),      // скорость руля по горизонтали, экранов в секунду
     'sticky'    => array(0.2, 3),      // …и по вертикали
     'stickexpo' => array(0, 1),        // доля квадратичной составляющей в кривой руля
@@ -63,7 +64,12 @@ function pd_scene_out($data, $code = 200) {
 }
 function pd_scene_fail($msg, $code = 400) { pd_scene_out(array('ok' => false, 'error' => $msg), $code); }
 
-function pd_scene_profile($v) { return ($v === 'mobile') ? 'mobile' : 'desktop'; }
+// Профилей три, и планшет отдельно от телефона не для порядка: экран втрое крупнее,
+// пропорции другие, и подбор, годный для телефона, на iPad выглядит редким.
+function pd_scene_profile($v) {
+  if ($v === 'mobile' || $v === 'tablet') return $v;
+  return 'desktop';
+}
 
 function pd_scene_all() {
   if (!is_file(PD_SCENE_FILE)) return array();

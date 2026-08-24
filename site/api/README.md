@@ -44,7 +44,7 @@ api/uploads/            ← приложенные файлы до отправ�
 главной, ОБЩИЕ для всех посетителей: их кладёт туда панель настроек сцены (открывается
 удержанием правого верхнего угла 3 секунды), а забирает при загрузке каждый браузер.
 
-    GET  /api/scene.php?p=mobile|desktop   → {ok, rev, profile, data|null, saved}
+    GET  /api/scene.php?p=mobile|tablet|desktop → {ok, rev, profile, data|null, saved}
     POST {action:'save'|'clear', profile, pass, data}
 
 Зависимостей от `lib/` и от `config.php` у неё нет сознательно: сцена обязана открываться

@@ -892,7 +892,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2308-stick5';</script>
+<script>window.PD_V = 'b2408-touch1';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -1012,7 +1012,10 @@ try {
 // в центре не читается вовсе (см. lensr ниже).
 if (isMobile && !_hadSaved) {
   S.count = Math.min(S.count, _tablet ? 0.3 : 0.12);
-  S.lensr = _tablet ? 0.42 : 0.36;
+  // Радиус линзы — доля меньшей стороны экрана. На телефоне 0.5 накрывает ровно кадр
+  // проекта в середине; прежние жёсткие 450 px покрывали телефон целиком, и «зоны
+  // внимания» не получалось вовсе — детализировано было всё подряд.
+  S.lensr = _tablet ? 0.45 : 0.5;
 }
 // потолок генерации точек: сцена сэмплируется в PT_MUL раз плотнее, слайдер «Кол-во» показывает долю
 // на мобильных потолок ниже: меньше памяти и вершинной нагрузки, глазу незаметно
@@ -6357,8 +6360,8 @@ addEventListener('resize', () => {
   //                          при этом снимается, чтобы автор сразу видел то же, что и они.
   //   «Сброс»              — заводские значения и снятый черновик.
   const cloudBtn = g('s-cloud'), cloudNote = g('s-cloud-note');
-  const profName = isMobile ? 'mobile' : 'desktop';
-  const profRu = isMobile ? 'мобильный' : 'десктопный';
+  const profName = PROFILE;   // desktop | tablet | mobile — у планшета свой набор
+  const profRu = { desktop: 'десктопный', tablet: 'планшетный', mobile: 'мобильный' }[PROFILE];
   let _cloudPass = '';   // пароль держим в памяти вкладки: подбор идёт в несколько заходов
   const note = t => { if (cloudNote) cloudNote.textContent = t; };
   // сразу показываем, что сейчас лежит на сервере: панель и открывают, чтобы это узнать

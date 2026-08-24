@@ -1988,7 +1988,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b2408-light8&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2408-touch1&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -3123,9 +3123,19 @@
         x0 = t.clientX; y0 = t.clientY;
       }
     }, { passive: false });
-    // тап без свайпа (axis не определился) = запустить/закрыть видео текущего проекта
+    // Тап без свайпа (axis не определился). У КРАЯ экрана — листаем галерею на соседний
+    // проект, в середине — запускаем/закрываем видео. Край нужен потому, что на телефоне
+    // сцена касаний не получает вовсе (pointer-events: none у iframe), и нарисованные в
+    // ней стрелки-подсказки нажать нельзя — тап за них ловит эта страница.
+    // Полоса по высоте (25–75%) совпадает с тем местом, где стрелки нарисованы: тап по
+    // заголовку внизу или у шапки не должен перелистывать кадр.
     hero.addEventListener('touchend', function(){
-      if (axis === null && frame && frame.contentWindow) frame.contentWindow.postMessage({ pdTapPlay: true }, '*');
+      if (axis !== null || !frame || !frame.contentWindow) return;
+      var w = innerWidth, h = innerHeight;
+      var inBand = y0 > h * 0.25 && y0 < h * 0.75;
+      if (inBand && x0 < w * 0.16)      frame.contentWindow.postMessage({ pdStep: -1 }, '*');
+      else if (inBand && x0 > w * 0.84) frame.contentWindow.postMessage({ pdStep: 1 }, '*');
+      else                              frame.contentWindow.postMessage({ pdTapPlay: true }, '*');
     }, { passive: true });
   })();
 
