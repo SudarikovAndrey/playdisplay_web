@@ -533,6 +533,8 @@ for L in langs:
                   if os.path.exists(os.path.join(SITE, L.data, 'concepts.json')) else '')
     if os.path.exists(os.path.join(SITE, L.data, 'atlas.json')):
         L.cnc_foot += ' · <a href="%satlas/">%s</a>' % (L.up + L.prefix, esc(L.t('Атлас')))
+    if os.path.exists(os.path.join(SITE, L.data, 'library.json')):
+        L.cnc_foot += ' · <a href="%slibrary/">%s</a>' % (L.up + L.prefix, esc(L.t('Библиотека оборудования')))
 
 # языки, у которых услуги есть: только они попадают в hreflang и в sitemap
 SRV_LANGS = [L for L in langs if L.services]
@@ -661,6 +663,10 @@ def render_blocks(blocks):
             out.append('<ol class="steps">' + ''.join('<li>%s</li>' % esc(i) for i in b['items']) + '</ol>')
         elif t == 'notes':
             out.append('<ul class="notes">' + ''.join('<li>%s</li>' % esc(i) for i in b['items']) + '</ul>')
+        elif t == 'link':
+            # Отдельный тип, потому что текст блоков экранируется целиком: вставить
+            # <a> прямо в данные нельзя, а перелинковка из услуги в раздел нужна.
+            out.append('<p class="golink"><a href="%s">%s</a></p>' % (esc(b['href']), esc(b['text'])))
         elif t == 'stats':
             out.append('<ul class="stats">' + ''.join('<li><b>%s</b> %s</li>'
                        % (esc(i['n']), esc(i['label'])) for i in b['items']) + '</ul>')
@@ -777,6 +783,9 @@ SRV_CSS = '''
   .qa p { color:#c8d8e2; }
   .other { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:10px 18px; font-size:16px; }
   .cta { display:inline-block; margin-top:44px; padding:15px 26px; border:1px solid #2be0c6; color:#2be0c6; text-decoration:none; font-weight:600; }
+  .golink { margin:26px 0; padding:16px 20px; border:1px solid rgba(43,224,198,.45);
+            background:rgba(43,224,198,.05); }
+  .golink a { text-decoration:none; font-weight:600; font-size:19px; }
   .crumbs { font:500 13px monospace; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin-bottom:40px; }
   footer { margin-top:80px; color:#9fb4c8; font-size:14px; border-top:1px solid rgba(159,180,200,.22); padding-top:22px; }
 '''
@@ -1329,6 +1338,297 @@ for L in langs:
     print('atlas page [%s]: %d принципов' % (L.code, len(items)))
 
 
+
+# ---------- /library/ — библиотека оборудования ----------
+# Почему разделами, а не пятьюдесятью страницами (24.08.2026). У позиции библиотеки
+# 1200–2500 знаков — на отдельную страницу этого хватило бы. Но пятьдесят страниц,
+# отличающихся только названием железки, конкурируют друг с другом за один и тот же
+# запрос и размывают вес. Три категории по 15–19 позиций дают три сильные страницы
+# по 25–40 тысяч знаков каждая: это уже справочник, на который ссылаются.
+#
+# Почему не на ките. Кит — презентационный: там noindex, захват курсора и запрет
+# выделения текста. Библиотеку ищут, копируют и цитируют, поэтому она собирается
+# обычным генератором и остаётся выделяемой и индексируемой.
+
+LIB_CSS = CNC_CSS + '''
+  /* --- Библиотека: хаб --- */
+  .libcats { list-style:none; padding:0; margin:44px 0 0; display:grid; gap:18px; }
+  .libcat { display:block; border:1px solid rgba(159,180,200,.24); padding:26px 28px 24px;
+            text-decoration:none; color:inherit; transition:border-color .18s, background .18s; }
+  .libcat:hover { border-color:#2be0c6; background:rgba(43,224,198,.045); }
+  .libcat i { font:500 12px/1 monospace; letter-spacing:.18em; color:#ff6a3d; font-style:normal; }
+  .libcat b { display:block; font-size:clamp(24px,3.4vw,34px); color:#fff; margin:10px 0 4px; letter-spacing:-.01em; }
+  .libcat em { display:block; font-style:normal; color:#2be0c6; font-size:17px; margin-bottom:12px; }
+  .libcat span { display:block; color:#9fb4c8; font-size:16px; line-height:1.6; }
+  .libcat u { display:block; margin-top:14px; text-decoration:none; font:500 12px/1 monospace;
+              letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; }
+
+  /* --- Навигация внутри категории: липкая, чтобы не терять место в длинном тексте --- */
+  .libnav { position:sticky; top:0; z-index:5; margin:36px 0 8px; padding:12px 0;
+            background:#040c10; border-bottom:1px solid rgba(159,180,200,.22);
+            display:flex; flex-wrap:wrap; gap:8px 18px; font:500 13px/1.4 monospace;
+            letter-spacing:.06em; text-transform:uppercase; }
+  .libnav a { color:#9fb4c8; text-decoration:none; }
+  .libnav a:hover { color:#2be0c6; }
+
+  /* --- Раздел внутри категории --- */
+  .libsec { margin:64px 0 0; }
+  .libsec > h2 { margin:0 0 6px; }
+  .libsec > p.note { color:#9fb4c8; font-size:17px; margin:0 0 8px; max-width:62ch; }
+
+  /* --- Позиция --- */
+  .libitem { border-top:1px solid rgba(159,180,200,.18); padding:34px 0 6px; }
+  .libitem > i { font:500 12px/1 monospace; letter-spacing:.18em; color:#ff6a3d; font-style:normal; }
+  .libitem > h3 { font-size:clamp(21px,2.6vw,27px); margin:8px 0 2px; letter-spacing:-.01em; }
+  .libitem > p.line { color:#2be0c6; font-size:17px; margin:0 0 14px; }
+  .libitem > p.what { color:#c8d8e2; margin:0 0 18px; max-width:66ch; }
+
+  /* --- Когда работает / когда нет: сердце библиотеки, поэтому в две колонки --- */
+  .gb { display:grid; grid-template-columns:1fr 1fr; gap:8px 34px; margin:0 0 18px; }
+  .gb > div > h4 { font:500 12px/1 monospace; letter-spacing:.14em; text-transform:uppercase;
+                   margin:0 0 10px; color:#9fb4c8; }
+  .gb ul { list-style:none; padding:0; margin:0; }
+  .gb li { position:relative; padding-left:1.5em; margin:9px 0; font-size:16.5px; line-height:1.55; color:#c8d8e2; }
+  .gb li:before { position:absolute; left:0; top:0; font-weight:700; }
+  .gb .good li:before { content:"+"; color:#2be0c6; }
+  .gb .bad  li:before { content:"\\2013"; color:#ff6a3d; }
+
+  /* --- Врезки: замер, предупреждение про железо, сравнение, наше мнение --- */
+  .call { margin:0 0 18px; padding:14px 18px; border-left:2px solid #2be0c6;
+          background:rgba(43,224,198,.05); color:#c8d8e2; font-size:16.5px; line-height:1.6; max-width:70ch; }
+  /* Подпись врезки — ТОЛЬКО первый b. Раньше правило било по всем b внутри, и
+     выделения в тексте сравнения («Параболический купол») превращались в такие же
+     мелкие капсовые подписи: абзац рассыпался на три заголовка. */
+  .call > b:first-child { display:block; font:500 11px/1 monospace; letter-spacing:.16em;
+            text-transform:uppercase; color:#2be0c6; margin-bottom:8px; }
+  .call b { color:#fff; }
+  .call.hw, .call.warn { border-left-color:#ff6a3d; background:rgba(255,106,61,.06); }
+  .call.hw > b:first-child, .call.warn > b:first-child { color:#ff6a3d; }
+
+  /* --- Вынесенные ссылки на производителей --- */
+  .brands { margin:16px 0 0; }
+  .brands > h4 { font:500 11px/1 monospace; letter-spacing:.16em; text-transform:uppercase;
+                 color:#9fb4c8; margin:0 0 10px; }
+  .brands ul { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:8px; }
+  .brands li { border:1px solid rgba(159,180,200,.26); padding:8px 13px; max-width:290px;
+               transition:border-color .18s; }
+  .brands li:hover { border-color:#2be0c6; }
+  .brands a { text-decoration:none; font-weight:600; font-size:15.5px; }
+  .brands span { display:block; color:#9fb4c8; font-size:13.5px; line-height:1.45; margin-top:3px; }
+  .libcase { margin:16px 0 0; font-size:15.5px; }
+  .libcase:before { content:"\\2192"; color:#2be0c6; margin-right:.5em; }
+
+  @media (max-width:720px) {
+    .gb { grid-template-columns:1fr; gap:0; }
+    .gb > div { margin-bottom:14px; }
+    .libnav { font-size:12px; gap:6px 14px; }
+  }
+'''
+
+LIB_PAGE = ATLAS_PAGE.replace(
+    '<nav class="crumbs"><a href="{home}">playdisplay</a> / {title}</nav>',
+    '<nav class="crumbs"><a href="{home}">playdisplay</a> / {crumb} {title}</nav>')
+
+
+def lib_md(t):
+    """**жирный** внутри строки данных — единственная разметка, которую там допускаем"""
+    return re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', esc(t))
+
+
+def lib_brands(item):
+    if not item.get('brands'):
+        return ''
+    li = ''.join(
+        # rel=noopener обязателен при target=_blank: без него открытая вкладка
+        # получает доступ к window.opener. nofollow НЕ ставим — это честные
+        # редакционные ссылки, за них не наказывают, а доверие они добавляют.
+        '<li><a href="%s" target="_blank" rel="noopener">%s</a><span>%s</span></li>'
+        % (esc(b['u']), esc(b['n']), esc(b.get('note', '')))
+        for b in item['brands'])
+    return '<div class="brands"><h4>Производители</h4><ul>%s</ul></div>' % li
+
+
+def lib_item(L, item, idx):
+    out = ['<div class="libitem" id="%s">' % esc(item['id'])]
+    out.append('<i>%s</i>' % idx)
+    out.append('<h3>%s</h3>' % esc(item['name']))
+    out.append('<p class="line">%s</p>' % esc(item['line']))
+    out.append('<p class="what">%s</p>' % esc(item['what']))
+    if item.get('compare'):
+        out.append('<div class="call"><b>Два принципа</b>%s</div>' % lib_md(item['compare']))
+    if item.get('note_hw'):
+        out.append('<div class="call hw"><b>Важно для спецификации</b>%s</div>' % lib_md(item['note_hw']))
+    good = ''.join('<li>%s</li>' % esc(x) for x in item.get('good', []))
+    bad = ''.join('<li>%s</li>' % esc(x) for x in item.get('bad', []))
+    if good or bad:
+        out.append('<div class="gb"><div class="good"><h4>Когда работает</h4><ul>%s</ul></div>'
+                   '<div class="bad"><h4>Когда не работает</h4><ul>%s</ul></div></div>' % (good, bad))
+    if item.get('spec'):
+        out.append('<div class="call"><b>Как считать</b>%s</div>' % lib_md(item['spec']))
+    if item.get('warn'):
+        out.append('<div class="call warn"><b>Наше мнение</b>%s</div>' % lib_md(item['warn']))
+    out.append(lib_brands(item))
+    if item.get('case') and item['case'] in L.pmap:
+        p = L.pmap[item['case']]
+        out.append('<p class="libcase">Как это сделано у нас: <a href="../../work/%s/">%s</a></p>'
+                   % (esc(item['case']), esc(p.get('title') or item['case'])))
+    out.append('</div>')
+    return ''.join(out)
+
+
+def lib_jsonld(L, cat, tail, n):
+    items = [i for s in cat['sections'] for i in s['items']]
+    return json.dumps([
+        {"@context": "https://schema.org", "@type": "Article",
+         "headline": '%s для интерактивной экспозиции' % cat['full'],
+         "description": Lang._clip(cat['lead']),
+         "url": L.url(tail), "inLanguage": L.code,
+         "author": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'},
+         "publisher": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'}},
+        {"@context": "https://schema.org", "@type": "ItemList",
+         "name": cat['full'], "numberOfItems": n,
+         "itemListElement": [{"@type": "ListItem", "position": k + 1, "name": i['name'],
+                              "url": '%s#%s' % (L.url(tail), i['id'])}
+                             for k, i in enumerate(items)]},
+        {"@context": "https://schema.org", "@type": "BreadcrumbList",
+         "itemListElement": [
+             {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
+             {"@type": "ListItem", "position": 2, "name": "Библиотека оборудования", "item": L.url('library/')},
+             {"@type": "ListItem", "position": 3, "name": cat['full'], "item": L.url(tail)}]},
+    ], ensure_ascii=False, indent=0)
+
+
+LIB_LEAD = ('Пятьдесят типов оборудования, из которых собирается интерактивная экспозиция, — '
+            'разложенные по тому, что они делают: показывают человеку, слушают человека или '
+            'считают между этими двумя. У каждого: когда работает, когда не работает и кто '
+            'это выпускает.')
+
+LIB_INTRO = (
+ '<p>Библиотека устроена не по прайс-листу, а по роли в системе. Любой интерактивный '
+ 'экспонат — это замкнутый круг: человек что-то делает, машина это считает, экспозиция '
+ 'отвечает. Три категории ниже — три четверти этого круга, и слабое звено определяет '
+ 'всё остальное.</p>'
+ '<p>Сквозной принцип, который стоит держать в голове на каждой странице: '
+ '<b>оборудование выбирается последним</b>. Сначала сценарий — что человек должен унести '
+ 'с собой; потом взаимодействие — что он для этого делает руками; и только потом железо, '
+ 'которое это выдержит. Спецификация, составленная в обратном порядке, узнаётся по '
+ 'выключенным экранам на второй год.</p>')
+
+LIB_TAIL = (
+ '<h2>Чем мы в этом занимаемся</h2>'
+ '<p>Мы не поставщики оборудования и ничего из перечисленного не продаём. Витрины, '
+ 'фондовое и климатическое оборудование, хранение, охрана и общий свет — это вообще '
+ 'другие компании. Мы отвечаем за то, что происходит на экранах и вокруг них: сценарий, '
+ 'содержание, интерактив, программную часть и интеграцию.</p>'
+ '<p>Отсюда и библиотека: она написана с той стороны, с которой видно, что из железа '
+ 'потом действительно работает, а что через год стоит выключенным. Если у вас на руках '
+ 'спецификация — пришлите, посмотрим и скажем, что в ней лишнее, чего не хватает и что '
+ 'не переживёт первый год. Бесплатно и без обязательств.</p>')
+
+
+def lib_alternates(tail):
+    ls = [L for L in langs if os.path.exists(os.path.join(SITE, L.data, 'library.json'))]
+    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.code, BASE, L.prefix, tail) for L in ls]
+    if len(ls) > 1:
+        out.append('<link rel="alternate" hreflang="x-default" href="%s/%s%s">' % (BASE, ls[0].prefix, tail))
+    return '\n'.join(out)
+
+
+def load_library(L):
+    p = os.path.join(SITE, L.data, 'library.json')
+    if not os.path.exists(p):
+        return None
+    return json.load(open(p, encoding='utf-8'))
+
+
+LIB_LANGS, LIB_ORDER = [], []
+for L in langs:
+    lib = load_library(L)
+    L.has_library = bool(lib)
+    if not lib:
+        continue
+    LIB_LANGS.append(L)
+    cats = lib['categories']
+    if not LIB_ORDER:
+        LIB_ORDER = [c['id'] for c in cats]
+    up2 = '../../' if L.code == 'ru' else '../../../'
+    up1 = '../' if L.code == 'ru' else '../../'
+    total = sum(len(s['items']) for c in cats for s in c['sections'])
+
+    # --- страницы категорий ---
+    for cat in cats:
+        n = sum(len(s['items']) for s in cat['sections'])
+        tail = 'library/%s/' % cat['id']
+        nav = ''.join('<a href="#s%d">%s</a>' % (k, esc(s['name'])) for k, s in enumerate(cat['sections']))
+        body = []
+        i = 0
+        for k, s in enumerate(cat['sections']):
+            body.append('<div class="libsec" id="s%d"><h2>%s</h2><p class="note">%s</p>' % (k, esc(s['name']), esc(s['note'])))
+            for it in s['items']:
+                i += 1
+                body.append(lib_item(L, it, '%s.%02d' % (cat['num'], i)))
+            body.append('</div>')
+        other = ' · '.join('<a href="%s%s/">%s</a>' % (up1, c['id'], esc(c['full']))
+                           for c in cats if c['id'] != cat['id'])
+        groups = ('<div class="call"><b>Принцип категории</b>%s</div>' % esc(cat['principle'])
+                  + '<nav class="libnav">%s</nav>' % nav + ''.join(body)
+                  + '<h2>Другие категории</h2><p>%s</p>' % other + LIB_TAIL)
+        d = os.path.join(SITE, L.prefix, 'library', cat['id'])
+        os.makedirs(d, exist_ok=True)
+        open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
+            lang=L.code, title=esc(cat['full']),
+            h1=esc('%s: %s' % (cat['full'], cat['line'].lower())),
+            desc=esc(Lang._clip(cat['lead'])),
+            canon=L.url(tail), alts=lib_alternates(tail), locale=L.locale, css=LIB_CSS,
+            jsonld=lib_jsonld(L, cat, tail, n),
+            cover=esc(cover_url(ORDER[0], L.pmap)), up=up2, home=up2 + L.prefix,
+            crumb='<a href="%s">Библиотека оборудования</a> /' % (up1),
+            cnchome=up2 + L.prefix + 'concepts/', srvhome=up2 + L.prefix + 'services/',
+            lead=esc(cat['lead']), groups=groups,
+            t_concepts=esc('Концепции'), t_services=esc('Услуги'),
+            cta=esc('Прислать спецификацию на проверку →'),
+            footer=FOOT_RU, f_home=esc('На главную'), f_all=esc('Все проекты'))), )
+        print('library [%s/%s]: %d позиций, %d брендов'
+              % (L.code, cat['id'], n, sum(len(x['brands']) for s in cat['sections'] for x in s['items'])))
+
+    # --- хаб ---
+    # Хаб лежит В /library/, поэтому до категории путь короткий: output/, а не ../output/.
+    # Разница с up1 из страниц категорий — оттуда до соседа действительно нужен ../
+    li = ''.join(
+        '<li><a class="libcat" href="%s/"><i>%s</i><b>%s</b><em>%s</em><span>%s</span>'
+        '<u>%d позиций · %d производителей</u></a></li>'
+        % (c['id'], esc(c['num']), esc(c['full']), esc(c['line']), esc(c['lead']),
+           sum(len(s['items']) for s in c['sections']),
+           len(set(b['n'] for s in c['sections'] for x in s['items'] for b in x['brands'])))
+        for c in cats)
+    ld = json.dumps([
+        {"@context": "https://schema.org", "@type": "Article",
+         "headline": "Библиотека оборудования интерактивных экспозиций",
+         "description": Lang._clip(LIB_LEAD), "url": L.url('library/'), "inLanguage": L.code,
+         "author": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'},
+         "publisher": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'}},
+        {"@context": "https://schema.org", "@type": "BreadcrumbList",
+         "itemListElement": [
+             {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
+             {"@type": "ListItem", "position": 2, "name": "Библиотека оборудования", "item": L.url('library/')}]},
+    ], ensure_ascii=False, indent=0)
+    d = os.path.join(SITE, L.prefix, 'library')
+    os.makedirs(d, exist_ok=True)
+    open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
+        lang=L.code, title=esc('Библиотека оборудования'), crumb='',
+        h1=esc('Библиотека оборудования интерактивных экспозиций'),
+        desc=esc(Lang._clip(LIB_LEAD)),
+        canon=L.url('library/'), alts=lib_alternates('library/'), locale=L.locale,
+        css=LIB_CSS, jsonld=ld, cover=esc(cover_url(ORDER[0], L.pmap)),
+        up=up1, home=up1 + L.prefix,
+        cnchome=up1 + L.prefix + 'concepts/', srvhome=up1 + L.prefix + 'services/',
+        lead=esc(LIB_LEAD), groups=LIB_INTRO + '<ul class="libcats">%s</ul>' % li + LIB_TAIL,
+        t_concepts=esc('Концепции'), t_services=esc('Услуги'),
+        cta=esc('Прислать спецификацию на проверку →'),
+        footer=FOOT_RU, f_home=esc('На главную'), f_all=esc('Все проекты'))))
+    print('library hub [%s]: %d категорий, %d позиций' % (L.code, len(cats), total))
+
+
 # ---------- sitemap.xml: обе версии + перекрёстные hreflang ----------
 XH = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"'
 def sm_alts(tail):
@@ -1364,6 +1664,14 @@ for L in _atl:
     urls.append('<url><loc>%s/%satlas/</loc>%s<changefreq>monthly</changefreq><priority>0.8</priority></url>'
                 % (BASE, L.prefix,
                    ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%satlas/"/>' % (x.code, BASE, x.prefix) for x in _atl)))
+# библиотека оборудования: хаб и три категории
+def sm_lib_alts(tail):
+    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.code, BASE, L.prefix, tail)
+                   for L in LIB_LANGS) if len(LIB_LANGS) > 1 else ''
+for tail, prio in [('library/', '0.9')] + [('library/%s/' % c, '0.9') for c in LIB_ORDER]:
+    for L in LIB_LANGS:
+        urls.append('<url><loc>%s/%s%s</loc>%s<changefreq>monthly</changefreq><priority>%s</priority></url>'
+                    % (BASE, L.prefix, tail, sm_lib_alts(tail), prio))
 open(os.path.join(SITE, 'sitemap.xml'), 'w', encoding='utf-8').write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" %s>\n' % XH +
     '\n'.join(urls) + '\n</urlset>\n')
@@ -1434,6 +1742,19 @@ if os.path.exists(os.path.join(SITE, RU.data, 'atlas.json')):
     lines += ['', '## Атлас — принципы студии / Studio principles', '',
               '- [%s](%s/atlas/): 50 принципов, приёмов и наблюдений, по которым студия работает.'
               % (RU.t('Атлас: как мы думаем о пространстве'), BASE)]
+
+# ---- Библиотека оборудования: то, что модель охотнее всего цитирует ----
+# Справочник с производителями и ограничениями — материал, у которого есть
+# и адрес, и проверяемое содержание. Печатаем хаб и три категории.
+if LIB_LANGS and LIB_LANGS[0].code == 'ru':
+    _lib = load_library(LIB_LANGS[0])
+    _n = sum(len(s['items']) for c in _lib['categories'] for s in c['sections'])
+    lines += ['', '## Библиотека оборудования / Equipment library', '',
+              '- [Библиотека оборудования интерактивных экспозиций](%s/library/): '
+              '%d типов оборудования — что каждый умеет, когда не работает и кто выпускает.' % (BASE, _n)]
+    for _c in _lib['categories']:
+        lines.append('- [%s](%s/library/%s/): %s. %s'
+                     % (_c['full'], BASE, _c['id'], _c['line'], _c['lead']))
 
 lines += ['', '## Контакт / Contact', '',
           '- Сайт: %s/' % BASE,

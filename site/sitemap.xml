@@ -109,4 +109,8 @@
 <url><loc>https://playdisplay.com/en/concepts/city-flight/</loc><xhtml:link rel="alternate" hreflang="ru" href="https://playdisplay.com/concepts/city-flight/"/><xhtml:link rel="alternate" hreflang="en" href="https://playdisplay.com/en/concepts/city-flight/"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://playdisplay.com/atlas/</loc><xhtml:link rel="alternate" hreflang="ru" href="https://playdisplay.com/atlas/"/><xhtml:link rel="alternate" hreflang="en" href="https://playdisplay.com/en/atlas/"/><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://playdisplay.com/en/atlas/</loc><xhtml:link rel="alternate" hreflang="ru" href="https://playdisplay.com/atlas/"/><xhtml:link rel="alternate" hreflang="en" href="https://playdisplay.com/en/atlas/"/><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://playdisplay.com/library/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://playdisplay.com/library/output/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://playdisplay.com/library/input/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://playdisplay.com/library/processing/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>
