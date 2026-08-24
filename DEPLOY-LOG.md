@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-23 21:58 — hybrid-v8 @ 88e6de6
+
+**Коммиты в этой поставке**
+```
+2951813 Результаты Сталинграда, форума, «Панорамы 360» и МИГ-35: 9 кейсов из 15
+88e6de6 WebP рядом с картинками: 35 -> 24 МБ на статических страницах
+3327e78 Журнал деплоя: f22076e
+```
+
+**На сервер отправлено файлов:** 357, удалено: 0
+```
+hero-scene.html
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+api/.htaccess
+api/scene-pass.php
+api/scene.php
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+data/projects.json
+data/en/projects.json
+…и ещё 75
+```
+
+
 ## 2026-08-23 15:54 — hybrid-v8 @ f22076e
 
 **Коммиты в этой поставке**
