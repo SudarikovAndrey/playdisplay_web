@@ -236,6 +236,139 @@
       ]
     },
     {
+      "slug": "museum-equipment",
+      "title": "Interactive museum equipment",
+      "nav": "Museum equipment",
+      "subtitle": "A screen, a model or a vitrine tells nobody anything on its own. We build the equipment around the story, not the story around the equipment.",
+      "keywords": [
+        "museum equipment",
+        "interactive museum equipment",
+        "multimedia museum equipment",
+        "museum technology",
+        "interactive exhibits",
+        "museum av equipment"
+      ],
+      "cases": [
+        "vdnh-space-center",
+        "proryv",
+        "pano360",
+        "industry-rf"
+      ],
+      "flow": [
+        {
+          "t": "p",
+          "text": "“Museum equipment” is usually searched by someone who already has a budget line and a deadline to produce a list of items. The honest answer: equipment is chosen last. Not because it does not matter, but because until the story is written there is no way to say which equipment is the right one."
+        },
+        {
+          "t": "p",
+          "text": "Multimedia hardware tells nothing by itself. A touch table without content worth digging into is an expensive tablet on legs that people stop approaching within a month. A projector without a scenario is a bright patch on a wall. The difference between a museum with a queue at an exhibit and a museum whose screens have been off since last year is not the brand of the hardware."
+        },
+        {
+          "t": "h",
+          "text": "What gets decided before the hardware"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "What the visitor should walk out with. Without that answer every line in the specification is a guess.",
+            "Who comes: a school group, a family on a Sunday, a specialist, an official delegation. Different pace, different height, different patience — and those are already technical requirements.",
+            "Where the visitor stands and for how long. An exhibit people pass on the way to the cloakroom and an exhibit people sit down at for five minutes are different machines.",
+            "How many people at once. One touch screen for a group of thirty means twenty-nine of them are looking at someone's back.",
+            "What is actually shown. Content is the largest and most underestimated part of the budget: models, filming, texts, voice-over, animation.",
+            "Who maintains it. Museums rarely have an engineer on staff. Anything that cannot be restarted with one button does not survive into its second year."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "What exists, and what each type is actually good at"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Touch tables and panels — for content worth digging through: maps, archives, drawings, biographies. Poor under crowd flow, almost useless for a group.",
+            "Projection onto a physical model — when there is a form to work with: a territory, a building, a plant, a field. Stronger than any screen, because the volume is real rather than drawn.",
+            "Large screens and video walls — for overall impression and as a gathering point for a group. Not for reading: nobody reads long text off them.",
+            "Holographic showcases and volumetric displays — when the object cannot be shipped, cannot be cut open, or does not physically exist.",
+            "Touchless interfaces — gesture, proximity, sensors. The exhibit comes alive by itself, with no “press here” label, and it is the only way to reach visitors who are shy about touching things.",
+            "Augmented reality on a museum tablet or the visitor's own phone — cheaper in hardware, more expensive in content, and it needs someone to explain how to start.",
+            "VR — a strong impression for exactly one person and a queue for everyone else. Calculate throughput before the purchase, not after."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "What “modern” actually means"
+        },
+        {
+          "t": "p",
+          "text": "A museum is not modern because of the manufacturing year of its hardware or the size of its diagonal. An exhibit is modern when it is understood without instructions. Five seconds for a child to work out what to do. Five minutes for a specialist to find the depth they came for. The same object serves both. If it takes reading a rules plate to start, the object gets redesigned — however new the hardware underneath it is."
+        },
+        {
+          "t": "h",
+          "text": "What we do not do"
+        },
+        {
+          "t": "p",
+          "text": "We are not an equipment supplier. Display cases, collection storage and climate systems, security, general lighting, audio guides as a service — those are other companies, and there are good ones. We are responsible for what happens on the screens and around them: story, content, interaction, software and integration — and for making sure the hardware you buy is not the wrong hardware."
+        },
+        {
+          "t": "h",
+          "text": "What drives the cost"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Volume of content. It multiplies by the number of scenarios, not the number of screens: ten panels running one scenario cost less than three running different ones.",
+            "Whether source material exists — collections, drawings, 3D, footage — or has to be created.",
+            "A one-off delivery, or a system the museum keeps filling itself afterwards.",
+            "Room conditions: light, ceiling height, access to services, and whether drilling the walls is allowed at all."
+          ]
+        },
+        {
+          "t": "stats",
+          "items": [
+            {
+              "n": "115",
+              "label": "installations in a single exhibition — Cosmonautics and Aviation Centre, VDNH"
+            },
+            {
+              "n": "2011",
+              "label": "studio founded, working worldwide"
+            },
+            {
+              "n": "3 wks",
+              "label": "our fastest interactive project delivered end to end"
+            }
+          ]
+        },
+        {
+          "t": "p",
+          "text": "If the budget is already broken down into line items but there is no scenario underneath it, that is still fixable — as long as the supply contract is unsigned. Send us the list: we will say what is redundant, what is missing, and what will not survive the first year. Free, and it takes one conversation."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Do you supply the equipment?",
+          "a": "No. We design and build the interactive exhibits — scenario, content, software, integration. The hardware is procured through suppliers against a specification we write. On the museum's side that is usually a separate tender, and our job is to write the requirements so that the winner is the right kit rather than the cheapest one."
+        },
+        {
+          "q": "How much does interactive museum equipment cost?",
+          "a": "The figure comes out of the scenario, not out of a price list: until the number of exhibits and what happens on them is known, any sum is fiction. One proportion can be stated in advance though — in a multimedia exhibition budget the hardware itself rarely exceeds a third. The rest is content and the work on it. Budgets where everything went into the kit and nothing was left for content are recognisable by their switched-off screens."
+        },
+        {
+          "q": "We are a small school or departmental museum. What is realistic?",
+          "a": "One well-conceived exhibit beats five mediocre ones, and that is especially true on a small budget. The cheapest things that genuinely work are projection onto a physical model, and content built for a screen you already own. The most expensive mistake is trying to cover every wall with panels."
+        },
+        {
+          "q": "How do we know in advance the equipment will not sit idle?",
+          "a": "Two tests. First: can an attendant restart the exhibit with a single button. Second: can the museum change the content without calling the contractor. If both answers are no, in a year it will be furniture."
+        },
+        {
+          "q": "Can we show you a specification someone has already written for us?",
+          "a": "Yes — we will look and tell you what we think, with no obligation on your side. Two things usually turn up in such lists: items bought just in case, and no line for content at all."
+        }
+      ]
+    },
+    {
       "slug": "exhibition-stand",
       "title": "Interactive exhibition stand",
       "nav": "Exhibition stand",
