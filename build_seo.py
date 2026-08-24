@@ -1435,47 +1435,58 @@ LIB_CSS = CNC_CSS + '''
     .libcat .act { width:100%; justify-content:center; }
   }
 
-  /* --- Навигация внутри категории: липкая, чтобы не терять место в длинном тексте --- */
-  .libnav { position:sticky; top:0; z-index:5; margin:36px 0 8px; padding:12px 0;
+  /* --- Карточки позиций: сетка с фильтром, как в атласе --- */
+  .libbar { position:sticky; top:0; z-index:6; margin:34px 0 6px; padding:14px 0;
             background:#040c10; border-bottom:1px solid rgba(159,180,200,.22);
-            display:flex; flex-wrap:wrap; gap:8px 18px; font:500 13px/1.4 monospace;
-            letter-spacing:.06em; text-transform:uppercase; }
-  .libnav a { color:#9fb4c8; text-decoration:none; }
-  .libnav a:hover { color:#2be0c6; }
+            display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+  .libbar input { flex:1 1 220px; min-width:0; background:transparent; color:#e9f4f6;
+                  border:1px solid rgba(159,180,200,.3); padding:9px 13px; font:400 15px inherit; }
+  .libbar input::placeholder { color:#6d8496; }
+  .libbar input:focus { outline:none; border-color:#2be0c6; }
+  .libchips { display:flex; flex-wrap:wrap; gap:7px; }
+  .libchip { background:transparent; color:#9fb4c8; cursor:pointer;
+             border:1px solid rgba(159,180,200,.26); padding:8px 13px;
+             font:500 12px/1 monospace; letter-spacing:.08em; text-transform:uppercase;
+             transition:color .18s, border-color .18s, background .18s; }
+  .libchip:hover { color:#e9f4f6; border-color:#9fb4c8; }
+  .libchip[aria-pressed="true"] { color:#040c10; background:#2be0c6; border-color:#2be0c6; }
+  .libcount { color:#6d8496; font:500 12px/1 monospace; letter-spacing:.1em;
+              text-transform:uppercase; margin-left:auto; }
 
-  /* --- Раздел внутри категории --- */
-  .libsec { margin:64px 0 0; }
-  .libsec > h2 { margin:0 0 6px; }
-  .libsec > p.note { color:#9fb4c8; font-size:17px; margin:0 0 8px; max-width:62ch; }
+  .libgrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:22px 0 0; }
+  .libitem { border:1px solid rgba(159,180,200,.2); padding:24px 24px 22px; margin:0;
+             display:flex; flex-direction:column;
+             background:linear-gradient(160deg, rgba(43,224,198,.03), transparent 60%);
+             transition:border-color .2s, background .2s; }
+  .libitem:hover { border-color:rgba(43,224,198,.5);
+                   background:linear-gradient(160deg, rgba(43,224,198,.07), transparent 65%); }
+  .libitem[hidden] { display:none; }
+  .libitem > i { font:500 11px/1 monospace; letter-spacing:.18em; color:#ff6a3d; font-style:normal; }
+  .libitem > h3 { font-size:21px; line-height:1.2; margin:9px 0 3px; letter-spacing:-.01em; }
+  .libitem > p.line { color:#2be0c6; font-size:16px; line-height:1.4; margin:0 0 13px; }
+  .libitem > p.what { color:#c8d8e2; font-size:16px; line-height:1.6; margin:0 0 16px; max-width:none; }
+  .libitem .sec { font:500 10px/1 monospace; letter-spacing:.16em; text-transform:uppercase;
+                  color:#6d8496; margin-left:9px; }
 
-  /* --- Позиция --- */
-  .libitem { border-top:1px solid rgba(159,180,200,.18); padding:34px 0 6px; }
-  .libitem > i { font:500 12px/1 monospace; letter-spacing:.18em; color:#ff6a3d; font-style:normal; }
-  .libitem > h3 { font-size:clamp(21px,2.6vw,27px); margin:8px 0 2px; letter-spacing:-.01em; }
-  .libitem > p.line { color:#2be0c6; font-size:17px; margin:0 0 14px; }
-  .libitem > p.what { color:#c8d8e2; margin:0 0 18px; max-width:66ch; }
-
-  /* --- Когда работает / когда нет: сердце библиотеки, поэтому в две колонки --- */
-  .gb { display:grid; grid-template-columns:1fr 1fr; gap:8px 34px; margin:0 0 18px; }
-  .gb > div > h4 { font:500 12px/1 monospace; letter-spacing:.14em; text-transform:uppercase;
-                   margin:0 0 10px; color:#9fb4c8; }
+  .gb { display:grid; grid-template-columns:1fr; gap:14px; margin:0 0 16px; }
+  .gb > div > h4 { font:500 11px/1 monospace; letter-spacing:.14em; text-transform:uppercase;
+                   margin:0 0 8px; color:#9fb4c8; }
   .gb ul { list-style:none; padding:0; margin:0; }
-  .gb li { position:relative; padding-left:1.5em; margin:9px 0; font-size:16.5px; line-height:1.55; color:#c8d8e2; }
+  .gb li { position:relative; padding-left:1.4em; margin:7px 0; font-size:15.5px; line-height:1.5; color:#c8d8e2; }
   .gb li:before { position:absolute; left:0; top:0; font-weight:700; }
   .gb .good li:before { content:"+"; color:#2be0c6; }
-  .gb .bad  li:before { content:"\\2013"; color:#ff6a3d; }
+  .gb .bad  li:before { content:"\2013"; color:#ff6a3d; }
 
-  /* --- Врезки: замер, предупреждение про железо, сравнение, наше мнение --- */
-  .call { margin:0 0 18px; padding:14px 18px; border-left:2px solid #2be0c6;
-          background:rgba(43,224,198,.05); color:#c8d8e2; font-size:16.5px; line-height:1.6; max-width:70ch; }
-  /* Подпись врезки — ТОЛЬКО первый b. Раньше правило било по всем b внутри, и
-     выделения в тексте сравнения («Параболический купол») превращались в такие же
-     мелкие капсовые подписи: абзац рассыпался на три заголовка. */
-  .call > b:first-child { display:block; font:500 11px/1 monospace; letter-spacing:.16em;
-            text-transform:uppercase; color:#2be0c6; margin-bottom:8px; }
-  .call b { color:#fff; }
-  .call.hw, .call.warn { border-left-color:#ff6a3d; background:rgba(255,106,61,.06); }
-  .call.hw > b:first-child, .call.warn > b:first-child { color:#ff6a3d; }
+  .call { margin:0 0 16px; padding:13px 16px; border-left:2px solid #2be0c6;
+          background:rgba(43,224,198,.05); color:#c8d8e2; font-size:15.5px; line-height:1.55; max-width:none; }
+  .libitem .brands { margin-top:auto; padding-top:14px; }
+  .libitem .brands li { max-width:none; }
+  .libcase { margin:14px 0 0; font-size:15px; }
+  .libcase:before { content:"\2192"; color:#2be0c6; margin-right:.5em; }
+  .libempty { color:#9fb4c8; padding:30px 0; }
+
+  @media (max-width:900px) { .libgrid { grid-template-columns:1fr; } }
+  @media (max-width:720px) { .libcount { margin-left:0; width:100%; } }
 
   /* --- Вынесенные ссылки на производителей --- */
   .brands { margin:16px 0 0; }
@@ -1520,9 +1531,9 @@ def lib_brands(L, item):
     return '<div class="brands"><h4>%s</h4><ul>%s</ul></div>' % (LIB_T[L.code]['brands'], li)
 
 
-def lib_item(L, item, idx):
-    out = ['<div class="libitem" id="%s">' % esc(item['id'])]
-    out.append('<i>%s</i>' % idx)
+def lib_item(L, item, idx, sec=''):
+    out = ['<div class="libitem" id="%s" data-sec="%s">' % (esc(item['id']), esc(sec))]
+    out.append('<i>%s<span class="sec">%s</span></i>' % (idx, esc(sec)))
     out.append('<h3>%s</h3>' % esc(item['name']))
     out.append('<p class="line">%s</p>' % esc(item['line']))
     out.append('<p class="what">%s</p>' % esc(item['what']))
@@ -1586,37 +1597,11 @@ def plural(n, one, few, many):
     return many
 
 
-LIB_LEAD_RU = ('%d %s оборудования, из которых собирается интерактивная экспозиция, — '
-            'разложенные по тому, что они делают: показывают человеку, слушают человека или '
-            'считают между этими двумя. У каждого: когда работает, когда не работает и кто '
-            'это выпускает.')
+LIB_LEAD_RU = '%d %s оборудования: что каждое реально умеет, где привирают в презентациях и обо что спотыкаются на второй год. Мы это железо не продаём — мы им работаем.'
 
-LIB_INTRO_RU = (
- '<p>Библиотека устроена не по прайс-листу, а по роли в системе. Любой интерактивный '
- 'экспонат — это замкнутый круг: человек что-то делает, машина это считает, экспозиция '
- 'отвечает. Три категории ниже — три четверти этого круга, и слабое звено определяет '
- 'всё остальное.</p>'
- '<p>Сквозной принцип, который стоит держать в голове на каждой странице: '
- '<b>оборудование выбирается последним</b>. Сначала сценарий — что человек должен унести '
- 'с собой; потом взаимодействие — что он для этого делает руками; и только потом железо, '
- 'которое это выдержит. Спецификация, составленная в обратном порядке, узнаётся по '
- 'выключенным экранам на второй год.</p>')
+LIB_INTRO_RU = '<p>Справочник собран не по прайс-листу, а по роли в системе. Любой интерактивный экспонат — замкнутый круг: человек что-то делает, машина считывает, экспозиция отвечает. Три категории ниже — три четверти этого круга. Слабое звено решает за все остальные.</p><p>Одна мысль проходит через каждую страницу: <b>железо выбирают последним</b>. Сначала — что человек унесёт с собой. Потом — что он для этого сделает руками. И только потом — чем это выдержать. Смету, собранную наоборот, легко узнать через год: по тёмным экранам.</p>'
 
-LIB_TAIL_RU = (
- '<h2>Чем мы в этом занимаемся</h2>'
- '<p>Работая над проектом, мы отталкиваемся от желаемого эффекта, а не от конкретной '
- 'технологии. Сначала — что человек должен унести с собой, и только потом чем это сделать. '
- 'Мы не привязаны ни к одному производителю, поэтому под задачу подбирается лучшее '
- 'решение, а не то, что привычнее или уже лежит на складе. Отсюда и библиотека: она '
- 'написана как разбор ограничений — чтобы было видно, где технология действительно '
- 'сильна, а где её берут по инерции.</p>'
- '<p>Поставку берут на себя наши партнёры: любое оборудование из этой библиотеки '
- 'на лучших для клиента условиях. Наша часть — сценарий, содержание, интерактив, '
- 'программная часть и интеграция. Мы умеем строить сложные программно-аппаратные '
- 'комплексы и отвечаем за то, чтобы это работало как одно целое, а не как набор '
- 'коробок от разных поставщиков.</p>'
- '<p>Если у вас на руках спецификация — пришлите, посмотрим и скажем, что в ней лишнее, '
- 'чего не хватает и что не переживёт первый год. Бесплатно и без обязательств.</p>')
+LIB_TAIL_RU = '<h2>Причём здесь мы</h2><p>Мы не поставляем оборудование и не держим склад. Поэтому у нас нет причины продать вам то, что залежалось, — и есть причина разбираться в железе лучше тех, кто его продаёт. Отсюда и справочник: он написан со стороны тех, кто это потом запускает, чинит и объясняет смотрителю.</p><p>Мы отталкиваемся от эффекта, а не от техники. Сначала решаем, что человек должен почувствовать, — и уже под это подбираем решение. Обычный монитор в наших руках становится витриной, у которой останавливаются; тот же монитор без сценария — доской объявлений. Разница не в мониторе.</p><p>Поставку возьмут наши партнёры — любое железо из этого списка на лучших для вас условиях. За нами сценарий, содержание, интерактив, софт и интеграция: программно-аппаратный комплекс целиком, а не коробки от пяти поставщиков, которые друг о друге не знают.</p><p><b>Есть спецификация на руках?</b> Пришлите. Скажем, что лишнее, чего не хватает и что не доживёт до второго года. Бесплатно, без обязательств и без коммерческого предложения следом.</p>'
 
 
 def lib_alternates(tail):
@@ -1627,36 +1612,68 @@ def lib_alternates(tail):
     return '\n'.join(out)
 
 
-LIB_LEAD_EN = ('%d %s of equipment an interactive exhibition is built from, sorted by what they '
-               'actually do: show something to a person, listen to a person, or do the thinking '
-               'in between. For each one: when it works, when it does not, and who makes it.')
+LIB_LEAD_EN = '%d %s of equipment: what each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit — we work with it.'
 
-LIB_INTRO_EN = (
- '<p>This library is organised by role in the system rather than by price list. Every '
- 'interactive exhibit is a closed loop: a person does something, a machine reads it, the '
- 'exhibition answers. The three categories below are three quarters of that loop, and the '
- 'weakest link decides everything else.</p>'
- '<p>One principle runs through every page: <b>the equipment is chosen last</b>. First the '
- 'story — what the visitor should walk out with; then the interaction — what they do with '
- 'their hands to get there; and only then the hardware that has to survive it. A '
- 'specification written in the opposite order is recognisable a couple of years later by '
- 'its switched-off screens.</p>')
+LIB_INTRO_EN = '<p>Organised by role in the system, not by price list. Every interactive exhibit is a closed loop: a person acts, a machine reads it, the exhibition answers. The three categories below are three quarters of that loop, and the weakest link decides for all the others.</p><p>One idea runs through every page: <b>the hardware is chosen last</b>. First, what the visitor walks out with. Then, what they do with their hands to get there. Only then, what has to survive it. A budget built the other way round is easy to spot a year later — by the dark screens.</p>'
 
-LIB_TAIL_EN = (
- '<h2>What we do in all this</h2>'
- '<p>We start from the effect we want, not from a particular technology. First we settle what '
- 'the visitor should walk out with, and only then what to build it from. We are tied to no '
- 'manufacturer, so the solution gets picked for the job rather than for what is familiar or '
- 'already sitting in a warehouse. Hence a library written as a catalogue of limits — so you '
- 'can see where a technology is genuinely strong and where it gets specified out of habit.</p>'
- '<p>Supply is handled by our partners: any equipment in this library, on the best terms for '
- 'the client. Our part is the story, the content, the interaction, the software and the '
- 'integration. We build complex hardware-and-software systems and answer for the whole thing '
- 'working as one, rather than as a pile of boxes from different vendors.</p>'
- '<p>If you already have a specification in hand, send it over. We will tell you what is '
- 'redundant in it, what is missing, and what will not survive the first year. Free, '
- 'no strings.</p>')
+LIB_TAIL_EN = '<h2>Where we come in</h2><p>We do not supply equipment and we keep no warehouse. So we have no reason to sell you whatever is sitting on a shelf — and every reason to understand the kit better than the people who do sell it. Hence this library: written from the side that has to commission it, fix it and explain it to an attendant.</p><p>We start from the effect, not the technology. First we settle what the visitor should feel, and pick the solution for that. An ordinary monitor in our hands becomes a display people stop at; the same monitor with no story is a noticeboard. The difference is not the monitor.</p><p>Supply is handled by our partners — anything on this list, on the best terms for you. Ours is the story, the content, the interaction, the software and the integration: one hardware-and-software system, rather than boxes from five vendors who have never heard of each other.</p><p><b>Got a specification in hand?</b> Send it over. We will tell you what is redundant, what is missing and what will not see year two. Free, no obligation, and no sales pitch afterwards.</p>'
 
+
+LIB_GRID_JS = '''
+/* Фильтр и поиск по карточкам. Всё содержание уже в разметке — прячем и показываем
+   готовые карточки, а не подгружаем. Так раздел остаётся читаемым без скриптов
+   и целиком попадает в поиск: скрытая карточка скрыта только для глаз. */
+(function () {
+  var grid = document.getElementById('libgrid');
+  if (!grid) return;
+  var cards = [].slice.call(grid.querySelectorAll('.libitem'));
+  var chips = [].slice.call(document.querySelectorAll('.libchip'));
+  var q = document.getElementById('libq');
+  var count = document.getElementById('libcount');
+  var empty = document.getElementById('libempty');
+  var sec = '', text = '';
+  // поиск идёт по названию, подзаголовку, описанию и БРЕНДАМ: «Barco» или «Unity»
+  // человек набирает чаще, чем «инсталляционный лазерный проектор»
+  cards.forEach(function (c) { c._t = (c.textContent || '').toLowerCase(); });
+
+  function apply() {
+    var n = 0;
+    cards.forEach(function (c) {
+      var ok = (!sec || c.getAttribute('data-sec') === sec) &&
+               (!text || c._t.indexOf(text) >= 0);
+      c.hidden = !ok;
+      if (ok) n++;
+    });
+    if (count) count.textContent = n + ' ' + plural(n);
+    if (empty) empty.hidden = n > 0;
+  }
+  function plural(n) {
+    if (!RU) return n === 1 ? WORDS[0] : WORDS[2];
+    var a = Math.abs(n) % 100, b = a % 10;
+    if (a > 10 && a < 20) return WORDS[2];
+    if (b === 1) return WORDS[0];
+    if (b > 1 && b < 5) return WORDS[1];
+    return WORDS[2];
+  }
+  chips.forEach(function (ch) {
+    ch.addEventListener('click', function () {
+      var v = ch.getAttribute('data-sec') || '';
+      sec = (sec === v) ? '' : v;          // повторный клик снимает фильтр
+      chips.forEach(function (x) {
+        x.setAttribute('aria-pressed', String(x.getAttribute('data-sec') === sec && sec !== ''));
+      });
+      apply();
+    });
+  });
+  if (q) q.addEventListener('input', function () {
+    text = q.value.trim().toLowerCase();
+    sec = '';
+    chips.forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+    apply();
+  });
+  apply();
+})();
+'''
 
 LIB_FX_JS = '''/* Карточки категорий: иконка рассыпается в точки, точки магнитятся к курсору.
    Тот же приём, что на выборе проектов, но источник другой. Там облако собирается
@@ -1818,6 +1835,7 @@ LIB_T = {
   'warn': 'Наше мнение', 'principle': 'Принцип категории', 'other': 'Другие категории',
   'ourcase': 'Как это сделано у нас: ', 'hub': 'Библиотека оборудования',
   'cta': 'Прислать спецификацию на проверку →', 'open': 'Открыть раздел',
+  'search': 'Поиск по названию, задаче или бренду', 'nothing': 'Ничего не нашлось. Попробуйте другое слово.',
   'concepts': 'Концепции', 'services': 'Услуги', 'home': 'На главную', 'all': 'Все проекты',
   'h1': 'Библиотека оборудования интерактивных экспозиций',
   'pos': ('позиция', 'позиции', 'позиций'),
@@ -1830,6 +1848,7 @@ LIB_T = {
   'warn': 'Our take', 'principle': 'The principle here', 'other': 'Other categories',
   'ourcase': 'How we built it: ', 'hub': 'Equipment library',
   'cta': 'Send us your specification for a free review →', 'open': 'Open the section',
+  'search': 'Search by name, job or brand', 'nothing': 'Nothing matched. Try another word.',
   'concepts': 'Concepts', 'services': 'Services', 'home': 'Home', 'all': 'All projects',
   'h1': 'An equipment library for interactive exhibitions',
   'pos': ('entry', 'entries', 'entries'),
@@ -1872,23 +1891,32 @@ for L in langs:
     for cat in cats:
         n = sum(len(s['items']) for s in cat['sections'])
         tail = 'library/%s/' % cat['id']
-        nav = ''.join('<a href="#s%d">%s</a>' % (k, esc(s['name'])) for k, s in enumerate(cat['sections']))
-        body = []
-        i = 0
-        for k, s in enumerate(cat['sections']):
-            body.append('<div class="libsec" id="s%d"><h2>%s</h2><p class="note">%s</p>' % (k, esc(s['name']), esc(s['note'])))
+        # Плоская сетка вместо глав: с фильтром человек ищет по смыслу, а не листает
+        # двадцать позиций подряд. Разделы остались подписью на карточке и кнопкой
+        # фильтра — навигация та же, а прокрутки в разы меньше.
+        chips = ''.join('<button class="libchip" type="button" data-sec="%s" aria-pressed="false">%s</button>'
+                        % (esc(s['name']), esc(s['name'])) for s in cat['sections'])
+        body, i = [], 0
+        for s in cat['sections']:
             for it in s['items']:
                 i += 1
-                body.append(lib_item(L, it, '%s.%02d' % (cat['num'], i)))
-            body.append('</div>')
+                body.append(lib_item(L, it, '%s.%02d' % (cat['num'], i), s['name']))
+        body = ['<div class="libgrid" id="libgrid">'] + body + ['</div>',
+                '<p class="libempty" id="libempty" hidden>%s</p>' % esc(T['nothing'])]
+        nav = ('<div class="libbar"><input id="libq" type="search" placeholder="%s" aria-label="%s">'
+               '<div class="libchips">%s</div><span class="libcount" id="libcount"></span></div>'
+               % (esc(T['search']), esc(T['search']), chips))
         up_cat = '../'   # от /<lang>/library/<id>/ до /<lang>/library/ — всегда один уровень
         other = ' · '.join('<a href="%s%s/">%s</a>' % (up_cat, c['id'], esc(c['full']))
                            for c in cats if c['id'] != cat['id'])
         groups = ('<div class="libmark"><span>%s</span><i>%s</i></div>'
                   % (LIB_ICONS.get(cat['id'], ''), esc(cat['num']))
                   + '<div class="call"><b>%s</b>%s</div>' % (T['principle'], esc(cat['principle']))
-                  + '<nav class="libnav">%s</nav>' % nav + ''.join(body)
-                  + '<h2>%s</h2><p>%s</p>' % (T['other'], other) + LIB_TAIL_T[L.code])
+                  + nav + ''.join(body)
+                  + '<h2>%s</h2><p>%s</p>' % (T['other'], other) + LIB_TAIL_T[L.code]
+                  + '<script>var WORDS=%s,RU=%s;%s</script>'
+                  % (json.dumps(list(T['pos']), ensure_ascii=False),
+                     'true' if L.code == 'ru' else 'false', LIB_GRID_JS))
         d = os.path.join(SITE, L.prefix, 'library', cat['id'])
         os.makedirs(d, exist_ok=True)
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(

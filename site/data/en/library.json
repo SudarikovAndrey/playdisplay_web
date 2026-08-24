@@ -8,18 +8,18 @@
       "name": "Output",
       "full": "Output equipment",
       "line": "How the exhibition speaks to a person",
-      "lead": "Everything that reaches the senses: light, image, sound, air, vibration. The most visible part of the budget and the most deceptive. Visible does not mean strong: a four-metre screen people walk past without stopping loses to a spyglass with a queue in front of it.",
-      "principle": "The choice here is settled not by the catalogue photo but by three numbers: how much light is in the room, from what distance people look, and how many stand there at once. Everything else follows from those.",
+      "lead": "Light, image, sound, vibration — everything that reaches a person. The most visible part of the budget and the most treacherous: a four-metre screen people walk past without looking loses to a spyglass with a queue in front of it.",
+      "principle": "Three numbers decide it: how much light is in the room, from what distance people look, and how many stand there at once. Not the diagonal, not the brand.",
       "sections": [
         {
           "name": "Projection",
-          "note": "Light thrown onto a surface. The only way to make an image the size of a room, and the only one that can lie across an object of irregular shape.",
+          "note": "Light thrown at a surface. The only way to get a picture the size of a room, and the only one that lies down on something curved.",
           "items": [
             {
               "id": "laser-projector",
               "name": "Installation laser projector",
-              "line": "The workhorse of museum multimedia",
-              "what": "A laser source instead of a lamp: 20,000 hours and more without a change, instant start, operation at any angle and upside down. Lamp projectors are no longer specified for new exhibitions — not because they throw less light, but because a lamp dims and someone has to change it, and that someone is not on the museum's staff.",
+              "line": "The workhorse. Runs for years and never asks for a lamp",
+              "what": "Laser instead of a lamp: 20,000 hours without a change, instant start, mounts upside down if it has to. Lamp models are no longer specified for new exhibitions — not because they throw less light, but because someone has to change the lamp, and there is nobody to do it.",
               "good": [
                 "An image larger than a physical screen — from three metres up to a whole wall",
                 "A surface that is not flat: a model, a vault, a column, a façade",
@@ -64,7 +64,7 @@
               "id": "ust-projector",
               "name": "Ultra-short-throw projector",
               "line": "You get the picture without the beam",
-              "what": "Mounted right against the surface — twenty to forty centimetres away — throwing the image up or forward at almost a right angle. A person can walk up to the wall and not block the frame with their own body.",
+              "what": "Sits right against the surface and throws the image at almost a right angle. A person can walk up to the wall without blocking the frame with their own body — which is the whole point.",
               "good": [
                 "Interactive floors and tables: the visitor stands inside the image",
                 "Low ceilings, where a normal projector has nowhere to hang",
@@ -96,7 +96,7 @@
               "id": "rear-projection",
               "name": "Rear projection",
               "line": "The projector hides behind the surface",
-              "what": "The image is thrown onto a translucent screen or film from behind. The viewer sees a glowing surface, sees neither the machine nor the beam, and casts no shadow however many people crowd up to it.",
+              "what": "Throws onto a translucent screen from behind. The viewer sees a glowing surface, never the machine or the beam, and casts no shadow — however many people crowd in.",
               "good": [
                 "A vitrine or window that should glow from within",
                 "Dense foot traffic right up against the image",
@@ -127,8 +127,8 @@
             {
               "id": "mapping",
               "name": "Mapping onto volume",
-              "line": "Projection that follows the shape of an object",
-              "what": "Not a piece of hardware but a way of using one: the image is computed for the geometry of a model, a façade or a product so that light lands along the facets. It needs an accurate model of the object and a system for blending several projectors.",
+              "line": "Light lands along the facets of a real object",
+              "what": "Not a device but a technique: the image is computed for the geometry of a model, a façade or a product. Needs an accurate model and blended projectors — in return the volume is real, not drawn.",
               "good": [
                 "There is a physical form — a site model, a building, a product, a landscape",
                 "The decision turns on scale: what stands where and how it connects",
@@ -161,13 +161,13 @@
         },
         {
           "name": "LED screens",
-          "note": "A section of its own, because this is not «another screen» but a construction set. An LED screen is assembled from modules — tiles of roughly 50×50 cm — and the module you choose decides the shape, the price, and whether it can be repaired in place.",
+          "note": "Not «another screen» but a construction set. The canvas is assembled from modules — tiles of roughly 50×50 cm. The module you pick decides the shape, the price, and whether it can be repaired in place.",
           "items": [
             {
               "id": "led-module",
               "name": "Flat modular screen",
-              "line": "A wall of any size that sunlight does not bother",
-              "what": "The basis of the whole class. A module is a self-contained tile with its own LEDs, power and board; they lock into a frame, and from them a canvas of any size and proportion is built. Break a tile and you replace a tile, not a screen. Servicing is either from the front or from the back: if there is no half-metre walkway behind, the modules must come out from the front, and that is settled before purchase, not after.",
+              "line": "A wall of any size that sunlight cannot bother",
+              "what": "A module is a tile with its own LEDs, power and board. They build into a canvas of any shape, and a broken tile is replaced one tile at a time. One question is settled before purchase: is there half a metre behind for servicing, or must the modules come out from the front.",
               "spec": "Pixel pitch is the distance between LEDs in millimetres. A rough rule: comfortable viewing distance in metres roughly equals the pitch in millimetres. A 2.5 mm pitch means two and a half metres and further. Check on a sample in your own room rather than from the vendor's table: brightness and moiré only show in the flesh.",
               "good": [
                 "A bright room, an atrium, a window facing the street — sunlight is no obstacle",
@@ -213,7 +213,7 @@
               "id": "led-flexible",
               "name": "Flexible modules",
               "line": "A screen that bends to fit",
-              "what": "The same LEDs on a rubber or silicone backing: the canvas bends to a radius, wraps a column, lies over a dome or a wave-shaped wall. Fixed with magnets or into a purpose-made frame.",
+              "what": "The same LEDs on a rubber backing: the canvas wraps a column, lies over a vault, follows the wave of a wall. Where a flat panel would leave a seam, this gives one continuous surface.",
               "good": [
                 "A column, an arch, a vault, a curved wall — anywhere a flat canvas would leave a seam",
                 "Shape matters more than resolution: from a distance the silhouette reads, not the pixel",
@@ -245,8 +245,8 @@
             {
               "id": "led-shaped",
               "name": "Volumetric forms: sphere, cylinder, cube",
-              "line": "A screen with no flat side",
-              "what": "Ready-made LED objects — spheres, cylinders, cubes, rings, ribbons. The image wraps the whole form, so the object works for people circling it and reads from every side: it has no «viewer's seat».",
+              "line": "This screen has no viewer's seat",
+              "what": "Ready-made LED spheres, cylinders, cubes and rings. The image wraps the whole form, so the object works for people circling it and reads the same from a balcony and from below.",
               "note_hw": "Content for such a form is computed differently: flat video does not stretch onto a sphere without distortion. It needs an unwrap made for that exact geometry, and that is the work budgets routinely forget to include.",
               "good": [
                 "An atrium, a lobby, the centre of a room — a point people walk around",
@@ -280,7 +280,7 @@
               "id": "led-kinetic",
               "name": "Kinetic LED screen",
               "line": "A canvas that moves through the air",
-              "what": "Modules or individual glowing elements hang on winches and change position during the show: the screen parts, gathers, becomes a wave or a three-dimensional lattice. Image and movement are composed as a single score.",
+              "what": "Modules hang on winches and change position through the show: the screen parts, gathers, becomes a wave. Image and movement are one score — you cannot reproduce it with a video.",
               "good": [
                 "An opening, a launch, a show — an event with a beginning and a finale",
                 "An atrium with a high ceiling where the movement reads from below",
@@ -314,13 +314,13 @@
         },
         {
           "name": "Panels",
-          "note": "A self-lit surface in one piece, with nothing to assemble. Everything projection cannot do: sunlight, small type, round-the-clock operation.",
+          "note": "A finished glowing plane, nothing to assemble. Everything projection cannot do: sunlight, small type, working without a day off.",
           "items": [
             {
               "id": "pro-panel",
               "name": "Professional panel and video wall",
               "line": "Dull, dependable, legible",
-              "what": "The industrial relative of a television: rated for round-the-clock operation, portrait mounting, remote management and years without being switched off. A consumer TV in an exhibition lasts until its first summer.",
+              "what": "The industrial relative of a television: round-the-clock operation, portrait mounting, remote management, years without being switched off. A consumer TV in an exhibition lasts until its first summer.",
               "good": [
                 "Text, drawings and archive documents have to be read",
                 "The screen hangs for a long time and simply has to work",
@@ -353,7 +353,7 @@
               "id": "transparent",
               "name": "Transparent screen",
               "line": "Data over the real object",
-              "what": "The image hangs on glass while the real exhibit shows through it. The object stays authentic, and cutaways, labels and animation lie over it as a layer. Transparent OLED gives genuine transparency, but its brightness is modest.",
+              "what": "The image hangs on glass and the exhibit shows through. The original stays original while cutaways, labels and animation lie over it as a layer. Switch it off and only glass remains.",
               "good": [
                 "A vitrine holding an original that needs explaining without being covered",
                 "A cutaway, a diagram or a trajectory laid over a real product",
@@ -386,13 +386,13 @@
         },
         {
           "name": "Volume and illusion",
-          "note": "Everything that tries to present an object as three-dimensional. The area with the most marketing and the fewest honest limitations in a vendor's presentation.",
+          "note": "Attempts to make an object look three-dimensional. The most marketing per square metre and the fewest honest caveats in the deck.",
           "items": [
             {
               "id": "peppers-ghost",
               "name": "Pseudo-hologram: Pepper's ghost",
-              "line": "A reflection in angled glass",
-              "what": "An image from a screen reflects in a semi-transparent film set at an angle and appears to hang in mid-air. The trick is two hundred years old — it was used in nineteenth-century theatre — and it is still the most dependable of the «holograms», because there is nothing in it to break.",
+              "line": "A reflection in angled glass. Two hundred years and counting",
+              "what": "The picture from a screen reflects in a semi-transparent film and appears to hang in mid-air. Nineteenth-century theatre knew this trick, and it is still the most dependable of the «holograms» — there is nothing in it to break.",
               "good": [
                 "A small object with one or two people gathered around it",
                 "A dark zone: the illusion is built on glowing in darkness",
@@ -419,8 +419,8 @@
             {
               "id": "fan-display",
               "name": "Holographic fan display",
-              "line": "LEDs on spinning blades",
-              "what": "A strip of LEDs rotates fast enough that the eye assembles the trail into a whole image hanging in the air. Cheap, striking, installed in an hour. Several units gang together into a wall, which is how large «floating» logos and objects are made.",
+              "line": "LEDs on spinning blades. Cheap and impossible to ignore",
+              "what": "A strip of LEDs turns fast enough that the eye assembles the trail into a whole image hanging in the air. Installed in an hour, gangs into a wall — that is how the big «floating» objects are made.",
               "good": [
                 "A window, an entrance, a point that has to catch attention",
                 "A short bright image — a logo, an object, a sign",
@@ -444,8 +444,8 @@
             {
               "id": "light-field",
               "name": "Light-field display",
-              "line": "Volume without glasses, the honest kind",
-              "what": "The screen emits dozens of different viewpoints at once, so the left and right eye see different things and the picture is genuinely three-dimensional — move your head and the object turns. Sizes are still small and the price is high.",
+              "line": "Volume without glasses. The honest kind",
+              "what": "The screen emits dozens of viewpoints at once: the eyes see different things and the object turns as you move your head. Sizes are still modest and the price matches — but this is real volume, not an illusion.",
               "good": [
                 "A single object to be examined from every side — a product, a molecule, a part",
                 "Volume with no glasses and no instructions",
@@ -471,8 +471,8 @@
             {
               "id": "autostereo",
               "name": "Autostereoscopic screen",
-              "line": "Volume without glasses, on an ordinary panel",
-              "what": "A panel with an optical raster: each eye sees its own set of pixels and the picture comes out three-dimensional without glasses. It differs from light-field in scale and price — an ordinary diagonal at closer to panel money, but with a narrow zone where the illusion holds.",
+              "line": "Volume without glasses at panel money",
+              "what": "An optical raster on an ordinary panel gives each eye its own pixels. Cheaper and larger than light-field; you pay in the narrow zone where the effect holds.",
               "good": [
                 "A vitrine or pylon that people approach one at a time",
                 "A product to be shown in volume without handing out glasses",
@@ -505,13 +505,13 @@
         },
         {
           "name": "Headsets and windows",
-          "note": "An image tied not to a surface but to a head, or to a device in the hand.",
+          "note": "A picture tied to a head or to a device in the hand, rather than to a wall.",
           "items": [
             {
               "id": "vr",
               "name": "Virtual reality",
-              "line": "The strongest impression and the worst throughput",
-              "what": "The headset closes off the world entirely. Nothing matches it for intensity of experience: a person ends up somewhere they physically cannot be. But one person experiences it at a time, and the rest of the schedule is counted from that.",
+              "line": "The strongest impression and the longest queue",
+              "what": "The headset closes off the world: a person ends up where they physically cannot be. One person at a time experiences it — and the whole schedule is counted from that number.",
               "good": [
                 "A place you cannot go: underground, in orbit, inside a ruined building, inside a body",
                 "A separate zone with a queue and an attendant",
@@ -550,7 +550,7 @@
               "id": "ar-device",
               "name": "Augmented reality on a device",
               "line": "A layer over the real room",
-              "what": "A museum tablet or the visitor's own phone shows the camera feed with things the room does not contain laid over it: a building completed, a mechanism running, a character. Cheap in hardware, expensive in content, and it needs someone to explain how to start.",
+              "what": "A tablet or phone shows the camera feed with what the room does not contain laid over it: a building completed, a mechanism running, a character. Cheap in hardware, expensive in content.",
               "good": [
                 "Completing what has not survived: a ruin, a lost interior, a decommissioned machine",
                 "Showing the invisible over the visible: flows, cutaways, processes",
@@ -584,13 +584,13 @@
         },
         {
           "name": "Sound and body",
-          "note": "The most underrated half. Sound carries half the impression and almost never appears in a specification as a line of its own.",
+          "note": "The underrated half of the impression. In specifications sound appears as «speakers — 4 pcs» and stops there.",
           "items": [
             {
               "id": "sound-shower",
               "name": "Sound shower, directional audio",
-              "line": "Audible here, silent a step away",
-              "what": "Sound confined to a narrow zone. The visitor at the exhibit hears the story, a neighbour a metre away hears silence, and nobody needs headphones. It solves the chief affliction of multimedia exhibitions: when ten exhibits talk at once, none of them can be heard.",
+              "line": "Audible here, silent one step away",
+              "what": "Sound confined to a narrow zone: the visitor at the exhibit hears the story, a neighbour a metre away hears nothing, and nobody needs headphones. It cures the chief affliction of multimedia exhibitions — ten exhibits talking at once and none of them audible.",
               "compare": "Two different principles, and confusing them is expensive. A **parabolic dome** is an ordinary loudspeaker in a reflector: the sound is honest and full, the zone under the dome is about a metre across, and there is no distortion. An **ultrasonic parametric emitter** is a narrow beam of ultrasound that turns into sound in the air itself: the zone is far narrower and reaches further, but the bass is lost and speech sounds drier. For voice and atmosphere, the dome; for a pinpoint beam across a room, the parametric.",
               "good": [
                 "Several exhibits with sound in one room",
@@ -629,7 +629,7 @@
               "id": "spatial-audio",
               "name": "Installation audio and spatial sound",
               "line": "Sound that has a place in the room",
-              "what": "Several sources placed around the room give the sound direction and distance: a footstep on the left, a rumble overhead, a voice from one specific point. Half the sense of presence is made here, not on the screen.",
+              "what": "Sources placed around the room give sound direction and distance: a footstep on the left, a rumble overhead, a voice from one point. Half the sense of presence is made here, not on the screen.",
               "good": [
                 "A large room with a single score — a panorama, a reconstruction, an immersion",
                 "People need to be led by sound rather than by arrows on the floor",
@@ -665,8 +665,8 @@
             {
               "id": "headphones",
               "name": "Headphones and personal audio",
-              "line": "When the story is long and private",
-              "what": "From a classic audio guide to streaming sound to the visitor's own phone over the network. The only way to deliver a long text, several languages and different depths from the same exhibit.",
+              "line": "When the story is long and personal",
+              "what": "From a classic audio guide to streaming audio to the visitor's phone. The only way to deliver a long text, several languages and different depths from one and the same exhibit.",
               "good": [
                 "Many languages and different depths — children's, general, specialist",
                 "A story longer than two minutes",
@@ -699,7 +699,7 @@
               "id": "haptics",
               "name": "Vibration, wind, heat, scent",
               "line": "What is remembered longer than the picture",
-              "what": "Effects on the body beyond eyes and ears: low-frequency shakers in floors and benches, fans, heat panels, scent dispensers. Cheap relative to screens and disproportionately effective.",
+              "what": "Shakers in floors and benches, fans, heat, scent. Pennies next to screens, and it works disproportionately hard: the body remembers before the head does.",
               "good": [
                 "A moment that should be remembered by the body: a blast, a launch, a storm, a descent",
                 "Recreating an environment — the heat of a workshop, the damp of a trench, wind on a deck",
@@ -732,7 +732,7 @@
               "id": "light-dmx",
               "name": "Controlled light",
               "line": "The cheapest way to change a scene",
-              "what": "Light in an exhibition is not only illumination but a means of telling: it singles out, extinguishes, leads and sets the rhythm. It runs on the same cues as everything else and costs a fraction of any screen for the same effect.",
+              "what": "Light in an exhibition does not illuminate, it narrates: singles out, extinguishes, leads, sets the rhythm. It runs on the same cues as everything else at a fraction of any screen.",
               "good": [
                 "The route needs rhythm: darkness, flash, stillness",
                 "One original has to be picked out without touching the rest of the room",
@@ -770,13 +770,13 @@
         },
         {
           "name": "Motion and matter",
-          "note": "Output that does not glow. The most forgotten branch: an exhibition can answer a person physically — by turning, opening, changing the state of a real thing.",
+          "note": "Output that does not glow. An exhibition can answer physically: turn, open, change state.",
           "items": [
             {
               "id": "kinetic",
               "name": "Kinetics and mechanics",
               "line": "The exhibit genuinely moves",
-              "what": "Actuators, stepper motors, linear mechanisms: a model opens out, a machine rotates, a cutaway parts, a wall changes its pattern. Driven by the same cues as the screens, but the impression is of a different order — the object is real.",
+              "what": "Actuators and mechanisms: a model opens out, a machine rotates, a cutaway parts. A different order of impression — the object is real, and it reads from the far end of the hall.",
               "good": [
                 "How a product is made: shown in section, with the real form opening up",
                 "A room where there are already too many screens and they have stopped working",
@@ -809,8 +809,8 @@
             {
               "id": "eink",
               "name": "Electronic ink",
-              "line": "A label you can change",
-              "what": "A display that draws power only while the image changes and reads like paper — at any angle, in any light, without glowing into anyone's face. It solves an old museum ache: the label that has to be rewritten.",
+              "line": "A label you can rewrite",
+              "what": "The display draws power only while the image changes and reads like paper — at any angle, with nothing glowing into anyone's face. It cures an old museum ache: new attribution and a new language on the caption.",
               "good": [
                 "Labels and captions that change: new attribution, new language, rotation",
                 "A vitrine where a glowing screen would wreck the look",
@@ -838,7 +838,7 @@
               "id": "drone-show",
               "name": "Drone show",
               "line": "A screen the size of the sky",
-              "what": "A swarm of LED-carrying drones holds formation to a pre-computed programme and draws three-dimensional figures in the air — from a logo to a narrative animation. The only way to get an image hundreds of metres across with no structure at all, and in many places it has already replaced fireworks: quieter, cleaner and repeatable.",
+              "what": "A swarm holds formation to a computed programme and draws three-dimensional figures in the air. The only way to get a picture hundreds of metres across with no structure at all — in many places it has already replaced fireworks: quieter, cleaner, repeatable.",
               "note_hw": "If someone's presentation still says «Intel Shooting Star», the document is out of date. Intel left this business in 2022, selling the division along with its fleet; shows today are flown by other companies on their own platforms.",
               "good": [
                 "An opening, an anniversary, a city celebration — an event under open sky",
@@ -889,19 +889,19 @@
       "num": "02",
       "name": "Input",
       "full": "Input equipment",
-      "line": "How a person answers the exhibition",
-      "lead": "Everything the visitor acts with: fingers, hands, body, voice, their very presence. The cheapest part of the specification and the part that decides whether an exhibit works or becomes furniture. The difference between «interactive» and «switched on» lives here.",
-      "principle": "The main question is not how a person operates it, but where they understand from that they are operating it at all. An exhibit that needs a plate of rules gets redesigned, however precise the sensor.",
+      "line": "How a person answers back",
+      "lead": "Fingers, hands, body, voice, mere presence. The cheapest line in the budget and the one that decides everything: this is where «interactive» parts company with «switched on».",
+      "principle": "The question is not how a person operates it, but how they worked out that they could. An exhibit that needs a plate of rules does not need a better sensor — it needs redesigning.",
       "sections": [
         {
           "name": "Touch",
-          "note": "The most familiar route: people learned it on their phones. And the most over-specified — touch works for one person and barely works for a group.",
+          "note": "Everyone gets it: people learned on their phones. And it is over-specified — touch works for one person and barely works for a group.",
           "items": [
             {
               "id": "capacitive-touch",
               "name": "Capacitive touch",
               "line": "Like a phone, only large",
-              "what": "A film or glass that senses a finger through an electric field. High precision, honest multi-touch, and the glass can be thick — touch reads straight through it, so the exhibit survives a blow.",
+              "what": "Film or glass sensing a finger through an electric field. High precision, honest multi-touch, and the glass can be thick — touch reads straight through, so the exhibit survives a blow.",
               "good": [
                 "A vitrine where things are touched through protective glass",
                 "Confident multi-touch: a map two people rotate and stretch together",
@@ -934,7 +934,7 @@
               "id": "ir-frame",
               "name": "Infrared frame",
               "line": "Cheap, large, works in mittens",
-              "what": "A frame around the screen with emitters and receivers: a touch is caught by the broken beam. It responds to anything — a finger, a glove, a pointer, an elbow.",
+              "what": "A frame around the edge catches the broken beam. It responds to anything — finger, glove, pointer, elbow. In a northern museum in winter that is half the room.",
               "good": [
                 "Large diagonals, where capacitive touch costs as much as the screen",
                 "Gloves, mittens, children in winter coats",
@@ -962,7 +962,7 @@
               "id": "lidar-touch",
               "name": "Lidar touch on any surface",
               "line": "Touch where touch cannot exist",
-              "what": "A scanner in the corner casts a plane of light just above a surface and detects where it is crossed. It turns a wall, a vitrine, a model or a floor into a touch surface — no film, no frame, and no intervention in the surface itself.",
+              "what": "A scanner casts a plane of light above a surface and detects where it is crossed. It turns a wall, a vitrine, a model or a floor into a touch surface — no film, no frame, no intervention in the surface itself.",
               "good": [
                 "A historic surface that no equipment may be attached to",
                 "Projection on a wall or floor that becomes interactive",
@@ -994,8 +994,8 @@
             {
               "id": "touch-monitor",
               "name": "Off-the-shelf touch monitor",
-              "line": "Do not assemble it, buy it whole",
-              "what": "A panel in which glass, touch layer and electronics are already assembled and tested together. A dull choice and almost always the right one: a «kit» built from a frame, a panel and a computer is cheaper on paper but takes longer to commission, and when it fails there turns out to be nobody to blame.",
+              "line": "Do not assemble it from parts — buy it whole",
+              "what": "Glass, touch layer and electronics already built and tested together. A kit of frame, panel and computer is cheaper on paper, takes longer to commission, and when it fails there turns out to be nobody to blame.",
               "good": [
                 "An ordinary interactive stand with no unusual geometry",
                 "Time is short: a finished monitor goes in within an hour, an assembly takes a week",
@@ -1034,13 +1034,13 @@
         },
         {
           "name": "Physical action",
-          "note": "Real objects that get turned, pulled and pressed. They lose to touch on flexibility and win on everything else: understood without explanation, work for a group, remembered by the body.",
+          "note": "Real objects that get turned and pressed. They lose to touch on flexibility and win on everything else: understood without words, work for a group, remembered by the hands.",
           "items": [
             {
               "id": "controls",
               "name": "Real operating controls",
               "line": "A lever, a handwheel, a toggle, a helm",
-              "what": "Industrial buttons, rotary handles, grips and wheels, taken off real machinery or made to match it. Wired through a simple controller and read like an ordinary keyboard or joystick.",
+              "what": "Industrial buttons and grips, taken off real machinery or made to match. Understood without a word — by a child, and by the visitor who keeps away from screens.",
               "good": [
                 "An exhibition about machinery: you should operate it with what actually operated it",
                 "Children and older visitors — understood without a single word",
@@ -1079,7 +1079,7 @@
               "id": "rotary-controller",
               "name": "Rotary knob and encoder",
               "line": "One movement everybody understands",
-              "what": "Turning is the most natural gesture after pressing: it is how you scroll through time, move through a cutaway, change scale, leaf through the years. A knob gives what a screen cannot: resistance under the fingers and a sense of precision.",
+              "what": "Turning is the most natural gesture after pressing: it is how you leaf through years, move through a cutaway, change scale. A knob gives what a screen cannot — resistance under the fingers.",
               "note_hw": "The classic of the genre, the Griffin PowerMate, went out of production in 2018 — if it appears in a specification, that document was written from old templates. Living replacements: Binepad BNR1, Contour ShuttleXpress, and for a permanent installation better an industrial encoder rated for a million turns.",
               "good": [
                 "A timeline: scroll through a year, an era, a stage of a process",
@@ -1119,7 +1119,7 @@
               "id": "tangible",
               "name": "An object as a key",
               "line": "Put a thing down and the exhibition answers",
-              "what": "A real object with a marker underneath: place it on the table and the system knows which object it is and how it is turned. The marker may be optical, magnetic or RFID. The interaction becomes physical and collective.",
+              "what": "A real object with a marker underneath: the system knows what was placed and how it is turned. The interaction becomes physical and collective — everyone holds their own.",
               "good": [
                 "Comparing several things: put them side by side and see the connection",
                 "Group work: each person holds their own object",
@@ -1147,7 +1147,7 @@
               "id": "rfid-card",
               "name": "Visitor card, RFID and NFC",
               "line": "The exhibition knows who is standing there",
-              "what": "A ticket, a wristband or a card with a tag. Touch it and the exhibit speaks your language, resumes where you left off, and remembers what you chose. At the end of the route it produces a personal summary: what you saw, what you collected.",
+              "what": "A ticket or wristband with a tag. Touch it and the exhibit speaks your language and resumes where you left off. At the end of the route it hands you a personal summary of what you saw and gathered.",
               "good": [
                 "A long route with a running narrative and accumulation",
                 "Many languages without a single language button",
@@ -1175,7 +1175,7 @@
               "id": "load-cell",
               "name": "Weight, pressure and environmental sensors",
               "line": "The exhibition feels physical effort",
-              "what": "Load cells, pressure mats, rotation and tilt sensors. Simple, cheap and very honest: the visitor applies force and something happens. Nothing needs explaining.",
+              "what": "Load cells, pressure mats, rotation sensors. Cheap and utterly honest: apply force and something happens. Nothing to explain.",
               "good": [
                 "Comparing effort or mass: lift, press, pull",
                 "A mat by an exhibit that starts the scene when someone steps on it",
@@ -1202,13 +1202,13 @@
         },
         {
           "name": "Body and gesture",
-          "note": "Nothing to touch and nothing to explain. The most striking group and the most temperamental: the less physical contact there is, the harder it is for a person to grasp that they are in control.",
+          "note": "Nothing to touch and nothing to explain. The most striking group and the most temperamental: the less contact there is, the harder it is to realise you are in control at all.",
           "items": [
             {
               "id": "depth-camera",
               "name": "Depth camera and skeleton tracking",
               "line": "The system sees posture and movement",
-              "what": "The camera measures the distance to every point in frame and builds a skeleton from it: where the arms are, which way the lean goes, how many people there are. The basis of every exhibit where people dance, wave and copy a movement.",
+              "what": "The camera measures distance to every point in frame and builds a skeleton: where the arms are, which way the lean goes, how many people. The basis of everything involving waving, copying and dodging.",
               "note_hw": "Important for the specification: Microsoft ended production of the Azure Kinect DK in 2023 and passed the technology to partners. The direct successor is the Orbbec Femto Bolt, on the same depth technology with a compatible programming interface: Kinect code ports across with almost no changes. If your specification still says «Kinect», that is a red flag — the document was written from old templates.",
               "good": [
                 "Whole-body movement: copy it, dodge it, dance it, hold still",
@@ -1247,7 +1247,7 @@
               "id": "hand-tracking",
               "name": "Hand tracking",
               "line": "Fingers in the air, no gloves",
-              "what": "A small device looks upward and sees hands down to individual fingers. It lets people take, turn and take apart a virtual object with their hands — hygienic and without a single touch.",
+              "what": "The device looks up and sees hands down to individual fingers: a virtual object can be picked up, turned and taken apart by hand. Not one touch — and it looks like magic.",
               "good": [
                 "Hygiene above all: medicine, a children's museum, epidemic restrictions",
                 "An action on an object: turn it, open it, dismantle it",
@@ -1270,7 +1270,7 @@
               "id": "presence-sensor",
               "name": "Presence sensor",
               "line": "The exhibit wakes up by itself",
-              "what": "An infrared or radar sensor notices a person nearby. The cheapest part in the whole specification and one of the most useful: the exhibit comes alive as someone approaches, and in an empty room it darkens the screen and saves its life.",
+              "what": "An infrared or radar sensor notices someone nearby. The cheapest part in the whole specification and one of the most useful: the exhibit calls out, and in an empty room it saves its own life.",
               "good": [
                 "The exhibit should call out rather than wait to be pressed",
                 "Saving panel and projector hours through the empty times",
@@ -1302,8 +1302,8 @@
             {
               "id": "eeg",
               "name": "Reading brain activity",
-              "line": "An exhibit operated by doing nothing",
-              "what": "A light headband with dry electrodes picks up the brain's electrical activity and distinguishes states — concentration, relaxation, a spike of attention. This is not «mind reading»: the device tells states apart, not content, and saying so plainly is itself part of the scenario.",
+              "line": "An exhibit you operate by doing nothing",
+              "what": "A light headband reads brain activity and tells states apart — concentration, relaxation, a spike of attention. It does not read thoughts, and saying so plainly on the exhibit is already half the scenario.",
               "note_hw": "Expectations have to be lowered in advance. Consumer models give a few channels and distinguish two or three states with a delay of seconds. Anything promising more from a consumer headband is marketing.",
               "good": [
                 "The subject of the exhibition is the brain itself, attention, meditation, consciousness",
@@ -1344,13 +1344,13 @@
         },
         {
           "name": "Camera and algorithm",
-          "note": "An ordinary camera plus a program that understands what is in frame. The fastest-moving group, and the only one where you need a lawyer before you need an engineer.",
+          "note": "An ordinary camera plus software that understands the frame. The only group where you need a lawyer before you need an engineer.",
           "items": [
             {
               "id": "computer-vision",
               "name": "Computer vision",
               "line": "A camera that understands the frame",
-              "what": "An industrial camera and a neural network: the system tells objects apart, counts people, follows movement, recognises a gesture or a drawing. One camera replaces a dozen sensors and does what sensors cannot.",
+              "what": "An industrial camera and a neural network: tells objects apart, counts people, recognises a gesture or a drawing. One camera replaces a dozen sensors and does what sensors cannot do at all.",
               "good": [
                 "The visitor draws, assembles or builds — and the system understands it",
                 "Counting flow and heat-mapping the room: where people stand, where they walk past",
@@ -1388,7 +1388,7 @@
               "id": "face-recognition",
               "name": "Face and emotion recognition",
               "line": "Technically easy, legally expensive",
-              "what": "Determining age, gender, emotion or identity from a face. It works reliably and costs little. We install it rarely and discuss it separately: biometrics are personal data of a special category, and the rules are stricter than they look in a vendor demo.",
+              "what": "Age, gender, emotion, identity — from a face. It works reliably and costs little. We install it rarely and discuss it separately: biometrics are a special category of personal data, and the rules are stricter than they look in a vendor demo.",
               "good": [
                 "Anonymous statistics with no frames retained: how many people, of roughly what age",
                 "A narrative where recognition is the subject of the exhibition and the visitor has agreed to it"
@@ -1405,7 +1405,7 @@
               "id": "voice",
               "name": "Voice",
               "line": "Ask out loud, get an answer",
-              "what": "Speech recognition and conversational interface. It became genuinely usable only recently: current models understand living speech rather than memorised commands, and answer from the content of the exhibition rather than from a list of questions.",
+              "what": "This only became usable recently: current models understand living speech rather than memorised commands, and answer from the content of the exhibition rather than from a list of ten questions.",
               "good": [
                 "Open questions that cannot be anticipated",
                 "Accessibility: a visitor who finds reading or reaching a screen difficult",
@@ -1438,7 +1438,7 @@
               "id": "indoor-tracking",
               "name": "Positioning within the building",
               "line": "The exhibition knows where you are standing",
-              "what": "A tag on the ticket or the visitor's phone, with receivers around the building. The system knows who is where, to within tens of centimetres or a few metres, and serves content by location.",
+              "what": "A tag on the ticket and receivers around the building: the system knows who is where, to within tens of centimetres. Content arrives by location, and you get a map of the routes people actually walk.",
               "good": [
                 "A large floor area with a running narrative and a personal route",
                 "An audio guide that knows for itself which exhibit you are standing at",
@@ -1465,8 +1465,8 @@
             {
               "id": "scan-animate",
               "name": "Draw it and bring it to life",
-              "line": "A visitor's drawing joins the shared scene",
-              "what": "A table with paper and a scanner: a person colours a sheet, places it under the camera, and ten seconds later their character swims across a shared screen among everyone else's. The most dependable way to hold a child's attention, and the only one after which the drawing goes home with them.",
+              "line": "A visitor's drawing swims onto the shared screen",
+              "what": "A table with paper and a scanner: colour a sheet, place it under the camera, and ten seconds later your character is swimming among everyone else's. It holds a child without fail, and the sheet goes home.",
               "good": [
                 "A children's and family audience: it works without fail",
                 "A trace after the visit — the sheet stays with the visitor",
@@ -1489,7 +1489,7 @@
               "id": "lidar-scan",
               "name": "Three-dimensional scanning",
               "line": "How a real object gets into the scene",
-              "what": "A laser scanner or photogrammetry turns a real object, room or site into an accurate three-dimensional model. Half the content work starts here: modelling a building from scratch is dearer and less truthful than scanning it in a day.",
+              "what": "A laser scanner or photogrammetry turns an object, a room or a site into an accurate model. Modelling a building from scratch costs more and convinces less than scanning it in a day.",
               "good": [
                 "There is an original, a building or a site that has to be shown truthfully",
                 "Projection onto a model: the unwrap is computed from the scan, not the drawing",
@@ -1534,13 +1534,13 @@
         },
         {
           "name": "The visitor's own device",
-          "note": "A section of its own, because a phone does not fit the three categories: it is input, output and processing at once. And it is already in everybody's pocket — the cheapest equipment in this library and the hardest to use well.",
+          "note": "A phone does not fit the three categories: it is input, output and processing at once. And it is already in everyone's pocket — the cheapest equipment here and the hardest to use well.",
           "items": [
             {
               "id": "phone-all-in-one",
               "name": "The phone as a complete system",
-              "line": "Input, output and computing in one device, at someone else's expense",
-              "what": "A phone already has touch, camera, microphone, motion sensors, lidar on the higher models, a screen, sound, and enough processing for augmented reality. Zero spent on hardware. The bill arrives in a different currency: every step before launch loses people.",
+              "line": "Input, output and computing at once — at someone else's expense",
+              "what": "A phone already has touch, camera, microphone, sensors, lidar on the higher models, a screen, sound and enough power for augmented reality. Nothing spent on hardware. You pay elsewhere: every step before launch loses people.",
               "spec": "Count the funnel honestly. A hundred people reach the exhibit; half notice the invitation; a third of those get their phone out; a handful install an app. A web page with no installation changes that arithmetic several times over, and is almost always the right choice.",
               "good": [
                 "An exhibit outside the building: a courtyard, a park, a street, a city route",
@@ -1588,19 +1588,19 @@
       "num": "03",
       "name": "Processing",
       "full": "Processing and control",
-      "line": "What the visitor never sees and what holds it all up",
-      "lead": "Between what a person did and what they saw lies a layer that appears in no photograph of an exhibition: machines, engines, network and room control. Specifications cut this part first, because it cannot be shown to a board. A year later it is precisely this part that decides whether the exhibition runs or stands idle.",
-      "principle": "A simple acceptance rule: an exhibit must come up on one button pressed by an attendant, and the content must be changeable by museum staff. If both answers are no, you have not bought a system — you have bought a dependency on a contractor.",
+      "line": "What nobody sees and everything rests on",
+      "lead": "Machines, engines, network, room control. None of it appears in a single photograph of an exhibition, which is why it gets cut from the budget first. A year later it is exactly this part that decides whether the place runs or stands idle.",
+      "principle": "Acceptance in two questions: does the exhibit come up on one button pressed by an attendant, and can the museum change the text itself. Two nos and you have bought a contractor in perpetuity, not a system.",
       "sections": [
         {
           "name": "Machines",
-          "note": "The hardware everything is computed on. The choice is driven not by power but by who will restart it and how.",
+          "note": "The hardware it all runs on. Chosen not by power but by who will restart it, and how.",
           "items": [
             {
               "id": "player",
               "name": "Media player appliance",
               "line": "A box that simply plays",
-              "what": "A small device with no moving parts and no operating system in the usual sense: switch it on and it runs the schedule. It does not hang, does not update at the wrong moment, and does not show a desktop in the middle of a gallery.",
+              "what": "No moving parts and no operating system in the usual sense: switch it on and the schedule runs. It does not hang, does not update at the wrong moment, and does not show a desktop in the middle of a gallery.",
               "good": [
                 "A film or a schedule with no interactivity",
                 "Many identical points: ten screens with the same content",
@@ -1627,7 +1627,7 @@
               "id": "industrial-pc",
               "name": "Industrial computer",
               "line": "No fan, no dust, no surprises",
-              "what": "A computer in a sealed case with passive cooling, rated for round-the-clock work and for years of the same model staying available. That last point matters more than speed: in three years you will need exactly the same one as a replacement.",
+              "what": "A sealed case, passive cooling, and years of the same model staying available. That last point matters more than speed: in three years you will need exactly the same one.",
               "note_hw": "An ordinary office build inside a plinth survives until its first summer: dust settles on the fan, the temperature climbs, and the machine throttles out on the busiest day. This is the commonest mistake in ready-made specifications.",
               "good": [
                 "An exhibit inside a sealed box or in a dusty room",
@@ -1660,7 +1660,7 @@
               "id": "single-board",
               "name": "Single-board computer",
               "line": "Thirty dollars instead of three hundred",
-              "what": "A computer the size of a palm, with no moving parts and almost no power draw. It does not replace a workstation, but it covers half the points in an exhibition: a sensor, a button, sound on a trigger, lighting, simple video, polling equipment. Everywhere a full PC would otherwise stand «just in case».",
+              "what": "A computer the size of a palm covers half the points in an exhibition: a sensor, a button, sound on a trigger, lighting, simple video. Everywhere a full PC would otherwise stand «just in case».",
               "good": [
                 "Many small points: a sensor, a button, a lamp, an audio response",
                 "The exhibit hides in a plinth with no room and no ventilation",
@@ -1700,7 +1700,7 @@
               "id": "workstation",
               "name": "Graphics workstation",
               "line": "When the picture is computed right now",
-              "what": "A machine with a professional graphics card and several outputs. Needed where the image is not played back but born: real-time 3D, reaction to a person, several synchronised screens driven from one scene.",
+              "what": "A professional graphics card and several outputs. Needed where the image is not played back but born: real-time 3D, reaction to a person, synchronised screens from one scene.",
               "good": [
                 "An interactive 3D scene reacting to visitors",
                 "Several projectors from one source, blended into a single field",
@@ -1731,8 +1731,8 @@
             {
               "id": "edge-ai",
               "name": "Neural networks on site",
-              "line": "Computes here, sends nothing out",
-              "what": "A compact module that runs recognition models right there in the room, without internet and without a cloud. Frames never leave the museum — which removes half the legal questions before they arise.",
+              "line": "Computes here, sends nothing anywhere",
+              "what": "The module runs recognition right in the room, with no internet and no cloud. Frames never leave the museum — and half the legal questions vanish before they arise.",
               "good": [
                 "Recognition where data may not be sent outside",
                 "Unstable internet, or none at all",
@@ -1759,7 +1759,7 @@
               "id": "os-choice",
               "name": "The operating system of the room",
               "line": "A dull choice that echoes for two years",
-              "what": "Windows, macOS or Linux — decided once, and it determines who will be able to service the exhibition. Chosen not by taste but by what the required software runs on and who will fix it at three o'clock on a Saturday afternoon.",
+              "what": "Windows, macOS or Linux is decided once and determines who can service the exhibition. Chosen not by taste but by what the required software runs on, and who will fix it on a Saturday afternoon.",
               "compare": "**Windows** runs nearly everything: media servers, TouchDesigner, Unity and Unreal builds, drivers for any hardware. The price is updates that arrive at the wrong moment and reboot the gallery; cured by a long-term-servicing edition, not by a «defer» checkbox. **macOS** is reliable and quiet, good for audio and video, but the software choice is narrower and it is harder to put a machine in a plinth and leave it for five years. **Linux** is free, does not reboot itself and is ideal for players and single-board machines; professional media servers for it are rare.",
               "good": [
                 "Windows: interactivity, 3D, unusual hardware, media servers",
@@ -1793,13 +1793,13 @@
         },
         {
           "name": "Media servers",
-          "note": "A class of its own: machine and software together, whose job is to bring many images and many outputs into one governable picture.",
+          "note": "A class of its own: machine and software together. The job is to bring a dozen images and outputs into one governable picture.",
           "items": [
             {
               "id": "media-server",
               "name": "Media server",
               "line": "One brain for a whole projection wall",
-              "what": "It feeds a dozen outputs, blends projectors into a single field, corrects geometry for a curved surface and holds all of it to a timeline. Where there are more than two projectors, without one you assemble a zoo of machines that nobody will be able to service.",
+              "what": "Feeds a dozen outputs, blends projectors into one field, corrects geometry for a curved surface and holds it all to a timeline. More than two projectors without one is a zoo.",
               "good": [
                 "Several projectors into one field: a panorama, a dome, a vault",
                 "Mapping onto volume with exact geometry",
@@ -1846,7 +1846,7 @@
               "id": "warp-blend",
               "name": "Warping and geometry correction",
               "line": "So the seam cannot be seen",
-              "what": "Software that works out from camera shots how to distort each image so that several projectors merge into one field with no seam and no curvature on an uneven wall. Recomputed in minutes rather than overnight.",
+              "what": "Software works out from camera shots how to distort each image so the projectors merge into one field. Recomputed in minutes rather than overnight — which matters, because buildings move and equipment shifts.",
               "good": [
                 "More than one projector on one surface",
                 "A surface that is not flat: a vault, a dome, a corner, a model",
@@ -1878,13 +1878,13 @@
         },
         {
           "name": "Engines and environments",
-          "note": "What the content itself is made in. The choice here decides not the picture but who will be able to change it later.",
+          "note": "Where the content gets made. The choice decides not how it looks but who will be able to change it later.",
           "items": [
             {
               "id": "unity",
               "name": "Unity",
               "line": "The workhorse of interactive exhibits",
-              "what": "A game engine that has become the standard for museum interactivity: real-time 3D, work with any sensor, builds for anything from a gallery screen to a VR headset to a visitor's phone. There are more specialists on the market for it than for any other tool on this list.",
+              "what": "The standard for museum interactivity: real-time 3D, any sensor, builds for anything from a gallery screen to a headset to a phone. More specialists on the market than for any other tool on this list, and a contractor who is easy to replace.",
               "good": [
                 "An interactive exhibit with real logic and state",
                 "One body of content across several devices: gallery, headset, phone",
@@ -1907,7 +1907,7 @@
               "id": "unreal",
               "name": "Unreal Engine",
               "line": "When the credibility of the image decides it",
-              "what": "An engine with the strongest lighting and materials out of the box. Chosen where the image has to be indistinguishable from a photograph: architecture, interiors, landscape, a product at advertising quality.",
+              "what": "The strongest lighting and materials out of the box. Chosen where the image must be indistinguishable from a photograph: architecture, interiors, landscape, a product at advertising quality.",
               "good": [
                 "Architecture and territory that must look real",
                 "A large world with distant views",
@@ -1929,7 +1929,7 @@
               "id": "touchdesigner",
               "name": "TouchDesigner",
               "line": "An environment for things that never repeat",
-              "what": "A node-based environment for generative graphics, signal work and live reaction to data. Where Unity builds a scene, TouchDesigner builds a flow: an image born out of movement, sound and sensors that never looks the same twice.",
+              "what": "A node-based environment for generative graphics and live reaction to data. Unity builds a scene; TouchDesigner builds a flow — a picture born of movement and sound that never looks the same twice.",
               "good": [
                 "Generative content: an image born from data or movement",
                 "Many inputs and outputs at once: cameras, sensors, projectors, sound",
@@ -1951,7 +1951,7 @@
               "id": "notch-resolume",
               "name": "Notch and Resolume",
               "line": "Tools for live performance",
-              "what": "Notch makes effects computed in real time and runs inside media servers. Resolume is live playback and mapping from a console. Both are about performance and event more than about a permanent exhibition.",
+              "what": "Notch computes real-time effects inside media servers; Resolume drives playback and mapping from a desk. Both are about an event and a person at the controls, not an exhibition running unattended.",
               "good": [
                 "An event, an opening, a show on a façade",
                 "The effect has to react to a live signal — sound, camera, operator",
@@ -1977,8 +1977,8 @@
             {
               "id": "creative-coding",
               "name": "Creative coding",
-              "line": "Tools where graphics are written, not assembled",
-              "what": "Open environments in which the image is born from code and data: sound visualisation, generative patterns, reaction to the flow of visitors. Free, needing no licences, and happy on modest hardware — but a contractor for them is harder to find than for Unity.",
+              "line": "Here the graphics are written, not assembled",
+              "what": "Open environments where the picture is born of code and data: sound visualisation, generative patterns, reaction to the flow of visitors. No licences required, and happy on modest hardware.",
               "good": [
                 "Generative content: a pattern out of data, sound, movement",
                 "A small budget with no software licences",
@@ -2022,13 +2022,13 @@
         },
         {
           "name": "Signal and operations",
-          "note": "The part cut from the budget first and remembered in year two. Everything here pays for itself with a single call-out that never had to happen.",
+          "note": "First thing struck from the budget, first thing remembered in year two. Pays for itself with one call-out that never had to happen.",
           "items": [
             {
               "id": "signal",
               "name": "Signal distribution",
               "line": "Distance decides more than you would think",
-              "what": "An ordinary video cable works to about fifteen metres; beyond that you need twisted pair with dedicated transmitters, fibre, or transport over the network. The decision is taken while the walls are still open — afterwards it is expensive.",
+              "what": "An ordinary cable works to about fifteen metres; beyond that you need twisted pair with transmitters, fibre, or the network. Settled while the walls are open. Afterwards — expensive.",
               "good": [
                 "Machine in the rack room, screen in the gallery: separating them is right",
                 "Many sources and many screens with switching",
@@ -2060,7 +2060,7 @@
               "id": "control",
               "name": "Room control",
               "line": "One button for the whole exhibition",
-              "what": "The system that switches everything on to a schedule in the morning, shuts it down at night, and gives the attendant one panel with sensible buttons instead of ten remotes. It is what decides whether the museum can open without an engineer.",
+              "what": "Switches on to a schedule in the morning, shuts down at night, and gives the attendant one sensible panel instead of ten remotes. This is what decides whether the museum opens without an engineer.",
               "good": [
                 "More than five devices in a room",
                 "Opening and closing to a schedule, with nobody present",
@@ -2092,7 +2092,7 @@
               "id": "monitoring",
               "name": "Monitoring and remote access",
               "line": "Learn about the fault before the visitor does",
-              "what": "The system reports that an exhibit has gone dark, that a lamp has reached end of life or that a machine rebooted overnight. Without it you hear about the fault from an online review rather than from the equipment.",
+              "what": "The system reports that an exhibit has gone dark, a lamp has reached end of life, or a machine rebooted overnight. Without it you hear about the fault from an online review.",
               "good": [
                 "An exhibition of more than one room",
                 "The contractor is not in your city",
@@ -2118,7 +2118,7 @@
               "id": "cms",
               "name": "Content management system",
               "line": "So text can change without the contractor",
-              "what": "The panel through which the museum edits captions itself, changes photographs, adds a language and updates the schedule. The most important line in the acceptance list and the most frequently absent.",
+              "what": "The panel through which the museum edits captions itself, swaps photographs and adds a language. The most important line in the acceptance list and the most frequently absent.",
               "good": [
                 "The content will change — and it will",
                 "Several languages, added over time",
@@ -2135,7 +2135,7 @@
               "id": "sync",
               "name": "Machine synchronisation",
               "line": "So adjacent screens stay in step",
-              "what": "When an image is spread across several machines, each runs on its own clock — and within a minute of playback the drift is visible to the eye. Synchronisation binds them to a common time: frame to frame, sound to image.",
+              "what": "Each machine runs on its own clock, and within a minute of playback the drift is visible to the eye. Synchronisation binds them to a common time: frame to frame, sound to image.",
               "good": [
                 "A panorama or wall assembled from several machines",
                 "Sound and image from different sources that have to coincide",
@@ -2162,7 +2162,7 @@
               "id": "backup",
               "name": "Backup and recovery",
               "line": "A plan for the day it does break",
-              "what": "An image of every machine, a copy of the content and a written recovery procedure. Not equipment but a clause in the contract — yet without it, replacing a burnt-out computer turns from an hour into a week.",
+              "what": "An image of every machine, a copy of the content and a written recovery procedure. Not equipment but a clause in the contract — and without it, replacing a burnt-out computer turns from an hour into a week.",
               "good": [
                 "An exhibition that has to open tomorrow whatever happens",
                 "The contractor may leave the market — the museum will not",

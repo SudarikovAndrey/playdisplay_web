@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Equipment library — playdisplay</title>
-<meta name="description" content="63 types of equipment an interactive exhibition is built from, sorted by what they actually do: show something to a person, listen to a person, or do…">
+<meta name="description" content="63 types of equipment: what each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit…">
 <link rel="canonical" href="https://playdisplay.com/en/library/">
 <link rel="alternate" hreflang="ru" href="https://playdisplay.com/library/">
 <link rel="alternate" hreflang="en" href="https://playdisplay.com/en/library/">
@@ -12,21 +12,21 @@
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="An equipment library for interactive exhibitions">
-<meta property="og:description" content="63 types of equipment an interactive exhibition is built from, sorted by what they actually do: show something to a person, listen to a person, or do…">
+<meta property="og:description" content="63 types of equipment: what each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit…">
 <meta property="og:url" content="https://playdisplay.com/en/library/">
 <meta property="og:image" content="https://playdisplay.com/assets/work/industry-rf/site_ships_23_2-960x960.jpg">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="playdisplay">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="An equipment library for interactive exhibitions">
-<meta name="twitter:description" content="63 types of equipment an interactive exhibition is built from, sorted by what they actually do: show something to a person, listen to a person, or do…">
+<meta name="twitter:description" content="63 types of equipment: what each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit…">
 <meta name="twitter:image" content="https://playdisplay.com/assets/work/industry-rf/site_ships_23_2-960x960.jpg">
 <script type="application/ld+json">[
 {
 "@context": "https://schema.org",
 "@type": "Article",
 "headline": "An equipment library for interactive exhibitions",
-"description": "63 types of equipment an interactive exhibition is built from, sorted by what they actually do: show something to a person, listen to a person, or do…",
+"description": "63 types of equipment: what each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit…",
 "url": "https://playdisplay.com/en/library/",
 "inLanguage": "en",
 "author": {
@@ -160,47 +160,58 @@
     .libcat .act { width:100%; justify-content:center; }
   }
 
-  /* --- Навигация внутри категории: липкая, чтобы не терять место в длинном тексте --- */
-  .libnav { position:sticky; top:0; z-index:5; margin:36px 0 8px; padding:12px 0;
+  /* --- Карточки позиций: сетка с фильтром, как в атласе --- */
+  .libbar { position:sticky; top:0; z-index:6; margin:34px 0 6px; padding:14px 0;
             background:#040c10; border-bottom:1px solid rgba(159,180,200,.22);
-            display:flex; flex-wrap:wrap; gap:8px 18px; font:500 13px/1.4 monospace;
-            letter-spacing:.06em; text-transform:uppercase; }
-  .libnav a { color:#9fb4c8; text-decoration:none; }
-  .libnav a:hover { color:#2be0c6; }
+            display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+  .libbar input { flex:1 1 220px; min-width:0; background:transparent; color:#e9f4f6;
+                  border:1px solid rgba(159,180,200,.3); padding:9px 13px; font:400 15px inherit; }
+  .libbar input::placeholder { color:#6d8496; }
+  .libbar input:focus { outline:none; border-color:#2be0c6; }
+  .libchips { display:flex; flex-wrap:wrap; gap:7px; }
+  .libchip { background:transparent; color:#9fb4c8; cursor:pointer;
+             border:1px solid rgba(159,180,200,.26); padding:8px 13px;
+             font:500 12px/1 monospace; letter-spacing:.08em; text-transform:uppercase;
+             transition:color .18s, border-color .18s, background .18s; }
+  .libchip:hover { color:#e9f4f6; border-color:#9fb4c8; }
+  .libchip[aria-pressed="true"] { color:#040c10; background:#2be0c6; border-color:#2be0c6; }
+  .libcount { color:#6d8496; font:500 12px/1 monospace; letter-spacing:.1em;
+              text-transform:uppercase; margin-left:auto; }
 
-  /* --- Раздел внутри категории --- */
-  .libsec { margin:64px 0 0; }
-  .libsec > h2 { margin:0 0 6px; }
-  .libsec > p.note { color:#9fb4c8; font-size:17px; margin:0 0 8px; max-width:62ch; }
+  .libgrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:22px 0 0; }
+  .libitem { border:1px solid rgba(159,180,200,.2); padding:24px 24px 22px; margin:0;
+             display:flex; flex-direction:column;
+             background:linear-gradient(160deg, rgba(43,224,198,.03), transparent 60%);
+             transition:border-color .2s, background .2s; }
+  .libitem:hover { border-color:rgba(43,224,198,.5);
+                   background:linear-gradient(160deg, rgba(43,224,198,.07), transparent 65%); }
+  .libitem[hidden] { display:none; }
+  .libitem > i { font:500 11px/1 monospace; letter-spacing:.18em; color:#ff6a3d; font-style:normal; }
+  .libitem > h3 { font-size:21px; line-height:1.2; margin:9px 0 3px; letter-spacing:-.01em; }
+  .libitem > p.line { color:#2be0c6; font-size:16px; line-height:1.4; margin:0 0 13px; }
+  .libitem > p.what { color:#c8d8e2; font-size:16px; line-height:1.6; margin:0 0 16px; max-width:none; }
+  .libitem .sec { font:500 10px/1 monospace; letter-spacing:.16em; text-transform:uppercase;
+                  color:#6d8496; margin-left:9px; }
 
-  /* --- Позиция --- */
-  .libitem { border-top:1px solid rgba(159,180,200,.18); padding:34px 0 6px; }
-  .libitem > i { font:500 12px/1 monospace; letter-spacing:.18em; color:#ff6a3d; font-style:normal; }
-  .libitem > h3 { font-size:clamp(21px,2.6vw,27px); margin:8px 0 2px; letter-spacing:-.01em; }
-  .libitem > p.line { color:#2be0c6; font-size:17px; margin:0 0 14px; }
-  .libitem > p.what { color:#c8d8e2; margin:0 0 18px; max-width:66ch; }
-
-  /* --- Когда работает / когда нет: сердце библиотеки, поэтому в две колонки --- */
-  .gb { display:grid; grid-template-columns:1fr 1fr; gap:8px 34px; margin:0 0 18px; }
-  .gb > div > h4 { font:500 12px/1 monospace; letter-spacing:.14em; text-transform:uppercase;
-                   margin:0 0 10px; color:#9fb4c8; }
+  .gb { display:grid; grid-template-columns:1fr; gap:14px; margin:0 0 16px; }
+  .gb > div > h4 { font:500 11px/1 monospace; letter-spacing:.14em; text-transform:uppercase;
+                   margin:0 0 8px; color:#9fb4c8; }
   .gb ul { list-style:none; padding:0; margin:0; }
-  .gb li { position:relative; padding-left:1.5em; margin:9px 0; font-size:16.5px; line-height:1.55; color:#c8d8e2; }
+  .gb li { position:relative; padding-left:1.4em; margin:7px 0; font-size:15.5px; line-height:1.5; color:#c8d8e2; }
   .gb li:before { position:absolute; left:0; top:0; font-weight:700; }
   .gb .good li:before { content:"+"; color:#2be0c6; }
-  .gb .bad  li:before { content:"\2013"; color:#ff6a3d; }
+  .gb .bad  li:before { content:"3"; color:#ff6a3d; }
 
-  /* --- Врезки: замер, предупреждение про железо, сравнение, наше мнение --- */
-  .call { margin:0 0 18px; padding:14px 18px; border-left:2px solid #2be0c6;
-          background:rgba(43,224,198,.05); color:#c8d8e2; font-size:16.5px; line-height:1.6; max-width:70ch; }
-  /* Подпись врезки — ТОЛЬКО первый b. Раньше правило било по всем b внутри, и
-     выделения в тексте сравнения («Параболический купол») превращались в такие же
-     мелкие капсовые подписи: абзац рассыпался на три заголовка. */
-  .call > b:first-child { display:block; font:500 11px/1 monospace; letter-spacing:.16em;
-            text-transform:uppercase; color:#2be0c6; margin-bottom:8px; }
-  .call b { color:#fff; }
-  .call.hw, .call.warn { border-left-color:#ff6a3d; background:rgba(255,106,61,.06); }
-  .call.hw > b:first-child, .call.warn > b:first-child { color:#ff6a3d; }
+  .call { margin:0 0 16px; padding:13px 16px; border-left:2px solid #2be0c6;
+          background:rgba(43,224,198,.05); color:#c8d8e2; font-size:15.5px; line-height:1.55; max-width:none; }
+  .libitem .brands { margin-top:auto; padding-top:14px; }
+  .libitem .brands li { max-width:none; }
+  .libcase { margin:14px 0 0; font-size:15px; }
+  .libcase:before { content:"92"; color:#2be0c6; margin-right:.5em; }
+  .libempty { color:#9fb4c8; padding:30px 0; }
+
+  @media (max-width:900px) { .libgrid { grid-template-columns:1fr; } }
+  @media (max-width:720px) { .libcount { margin-left:0; width:100%; } }
 
   /* --- Вынесенные ссылки на производителей --- */
   .brands { margin:16px 0 0; }
@@ -227,8 +238,8 @@
   <nav class="crumbs"><a href="../../en/">playdisplay</a> /  Equipment library</nav>
   <article>
     <h1>An equipment library for interactive exhibitions</h1>
-    <p class="lead">63 types of equipment an interactive exhibition is built from, sorted by what they actually do: show something to a person, listen to a person, or do the thinking in between. For each one: when it works, when it does not, and who makes it.</p>
-    <p>This library is organised by role in the system rather than by price list. Every interactive exhibit is a closed loop: a person does something, a machine reads it, the exhibition answers. The three categories below are three quarters of that loop, and the weakest link decides everything else.</p><p>One principle runs through every page: <b>the equipment is chosen last</b>. First the story — what the visitor should walk out with; then the interaction — what they do with their hands to get there; and only then the hardware that has to survive it. A specification written in the opposite order is recognisable a couple of years later by its switched-off screens.</p><ul class="libcats"><li><a class="libcat" data-cat="output" href="output/"><canvas class="libfx" aria-hidden="true"></canvas><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="12.5" width="7" height="7" rx="1.5"/><circle cx="6" cy="16" r="1.15" fill="currentColor" stroke="none"/><path d="M9.5 14.2 L26.5 6.5"/><path d="M9.5 17.8 L26.5 25.5"/><path d="M26.5 6.5 L26.5 25.5"/></svg></span><span class="body"><i>01</i><b>Output equipment</b><em>How the exhibition speaks to a person</em><span class="lead">Everything that reaches the senses: light, image, sound, air, vibration. The most visible part of the budget and the most deceptive. Visible does not mean strong: a four-metre screen people walk past without stopping loses to a spyglass with a queue in front of it.</span><u><span class="cnt">24 entries · 68 manufacturers</span><span class="act">Open the section</span></u></span></a></li><li><a class="libcat" data-cat="input" href="input/"><canvas class="libfx" aria-hidden="true"></canvas><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 25.5 H27.5"/><circle cx="16" cy="19.5" r="3"/><path d="M16 4 V11.5 m-2.4 -2.6 L16 11.5 l2.4 -2.6"/><path d="M10 22.5 a8 8 0 0 1 0 -6"/><path d="M22 16.5 a8 8 0 0 1 0 6"/></svg></span><span class="body"><i>02</i><b>Input equipment</b><em>How a person answers the exhibition</em><span class="lead">Everything the visitor acts with: fingers, hands, body, voice, their very presence. The cheapest part of the specification and the part that decides whether an exhibit works or becomes furniture. The difference between «interactive» and «switched on» lives here.</span><u><span class="cnt">20 entries · 51 manufacturer</span><span class="act">Open the section</span></u></span></a></li><li><a class="libcat" data-cat="processing" href="processing/"><canvas class="libfx" aria-hidden="true"></canvas><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="14" height="14" rx="2.5"/><rect x="13.75" y="13.75" width="4.5" height="4.5" rx="1"/><path d="M13 9 V5 M19 9 V5 M13 23 V27 M19 23 V27 M9 13 H5 M9 19 H5 M23 13 H27 M23 19 H27"/></svg></span><span class="body"><i>03</i><b>Processing and control</b><em>What the visitor never sees and what holds it all up</em><span class="lead">Between what a person did and what they saw lies a layer that appears in no photograph of an exhibition: machines, engines, network and room control. Specifications cut this part first, because it cannot be shown to a board. A year later it is precisely this part that decides whether the exhibition runs or stands idle.</span><u><span class="cnt">19 entries · 46 manufacturers</span><span class="act">Open the section</span></u></span></a></li></ul><h2>What we do in all this</h2><p>We start from the effect we want, not from a particular technology. First we settle what the visitor should walk out with, and only then what to build it from. We are tied to no manufacturer, so the solution gets picked for the job rather than for what is familiar or already sitting in a warehouse. Hence a library written as a catalogue of limits — so you can see where a technology is genuinely strong and where it gets specified out of habit.</p><p>Supply is handled by our partners: any equipment in this library, on the best terms for the client. Our part is the story, the content, the interaction, the software and the integration. We build complex hardware-and-software systems and answer for the whole thing working as one, rather than as a pile of boxes from different vendors.</p><p>If you already have a specification in hand, send it over. We will tell you what is redundant in it, what is missing, and what will not survive the first year. Free, no strings.</p><script>/* Карточки категорий: иконка рассыпается в точки, точки магнитятся к курсору.
+    <p class="lead">63 types of equipment: what each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit — we work with it.</p>
+    <p>Organised by role in the system, not by price list. Every interactive exhibit is a closed loop: a person acts, a machine reads it, the exhibition answers. The three categories below are three quarters of that loop, and the weakest link decides for all the others.</p><p>One idea runs through every page: <b>the hardware is chosen last</b>. First, what the visitor walks out with. Then, what they do with their hands to get there. Only then, what has to survive it. A budget built the other way round is easy to spot a year later — by the dark screens.</p><ul class="libcats"><li><a class="libcat" data-cat="output" href="output/"><canvas class="libfx" aria-hidden="true"></canvas><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="12.5" width="7" height="7" rx="1.5"/><circle cx="6" cy="16" r="1.15" fill="currentColor" stroke="none"/><path d="M9.5 14.2 L26.5 6.5"/><path d="M9.5 17.8 L26.5 25.5"/><path d="M26.5 6.5 L26.5 25.5"/></svg></span><span class="body"><i>01</i><b>Output equipment</b><em>How the exhibition speaks to a person</em><span class="lead">Light, image, sound, vibration — everything that reaches a person. The most visible part of the budget and the most treacherous: a four-metre screen people walk past without looking loses to a spyglass with a queue in front of it.</span><u><span class="cnt">24 entries · 68 manufacturers</span><span class="act">Open the section</span></u></span></a></li><li><a class="libcat" data-cat="input" href="input/"><canvas class="libfx" aria-hidden="true"></canvas><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 25.5 H27.5"/><circle cx="16" cy="19.5" r="3"/><path d="M16 4 V11.5 m-2.4 -2.6 L16 11.5 l2.4 -2.6"/><path d="M10 22.5 a8 8 0 0 1 0 -6"/><path d="M22 16.5 a8 8 0 0 1 0 6"/></svg></span><span class="body"><i>02</i><b>Input equipment</b><em>How a person answers back</em><span class="lead">Fingers, hands, body, voice, mere presence. The cheapest line in the budget and the one that decides everything: this is where «interactive» parts company with «switched on».</span><u><span class="cnt">20 entries · 51 manufacturer</span><span class="act">Open the section</span></u></span></a></li><li><a class="libcat" data-cat="processing" href="processing/"><canvas class="libfx" aria-hidden="true"></canvas><span class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="14" height="14" rx="2.5"/><rect x="13.75" y="13.75" width="4.5" height="4.5" rx="1"/><path d="M13 9 V5 M19 9 V5 M13 23 V27 M19 23 V27 M9 13 H5 M9 19 H5 M23 13 H27 M23 19 H27"/></svg></span><span class="body"><i>03</i><b>Processing and control</b><em>What nobody sees and everything rests on</em><span class="lead">Machines, engines, network, room control. None of it appears in a single photograph of an exhibition, which is why it gets cut from the budget first. A year later it is exactly this part that decides whether the place runs or stands idle.</span><u><span class="cnt">19 entries · 46 manufacturers</span><span class="act">Open the section</span></u></span></a></li></ul><h2>Where we come in</h2><p>We do not supply equipment and we keep no warehouse. So we have no reason to sell you whatever is sitting on a shelf — and every reason to understand the kit better than the people who do sell it. Hence this library: written from the side that has to commission it, fix it and explain it to an attendant.</p><p>We start from the effect, not the technology. First we settle what the visitor should feel, and pick the solution for that. An ordinary monitor in our hands becomes a display people stop at; the same monitor with no story is a noticeboard. The difference is not the monitor.</p><p>Supply is handled by our partners — anything on this list, on the best terms for you. Ours is the story, the content, the interaction, the software and the integration: one hardware-and-software system, rather than boxes from five vendors who have never heard of each other.</p><p><b>Got a specification in hand?</b> Send it over. We will tell you what is redundant, what is missing and what will not see year two. Free, no obligation, and no sales pitch afterwards.</p><script>/* Карточки категорий: иконка рассыпается в точки, точки магнитятся к курсору.
    Тот же приём, что на выборе проектов, но источник другой. Там облако собирается
    из ПИКСЕЛЕЙ обложки; здесь обложек нет, поэтому иконка рисуется в канвас кодом
    и облако снимается с собственного рисунка. Растеризовать <svg> через data-URI
