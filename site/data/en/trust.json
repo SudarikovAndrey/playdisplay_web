@@ -1,0 +1,81 @@
+{
+ "note": "Same set as data/trust.json, English. Order and length must match: smoke.py checks it.",
+ "items": [
+  {
+   "org": "Roscosmos",
+   "full": "Roscosmos State Corporation",
+   "kind": "Certificate of Honour",
+   "for": "for active contribution to popularising the historical legacy of Russian cosmonautics",
+   "who": "Director General of the State Corporation",
+   "year": ""
+  },
+  {
+   "org": "URSC",
+   "full": "United Rocket and Space Corporation",
+   "kind": "Letter of appreciation",
+   "for": "for the interactive installation of the Express AM5 spacecraft using augmented reality",
+   "quote": "for professionalism and responsiveness",
+   "who": "Deputy Director General",
+   "year": ""
+  },
+  {
+   "org": "Gazprom Dobycha Astrakhan",
+   "full": "Gazprom Dobycha Astrakhan LLC",
+   "kind": "Letter of thanks",
+   "for": "for support in modernising the IT infrastructure",
+   "quote": "professionalism and responsiveness",
+   "who": "Deputy Director General",
+   "year": "2015"
+  },
+  {
+   "org": "Spetstyazhmash",
+   "full": "Sukhodolsk Heavy Engineering Plant",
+   "kind": "Letter of thanks",
+   "for": "for fruitful cooperation in organising the plant opening",
+   "quote": "our sincere gratitude and deep appreciation",
+   "who": "Director of Corporate Communications",
+   "year": "2014"
+  },
+  {
+   "org": "BereZka",
+   "full": "Russia’s first business forum for teenagers",
+   "kind": "Letter of appreciation",
+   "for": "for the contribution to preparing and running the forum",
+   "quote": "genuine interest, high professionalism and a significant contribution",
+   "who": "Executive producers",
+   "year": "2019"
+  },
+  {
+   "org": "Samsung",
+   "full": "Samsung Electronics Rus",
+   "kind": "Official letter",
+   "for": "confirmation of authorised partner status",
+   "who": "Director of Corporate Sales",
+   "year": "2013"
+  },
+  {
+   "org": "MAKS 2013",
+   "full": "Moscow Department of Science, Industrial Policy and Entrepreneurship",
+   "kind": "Diploma",
+   "for": "for taking part in the Moscow Government collective exposition at the 11th International Aviation and Space Salon",
+   "who": "Head of the Department",
+   "year": "2013"
+  },
+  {
+   "org": "Open Innovations",
+   "full": "Moscow International Forum for Innovative Development",
+   "kind": "Diploma",
+   "for": "for participation in the Open Innovations Expo, Crocus Expo",
+   "who": "The Organising Committee",
+   "year": "2013"
+  },
+  {
+   "org": "High-Tech Leader",
+   "full": "Moscow Association of Entrepreneurs",
+   "kind": "Diploma",
+   "for": "laureate of the competition programmes at the 2nd International Forum “Technologies in Machine Building”",
+   "who": "Head of the Moscow Department of Science",
+   "year": "2012"
+  }
+ ]
+}

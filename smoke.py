@@ -159,6 +159,36 @@ def check_data():
                             bad('%s %s' % (path, p['slug']), 'нет мобильной копии %s' % f)
 
 
+def check_trust():
+    """Отзывы и благодарности: состав ru и en обязан совпадать по длине и порядку.
+
+    Карточки рисуются из json по индексу, поэтому расхождение в СОСТАВЕ страшнее
+    расхождения в тексте: на английской версии окажется чужая подпись под чужой
+    организацией, и заметить это можно только открыв обе страницы рядом."""
+    paths = ('data/trust.json', 'data/en/trust.json')
+    sets = []
+    for path in paths:
+        full = os.path.join(SITE, path)
+        if not os.path.exists(full):
+            bad('отзывы', 'нет файла %s' % path); return
+        items = (json.load(open(full, encoding='utf-8')) or {}).get('items') or []
+        if not items:
+            bad('отзывы', '%s пустой' % path); return
+        sets.append(items)
+        for i, it in enumerate(items):
+            for key in ('org', 'for', 'who'):
+                if not (it.get(key) or '').strip():
+                    bad('отзывы %s' % path, 'карточка %d: пустое поле «%s»' % (i + 1, key))
+    if len(sets[0]) != len(sets[1]):
+        bad('отзывы', 'карточек ru %d, en %d — состав расходится' % (len(sets[0]), len(sets[1])))
+        return
+    # Цитата есть не у всех (у дипломов её нет), но если она есть в одном языке,
+    # то должна быть и во втором — иначе английская карточка молча теряет главное.
+    for i, (r, e) in enumerate(zip(*sets)):
+        if bool(r.get('quote')) != bool(e.get('quote')):
+            bad('отзывы', 'карточка %d: цитата есть только в одном языке' % (i + 1))
+
+
 # ---------------------------------------------------------------- 4. сборка свежая
 def check_build_current():
     """build_seo.py не должен ничего менять: если меняет — забыли прогнать.
@@ -226,6 +256,7 @@ for u in urls:
     check_page(u, url_to_file(u))
 check_cases()
 check_data()
+check_trust()
 check_required()
 check_build_current()
 if LIVE:
