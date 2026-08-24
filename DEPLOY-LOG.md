@@ -8,6 +8,62 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-24 19:43 — hybrid-v8 @ 8255616
+
+**Коммиты в этой поставке**
+```
+8255616 частицы на карточках библиотеки, пункт меню и полоса-вход с главной
+ef28902 Карточки категорий: частицы из иконки, кнопка «Открыть раздел», входы с главной
+f24c056 Отзывы и благодарности: данные девяти документов и проверка их состава
+6a1ebb4 Журнал деплоя: 003c416
+```
+
+**На сервер отправлено файлов:** 125, удалено: 0
+```
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+data/trust.json
+data/en/trust.json
+data/i18n/en.js
+digital/digital.css
+digital/digital.js
+digital/index.html
+…и ещё 85
+```
+
+
 ## 2026-08-24 18:51 — hybrid-v8 @ 003c416
 
 **Коммиты в этой поставке**
