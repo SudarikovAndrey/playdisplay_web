@@ -1959,33 +1959,29 @@
        шумом без причины. Каскадное появление карточек делает revealGrid. */
     #cards-fx { display: none; }
   }
-  /* ---------- СЛАЙД «МУЛЬТИМЕДИЙНОЕ ОБОРУДОВАНИЕ» ----------
-     Раздел /library/ живёт вне лендинга, и попасть в него с главной было можно
-     только через меню. Полоса в четыре строки эту задачу решала плохо: рядом
-     с полноэкранными блоками она читалась как подвал. Теперь это полноценный
-     экран, и три категории — не украшение, а три отдельные двери: человек
-     заходит сразу туда, что ему нужно.
-     Название «Мультимедийное оборудование» выбрано не случайно: это самый
-     частотный коммерческий запрос ниши, 1195 показов в месяц. */
+  /* ---------- ОБОРУДОВАНИЕ: вход в справочник /library/ ----------
+     Ритм секции общий с атласом и библиотекой решений: надстрочник, заголовок,
+     подзаголовок, содержание. Своего центрирования и стопроцентной высоты больше
+     нет — из-за них блок выбивался из строя соседних секций. */
   .equip { position: relative; overflow: hidden; border-top: 1px solid var(--space-line); }
-  .equip .wrap { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 40px; }
   /* мягкое свечение за содержанием — глубина без единой картинки */
   .equip::before {
-    content: ""; position: absolute; left: 50%; top: 46%; width: 120vmin; height: 120vmin;
+    content: ""; position: absolute; left: 50%; top: 50%; width: 120vmin; height: 120vmin;
     transform: translate(-50%,-50%); pointer-events: none;
-    background: radial-gradient(closest-side, rgba(43,224,198,0.09), transparent 70%);
+    background: radial-gradient(closest-side, rgba(43,224,198,0.08), transparent 70%);
   }
-  .equip > * { position: relative; }
-  .eq-top { max-width: 40ch; }
+  .equip .wrap { position: relative; }
   .equip h2 { margin: 14px 0 12px; }
-  .eq-nums { display: flex; flex-wrap: wrap; gap: 30px 64px; margin: 0; }
+  .equip .intro-sub { max-width: 58ch; }
+  .eq-nums { display: flex; flex-wrap: wrap; gap: 30px 64px; margin: 42px 0 0; }
   .eq-nums b { display: block; font: 700 clamp(30px,3.6vw,46px)/1 var(--font-display);
                color: var(--signal-teal); letter-spacing: -0.02em; }
   .eq-nums span { display: block; margin-top: 8px; font: 600 11px var(--font-mono);
                   letter-spacing: var(--tracking-hud); text-transform: uppercase; color: var(--scan-white-dim); }
 
   /* три двери: не иконки для красоты, а ссылки в свои категории */
-  .eq-cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; list-style: none; padding: 0; margin: 0; }
+  .eq-cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+             list-style: none; padding: 0; margin: 44px 0 0; }
   .eq-cat {
     display: block; text-decoration: none; color: inherit; padding: 26px 24px 22px;
     border: 1px solid var(--space-line);
@@ -2005,7 +2001,7 @@
   .eq-cat u { display: block; margin-top: 16px; text-decoration: none; font: 600 11px var(--font-mono);
               letter-spacing: var(--tracking-hud); text-transform: uppercase; color: var(--signal-teal); }
   .eq-go {
-    align-self: flex-start; display: inline-flex; align-items: center; gap: 10px;
+    display: inline-flex; align-items: center; gap: 10px; margin-top: 40px;
     font: 700 13px "Blender Pro", var(--font-body); letter-spacing: 0.1em; text-transform: uppercase;
     background: var(--signal-amber); color: var(--space-void); padding: 15px 26px; text-decoration: none;
     clip-path: polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
@@ -2013,11 +2009,25 @@
   }
   .eq-go:hover { transform: translateY(-2px); box-shadow: var(--glow-amber-soft); }
   @media (max-width: 900px) {
-    .equip .wrap { min-height: 0; padding-top: 92px; padding-bottom: 92px; gap: 30px; }
-    .eq-cats { grid-template-columns: 1fr; gap: 12px; }
+    .eq-cats { grid-template-columns: 1fr; gap: 12px; margin-top: 32px; }
     .eq-cat { padding: 20px 18px; }
-    .eq-nums { gap: 22px 34px; }
+    .eq-nums { gap: 22px 34px; margin-top: 30px; }
+    .eq-go { margin-top: 30px; }
   }
+  /* ---------- ЭФИР: перечень каналов в блоке «Пресса» ----------
+     Плашки, а не строка через запятую: перечисление каналов читают взглядом,
+     а не по словам, и разделённые рамкой они считываются за один раз. */
+  .tv { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 18px 0 0; }
+  .tv li {
+    display: inline-flex; align-items: baseline; gap: 5px; padding: 8px 12px;
+    border: 1px solid var(--space-line); color: var(--scan-white-dim);
+    transition: border-color var(--duration-base), color var(--duration-base);
+  }
+  .tv li:hover { border-color: var(--signal-teal); color: var(--scan-white); }
+  .tv span { font: 700 13px/1 var(--font-display); letter-spacing: 0.01em; color: #F1FBFC; }
+  .tv i { font: 600 10px/1 var(--font-mono); font-style: normal;
+          letter-spacing: var(--tracking-hud); text-transform: uppercase; }
+  @media (max-width: 700px) { .tv { gap: 6px; } .tv li { padding: 7px 10px; } }
 </style>
 <script>
 /* Выбор подачи проектов на мобиле: ?mob=lenta | grid | more. Ставится на <html> ДО отрисовки,
@@ -2038,7 +2048,7 @@
 <!-- Аналитика: GA4 + Яндекс.Метрика + события воронки. Один файл на все страницы. -->
 <script src="analytics.js?v=7fe9358a" defer></script>
 <script>window.PD_LANG='en';</script>
-<script src="data/i18n/en.js?v=ba610005"></script>
+<script src="data/i18n/en.js?v=caff0d67"></script>
 </head>
 <body class="booting">
 
@@ -2312,15 +2322,16 @@
   </div>
 </section>
 
-<!-- ===== СЛАЙД «МУЛЬТИМЕДИЙНОЕ ОБОРУДОВАНИЕ»: вход в справочник /library/ ===== -->
+<!-- ===== ОБОРУДОВАНИЕ: вход в справочник /library/ =====
+     Заголовок и ритм — как у атласа и библиотеки решений: надстрочник, крупный
+     заголовок, подзаголовок. Раздел стоит в одном ряду с ними, значит и выглядеть
+     должен так же, а не по-своему. -->
 <section class="equip sec-pad" id="equipment">
   <div class="wrap">
-    <div class="eq-top">
-      <div class="kicker teal eyebrow">Библиотека оборудования</div>
-      <h2>Мультимедийное оборудование.</h2>
-      <p class="intro-sub">Что каждое реально умеет, где привирают в презентациях и обо что
-        спотыкаются на второй год. Мы это железо не продаём — мы им работаем.</p>
-    </div>
+    <div class="kicker teal eyebrow">Оборудование</div>
+    <h2>Мультимедиа технологии.</h2>
+    <p class="intro-sub">Что каждое реально умеет, где привирают в презентациях и обо что
+      спотыкаются на второй год. Мы это железо не продаём — мы им работаем.</p>
     <div class="eq-nums">
       <div><b>63</b><span>типа оборудования</span></div>
       <div><b>155</b><span>производителей</span></div>
@@ -2331,7 +2342,7 @@
       <li><a class="eq-cat" href="/en/library/input/"><i><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 25.5 H27.5"/><circle cx="16" cy="19.5" r="3"/><path d="M16 4 V11.5 m-2.4 -2.6 L16 11.5 l2.4 -2.6"/><path d="M10 22.5 a8 8 0 0 1 0 -6"/><path d="M22 16.5 a8 8 0 0 1 0 6"/></svg></i><b>Ввод</b><em>Чем человек отвечает экспозиции</em><u>20 позиций →</u></a></li>
       <li><a class="eq-cat" href="/en/library/processing/"><i><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="14" height="14" rx="2.5"/><rect x="13.75" y="13.75" width="4.5" height="4.5" rx="1"/><path d="M13 9 V5 M19 9 V5 M13 23 V27 M19 23 V27 M9 13 H5 M9 19 H5 M23 13 H27 M23 19 H27"/></svg></i><b>Обработка</b><em>То, чего не видно, и на чём всё держится</em><u>19 позиций →</u></a></li>
     </ul>
-    <a class="eq-go" href="/en/library/">Открыть библиотеку <span aria-hidden="true">→</span></a>
+    <a class="eq-go" href="/en/library/">Открыть библиотеку <span aria-hidden="true">&#8594;</span></a>
   </div>
 </section>
 
@@ -2420,8 +2431,18 @@
       </div>
       <div class="panel">
         <div class="ptitle">Пресса</div>
-        <h4>Discovery Channel и не только</h4>
-        <p>О студии рассказывали Discovery Channel и международные технологические программы.</p>
+        <h4>О проектах рассказывали в эфире</h4>
+        <p>Работы студии показывали федеральные каналы и международные технологические программы.</p>
+        <!-- Начертания набраны шрифтом, а не картинками: файлов логотипов в проекте нет,
+             а рисовать чужие знаки по памяти — верный способ ошибиться в пропорциях.
+             Появятся файлы — меняется разметка внутри li, стили остаются. -->
+        <ul class="tv">
+          <li><span>Discovery</span><i>Channel</i></li>
+          <li><span>Первый</span><i>канал</i></li>
+          <li><span>Россия</span><i>24</i></li>
+          <li><span>НТВ</span></li>
+          <li><span>РЕН</span><i>ТВ</i></li>
+        </ul>
       </div>
     </div>
 
@@ -3751,19 +3772,18 @@
   //
   // Контекст создаётся ЛЕНИВО, при первом жесте: браузер не даёт завести звук без
   // действия человека, а перетаскивание как раз им и является.
+  // ЗВУК ПЕРЕТАСКИВАНИЯ ЛЕНТЫ. Было потрескивание на белом шуме — оно читалось
+  // как помеха и «пыль», а лента цифровая. Теперь короткий тон: две синусоиды
+  // октавой, мягкая атака, низкочастотный фильтр. Высота ползёт вверх по ходу
+  // жеста и сбрасывается на новом захвате — получается не метроном, а отклик,
+  // который слышно как движение.
   var pdCrackle = (function(){
-    var ctx = null, noise = null, lastAt = 0;
+    var ctx = null, lastAt = 0, n = 0;
     function ensure(){
       if (ctx) return ctx;
       var AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
       try { ctx = new AC(); } catch (e) { return null; }
-      // Один буфер шума на всё время: генерировать его на каждый щелчок
-      // расточительно, а звучит одинаково — разброс дают фильтр и скорость.
-      var n = Math.floor(ctx.sampleRate * 0.05);
-      noise = ctx.createBuffer(1, n, ctx.sampleRate);
-      var d = noise.getChannelData(0);
-      for (var k = 0; k < n; k++) d[k] = Math.random() * 2 - 1;
       return ctx;
     }
     function tick(){
@@ -3771,25 +3791,33 @@
       var c = ensure(); if (!c) return;
       if (c.state === 'suspended') { try { c.resume(); } catch (e) {} }
       var t = c.currentTime;
-      var src = c.createBufferSource(); src.buffer = noise;
-      src.playbackRate.value = 0.8 + Math.random() * 0.7;
-      var bp = c.createBiquadFilter();
-      bp.type = 'bandpass';
-      bp.frequency.value = 1500 + Math.random() * 1400;
-      bp.Q.value = 0.9;
+      // высота идёт по ступеням пентатоники: соседние тоны не спорят между собой,
+      // поэтому частая череда щелчков не превращается в дребезг
+      var STEPS = [0, 2, 4, 7, 9];
+      var semi = STEPS[n % STEPS.length] + 12 * Math.floor((n % 10) / 5);
+      var f = 660 * Math.pow(2, semi / 12);
+      n++;
+      var lp = c.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 2600; lp.Q.value = 0.4;
       var g = c.createGain();
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.045, t + 0.004);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
-      src.connect(bp); bp.connect(g); g.connect(c.destination);
-      src.start(t); src.stop(t + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.030, t + 0.010);   // мягкая атака, не щелчок
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);   // длинный тихий хвост
+      [[f, 1], [f * 2, 0.32]].forEach(function(v){
+        var o = c.createOscillator();
+        o.type = 'sine'; o.frequency.value = v[0];
+        var og = c.createGain(); og.gain.value = v[1];
+        o.connect(og); og.connect(lp);
+        o.start(t); o.stop(t + 0.18);
+      });
+      lp.connect(g); g.connect(c.destination);
     }
     return {
-      reset: function(){ lastAt = 0; },
-      // step — сколько пикселей пути на один щелчок. Мелкий разброс убирает
-      // машинную ровность: без него звук читается как метроном.
+      reset: function(){ lastAt = 0; n = 0; },
+      // step — сколько пикселей пути на один тон. Шаг крупнее прежнего: мягкий
+      // звук с хвостом не терпит частого повторения, иначе тоны накладываются в гул.
       by: function(dist){
-        var step = 26 + Math.random() * 10;
+        var step = 44 + Math.random() * 14;
         if (Math.abs(dist - lastAt) < step) return;
         lastAt = dist; tick();
       }
@@ -3832,17 +3860,21 @@
     var x = 0, speed = 0, want = 0, half = 0, raf = 0, live = true, rolling = false;
     var SPEED = 0.55;                     // пикселей за кадр, около 33 px/с
     var SLOW = SPEED * 0.14;              // под курсором лента не встаёт, а еле ползёт
+    // Куда лента едет сама. 1 — влево (как было изначально), -1 — вправо.
+    // Меняется на отпускании после перетаскивания: человек показал рукой, в какую
+    // сторону ему интересно, и лента продолжает туда же, а не отыгрывает назад.
+    var dir = 1;
     function roll(){
       if (reduce) return;
-      rolling = true; want = SPEED;
-      strip.addEventListener('pointerenter', function(){ want = SLOW; kick(); });
-      strip.addEventListener('pointerleave', function(){ want = SPEED; kick(); });
+      rolling = true; want = SPEED * dir;
+      strip.addEventListener('pointerenter', function(){ want = SLOW * dir; kick(); });
+      strip.addEventListener('pointerleave', function(){ want = SPEED * dir; kick(); });
       // на тач-экранах наведения нет: касание замедляет ленту на время жеста
-      strip.addEventListener('pointerdown', function(e){ if (e.pointerType === 'touch') { want = SLOW; kick(); } });
-      strip.addEventListener('pointerup', function(e){ if (e.pointerType === 'touch') { want = SPEED; kick(); } });
+      strip.addEventListener('pointerdown', function(e){ if (e.pointerType === 'touch') { want = SLOW * dir; kick(); } });
+      strip.addEventListener('pointerup', function(e){ if (e.pointerType === 'touch') { want = SPEED * dir; kick(); } });
       // клик по логотипу не должен оставлять ленту стоять: на всякий случай
       // возвращаем ход, даже если уход курсора почему-то не пришёл
-      strip.addEventListener('click', function(){ setTimeout(function(){ want = SPEED; kick(); }, 900); });
+      strip.addEventListener('click', function(){ setTimeout(function(){ want = SPEED * dir; kick(); }, 900); });
       kick();
     }
     function step(){
@@ -3904,6 +3936,11 @@
       try { strip.releasePointerCapture(e.pointerId); } catch (err) {}
       // Бросок ограничиваем: резкий рывок мышью иначе швыряет ленту через пол-экрана.
       speed = Math.max(-42, Math.min(42, -dVel));
+      // Куда тянули, туда лента и поедет дальше. Цикл делает x -= speed, поэтому
+      // тяга вправо (dVel > 0) — это отрицательная скорость, то есть dir = -1.
+      // Порог в 2 px/кадр: короткий тычок без намерения направление не меняет.
+      if (Math.abs(dVel) > 2) dir = dVel > 0 ? -1 : 1;
+      want = SPEED * dir;
       rolling = true; kick();
     }
     strip.addEventListener('pointerup', endDrag);
@@ -6002,13 +6039,33 @@
         if (host && (host.classList.contains('v-scrub') || host.classList.contains('v-alpha-top'))) return;
         v.muted = !on;
       });
-      tellScene(on);
+      tellScene(on && heroSeen);   // включить сцену вне первого экрана нечему
       paint();
     });
     paint();
     // сцена поднимается позже — сообщаем ей состояние, когда она готова
-    addEventListener('message', function(e){ if (e.data && e.data.pdReady) tellScene(soundOn()); });
-    addEventListener('load', function(){ tellScene(soundOn()); });
+    addEventListener('message', function(e){ if (e.data && e.data.pdReady) tellScene(soundOn() && heroSeen); });
+    addEventListener('load', function(){ tellScene(soundOn() && heroSeen); });
+
+    // ЗВУК СЦЕНЫ СЛЫШЕН ТОЛЬКО НА ПЕРВОМ ЭКРАНЕ. Дальше по странице свои смыслы —
+    // проекты, концепции, атлас, — и фон из шапки становится шумом за спиной:
+    // человек его не связывает ни с чем, что видит. Уехал первый экран — гасим,
+    // вернулся — возвращаем. Выключатель в шапке при этом главнее: если человек
+    // выключил звук сам, обратно он не включится.
+    var heroSeen = true;
+    var hero = document.getElementById('start');
+    if (hero && window.IntersectionObserver) {
+      heroSeen = false;
+      new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if (e.isIntersecting === heroSeen) return;   // состояние не изменилось
+          heroSeen = e.isIntersecting;
+          tellScene(soundOn() && heroSeen);
+        });
+      // порог 0.15: пока видна хотя бы шестая часть экрана, сцена ещё «здесь».
+      // Нулевой порог гасил бы звук от полоски в пару пикселей.
+      }, { threshold: 0.15 }).observe(hero);
+    }
   })();
 
   function armSound(){

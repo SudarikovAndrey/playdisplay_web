@@ -14,7 +14,10 @@ PHP этот сервер не исполняет: панель AI-ассист�
 import http.server, os, re, socketserver, sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'site')
-PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
+# Порт: аргумент → переменная среды PORT → 8000. Средняя ступень нужна
+# предпросмотру из редактора: он сам подбирает свободный порт и передаёт его
+# через PORT, потому что 8000 часто уже занят вручную запущенным сервером.
+PORT = int(sys.argv[1]) if len(sys.argv) > 1 else int(os.environ.get('PORT') or 8000)
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):

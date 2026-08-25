@@ -122,7 +122,7 @@ window.PD_I18N = {
  "Discovery Channel и не только": "Discovery Channel and beyond",
  "География": "Geography",
  "Работаем по всему миру": "We work worldwide",
- "Россия": "Russia",
+ "Россия": "Rossiya",
  "Кипр": "Cyprus",
  "Бразилия": "Brazil",
  "Следующий шаг": "Next step",
@@ -424,5 +424,12 @@ window.PD_I18N = {
  "То, чего не видно, и на чём всё держится": "What nobody sees and everything rests on",
  "24 позиции →": "24 entries →",
  "20 позиций →": "20 entries →",
- "19 позиций →": "19 entries →"
+ "19 позиций →": "19 entries →",
+ "О проектах рассказывали в эфире": "Our projects have been on air",
+ "Работы студии показывали федеральные каналы и международные технологические программы.": "The studio's work has been featured by national broadcasters and international technology programmes.",
+ "Первый": "Perviy",
+ "канал": "Kanal",
+ "НТВ": "NTV",
+ "РЕН": "REN",
+ "ТВ": "TV"
 };
