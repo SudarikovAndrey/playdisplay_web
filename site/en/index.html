@@ -2952,16 +2952,28 @@
     ['wheel', 'touchstart', 'keydown'].forEach(function(t){
       addEventListener(t, function(){ stop = true; }, { passive: true, once: true });
     });
+    // ПРЫГАЕМ МГНОВЕННО, сняв плавность на кадр. У html включён scroll-behavior:smooth,
+    // и обычный scrollIntoView запускает анимацию: следующая попытка через четверть
+    // секунды перезапускала её с полпути, и до цели страница не доезжала никогда.
+    // Тот же приём применяет замок прокрутки, когда возвращает позицию после кейса.
+    function jump(){
+      var html = document.documentElement, prev = html.style.scrollBehavior;
+      html.style.scrollBehavior = 'auto';
+      el.scrollIntoView({ block: 'start' });
+      requestAnimationFrame(function(){ html.style.scrollBehavior = prev; });
+    }
     function go(){
       if (stop) return;
       tries++;
-      el.scrollIntoView({ block: 'start' });
+      jump();
       var settled = Math.abs(el.getBoundingClientRect().top) < 90;
       if (settled && book && !opened && window.pdBook) {
         opened = true;
         try { window.pdBook.open(); } catch (e) {}
       }
-      // заставка держится до готовности сцены; повторяем, пока не встанем на место
+      // Пока держится заставка, body лежит position:fixed и прокрутка невозможна;
+      // на снятии замка страница ещё и возвращается на сохранённый ноль. Поэтому
+      // повторяем, пока не встанем на место, но не дольше десяти секунд.
       if ((!settled || (book && !opened)) && tries < 40) setTimeout(go, 250);
     }
     addEventListener('load', function(){ setTimeout(go, 80); });
