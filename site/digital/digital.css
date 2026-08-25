@@ -891,6 +891,14 @@ button.mind-node { appearance: none; cursor: pointer; }
     radial-gradient(circle at 88% 18%, rgba(111,134,255,.16), transparent 30%),
     linear-gradient(135deg, rgba(255,255,255,.045), rgba(10,21,28,.96));
 }
+.mind-node--category > small {
+  max-height: 0;
+  margin-top: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(9px);
+  transition: max-height 1.1s cubic-bezier(.12,.78,.18,1), margin 1.1s cubic-bezier(.12,.78,.18,1), opacity .55s ease, transform .9s cubic-bezier(.12,.78,.18,1);
+}
 .mind-node__icon {
   position: absolute;
   top: 17px;
@@ -921,7 +929,15 @@ button.mind-node { appearance: none; cursor: pointer; }
 .mind-node__icon[data-icon="idea"]::after { left: 13px; top: 26px; width: 9px; height: 4px; border-top: 1px solid currentColor; border-bottom: 1px solid currentColor; }
 .mind-node--category.is-selected {
   z-index: 5;
+  width: 310px;
+  min-height: 182px;
   box-shadow: 0 0 0 1px rgba(111,134,255,.8), 0 22px 70px rgba(35,70,255,.32);
+}
+.mind-node--category.is-selected > small {
+  max-height: 100px;
+  margin-top: 10px;
+  opacity: 1;
+  transform: translateY(0);
 }
 .mind-node--category > span { color: #d8a091; }
 .mind-node--category > strong { font-size: 15px; }

@@ -375,11 +375,13 @@
     var cameraRun = 0;
     var pointerParallax = { x: 0, y: 0 };
     var spaceReactionTimer = 0;
+    var panLimits = null;
+    var enforcingPan = false;
     var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     var catalog = [
       {
-        id: 'product', title: 'Продукт или физический объект', note: 'Упаковка, техника, автомобиль, дом, материал или комплектующая — всё, что человек выбирает, покупает и использует.', image: '../assets/concepts/floating-object/thumb.jpg',
+        id: 'product', title: 'Ваш продукт или физический объект', note: 'Упаковка, техника, автомобиль, дом, материал или комплектующая — всё, что человек выбирает, покупает и использует.', image: '../assets/concepts/floating-object/thumb.jpg',
         benefits: [
           ['Раскрывает ценность', 'Объясняет состав, происхождение, свойства и устройство продукта.'],
           ['Отвечает на вопросы', 'Помогает выбрать, использовать, установить или обслуживать продукт.'],
@@ -397,7 +399,7 @@
         ]
       },
       {
-        id: 'event', title: 'Событие и его аудитория', note: 'Выставка, форум, курс, концерт или частное мероприятие — очно, онлайн или в гибридном формате.', image: 'assets/youth.jpg',
+        id: 'event', title: 'Ваше событие и его аудитория', note: 'Выставка, форум, курс, концерт или частное мероприятие — очно, онлайн или в гибридном формате.', image: 'assets/youth.jpg',
         benefits: [
           ['Готовит участника', 'Знакомит с темой, программой и возможностями до начала события.'],
           ['Строит личный маршрут', 'Выбирает релевантные темы, людей, стенды и активности.'],
@@ -415,7 +417,7 @@
         ]
       },
       {
-        id: 'place', title: 'Место и посетители', note: 'Музей, школа, офис продаж, кампус или торговый центр, где человеку важно сориентироваться и включиться.', image: '../assets/concepts/living-interior/thumb.jpg',
+        id: 'place', title: 'Ваше место и его посетители', note: 'Музей, школа, офис продаж, кампус или торговый центр, где человеку важно сориентироваться и включиться.', image: '../assets/concepts/living-interior/thumb.jpg',
         benefits: [
           ['Помогает ориентироваться', 'Показывает пространство, маршруты, сервисы и точки интереса.'],
           ['Раскрывает объекты', 'Даёт каждому месту и предмету собственную историю и функцию.'],
@@ -433,7 +435,7 @@
         ]
       },
       {
-        id: 'person', title: 'Эксперт или публичная персона', note: 'Специалист, врач, художник, политик или мастер, чьи знания, подход и образ важно передать аудитории.', image: '../assets/concepts/art-portrait/thumb.jpg',
+        id: 'person', title: 'Ваш образ: эксперт или публичная персона', note: 'Специалист, врач, художник, политик или мастер, чьи знания, подход и образ важно передать аудитории.', image: '../assets/concepts/art-portrait/thumb.jpg',
         benefits: [
           ['Масштабирует присутствие', 'Человек может знакомить и консультировать аудиторию круглосуточно.'],
           ['Передаёт экспертизу', 'Сохраняет знания, подход, язык и авторскую позицию.'],
@@ -451,7 +453,7 @@
         ]
       },
       {
-        id: 'organization', title: 'Организация или бренд', note: 'Компания, учреждение, фонд или сообщество с разными аудиториями, сервисами и точками взаимодействия.', image: '../assets/concepts/control-center/thumb.jpg',
+        id: 'organization', title: 'Ваша организация или бренд', note: 'Компания, учреждение, фонд или сообщество с разными аудиториями, сервисами и точками взаимодействия.', image: '../assets/concepts/control-center/thumb.jpg',
         benefits: [
           ['Создаёт единый вход', 'Объединяет продукты, сервисы, знания и возможности организации.'],
           ['Говорит с разными людьми', 'Адаптирует содержание под клиента, сотрудника, партнёра или кандидата.'],
@@ -469,7 +471,7 @@
         ]
       },
       {
-        id: 'program', title: 'Программа или процесс', note: 'Государственная инициатива, корпоративная программа, рекламная акция или путь к конкретному результату.', image: '../assets/concepts/team-mission/thumb.jpg',
+        id: 'program', title: 'Ваша программа или процесс', note: 'Государственная инициатива, корпоративная программа, рекламная акция или путь к конкретному результату.', image: '../assets/concepts/team-mission/thumb.jpg',
         benefits: [
           ['Объясняет условия', 'Переводит сложную программу на понятный язык и показывает возможности.'],
           ['Определяет потребность', 'Понимает ситуацию человека и проверяет, что ему подходит.'],
@@ -487,7 +489,7 @@
         ]
       },
       {
-        id: 'idea', title: 'Идея, знание или явление', note: 'Технология, история, теория или общественная тема, которую трудно понять через обычное линейное описание.', image: '../assets/concepts/ar-xray/thumb.jpg',
+        id: 'idea', title: 'Ваша тема: идея, знание или явление', note: 'Технология, история, теория или общественная тема, которую трудно понять через обычное линейное описание.', image: '../assets/concepts/ar-xray/thumb.jpg',
         benefits: [
           ['Делает абстрактное наглядным', 'Показывает связи, причины, устройство и скрытые процессы.'],
           ['Настраивает сложность', 'Объясняет одну тему по-разному новичку и специалисту.'],
@@ -785,20 +787,47 @@
 
     function pointBounds(points) {
       return points.reduce(function (bounds, point) {
-        bounds.left = Math.min(bounds.left, point.x - 145);
-        bounds.right = Math.max(bounds.right, point.x + 145);
-        bounds.top = Math.min(bounds.top, point.y - 72);
-        bounds.bottom = Math.max(bounds.bottom, point.y + 72);
+        bounds.left = Math.min(bounds.left, point.x - 235);
+        bounds.right = Math.max(bounds.right, point.x + 235);
+        bounds.top = Math.min(bounds.top, point.y - 135);
+        bounds.bottom = Math.max(bounds.bottom, point.y + 135);
         return bounds;
       }, { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity });
     }
 
+    function calculatePanLimits(points) {
+      var bounds = pointBounds(points);
+      var padding = viewport.clientWidth <= 760 ? 42 : 86;
+      var contentWidth = bounds.right - bounds.left;
+      var contentHeight = bounds.bottom - bounds.top;
+      var maximumStageLeft = Math.max(0, stage.offsetWidth - viewport.clientWidth);
+      var maximumStageTop = Math.max(0, stage.offsetHeight - viewport.clientHeight);
+      var fitsX = contentWidth + padding * 2 <= viewport.clientWidth;
+      var fitsY = contentHeight + padding * 2 <= viewport.clientHeight;
+      var centeredLeft = (bounds.left + bounds.right - viewport.clientWidth) / 2;
+      var centeredTop = (bounds.top + bounds.bottom - viewport.clientHeight) / 2;
+      return {
+        left: Math.max(0, fitsX ? centeredLeft : bounds.left - padding),
+        right: Math.min(maximumStageLeft, fitsX ? centeredLeft : bounds.right + padding - viewport.clientWidth),
+        top: Math.max(0, fitsY ? centeredTop : bounds.top - padding),
+        bottom: Math.min(maximumStageTop, fitsY ? centeredTop : bounds.bottom + padding - viewport.clientHeight),
+        fits: fitsX && fitsY
+      };
+    }
+
+    function limitPan(left, top) {
+      if (!panLimits) return { left: left, top: top };
+      return {
+        left: Math.max(panLimits.left, Math.min(panLimits.right, left)),
+        top: Math.max(panLimits.top, Math.min(panLimits.bottom, top))
+      };
+    }
+
     function updatePanState(points) {
       if (!points.length) return;
-      var bounds = pointBounds(points);
-      var fits = bounds.right - bounds.left <= viewport.clientWidth - 36 && bounds.bottom - bounds.top <= viewport.clientHeight - 36;
-      viewport.classList.toggle('is-static', fits);
-      viewport.setAttribute('aria-label', fits ? 'Интерактивная карта цифрового слоя' : 'Перемещаемая карта цифрового слоя');
+      panLimits = calculatePanLimits(points);
+      viewport.classList.toggle('is-static', panLimits.fits);
+      viewport.setAttribute('aria-label', panLimits.fits ? 'Интерактивная карта цифрового слоя' : 'Перемещаемая карта цифрового слоя');
     }
 
     function arePointsVisible(points) {
@@ -841,10 +870,9 @@
     }
 
     function moveCamera(left, top) {
-      var maximumLeft = Math.max(0, stage.offsetWidth - viewport.clientWidth);
-      var maximumTop = Math.max(0, stage.offsetHeight - viewport.clientHeight);
-      var targetLeft = Math.max(0, Math.min(maximumLeft, left));
-      var targetTop = Math.max(0, Math.min(maximumTop, top));
+      var limited = limitPan(left, top);
+      var targetLeft = limited.left;
+      var targetTop = limited.top;
       var startLeft = viewport.scrollLeft;
       var startTop = viewport.scrollTop;
       var distance = Math.hypot(targetLeft - startLeft, targetTop - startTop);
@@ -1085,8 +1113,9 @@
       updateMapParallax();
       if (!drag) return;
       if (Math.abs(event.clientX - drag.x) + Math.abs(event.clientY - drag.y) > 7) drag.moved = true;
-      viewport.scrollLeft = drag.left - (event.clientX - drag.x);
-      viewport.scrollTop = drag.top - (event.clientY - drag.y);
+      var limited = limitPan(drag.left - (event.clientX - drag.x), drag.top - (event.clientY - drag.y));
+      viewport.scrollLeft = limited.left;
+      viewport.scrollTop = limited.top;
     });
     viewport.addEventListener('pointerleave', function () {
       pointerParallax = { x: 0, y: 0 };
@@ -1104,7 +1133,18 @@
       if (suppressCanvasClick || event.target.closest('.mind-node')) return;
       collapsePreviousStep();
     });
-    viewport.addEventListener('scroll', updateMapParallax, { passive: true });
+    viewport.addEventListener('scroll', function () {
+      if (!enforcingPan) {
+        var limited = limitPan(viewport.scrollLeft, viewport.scrollTop);
+        if (Math.abs(limited.left - viewport.scrollLeft) > .5 || Math.abs(limited.top - viewport.scrollTop) > .5) {
+          enforcingPan = true;
+          viewport.scrollLeft = limited.left;
+          viewport.scrollTop = limited.top;
+          enforcingPan = false;
+        }
+      }
+      updateMapParallax();
+    }, { passive: true });
     viewport.addEventListener('keydown', function (event) {
       if (viewport.classList.contains('is-static')) return;
       var moves = { ArrowLeft: [-90, 0], ArrowRight: [90, 0], ArrowUp: [0, -90], ArrowDown: [0, 90] };
@@ -1166,7 +1206,9 @@
         horizontalDelta += verticalDelta;
         verticalDelta = 0;
       }
-      viewport.scrollBy({ left: horizontalDelta, top: verticalDelta, behavior: 'auto' });
+      var limited = limitPan(viewport.scrollLeft + horizontalDelta, viewport.scrollTop + verticalDelta);
+      viewport.scrollLeft = limited.left;
+      viewport.scrollTop = limited.top;
     }, { passive: false, capture: true });
 
     document.addEventListener('keydown', function (event) {
