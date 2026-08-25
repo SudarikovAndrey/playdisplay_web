@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#030c10">
-  <meta name="description" content="Playdisplay создает цифровые слои для событий, программ и сложных идей: AI-ассистенты, виртуальные пространства, игры, библиотеки и интерактивные объекты.">
+  <meta name="description" content="Цифровой слой — интерактивная среда вокруг продукта, события, места, человека, программы или идеи. Объясняет, отвечает, вовлекает и ведёт к действию.">
   <link rel="canonical" href="https://playdisplay.com/digital/">
   <meta property="og:title" content="Цифровой слой — Playdisplay">
-  <meta property="og:description" content="AI-ассистенты, виртуальные пространства, игры, библиотеки и интерактивные объекты для событий, программ и сложных идей.">
+  <meta property="og:description" content="Интерактивная среда вокруг реального или абстрактного объекта: AI, знания, игры, виртуальные пространства и сервисы.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://playdisplay.com/digital/">
-  <title>Цифровой слой для событий и сложных идей — Playdisplay</title>
+  <title>Цифровой слой — интерактивная среда вокруг объектов и идей | Playdisplay</title>
   <!-- Шрифты у нас, не с fonts.googleapis.com (15.08.2026) — см. assets/fonts/fonts.css -->
   <!-- Иконка вкладки. Пути от корня домена, как на остальных страницах сайта -->
   <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="../kit/css/typography.css?v=720384aa">
   <link rel="stylesheet" href="../kit/css/components.css?v=6e5b4ea3">
   <link rel="stylesheet" href="../kit/css/animations.css?v=8019a710">
-  <link rel="stylesheet" href="digital.css">
+  <link rel="stylesheet" href="digital.css?v=20260824h">
 </head>
 <body>
   <div class="boot" id="boot">
@@ -44,59 +44,110 @@
     <div class="book-mark"><span>Цифровой слой</span><span>Interactive Experience</span></div>
   </header>
 
-  <nav class="chapter-nav" aria-label="Навигация по разделам">
-    <a href="#s01" data-section="s01" aria-label="Что это"><span>01</span><small>Что это</small></a>
-    <a href="#s02" data-section="s02" aria-label="Первый продукт"><span>02</span><small>Пилот</small></a>
-    <a href="#s03" data-section="s03" aria-label="Состав решения"><span>03</span><small>Состав</small></a>
-    <a href="#s04" data-section="s04" aria-label="Примеры"><span>04</span><small>Примеры</small></a>
-    <a href="#s05" data-section="s05" aria-label="Почему Playdisplay"><span>05</span><small>Запуск</small></a>
+  <button class="site-menu-toggle" id="siteMenuToggle" type="button" aria-expanded="false" aria-controls="siteMenu" aria-label="Открыть меню">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="site-menu-scrim" id="siteMenuScrim" aria-hidden="true"></div>
+
+  <nav class="chapter-nav" id="siteMenu" aria-label="Навигация по разделам">
+    <a href="#intro" data-section="intro" aria-label="Что такое цифровой слой"><span>01</span><small>Суть</small></a>
+    <a href="#s03" data-section="s03" aria-label="Карта цифрового слоя"><span>02</span><small>Карта</small></a>
+    <a href="#s01" data-section="s01" aria-label="Как это работает"><span>03</span><small>Связь</small></a>
+    <a href="#s02" data-section="s02" aria-label="Первый продукт"><span>04</span><small>Пилот</small></a>
+    <a href="#s04" data-section="s04" aria-label="Примеры"><span>05</span><small>Примеры</small></a>
+    <a href="#s05" data-section="s05" aria-label="Почему Playdisplay"><span>06</span><small>Запуск</small></a>
     <p class="nav-legal">© Playdisplay</p>
   </nav>
 
   <main id="top">
-    <section class="hero">
-      <div class="hero-noise" aria-hidden="true"></div>
-      <div class="hero-orbit orbit-a" aria-hidden="true"></div>
-      <div class="hero-orbit orbit-b" aria-hidden="true"></div>
-      <div class="hero-sphere" aria-hidden="true"></div>
-      <div class="hero-intro">
-        <div class="hero-copy reveal">
-          <h1 data-particle-attract>
-            <span class="l1" data-parallax="0.075">ЦИФРОВОЙ</span>
-            <span class="l2" data-parallax="0.05">СЛОЙ</span>
-          </h1>
-          <p class="hero-statement hero-statement--float" data-parallax="0.04">Превращаем просмотр в глубокое понимание, личное участие и действие.</p>
+
+    <section id="intro" class="layer-hero" data-chapter="01">
+      <div class="layer-hero__sticky" data-layer-transition>
+        <div class="layer-hero__copy">
+          <h1>Цифровой<br><strong>слой</strong></h1>
+          <p class="layer-hero__statement">
+            <span>интерактивная среда, которая</span>
+            <button type="button" data-layer-word aria-live="polite" aria-label="Сменить слово">объясняет</button>
+          </p>
         </div>
-        <div class="hero-actions">
-          <button class="action action--primary" type="button" data-open-brief>Обсудить проект</button>
+
+        <div class="layer-hero__visual" data-layer-visual>
+          <div class="layer-hero__points" data-layer-points></div>
+          <div class="layer-hero__orbit layer-hero__orbit--one"></div>
+          <div class="layer-hero__orbit layer-hero__orbit--two"></div>
+          <button class="layer-hero__core" type="button" data-layer-core aria-label="Открыть схему цифрового слоя">
+            <i class="point-sphere" data-point-sphere aria-hidden="true"></i>
+            <span>Цифровой</span>
+            <strong>слой</strong>
+            <em>Применение</em>
+          </button>
+          <span class="layer-hero__stage layer-hero__stage--entry"><b>01</b> Вход</span>
+          <span class="layer-hero__stage layer-hero__stage--meaning"><b>02</b> Понимание</span>
+          <span class="layer-hero__stage layer-hero__stage--dialog"><b>03</b> Диалог</span>
+          <span class="layer-hero__stage layer-hero__stage--action"><b>04</b> Участие</span>
+          <span class="layer-hero__stage layer-hero__stage--relation"><b>05</b> Связь</span>
         </div>
-        <a class="scroll-cue" href="#s01"><span>Как это работает</span><i></i></a>
+
+        <p class="layer-hero__formula">AI · знания · интерактив · сервисы</p>
       </div>
     </section>
 
-    <section class="opening-statement">
-      <p class="reveal" data-parallax="0.012">Глубокое понимание.</p>
-      <p class="reveal" data-parallax="0.026">Личное участие и действие.</p>
+    <section id="s03" class="chapter feature mindmap-chapter" data-chapter="02">
+      <div class="chapter-shell">
+        <article class="chapter-copy">
+          <div class="digital-mindmap" data-digital-mindmap data-map-state="root">
+            <header class="digital-mindmap__bar">
+              <div class="digital-mindmap__intro">
+                <span class="digital-mindmap__eyebrow">Интерактивная карта</span>
+                <h1>Цифровой слой</h1>
+                <p>Выберите, вокруг чего он создаётся, — и раскройте ценность и состав решения.</p>
+                <p class="digital-mindmap__path" data-map-path>Цифровой слой</p>
+              </div>
+              <div class="digital-mindmap__controls">
+                <button type="button" data-map-back hidden>Назад</button>
+                <button type="button" data-map-reset hidden>В начало</button>
+              </div>
+            </header>
+
+            <div class="digital-mindmap__viewport" data-map-viewport tabindex="0" aria-label="Перемещаемая карта цифрового слоя">
+              <div class="digital-mindmap__stage" data-map-stage>
+                <svg class="digital-mindmap__lines" data-map-lines width="5000" height="3600" viewBox="0 0 5000 3600" aria-hidden="true"></svg>
+                <div class="digital-mindmap__nodes" data-map-nodes>
+                  <button class="mind-node mind-node--root is-visible" type="button" data-map-root style="--x:2400px;--y:1800px;left:2400px;top:1800px">
+                    <i class="point-sphere" data-point-sphere aria-hidden="true"></i>
+                    <span>Цифровой</span>
+                    <strong>слой</strong>
+                    <small>Применение</small>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <footer class="digital-mindmap__footer">
+              <p data-map-help>Выберите направление и раскройте следующий уровень.</p>
+              <a href="#s01">Ниже — как это работает <span aria-hidden="true">↓</span></a>
+            </footer>
+            <p class="sr-only" data-map-live aria-live="polite"></p>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <section id="s01" class="chapter" data-chapter="01">
+    <section id="s01" class="chapter" data-chapter="03">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">01</span>
+          <span class="chapter-number">03</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Определение</span>
         </header>
         <article class="chapter-copy">
-          <h2>Среда для понимания и действия</h2>
-          <p class="pull">Цифровое пространство вокруг объекта, события, явления, идеи или программы.</p>
-          <p>Оно помогает человеку понять смысл, исследовать тему, задать вопросы и перейти к действию.</p>
-          <p>Цифровой слой дополняет реальный мир, сопровождает событие или становится самостоятельным виртуальным опытом для удалённой аудитории.</p>
-          <p><strong>Все элементы работают как единый опыт:</strong> содержание, персональный маршрут, AI-диалог, интерактивное действие и продолжение контакта.</p>
+          <h2>Как цифровой слой строит отношения</h2>
+          <p class="pull">Цифровой слой узнаёт потребность человека, помогает ему включиться и продолжает отношения после первого взаимодействия.</p>
           <div class="relationship-model" aria-label="Как цифровой слой развивает отношения с человеком">
             <header class="relationship-model__head">
               <span>Логика взаимодействия</span>
               <h3>От контакта — к устойчивой связи</h3>
-              <p>Цифровой слой постепенно превращает первый контакт в устойчивую связь с человеком.</p>
+              <p>От первого входа — к пониманию потребностей, полезному диалогу и долгим отношениям.</p>
             </header>
             <ol class="relationship-model__steps">
               <li>
@@ -130,10 +181,10 @@
       </div>
     </section>
 
-    <section id="s02" class="chapter chapter--wide" data-chapter="02">
+    <section id="s02" class="chapter chapter--wide" data-chapter="04">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">02</span>
+          <span class="chapter-number">04</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Первый продукт</span>
         </header>
@@ -154,62 +205,16 @@
       </div>
     </section>
 
-    <section id="s03" class="chapter feature" data-chapter="03">
+    <section id="s04" class="chapter chapter--wide" data-chapter="05">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">03</span>
-          <span class="chapter-rule"></span>
-          <span class="chapter-meta">Состав решения</span>
-        </header>
-        <article class="chapter-copy">
-          <h2>Карта цифрового слоя</h2>
-          <p class="pull">Один принцип — разные сценарии для продукта, события, места, человека, организации, программы или сложной идеи.</p>
-
-          <div class="digital-mindmap" data-digital-mindmap>
-            <header class="digital-mindmap__bar">
-              <div>
-                <span class="digital-mindmap__eyebrow">Интерактивная карта</span>
-                <p class="digital-mindmap__path" data-map-path>Цифровой слой</p>
-              </div>
-              <div class="digital-mindmap__controls">
-                <button type="button" data-map-back hidden>Назад</button>
-                <button type="button" data-map-reset hidden>В начало</button>
-              </div>
-            </header>
-
-            <div class="digital-mindmap__viewport" data-map-viewport tabindex="0" aria-label="Перемещаемая карта цифрового слоя">
-              <div class="digital-mindmap__stage" data-map-stage>
-                <svg class="digital-mindmap__lines" data-map-lines width="1800" height="1120" viewBox="0 0 1800 1120" aria-hidden="true"></svg>
-                <div class="digital-mindmap__nodes" data-map-nodes>
-                  <button class="mind-node mind-node--root is-visible" type="button" data-map-root style="--x:900px;--y:560px;left:900px;top:560px">
-                    <span>Цифровой</span>
-                    <strong>слой</strong>
-                    <small>Нажмите, чтобы раскрыть</small>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <footer class="digital-mindmap__footer">
-              <p data-map-help>Нажмите на центральный круг. Карту можно двигать мышью или пальцем.</p>
-              <span>Выбор ветки меняет содержание карты</span>
-            </footer>
-            <p class="sr-only" data-map-live aria-live="polite"></p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="s04" class="chapter chapter--wide" data-chapter="04">
-      <div class="chapter-shell">
-        <header class="chapter-header reveal">
-          <span class="chapter-number">04</span>
+          <span class="chapter-number">05</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Примеры</span>
         </header>
         <article class="chapter-copy">
           <h2>Три сценария применения</h2>
-          <p>Цифровой слой работает с физическим пространством, полностью виртуальным опытом или сложным содержанием. Видеоряд — из реализованных проектов Playdisplay.</p>
+          <p>Физическое пространство, удалённое участие и сложное содержание — три базовых сценария.</p>
           <div class="case-media-grid">
             <article class="media-case">
               <figure class="art-frame">
@@ -249,10 +254,10 @@
       </div>
     </section>
 
-    <section id="s05" class="chapter" data-chapter="05">
+    <section id="s05" class="chapter" data-chapter="06">
       <div class="chapter-shell">
         <header class="chapter-header reveal">
-          <span class="chapter-number">05</span>
+          <span class="chapter-number">06</span>
           <span class="chapter-rule"></span>
           <span class="chapter-meta">Playdisplay</span>
         </header>
@@ -348,6 +353,6 @@
   <script defer src="../kit/js/lists.js?v=8493dc93"></script>
   <script defer src="../kit/js/hotspots.js?v=5b3c99e7"></script>
   <script defer src="../kit/js/ui.js?v=a37ebc4f"></script>
-  <script defer src="digital.js"></script>
+  <script defer src="digital.js?v=20260824h"></script>
 </body>
 </html>
