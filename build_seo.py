@@ -1495,17 +1495,25 @@ LIB_CSS = CNC_CSS + '''
            line-height:1.5; color:#c8d8e2; }
   .gb li:before { position:absolute; left:0; top:0; font-weight:700; }
   .gb .good li:before { content:"+"; color:#2be0c6; }
-  .gb .bad  li:before { content:"\2013"; color:#ff6a3d; }
+  .gb .bad  li:before { content:"–"; color:#ff6a3d; }
 
   .call { margin:0 0 16px; padding:13px 16px; border-left:2px solid #2be0c6;
           background:rgba(43,224,198,.05); color:#c8d8e2; font-size:15.5px;
           line-height:1.55; max-width:60ch; }
+  /* Подпись врезки — ТОЛЬКО первый b. Правило потерялось при перестройке карточек,
+     и «Принцип категории» слипался со следующим словом. По всем b бить нельзя:
+     выделения внутри текста сравнения превратятся в такие же капсовые заголовки. */
+  .call > b:first-child { display:block; font:500 11px/1 monospace; letter-spacing:.16em;
+          text-transform:uppercase; color:#2be0c6; margin-bottom:8px; }
+  .call b { color:#fff; }
+  .call.hw, .call.warn { border-left-color:#ff6a3d; background:rgba(255,106,61,.06); }
+  .call.hw > b:first-child, .call.warn > b:first-child { color:#ff6a3d; }
   .li-foot .brands { margin-top:20px; padding-top:16px;
                      border-top:1px solid rgba(159,180,200,.15); }
   .li-foot .brands ul { gap:7px; }
   .li-foot .brands li { max-width:none; padding:7px 12px; }
   .libcase { margin:14px 0 0; font-size:15px; }
-  .libcase:before { content:"\2192"; color:#2be0c6; margin-right:.5em; }
+  .libcase:before { content:"→"; color:#2be0c6; margin-right:.5em; }
 
   /* Планшет: колонки складываются, рейка уходит строкой над заголовком */
   @media (max-width:900px) {
@@ -1518,7 +1526,6 @@ LIB_CSS = CNC_CSS + '''
   }
   .libempty { color:#9fb4c8; padding:30px 0; }
 
-  @media (max-width:900px) { .libgrid { grid-template-columns:1fr; } }
   /* На телефоне семь кнопок переносились в четыре ряда, и липкая панель съедала
      треть экрана. Лентой с горизонтальной прокруткой она остаётся в одну строку.
      Полосу прокрутки прячем: её место дороже, чем подсказка о ней, — а то, что
@@ -1543,19 +1550,38 @@ LIB_CSS = CNC_CSS + '''
   .brands li:hover { border-color:#2be0c6; }
   .brands a { text-decoration:none; font-weight:600; font-size:15.5px; }
   .brands span { display:block; color:#9fb4c8; font-size:13.5px; line-height:1.45; margin-top:3px; }
-  .libcase { margin:16px 0 0; font-size:15.5px; }
-  .libcase:before { content:"\\2192"; color:#2be0c6; margin-right:.5em; }
-
-  @media (max-width:720px) {
-    .gb { grid-template-columns:1fr; gap:0; }
-    .gb > div { margin-bottom:14px; }
-    .libnav { font-size:12px; gap:6px 14px; }
-  }
 '''
 
 LIB_PAGE = ATLAS_PAGE.replace(
     '<nav class="crumbs"><a href="{home}">playdisplay</a> / {title}</nav>',
     '<nav class="crumbs"><a href="{home}">playdisplay</a> / {crumb} {title}</nav>')
+
+
+# Висяки в заголовках. Союз, предлог или частица не должны оставаться в конце
+# строки: заголовок ломается по случайной ширине, а не по смыслу. Приклеиваем их
+# к следующему слову неразрывным пробелом. Правило кита (site/kit/blocks.json),
+# и в заголовках библиотеки оно было нарушено: «...экспозиция говорит с / человеком».
+# Только заголовки и подзаголовки: в абзаце перенос не так заметен, а неразрывных
+# пробелов там набралось бы на каждой строке.
+NBSP_RU = ('в во на с со к ко о об обо у за из изо от ото по при над под про для без '
+           'через между и а но да или же ли бы не ни что как чем чтобы то ведь уже ещё').split()
+NBSP_EN = ('a an the in on at to of for and or but with by from as is it we you our your '
+           'no not its their this that').split()
+
+
+def nbsp(text, code='ru'):
+    """приклеить короткие служебные слова к следующему за ними"""
+    if not text:
+        return text
+    words = NBSP_RU if code == 'ru' else NBSP_EN
+    rx = re.compile(r'(?<![^\s(«"—-])(%s)\s+' % '|'.join(words), re.I | re.U)
+    prev = None
+    # два прохода и больше: «и в зале» — приклеить надо оба слова, а один проход
+    # съедает пробел после «и», и второе слово уже не видит границы
+    while prev != text:
+        prev = text
+        text = rx.sub(lambda m: m.group(1) + ' ', text)
+    return text
 
 
 def lib_md(t):
@@ -1586,7 +1612,7 @@ def lib_item(L, item, idx, sec=''):
 
     out.append('<div class="li-rail"><i>%s</i><span class="sec">%s</span></div>' % (idx, esc(sec)))
     out.append('<div class="li-head"><h3>%s</h3><p class="line">%s</p></div>'
-               % (esc(item['name']), esc(item['line'])))
+               % (esc(nbsp(item['name'], L.code)), esc(nbsp(item['line'], L.code))))
 
     main = ['<p class="what">%s</p>' % esc(item['what'])]
     if item.get('compare'):
@@ -1658,7 +1684,7 @@ LIB_LEAD_RU = '%d %s оборудования: что каждое реальн�
 
 LIB_INTRO_RU = '<p>Справочник собран не по прайс-листу, а по роли в системе. Любой интерактивный экспонат — замкнутый круг: человек что-то делает, машина считывает, экспозиция отвечает. Три категории ниже — три четверти этого круга. Слабое звено решает за все остальные.</p><p>Одна мысль проходит через каждую страницу: <b>железо выбирают последним</b>. Сначала — что человек унесёт с собой. Потом — что он для этого сделает руками. И только потом — чем это выдержать. Смету, собранную наоборот, легко узнать через год: по тёмным экранам.</p>'
 
-LIB_TAIL_RU = '<h2>Причём здесь мы</h2><p>Мы не поставляем оборудование и не держим склад. Поэтому у нас нет причины продать вам то, что залежалось, — и есть причина разбираться в железе лучше тех, кто его продаёт. Отсюда и справочник: он написан со стороны тех, кто это потом запускает, чинит и объясняет смотрителю.</p><p>Мы отталкиваемся от эффекта, а не от техники. Сначала решаем, что человек должен почувствовать, — и уже под это подбираем решение. Обычный монитор в наших руках становится витриной, у которой останавливаются; тот же монитор без сценария — доской объявлений. Разница не в мониторе.</p><p>Поставку возьмут наши партнёры — любое железо из этого списка на лучших для вас условиях. За нами сценарий, содержание, интерактив, софт и интеграция: программно-аппаратный комплекс целиком, а не коробки от пяти поставщиков, которые друг о друге не знают.</p><p><b>Есть спецификация на руках?</b> Пришлите. Скажем, что лишнее, чего не хватает и что не доживёт до второго года. Бесплатно, без обязательств и без коммерческого предложения следом.</p>'
+LIB_TAIL_RU = '<h2>Причём здесь мы</h2><p>Мы интеграторы: собираем из этого железа работающие экспозиции — от сценария до запуска. Знаем его не по каталогам, а по залам, которые сами проектировали, монтировали и потом чинили. Что из каждой позиции выжимается, где она подведёт и чем её заменить, когда бюджет не сходится, — знаем на своём опыте, а не на чужих обещаниях.</p><p>В наших руках обычный монитор становится витриной, у которой останавливаются. Тот же монитор без сценария — доска объявлений. Разница не в мониторе, а в том, что на нём происходит и почему человек это заметил.</p><p>Мы независимы от поставщиков: своего склада нет, процента с продажи железа нет. Поэтому решение подбирается под задачу, а не под остатки. Поставку возьмут наши партнёры — любое железо из этого списка на лучших для вас условиях. За нами сценарий, содержание, интерактив, софт и интеграция: программно-аппаратный комплекс целиком, а не коробки от пяти поставщиков, которые друг о друге не знают.</p><p><b>Есть спецификация на руках?</b> Пришлите. Скажем, что лишнее, чего не хватает и что не доживёт до второго года. Бесплатно, без обязательств и без коммерческого предложения следом.</p>'
 
 
 def lib_alternates(tail):
@@ -1673,7 +1699,7 @@ LIB_LEAD_EN = '%d %s of equipment: what each one actually does, where the sales 
 
 LIB_INTRO_EN = '<p>Organised by role in the system, not by price list. Every interactive exhibit is a closed loop: a person acts, a machine reads it, the exhibition answers. The three categories below are three quarters of that loop, and the weakest link decides for all the others.</p><p>One idea runs through every page: <b>the hardware is chosen last</b>. First, what the visitor walks out with. Then, what they do with their hands to get there. Only then, what has to survive it. A budget built the other way round is easy to spot a year later — by the dark screens.</p>'
 
-LIB_TAIL_EN = '<h2>Where we come in</h2><p>We do not supply equipment and we keep no warehouse. So we have no reason to sell you whatever is sitting on a shelf — and every reason to understand the kit better than the people who do sell it. Hence this library: written from the side that has to commission it, fix it and explain it to an attendant.</p><p>We start from the effect, not the technology. First we settle what the visitor should feel, and pick the solution for that. An ordinary monitor in our hands becomes a display people stop at; the same monitor with no story is a noticeboard. The difference is not the monitor.</p><p>Supply is handled by our partners — anything on this list, on the best terms for you. Ours is the story, the content, the interaction, the software and the integration: one hardware-and-software system, rather than boxes from five vendors who have never heard of each other.</p><p><b>Got a specification in hand?</b> Send it over. We will tell you what is redundant, what is missing and what will not see year two. Free, no obligation, and no sales pitch afterwards.</p>'
+LIB_TAIL_EN = '<h2>Where we come in</h2><p>We are integrators: we build working exhibitions out of this kit, from the story to opening day. We know it from the rooms we designed, installed and later repaired, not from catalogues. What each item really gives you, where it will let you down, and what to swap it for when the budget will not close — we know from our own work rather than from somebody else’s promises.</p><p>In our hands an ordinary monitor becomes a display people stop at. The same monitor with no story is a noticeboard. The difference is not the monitor — it is what happens on it, and why anyone noticed.</p><p>We are independent of suppliers: no warehouse of our own, no commission on hardware. So the solution gets picked for the job rather than for the stock. Supply is handled by our partners — anything on this list, on the best terms for you. Ours is the story, the content, the interaction, the software and the integration: one hardware-and-software system, rather than boxes from five vendors who have never heard of each other.</p><p><b>Got a specification in hand?</b> Send it over. We will tell you what is redundant, what is missing and what will not see year two. Free, no obligation, and no sales pitch afterwards.</p>'
 
 
 LIB_GRID_JS = '''
@@ -1978,7 +2004,7 @@ for L in langs:
         os.makedirs(d, exist_ok=True)
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
             lang=L.code, title=esc(cat['full']),
-            h1=esc('%s: %s' % (cat['full'], cat['line'].lower())),
+            h1=esc(nbsp('%s: %s' % (cat['full'], cat['line'].lower()), L.code)),
             desc=esc(Lang._clip(cat['lead'])),
             canon=L.url(tail), alts=lib_alternates(tail), locale=L.locale, css=LIB_CSS,
             jsonld=lib_jsonld(L, cat, tail, n),
@@ -2003,8 +2029,8 @@ for L in langs:
         '<i>%s</i><b>%s</b><em>%s</em><span class="lead">%s</span>'
         '<u><span class="cnt">%d %s · %d %s</span><span class="act">%s</span></u>'
         '</span></a></li>'
-        % (c['id'], c['id'], LIB_ICONS.get(c['id'], ''), esc(c['num']), esc(c['full']),
-           esc(c['line']), esc(c['lead']),
+        % (c['id'], c['id'], LIB_ICONS.get(c['id'], ''), esc(c['num']), esc(nbsp(c['full'], L.code)),
+           esc(nbsp(c['line'], L.code)), esc(c['lead']),
            _n(c), plural(_n(c), *T['pos']), _b(c), plural(_b(c), *T['man']), esc(T['open']))
         for c in cats)
     lib_lead = LIB_LEAD_T[L.code] % (total, plural(total, *T['kind']))
@@ -2022,7 +2048,7 @@ for L in langs:
     d = os.path.join(SITE, L.prefix, 'library')
     os.makedirs(d, exist_ok=True)
     open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
-        lang=L.code, title=esc(T['hub']), crumb='', h1=esc(T['h1']),
+        lang=L.code, title=esc(T['hub']), crumb='', h1=esc(nbsp(T['h1'], L.code)),
         desc=esc(Lang._clip(lib_lead)),
         canon=L.url('library/'), alts=lib_alternates('library/'), locale=L.locale,
         css=LIB_CSS, jsonld=ld, cover=esc(cover_url(ORDER[0], L.pmap)),
