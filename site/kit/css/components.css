@@ -1670,7 +1670,18 @@ html.deck { scroll-snap-type: y mandatory; }
 /* ПЛИТКИ ПЛОЩАДОК. Ряд мелких плашек читался как служебная строка; здесь это
    призыв «скачай и посмотри сам», поэтому знаки крупные, глиф в свою строку,
    название под ним. Плитка – цель для пальца и для курсора одинаково. */
-.stores--tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 10px; width: min(100%, 780px); }
+/* ОДИН РЯД, СКОЛЬКО БЫ ПЛОЩАДОК НИ БЫЛО. Было auto-fit по 132 px: шесть знаков не
+   влезали и последний уходил на вторую строку сиротой, а ряд площадок обязан читаться
+   одной строкой — это перечень, а не сетка. Автоматический поток по КОЛОНКАМ считает
+   ширину сам, поэтому добавление новой площадки (как RuStore) не требует правки числа
+   колонок. Ширину поднял до 980: шести плиткам по 132 нужно 852 плюс промежутки. */
+.stores--tiles {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 10px;
+  width: min(100%, 980px);
+}
 .stores--tiles li { padding: 0; border-radius: 4px; }
 /* РЯДЫ У ПЛИТОК ЖЁСТКИЕ, и это единственный способ выровнять знаки. Глифы у площадок
    разной формы: у Apple высокий, у VK низкий и широкий, у OK узкий. В свободной сетке
@@ -1690,7 +1701,13 @@ html.deck { scroll-snap-type: y mandatory; }
   font-size: 12.5px;
   letter-spacing: .06em;
 }
-.stores--tiles svg { width: 34px; height: 34px; }
+/* ЗНАК СТРОГО ПО ЦЕНТРУ ПЛИТКИ. Само собой это не выходит: у площадок без ссылки (VK,
+   OK) подпись лежала голым текстом прямо в <li>, а текст в сетке становится анонимным
+   элементом, на который выравнивание элементов сетки не действует. Знак съезжал вправо
+   на 16–17 px — замер на живой странице. Подписи обёрнуты в <span>, а здесь оставлено
+   двойное подтверждение: и своё выравнивание у знака, и центрирование текста. */
+.stores--tiles li { text-align: center; }
+.stores--tiles svg { width: 34px; height: 34px; display: block; justify-self: center; margin-inline: auto; }
 /* Оптическая подгонка по каждому знаку: одинаковая коробка не значит одинаковый вид,
    потому что путь внутри заполняет её по-разному. Числа подобраны замером на экране. */
 .stores--tiles .ico--vk svg { width: 40px; height: 40px; }
@@ -1707,12 +1724,22 @@ html.deck { scroll-snap-type: y mandatory; }
   text-transform: uppercase;
   align-self: start;
 }
+/* УЗКИЙ НОУТБУК: шести плиткам в один ряд нужен меньший кегль. Считано по самой длинной
+   подписи: при окне 1150 полоса даёт колонку 137 px, а «Google Play» просит 118 плюс
+   отступы 24 — не влезает. С 11.5 px и отступами по 8 нужно 125. */
+@media (min-width: 761px) and (max-width: 1200px) {
+  .stores--tiles a, .stores--tiles li:not(:has(a)) { padding: 16px 8px 12px; font-size: 11.5px; }
+  .stores--tiles svg { width: 30px; height: 30px; }
+}
 @media (max-width: 680px) {
   /* РОВНО ДВЕ КОЛОНКИ, а не auto-fit. С minmax(104px) на телефоне влезало три, колонка
      выходила 104 px — а самая длинная подпись, «Яндекс Игры», просит 115 и вылезала из
      своей плитки на 11 px (замер на 375×812). Плюс пять плиток в три колонки дают
      последнюю сиротой. Две колонки по 162 px вмещают любую подпись. */
-  .stores--tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* ПОТОК ВОЗВРАЩАЕМ В СТРОКИ. На широком экране плитки идут одной строкой автоматическим
+     потоком по колонкам; если этого не отменить, на телефоне шесть площадок останутся в
+     один ряд по 50 px, и от знаков останутся точки. */
+  .stores--tiles { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /* Нечётная последняя плитка занимает обе колонки: одна в ряду она читается как забытая.
      Условие срабатывает само — считать плитки руками не нужно. */
   .stores--tiles li:last-child:nth-child(odd) { grid-column: 1 / -1; }
@@ -2900,3 +2927,72 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   .gallery__item--stage::after,
   .gallery__item--wall::after { display: none; }
 }
+
+/* ── СОСТОЯНИЕ РОЛИКА ПО ЦЕНТРУ КАДРА (js/videoctl.js) ───────────────────
+   Тонкая панель снизу говорит «пуск/пауза», но не говорит «грузится» и не видна тому,
+   кто смотрит в середину кадра: ролик тянется по сети, кадр стоит с постером и выглядит
+   сломанным. Здесь два состояния, и одновременно они не показываются никогда.
+   СЛОЙ НЕ ПЕРЕХВАТЫВАЕТ УКАЗАТЕЛЬ (pointer-events: none), кнопка перехватывает: слой на
+   весь кадр иначе воровал бы и тягу галереи, и нажатие по самому кадру. */
+.vstate {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.vstate__spin,
+.vstate__play { display: none; }
+
+/* Кольцо загрузки. Своя дуга, а не спиннер из символа: символ зависит от шрифта.
+   Тень под кольцом обязательна — на светлом кадре белое кольцо иначе исчезает. */
+.vstate.is-loading .vstate__spin {
+  display: block;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 3px solid rgba(243, 236, 224, .22);
+  border-top-color: var(--paper);
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .55));
+  animation: vspin .85s linear infinite;
+}
+@keyframes vspin { to { transform: rotate(360deg); } }
+
+/* Кнопка пуска. Крупная и с тёмной подложкой: она должна читаться поверх любого кадра,
+   от асфальта до неба. Треугольник нарисован границами — так он не зависит от шрифта и
+   всегда оптически по центру круга (левый отступ 4 px компенсирует пустоту справа
+   у треугольника). */
+.vstate.is-paused .vstate__play {
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  width: 88px;
+  height: 88px;
+  border: 1px solid rgba(243, 236, 224, .5);
+  border-radius: 50%;
+  background: rgba(10, 10, 12, .52);
+  backdrop-filter: blur(3px);
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+.vstate.is-paused .vstate__play::before {
+  content: "";
+  width: 0;
+  height: 0;
+  margin-left: 4px;
+  border-style: solid;
+  border-width: 15px 0 15px 25px;
+  border-color: transparent transparent transparent var(--paper);
+}
+.vstate.is-paused .vstate__play:hover {
+  transform: scale(1.06);
+  background: rgba(10, 10, 12, .68);
+  border-color: var(--paper);
+}
+@media (max-width: 760px) {
+  .vstate.is-paused .vstate__play { width: 68px; height: 68px; }
+  .vstate.is-paused .vstate__play::before { border-width: 12px 0 12px 20px; }
+  .vstate.is-loading .vstate__spin { width: 44px; height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { .vstate.is-loading .vstate__spin { animation: none; } }

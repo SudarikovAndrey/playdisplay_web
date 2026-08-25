@@ -46,7 +46,7 @@ window.PD_I18N = {
  "полный цикл — от идеи до эксплуатации": "end to end, from concept to daily operation",
  "Доверие": "Trust",
  "Наши работы показывал канал": "Our work has been featured on",
- "Среди клиентов": "Our clients include",
+ "Среди клиентов": "Our clients",
  "— автопроизводители, международные аэропорты, национальные музеи и промышленные корпорации.": "carmakers, international airports, national museums and industrial groups.",
  "Синара — Транспортные Машины": "Sinara Transport Machines",
  "Группа ПТК": "PTK Group",
@@ -431,5 +431,6 @@ window.PD_I18N = {
  "канал": "Kanal",
  "НТВ": "NTV",
  "РЕН": "REN",
- "ТВ": "TV"
+ "ТВ": "TV",
+ "Клиенты": "Clients"
 };

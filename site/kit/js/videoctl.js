@@ -44,11 +44,50 @@
 
     var pausedByHand = false;
 
+    /* ── СОСТОЯНИЕ РОЛИКА ПО ЦЕНТРУ КАДРА ──────────────────────────────────
+       Тонкая панель снизу говорит «пуск/пауза», но НЕ говорит «грузится» и не видна тому,
+       кто смотрит в середину кадра. Пока ролик тянется по сети, кадр стоит с постером и
+       выглядит сломанным; а если браузер отказал в автозапуске, человек вообще не знает,
+       что здесь можно нажать. Поэтому в центре: кольцо загрузки — пока данных не хватает
+       на воспроизведение, крупная кнопка пуска — когда данных хватает, а ролик стоит.
+       Слой РИСУЕТСЯ СКРИПТОМ, а не лежит в разметке: он нужен каждому ролику, и держать
+       его руками в десяти местах — значит однажды забыть.
+       pointer-events: none у слоя и auto у кнопки: слой на весь кадр не должен воровать
+       ни тягу галереи, ни нажатие по самому кадру. */
+    var host = video.parentNode;
+    var state = document.createElement('div');
+    state.className = 'vstate';
+    state.innerHTML = '<span class="vstate__spin" aria-hidden="true"></span>' +
+                      '<button class="vstate__play" type="button" aria-label="Пуск"></button>';
+    host.appendChild(state);
+    var bigPlay = state.querySelector('.vstate__play');
+    bigPlay.addEventListener('click', function (e) {
+      e.stopPropagation();          // иначе нажатие уходит кадру галереи
+      pausedByHand = false;
+      var q = video.play();
+      if (q && q.catch) q.catch(function () {});
+    });
+
+    function paintState() {
+      /* readyState 3 — это HAVE_FUTURE_DATA: данных хватает, чтобы начать играть. Ниже
+         этого показываем загрузку, даже если ролик формально «не на паузе». */
+      var ready = video.readyState >= 3;
+      var playing = !video.paused && !video.ended;
+      state.classList.toggle('is-loading', !ready);
+      state.classList.toggle('is-paused', ready && !playing);
+    }
+
+    ['loadstart', 'waiting', 'stalled', 'canplay', 'canplaythrough', 'playing',
+     'play', 'pause', 'seeking', 'seeked', 'ended', 'error', 'loadeddata'].forEach(function (ev) {
+      video.addEventListener(ev, paintState);
+    });
+
     function paint() {
       var on = !video.paused && !video.ended;
       play.setAttribute('aria-pressed', on ? 'true' : 'false');
       play.setAttribute('aria-label', on ? 'Пауза' : 'Пуск');
       box.classList.toggle('is-playing', on);
+      paintState();
     }
 
     play.addEventListener('click', function () {
@@ -82,6 +121,10 @@
       bar.addEventListener('change', function () { dragging = false; seek(); });
       bar.addEventListener('pointerup', function () { dragging = false; });
     }
+
+    /* Первая отрисовка сразу: ролик мог быть в кэше, и события загрузки прошли ДО
+       подключения скрипта (он с defer). Тогда без этого вызова слой остался бы пустым. */
+    paintState();
 
     /* ЗАПУСК ДЕРЖИТ АТРИБУТ autoplay, А НЕ ЭТОТ СКРИПТ — так сделано на главной сайта,
        и это единственный надёжный способ. Пока пуск висел на наблюдателе видимости, ролик

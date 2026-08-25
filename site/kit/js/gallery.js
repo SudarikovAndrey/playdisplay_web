@@ -66,6 +66,12 @@
 
     track.addEventListener('pointerdown', function (e) {
       if (e.button !== undefined && e.button !== 0) return;
+      /* НА ОРГАНАХ УПРАВЛЕНИЯ ТЯГА НЕ НАЧИНАЕТСЯ. Внутри кадра живут ползунок перемотки
+         ролика, кнопка пуска, кубик смены машины, ссылки. Захватывая их, трек уезжал
+         вместе с бегунком: человек тянет перемотку, а листается слайд. Проверять надо
+         именно цель нажатия, а не координаты — попадание в мелкий ползунок пальцем иначе
+         не отличить от начала свайпа. */
+      if (e.target.closest && e.target.closest('input, button, a, [data-vctl], .stages, .signwall')) return;
       dragging = true; decided = false; horizontal = false; dx = 0;
       startX = e.clientX; startY = e.clientY;
       track.style.transition = 'none';

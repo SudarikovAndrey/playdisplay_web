@@ -759,7 +759,11 @@ def service_jsonld(L, s):
 
 
 SRV_CSS = '''
-  body { margin:0; background:#040c10; color:#e9f4f6; font:400 18px/1.7 -apple-system,'Segoe UI',Roboto,sans-serif; }
+  body { margin:0; background:var(--space-void); color:var(--scan-white);
+         font:400 18px/1.7 var(--font-body); }
+  /* Заголовки — Unbounded, как на главной. Раньше раздел шёл системным шрифтом
+     и читался как чужая страница, пришитая сбоку. */
+  h1, h2, h3 { font-family:var(--font-display); font-weight:800; letter-spacing:-0.02em; color:#F1FBFC; }
   .wrap { max-width:1000px; margin:0 auto; padding:64px 24px 100px; }
   a { color:#2be0c6; }
   h1 { font-size:clamp(34px,6vw,64px); line-height:1.05; margin:0 0 10px; letter-spacing:-.02em; }
@@ -1553,6 +1557,12 @@ LIB_CSS = CNC_CSS + '''
 '''
 
 LIB_PAGE = ATLAS_PAGE.replace(
+    '<style>{css}</style>',
+    '<link rel="preload" href="{up}assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>\n'
+    '<link rel="stylesheet" href="{up}assets/fonts/fonts.css">\n'
+    '<link rel="stylesheet" href="{up}styles.css">\n'
+    '<style>{css}</style>'
+).replace(
     '<nav class="crumbs"><a href="{home}">playdisplay</a> / {title}</nav>',
     '<nav class="crumbs"><a href="{home}">playdisplay</a> / {crumb} {title}</nav>'
 ).replace('<body>\n<main class="wrap">', '<body>\n{chrome}\n<main class="wrap">')
@@ -1603,21 +1613,32 @@ def lib_brands(L, item):
     return '<div class="brands"><h4>%s</h4><ul>%s</ul></div>' % (LIB_T[L.code]['brands'], li)
 
 
-def lib_chrome(L, up, current=''):
-    """шапка, «назад» и «наверх» для страниц раздела: навигация та же, что на главной"""
+def lib_chrome(L, up, alt_url=''):
+    """Шапка раздела ОДИН В ОДИН как на главной: те же пункты, порядок, адреса
+    и типографика. Плюс кнопки «назад» и «наверх», которых на лендинге нет —
+    там некуда возвращаться, а здесь есть."""
     T = LIB_T[L.code]
     home = up + L.prefix
-    items = [(T['services'], home + 'services/', 'services'),
-             (T['work'], home + '#work', 'work'),
-             (T['concepts'], home + 'concepts/', 'concepts'),
-             (T['hubnav'], up + L.prefix + 'library/', 'library'),
-             (T['atlas'], home + 'atlas/', 'atlas')]
-    nav = ''.join('<a href="%s"%s>%s</a>' % (esc(u), ' aria-current="page"' if k == current else '', esc(n))
-                  for n, u, k in items)
+    # адреса ровно те же, что в nav.links на главной
+    items = [(T['services'], home + 'services/'),
+             (T['work'], home + '#work'),
+             (T['concepts'], home + '#concepts'),
+             (T['hubnav'], home + 'library/'),
+             (T['atlas'], home + '#atlas'),
+             (T['studio'], home + '#studio')]
+    nav = ''.join('<a href="%s"%s>%s</a>'
+                  % (esc(u), ' aria-current="page"' if u.endswith('library/') else '', esc(n))
+                  for n, u in items)
+    lang = ('<div class="lang"><a class="on" aria-current="true">RU</a>'
+            '<a href="%s" hreflang="en">ENG</a></div>' % esc(alt_url)) if L.code == 'ru' else (
+           '<div class="lang"><a href="%s" hreflang="ru">RU</a>'
+           '<a class="on" aria-current="true">ENG</a></div>' % esc(alt_url))
+    snd = ('<button class="snd" type="button" data-off="%s" data-on="%s">%s</button>'
+           % (esc(T['sndoff']), esc(T['sndon']), LIB_SND_SVG))
     return (
       '<header class="pdhdr"><div class="in">'
       '<a class="lg" href="%s" aria-label="playdisplay"><img src="%sassets/logos/playdisplay-logo-black.png" alt="playdisplay"></a>'
-      '<nav>%s</nav><a class="talk" href="%s#contact">%s</a>'
+      '<nav>%s</nav><a class="talk" href="%s#contact">%s</a>%s%s'
       '</div></header>'
       '<div class="pdnav">'
       '<button class="back" type="button" data-home="%slibrary/" aria-label="%s" title="%s">'
@@ -1627,8 +1648,8 @@ def lib_chrome(L, up, current=''):
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
       '<path d="M5 14 L12 7 L19 14"/></svg></button>'
       '</div>'
-    ) % (esc(home), esc(up), nav, esc(home), esc(T['talk']),
-         esc(up + L.prefix), esc(T['back']), esc(T['back']), esc(T['top']), esc(T['top']))
+    ) % (esc(home), esc(up), nav, esc(home), esc(T['talk']), lang, snd,
+         esc(home), esc(T['back']), esc(T['back']), esc(T['top']), esc(T['top']))
 
 
 def lib_item(L, item, idx, sec=''):
@@ -1741,30 +1762,58 @@ LIB_CHROME_CSS = '''
   .pdhdr { position:fixed; top:0; left:0; right:0; z-index:60;
            border-bottom:1px solid transparent;
            transition:background .3s ease, border-color .3s ease; }
-  .pdhdr.scrolled { background:rgba(4,12,16,.88); backdrop-filter:blur(12px);
-                    border-bottom-color:rgba(159,180,200,.2); }
-  .pdhdr .in { display:flex; align-items:center; gap:26px;
-               max-width:1180px; margin:0 auto; padding:15px 24px; }
-  .pdhdr .lg { display:inline-flex; flex:0 0 auto; }
-  .pdhdr .lg img { height:17px; display:block; filter:brightness(0) invert(1); }
-  .pdhdr nav { display:flex; gap:24px; overflow-x:auto; scrollbar-width:none; }
-  .pdhdr nav::-webkit-scrollbar { display:none; }
-  .pdhdr nav a { flex:0 0 auto; text-decoration:none; color:#9fb4c8;
-                 font:700 11.5px/1 monospace; letter-spacing:.2em; text-transform:uppercase;
-                 transition:color .18s; }
-  .pdhdr nav a:hover { color:#e9f4f6; }
-  .pdhdr nav a[aria-current="page"] { color:#2be0c6; }
-  .pdhdr .talk { margin-left:auto; flex:0 0 auto; text-decoration:none;
-                font:700 11.5px/1 monospace; letter-spacing:.12em; text-transform:uppercase;
-                background:#ff6a3d; color:#040c10; padding:11px 18px;
-                clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
-                transition:transform .2s cubic-bezier(.2,.8,.2,1); }
+  .pdhdr.scrolled { background:rgba(3,12,16,.82); backdrop-filter:blur(12px);
+                    border-bottom-color:var(--space-line); }
+  .pdhdr .in { display:flex; align-items:center; justify-content:space-between; padding:22px 64px; }
+  .pdhdr .lg { display:inline-flex; align-items:center; flex:0 0 auto; }
+  .pdhdr .lg img { height:19px; display:block; filter:brightness(0) invert(1); }
+  .pdhdr nav { display:flex; gap:34px; }
+  .pdhdr nav a { text-decoration:none; color:var(--scan-white-dim);
+                 font:700 12.5px "Blender Pro", var(--font-body); letter-spacing:0.24em;
+                 text-transform:uppercase; transition:color .18s; }
+  .pdhdr nav a:hover { color:var(--scan-white); }
+  .pdhdr nav a[aria-current="page"] { color:var(--signal-teal); }
+  .pdhdr .talk { display:inline-flex; align-items:center; gap:9px; text-decoration:none;
+                 font:700 13px "Blender Pro", var(--font-body); letter-spacing:0.1em;
+                 text-transform:uppercase; background:var(--signal-amber); color:var(--space-void);
+                 padding:11px 20px; border:none;
+                 clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+                 transition:transform .25s cubic-bezier(.2,.8,.2,1); }
   .pdhdr .talk:hover { transform:translateY(-2px); }
+  .pdhdr .lang { display:flex; align-items:center; gap:2px; margin-left:18px; }
+  .pdhdr .lang a { font:700 11.5px "Blender Pro", var(--font-mono); letter-spacing:0.16em;
+                   text-transform:uppercase; color:var(--scan-white-dim); padding:5px 7px;
+                   border:1px solid transparent; text-decoration:none; transition:color .18s; }
+  .pdhdr .lang a:hover { color:var(--scan-white); }
+  .pdhdr .lang a.on { color:var(--space-void); background:var(--scan-white); }
+  .pdhdr .snd { margin-left:14px; width:30px; height:30px; display:flex; align-items:center;
+                justify-content:center; background:none; border:1px solid transparent;
+                color:var(--scan-white-dim); cursor:pointer; transition:color .18s, border-color .18s; }
+  .pdhdr .snd:hover { color:var(--scan-white); border-color:var(--scan-white-faint); }
+  .pdhdr .snd svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6;
+                    stroke-linecap:round; stroke-linejoin:round; }
+  .pdhdr .snd .wave { transition:opacity .18s; }
+  .pdhdr .snd .slash { opacity:0; transition:opacity .18s; }
+  .pdhdr .snd.off { color:var(--scan-white-faint); }
+  .pdhdr .snd.off .wave { opacity:0; }
+  .pdhdr .snd.off .slash { opacity:1; }
+  /* Пункты меню на узком экране прячем, как на главной: шесть названий в строку
+     не помещаются. Логотип, кнопка и язык остаются — этого хватает, чтобы уйти. */
+  @media (max-width:1100px) {
+    .pdhdr .in { padding:16px 24px; }
+    .pdhdr nav { gap:22px; overflow-x:auto; scrollbar-width:none; }
+    .pdhdr nav::-webkit-scrollbar { display:none; }
+    .pdhdr nav a { flex:0 0 auto; letter-spacing:0.16em; font-size:11.5px; }
+  }
+  @media (max-width:760px) {
+    .pdhdr nav, .pdhdr .talk { display:none; }
+    .pdhdr .lang { margin-left:auto; }
+  }
 
   /* Панель фильтра липнет ПОД шапкой, а не под верх окна: иначе она уезжала бы
      под неё и первые кнопки были не видны. Высота шапки подставляется скриптом. */
   .libbar { top:var(--hdr,58px); }
-  .wrap { padding-top:112px; }
+  .wrap { padding-top:calc(var(--hdr, 84px) + 44px); }
 
   /* Кнопки «назад» и «наверх». Стопкой в правом нижнем углу: там их ищут,
      и они не спорят с содержанием. «Наверх» появляется после первого экрана. */
@@ -1825,6 +1874,11 @@ LIB_CHROME_JS = '''
   }
   fit();
   addEventListener('resize', fit, { passive: true });
+  // ШРИФТЫ МЕНЯЮТ ВЫСОТУ ШАПКИ. Скрипт снимает её сразу, а Blender Pro и Onest
+  // приезжают позже и пересобирают строку меню — замер устаревал на десятки
+  // пикселей, и панель фильтра липла не туда. Пересчитываем, когда шрифты готовы.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit).catch(function(){});
+  addEventListener('load', fit);
 
   var tick = false;
   function onScroll() {
@@ -1905,6 +1959,31 @@ LIB_CHROME_JS = '''
       dot.classList.toggle('big', !!(t.closest && t.closest('a,button,input')));
     }, { passive: true });
   }
+})();
+'''
+
+
+LIB_SND_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13L7.2 14.5H4z"/><path class="wave" d="M16 9c1.2 1 1.2 5 0 6"/><path class="wave" d="M18.7 6.8c2.3 2 2.3 8.4 0 10.4"/><path class="slash" d="M16.6 9.6l4.8 4.8m0-4.8l-4.8 4.8"/></svg>'
+
+LIB_HDR_JS = '''
+/* Выключатель звука в шапке раздела. Своего звука тут нет, но ключ pd_sound общий
+   на весь сайт: выключил здесь — вернулся на главную, и сцена молчит. Кнопка,
+   которая ничего не делает, была бы обманом; эта делает ровно то, что обещает. */
+(function () {
+  var b = document.querySelector('.pdhdr .snd');
+  if (!b) return;
+  function on(){ try { return localStorage.getItem('pd_sound') !== 'off'; } catch (e) { return true; } }
+  function paint(){
+    var v = on();
+    b.classList.toggle('off', !v);
+    var l = b.getAttribute(v ? 'data-off' : 'data-on') || '';
+    b.setAttribute('aria-label', l); b.setAttribute('title', l);
+  }
+  b.addEventListener('click', function () {
+    try { localStorage.setItem('pd_sound', on() ? 'off' : 'on'); } catch (e) {}
+    paint();
+  });
+  paint();
 })();
 '''
 
@@ -2129,7 +2208,8 @@ LIB_T = {
   'search': 'Поиск по названию, задаче или бренду', 'nothing': 'Ничего не нашлось. Попробуйте другое слово.',
   'work': 'Проекты', 'atlas': 'Атлас', 'hubnav': 'Оборудование',
   'talk': '▶ Обсудить идею', 'back': 'Назад', 'top': 'Наверх',
-  'concepts': 'Концепции', 'services': 'Услуги', 'home': 'На главную', 'all': 'Все проекты',
+  'studio': 'Студия', 'sndoff': 'Выключить звук', 'sndon': 'Включить звук',
+  'concepts': 'Библиотека', 'services': 'Услуги', 'home': 'На главную', 'all': 'Все проекты',
   'h1': 'Библиотека оборудования интерактивных экспозиций',
   'pos': ('позиция', 'позиции', 'позиций'),
   'man': ('производитель', 'производителя', 'производителей'),
@@ -2144,6 +2224,7 @@ LIB_T = {
   'search': 'Search by name, job or brand', 'nothing': 'Nothing matched. Try another word.',
   'work': 'Work', 'atlas': 'Atlas', 'hubnav': 'Equipment',
   'talk': '▶ Book a call', 'back': 'Back', 'top': 'Top',
+  'studio': 'Studio', 'sndoff': 'Mute', 'sndon': 'Unmute',
   'concepts': 'Concepts', 'services': 'Services', 'home': 'Home', 'all': 'All projects',
   'h1': 'An equipment library for interactive exhibitions',
   'pos': ('entry', 'entries', 'entries'),
@@ -2212,7 +2293,8 @@ for L in langs:
                   + '<script>var WORDS=%s,RU=%s;%s</script>'
                   % (json.dumps(list(T['pos']), ensure_ascii=False),
                      'true' if L.code == 'ru' else 'false', LIB_GRID_JS)
-                  + '<script>%s</script>' % LIB_CHROME_JS)
+                  + '<script>%s</script>' % LIB_CHROME_JS
+                  + '<script>%s</script>' % LIB_HDR_JS)
         d = os.path.join(SITE, L.prefix, 'library', cat['id'])
         os.makedirs(d, exist_ok=True)
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
@@ -2220,7 +2302,8 @@ for L in langs:
             h1=esc(nbsp('%s: %s' % (cat['full'], cat['line'].lower()), L.code)),
             desc=esc(Lang._clip(cat['lead'])),
             canon=L.url(tail), alts=lib_alternates(tail), locale=L.locale,
-            css=LIB_CSS + LIB_CHROME_CSS, chrome=lib_chrome(L, up2, 'library'),
+            css=LIB_CSS + LIB_CHROME_CSS,
+            chrome=lib_chrome(L, up2, ('/en/' if L.code == 'ru' else '/') + tail),
             jsonld=lib_jsonld(L, cat, tail, n),
             cover=esc(cover_url(ORDER[0], L.pmap)), up=up2, home=up2 + L.prefix,
             crumb='<a href="%s">%s</a> /' % (up_cat, esc(T['hub'])),
@@ -2265,7 +2348,8 @@ for L in langs:
         lang=L.code, title=esc(T['hub']), crumb='', h1=esc(nbsp(T['h1'], L.code)),
         desc=esc(Lang._clip(lib_lead)),
         canon=L.url('library/'), alts=lib_alternates('library/'), locale=L.locale,
-        css=LIB_CSS + LIB_CHROME_CSS, chrome=lib_chrome(L, up1, 'library'),
+        css=LIB_CSS + LIB_CHROME_CSS,
+        chrome=lib_chrome(L, up1, '/en/library/' if L.code == 'ru' else '/library/'),
         jsonld=ld, cover=esc(cover_url(ORDER[0], L.pmap)),
         up=up1, home=up1 + L.prefix,
         cnchome=up1 + L.prefix + 'concepts/', srvhome=up1 + L.prefix + 'services/',
@@ -2273,7 +2357,8 @@ for L in langs:
         groups=(LIB_INTRO_T[L.code] + '<ul class="libcats">%s</ul>' % li
                 + LIB_TAIL_T[L.code]
                 + '<script>%s</script>' % LIB_FX_JS
-                + '<script>%s</script>' % LIB_CHROME_JS),
+                + '<script>%s</script>' % LIB_CHROME_JS
+                + '<script>%s</script>' % LIB_HDR_JS),
         t_concepts=esc(T['concepts']), t_services=esc(T['services']), cta=esc(T['cta']),
         footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
         f_home=esc(T['home']), f_all=esc(T['all']))))

@@ -221,8 +221,15 @@
 <link rel="icon" type="image/png" href="/assets/logos/favicon-32.png?v=be32f3d0" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/logos/favicon-180.png?v=c9973eae">
 <script src="../../../analytics.js?v=7fe9358a" defer></script>
+<link rel="preload" href="../../../assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../../../styles.css?v=20d8f814">
 <style>
-  body { margin:0; background:#040c10; color:#e9f4f6; font:400 18px/1.7 -apple-system,'Segoe UI',Roboto,sans-serif; }
+  body { margin:0; background:var(--space-void); color:var(--scan-white);
+         font:400 18px/1.7 var(--font-body); }
+  /* Заголовки — Unbounded, как на главной. Раньше раздел шёл системным шрифтом
+     и читался как чужая страница, пришитая сбоку. */
+  h1, h2, h3 { font-family:var(--font-display); font-weight:800; letter-spacing:-0.02em; color:#F1FBFC; }
   .wrap { max-width:1000px; margin:0 auto; padding:64px 24px 100px; }
   a { color:#2be0c6; }
   h1 { font-size:clamp(34px,6vw,64px); line-height:1.05; margin:0 0 10px; letter-spacing:-.02em; }
@@ -443,30 +450,58 @@
   .pdhdr { position:fixed; top:0; left:0; right:0; z-index:60;
            border-bottom:1px solid transparent;
            transition:background .3s ease, border-color .3s ease; }
-  .pdhdr.scrolled { background:rgba(4,12,16,.88); backdrop-filter:blur(12px);
-                    border-bottom-color:rgba(159,180,200,.2); }
-  .pdhdr .in { display:flex; align-items:center; gap:26px;
-               max-width:1180px; margin:0 auto; padding:15px 24px; }
-  .pdhdr .lg { display:inline-flex; flex:0 0 auto; }
-  .pdhdr .lg img { height:17px; display:block; filter:brightness(0) invert(1); }
-  .pdhdr nav { display:flex; gap:24px; overflow-x:auto; scrollbar-width:none; }
-  .pdhdr nav::-webkit-scrollbar { display:none; }
-  .pdhdr nav a { flex:0 0 auto; text-decoration:none; color:#9fb4c8;
-                 font:700 11.5px/1 monospace; letter-spacing:.2em; text-transform:uppercase;
-                 transition:color .18s; }
-  .pdhdr nav a:hover { color:#e9f4f6; }
-  .pdhdr nav a[aria-current="page"] { color:#2be0c6; }
-  .pdhdr .talk { margin-left:auto; flex:0 0 auto; text-decoration:none;
-                font:700 11.5px/1 monospace; letter-spacing:.12em; text-transform:uppercase;
-                background:#ff6a3d; color:#040c10; padding:11px 18px;
-                clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
-                transition:transform .2s cubic-bezier(.2,.8,.2,1); }
+  .pdhdr.scrolled { background:rgba(3,12,16,.82); backdrop-filter:blur(12px);
+                    border-bottom-color:var(--space-line); }
+  .pdhdr .in { display:flex; align-items:center; justify-content:space-between; padding:22px 64px; }
+  .pdhdr .lg { display:inline-flex; align-items:center; flex:0 0 auto; }
+  .pdhdr .lg img { height:19px; display:block; filter:brightness(0) invert(1); }
+  .pdhdr nav { display:flex; gap:34px; }
+  .pdhdr nav a { text-decoration:none; color:var(--scan-white-dim);
+                 font:700 12.5px "Blender Pro", var(--font-body); letter-spacing:0.24em;
+                 text-transform:uppercase; transition:color .18s; }
+  .pdhdr nav a:hover { color:var(--scan-white); }
+  .pdhdr nav a[aria-current="page"] { color:var(--signal-teal); }
+  .pdhdr .talk { display:inline-flex; align-items:center; gap:9px; text-decoration:none;
+                 font:700 13px "Blender Pro", var(--font-body); letter-spacing:0.1em;
+                 text-transform:uppercase; background:var(--signal-amber); color:var(--space-void);
+                 padding:11px 20px; border:none;
+                 clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+                 transition:transform .25s cubic-bezier(.2,.8,.2,1); }
   .pdhdr .talk:hover { transform:translateY(-2px); }
+  .pdhdr .lang { display:flex; align-items:center; gap:2px; margin-left:18px; }
+  .pdhdr .lang a { font:700 11.5px "Blender Pro", var(--font-mono); letter-spacing:0.16em;
+                   text-transform:uppercase; color:var(--scan-white-dim); padding:5px 7px;
+                   border:1px solid transparent; text-decoration:none; transition:color .18s; }
+  .pdhdr .lang a:hover { color:var(--scan-white); }
+  .pdhdr .lang a.on { color:var(--space-void); background:var(--scan-white); }
+  .pdhdr .snd { margin-left:14px; width:30px; height:30px; display:flex; align-items:center;
+                justify-content:center; background:none; border:1px solid transparent;
+                color:var(--scan-white-dim); cursor:pointer; transition:color .18s, border-color .18s; }
+  .pdhdr .snd:hover { color:var(--scan-white); border-color:var(--scan-white-faint); }
+  .pdhdr .snd svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6;
+                    stroke-linecap:round; stroke-linejoin:round; }
+  .pdhdr .snd .wave { transition:opacity .18s; }
+  .pdhdr .snd .slash { opacity:0; transition:opacity .18s; }
+  .pdhdr .snd.off { color:var(--scan-white-faint); }
+  .pdhdr .snd.off .wave { opacity:0; }
+  .pdhdr .snd.off .slash { opacity:1; }
+  /* Пункты меню на узком экране прячем, как на главной: шесть названий в строку
+     не помещаются. Логотип, кнопка и язык остаются — этого хватает, чтобы уйти. */
+  @media (max-width:1100px) {
+    .pdhdr .in { padding:16px 24px; }
+    .pdhdr nav { gap:22px; overflow-x:auto; scrollbar-width:none; }
+    .pdhdr nav::-webkit-scrollbar { display:none; }
+    .pdhdr nav a { flex:0 0 auto; letter-spacing:0.16em; font-size:11.5px; }
+  }
+  @media (max-width:760px) {
+    .pdhdr nav, .pdhdr .talk { display:none; }
+    .pdhdr .lang { margin-left:auto; }
+  }
 
   /* Панель фильтра липнет ПОД шапкой, а не под верх окна: иначе она уезжала бы
      под неё и первые кнопки были не видны. Высота шапки подставляется скриптом. */
   .libbar { top:var(--hdr,58px); }
-  .wrap { padding-top:112px; }
+  .wrap { padding-top:calc(var(--hdr, 84px) + 44px); }
 
   /* Кнопки «назад» и «наверх». Стопкой в правом нижнем углу: там их ищут,
      и они не спорят с содержанием. «Наверх» появляется после первого экрана. */
@@ -510,7 +545,7 @@
 </style>
 </head>
 <body>
-<header class="pdhdr"><div class="in"><a class="lg" href="../../../en/" aria-label="playdisplay"><img src="../../../assets/logos/playdisplay-logo-black.png" alt="playdisplay"></a><nav><a href="../../../en/services/">Services</a><a href="../../../en/#work">Work</a><a href="../../../en/concepts/">Concepts</a><a href="../../../en/library/" aria-current="page">Equipment</a><a href="../../../en/atlas/">Atlas</a></nav><a class="talk" href="../../../en/#contact">▶ Book a call</a></div></header><div class="pdnav"><button class="back" type="button" data-home="../../../en/library/" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button><button class="up" type="button" aria-label="Top" title="Top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14 L12 7 L19 14"/></svg></button></div>
+<header class="pdhdr"><div class="in"><a class="lg" href="../../../en/" aria-label="playdisplay"><img src="../../../assets/logos/playdisplay-logo-black.png" alt="playdisplay"></a><nav><a href="../../../en/services/">Services</a><a href="../../../en/#work">Work</a><a href="../../../en/#concepts">Concepts</a><a href="../../../en/library/" aria-current="page">Equipment</a><a href="../../../en/#atlas">Atlas</a><a href="../../../en/#studio">Studio</a></nav><a class="talk" href="../../../en/#contact">▶ Book a call</a><div class="lang"><a href="/library/output/" hreflang="ru">RU</a><a class="on" aria-current="true">ENG</a></div><button class="snd" type="button" data-off="Mute" data-on="Unmute"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13L7.2 14.5H4z"/><path class="wave" d="M16 9c1.2 1 1.2 5 0 6"/><path class="wave" d="M18.7 6.8c2.3 2 2.3 8.4 0 10.4"/><path class="slash" d="M16.6 9.6l4.8 4.8m0-4.8l-4.8 4.8"/></svg></button></div></header><div class="pdnav"><button class="back" type="button" data-home="../../../en/library/" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button><button class="up" type="button" aria-label="Top" title="Top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14 L12 7 L19 14"/></svg></button></div>
 <main class="wrap">
   <nav class="crumbs"><a href="../../../en/">playdisplay</a> / <a href="../">Equipment library</a> / Output equipment</nav>
   <article>
@@ -589,6 +624,11 @@
   }
   fit();
   addEventListener('resize', fit, { passive: true });
+  // ШРИФТЫ МЕНЯЮТ ВЫСОТУ ШАПКИ. Скрипт снимает её сразу, а Blender Pro и Onest
+  // приезжают позже и пересобирают строку меню — замер устаревал на десятки
+  // пикселей, и панель фильтра липла не туда. Пересчитываем, когда шрифты готовы.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit).catch(function(){});
+  addEventListener('load', fit);
 
   var tick = false;
   function onScroll() {
@@ -669,6 +709,26 @@
       dot.classList.toggle('big', !!(t.closest && t.closest('a,button,input')));
     }, { passive: true });
   }
+})();
+</script><script>
+/* Выключатель звука в шапке раздела. Своего звука тут нет, но ключ pd_sound общий
+   на весь сайт: выключил здесь — вернулся на главную, и сцена молчит. Кнопка,
+   которая ничего не делает, была бы обманом; эта делает ровно то, что обещает. */
+(function () {
+  var b = document.querySelector('.pdhdr .snd');
+  if (!b) return;
+  function on(){ try { return localStorage.getItem('pd_sound') !== 'off'; } catch (e) { return true; } }
+  function paint(){
+    var v = on();
+    b.classList.toggle('off', !v);
+    var l = b.getAttribute(v ? 'data-off' : 'data-on') || '';
+    b.setAttribute('aria-label', l); b.setAttribute('title', l);
+  }
+  b.addEventListener('click', function () {
+    try { localStorage.setItem('pd_sound', on() ? 'off' : 'on'); } catch (e) {}
+    paint();
+  });
+  paint();
 })();
 </script>
     <a class="cta" href="../../../en/">Send us your specification for a free review →</a>
