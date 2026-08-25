@@ -1453,40 +1453,85 @@ LIB_CSS = CNC_CSS + '''
   .libcount { color:#6d8496; font:500 12px/1 monospace; letter-spacing:.1em;
               text-transform:uppercase; margin-left:auto; }
 
-  .libgrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:22px 0 0; }
-  .libitem { border:1px solid rgba(159,180,200,.2); padding:24px 24px 22px; margin:0;
-             display:flex; flex-direction:column;
-             background:linear-gradient(160deg, rgba(43,224,198,.03), transparent 60%);
-             transition:border-color .2s, background .2s; }
-  .libitem:hover { border-color:rgba(43,224,198,.5);
-                   background:linear-gradient(160deg, rgba(43,224,198,.07), transparent 65%); }
+  /* --- Горизонтальная карточка ---
+     Сетка на всю ширину: рейка с номером во всю высоту, заголовок через обе
+     колонки, ниже описание слева и «работает / не работает» справа, внизу
+     полоса производителей. Левый край подкрашивается при наведении — карточка
+     отзывается целиком, а не одной рамкой. */
+  .libgrid { display:flex; flex-direction:column; gap:16px; margin:22px 0 0; }
+  .libitem {
+    display:grid; grid-template-columns:104px minmax(0,1.05fr) minmax(0,1fr);
+    column-gap:34px; row-gap:0; margin:0; padding:28px 32px 24px;
+    border:1px solid rgba(159,180,200,.2); border-left:2px solid rgba(159,180,200,.22);
+    background:linear-gradient(105deg, rgba(43,224,198,.035), transparent 42%);
+    transition:border-color .2s, background .2s;
+  }
+  .libitem:hover { border-color:rgba(159,180,200,.34); border-left-color:#2be0c6;
+                   background:linear-gradient(105deg, rgba(43,224,198,.09), transparent 48%); }
   .libitem[hidden] { display:none; }
-  .libitem > i { font:500 11px/1 monospace; letter-spacing:.18em; color:#ff6a3d; font-style:normal; }
-  .libitem > h3 { font-size:21px; line-height:1.2; margin:9px 0 3px; letter-spacing:-.01em; }
-  .libitem > p.line { color:#2be0c6; font-size:16px; line-height:1.4; margin:0 0 13px; }
-  .libitem > p.what { color:#c8d8e2; font-size:16px; line-height:1.6; margin:0 0 16px; max-width:none; }
-  .libitem .sec { font:500 10px/1 monospace; letter-spacing:.16em; text-transform:uppercase;
-                  color:#6d8496; margin-left:9px; }
+  /* Панель фильтра липкая и высотой около 130 px: без отступа переход по якорю
+     ставил карточку ровно под неё и прятал заголовок. Запас взят с избытком —
+     на узком экране панель переносит кнопки и становится выше. */
+  .libitem { scroll-margin-top:150px; }
 
-  .gb { display:grid; grid-template-columns:1fr; gap:14px; margin:0 0 16px; }
-  .gb > div > h4 { font:500 11px/1 monospace; letter-spacing:.14em; text-transform:uppercase;
-                   margin:0 0 8px; color:#9fb4c8; }
+  .li-rail { grid-column:1; grid-row:1 / span 3; }
+  .li-rail i { display:block; font:500 13px/1 monospace; letter-spacing:.14em;
+               color:#ff6a3d; font-style:normal; }
+  .li-rail .sec { display:block; margin-top:9px; font:500 10px/1.5 monospace;
+                  letter-spacing:.14em; text-transform:uppercase; color:#6d8496; }
+  .li-head { grid-column:2 / span 2; grid-row:1; margin-bottom:16px; }
+  .li-head h3 { font-size:clamp(20px,2.1vw,25px); line-height:1.18; margin:0 0 4px; letter-spacing:-.01em; }
+  .li-head .line { color:#2be0c6; font-size:17px; line-height:1.4; margin:0; }
+  .li-main { grid-column:2; grid-row:2; }
+  .li-side { grid-column:3; grid-row:2; }
+  .li-foot { grid-column:2 / span 2; grid-row:3; }
+  .li-main .what { color:#c8d8e2; font-size:16.5px; line-height:1.62; margin:0 0 16px; max-width:60ch; }
+
+  .gb { display:grid; grid-template-columns:1fr; gap:16px; margin:0; }
+  .gb > div > h4 { font:500 10px/1 monospace; letter-spacing:.16em; text-transform:uppercase;
+                   margin:0 0 9px; color:#9fb4c8; }
   .gb ul { list-style:none; padding:0; margin:0; }
-  .gb li { position:relative; padding-left:1.4em; margin:7px 0; font-size:15.5px; line-height:1.5; color:#c8d8e2; }
+  .gb li { position:relative; padding-left:1.35em; margin:7px 0; font-size:15.5px;
+           line-height:1.5; color:#c8d8e2; }
   .gb li:before { position:absolute; left:0; top:0; font-weight:700; }
   .gb .good li:before { content:"+"; color:#2be0c6; }
   .gb .bad  li:before { content:"\2013"; color:#ff6a3d; }
 
   .call { margin:0 0 16px; padding:13px 16px; border-left:2px solid #2be0c6;
-          background:rgba(43,224,198,.05); color:#c8d8e2; font-size:15.5px; line-height:1.55; max-width:none; }
-  .libitem .brands { margin-top:auto; padding-top:14px; }
-  .libitem .brands li { max-width:none; }
+          background:rgba(43,224,198,.05); color:#c8d8e2; font-size:15.5px;
+          line-height:1.55; max-width:60ch; }
+  .li-foot .brands { margin-top:20px; padding-top:16px;
+                     border-top:1px solid rgba(159,180,200,.15); }
+  .li-foot .brands ul { gap:7px; }
+  .li-foot .brands li { max-width:none; padding:7px 12px; }
   .libcase { margin:14px 0 0; font-size:15px; }
   .libcase:before { content:"\2192"; color:#2be0c6; margin-right:.5em; }
+
+  /* Планшет: колонки складываются, рейка уходит строкой над заголовком */
+  @media (max-width:900px) {
+    .libitem { grid-template-columns:1fr; row-gap:0; padding:24px 22px 20px; }
+    .li-rail { grid-column:1; grid-row:auto; display:flex; align-items:baseline; gap:12px; margin-bottom:10px; }
+    .li-rail .sec { margin-top:0; }
+    .li-head, .li-main, .li-side, .li-foot { grid-column:1; grid-row:auto; }
+    .li-side { margin-top:4px; }
+    .li-foot .brands { margin-top:18px; }
+  }
   .libempty { color:#9fb4c8; padding:30px 0; }
 
   @media (max-width:900px) { .libgrid { grid-template-columns:1fr; } }
-  @media (max-width:720px) { .libcount { margin-left:0; width:100%; } }
+  /* На телефоне семь кнопок переносились в четыре ряда, и липкая панель съедала
+     треть экрана. Лентой с горизонтальной прокруткой она остаётся в одну строку.
+     Полосу прокрутки прячем: её место дороже, чем подсказка о ней, — а то, что
+     лента тянется, видно по обрезанной кнопке у края. */
+  @media (max-width:720px) {
+    .libcount { margin-left:0; width:100%; }
+    .libbar { gap:12px; }
+    .libchips { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+                width:100%; scrollbar-width:none; padding-bottom:2px; }
+    .libchips::-webkit-scrollbar { display:none; }
+    .libchip { flex:0 0 auto; }
+    .libitem { scroll-margin-top:190px; }
+  }
 
   /* --- Вынесенные ссылки на производителей --- */
   .brands { margin:16px 0 0; }
@@ -1532,32 +1577,44 @@ def lib_brands(L, item):
 
 
 def lib_item(L, item, idx, sec=''):
-    out = ['<div class="libitem" id="%s" data-sec="%s">' % (esc(item['id']), esc(sec))]
-    out.append('<i>%s<span class="sec">%s</span></i>' % (idx, esc(sec)))
-    out.append('<h3>%s</h3>' % esc(item['name']))
-    out.append('<p class="line">%s</p>' % esc(item['line']))
-    out.append('<p class="what">%s</p>' % esc(item['what']))
+    """Горизонтальная карточка: слева рейка с номером, справа заголовок,
+    ниже описание и «работает / не работает» двумя колонками, внизу производители.
+    Плиткой было хуже: карточка в 490 пикселей ширины растягивалась на полторы
+    тысячи в высоту, и две такие рядом читались как две колонки газеты."""
     T = LIB_T[L.code]
+    out = ['<div class="libitem" id="%s" data-sec="%s">' % (esc(item['id']), esc(sec))]
+
+    out.append('<div class="li-rail"><i>%s</i><span class="sec">%s</span></div>' % (idx, esc(sec)))
+    out.append('<div class="li-head"><h3>%s</h3><p class="line">%s</p></div>'
+               % (esc(item['name']), esc(item['line'])))
+
+    main = ['<p class="what">%s</p>' % esc(item['what'])]
     if item.get('compare'):
-        out.append('<div class="call"><b>%s</b>%s</div>' % (T['compare'], lib_md(item['compare'])))
+        main.append('<div class="call"><b>%s</b>%s</div>' % (T['compare'], lib_md(item['compare'])))
     if item.get('note_hw'):
-        out.append('<div class="call hw"><b>%s</b>%s</div>' % (T['hw'], lib_md(item['note_hw'])))
+        main.append('<div class="call hw"><b>%s</b>%s</div>' % (T['hw'], lib_md(item['note_hw'])))
+    if item.get('spec'):
+        main.append('<div class="call"><b>%s</b>%s</div>' % (T['spec'], lib_md(item['spec'])))
+    if item.get('warn'):
+        main.append('<div class="call warn"><b>%s</b>%s</div>' % (T['warn'], lib_md(item['warn'])))
+    out.append('<div class="li-main">%s</div>' % ''.join(main))
+
     good = ''.join('<li>%s</li>' % esc(x) for x in item.get('good', []))
     bad = ''.join('<li>%s</li>' % esc(x) for x in item.get('bad', []))
+    side = ''
     if good or bad:
-        out.append('<div class="gb"><div class="good"><h4>%s</h4><ul>%s</ul></div>'
-                   '<div class="bad"><h4>%s</h4><ul>%s</ul></div></div>'
-                   % (T['good'], good, T['bad'], bad))
-    if item.get('spec'):
-        out.append('<div class="call"><b>%s</b>%s</div>' % (T['spec'], lib_md(item['spec'])))
-    if item.get('warn'):
-        out.append('<div class="call warn"><b>%s</b>%s</div>' % (T['warn'], lib_md(item['warn'])))
-    out.append(lib_brands(L, item))
+        side = ('<div class="gb"><div class="good"><h4>%s</h4><ul>%s</ul></div>'
+                '<div class="bad"><h4>%s</h4><ul>%s</ul></div></div>'
+                % (T['good'], good, T['bad'], bad))
+    out.append('<div class="li-side">%s</div>' % side)
+
+    foot = [lib_brands(L, item)]
     if item.get('case') and item['case'] in L.pmap:
-        p = L.pmap[item['case']]
-        out.append('<p class="libcase">%s<a href="%swork/%s/">%s</a></p>'
-                   % (T['ourcase'], '../../' if L.code == 'ru' else '../../../',
-                      esc(item['case']), esc(p.get('title') or item['case'])))
+        pr = L.pmap[item['case']]
+        foot.append('<p class="libcase">%s<a href="%swork/%s/">%s</a></p>'
+                    % (T['ourcase'], '../../' if L.code == 'ru' else '../../../',
+                       esc(item['case']), esc(pr.get('title') or item['case'])))
+    out.append('<div class="li-foot">%s</div>' % ''.join(foot))
     out.append('</div>')
     return ''.join(out)
 
