@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-25 00:20 — hybrid-v8 @ 7bcc1dc
+
+**Коммиты в этой поставке**
+```
+7bcc1dc шапка внутри раздела, слайд оборудования на главной
+8b7f920 Раздел оборудования: шапка сайта внутри, слайд на главной
+fede2bf Журнал деплоя: 6c8871d
+```
+
+**На сервер отправлено файлов:** 123, удалено: 0
+```
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+data/i18n/en.js
+digital/digital.css
+digital/digital.js
+digital/index.html
+en/index.html
+en/atlas/index.html
+…и ещё 83
+```
+
+
 ## 2026-08-24 23:58 — hybrid-v8 @ 6c8871d
 
 **Коммиты в этой поставке**
