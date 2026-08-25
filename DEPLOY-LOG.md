@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-25 10:45 — hybrid-v8 @ af702e9
+
+**Коммиты в этой поставке**
+```
+af702e9 Главная: эфир в прессе, звук по первому экрану, лента логотипов, ритм слайда
+3138e21 Ролик локаций до 1:55, RuStore в площадках, направления по 16 млн
+18c4954 Журнал деплоя: 4e8b4c9
+```
+
+**На сервер отправлено файлов:** 124, удалено: 0
+```
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+avtovaz/assets/world-tour.mp4
+avtovaz/private/page.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+data/i18n/en.js
+digital/index.html
+en/index.html
+en/atlas/index.html
+…и ещё 84
+```
+
+
 ## 2026-08-25 00:32 — hybrid-v8 @ 4e8b4c9
 
 **Коммиты в этой поставке**
