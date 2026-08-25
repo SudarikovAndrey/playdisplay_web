@@ -1696,6 +1696,8 @@ html.deck { scroll-snap-type: y mandatory; }
 .stores--tiles .ico--vk svg { width: 40px; height: 40px; }
 .stores--tiles .ico--ok svg { width: 33px; height: 33px; }
 .stores--tiles .ico--ya svg { width: 32px; height: 32px; }
+/* У RuStore знак — плашка со скруглением, и она визуально крупнее круга: сбавляем */
+.stores--tiles .ico--rs svg { width: 31px; height: 31px; }
 /* Подпись действия берётся из разметки: у магазинов «скачать», у веб-площадок «играть». */
 .stores--tiles a::after {
   content: attr(data-action);
