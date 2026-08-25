@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-24 23:53 — hybrid-v8 @ f83135a
+
+**Коммиты в этой поставке**
+```
+f83135a библиотека: вёрстка карточек, висяки, продающий текст
+98171f1 Библиотека: чинёная вёрстка, висяки в заголовках, продающий текст
+c9ec879 Журнал деплоя: 183abb6
+```
+
+**На сервер отправлено файлов:** 121, удалено: 0
+```
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+digital/digital.css
+digital/digital.js
+digital/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/concepts/ar-portal/index.html
+…и ещё 81
+```
+
+
 ## 2026-08-24 23:24 — hybrid-v8 @ 183abb6
 
 **Коммиты в этой поставке**
