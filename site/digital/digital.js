@@ -43,36 +43,75 @@
   function initPointSpheres(hosts) {
     var points = [];
     var goldenAngle = Math.PI * (3 - Math.sqrt(5));
-    var surfaceCount = 1540;
-    var rimCount = 720;
+    var surfaceCount = 2400;
+    var innerCount = 900;
+
+    function noise(value) {
+      var raw = Math.sin(value * 12.9898 + 78.233) * 43758.5453;
+      return raw - Math.floor(raw);
+    }
 
     for (var index = 0; index < surfaceCount; index += 1) {
       var y = 1 - 2 * (index + .5) / surfaceCount;
       var radius = Math.sqrt(Math.max(0, 1 - y * y));
       var angle = index * goldenAngle;
-      points.push({ x: Math.cos(angle) * radius, y: y, z: Math.sin(angle) * radius });
-    }
-    for (var rimIndex = 0; rimIndex < rimCount; rimIndex += 1) {
-      var rimAngle = Math.PI * 2 * rimIndex / rimCount;
-      var rimRadius = .88 + .1 * (.5 + .5 * Math.sin(rimIndex * 2.17));
+      var shell = .9 + noise(index + 1) * .1;
       points.push({
-        x: Math.cos(rimAngle) * rimRadius,
-        y: Math.sin(rimAngle) * rimRadius,
-        z: Math.sin(rimIndex * 1.73) * .16
+        x: Math.cos(angle) * radius * shell,
+        y: y * shell,
+        z: Math.sin(angle) * radius * shell,
+        shell: shell,
+        phase: noise(index + 41) * Math.PI * 2,
+        speed: .66 + noise(index + 87) * .72,
+        wobble: .68 + noise(index + 133) * 1.15,
+        opacity: .68 + noise(index + 171) * .32
+      });
+    }
+    for (var innerIndex = 0; innerIndex < innerCount; innerIndex += 1) {
+      var innerY = 1 - 2 * (innerIndex + .5) / innerCount;
+      var innerRadius = Math.sqrt(Math.max(0, 1 - innerY * innerY));
+      var innerAngle = innerIndex * goldenAngle + noise(innerIndex + 217) * .7;
+      var innerShell = .32 + Math.pow(noise(innerIndex + 263), .52) * .58;
+      points.push({
+        x: Math.cos(innerAngle) * innerRadius * innerShell,
+        y: innerY * innerShell,
+        z: Math.sin(innerAngle) * innerRadius * innerShell,
+        shell: innerShell,
+        phase: noise(innerIndex + 311) * Math.PI * 2,
+        speed: .42 + noise(innerIndex + 359) * 1.26,
+        wobble: .8 + noise(innerIndex + 401) * 1.5,
+        opacity: .34 + noise(innerIndex + 449) * .42
       });
     }
 
-    var hoverCount = 0;
     var spheres = Array.prototype.map.call(hosts, function (host) {
       var canvas = document.createElement('canvas');
       canvas.setAttribute('aria-hidden', 'true');
       host.appendChild(canvas);
       var button = host.closest('button');
+      var sphere = {
+        host: host,
+        canvas: canvas,
+        context: canvas.getContext('2d'),
+        hoverTarget: 0,
+        hoverMix: 0,
+        pointerX: 0,
+        pointerY: 0
+      };
       if (button) {
-        button.addEventListener('pointerenter', function () { hoverCount += 1; });
-        button.addEventListener('pointerleave', function () { hoverCount = Math.max(0, hoverCount - 1); });
+        button.addEventListener('pointerenter', function () { sphere.hoverTarget = 1; });
+        button.addEventListener('pointermove', function (event) {
+          var box = button.getBoundingClientRect();
+          sphere.pointerX = Math.max(-1, Math.min(1, (event.clientX - box.left) / Math.max(1, box.width) * 2 - 1));
+          sphere.pointerY = Math.max(-1, Math.min(1, (event.clientY - box.top) / Math.max(1, box.height) * 2 - 1));
+        });
+        button.addEventListener('pointerleave', function () {
+          sphere.hoverTarget = 0;
+          sphere.pointerX = 0;
+          sphere.pointerY = 0;
+        });
       }
-      return { host: host, canvas: canvas, context: canvas.getContext('2d') };
+      return sphere;
     });
 
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -85,15 +124,12 @@
       }
       var elapsed = lastFrame ? Math.min(80, time - lastFrame) : 34;
       lastFrame = time;
-      var active = hoverCount > 0;
-      rotationY += elapsed * (active ? .00105 : .00019);
-      var rotationX = Math.sin(time * .00011) * .16;
-      var cosY = Math.cos(rotationY);
-      var sinY = Math.sin(rotationY);
-      var cosX = Math.cos(rotationX);
-      var sinX = Math.sin(rotationX);
+      var anyActive = spheres.some(function (sphere) { return sphere.hoverTarget > 0; });
+      rotationY += elapsed * (anyActive ? .00078 : .00023);
 
       spheres.forEach(function (sphere) {
+        sphere.hoverMix += (sphere.hoverTarget - sphere.hoverMix) * Math.min(1, elapsed * .0065);
+        var active = sphere.hoverMix;
         var box = sphere.host.getBoundingClientRect();
         if (box.width < 2 || box.height < 2) return;
         var ratio = Math.min(2, window.devicePixelRatio || 1);
@@ -105,23 +141,37 @@
         }
         var context = sphere.context;
         context.clearRect(0, 0, width, height);
-        context.fillStyle = active ? 'rgba(226,234,255,.96)' : 'rgba(196,209,245,.72)';
+        context.fillStyle = 'rgb(222,230,250)';
         var centerX = width / 2;
         var centerY = height / 2;
-        var radius = Math.min(width, height) * .465;
+        var sphereRadius = Math.min(width, height) * (.46 + active * .012);
         var pixel = Math.max(1, ratio);
+        var rotationX = Math.sin(time * .00013) * .14 + active * sphere.pointerY * .07;
+        var cosX = Math.cos(rotationX);
+        var sinX = Math.sin(rotationX);
 
         points.forEach(function (point) {
+          var layeredRotation = rotationY * point.speed + Math.sin(time * .00016 * point.wobble + point.phase) * (.025 + (1 - point.shell) * .055);
+          var cosY = Math.cos(layeredRotation);
+          var sinY = Math.sin(layeredRotation);
           var x = point.x * cosY + point.z * sinY;
           var z = -point.x * sinY + point.z * cosY;
           var y = point.y * cosX - z * sinX;
           var depth = point.y * sinX + z * cosX;
+          var innerFactor = 1 - point.shell;
+          var vortex = Math.sin(time * .00042 * point.wobble + point.phase + y * 3.4);
+          x += vortex * (.008 + innerFactor * .025 + active * .018);
+          y += Math.cos(time * .00031 * point.wobble + point.phase + x * 3.1) * (.005 + innerFactor * .018 + active * .012);
+          x += active * sphere.pointerX * (1 - Math.min(1, Math.abs(y))) * .026;
+          y += active * sphere.pointerY * (1 - Math.min(1, Math.abs(x))) * .018;
           var edge = Math.min(1, Math.sqrt(x * x + y * y));
-          var perspective = 1 + depth * .075;
-          context.globalAlpha = Math.min(1, (active ? .38 : .18) + (depth + 1) * (active ? .31 : .23) + edge * .16);
+          var perspective = 1 + depth * (.115 + active * .025);
+          var frontLight = .14 + (depth + 1) * .27;
+          var rimLight = Math.pow(edge, 2.5) * .29;
+          context.globalAlpha = Math.min(1, (frontLight + rimLight) * point.opacity * (1 + active * .54));
           context.fillRect(
-            Math.round(centerX + x * radius * perspective),
-            Math.round(centerY + y * radius * perspective),
+            Math.round(centerX + x * sphereRadius * perspective),
+            Math.round(centerY + y * sphereRadius * perspective),
             pixel,
             pixel
           );
@@ -296,6 +346,7 @@
 
     function returnToIntro() {
       if (transitioning) return;
+      document.dispatchEvent(new CustomEvent('digital-map:exited'));
       document.documentElement.classList.remove('intro-space-locked');
       var rootScrollBehavior = document.documentElement.style.scrollBehavior;
       var bodyScrollBehavior = document.body.style.scrollBehavior;
@@ -336,7 +387,13 @@
     });
     document.addEventListener('digital-intro:return', returnToIntro);
     var toTopButton = document.getElementById('toTop');
-    if (toTopButton) toTopButton.addEventListener('click', returnToIntro);
+    if (toTopButton) {
+      toTopButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        returnToIntro();
+      }, true);
+    }
 
     if (bypassIntro) {
       renderTransition(1);
@@ -529,10 +586,38 @@
       };
     }
 
+    function layoutMetrics(direction, compact, componentLevel) {
+      var horizontalWeight = Math.abs(direction.x);
+      var verticalWeight = Math.abs(direction.y);
+      var benefitForward = compact
+        ? 85 * horizontalWeight + 43 * verticalWeight
+        : 130 * horizontalWeight + 54 * verticalWeight;
+      var benefitSide = compact
+        ? 85 * verticalWeight + 43 * horizontalWeight
+        : 130 * verticalWeight + 54 * horizontalWeight;
+      var selectedForward = compact
+        ? 130 * horizontalWeight + 88 * verticalWeight
+        : 200 * horizontalWeight + 115 * verticalWeight;
+      var branchForward = compact
+        ? 85 * horizontalWeight + 56 * verticalWeight
+        : 85 * horizontalWeight + 54 * verticalWeight;
+      var questionDistance = selectedForward + 59 + (compact ? 48 : 34);
+      return {
+        questionDistance: questionDistance,
+        perpendicularSpacing: benefitSide * 2 + (compact ? 34 : 56),
+        layerGap: benefitForward * 2 + (compact ? 34 : 54),
+        firstDistance: componentLevel
+          ? branchForward + benefitForward + (compact ? 48 : 70)
+          : questionDistance + 59 + benefitForward + (compact ? 42 : 70),
+        branchGap: benefitForward + branchForward + (compact ? 38 : 58)
+      };
+    }
+
     function fanLayout(origin, direction, count, compact, componentLevel) {
-      var perpendicularSpacing = compact ? 100 + Math.abs(direction.y) * 80 : 122 + Math.abs(direction.y) * 178;
-      var layerGap = compact ? 108 + Math.abs(direction.x) * 95 : 128 + Math.abs(direction.x) * 172;
-      var firstDistance = compact ? (componentLevel ? 245 : 260) : (componentLevel ? 430 : 460);
+      var metrics = layoutMetrics(direction, compact, componentLevel);
+      var perpendicularSpacing = metrics.perpendicularSpacing;
+      var layerGap = metrics.layerGap;
+      var firstDistance = metrics.firstDistance;
       var firstSides = [-perpendicularSpacing, 0, perpendicularSpacing];
       var secondSides = count === 5
         ? [-perpendicularSpacing / 2, perpendicularSpacing / 2]
@@ -696,13 +781,13 @@
           if (currentRun !== detailTypingRun || detailedNode !== node) return;
           note.textContent = detail.slice(0, position);
           if (position < detail.length) {
-            window.setTimeout(function () { type(position + 1); }, 24);
+            window.setTimeout(function () { type(position + 1); }, 13);
             return;
           }
           note.classList.remove('is-typing');
         }
         type(0);
-      }, 1180);
+      }, 1260);
     }
 
     function stopNodeDetailTyping(node) {
@@ -720,6 +805,10 @@
       if (detailedNode) closeNodeDetail(false);
       detailReturnView = { left: viewport.scrollLeft, top: viewport.scrollTop };
       detailedNode = node;
+      var detail = node.querySelector('small');
+      var detailLength = detail && detail._detailText ? detail._detailText.length : 0;
+      var detailHeight = Math.round(Math.max(300, Math.min(370, 284 + Math.max(0, detailLength - 105) * .52)));
+      node.style.setProperty('--detail-height', detailHeight + 'px');
       reactSpace();
       map.classList.add('has-expanded');
       viewport.classList.add('is-detail-focus');
@@ -728,6 +817,7 @@
       node.setAttribute('aria-label', title + '. Закрыть подробное описание');
       live.textContent = 'Открыто подробное описание: ' + title + '.';
       typeNodeDetail(node);
+      updatePanState([point]);
       window.setTimeout(function () { centerOn(point); }, 80);
     }
 
@@ -744,6 +834,7 @@
       map.classList.remove('has-expanded');
       viewport.classList.remove('is-detail-focus');
       live.textContent = 'Подробное описание закрыто.';
+      updatePanState(currentPoints);
       if (restoreView && detailReturnView) {
         moveCamera(detailReturnView.left, detailReturnView.top);
       }
@@ -787,16 +878,32 @@
 
     function pointBounds(points) {
       return points.reduce(function (bounds, point) {
-        bounds.left = Math.min(bounds.left, point.x - 235);
-        bounds.right = Math.max(bounds.right, point.x + 235);
-        bounds.top = Math.min(bounds.top, point.y - 135);
-        bounds.bottom = Math.max(bounds.bottom, point.y + 135);
+        bounds.left = Math.min(bounds.left, point.x - 210);
+        bounds.right = Math.max(bounds.right, point.x + 210);
+        bounds.top = Math.min(bounds.top, point.y - 125);
+        bounds.bottom = Math.max(bounds.bottom, point.y + 125);
+        return bounds;
+      }, { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity });
+    }
+
+    function interactionBounds(points) {
+      var halfWidth = state === 'root' ? Math.max(118, rootNode.offsetWidth / 2) : 210;
+      var halfHeight = state === 'root' ? Math.max(118, rootNode.offsetHeight / 2) : 130;
+      if (detailedNode && points.length === 1) {
+        halfWidth = Math.max(halfWidth, detailedNode.offsetWidth / 2);
+        halfHeight = Math.max(halfHeight, detailedNode.offsetHeight / 2);
+      }
+      return points.reduce(function (bounds, point) {
+        bounds.left = Math.min(bounds.left, point.x - halfWidth);
+        bounds.right = Math.max(bounds.right, point.x + halfWidth);
+        bounds.top = Math.min(bounds.top, point.y - halfHeight);
+        bounds.bottom = Math.max(bounds.bottom, point.y + halfHeight);
         return bounds;
       }, { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity });
     }
 
     function calculatePanLimits(points) {
-      var bounds = pointBounds(points);
+      var bounds = interactionBounds(points);
       var padding = viewport.clientWidth <= 760 ? 42 : 86;
       var contentWidth = bounds.right - bounds.left;
       var contentHeight = bounds.bottom - bounds.top;
@@ -836,7 +943,7 @@
       var top = viewport.scrollTop + 72;
       var bottom = viewport.scrollTop + viewport.clientHeight - 72;
       return points.every(function (point) {
-        return point.x - 138 >= left && point.x + 138 <= right && point.y - 62 >= top && point.y + 62 <= bottom;
+        return point.x - 210 >= left && point.x + 210 <= right && point.y - 125 >= top && point.y + 125 <= bottom;
       });
     }
 
@@ -1008,13 +1115,12 @@
       selectedNode.setAttribute('data-map-role', 'benefit-base');
       line(rootPoint, selectedPoint, 'category', 'benefit-base');
 
-      var questionDistance = compact ? 145 : 230;
+      var metrics = layoutMetrics(selectedDirection, compact, false);
+      var questionDistance = metrics.questionDistance;
       questionPoint = offsetPoint(selectedPoint, selectedDirection, questionDistance, 0);
       benefitPoints = fanLayout(selectedPoint, selectedDirection, item.benefits.length, compact, false);
-      var farthestBenefitDistance = compact
-        ? 368 + Math.abs(selectedDirection.x) * 95
-        : 588 + Math.abs(selectedDirection.x) * 172;
-      var branchGap = compact ? 145 + Math.abs(selectedDirection.x) * 75 : 185 + Math.abs(selectedDirection.x) * 95;
+      var farthestBenefitDistance = metrics.firstDistance + metrics.layerGap;
+      var branchGap = metrics.branchGap;
       branchPoint = offsetPoint(selectedPoint, selectedDirection, farthestBenefitDistance + branchGap, 0);
 
       line(selectedPoint, questionPoint, 'benefit', 'benefit-question', 0);
@@ -1161,6 +1267,12 @@
     function setMapLocked(locked) {
       mapLocked = locked;
       document.documentElement.classList.toggle('map-space-locked', locked);
+      if (locked) {
+        updatePanState(currentPoints);
+        var settled = limitPan(viewport.scrollLeft, viewport.scrollTop);
+        viewport.scrollLeft = settled.left;
+        viewport.scrollTop = settled.top;
+      }
     }
 
     function releaseMapSpace() {
@@ -1174,6 +1286,11 @@
       var box = mapSection.getBoundingClientRect();
       var visible = Math.max(0, Math.min(window.innerHeight, box.bottom) - Math.max(0, box.top));
       var ratio = visible / Math.min(window.innerHeight, box.height);
+      if (window.location.hash === '#s03') {
+        mapSection.scrollIntoView({ block: 'start', behavior: 'auto' });
+        setMapLocked(true);
+        return;
+      }
       if (ratio < .92) return;
       mapSection.scrollIntoView({ block: 'start', behavior: reducedMotion ? 'auto' : 'smooth' });
       setMapLocked(true);
@@ -1190,6 +1307,7 @@
       setMapLocked(true);
       window.setTimeout(function () { centerOn(rootPoint); }, 80);
     });
+    document.addEventListener('digital-map:exited', releaseMapSpace);
 
     window.addEventListener('scroll', requestMapLock, { passive: true });
     window.addEventListener('resize', requestMapLock);
