@@ -8,6 +8,64 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-24 23:24 — hybrid-v8 @ 183abb6
+
+**Коммиты в этой поставке**
+```
+183abb6 библиотека: живой язык, горизонтальные карточки, фильтр и поиск
+cd0c1cd Библиотека: карточки стали горизонтальными
+e1b64ce Отзывы карточками, лента логотипов тащится рукой, логотип загрузки собирается из частиц
+925aa86 Подписи двух карточек короче: «Газпром» и «МАКС авиасалон»
+5ef8986 Библиотека: живой язык, карточки с фильтром и поиском
+1836028 Журнал деплоя: 8255616
+```
+
+**На сервер отправлено файлов:** 126, удалено: 0
+```
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+data/library.json
+data/trust.json
+data/en/library.json
+data/en/trust.json
+digital/digital.css
+digital/digital.js
+…и ещё 86
+```
+
+
 ## 2026-08-24 19:43 — hybrid-v8 @ 8255616
 
 **Коммиты в этой поставке**
