@@ -1554,7 +1554,8 @@ LIB_CSS = CNC_CSS + '''
 
 LIB_PAGE = ATLAS_PAGE.replace(
     '<nav class="crumbs"><a href="{home}">playdisplay</a> / {title}</nav>',
-    '<nav class="crumbs"><a href="{home}">playdisplay</a> / {crumb} {title}</nav>')
+    '<nav class="crumbs"><a href="{home}">playdisplay</a> / {crumb} {title}</nav>'
+).replace('<body>\n<main class="wrap">', '<body>\n{chrome}\n<main class="wrap">')
 
 
 # Висяки в заголовках. Союз, предлог или частица не должны оставаться в конце
@@ -1600,6 +1601,34 @@ def lib_brands(L, item):
         % (esc(b['u']), esc(b['n']), esc(b.get('note', '')))
         for b in item['brands'])
     return '<div class="brands"><h4>%s</h4><ul>%s</ul></div>' % (LIB_T[L.code]['brands'], li)
+
+
+def lib_chrome(L, up, current=''):
+    """шапка, «назад» и «наверх» для страниц раздела: навигация та же, что на главной"""
+    T = LIB_T[L.code]
+    home = up + L.prefix
+    items = [(T['services'], home + 'services/', 'services'),
+             (T['work'], home + '#work', 'work'),
+             (T['concepts'], home + 'concepts/', 'concepts'),
+             (T['hubnav'], up + L.prefix + 'library/', 'library'),
+             (T['atlas'], home + 'atlas/', 'atlas')]
+    nav = ''.join('<a href="%s"%s>%s</a>' % (esc(u), ' aria-current="page"' if k == current else '', esc(n))
+                  for n, u, k in items)
+    return (
+      '<header class="pdhdr"><div class="in">'
+      '<a class="lg" href="%s" aria-label="playdisplay"><img src="%sassets/logos/playdisplay-logo-black.png" alt="playdisplay"></a>'
+      '<nav>%s</nav><a class="talk" href="%s#contact">%s</a>'
+      '</div></header>'
+      '<div class="pdnav">'
+      '<button class="back" type="button" data-home="%slibrary/" aria-label="%s" title="%s">'
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+      '<path d="M15 5 L8 12 L15 19"/></svg></button>'
+      '<button class="up" type="button" aria-label="%s" title="%s">'
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+      '<path d="M5 14 L12 7 L19 14"/></svg></button>'
+      '</div>'
+    ) % (esc(home), esc(up), nav, esc(home), esc(T['talk']),
+         esc(up + L.prefix), esc(T['back']), esc(T['back']), esc(T['top']), esc(T['top']))
 
 
 def lib_item(L, item, idx, sec=''):
@@ -1702,6 +1731,184 @@ LIB_INTRO_EN = '<p>Organised by role in the system, not by price list. Every int
 LIB_TAIL_EN = '<h2>Integration by Playdisplay</h2><p>We are integrators: we build working exhibitions out of this kit, from the story to opening day. We know it from the rooms we designed, installed and later repaired, not from catalogues. What each item really gives you, where it will let you down, and what to swap it for when the budget will not close — we know from our own work rather than from somebody else’s promises.</p><p>In our hands an ordinary monitor becomes a display people stop at. The same monitor with no story is a noticeboard. The difference is not the monitor — it is what happens on it, and why anyone noticed.</p><p>We are independent of suppliers: no warehouse of our own, no commission on hardware. So the solution gets picked for the job rather than for the stock. Supply is handled by our partners — anything on this list, on the best terms for you. Ours is the story, the content, the interaction, the software and the integration: one hardware-and-software system, rather than boxes from five vendors who have never heard of each other.</p><p><b>Got a specification in hand?</b> Send it over. We will tell you what is redundant, what is missing and what will not see year two. Free, no obligation, and no sales pitch afterwards.</p>'
 
 
+LIB_CHROME_CSS = '''
+  /* ---------- Обвязка страницы: шапка, кнопки, курсор ----------
+     Раздел лежит вне лендинга и своих стилей лендинга не тянет, поэтому шапка
+     собрана здесь заново — но по тем же правилам: фиксирована сверху, прозрачная
+     над первым экраном и с подложкой после прокрутки. Без неё «провалившись»
+     в раздел человек терял навигацию и мог вернуться только кнопкой браузера. */
+  body { padding-top:0; }
+  .pdhdr { position:fixed; top:0; left:0; right:0; z-index:60;
+           border-bottom:1px solid transparent;
+           transition:background .3s ease, border-color .3s ease; }
+  .pdhdr.scrolled { background:rgba(4,12,16,.88); backdrop-filter:blur(12px);
+                    border-bottom-color:rgba(159,180,200,.2); }
+  .pdhdr .in { display:flex; align-items:center; gap:26px;
+               max-width:1180px; margin:0 auto; padding:15px 24px; }
+  .pdhdr .lg { display:inline-flex; flex:0 0 auto; }
+  .pdhdr .lg img { height:17px; display:block; filter:brightness(0) invert(1); }
+  .pdhdr nav { display:flex; gap:24px; overflow-x:auto; scrollbar-width:none; }
+  .pdhdr nav::-webkit-scrollbar { display:none; }
+  .pdhdr nav a { flex:0 0 auto; text-decoration:none; color:#9fb4c8;
+                 font:700 11.5px/1 monospace; letter-spacing:.2em; text-transform:uppercase;
+                 transition:color .18s; }
+  .pdhdr nav a:hover { color:#e9f4f6; }
+  .pdhdr nav a[aria-current="page"] { color:#2be0c6; }
+  .pdhdr .talk { margin-left:auto; flex:0 0 auto; text-decoration:none;
+                font:700 11.5px/1 monospace; letter-spacing:.12em; text-transform:uppercase;
+                background:#ff6a3d; color:#040c10; padding:11px 18px;
+                clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
+                transition:transform .2s cubic-bezier(.2,.8,.2,1); }
+  .pdhdr .talk:hover { transform:translateY(-2px); }
+
+  /* Панель фильтра липнет ПОД шапкой, а не под верх окна: иначе она уезжала бы
+     под неё и первые кнопки были не видны. Высота шапки подставляется скриптом. */
+  .libbar { top:var(--hdr,58px); }
+  .wrap { padding-top:112px; }
+
+  /* Кнопки «назад» и «наверх». Стопкой в правом нижнем углу: там их ищут,
+     и они не спорят с содержанием. «Наверх» появляется после первого экрана. */
+  .pdnav { position:fixed; right:22px; bottom:22px; z-index:55;
+           display:flex; flex-direction:column; gap:10px; }
+  .pdnav button { width:44px; height:44px; cursor:pointer; display:grid; place-items:center;
+                  background:rgba(4,12,16,.82); backdrop-filter:blur(8px);
+                  border:1px solid rgba(159,180,200,.28); color:#9fb4c8;
+                  transition:color .18s, border-color .18s, background .18s, opacity .3s, transform .3s; }
+  .pdnav button:hover { color:#2be0c6; border-color:#2be0c6; background:rgba(43,224,198,.1); }
+  .pdnav button svg { width:18px; height:18px; display:block; }
+  .pdnav .up { opacity:0; transform:translateY(10px); pointer-events:none; }
+  .pdnav .up.on { opacity:1; transform:none; pointer-events:auto; }
+
+  /* Проявление карточек при прокрутке — тот же приём, что на лендинге.
+     Без скриптов и при prefers-reduced-motion карточки видны сразу. */
+  .rv { opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
+  .rv.in { opacity:1; transform:none; }
+  @media (prefers-reduced-motion:reduce) { .rv { opacity:1; transform:none; transition:none; } }
+
+  /* Курсор: точка с мягким ореолом. Системный не прячем — на длинном тексте
+     он нужен для выделения, а метка идёт следом и добавляет живости. */
+  .pdcur { position:fixed; left:0; top:0; z-index:70; pointer-events:none;
+           width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%;
+           background:#2be0c6; opacity:0; transition:opacity .3s, width .2s, height .2s, margin .2s; }
+  .pdcur.on { opacity:.9; }
+  .pdcur.big { width:26px; height:26px; margin:-13px 0 0 -13px; opacity:.35; }
+  .pdglow { position:fixed; left:0; top:0; z-index:69; pointer-events:none;
+            width:190px; height:190px; margin:-95px 0 0 -95px; opacity:0;
+            background:radial-gradient(closest-side, rgba(43,224,198,.16), transparent 70%);
+            transition:opacity .4s; }
+  .pdglow.on { opacity:1; }
+
+  @media (max-width:760px) {
+    .pdhdr .in { gap:16px; padding:12px 16px; }
+    .pdhdr .talk { display:none; }
+    .wrap { padding-top:92px; }
+    .pdnav { right:14px; bottom:14px; }
+    .pdcur, .pdglow { display:none; }
+  }
+'''
+
+LIB_CHROME_JS = '''
+/* Обвязка страницы раздела: подложка шапки, кнопка «наверх», проявление карточек,
+   метка курсора. Всё необязательное: без скриптов страница остаётся читаемой,
+   карточки видны, навигация работает. */
+(function () {
+  var hdr = document.querySelector('.pdhdr');
+  var up = document.querySelector('.pdnav .up');
+  var fine = window.matchMedia && matchMedia('(hover:hover) and (pointer:fine)').matches;
+  var calm = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // высота шапки уезжает в переменную: панель фильтра липнет ровно под ней,
+  // а на узком экране шапка выше, и подгонять число руками пришлось бы дважды
+  function fit() {
+    if (!hdr) return;
+    document.documentElement.style.setProperty('--hdr', hdr.offsetHeight + 'px');
+  }
+  fit();
+  addEventListener('resize', fit, { passive: true });
+
+  var tick = false;
+  function onScroll() {
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(function () {
+      tick = false;
+      var y = window.pageYOffset || document.documentElement.scrollTop;
+      if (hdr) hdr.classList.toggle('scrolled', y > 12);
+      if (up) up.classList.toggle('on', y > innerHeight * 0.6);
+    });
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  if (up) up.addEventListener('click', function () {
+    scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
+  });
+  var back = document.querySelector('.pdnav .back');
+  if (back) back.addEventListener('click', function () {
+    // если человек пришёл из поиска, истории нет — уводим на хаб раздела,
+    // а не оставляем кнопку мёртвой
+    if (history.length > 1 && document.referrer && document.referrer.indexOf(location.host) > -1) history.back();
+    else location.href = back.getAttribute('data-home');
+  });
+
+  // проявление карточек
+  var items = [].slice.call(document.querySelectorAll('.libitem, .libcat'));
+  // ПРЕДОХРАНИТЕЛЬ. Проявление прячет карточки до срабатывания наблюдателя, а он
+  // завязан на отрисовку: во вкладке, открытой в фоне, кадры не идут и колбэк
+  // не приходит. Для справочника это значило бы пустую страницу, поэтому
+  // во-первых не начинаем, если вкладка скрыта, во-вторых через полторы секунды
+  // показываем всё, что попало в окно, независимо от наблюдателя.
+  if (items.length && window.IntersectionObserver && !calm && !document.hidden) {
+    items.forEach(function (el) { el.classList.add('rv'); });
+    setTimeout(function () {
+      items.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.top < innerHeight && r.bottom > 0) el.classList.add('in');
+      });
+    }, 1500);
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    items.forEach(function (el) { io.observe(el); });
+    // фильтр прячет и показывает карточки: показанная заново должна быть видимой,
+    // а не остаться в стартовом состоянии проявления
+    addEventListener('pdfilter', function () {
+      items.forEach(function (el) { if (!el.hidden) el.classList.add('in'); });
+    });
+  }
+
+  // метка курсора
+  if (fine && !calm) {
+    var dot = document.createElement('div'), glow = document.createElement('div');
+    dot.className = 'pdcur'; glow.className = 'pdglow';
+    document.body.appendChild(glow); document.body.appendChild(dot);
+    var x = 0, y = 0, gx = 0, gy = 0, raf = null;
+    function loop() {
+      raf = null;
+      gx += (x - gx) * 0.16; gy += (y - gy) * 0.16;
+      dot.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      glow.style.transform = 'translate(' + gx + 'px,' + gy + 'px)';
+      if (Math.abs(x - gx) > 0.4 || Math.abs(y - gy) > 0.4) raf = requestAnimationFrame(loop);
+    }
+    addEventListener('pointermove', function (e) {
+      x = e.clientX; y = e.clientY;
+      dot.classList.add('on'); glow.classList.add('on');
+      if (!raf) raf = requestAnimationFrame(loop);
+    }, { passive: true });
+    addEventListener('pointerdown', function () { dot.classList.add('big'); });
+    addEventListener('pointerup', function () { dot.classList.remove('big'); });
+    // над ссылками и кнопками метка растёт — подсказка, что здесь можно нажать
+    document.addEventListener('pointerover', function (e) {
+      var t = e.target;
+      dot.classList.toggle('big', !!(t.closest && t.closest('a,button,input')));
+    }, { passive: true });
+  }
+})();
+'''
+
+
 LIB_GRID_JS = '''
 /* Фильтр и поиск по карточкам. Всё содержание уже в разметке — прячем и показываем
    готовые карточки, а не подгружаем. Так раздел остаётся читаемым без скриптов
@@ -1729,6 +1936,7 @@ LIB_GRID_JS = '''
     });
     if (count) count.textContent = n + ' ' + plural(n);
     if (empty) empty.hidden = n > 0;
+    try { dispatchEvent(new Event('pdfilter')); } catch (e) {}
   }
   function plural(n) {
     if (!RU) return n === 1 ? WORDS[0] : WORDS[2];
@@ -1919,6 +2127,8 @@ LIB_T = {
   'ourcase': 'Как это сделано у нас: ', 'hub': 'Библиотека оборудования',
   'cta': 'Прислать спецификацию на проверку →', 'open': 'Открыть раздел',
   'search': 'Поиск по названию, задаче или бренду', 'nothing': 'Ничего не нашлось. Попробуйте другое слово.',
+  'work': 'Проекты', 'atlas': 'Атлас', 'hubnav': 'Оборудование',
+  'talk': '▶ Обсудить идею', 'back': 'Назад', 'top': 'Наверх',
   'concepts': 'Концепции', 'services': 'Услуги', 'home': 'На главную', 'all': 'Все проекты',
   'h1': 'Библиотека оборудования интерактивных экспозиций',
   'pos': ('позиция', 'позиции', 'позиций'),
@@ -1932,6 +2142,8 @@ LIB_T = {
   'ourcase': 'How we built it: ', 'hub': 'Equipment library',
   'cta': 'Send us your specification for a free review →', 'open': 'Open the section',
   'search': 'Search by name, job or brand', 'nothing': 'Nothing matched. Try another word.',
+  'work': 'Work', 'atlas': 'Atlas', 'hubnav': 'Equipment',
+  'talk': '▶ Book a call', 'back': 'Back', 'top': 'Top',
   'concepts': 'Concepts', 'services': 'Services', 'home': 'Home', 'all': 'All projects',
   'h1': 'An equipment library for interactive exhibitions',
   'pos': ('entry', 'entries', 'entries'),
@@ -1999,14 +2211,16 @@ for L in langs:
                   + '<h2>%s</h2><p>%s</p>' % (T['other'], other) + LIB_TAIL_T[L.code]
                   + '<script>var WORDS=%s,RU=%s;%s</script>'
                   % (json.dumps(list(T['pos']), ensure_ascii=False),
-                     'true' if L.code == 'ru' else 'false', LIB_GRID_JS))
+                     'true' if L.code == 'ru' else 'false', LIB_GRID_JS)
+                  + '<script>%s</script>' % LIB_CHROME_JS)
         d = os.path.join(SITE, L.prefix, 'library', cat['id'])
         os.makedirs(d, exist_ok=True)
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
             lang=L.code, title=esc(cat['full']),
             h1=esc(nbsp('%s: %s' % (cat['full'], cat['line'].lower()), L.code)),
             desc=esc(Lang._clip(cat['lead'])),
-            canon=L.url(tail), alts=lib_alternates(tail), locale=L.locale, css=LIB_CSS,
+            canon=L.url(tail), alts=lib_alternates(tail), locale=L.locale,
+            css=LIB_CSS + LIB_CHROME_CSS, chrome=lib_chrome(L, up2, 'library'),
             jsonld=lib_jsonld(L, cat, tail, n),
             cover=esc(cover_url(ORDER[0], L.pmap)), up=up2, home=up2 + L.prefix,
             crumb='<a href="%s">%s</a> /' % (up_cat, esc(T['hub'])),
@@ -2051,12 +2265,15 @@ for L in langs:
         lang=L.code, title=esc(T['hub']), crumb='', h1=esc(nbsp(T['h1'], L.code)),
         desc=esc(Lang._clip(lib_lead)),
         canon=L.url('library/'), alts=lib_alternates('library/'), locale=L.locale,
-        css=LIB_CSS, jsonld=ld, cover=esc(cover_url(ORDER[0], L.pmap)),
+        css=LIB_CSS + LIB_CHROME_CSS, chrome=lib_chrome(L, up1, 'library'),
+        jsonld=ld, cover=esc(cover_url(ORDER[0], L.pmap)),
         up=up1, home=up1 + L.prefix,
         cnchome=up1 + L.prefix + 'concepts/', srvhome=up1 + L.prefix + 'services/',
         lead=esc(lib_lead),
         groups=(LIB_INTRO_T[L.code] + '<ul class="libcats">%s</ul>' % li
-                + LIB_TAIL_T[L.code] + '<script>%s</script>' % LIB_FX_JS),
+                + LIB_TAIL_T[L.code]
+                + '<script>%s</script>' % LIB_FX_JS
+                + '<script>%s</script>' % LIB_CHROME_JS),
         t_concepts=esc(T['concepts']), t_services=esc(T['services']), cta=esc(T['cta']),
         footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
         f_home=esc(T['home']), f_all=esc(T['all']))))
@@ -2336,10 +2553,14 @@ if _n_srv != 2:
     raise SystemExit('в главной ожидались 2 ссылки на /services/ (шапка и мобильное меню), найдено %d' % _n_srv)
 en = en.replace('href="/services/"', 'href="/en/services/"')
 # то же для библиотеки оборудования: шапка, мобильное меню и кнопка в полосе
-_n_lib = en.count('href="/library/"')
-if _n_lib != 3:
-    raise SystemExit('в главной ожидались 3 ссылки на /library/ (шапка, мобильное меню, полоса), найдено %d' % _n_lib)
-en = en.replace('href="/library/"', 'href="/en/library/"')
+# Ловим ВСЕ адреса раздела, а не только хаб: на слайде есть ещё три ссылки
+# в категории вида /library/output/, и с точным «/library/"» они оставались
+# русскими — человек с английской главной уходил на русскую страницу.
+_n_lib = en.count('href="/library/')
+if _n_lib != 6:
+    raise SystemExit('в главной ожидались 6 ссылок на /library/ (шапка, мобильное меню, '
+                     'три категории и кнопка), найдено %d' % _n_lib)
+en = en.replace('href="/library/', 'href="/en/library/')
 en = en.replace('name="Landing — Spatial Capture (RU)"', 'name="Landing — Spatial Capture (EN)"', 1)
 en = en.replace('PlayDisplay long-form landing (RU)', 'PlayDisplay long-form landing (EN)', 1)
 os.makedirs(os.path.join(SITE, 'en'), exist_ok=True)

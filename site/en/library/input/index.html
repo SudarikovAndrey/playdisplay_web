@@ -409,9 +409,84 @@
   .brands li:hover { border-color:#2be0c6; }
   .brands a { text-decoration:none; font-weight:600; font-size:15.5px; }
   .brands span { display:block; color:#9fb4c8; font-size:13.5px; line-height:1.45; margin-top:3px; }
+
+  /* ---------- Обвязка страницы: шапка, кнопки, курсор ----------
+     Раздел лежит вне лендинга и своих стилей лендинга не тянет, поэтому шапка
+     собрана здесь заново — но по тем же правилам: фиксирована сверху, прозрачная
+     над первым экраном и с подложкой после прокрутки. Без неё «провалившись»
+     в раздел человек терял навигацию и мог вернуться только кнопкой браузера. */
+  body { padding-top:0; }
+  .pdhdr { position:fixed; top:0; left:0; right:0; z-index:60;
+           border-bottom:1px solid transparent;
+           transition:background .3s ease, border-color .3s ease; }
+  .pdhdr.scrolled { background:rgba(4,12,16,.88); backdrop-filter:blur(12px);
+                    border-bottom-color:rgba(159,180,200,.2); }
+  .pdhdr .in { display:flex; align-items:center; gap:26px;
+               max-width:1180px; margin:0 auto; padding:15px 24px; }
+  .pdhdr .lg { display:inline-flex; flex:0 0 auto; }
+  .pdhdr .lg img { height:17px; display:block; filter:brightness(0) invert(1); }
+  .pdhdr nav { display:flex; gap:24px; overflow-x:auto; scrollbar-width:none; }
+  .pdhdr nav::-webkit-scrollbar { display:none; }
+  .pdhdr nav a { flex:0 0 auto; text-decoration:none; color:#9fb4c8;
+                 font:700 11.5px/1 monospace; letter-spacing:.2em; text-transform:uppercase;
+                 transition:color .18s; }
+  .pdhdr nav a:hover { color:#e9f4f6; }
+  .pdhdr nav a[aria-current="page"] { color:#2be0c6; }
+  .pdhdr .talk { margin-left:auto; flex:0 0 auto; text-decoration:none;
+                font:700 11.5px/1 monospace; letter-spacing:.12em; text-transform:uppercase;
+                background:#ff6a3d; color:#040c10; padding:11px 18px;
+                clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
+                transition:transform .2s cubic-bezier(.2,.8,.2,1); }
+  .pdhdr .talk:hover { transform:translateY(-2px); }
+
+  /* Панель фильтра липнет ПОД шапкой, а не под верх окна: иначе она уезжала бы
+     под неё и первые кнопки были не видны. Высота шапки подставляется скриптом. */
+  .libbar { top:var(--hdr,58px); }
+  .wrap { padding-top:112px; }
+
+  /* Кнопки «назад» и «наверх». Стопкой в правом нижнем углу: там их ищут,
+     и они не спорят с содержанием. «Наверх» появляется после первого экрана. */
+  .pdnav { position:fixed; right:22px; bottom:22px; z-index:55;
+           display:flex; flex-direction:column; gap:10px; }
+  .pdnav button { width:44px; height:44px; cursor:pointer; display:grid; place-items:center;
+                  background:rgba(4,12,16,.82); backdrop-filter:blur(8px);
+                  border:1px solid rgba(159,180,200,.28); color:#9fb4c8;
+                  transition:color .18s, border-color .18s, background .18s, opacity .3s, transform .3s; }
+  .pdnav button:hover { color:#2be0c6; border-color:#2be0c6; background:rgba(43,224,198,.1); }
+  .pdnav button svg { width:18px; height:18px; display:block; }
+  .pdnav .up { opacity:0; transform:translateY(10px); pointer-events:none; }
+  .pdnav .up.on { opacity:1; transform:none; pointer-events:auto; }
+
+  /* Проявление карточек при прокрутке — тот же приём, что на лендинге.
+     Без скриптов и при prefers-reduced-motion карточки видны сразу. */
+  .rv { opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
+  .rv.in { opacity:1; transform:none; }
+  @media (prefers-reduced-motion:reduce) { .rv { opacity:1; transform:none; transition:none; } }
+
+  /* Курсор: точка с мягким ореолом. Системный не прячем — на длинном тексте
+     он нужен для выделения, а метка идёт следом и добавляет живости. */
+  .pdcur { position:fixed; left:0; top:0; z-index:70; pointer-events:none;
+           width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%;
+           background:#2be0c6; opacity:0; transition:opacity .3s, width .2s, height .2s, margin .2s; }
+  .pdcur.on { opacity:.9; }
+  .pdcur.big { width:26px; height:26px; margin:-13px 0 0 -13px; opacity:.35; }
+  .pdglow { position:fixed; left:0; top:0; z-index:69; pointer-events:none;
+            width:190px; height:190px; margin:-95px 0 0 -95px; opacity:0;
+            background:radial-gradient(closest-side, rgba(43,224,198,.16), transparent 70%);
+            transition:opacity .4s; }
+  .pdglow.on { opacity:1; }
+
+  @media (max-width:760px) {
+    .pdhdr .in { gap:16px; padding:12px 16px; }
+    .pdhdr .talk { display:none; }
+    .wrap { padding-top:92px; }
+    .pdnav { right:14px; bottom:14px; }
+    .pdcur, .pdglow { display:none; }
+  }
 </style>
 </head>
 <body>
+<header class="pdhdr"><div class="in"><a class="lg" href="../../../en/" aria-label="playdisplay"><img src="../../../assets/logos/playdisplay-logo-black.png" alt="playdisplay"></a><nav><a href="../../../en/services/">Services</a><a href="../../../en/#work">Work</a><a href="../../../en/concepts/">Concepts</a><a href="../../../en/library/" aria-current="page">Equipment</a><a href="../../../en/atlas/">Atlas</a></nav><a class="talk" href="../../../en/#contact">▶ Book a call</a></div></header><div class="pdnav"><button class="back" type="button" data-home="../../../en/library/" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button><button class="up" type="button" aria-label="Top" title="Top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14 L12 7 L19 14"/></svg></button></div>
 <main class="wrap">
   <nav class="crumbs"><a href="../../../en/">playdisplay</a> / <a href="../">Equipment library</a> / Input equipment</nav>
   <article>
@@ -444,6 +519,7 @@
     });
     if (count) count.textContent = n + ' ' + plural(n);
     if (empty) empty.hidden = n > 0;
+    try { dispatchEvent(new Event('pdfilter')); } catch (e) {}
   }
   function plural(n) {
     if (!RU) return n === 1 ? WORDS[0] : WORDS[2];
@@ -470,6 +546,105 @@
     apply();
   });
   apply();
+})();
+</script><script>
+/* Обвязка страницы раздела: подложка шапки, кнопка «наверх», проявление карточек,
+   метка курсора. Всё необязательное: без скриптов страница остаётся читаемой,
+   карточки видны, навигация работает. */
+(function () {
+  var hdr = document.querySelector('.pdhdr');
+  var up = document.querySelector('.pdnav .up');
+  var fine = window.matchMedia && matchMedia('(hover:hover) and (pointer:fine)').matches;
+  var calm = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // высота шапки уезжает в переменную: панель фильтра липнет ровно под ней,
+  // а на узком экране шапка выше, и подгонять число руками пришлось бы дважды
+  function fit() {
+    if (!hdr) return;
+    document.documentElement.style.setProperty('--hdr', hdr.offsetHeight + 'px');
+  }
+  fit();
+  addEventListener('resize', fit, { passive: true });
+
+  var tick = false;
+  function onScroll() {
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(function () {
+      tick = false;
+      var y = window.pageYOffset || document.documentElement.scrollTop;
+      if (hdr) hdr.classList.toggle('scrolled', y > 12);
+      if (up) up.classList.toggle('on', y > innerHeight * 0.6);
+    });
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  if (up) up.addEventListener('click', function () {
+    scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
+  });
+  var back = document.querySelector('.pdnav .back');
+  if (back) back.addEventListener('click', function () {
+    // если человек пришёл из поиска, истории нет — уводим на хаб раздела,
+    // а не оставляем кнопку мёртвой
+    if (history.length > 1 && document.referrer && document.referrer.indexOf(location.host) > -1) history.back();
+    else location.href = back.getAttribute('data-home');
+  });
+
+  // проявление карточек
+  var items = [].slice.call(document.querySelectorAll('.libitem, .libcat'));
+  // ПРЕДОХРАНИТЕЛЬ. Проявление прячет карточки до срабатывания наблюдателя, а он
+  // завязан на отрисовку: во вкладке, открытой в фоне, кадры не идут и колбэк
+  // не приходит. Для справочника это значило бы пустую страницу, поэтому
+  // во-первых не начинаем, если вкладка скрыта, во-вторых через полторы секунды
+  // показываем всё, что попало в окно, независимо от наблюдателя.
+  if (items.length && window.IntersectionObserver && !calm && !document.hidden) {
+    items.forEach(function (el) { el.classList.add('rv'); });
+    setTimeout(function () {
+      items.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.top < innerHeight && r.bottom > 0) el.classList.add('in');
+      });
+    }, 1500);
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    items.forEach(function (el) { io.observe(el); });
+    // фильтр прячет и показывает карточки: показанная заново должна быть видимой,
+    // а не остаться в стартовом состоянии проявления
+    addEventListener('pdfilter', function () {
+      items.forEach(function (el) { if (!el.hidden) el.classList.add('in'); });
+    });
+  }
+
+  // метка курсора
+  if (fine && !calm) {
+    var dot = document.createElement('div'), glow = document.createElement('div');
+    dot.className = 'pdcur'; glow.className = 'pdglow';
+    document.body.appendChild(glow); document.body.appendChild(dot);
+    var x = 0, y = 0, gx = 0, gy = 0, raf = null;
+    function loop() {
+      raf = null;
+      gx += (x - gx) * 0.16; gy += (y - gy) * 0.16;
+      dot.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      glow.style.transform = 'translate(' + gx + 'px,' + gy + 'px)';
+      if (Math.abs(x - gx) > 0.4 || Math.abs(y - gy) > 0.4) raf = requestAnimationFrame(loop);
+    }
+    addEventListener('pointermove', function (e) {
+      x = e.clientX; y = e.clientY;
+      dot.classList.add('on'); glow.classList.add('on');
+      if (!raf) raf = requestAnimationFrame(loop);
+    }, { passive: true });
+    addEventListener('pointerdown', function () { dot.classList.add('big'); });
+    addEventListener('pointerup', function () { dot.classList.remove('big'); });
+    // над ссылками и кнопками метка растёт — подсказка, что здесь можно нажать
+    document.addEventListener('pointerover', function (e) {
+      var t = e.target;
+      dot.classList.toggle('big', !!(t.closest && t.closest('a,button,input')));
+    }, { passive: true });
+  }
 })();
 </script>
     <a class="cta" href="../../../en/">Send us your specification for a free review →</a>

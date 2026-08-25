@@ -410,5 +410,19 @@ window.PD_I18N = {
  "Библиотека оборудования": "Equipment library",
  "Чем это делается.": "What it is built from.",
  "63 типа оборудования, из которых собирается интерактивная экспозиция: чем она показывает, чем слышит посетителя и что считает между этим. У каждого — когда работает, когда не работает и кто это выпускает.": "63 types of equipment an interactive exhibition is built from: what it shows with, what it hears the visitor with, and what does the thinking in between. For each: when it works, when it does not, and who makes it.",
- "Открыть библиотеку": "Open the library"
+ "Открыть библиотеку": "Open the library",
+ "Мультимедийное оборудование.": "Multimedia equipment.",
+ "Что каждое реально умеет, где привирают в презентациях и обо что\n        спотыкаются на второй год. Мы это железо не продаём — мы им работаем.": "What each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit — we work with it.",
+ "типа оборудования": "types of equipment",
+ "производителей": "manufacturers",
+ "роли в системе": "roles in the system",
+ "Вывод": "Output",
+ "Ввод": "Input",
+ "Обработка": "Processing",
+ "Чем экспозиция говорит с человеком": "How the exhibition speaks to a person",
+ "Чем человек отвечает экспозиции": "How a person answers back",
+ "То, чего не видно, и на чём всё держится": "What nobody sees and everything rests on",
+ "24 позиции →": "24 entries →",
+ "20 позиций →": "20 entries →",
+ "19 позиций →": "19 entries →"
 };
