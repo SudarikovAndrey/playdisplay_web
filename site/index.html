@@ -2335,14 +2335,14 @@
     <p class="intro-sub">Что каждое реально умеет, где привирают в презентациях и обо что
       спотыкаются на второй год. Мы это железо не продаём — мы им работаем.</p>
     <div class="eq-nums">
-      <div><b>63</b><span>типа оборудования</span></div>
-      <div><b>155</b><span>производителей</span></div>
+      <div><b>65</b><span>типов оборудования</span></div>
+      <div><b>158</b><span>производителей</span></div>
       <div><b>3</b><span>роли в системе</span></div>
     </div>
     <ul class="eq-cats">
       <li><a class="eq-cat" href="/library/output/"><i><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="12.5" width="7" height="7" rx="1.5"/><circle cx="6" cy="16" r="1.15" fill="currentColor" stroke="none"/><path d="M9.5 14.2 L26.5 6.5"/><path d="M9.5 17.8 L26.5 25.5"/><path d="M26.5 6.5 L26.5 25.5"/></svg></i><b>Вывод</b><em>Чем экспозиция говорит с человеком</em><u>24 позиции →</u></a></li>
       <li><a class="eq-cat" href="/library/input/"><i><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 25.5 H27.5"/><circle cx="16" cy="19.5" r="3"/><path d="M16 4 V11.5 m-2.4 -2.6 L16 11.5 l2.4 -2.6"/><path d="M10 22.5 a8 8 0 0 1 0 -6"/><path d="M22 16.5 a8 8 0 0 1 0 6"/></svg></i><b>Ввод</b><em>Чем человек отвечает экспозиции</em><u>20 позиций →</u></a></li>
-      <li><a class="eq-cat" href="/library/processing/"><i><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="14" height="14" rx="2.5"/><rect x="13.75" y="13.75" width="4.5" height="4.5" rx="1"/><path d="M13 9 V5 M19 9 V5 M13 23 V27 M19 23 V27 M9 13 H5 M9 19 H5 M23 13 H27 M23 19 H27"/></svg></i><b>Обработка</b><em>То, чего не видно, и на чём всё держится</em><u>19 позиций →</u></a></li>
+      <li><a class="eq-cat" href="/library/processing/"><i><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="14" height="14" rx="2.5"/><rect x="13.75" y="13.75" width="4.5" height="4.5" rx="1"/><path d="M13 9 V5 M19 9 V5 M13 23 V27 M19 23 V27 M9 13 H5 M9 19 H5 M23 13 H27 M23 19 H27"/></svg></i><b>Обработка</b><em>То, чего не видно, и на чём всё держится</em><u>21 позиция →</u></a></li>
     </ul>
     <a class="eq-go" href="/library/">Открыть библиотеку <span aria-hidden="true">&#8594;</span></a>
   </div>
@@ -2930,6 +2930,39 @@
     addEventListener('resize', function(){ if (innerWidth > 900) set(false); });
   })();
   document.documentElement.lang = PD_LANG;
+
+  // ЯКОРЬ ПРИ ЗАХОДЕ ИЗВНЕ. Браузер прыгает к секции сразу, но заставка и сцена
+  // потом возвращают прокрутку в ноль: человек со страницы раздела приходил
+  // на первый экран вместо контактов, и кнопки «Обсудить идею» и «Прислать
+  // спецификацию» выглядели сломанными. Доводим сами, когда заставка ушла.
+  // #book — то же место плюс раскрытая форма: у человека уже есть, что прислать,
+  // и лишний клик по «Забронировать» ему не нужен.
+  (function incomingAnchor(){
+    var h = location.hash;
+    if (!h || h.length < 2 || h.indexOf('#/') === 0) return;   // #/work/... — своя маршрутизация
+    var book = (h === '#book');
+    var el = null;
+    try { el = document.querySelector(book ? '#contact' : h); } catch (e) { return; }
+    if (!el) return;
+    var tries = 0, stop = false, opened = false;
+    // человек начал листать сам — не мешаем: своё намерение сильнее нашего
+    ['wheel', 'touchstart', 'keydown'].forEach(function(t){
+      addEventListener(t, function(){ stop = true; }, { passive: true, once: true });
+    });
+    function go(){
+      if (stop) return;
+      tries++;
+      el.scrollIntoView({ block: 'start' });
+      var settled = Math.abs(el.getBoundingClientRect().top) < 90;
+      if (settled && book && !opened && window.pdBook) {
+        opened = true;
+        try { window.pdBook.open(); } catch (e) {}
+      }
+      // заставка держится до готовности сцены; повторяем, пока не встанем на место
+      if ((!settled || (book && !opened)) && tries < 40) setTimeout(go, 250);
+    }
+    addEventListener('load', function(){ setTimeout(go, 80); });
+  })();
 
   // ЯКОРИ НЕ ВЫБРАСЫВАЮТ ИЗ ЯЗЫКА. На /en/ стоит <base href="/"> — он нужен, чтобы
   // assets и data грузились от корня, но из-за него ссылка href="#work" превращается

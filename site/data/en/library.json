@@ -1948,6 +1948,61 @@
               ]
             },
             {
+              "id": "ventuz",
+              "name": "Ventuz",
+              "line": "Real time without a line of code",
+              "what": "A node-based environment for interactive graphics: configurators, storefronts, video walls, virtual studios. Split into three parts — Designer draws, Runtime plays, Director drives the show from a desk. Strongest where the picture changes live, in front of people.",
+              "good": [
+                "A product configurator: colour, trim, material — instantly and in volume",
+                "A showroom or dealership where a person runs the show, not a schedule",
+                "Live data on a large screen: markets, production, logistics",
+                "A TV studio, virtual sets and on-air augmented reality"
+              ],
+              "bad": [
+                "Windows only",
+                "Far fewer specialists on the market than for Unity",
+                "Paid licensing counted per machine — an estate of ten points will feel it",
+                "One exhibit with simple logic: overkill"
+              ],
+              "brands": [
+                {
+                  "n": "Ventuz",
+                  "u": "https://www.ventuz.com/",
+                  "note": "Designer, Runtime, Director"
+                }
+              ]
+            },
+            {
+              "id": "vvvv",
+              "name": "vvvv",
+              "line": "Nodes, hardware and network in one window",
+              "what": "A node-based environment grown out of media art. Its strength is not the picture but the plumbing: sensors, DMX, lasers, industrial protocols, several machines across a network — all in one window. Where TouchDesigner is about the image, vvvv is more often about making mismatched hardware get along.",
+              "good": [
+                "Lots of different equipment that has to behave as one thing",
+                "Unusual protocols and home-built electronics",
+                "Several machines running in step",
+                "A prototype to be tested against real hardware rather than on screen"
+              ],
+              "bad": [
+                "Even fewer specialists than for TouchDesigner: there will be nobody to hand it to",
+                "Windows",
+                "A high barrier to entry, and documentation that is thin in places",
+                "A simple display with a looping film — a sledgehammer for a nut"
+              ],
+              "brands": [
+                {
+                  "n": "vvvv gamma",
+                  "u": "https://vvvv.org/",
+                  "note": "the current generation"
+                },
+                {
+                  "n": "VL",
+                  "u": "https://thegraybook.vvvv.org/",
+                  "note": "language and reference"
+                }
+              ]
+            },
+            {
               "id": "notch-resolume",
               "name": "Notch and Resolume",
               "line": "Tools for live performance",

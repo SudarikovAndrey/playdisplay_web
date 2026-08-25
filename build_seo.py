@@ -1565,7 +1565,11 @@ LIB_PAGE = ATLAS_PAGE.replace(
 ).replace(
     '<nav class="crumbs"><a href="{home}">playdisplay</a> / {title}</nav>',
     '<nav class="crumbs"><a href="{home}">playdisplay</a> / {crumb} {title}</nav>'
-).replace('<body>\n<main class="wrap">', '<body>\n{chrome}\n<main class="wrap">')
+).replace('<body>\n<main class="wrap">', '<body>\n{chrome}\n<main class="wrap">'
+# «Прислать спецификацию» вела просто на главную, без якоря: человек оказывался
+# на первом экране и не понимал, куда что слать. Теперь #book — контакты
+# и сразу раскрытая форма, потому что присылать ему уже есть что.
+).replace('<a class="cta" href="{home}">{cta}</a>', '<a class="cta" href="{ctahref}">{cta}</a>')
 
 
 # Висяки в заголовках. Союз, предлог или частица не должны оставаться в конце
@@ -1830,9 +1834,25 @@ LIB_CHROME_CSS = '''
 
   /* Проявление карточек при прокрутке — тот же приём, что на лендинге.
      Без скриптов и при prefers-reduced-motion карточки видны сразу. */
-  .rv { opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
-  .rv.in { opacity:1; transform:none; }
-  @media (prefers-reduced-motion:reduce) { .rv { opacity:1; transform:none; transition:none; } }
+  /* Кривая, длительность и блюр — те же, что на главной (см. .rv в index.html).
+     Свои значения читались бы как другая страница: глаз замечает разницу в темпе
+     раньше, чем разницу в цвете. */
+  .rv { opacity:0; transform:translateY(22px); filter:blur(6px);
+        transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1),
+                   filter .8s ease; }
+  .rv.in { opacity:1; transform:none; filter:none; }
+  @media (prefers-reduced-motion:reduce) { .rv { opacity:1; transform:none; filter:none; transition:none; } }
+
+  /* Вход на страницу: содержание всплывает целиком, а не появляется рывком.
+     Класс снимается скриптом; без скриптов страница видна сразу. */
+  body.pd-enter .wrap { opacity:0; transform:translateY(14px); }
+  body.pd-enter .pdhdr { opacity:0; transform:translateY(-100%); }
+  .wrap { transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+  .pdhdr { transition:background .3s ease, border-color .3s ease,
+                      opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1); }
+  @media (prefers-reduced-motion:reduce) {
+    body.pd-enter .wrap, body.pd-enter .pdhdr { opacity:1; transform:none; }
+  }
 
   /* Курсор: точка с мягким ореолом. Системный не прячем — на длинном тексте
      он нужен для выделения, а метка идёт следом и добавляет живости. */
@@ -1880,6 +1900,15 @@ LIB_CHROME_JS = '''
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit).catch(function(){});
   addEventListener('load', fit);
 
+  // Вход на страницу. Класс ставим из скрипта, а не в разметке: если скрипты
+  // отключены, содержание не должно остаться невидимым.
+  if (!calm) {
+    document.body.classList.add('pd-enter');
+    var off = function () { document.body.classList.remove('pd-enter'); };
+    requestAnimationFrame(function () { requestAnimationFrame(off); });
+    setTimeout(off, 400);                       // страховка, если кадр не пришёл
+  }
+
   var tick = false;
   function onScroll() {
     if (tick) return;
@@ -1906,7 +1935,11 @@ LIB_CHROME_JS = '''
   });
 
   // проявление карточек
-  var items = [].slice.call(document.querySelectorAll('.libitem, .libcat'));
+  // Проявляем ВСЁ, что читается как отдельный шаг: заголовок, лид, знак категории,
+  // врезку с принципом, панель фильтра и карточки. Раньше оживали только карточки,
+  // и верх страницы выглядел статичным на фоне движения ниже.
+  var items = [].slice.call(document.querySelectorAll(
+    '.crumbs, h1, .lead, .libmark, .call, .libbar, .libitem, .libcat, .libgrid + h2, .libcats'));
   // ПРЕДОХРАНИТЕЛЬ. Проявление прячет карточки до срабатывания наблюдателя, а он
   // завязан на отрисовку: во вкладке, открытой в фоне, кадры не идут и колбэк
   // не приходит. Для справочника это значило бы пустую страницу, поэтому
@@ -1920,9 +1953,20 @@ LIB_CHROME_JS = '''
         if (r.top < innerHeight && r.bottom > 0) el.classList.add('in');
       });
     }, 1500);
+    // Каскад: соседи, попавшие в кадр одновременно, проявляются по очереди
+    // с тем же шагом 85 мс, что на главной. Одновременное появление читается
+    // как перерисовка, последовательное — как движение.
+    var wave = 0, waveAt = 0;
     var io = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        if (!e.isIntersecting) return;
+        var now = Date.now();
+        if (now - waveAt > 220) wave = 0;      // новая волна: отсчёт заново
+        waveAt = now;
+        var el = e.target, k = wave++;
+        io.unobserve(el);
+        if (k === 0) el.classList.add('in');
+        else setTimeout(function () { el.classList.add('in'); }, Math.min(k, 6) * 85);
       });
     }, { rootMargin: '0px 0px -8% 0px' });
     items.forEach(function (el) { io.observe(el); });
@@ -2310,6 +2354,7 @@ for L in langs:
             cnchome=up2 + L.prefix + 'concepts/', srvhome=up2 + L.prefix + 'services/',
             lead=esc(cat['lead']), groups=groups,
             t_concepts=esc(T['concepts']), t_services=esc(T['services']), cta=esc(T['cta']),
+            ctahref=esc(up2 + L.prefix + '#book'),
             footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
             f_home=esc(T['home']), f_all=esc(T['all']))), )
         print('library [%s/%s]: %d позиций, %d брендов'
@@ -2360,6 +2405,7 @@ for L in langs:
                 + '<script>%s</script>' % LIB_CHROME_JS
                 + '<script>%s</script>' % LIB_HDR_JS),
         t_concepts=esc(T['concepts']), t_services=esc(T['services']), cta=esc(T['cta']),
+        ctahref=esc(up1 + L.prefix + '#book'),
         footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
         f_home=esc(T['home']), f_all=esc(T['all']))))
     print('library hub [%s]: %d категорий, %d позиций' % (L.code, len(cats), total))
@@ -2578,6 +2624,27 @@ _home = open(os.path.join(SITE, 'index.html'), encoding='utf-8').read()
 if '<!--SEO-->' not in _home:
     raise SystemExit('в site/index.html нет маркеров <!--SEO-->…<!--/SEO--> — вставлять некуда')
 _new = re.sub(r'<!--SEO-->.*?<!--/SEO-->', lambda m: home_block(RU), _home, count=1, flags=re.S)
+
+# ЧИСЛА НА СЛАЙДЕ ОБОРУДОВАНИЯ СЧИТАЮТСЯ ИЗ ДАННЫХ, а не живут в разметке.
+# Библиотека растёт, и «63 типа» уже один раз разъехались с настоящими 65 —
+# в трёх местах сразу. Разметку правим здесь, при сборке: одно место правды.
+if LIB_LANGS:
+    _lib = load_library(LIB_LANGS[0])
+    _cats = _lib['categories']
+    _total = sum(len(s['items']) for c in _cats for s in c['sections'])
+    _makers = len(set(b['n'] for c in _cats for s in c['sections']
+                      for i in s['items'] for b in i['brands']))
+    # склоняем и само слово: было «63 типа», стало 65 — а «65 типа» уже неверно
+    _new = re.sub(r'<div><b>\d+</b><span>(?:тип|типа|типов) оборудования</span></div>',
+                  '<div><b>%d</b><span>%s оборудования</span></div>'
+                  % (_total, plural(_total, 'тип', 'типа', 'типов')), _new, count=1)
+    _new = re.sub(r'(<div><b>)\d+(</b><span>производителей)', r'\g<1>%d\g<2>' % _makers, _new, count=1)
+    for _c in _cats:
+        _n = sum(len(s['items']) for s in _c['sections'])
+        _new = re.sub(r'(href="/library/%s/".*?<u>)\d+ [^<]*(</u>)' % _c['id'],
+                      lambda m, n=_n: '%s%d %s →%s' % (m.group(1), n,
+                          plural(n, *LIB_T['ru']['pos']), m.group(2)),
+                      _new, count=1, flags=re.S)
 # отпечаток общих файлов проставляем здесь же: /en/index.html делается копией
 # этого текста и получает его заодно, без второй ступени
 _new = stamp_assets(_new)
