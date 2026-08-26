@@ -892,7 +892,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2408-stick5v';</script>
+<script>window.PD_V = 'b2608-pulse1';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -5744,6 +5744,27 @@ function gLabel(t) {
 const gameOverEl = document.getElementById('game-over');
 // вход/выход: сообщение от лендинга, клавиша G; Esc — плавный выход
 addEventListener('message', e => { if (e.data && typeof e.data.pdGame === 'boolean') e.data.pdGame ? enterGame() : startExitGame(); });
+// ПУЛЬС СОСТОЯНИЯ ДЛЯ ЛЕНДИНГА (26.08). События pdPlay:false и pdGameOn:false уходят из
+// КАДРОВОГО цикла — в момент, когда анимация закрытия доиграла. А цикл замирает, как
+// только герой уходит из кадра (pdVisible:false → ранний return). Закрыл ролик и сразу
+// скролльнул вниз — закрытие замерло на середине, «отбой» лендинг не услышал, и классы
+// video-on/game-on оставались висеть: весь интерфейс поверх галереи пропадал до тех пор,
+// пока возврат к герою не оживлял цикл. setInterval от кадров не зависит и работает даже
+// у замороженной сцены, поэтому лендинг раз в секунду получает честное состояние и сам
+// снимает залипшее. У видео состояние «закрывается» (play.state 3) сознательно считается
+// выключенным: интерфейсу пора возвращаться, анимация доиграет под ним. У игры наоборот —
+// выход (GAME.exit >= 0) считается ещё игрой: на мобиле game-live держит iframe поверх
+// страницы, и снять его пульсом посреди живого 1.1-секундного выхода значит дёрнуть сцену
+// обратно в секцию у зрителя на глазах. Залипший выход игры и так прикрыт страховкой
+// лендинга по скроллу (IntersectionObserver снимает game-live при уходе героя из кадра).
+if (EMBEDDED) setInterval(() => {
+  try {
+    parent.postMessage({ pdState: {
+      game: !!GAME.on,
+      video: play.state === 1 || play.state === 2
+    } }, '*');
+  } catch (e) {}
+}, 1000);
 // выключатель звука в шапке лендинга: одно решение на весь сайт
 addEventListener('message', e => {
   if (!e.data || typeof e.data.pdSound !== 'boolean') return;

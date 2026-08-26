@@ -2149,7 +2149,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b2408-stick5v&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2608-pulse1&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -3412,6 +3412,19 @@
     // 3D-архив: сцена подтверждает вход/выход — держим iframe поверх страницы
     if (typeof e.data.pdArchiveOn === 'boolean')
       document.body.classList.toggle('arc-on', e.data.pdArchiveOn);
+    // ПУЛЬС СОСТОЯНИЯ СЦЕНЫ (26.08): раз в секунду сцена говорит, идёт ли игра и играет
+    // ли видео. Пульс — уборщик, а не управляющий: он только СНИМАЕТ залипшие классы,
+    // а ставят их по-прежнему события pdPlay/pdGameOn. Залипание случалось, когда «отбой»
+    // терялся в замороженном кадровом цикле сцены (подробно — у отправителя в
+    // hero-scene.html): интерфейс поверх галереи пропадал до случайного скролла.
+    if (e.data.pdState) {
+      var st = e.data.pdState, hs = document.getElementById('start');
+      if (!st.game) {
+        document.body.classList.remove('game-live');
+        if (hs) hs.classList.remove('game-on');
+      }
+      if (!st.video && hs) hs.classList.remove('video-on');
+    }
   });
 
   // Страховка от залипшего game-live: он гасит хедер, виджет и сияние под курсором
