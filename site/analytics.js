@@ -110,6 +110,23 @@
          существовало в принципе. Кнопок две: на первом экране и в мобильном
          меню, поэтому источник кладём в параметр. */
       if (el.id === 'bootPlay' || el.id === 'mnavGame') { track('game_start', { source: el.id }); return; }
+      /* ВОРОНКА РАЗДЕЛА ОБОРУДОВАНИЯ. Раздел появился 24.08 и до сих пор был для
+         статистики невидим: ни входа, ни главного призыва. На вопрос «принёс ли
+         справочник хоть одну заявку» ответа не существовало. Классы, а не id:
+         страниц раздела восемь, и на каждой эти элементы свои. */
+      if (el.classList && el.classList.contains('cta') && el.closest && el.closest('.wrap')) {
+        var lib = /\/library\//.test(location.pathname);
+        if (lib) { track('spec_click', { page: location.pathname }); return; }
+      }
+      if (el.classList && el.classList.contains('eq-cat')) {
+        track('lib_open', { source: 'home_slide', cat: (el.getAttribute('href') || '').replace(/\D+/g, '') || el.getAttribute('href') });
+        return;
+      }
+      if (el.classList && el.classList.contains('eq-go')) { track('lib_open', { source: 'home_cta' }); return; }
+      if (el.classList && el.classList.contains('libcat')) {
+        track('lib_open', { source: 'hub', cat: el.getAttribute('data-cat') || '' });
+        return;
+      }
       var href = (el.tagName === 'A' && el.getAttribute('href')) || '';
       if (href.indexOf('mailto:') === 0) { track('contact_click', { channel: 'email' }); return; }
       if (href.indexOf('tel:') === 0) { track('contact_click', { channel: 'phone' }); return; }
@@ -118,6 +135,26 @@
       el = el.parentNode;
     }
   }, true);
+
+  /* ---- раздел оборудования: просмотр и пользование фильтром ----
+     Просмотр шлём один раз при загрузке: страницы раздела статические, своей
+     маршрутизации у них нет. Фильтр и поиск — по одному событию на страницу,
+     а не на каждое нажатие: нам важно, пользуются ли им вообще, а не сколько
+     букв человек набрал. */
+  (function libPage(){
+    var m = location.pathname.match(/\/library\/([a-z-]+)?\/?$/);
+    if (!m) return;
+    track('lib_view', { cat: m[1] || 'hub' });
+    var used = false;
+    document.addEventListener('input', function (e) {
+      if (used || !e.target || e.target.id !== 'libq') return;
+      used = true; track('lib_search', { cat: m[1] || 'hub' });
+    }, true);
+    document.addEventListener('click', function (e) {
+      if (used || !e.target || !e.target.classList || !e.target.classList.contains('libchip')) return;
+      used = true; track('lib_filter', { cat: m[1] || 'hub' });
+    }, true);
+  })();
 
   /* ---- воронка: разговор с ассистентом ----
      Клиент ассистента шлёт XHR на api/ai.php с JSON {action: ...}. Мы НЕ трогаем
