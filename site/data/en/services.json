@@ -369,6 +369,134 @@
       ]
     },
     {
+      "slug": "museum-equipping",
+      "title": "Technical fit-out for museums",
+      "nav": "Museum fit-out",
+      "subtitle": "We write and audit the specification, put together the equipment list, and answer for all of it working as one system.",
+      "keywords": [
+        "museum fit-out",
+        "museum technical specification",
+        "museum equipment specification",
+        "multimedia museum brief",
+        "equipping a museum",
+        "museum tender specification"
+      ],
+      "cases": [
+        "vdnh-space-center",
+        "stalingrad",
+        "proryv",
+        "industry-rf"
+      ],
+      "flow": [
+        {
+          "t": "p",
+          "text": "Fitting out a museum starts with a brief, not a purchase order. And the brief is almost always written in a hurry: the programme deadline is burning, the money has to be spent before year end, and the person writing it does something else for a living. What follows is predictable — the cheapest bundle wins, because a brief like that gives you no way to tell bundles apart."
+        },
+        {
+          "t": "p",
+          "text": "We take it from the other end. Not «which line items to buy» but «what should happen in the room» — and the list follows from that. Such a brief wins twice: you can see who understood the job, and you can later accept the work against it."
+        },
+        {
+          "t": "h",
+          "text": "What a fit-out contains besides hardware"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "The story: what a person does at each point and what they carry out. Without it the specification is guesswork.",
+            "The exhibit list: how many, which ones, where they stand and how many people each serves at once.",
+            "Content: models, filming, texts, voice-over, animation. The largest and most underestimated part of the budget.",
+            "Software and integration: so that ten exhibits are a system rather than ten boxes.",
+            "Room engineering: power, network, cable routes, mounting, lighting, room acoustics.",
+            "Operations: who switches it on, who fixes it, who changes the text. Those are lines in the brief, not the contractor's goodwill."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "How a bad brief differs from a working one"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "A bad one lists items: «55-inch panel — 6 pcs». A working one describes the job: «six points, a person stands at each for up to five minutes reading an archive document». The list follows from the second, not the first.",
+            "A bad one says nothing about content. The winner is whoever budgeted only hardware — and then there is nothing to put on it.",
+            "A bad one does not describe acceptance. A working one says plainly: an attendant restarts an exhibit with one button, the museum changes captions itself, the contractor hands over machine images and content sources.",
+            "A bad one does not count throughput. One VR headset for a school group of thirty is two and a half hours of queue, and that is visible on paper in advance.",
+            "A bad one ignores the room: daylight kills projection, and ceiling height decides what can be hung at all."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "For municipal and school museums"
+        },
+        {
+          "t": "p",
+          "text": "Smaller budget, more reporting. One rule holds: one well-conceived exhibit beats five mediocre ones. The cheapest things that genuinely work are projection onto a physical model, and content built for a screen you already own. The most expensive mistake is covering every wall with panels."
+        },
+        {
+          "t": "link",
+          "href": "/en/library/",
+          "text": "Equipment library: 65 types, what each does and who makes it →"
+        },
+        {
+          "t": "h",
+          "text": "How we come in"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Writing the brief from scratch — when there is a building, a collection and a goal, but no wording.",
+            "Auditing an existing brief or specification: what is redundant, what is missing, what will not survive year one. Free.",
+            "Running the whole project: story, content, interaction, software, integration and opening.",
+            "Supply is handled by our partners — we keep no warehouse, so we pick for the job rather than for the stock."
+          ]
+        },
+        {
+          "t": "stats",
+          "items": [
+            {
+              "n": "115",
+              "label": "installations in a single exhibition — Cosmonautics and Aviation Centre, VDNH"
+            },
+            {
+              "n": "2011",
+              "label": "studio founded, working worldwide"
+            },
+            {
+              "n": "65",
+              "label": "equipment types covered in our open library"
+            }
+          ]
+        },
+        {
+          "t": "p",
+          "text": "If the brief is written and about to go out to tender — send it over. We will tell you what contractors will read into it and what you will end up with. Free, one conversation, no obligation."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can we commission just the specification?",
+          "a": "Yes, and it is a common arrangement. A brief is a document in its own right: you take it to tender, you defend a budget with it, you compare bids against it. We write it so it works for both choosing a contractor and accepting their work later."
+        },
+        {
+          "q": "Do you bid for tenders you wrote the brief for?",
+          "a": "If the client wants that, we discuss it separately and in advance, because the arrangement raises obvious questions. More often we stay on the museum's side: write the brief, help read the bids and accept the work. That is more comfortable for everyone."
+        },
+        {
+          "q": "How much does fitting out a museum cost?",
+          "a": "The figure comes out of the story, not a price list. One proportion can be stated in advance though: in a multimedia exhibition budget the hardware itself rarely exceeds a third; the rest is content and the work on it. Budgets where everything went into the kit are recognisable later by their dark screens."
+        },
+        {
+          "q": "We are a municipal museum on a very modest budget.",
+          "a": "That is a normal brief and it is solvable. We look at what the room already has and put the money into one or two strong exhibits rather than an even layer of technology across every wall. Reviewing your estimate and pointing out where money is wasted costs you nothing."
+        },
+        {
+          "q": "What do you insist on at acceptance?",
+          "a": "Three things the museum must own outright: machine images, content source files and a written recovery procedure. Without them, replacing a burnt-out computer turns from an hour into a week, and any text edit into a call-out."
+        }
+      ]
+    },
+    {
       "slug": "exhibition-stand",
       "title": "Interactive exhibition stand",
       "nav": "Exhibition stand",
