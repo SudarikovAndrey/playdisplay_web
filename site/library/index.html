@@ -619,7 +619,10 @@
   // врезку с принципом, панель фильтра и карточки. Раньше оживали только карточки,
   // и верх страницы выглядел статичным на фоне движения ниже.
   var items = [].slice.call(document.querySelectorAll(
-    '.crumbs, h1, .lead, .libmark, .call, .libbar, .libitem, .libcat, .libgrid + h2, .libcats'));
+    '.crumbs, h1, .lead, .libmark, .call, .libbar, .libitem, .libcat, .libgrid + h2, .libcats,'
+    // обычные разделы: заголовки глав, списки, врезки, карточки услуг и концепций
+    + ' article h2, article h3, ol.steps, ul.notes, ul.stats, ul.cases, .qa, .golink,'
+    + ' ol.atlas li, .cncs li, .gal img, footer'));
   // ПРЕДОХРАНИТЕЛЬ. Проявление прячет карточки до срабатывания наблюдателя, а он
   // завязан на отрисовку: во вкладке, открытой в фоне, кадры не идут и колбэк
   // не приходит. Для справочника это значило бы пустую страницу, поэтому
@@ -712,5 +715,6 @@
     <p style="margin-top:22px"><a href="../">На главную</a> · <a href="../concepts/">Библиотека</a> · <a href="../services/">Услуги</a> · <a href="../#work">Все проекты</a></p>
   </footer>
 </main>
+
 </body>
 </html>

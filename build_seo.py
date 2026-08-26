@@ -795,6 +795,394 @@ SRV_CSS = '''
   footer { margin-top:80px; color:#9fb4c8; font-size:14px; border-top:1px solid rgba(159,180,200,.22); padding-top:22px; }
 '''
 
+def with_chrome(tpl):
+    """Добавить шаблону шрифты сайта, его переменные и место под шапку.
+
+    styles.css — только :root-переменные, ни одного правила на элементы, поэтому
+    подключается без риска задеть вёрстку раздела. Без него страница шла системным
+    шрифтом и читалась как чужая, пришитая сбоку."""
+    return tpl.replace(
+        '<style>{css}</style>',
+        '<link rel="preload" href="{up}assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>\n'
+        '<link rel="stylesheet" href="{up}assets/fonts/fonts.css">\n'
+        '<link rel="stylesheet" href="{up}styles.css">\n'
+        '<style>{css}</style>'
+    ).replace(
+        '<body>\n<main class="wrap">', '<body>\n{chrome}\n<main class="wrap">'
+    # Скрипты — В КОНЦЕ body, а не рядом с шапкой: обвязка ищет карточки
+    # и заголовки, а сразу после <body> их ещё нет.
+    ).replace('</body>', '{chromejs}\n</body>')
+
+
+# ---------- Обвязка страниц: шапка, кнопки, курсор ----------
+# Определена ЗДЕСЬ, а не в разделе библиотеки: услуги и концепции собираются
+# раньше по файлу, и снизу они бы её не увидели.
+LIB_T = {
+ 'ru': {
+  'brands': 'Производители', 'good': 'Когда работает', 'bad': 'Когда не работает',
+  'compare': 'Два принципа', 'hw': 'Важно для спецификации', 'spec': 'Как считать',
+  'warn': 'Наше мнение', 'principle': 'Принцип категории', 'other': 'Другие категории',
+  'ourcase': 'Как это сделано у нас: ', 'hub': 'Библиотека оборудования',
+  'cta': 'Прислать спецификацию на проверку →', 'open': 'Открыть раздел',
+  'search': 'Поиск по названию, задаче или бренду', 'nothing': 'Ничего не нашлось. Попробуйте другое слово.',
+  'work': 'Проекты', 'atlas': 'Атлас', 'hubnav': 'Оборудование',
+  'talk': '▶ Обсудить идею', 'back': 'Назад', 'top': 'Наверх',
+  'studio': 'Студия', 'sndoff': 'Выключить звук', 'sndon': 'Включить звук',
+  'concepts': 'Библиотека', 'services': 'Услуги', 'home': 'На главную', 'all': 'Все проекты',
+  'h1': 'Библиотека оборудования интерактивных экспозиций',
+  'pos': ('позиция', 'позиции', 'позиций'),
+  'man': ('производитель', 'производителя', 'производителей'),
+  'kind': ('тип', 'типа', 'типов'),
+ },
+ 'en': {
+  'brands': 'Manufacturers', 'good': 'Works when', 'bad': 'Falls short when',
+  'compare': 'Two principles', 'hw': 'Watch out in the spec', 'spec': 'How to size it',
+  'warn': 'Our take', 'principle': 'The principle here', 'other': 'Other categories',
+  'ourcase': 'How we built it: ', 'hub': 'Equipment library',
+  'cta': 'Send us your specification for a free review →', 'open': 'Open the section',
+  'search': 'Search by name, job or brand', 'nothing': 'Nothing matched. Try another word.',
+  'work': 'Work', 'atlas': 'Atlas', 'hubnav': 'Equipment',
+  'talk': '▶ Book a call', 'back': 'Back', 'top': 'Top',
+  'studio': 'Studio', 'sndoff': 'Mute', 'sndon': 'Unmute',
+  'concepts': 'Concepts', 'services': 'Services', 'home': 'Home', 'all': 'All projects',
+  'h1': 'An equipment library for interactive exhibitions',
+  'pos': ('entry', 'entries', 'entries'),
+  'man': ('manufacturer', 'manufacturers', 'manufacturers'),
+  'kind': ('type', 'types', 'types'),
+ },
+}
+
+
+LIB_SND_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13L7.2 14.5H4z"/><path class="wave" d="M16 9c1.2 1 1.2 5 0 6"/><path class="wave" d="M18.7 6.8c2.3 2 2.3 8.4 0 10.4"/><path class="slash" d="M16.6 9.6l4.8 4.8m0-4.8l-4.8 4.8"/></svg>'
+
+
+LIB_HDR_JS = '''
+/* Выключатель звука в шапке раздела. Своего звука тут нет, но ключ pd_sound общий
+   на весь сайт: выключил здесь — вернулся на главную, и сцена молчит. Кнопка,
+   которая ничего не делает, была бы обманом; эта делает ровно то, что обещает. */
+(function () {
+  var b = document.querySelector('.pdhdr .snd');
+  if (!b) return;
+  function on(){ try { return localStorage.getItem('pd_sound') !== 'off'; } catch (e) { return true; } }
+  function paint(){
+    var v = on();
+    b.classList.toggle('off', !v);
+    var l = b.getAttribute(v ? 'data-off' : 'data-on') || '';
+    b.setAttribute('aria-label', l); b.setAttribute('title', l);
+  }
+  b.addEventListener('click', function () {
+    try { localStorage.setItem('pd_sound', on() ? 'off' : 'on'); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+'''
+
+
+LIB_CHROME_CSS = '''
+  /* ---------- Обвязка страницы: шапка, кнопки, курсор ----------
+     Раздел лежит вне лендинга и своих стилей лендинга не тянет, поэтому шапка
+     собрана здесь заново — но по тем же правилам: фиксирована сверху, прозрачная
+     над первым экраном и с подложкой после прокрутки. Без неё «провалившись»
+     в раздел человек терял навигацию и мог вернуться только кнопкой браузера. */
+  body { padding-top:0; }
+  .pdhdr { position:fixed; top:0; left:0; right:0; z-index:60;
+           border-bottom:1px solid transparent;
+           transition:background .3s ease, border-color .3s ease; }
+  .pdhdr.scrolled { background:rgba(3,12,16,.82); backdrop-filter:blur(12px);
+                    border-bottom-color:var(--space-line); }
+  .pdhdr .in { display:flex; align-items:center; justify-content:space-between; padding:22px 64px; }
+  .pdhdr .lg { display:inline-flex; align-items:center; flex:0 0 auto; }
+  .pdhdr .lg img { height:19px; display:block; filter:brightness(0) invert(1); }
+  .pdhdr nav { display:flex; gap:34px; }
+  .pdhdr nav a { text-decoration:none; color:var(--scan-white-dim);
+                 font:700 12.5px "Blender Pro", var(--font-body); letter-spacing:0.24em;
+                 text-transform:uppercase; transition:color .18s; }
+  .pdhdr nav a:hover { color:var(--scan-white); }
+  .pdhdr nav a[aria-current="page"] { color:var(--signal-teal); }
+  .pdhdr .talk { display:inline-flex; align-items:center; gap:9px; text-decoration:none;
+                 font:700 13px "Blender Pro", var(--font-body); letter-spacing:0.1em;
+                 text-transform:uppercase; background:var(--signal-amber); color:var(--space-void);
+                 padding:11px 20px; border:none;
+                 clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+                 transition:transform .25s cubic-bezier(.2,.8,.2,1); }
+  .pdhdr .talk:hover { transform:translateY(-2px); }
+  .pdhdr .lang { display:flex; align-items:center; gap:2px; margin-left:18px; }
+  .pdhdr .lang a { font:700 11.5px "Blender Pro", var(--font-mono); letter-spacing:0.16em;
+                   text-transform:uppercase; color:var(--scan-white-dim); padding:5px 7px;
+                   border:1px solid transparent; text-decoration:none; transition:color .18s; }
+  .pdhdr .lang a:hover { color:var(--scan-white); }
+  .pdhdr .lang a.on { color:var(--space-void); background:var(--scan-white); }
+  .pdhdr .snd { margin-left:14px; width:30px; height:30px; display:flex; align-items:center;
+                justify-content:center; background:none; border:1px solid transparent;
+                color:var(--scan-white-dim); cursor:pointer; transition:color .18s, border-color .18s; }
+  .pdhdr .snd:hover { color:var(--scan-white); border-color:var(--scan-white-faint); }
+  .pdhdr .snd svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6;
+                    stroke-linecap:round; stroke-linejoin:round; }
+  .pdhdr .snd .wave { transition:opacity .18s; }
+  .pdhdr .snd .slash { opacity:0; transition:opacity .18s; }
+  .pdhdr .snd.off { color:var(--scan-white-faint); }
+  .pdhdr .snd.off .wave { opacity:0; }
+  .pdhdr .snd.off .slash { opacity:1; }
+  /* Пункты меню на узком экране прячем, как на главной: шесть названий в строку
+     не помещаются. Логотип, кнопка и язык остаются — этого хватает, чтобы уйти. */
+  @media (max-width:1100px) {
+    .pdhdr .in { padding:16px 24px; }
+    .pdhdr nav { gap:22px; overflow-x:auto; scrollbar-width:none; }
+    .pdhdr nav::-webkit-scrollbar { display:none; }
+    .pdhdr nav a { flex:0 0 auto; letter-spacing:0.16em; font-size:11.5px; }
+  }
+  @media (max-width:760px) {
+    .pdhdr nav, .pdhdr .talk { display:none; }
+    .pdhdr .lang { margin-left:auto; }
+  }
+
+  /* Панель фильтра липнет ПОД шапкой, а не под верх окна: иначе она уезжала бы
+     под неё и первые кнопки были не видны. Высота шапки подставляется скриптом. */
+  .libbar { top:var(--hdr,58px); }
+  .wrap { padding-top:calc(var(--hdr, 84px) + 44px); }
+
+  /* Кнопки «назад» и «наверх». Стопкой в правом нижнем углу: там их ищут,
+     и они не спорят с содержанием. «Наверх» появляется после первого экрана. */
+  .pdnav { position:fixed; right:22px; bottom:22px; z-index:55;
+           display:flex; flex-direction:column; gap:10px; }
+  .pdnav button { width:44px; height:44px; cursor:pointer; display:grid; place-items:center;
+                  background:rgba(4,12,16,.82); backdrop-filter:blur(8px);
+                  border:1px solid rgba(159,180,200,.28); color:#9fb4c8;
+                  transition:color .18s, border-color .18s, background .18s, opacity .3s, transform .3s; }
+  .pdnav button:hover { color:#2be0c6; border-color:#2be0c6; background:rgba(43,224,198,.1); }
+  .pdnav button svg { width:18px; height:18px; display:block; }
+  .pdnav .up { opacity:0; transform:translateY(10px); pointer-events:none; }
+  .pdnav .up.on { opacity:1; transform:none; pointer-events:auto; }
+
+  /* Проявление карточек при прокрутке — тот же приём, что на лендинге.
+     Без скриптов и при prefers-reduced-motion карточки видны сразу. */
+  /* Кривая, длительность и блюр — те же, что на главной (см. .rv в index.html).
+     Свои значения читались бы как другая страница: глаз замечает разницу в темпе
+     раньше, чем разницу в цвете. */
+  .rv { opacity:0; transform:translateY(22px); filter:blur(6px);
+        transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1),
+                   filter .8s ease; }
+  .rv.in { opacity:1; transform:none; filter:none; }
+  @media (prefers-reduced-motion:reduce) { .rv { opacity:1; transform:none; filter:none; transition:none; } }
+
+  /* Вход на страницу: содержание всплывает целиком, а не появляется рывком.
+     Класс снимается скриптом; без скриптов страница видна сразу. */
+  body.pd-enter .wrap { opacity:0; transform:translateY(14px); }
+  body.pd-enter .pdhdr { opacity:0; transform:translateY(-100%); }
+  .wrap { transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+  .pdhdr { transition:background .3s ease, border-color .3s ease,
+                      opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1); }
+  @media (prefers-reduced-motion:reduce) {
+    body.pd-enter .wrap, body.pd-enter .pdhdr { opacity:1; transform:none; }
+  }
+
+  /* Курсор: точка с мягким ореолом. Системный не прячем — на длинном тексте
+     он нужен для выделения, а метка идёт следом и добавляет живости. */
+  .pdcur { position:fixed; left:0; top:0; z-index:70; pointer-events:none;
+           width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%;
+           background:#2be0c6; opacity:0; transition:opacity .3s, width .2s, height .2s, margin .2s; }
+  .pdcur.on { opacity:.9; }
+  .pdcur.big { width:26px; height:26px; margin:-13px 0 0 -13px; opacity:.35; }
+  .pdglow { position:fixed; left:0; top:0; z-index:69; pointer-events:none;
+            width:190px; height:190px; margin:-95px 0 0 -95px; opacity:0;
+            background:radial-gradient(closest-side, rgba(43,224,198,.16), transparent 70%);
+            transition:opacity .4s; }
+  .pdglow.on { opacity:1; }
+
+  @media (max-width:760px) {
+    .pdhdr .in { gap:16px; padding:12px 16px; }
+    .pdhdr .talk { display:none; }
+    .wrap { padding-top:92px; }
+    .pdnav { right:14px; bottom:14px; }
+    .pdcur, .pdglow { display:none; }
+  }
+'''
+
+
+LIB_CHROME_JS = '''
+/* Обвязка страницы раздела: подложка шапки, кнопка «наверх», проявление карточек,
+   метка курсора. Всё необязательное: без скриптов страница остаётся читаемой,
+   карточки видны, навигация работает. */
+(function () {
+  var hdr = document.querySelector('.pdhdr');
+  var up = document.querySelector('.pdnav .up');
+  var fine = window.matchMedia && matchMedia('(hover:hover) and (pointer:fine)').matches;
+  var calm = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // высота шапки уезжает в переменную: панель фильтра липнет ровно под ней,
+  // а на узком экране шапка выше, и подгонять число руками пришлось бы дважды
+  function fit() {
+    if (!hdr) return;
+    document.documentElement.style.setProperty('--hdr', hdr.offsetHeight + 'px');
+  }
+  fit();
+  addEventListener('resize', fit, { passive: true });
+  // ШРИФТЫ МЕНЯЮТ ВЫСОТУ ШАПКИ. Скрипт снимает её сразу, а Blender Pro и Onest
+  // приезжают позже и пересобирают строку меню — замер устаревал на десятки
+  // пикселей, и панель фильтра липла не туда. Пересчитываем, когда шрифты готовы.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit).catch(function(){});
+  addEventListener('load', fit);
+
+  // Вход на страницу. Класс ставим из скрипта, а не в разметке: если скрипты
+  // отключены, содержание не должно остаться невидимым.
+  if (!calm) {
+    document.body.classList.add('pd-enter');
+    var off = function () { document.body.classList.remove('pd-enter'); };
+    requestAnimationFrame(function () { requestAnimationFrame(off); });
+    setTimeout(off, 400);                       // страховка, если кадр не пришёл
+  }
+
+  var tick = false;
+  function onScroll() {
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(function () {
+      tick = false;
+      var y = window.pageYOffset || document.documentElement.scrollTop;
+      if (hdr) hdr.classList.toggle('scrolled', y > 12);
+      if (up) up.classList.toggle('on', y > innerHeight * 0.6);
+    });
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  if (up) up.addEventListener('click', function () {
+    scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
+  });
+  var back = document.querySelector('.pdnav .back');
+  if (back) back.addEventListener('click', function () {
+    // если человек пришёл из поиска, истории нет — уводим на хаб раздела,
+    // а не оставляем кнопку мёртвой
+    if (history.length > 1 && document.referrer && document.referrer.indexOf(location.host) > -1) history.back();
+    else location.href = back.getAttribute('data-home');
+  });
+
+  // проявление карточек
+  // Проявляем ВСЁ, что читается как отдельный шаг: заголовок, лид, знак категории,
+  // врезку с принципом, панель фильтра и карточки. Раньше оживали только карточки,
+  // и верх страницы выглядел статичным на фоне движения ниже.
+  var items = [].slice.call(document.querySelectorAll(
+    '.crumbs, h1, .lead, .libmark, .call, .libbar, .libitem, .libcat, .libgrid + h2, .libcats,'
+    // обычные разделы: заголовки глав, списки, врезки, карточки услуг и концепций
+    + ' article h2, article h3, ol.steps, ul.notes, ul.stats, ul.cases, .qa, .golink,'
+    + ' ol.atlas li, .cncs li, .gal img, footer'));
+  // ПРЕДОХРАНИТЕЛЬ. Проявление прячет карточки до срабатывания наблюдателя, а он
+  // завязан на отрисовку: во вкладке, открытой в фоне, кадры не идут и колбэк
+  // не приходит. Для справочника это значило бы пустую страницу, поэтому
+  // во-первых не начинаем, если вкладка скрыта, во-вторых через полторы секунды
+  // показываем всё, что попало в окно, независимо от наблюдателя.
+  if (items.length && window.IntersectionObserver && !calm && !document.hidden) {
+    items.forEach(function (el) { el.classList.add('rv'); });
+    setTimeout(function () {
+      items.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.top < innerHeight && r.bottom > 0) el.classList.add('in');
+      });
+    }, 1500);
+    // Каскад: соседи, попавшие в кадр одновременно, проявляются по очереди
+    // с тем же шагом 85 мс, что на главной. Одновременное появление читается
+    // как перерисовка, последовательное — как движение.
+    var wave = 0, waveAt = 0;
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var now = Date.now();
+        if (now - waveAt > 220) wave = 0;      // новая волна: отсчёт заново
+        waveAt = now;
+        var el = e.target, k = wave++;
+        io.unobserve(el);
+        if (k === 0) el.classList.add('in');
+        else setTimeout(function () { el.classList.add('in'); }, Math.min(k, 6) * 85);
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    items.forEach(function (el) { io.observe(el); });
+    // фильтр прячет и показывает карточки: показанная заново должна быть видимой,
+    // а не остаться в стартовом состоянии проявления
+    addEventListener('pdfilter', function () {
+      items.forEach(function (el) { if (!el.hidden) el.classList.add('in'); });
+    });
+  }
+
+  // метка курсора
+  if (fine && !calm) {
+    var dot = document.createElement('div'), glow = document.createElement('div');
+    dot.className = 'pdcur'; glow.className = 'pdglow';
+    document.body.appendChild(glow); document.body.appendChild(dot);
+    var x = 0, y = 0, gx = 0, gy = 0, raf = null;
+    function loop() {
+      raf = null;
+      gx += (x - gx) * 0.16; gy += (y - gy) * 0.16;
+      dot.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      glow.style.transform = 'translate(' + gx + 'px,' + gy + 'px)';
+      if (Math.abs(x - gx) > 0.4 || Math.abs(y - gy) > 0.4) raf = requestAnimationFrame(loop);
+    }
+    addEventListener('pointermove', function (e) {
+      x = e.clientX; y = e.clientY;
+      dot.classList.add('on'); glow.classList.add('on');
+      if (!raf) raf = requestAnimationFrame(loop);
+    }, { passive: true });
+    addEventListener('pointerdown', function () { dot.classList.add('big'); });
+    addEventListener('pointerup', function () { dot.classList.remove('big'); });
+    // над ссылками и кнопками метка растёт — подсказка, что здесь можно нажать
+    document.addEventListener('pointerover', function (e) {
+      var t = e.target;
+      dot.classList.toggle('big', !!(t.closest && t.closest('a,button,input')));
+    }, { passive: true });
+  }
+})();
+'''
+
+
+def chrome_js():
+    """скрипты обвязки: подложка шапки, «наверх», проявление, курсор, звук"""
+    return '<script>%s</script><script>%s</script>' % (LIB_CHROME_JS, LIB_HDR_JS)
+
+
+def lib_chrome(L, up, alt_url='', current='library'):
+    """Шапка раздела ОДИН В ОДИН как на главной: те же пункты, порядок, адреса
+    и типографика. Плюс кнопки «назад» и «наверх», которых на лендинге нет —
+    там некуда возвращаться, а здесь есть."""
+    T = LIB_T[L.code]
+    home = up + L.prefix
+    # адреса ровно те же, что в nav.links на главной
+    items = [(T['services'], home + 'services/'),
+             (T['work'], home + '#work'),
+             (T['concepts'], home + '#concepts'),
+             (T['hubnav'], home + 'library/'),
+             (T['atlas'], home + '#atlas'),
+             (T['studio'], home + '#studio')]
+    # какой пункт подсвечен, решает вызывающий: раздел знает про себя сам
+    marks = {'services': 'services/', 'library': 'library/',
+             'concepts': '#concepts', 'atlas': '#atlas', 'work': '#work'}
+    mark = marks.get(current, '')
+    nav = ''.join('<a href="%s"%s>%s</a>'
+                  % (esc(u), ' aria-current="page"' if mark and u.endswith(mark) else '', esc(n))
+                  for n, u in items)
+    lang = ('<div class="lang"><a class="on" aria-current="true">RU</a>'
+            '<a href="%s" hreflang="en">ENG</a></div>' % esc(alt_url)) if L.code == 'ru' else (
+           '<div class="lang"><a href="%s" hreflang="ru">RU</a>'
+           '<a class="on" aria-current="true">ENG</a></div>' % esc(alt_url))
+    snd = ('<button class="snd" type="button" data-off="%s" data-on="%s">%s</button>'
+           % (esc(T['sndoff']), esc(T['sndon']), LIB_SND_SVG))
+    return (
+      '<header class="pdhdr"><div class="in">'
+      '<a class="lg" href="%s" aria-label="playdisplay"><img src="%sassets/logos/playdisplay-logo-black.png" alt="playdisplay"></a>'
+      '<nav>%s</nav><a class="talk" href="%s#contact">%s</a>%s%s'
+      '</div></header>'
+      '<div class="pdnav">'
+      '<button class="back" type="button" data-home="%s" aria-label="%s" title="%s">'
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+      '<path d="M15 5 L8 12 L15 19"/></svg></button>'
+      '<button class="up" type="button" aria-label="%s" title="%s">'
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+      '<path d="M5 14 L12 7 L19 14"/></svg></button>'
+      '</div>'
+    ) % (esc(home), esc(up), nav, esc(home), esc(T['talk']), lang, snd,
+         esc(home + (current + '/' if current in ('services', 'library', 'concepts') else '')),
+         esc(T['back']), esc(T['back']), esc(T['top']), esc(T['top']))
+
+
 SERVICE_PAGE = '''<!DOCTYPE html>
 <html lang="{lang}">
 <head>
@@ -847,6 +1235,8 @@ SERVICE_PAGE = '''<!DOCTYPE html>
 </html>
 '''
 
+SERVICE_PAGE = with_chrome(SERVICE_PAGE)
+
 HUB_PAGE = '''<!DOCTYPE html>
 <html lang="{lang}">
 <head>
@@ -891,6 +1281,8 @@ HUB_PAGE = '''<!DOCTYPE html>
 </html>
 '''
 
+HUB_PAGE = with_chrome(HUB_PAGE)
+
 HUB_LEAD_RU = ('Пять направлений, в которых мы работаем с 2011 года. Внутри каждого — что входит, '
                'как идёт работа, что определяет срок и стоимость, и проекты, на которых это уже сделано.')
 HUB_LEAD_EN = ('Five directions we have been working in since 2011. Each page covers what is included, '
@@ -910,7 +1302,10 @@ for L in SRV_LANGS:
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(SERVICE_PAGE.format(
             lang=L.code, title=esc(s['title']), subtitle=esc(s['subtitle']),
             desc=esc(Lang._clip(s['subtitle'])), canon=L.url(tail), alts=srv_alternates(tail),
-            cover=esc(cover_url(s['cases'][0], L.pmap)), locale=L.locale, css=SRV_CSS,
+            cover=esc(cover_url(s['cases'][0], L.pmap)), locale=L.locale,
+            css=SRV_CSS + LIB_CHROME_CSS,
+            chrome=lib_chrome(L, L.up, ('/en/' if L.code == 'ru' else '/') + tail, 'services'),
+            chromejs=chrome_js(),
             jsonld=service_jsonld(L, s), up=L.up_srv, home=L.up_srv + L.prefix,
             srvhome=L.up_srv + L.prefix + 'services/',
             flow=render_blocks(s['flow']), cases=render_cases(L, s['cases']), faqblock=faqblock,
@@ -941,7 +1336,10 @@ for L in SRV_LANGS:
     open(os.path.join(dh, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(HUB_PAGE.format(
         lang=L.code, title=esc(L.t('Услуги')),
         desc=esc(Lang._clip(HUB_LEAD_EN if L.code == 'en' else HUB_LEAD_RU)),
-        canon=L.url('services/'), alts=srv_alternates('services/'), locale=L.locale, css=SRV_CSS,
+        canon=L.url('services/'), alts=srv_alternates('services/'), locale=L.locale,
+        css=SRV_CSS + LIB_CHROME_CSS,
+        chrome=lib_chrome(L, up_hub, '/en/services/' if L.code == 'ru' else '/services/', 'services'),
+        chromejs=chrome_js(),
         cover=esc(cover_url(L.services[0]['cases'][0], L.pmap)),
         jsonld=hub_ld, up=up_hub, home=up_hub + L.prefix,
         lead=esc(HUB_LEAD_EN if L.code == 'en' else HUB_LEAD_RU), items=hub_items,
@@ -1097,6 +1495,7 @@ CNC_CSS = SRV_CSS + '''
   h3.cat { font-size:15px; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin:38px 0 10px; }
 '''
 
+
 CONCEPT_PAGE = '''<!DOCTYPE html>
 <html lang="{lang}">
 <head>
@@ -1147,6 +1546,8 @@ CONCEPT_PAGE = '''<!DOCTYPE html>
 </html>
 '''
 
+CONCEPT_PAGE = with_chrome(CONCEPT_PAGE)
+
 # Хаб концепций берёт общий шаблон, но список у него сгруппирован по категориям:
 # <h3>+<ul> нельзя вкладывать в <ul class="cases"> — получилась бы невалидная разметка.
 CNC_HUB_PAGE = HUB_PAGE.replace('<ul class="cases">{items}</ul>', '{items}')
@@ -1173,7 +1574,10 @@ for L in CNC_LANGS:
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(CONCEPT_PAGE.format(
             lang=L.code, title=esc(c.get('title')), lead=esc(c.get('line') or ''),
             desc=esc(Lang._clip(c.get('line') or '')), canon=L.url(tail), alts=cnc_alternates(tail),
-            cover=esc(cover), locale=L.locale, css=CNC_CSS, jsonld=cnc_jsonld(L, c),
+            cover=esc(cover), locale=L.locale, css=CNC_CSS + LIB_CHROME_CSS,
+            chrome=lib_chrome(L, L.up, ('/en/' if L.code == 'ru' else '/') + tail, 'concepts'),
+            chromejs=chrome_js(),
+            jsonld=cnc_jsonld(L, c),
             up=L.up_srv, home=L.up_srv + L.prefix, cnchome=L.up_srv + L.prefix + 'concepts/',
             atlashome=L.up_srv + L.prefix + 'atlas/', t_atlas=esc(L.t('Атлас')),
             srvhome=L.up_srv + L.prefix + 'services/',
@@ -1206,7 +1610,10 @@ for L in CNC_LANGS:
     open(os.path.join(dh, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(CNC_HUB_PAGE.format(
         lang=L.code, title=esc(L.t('Концепции')),
         desc=esc(Lang._clip(CNC_HUB_LEAD_EN if L.code == 'en' else CNC_HUB_LEAD_RU)),
-        canon=L.url('concepts/'), alts=cnc_alternates('concepts/'), locale=L.locale, css=CNC_CSS,
+        canon=L.url('concepts/'), alts=cnc_alternates('concepts/'), locale=L.locale,
+        css=CNC_CSS + LIB_CHROME_CSS,
+        chrome=lib_chrome(L, up_hub, '/en/concepts/' if L.code == 'ru' else '/concepts/', 'concepts'),
+        chromejs=chrome_js(),
         cover=esc(cover_url(ORDER[0], L.pmap)),
         jsonld=hub_ld, up=up_hub, home=up_hub + L.prefix,
         lead=esc(CNC_HUB_LEAD_EN if L.code == 'en' else CNC_HUB_LEAD_RU), items=''.join(groups),
@@ -1214,6 +1621,7 @@ for L in CNC_LANGS:
         footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
         f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
     print('concept pages [%s]: %d + хаб' % (L.code, len(L.concepts)))
+
 
 
 ATLAS_PAGE = '''<!DOCTYPE html>
@@ -1261,6 +1669,8 @@ ATLAS_PAGE = '''<!DOCTYPE html>
 </body>
 </html>
 '''
+
+ATLAS_PAGE = with_chrome(ATLAS_PAGE)
 
 
 def atlas_alternates(tail):
@@ -1332,7 +1742,11 @@ for L in langs:
         lang=L.code, title=esc(L.t('Атлас')),
         h1=esc(L.t('Атлас: как мы думаем о пространстве')),
         desc=esc(Lang._clip(ATLAS_LEAD_EN if L.code == 'en' else ATLAS_LEAD_RU)),
-        canon=L.url(tail), alts=atlas_alternates(tail), locale=L.locale, css=css, jsonld=ld,
+        canon=L.url(tail), alts=atlas_alternates(tail), locale=L.locale,
+        css=css + LIB_CHROME_CSS,
+        chrome=lib_chrome(L, up, '/en/atlas/' if L.code == 'ru' else '/atlas/', 'atlas'),
+        chromejs=chrome_js(),
+        jsonld=ld,
         cover=esc(cover_url(ORDER[0], L.pmap)), up=up, home=up + L.prefix,
         cnchome=up + L.prefix + 'concepts/', srvhome=up + L.prefix + 'services/',
         lead=esc(ATLAS_LEAD_EN if L.code == 'en' else ATLAS_LEAD_RU), groups=''.join(groups),
@@ -1556,19 +1970,15 @@ LIB_CSS = CNC_CSS + '''
   .brands span { display:block; color:#9fb4c8; font-size:13.5px; line-height:1.45; margin-top:3px; }
 '''
 
-LIB_PAGE = ATLAS_PAGE.replace(
-    '<style>{css}</style>',
-    '<link rel="preload" href="{up}assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>\n'
-    '<link rel="stylesheet" href="{up}assets/fonts/fonts.css">\n'
-    '<link rel="stylesheet" href="{up}styles.css">\n'
-    '<style>{css}</style>'
-).replace(
-    '<nav class="crumbs"><a href="{home}">playdisplay</a> / {title}</nav>',
-    '<nav class="crumbs"><a href="{home}">playdisplay</a> / {crumb} {title}</nav>'
-).replace('<body>\n<main class="wrap">', '<body>\n{chrome}\n<main class="wrap">'
+
+
+
 # «Прислать спецификацию» вела просто на главную, без якоря: человек оказывался
 # на первом экране и не понимал, куда что слать. Теперь #book — контакты
 # и сразу раскрытая форма, потому что присылать ему уже есть что.
+LIB_PAGE = ATLAS_PAGE.replace(
+    '<nav class="crumbs"><a href="{home}">playdisplay</a> / {title}</nav>',
+    '<nav class="crumbs"><a href="{home}">playdisplay</a> / {crumb} {title}</nav>'
 ).replace('<a class="cta" href="{home}">{cta}</a>', '<a class="cta" href="{ctahref}">{cta}</a>')
 
 
@@ -1617,43 +2027,7 @@ def lib_brands(L, item):
     return '<div class="brands"><h4>%s</h4><ul>%s</ul></div>' % (LIB_T[L.code]['brands'], li)
 
 
-def lib_chrome(L, up, alt_url=''):
-    """Шапка раздела ОДИН В ОДИН как на главной: те же пункты, порядок, адреса
-    и типографика. Плюс кнопки «назад» и «наверх», которых на лендинге нет —
-    там некуда возвращаться, а здесь есть."""
-    T = LIB_T[L.code]
-    home = up + L.prefix
-    # адреса ровно те же, что в nav.links на главной
-    items = [(T['services'], home + 'services/'),
-             (T['work'], home + '#work'),
-             (T['concepts'], home + '#concepts'),
-             (T['hubnav'], home + 'library/'),
-             (T['atlas'], home + '#atlas'),
-             (T['studio'], home + '#studio')]
-    nav = ''.join('<a href="%s"%s>%s</a>'
-                  % (esc(u), ' aria-current="page"' if u.endswith('library/') else '', esc(n))
-                  for n, u in items)
-    lang = ('<div class="lang"><a class="on" aria-current="true">RU</a>'
-            '<a href="%s" hreflang="en">ENG</a></div>' % esc(alt_url)) if L.code == 'ru' else (
-           '<div class="lang"><a href="%s" hreflang="ru">RU</a>'
-           '<a class="on" aria-current="true">ENG</a></div>' % esc(alt_url))
-    snd = ('<button class="snd" type="button" data-off="%s" data-on="%s">%s</button>'
-           % (esc(T['sndoff']), esc(T['sndon']), LIB_SND_SVG))
-    return (
-      '<header class="pdhdr"><div class="in">'
-      '<a class="lg" href="%s" aria-label="playdisplay"><img src="%sassets/logos/playdisplay-logo-black.png" alt="playdisplay"></a>'
-      '<nav>%s</nav><a class="talk" href="%s#contact">%s</a>%s%s'
-      '</div></header>'
-      '<div class="pdnav">'
-      '<button class="back" type="button" data-home="%slibrary/" aria-label="%s" title="%s">'
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
-      '<path d="M15 5 L8 12 L15 19"/></svg></button>'
-      '<button class="up" type="button" aria-label="%s" title="%s">'
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
-      '<path d="M5 14 L12 7 L19 14"/></svg></button>'
-      '</div>'
-    ) % (esc(home), esc(up), nav, esc(home), esc(T['talk']), lang, snd,
-         esc(home), esc(T['back']), esc(T['back']), esc(T['top']), esc(T['top']))
+
 
 
 def lib_item(L, item, idx, sec=''):
@@ -1756,280 +2130,14 @@ LIB_INTRO_EN = '<p>Organised by role in the system, not by price list. Every int
 LIB_TAIL_EN = '<h2>Integration by Playdisplay</h2><p>We are integrators: we build working exhibitions out of this kit, from the story to opening day. We know it from the rooms we designed, installed and later repaired, not from catalogues. What each item really gives you, where it will let you down, and what to swap it for when the budget will not close — we know from our own work rather than from somebody else’s promises.</p><p>In our hands an ordinary monitor becomes a display people stop at. The same monitor with no story is a noticeboard. The difference is not the monitor — it is what happens on it, and why anyone noticed.</p><p>We are independent of suppliers: no warehouse of our own, no commission on hardware. So the solution gets picked for the job rather than for the stock. Supply is handled by our partners — anything on this list, on the best terms for you. Ours is the story, the content, the interaction, the software and the integration: one hardware-and-software system, rather than boxes from five vendors who have never heard of each other.</p><p><b>Got a specification in hand?</b> Send it over. We will tell you what is redundant, what is missing and what will not see year two. Free, no obligation, and no sales pitch afterwards.</p>'
 
 
-LIB_CHROME_CSS = '''
-  /* ---------- Обвязка страницы: шапка, кнопки, курсор ----------
-     Раздел лежит вне лендинга и своих стилей лендинга не тянет, поэтому шапка
-     собрана здесь заново — но по тем же правилам: фиксирована сверху, прозрачная
-     над первым экраном и с подложкой после прокрутки. Без неё «провалившись»
-     в раздел человек терял навигацию и мог вернуться только кнопкой браузера. */
-  body { padding-top:0; }
-  .pdhdr { position:fixed; top:0; left:0; right:0; z-index:60;
-           border-bottom:1px solid transparent;
-           transition:background .3s ease, border-color .3s ease; }
-  .pdhdr.scrolled { background:rgba(3,12,16,.82); backdrop-filter:blur(12px);
-                    border-bottom-color:var(--space-line); }
-  .pdhdr .in { display:flex; align-items:center; justify-content:space-between; padding:22px 64px; }
-  .pdhdr .lg { display:inline-flex; align-items:center; flex:0 0 auto; }
-  .pdhdr .lg img { height:19px; display:block; filter:brightness(0) invert(1); }
-  .pdhdr nav { display:flex; gap:34px; }
-  .pdhdr nav a { text-decoration:none; color:var(--scan-white-dim);
-                 font:700 12.5px "Blender Pro", var(--font-body); letter-spacing:0.24em;
-                 text-transform:uppercase; transition:color .18s; }
-  .pdhdr nav a:hover { color:var(--scan-white); }
-  .pdhdr nav a[aria-current="page"] { color:var(--signal-teal); }
-  .pdhdr .talk { display:inline-flex; align-items:center; gap:9px; text-decoration:none;
-                 font:700 13px "Blender Pro", var(--font-body); letter-spacing:0.1em;
-                 text-transform:uppercase; background:var(--signal-amber); color:var(--space-void);
-                 padding:11px 20px; border:none;
-                 clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
-                 transition:transform .25s cubic-bezier(.2,.8,.2,1); }
-  .pdhdr .talk:hover { transform:translateY(-2px); }
-  .pdhdr .lang { display:flex; align-items:center; gap:2px; margin-left:18px; }
-  .pdhdr .lang a { font:700 11.5px "Blender Pro", var(--font-mono); letter-spacing:0.16em;
-                   text-transform:uppercase; color:var(--scan-white-dim); padding:5px 7px;
-                   border:1px solid transparent; text-decoration:none; transition:color .18s; }
-  .pdhdr .lang a:hover { color:var(--scan-white); }
-  .pdhdr .lang a.on { color:var(--space-void); background:var(--scan-white); }
-  .pdhdr .snd { margin-left:14px; width:30px; height:30px; display:flex; align-items:center;
-                justify-content:center; background:none; border:1px solid transparent;
-                color:var(--scan-white-dim); cursor:pointer; transition:color .18s, border-color .18s; }
-  .pdhdr .snd:hover { color:var(--scan-white); border-color:var(--scan-white-faint); }
-  .pdhdr .snd svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6;
-                    stroke-linecap:round; stroke-linejoin:round; }
-  .pdhdr .snd .wave { transition:opacity .18s; }
-  .pdhdr .snd .slash { opacity:0; transition:opacity .18s; }
-  .pdhdr .snd.off { color:var(--scan-white-faint); }
-  .pdhdr .snd.off .wave { opacity:0; }
-  .pdhdr .snd.off .slash { opacity:1; }
-  /* Пункты меню на узком экране прячем, как на главной: шесть названий в строку
-     не помещаются. Логотип, кнопка и язык остаются — этого хватает, чтобы уйти. */
-  @media (max-width:1100px) {
-    .pdhdr .in { padding:16px 24px; }
-    .pdhdr nav { gap:22px; overflow-x:auto; scrollbar-width:none; }
-    .pdhdr nav::-webkit-scrollbar { display:none; }
-    .pdhdr nav a { flex:0 0 auto; letter-spacing:0.16em; font-size:11.5px; }
-  }
-  @media (max-width:760px) {
-    .pdhdr nav, .pdhdr .talk { display:none; }
-    .pdhdr .lang { margin-left:auto; }
-  }
-
-  /* Панель фильтра липнет ПОД шапкой, а не под верх окна: иначе она уезжала бы
-     под неё и первые кнопки были не видны. Высота шапки подставляется скриптом. */
-  .libbar { top:var(--hdr,58px); }
-  .wrap { padding-top:calc(var(--hdr, 84px) + 44px); }
-
-  /* Кнопки «назад» и «наверх». Стопкой в правом нижнем углу: там их ищут,
-     и они не спорят с содержанием. «Наверх» появляется после первого экрана. */
-  .pdnav { position:fixed; right:22px; bottom:22px; z-index:55;
-           display:flex; flex-direction:column; gap:10px; }
-  .pdnav button { width:44px; height:44px; cursor:pointer; display:grid; place-items:center;
-                  background:rgba(4,12,16,.82); backdrop-filter:blur(8px);
-                  border:1px solid rgba(159,180,200,.28); color:#9fb4c8;
-                  transition:color .18s, border-color .18s, background .18s, opacity .3s, transform .3s; }
-  .pdnav button:hover { color:#2be0c6; border-color:#2be0c6; background:rgba(43,224,198,.1); }
-  .pdnav button svg { width:18px; height:18px; display:block; }
-  .pdnav .up { opacity:0; transform:translateY(10px); pointer-events:none; }
-  .pdnav .up.on { opacity:1; transform:none; pointer-events:auto; }
-
-  /* Проявление карточек при прокрутке — тот же приём, что на лендинге.
-     Без скриптов и при prefers-reduced-motion карточки видны сразу. */
-  /* Кривая, длительность и блюр — те же, что на главной (см. .rv в index.html).
-     Свои значения читались бы как другая страница: глаз замечает разницу в темпе
-     раньше, чем разницу в цвете. */
-  .rv { opacity:0; transform:translateY(22px); filter:blur(6px);
-        transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1),
-                   filter .8s ease; }
-  .rv.in { opacity:1; transform:none; filter:none; }
-  @media (prefers-reduced-motion:reduce) { .rv { opacity:1; transform:none; filter:none; transition:none; } }
-
-  /* Вход на страницу: содержание всплывает целиком, а не появляется рывком.
-     Класс снимается скриптом; без скриптов страница видна сразу. */
-  body.pd-enter .wrap { opacity:0; transform:translateY(14px); }
-  body.pd-enter .pdhdr { opacity:0; transform:translateY(-100%); }
-  .wrap { transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
-  .pdhdr { transition:background .3s ease, border-color .3s ease,
-                      opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1); }
-  @media (prefers-reduced-motion:reduce) {
-    body.pd-enter .wrap, body.pd-enter .pdhdr { opacity:1; transform:none; }
-  }
-
-  /* Курсор: точка с мягким ореолом. Системный не прячем — на длинном тексте
-     он нужен для выделения, а метка идёт следом и добавляет живости. */
-  .pdcur { position:fixed; left:0; top:0; z-index:70; pointer-events:none;
-           width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%;
-           background:#2be0c6; opacity:0; transition:opacity .3s, width .2s, height .2s, margin .2s; }
-  .pdcur.on { opacity:.9; }
-  .pdcur.big { width:26px; height:26px; margin:-13px 0 0 -13px; opacity:.35; }
-  .pdglow { position:fixed; left:0; top:0; z-index:69; pointer-events:none;
-            width:190px; height:190px; margin:-95px 0 0 -95px; opacity:0;
-            background:radial-gradient(closest-side, rgba(43,224,198,.16), transparent 70%);
-            transition:opacity .4s; }
-  .pdglow.on { opacity:1; }
-
-  @media (max-width:760px) {
-    .pdhdr .in { gap:16px; padding:12px 16px; }
-    .pdhdr .talk { display:none; }
-    .wrap { padding-top:92px; }
-    .pdnav { right:14px; bottom:14px; }
-    .pdcur, .pdglow { display:none; }
-  }
-'''
-
-LIB_CHROME_JS = '''
-/* Обвязка страницы раздела: подложка шапки, кнопка «наверх», проявление карточек,
-   метка курсора. Всё необязательное: без скриптов страница остаётся читаемой,
-   карточки видны, навигация работает. */
-(function () {
-  var hdr = document.querySelector('.pdhdr');
-  var up = document.querySelector('.pdnav .up');
-  var fine = window.matchMedia && matchMedia('(hover:hover) and (pointer:fine)').matches;
-  var calm = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
-
-  // высота шапки уезжает в переменную: панель фильтра липнет ровно под ней,
-  // а на узком экране шапка выше, и подгонять число руками пришлось бы дважды
-  function fit() {
-    if (!hdr) return;
-    document.documentElement.style.setProperty('--hdr', hdr.offsetHeight + 'px');
-  }
-  fit();
-  addEventListener('resize', fit, { passive: true });
-  // ШРИФТЫ МЕНЯЮТ ВЫСОТУ ШАПКИ. Скрипт снимает её сразу, а Blender Pro и Onest
-  // приезжают позже и пересобирают строку меню — замер устаревал на десятки
-  // пикселей, и панель фильтра липла не туда. Пересчитываем, когда шрифты готовы.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit).catch(function(){});
-  addEventListener('load', fit);
-
-  // Вход на страницу. Класс ставим из скрипта, а не в разметке: если скрипты
-  // отключены, содержание не должно остаться невидимым.
-  if (!calm) {
-    document.body.classList.add('pd-enter');
-    var off = function () { document.body.classList.remove('pd-enter'); };
-    requestAnimationFrame(function () { requestAnimationFrame(off); });
-    setTimeout(off, 400);                       // страховка, если кадр не пришёл
-  }
-
-  var tick = false;
-  function onScroll() {
-    if (tick) return;
-    tick = true;
-    requestAnimationFrame(function () {
-      tick = false;
-      var y = window.pageYOffset || document.documentElement.scrollTop;
-      if (hdr) hdr.classList.toggle('scrolled', y > 12);
-      if (up) up.classList.toggle('on', y > innerHeight * 0.6);
-    });
-  }
-  addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  if (up) up.addEventListener('click', function () {
-    scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
-  });
-  var back = document.querySelector('.pdnav .back');
-  if (back) back.addEventListener('click', function () {
-    // если человек пришёл из поиска, истории нет — уводим на хаб раздела,
-    // а не оставляем кнопку мёртвой
-    if (history.length > 1 && document.referrer && document.referrer.indexOf(location.host) > -1) history.back();
-    else location.href = back.getAttribute('data-home');
-  });
-
-  // проявление карточек
-  // Проявляем ВСЁ, что читается как отдельный шаг: заголовок, лид, знак категории,
-  // врезку с принципом, панель фильтра и карточки. Раньше оживали только карточки,
-  // и верх страницы выглядел статичным на фоне движения ниже.
-  var items = [].slice.call(document.querySelectorAll(
-    '.crumbs, h1, .lead, .libmark, .call, .libbar, .libitem, .libcat, .libgrid + h2, .libcats'));
-  // ПРЕДОХРАНИТЕЛЬ. Проявление прячет карточки до срабатывания наблюдателя, а он
-  // завязан на отрисовку: во вкладке, открытой в фоне, кадры не идут и колбэк
-  // не приходит. Для справочника это значило бы пустую страницу, поэтому
-  // во-первых не начинаем, если вкладка скрыта, во-вторых через полторы секунды
-  // показываем всё, что попало в окно, независимо от наблюдателя.
-  if (items.length && window.IntersectionObserver && !calm && !document.hidden) {
-    items.forEach(function (el) { el.classList.add('rv'); });
-    setTimeout(function () {
-      items.forEach(function (el) {
-        var r = el.getBoundingClientRect();
-        if (r.top < innerHeight && r.bottom > 0) el.classList.add('in');
-      });
-    }, 1500);
-    // Каскад: соседи, попавшие в кадр одновременно, проявляются по очереди
-    // с тем же шагом 85 мс, что на главной. Одновременное появление читается
-    // как перерисовка, последовательное — как движение.
-    var wave = 0, waveAt = 0;
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        var now = Date.now();
-        if (now - waveAt > 220) wave = 0;      // новая волна: отсчёт заново
-        waveAt = now;
-        var el = e.target, k = wave++;
-        io.unobserve(el);
-        if (k === 0) el.classList.add('in');
-        else setTimeout(function () { el.classList.add('in'); }, Math.min(k, 6) * 85);
-      });
-    }, { rootMargin: '0px 0px -8% 0px' });
-    items.forEach(function (el) { io.observe(el); });
-    // фильтр прячет и показывает карточки: показанная заново должна быть видимой,
-    // а не остаться в стартовом состоянии проявления
-    addEventListener('pdfilter', function () {
-      items.forEach(function (el) { if (!el.hidden) el.classList.add('in'); });
-    });
-  }
-
-  // метка курсора
-  if (fine && !calm) {
-    var dot = document.createElement('div'), glow = document.createElement('div');
-    dot.className = 'pdcur'; glow.className = 'pdglow';
-    document.body.appendChild(glow); document.body.appendChild(dot);
-    var x = 0, y = 0, gx = 0, gy = 0, raf = null;
-    function loop() {
-      raf = null;
-      gx += (x - gx) * 0.16; gy += (y - gy) * 0.16;
-      dot.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-      glow.style.transform = 'translate(' + gx + 'px,' + gy + 'px)';
-      if (Math.abs(x - gx) > 0.4 || Math.abs(y - gy) > 0.4) raf = requestAnimationFrame(loop);
-    }
-    addEventListener('pointermove', function (e) {
-      x = e.clientX; y = e.clientY;
-      dot.classList.add('on'); glow.classList.add('on');
-      if (!raf) raf = requestAnimationFrame(loop);
-    }, { passive: true });
-    addEventListener('pointerdown', function () { dot.classList.add('big'); });
-    addEventListener('pointerup', function () { dot.classList.remove('big'); });
-    // над ссылками и кнопками метка растёт — подсказка, что здесь можно нажать
-    document.addEventListener('pointerover', function (e) {
-      var t = e.target;
-      dot.classList.toggle('big', !!(t.closest && t.closest('a,button,input')));
-    }, { passive: true });
-  }
-})();
-'''
 
 
-LIB_SND_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13L7.2 14.5H4z"/><path class="wave" d="M16 9c1.2 1 1.2 5 0 6"/><path class="wave" d="M18.7 6.8c2.3 2 2.3 8.4 0 10.4"/><path class="slash" d="M16.6 9.6l4.8 4.8m0-4.8l-4.8 4.8"/></svg>'
 
-LIB_HDR_JS = '''
-/* Выключатель звука в шапке раздела. Своего звука тут нет, но ключ pd_sound общий
-   на весь сайт: выключил здесь — вернулся на главную, и сцена молчит. Кнопка,
-   которая ничего не делает, была бы обманом; эта делает ровно то, что обещает. */
-(function () {
-  var b = document.querySelector('.pdhdr .snd');
-  if (!b) return;
-  function on(){ try { return localStorage.getItem('pd_sound') !== 'off'; } catch (e) { return true; } }
-  function paint(){
-    var v = on();
-    b.classList.toggle('off', !v);
-    var l = b.getAttribute(v ? 'data-off' : 'data-on') || '';
-    b.setAttribute('aria-label', l); b.setAttribute('title', l);
-  }
-  b.addEventListener('click', function () {
-    try { localStorage.setItem('pd_sound', on() ? 'off' : 'on'); } catch (e) {}
-    paint();
-  });
-  paint();
-})();
-'''
+
+
+
+
+
 
 
 LIB_GRID_JS = '''
@@ -2242,40 +2350,7 @@ LIB_FX_JS = '''/* Карточки категорий: иконка рассып
 # Подписи библиотеки. Отдельным словарём, а не через L.t(): в site/data/i18n
 # лежат строки интерфейса лендинга, и подмешивать туда служебные заголовки раздела
 # значит связать два независимых файла. Ключ — код языка.
-LIB_T = {
- 'ru': {
-  'brands': 'Производители', 'good': 'Когда работает', 'bad': 'Когда не работает',
-  'compare': 'Два принципа', 'hw': 'Важно для спецификации', 'spec': 'Как считать',
-  'warn': 'Наше мнение', 'principle': 'Принцип категории', 'other': 'Другие категории',
-  'ourcase': 'Как это сделано у нас: ', 'hub': 'Библиотека оборудования',
-  'cta': 'Прислать спецификацию на проверку →', 'open': 'Открыть раздел',
-  'search': 'Поиск по названию, задаче или бренду', 'nothing': 'Ничего не нашлось. Попробуйте другое слово.',
-  'work': 'Проекты', 'atlas': 'Атлас', 'hubnav': 'Оборудование',
-  'talk': '▶ Обсудить идею', 'back': 'Назад', 'top': 'Наверх',
-  'studio': 'Студия', 'sndoff': 'Выключить звук', 'sndon': 'Включить звук',
-  'concepts': 'Библиотека', 'services': 'Услуги', 'home': 'На главную', 'all': 'Все проекты',
-  'h1': 'Библиотека оборудования интерактивных экспозиций',
-  'pos': ('позиция', 'позиции', 'позиций'),
-  'man': ('производитель', 'производителя', 'производителей'),
-  'kind': ('тип', 'типа', 'типов'),
- },
- 'en': {
-  'brands': 'Manufacturers', 'good': 'Works when', 'bad': 'Falls short when',
-  'compare': 'Two principles', 'hw': 'Watch out in the spec', 'spec': 'How to size it',
-  'warn': 'Our take', 'principle': 'The principle here', 'other': 'Other categories',
-  'ourcase': 'How we built it: ', 'hub': 'Equipment library',
-  'cta': 'Send us your specification for a free review →', 'open': 'Open the section',
-  'search': 'Search by name, job or brand', 'nothing': 'Nothing matched. Try another word.',
-  'work': 'Work', 'atlas': 'Atlas', 'hubnav': 'Equipment',
-  'talk': '▶ Book a call', 'back': 'Back', 'top': 'Top',
-  'studio': 'Studio', 'sndoff': 'Mute', 'sndon': 'Unmute',
-  'concepts': 'Concepts', 'services': 'Services', 'home': 'Home', 'all': 'All projects',
-  'h1': 'An equipment library for interactive exhibitions',
-  'pos': ('entry', 'entries', 'entries'),
-  'man': ('manufacturer', 'manufacturers', 'manufacturers'),
-  'kind': ('type', 'types', 'types'),
- },
-}
+
 
 LIB_INTRO_T = {
  'ru': LIB_INTRO_RU,
@@ -2348,6 +2423,7 @@ for L in langs:
             canon=L.url(tail), alts=lib_alternates(tail), locale=L.locale,
             css=LIB_CSS + LIB_CHROME_CSS,
             chrome=lib_chrome(L, up2, ('/en/' if L.code == 'ru' else '/') + tail),
+            chromejs='',
             jsonld=lib_jsonld(L, cat, tail, n),
             cover=esc(cover_url(ORDER[0], L.pmap)), up=up2, home=up2 + L.prefix,
             crumb='<a href="%s">%s</a> /' % (up_cat, esc(T['hub'])),
@@ -2395,6 +2471,7 @@ for L in langs:
         canon=L.url('library/'), alts=lib_alternates('library/'), locale=L.locale,
         css=LIB_CSS + LIB_CHROME_CSS,
         chrome=lib_chrome(L, up1, '/en/library/' if L.code == 'ru' else '/library/'),
+        chromejs='',
         jsonld=ld, cover=esc(cover_url(ORDER[0], L.pmap)),
         up=up1, home=up1 + L.prefix,
         cnchome=up1 + L.prefix + 'concepts/', srvhome=up1 + L.prefix + 'services/',
