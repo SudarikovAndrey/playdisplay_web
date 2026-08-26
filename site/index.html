@@ -149,9 +149,14 @@
        уводила логотип вверх примерно на полсотни пикселей. Убираем её из потока —
        колонка остаётся из одного элемента и центрируется честно. */
     #boot { gap: 0; }
-    #boot #bootPlay { position: absolute; left: 50%; bottom: 13vh;
-      transform: translateX(-50%) translateY(10px); }
-    #boot.ready #bootPlay { transform: translateX(-50%); }
+    /* ЦЕНТРИРОВАНИЕ БЕЗ TRANSFORM (24.08). Раньше кнопка центрировалась через
+       translateX(-50%), но ниже по файлу общие правила #boot #bootPlay задают свой
+       transform (translateY(10px) / none) — специфичность та же, побеждает поздний,
+       и минус-50% пропадал: кнопка стояла сдвинутой вправо на половину своей ширины.
+       left:0 + right:0 + margin:auto центрируют независимо от transform — общие
+       правила продолжают анимировать появление, не трогая положения. */
+    #boot #bootPlay { position: absolute; left: 0; right: 0; bottom: 13vh;
+      margin: 0 auto; width: max-content; }
     /* и сам знак на треть мельче: на телефоне 58vw читались как заставка, а не как пауза */
     #boot .bl { width: min(41vw, 238px); }
   }
@@ -2141,7 +2146,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b2408-touch1" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2408-stick5v" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>

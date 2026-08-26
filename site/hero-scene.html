@@ -849,12 +849,12 @@ addEventListener('DOMContentLoaded', function(){
          телефоне — значит, им место здесь. -->
     <h4 class="set-sub">Управление на телефоне</h4>
     <div class="set-row">
-      <div class="set-label"><span>Скорость руля · вбок</span><b id="v-stickx">0.85</b></div>
-      <input type="range" id="s-stickx" min="0.2" max="3" step="0.05">
+      <div class="set-label"><span>Ход руля · вбок</span><b id="v-stickrx">1.00</b></div>
+      <input type="range" id="s-stickrx" min="0.3" max="2" step="0.05">
     </div>
     <div class="set-row">
-      <div class="set-label"><span>Скорость руля · вверх-вниз</span><b id="v-sticky">1.25</b></div>
-      <input type="range" id="s-sticky" min="0.2" max="3" step="0.05">
+      <div class="set-label"><span>Ход руля · вверх-вниз</span><b id="v-stickry">1.00</b></div>
+      <input type="range" id="s-stickry" min="0.3" max="2" step="0.05">
     </div>
     <div class="set-row">
       <div class="set-label"><span>Мягкость у центра</span><b id="v-stickexpo">40%</b></div>
@@ -892,7 +892,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2408-touch1';</script>
+<script>window.PD_V = 'b2408-stick5v';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -964,7 +964,7 @@ console.log('PLAYDISPLAY build', window.PD_BUILD);
 const SETTINGS_KEY = 'pd_proto_settings';
 // Эталонный «максимальный» вид (как в Chrome) — открывается одинаково в любом браузере/устройстве;
 // авто-качество само снизит нагрузку на слабом железе.
-const SETTINGS_DEFAULTS = { height: 26, viewy: 0, fov: 41, dist: 46, sizemin: 0.5, sizemax: 8, count: 1, spread: 0, edge: -0.7, sizevar: 1, projscale: 1.5, objscale: 2.15, envscale: 1, morph: 1.7, vortspeed: 0.08, vortamp: 0.14, vortpct: 0.01, rubber: 0.06, lensr: 0.5, stickx: 0.85, sticky: 1.25, stickexpo: 0.4, envon: true, sound: true, autoq: true, projfit: true, model: 'original' }; // подобрано вручную (экспорт панели 27.07)
+const SETTINGS_DEFAULTS = { height: 26, viewy: 0, fov: 41, dist: 46, sizemin: 0.5, sizemax: 8, count: 1, spread: 0, edge: -0.7, sizevar: 1, projscale: 1.5, objscale: 2.15, envscale: 1, morph: 1.7, vortspeed: 0.08, vortamp: 0.14, vortpct: 0.01, rubber: 0.06, lensr: 0.5, stickrx: 1, stickry: 1, stickexpo: 0.4, envon: true, sound: true, autoq: true, projfit: true, model: 'original' }; // подобрано вручную (экспорт панели 27.07)
 // height — сдвиг высоты, fov — линза, dist — радиус орбиты,
 // size — размер точек, count — доля видимых точек, spread — разрежённость (сдвиг расстановки)
 const S = Object.assign({}, SETTINGS_DEFAULTS);
@@ -1205,7 +1205,9 @@ function obUpdate(dt) {
 }
 
 let touchPX = mousePX, touchPY = mousePY;
-let stickVX = 0, stickVY = 0;   // ход руля, −1…1 по осям; интегрирует gTick
+let stickVX = 0, stickVY = 0;   // отклонение ручки, −1…1 по осям; читает gTick
+let stickOn = false;            // палец на руле прямо сейчас (пока держит — прицел следует за ручкой)
+let stickBX = 0, stickBY = 0;   // прицел в момент касания: ход ручки меряется ОТ него, не от центра экрана
 if (isMobile) {
   // ДЖОЙСТИК ВМЕСТО ПРИЦЕЛИВАНИЯ ПАЛЬЦЕМ.
   // Раньше корабль вставал ровно под палец: чтобы увести его в верхний угол, палец
@@ -1227,14 +1229,20 @@ if (isMobile) {
 
   const centerAim = () => { touchPX = innerWidth / 2; touchPY = innerHeight / 2; };
   const clamp01s = (v, lo, hi) => v < lo ? lo : (v > hi ? hi : v);
-  // РУЛЬ = СКОРОСТЬ, А НЕ СМЕЩЕНИЕ (11.08). Аудит показал две беды прежней схемы.
-  // Во-первых, отклонение нормировалось по РАДИУСУ (Math.hypot): зона руля была кругом,
-  // и в углы экрана — «полный вбок + полный вверх» — попасть было геометрически нельзя.
-  // Во-вторых, полный ход ручки сдвигал прицел всего на 6% экрана (0.5·GX при GX=0.12):
-  // до края приходилось перехватывать палец несколько раз.
-  // Теперь оси НЕЗАВИСИМЫ (кламп по каждой — зона квадратная, углы достижимы), а
-  // отклонение задаёт СКОРОСТЬ прицела: держишь ручку — корабль продолжает ехать,
-  // отпустил — остановился, где был. Интегрирует gTick, там есть dt.
+  // РУЛЬ = СМЕЩЕНИЕ С ПОЛНЫМ ХОДОМ (24.08, v5). История, чтобы не пойти по кругу.
+  // v1 (смещение) забраковали за две беды: нормировку по РАДИУСУ (в углы экрана —
+  // «полный вбок + полный вверх» — попасть было геометрически нельзя) и мизерный ход
+  // (полное отклонение = 6% экрана). v2-v4 лечили это СКОРОСТЬЮ: отклонение разгоняло
+  // прицел, gTick интегрировал. Скорость дала новую беду, хуже старых: эффект КОПИТСЯ.
+  // Держишь ручку — прицел едет, едет и доезжает до края экрана; начало движения мягкое,
+  // а через полсекунды корабль «внезапно» у земли — владелец описал это как «мягко, а
+  // потом очень резко». Естественное управление — когда ручку ДЕРЖАТ, а не щёлкают ей.
+  // v5 возвращает смещение и чинит обе беды v1 честно: оси НЕЗАВИСИМЫ (кламп по каждой —
+  // зона квадратная, углы достижимы), ход ПОЛНЫЙ (край ручки = край экрана, ползунок
+  // «Ход руля» в панели), у центра экспо-кривая для точности. Ручка держится — прицел
+  // стоит где поставили, времени в формуле нет, копиться нечему. Отпустил — прицел
+  // остаётся на месте (курс сохраняется, как у штурвала), новое касание задаёт
+  // новый ноль ОТ ТЕКУЩЕГО ПРИЦЕЛА — перехват пальца не дёргает корабль.
   const place = (dx, dy) => {
     const kx = clamp01s(dx, -R, R), ky = clamp01s(dy, -R, R);
     knob.style.transform = 'translate(' + kx.toFixed(1) + 'px,' + ky.toFixed(1) + 'px)';
@@ -1246,6 +1254,7 @@ if (isMobile) {
     const t = e.changedTouches[0];
     if (!t) return;
     stickId = t.identifier; ox = t.clientX; oy = t.clientY;
+    stickOn = true; stickBX = touchPX; stickBY = touchPY;   // ноль руля = текущий прицел
     OB.live = true;
     if (OB.on && OB.phase <= 2) obFinish();   // палец на экране — управление сразу ваше
 
@@ -1273,7 +1282,7 @@ if (isMobile) {
     if (stickId === null) return;
     for (let i = 0; i < e.changedTouches.length; i++) {
       if (e.changedTouches[i].identifier !== stickId) continue;
-      stickId = null; OB.live = false; stickVX = 0; stickVY = 0;
+      stickId = null; OB.live = false; stickOn = false; stickVX = 0; stickVY = 0;
       stick.classList.remove('on');
       knob.style.transform = '';
       // КОРАБЛЬ ОСТАЁТСЯ ТАМ, ГДЕ ЕГО ОСТАВИЛИ. Раньше здесь стоял возврат прицела
@@ -4780,8 +4789,8 @@ function enterGame() {
   // мобила: палец ещё не коснулся экрана полёта — целимся в центр, а не в точку старого тапа
   // (например, по кнопке «Сыграть»), иначе корабль дёрнется туда в первом же кадре
   if (isMobile) { touchPX = innerWidth / 2; touchPY = innerHeight / 2; }
-  GAME.on = true; GAME.z = 0; GAME.z0 = 0; GAME.score = 0; GAME.speed = 90; GAME.exit = -1;
-  GAME.enter = 0; GAME.over = false; GAME.grace = 2; // короткая неуязвимость на старте
+  GAME.on = true; GAME.z = 0; GAME.z0 = 0; GAME.score = 0; GAME.speed = 70; GAME.exit = -1; // 90 → 70 (24.08): первые секунды спокойнее, разгон догонит
+  GAME.enter = 0; GAME.over = false; GAME.grace = 3; // неуязвимость на старте; отсчёт начнётся ПОСЛЕ влёта (см. updateGame)
   GAME.tint.copy(curAccent); // колорит мира = акцент текущего слайда
   // НОВЫЙ МИР: план уровня и переходник высоты создаём ДО первого спавна — от
   // probe.floor зависит и стартовая высота корабля, и коллизия с первого кадра.
@@ -4992,7 +5001,7 @@ function exitGame() {
   document.body.classList.remove('ob-demo-on', 'ob-noship');
   if (typeof _obTypeT !== 'undefined' && _obTypeT) { clearInterval(_obTypeT); _obTypeT = null; }
   if (OB.aEl) OB.aEl.textContent = '';
-  stickVX = 0; stickVY = 0;
+  stickVX = 0; stickVY = 0; stickOn = false;   // выход из игры бросает руль, даже если палец ещё на экране
   if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
   applySceneMode(); // корректная видимость окружения по текущему режиму
   gameOverEl.classList.remove('show'); // игровые оверлеи не должны пережить выход
@@ -5185,37 +5194,18 @@ function updateGame(dt, time) {
   }
   // корабль следует за курсором (x — вбок, y — высота), с мягкой пружиной;
   // на мобиле вместо курсора мыши — палец на экране (touchPX/Y), комп это ветвление не задействует
-  if (isMobile && (stickVX || stickVY)) {
-    // ЭКСПО-КРИВАЯ ОТКЛИКА (16.08, v4; числа с 23.08 живут в настройках). Полный ход
-    // ручки = экран примерно за 1.2с по X и 0.8с по Y; вертикальный диапазон прицела
-    // вдвое уже горизонтального, поэтому по Y скорость выше.
-    //
-    // История, чтобы не пойти по третьему кругу. Линейный отклик (v1) «швырял»:
-    // чуть тронул ручку — корабль уже разогнан. Лечение квадратом (v3, v·|v|) цель
-    // не поразило, а создало новую беду: квадрат гасит РОВНО РАБОЧУЮ СЕРЕДИНУ хода.
-    // Большой палец на ручке радиусом 62 px живёт в диапазоне 0.4–0.7, и там v3
-    // оказался в 2–3,5 раза медленнее v1, а у 0.2 — в семь раз. Корабль перестал
-    // рулиться вовсе. Вдобавок к смене кривой там же срезали усиление (0.42→0.30,
-    // 0.62→0.44) — две правки разом, и обе в минус.
-    //
-    // Правильный инструмент — экспо: смесь линейного и квадратичного. У центра
-    // мягко (нет «швыряния»), к краю выходит на полную (есть чем рулить). Именно
-    // так устроены кривые в пультах радиоуправления, и ровно по этой же причине.
-    // EXPO — доля квадратичной составляющей: 0 даёт чистую линию, 1 — чистый
-    // квадрат. При 0.4 около центра мягче линии примерно на треть, а полное
-    // отклонение равно линейному ровно (0.6·1 + 0.4·1 = 1).
-    // Усиление возвращено к значениям v1: они были подобраны замером и описаны
-    // как «ведёт, а не швыряет».
-    //
-    // 23.08.2026, v5: усиление и кривая ПЕРЕЕХАЛИ В НАСТРОЙКИ (ползунки «Управление на
-    // телефоне» в панели, сохраняются на сервер для всех). Четвёртый заход вслепую этот
-    // код не переживёт: подбирать надо пальцем на живом телефоне, а не числом в файле.
-    // Заводские значения подняты вдвое (0.42 → 0.85 и 0.62 → 1.25): при прежних полный
-    // ход ручки вёз прицел через экран 2,4 секунды, и это и читалось как «очень медленно».
+  if (isMobile && stickOn) {
+    // РУЛЬ = СМЕЩЕНИЕ (24.08, v5; история решения — у объявления джойстика выше).
+    // Прицел стоит там, куда отклонена ручка: база (прицел в момент касания) плюс ход.
+    // Времени в формуле нет — держишь ручку неподвижно, и корабль стоит неподвижно;
+    // «мягко, а потом резко» было следствием интегрирования по dt в v2-v4.
+    // Экспо-кривая оставлена: у центра точнее, к краю выходит на полный ход.
+    // «Ход руля» из настроек: 1 = край ручки ровно край экрана; больше — тот же путь
+    // коротким движением (курс грубее), меньше — точнее, но до края не достать.
     const EXPO = S.stickexpo;
     const curve = v => (1 - EXPO) * v + EXPO * v * Math.abs(v);
-    touchPX = Math.max(0, Math.min(innerWidth,  touchPX + curve(stickVX) * innerWidth  * S.stickx * dt));
-    touchPY = Math.max(0, Math.min(innerHeight, touchPY + curve(stickVY) * innerHeight * S.sticky * dt));
+    touchPX = Math.max(0, Math.min(innerWidth,  stickBX + curve(stickVX) * (innerWidth  / 2) * S.stickrx));
+    touchPY = Math.max(0, Math.min(innerHeight, stickBY + curve(stickVY) * (innerHeight / 2) * S.stickry));
   }
   const aimX = isMobile ? touchPX : mousePX, aimY = isMobile ? touchPY : mousePY;
   const tx = (aimX / innerWidth - 0.5) * 120;
@@ -5457,8 +5447,12 @@ function updateGame(dt, time) {
                                                 ((0.5 - _dngV.y * 0.5) * innerHeight + 26) + 'px)';
     gameDanger.textContent = 'ОПАСНОСТЬ · ' + alt.toFixed(1) + ' М';
   } else gameDanger.classList.remove('on');
-  // грейс-период: после старта/рестарта разбиться нельзя, корабль мигает
-  GAME.grace = Math.max(0, (GAME.grace || 0) - dt);
+  // грейс-период: после старта/рестарта разбиться нельзя, корабль мигает.
+  // ПОКА ИДЁТ ВЛЁТ (enter<1), грейс НЕ ТИКАЕТ: раньше он сгорал под шторкой перехода,
+  // и на десктопе из объявленных 2 секунд игроку доставалось 0.25 — управление ещё
+  // не в руках, а неуязвимость уже кончилась. Отсчёт честный: от момента, когда
+  // корабль действительно слушается игрока.
+  if (GAME.enter >= 1) GAME.grace = Math.max(0, (GAME.grace || 0) - dt);
   if (GAME.grace > 0) {
     gShipOpacity(0.35 + 0.65 * Math.abs(Math.sin(time * 8)));
     // если рельеф под нами вырос — мягко выталкиваем корабль вверх, давая шанс
@@ -5468,8 +5462,20 @@ function updateGame(dt, time) {
   // см. gHazardHit — наклонные колонны и мост-арка из gMakeChunk)
   // во время обучения разбиться нельзя — и корабль при этом НЕ мигает (см. OB.safe)
   if (OB.on && OB.safe && alt < 6) GAME.shipP.y = groundH + 6;   // мягко выталкиваем с рельефа
+  // О НЕВИДИМОЕ НЕ РАЗБИВАЮТСЯ (24.08). Высоту рельефа отдаёт probe — чистая математика,
+  // она есть с первого кадра. А ТОЧКИ чанка строит worker, и на слабом телефоне первые
+  // чанки могут отстать на секунду-другую: игрок влетал в гору, которой НА ЭКРАНЕ НЕТ, —
+  // это и читалось как «сразу столкновение, непонятно что случилось». Пока чанк под
+  // кораблём не построен, ведём себя как в грейсе: выталкиваем вверх и не убиваем.
+  const chunkSeen = !(NEW_WORLD && WORLD) || (function () {
+    const idx = WORLD.probe.chunkAt(GAME.z);
+    for (let i = 0; i < GAME.chunks.length; i++)
+      if (GAME.chunks[i].userData.wIndex === idx) return true;
+    return false;
+  })();
+  if (!chunkSeen && alt < 6) GAME.shipP.y = groundH + 6;
   if ((alt < 1.3 || gHazardHit()) && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over
-      && GAME.grace === 0 && !(OB.on && OB.safe)) {
+      && GAME.grace === 0 && chunkSeen && !(OB.on && OB.safe)) {
     GAME.over = true; // столкновение — гейм-овер
     GAME.overT = 0;
     document.body.classList.add('over'); // возвращаем системный курсор и клики по кнопкам
@@ -6244,8 +6250,8 @@ addEventListener('resize', () => {
 // ---------- Панель настроек ----------
 (function () {
   const g = id => document.getElementById(id);
-  const el  = { height: g('s-height'), viewy: g('s-viewy'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), morph: g('s-morph'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale'), envscale: g('s-envscale'), vortspeed: g('s-vortspeed'), vortamp: g('s-vortamp'), vortpct: g('s-vortpct'), rubber: g('s-rubber'), lensr: g('s-lensr'), stickx: g('s-stickx'), sticky: g('s-sticky'), stickexpo: g('s-stickexpo') };
-  const lbl = { height: g('v-height'), viewy: g('v-viewy'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), morph: g('v-morph'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale'), envscale: g('v-envscale'), vortspeed: g('v-vortspeed'), vortamp: g('v-vortamp'), vortpct: g('v-vortpct'), rubber: g('v-rubber'), lensr: g('v-lensr'), stickx: g('v-stickx'), sticky: g('v-sticky'), stickexpo: g('v-stickexpo') };
+  const el  = { height: g('s-height'), viewy: g('s-viewy'), fov: g('s-fov'), dist: g('s-dist'), sizemin: g('s-sizemin'), sizemax: g('s-sizemax'), sizevar: g('s-sizevar'), projscale: g('s-projscale'), morph: g('s-morph'), count: g('s-count'), spread: g('s-spread'), edge: g('s-edge'), objscale: g('s-objscale'), envscale: g('s-envscale'), vortspeed: g('s-vortspeed'), vortamp: g('s-vortamp'), vortpct: g('s-vortpct'), rubber: g('s-rubber'), lensr: g('s-lensr'), stickrx: g('s-stickrx'), stickry: g('s-stickry'), stickexpo: g('s-stickexpo') };
+  const lbl = { height: g('v-height'), viewy: g('v-viewy'), fov: g('v-fov'), dist: g('v-dist'), sizemin: g('v-sizemin'), sizemax: g('v-sizemax'), sizevar: g('v-sizevar'), projscale: g('v-projscale'), morph: g('v-morph'), count: g('v-count'), spread: g('v-spread'), edge: g('v-edge'), objscale: g('v-objscale'), envscale: g('v-envscale'), vortspeed: g('v-vortspeed'), vortamp: g('v-vortamp'), vortpct: g('v-vortpct'), rubber: g('v-rubber'), lensr: g('v-lensr'), stickrx: g('v-stickrx'), stickry: g('v-stickry'), stickexpo: g('v-stickexpo') };
   const fmt = {
     height:  v => (v > 0 ? '+' : '') + (+v).toFixed(1),
     viewy:   v => (v > 0 ? '+' : '') + (+v).toFixed(1),
@@ -6266,8 +6272,8 @@ addEventListener('resize', () => {
     vortpct: v => Math.round(v * 100) + '%',
     rubber: v => (+v).toFixed(2) + '\u00d7',
     lensr:  v => (+v).toFixed(2) + ' экр',
-    stickx: v => (+v).toFixed(2) + ' экр/с',
-    sticky: v => (+v).toFixed(2) + ' экр/с',
+    stickrx: v => (+v).toFixed(2) + '\u00d7',
+    stickry: v => (+v).toFixed(2) + '\u00d7',
     stickexpo: v => Math.round(v * 100) + '%',
   };
   const uni = { sizemin: voxUniforms.uSizeMin, sizemax: voxUniforms.uSizeMax, sizevar: voxUniforms.uSizeVar, projscale: voxUniforms.uProjScale, morph: voxUniforms.uMorphAmp, count: voxUniforms.uCount, spread: voxUniforms.uSpread, edge: voxUniforms.uEdgeBias, vortspeed: voxUniforms.uVortSpeed, vortamp: voxUniforms.uVortAmp, vortpct: voxUniforms.uVortPct, rubber: voxUniforms.uRubber };
@@ -6329,7 +6335,7 @@ addEventListener('resize', () => {
   projfitBtn.addEventListener('click', () => { S.projfit = !S.projfit; syncProjfit(); });
   syncProjfit();
 
-  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, rubber: S.rubber, lensr: S.lensr, stickx: S.stickx, sticky: S.sticky, stickexpo: S.stickexpo, envon: S.envon, sound: S.sound, autoq: S.autoq, projfit: S.projfit, model: S.model });
+  const persistObj = () => ({ height: S.height, viewy: S.viewy, fov: S.fov, dist: S.dist, sizemin: S.sizemin, sizemax: S.sizemax, sizevar: S.sizevar, projscale: S.projscale, morph: S.morph, count: S.count, spread: S.spread, edge: S.edge, objscale: S.objscale, envscale: S.envscale, vortspeed: S.vortspeed, vortamp: S.vortamp, vortpct: S.vortpct, rubber: S.rubber, lensr: S.lensr, stickrx: S.stickrx, stickry: S.stickry, stickexpo: S.stickexpo, envon: S.envon, sound: S.sound, autoq: S.autoq, projfit: S.projfit, model: S.model });
   // применить весь набор настроек к сцене (после сброса/импорта)
   function applyAll() {
     sync(); updateProjectors(); rebuildGrids();
