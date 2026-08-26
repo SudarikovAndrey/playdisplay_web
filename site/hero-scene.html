@@ -876,7 +876,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2608-drag6';</script>
+<script>window.PD_V = 'b2708-drag6y';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -1231,10 +1231,18 @@ if (isMobile) {
     for (let i = 0; i < e.changedTouches.length; i++) {
       const t = e.changedTouches[i];
       if (t.identifier !== stickId) continue;
-      // чувствительность из настроек: 1 = движение пальца один к одному,
-      // выше — тот же путь короче свайпом (подбирается в панели, хранится для всех)
+      // Чувствительность из настроек: 1 = движение пальца один к одному,
+      // выше — тот же путь короче свайпом (подбирается в панели, хранится для всех).
+      //
+      // ВЕРТИКАЛЬ НОРМИРОВАНА ПО ПРОПОРЦИИ ЭКРАНА (27.08). Прицел вбок растянут на
+      // ШИРИНУ экрана, а по высоте — на ВЫСОТУ; в портрете телефона высота в ~2.2 раза
+      // больше, и одинаковый свайп проходил по вертикали вдвое меньшую долю манёвра —
+      // «вбок супер, по высоте слабо», и ползунок этого не лечил: даже его максимум
+      // лишь дотягивал вертикаль до заводского бокового ощущения. Множитель H/W
+      // уравнивает ДОЛИ: сантиметр пальца — одна и та же часть диапазона по обеим осям,
+      // на любом экране и в любой ориентации.
       touchPX = Math.max(0, Math.min(innerWidth,  touchPX + (t.clientX - px) * S.stickrx));
-      touchPY = Math.max(0, Math.min(innerHeight, touchPY + (t.clientY - py) * S.stickry));
+      touchPY = Math.max(0, Math.min(innerHeight, touchPY + (t.clientY - py) * S.stickry * (innerHeight / innerWidth)));
       px = t.clientX; py = t.clientY;
       return;
     }
