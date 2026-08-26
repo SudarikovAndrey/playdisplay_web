@@ -88,7 +88,22 @@ def stamp_assets(text, up=''):
             pat,
             lambda m, n=name: '%s%s%s%s%s' % (m.group(1), m.group(2) or '', n, VERSIONS[n], m.group(1)),
             text)
-    return text
+    return og_size_fix(text)
+
+
+# Размеры превью объявляем только там, где превью — наша карточка 1200×630.
+# Шаблон один на все страницы, а у кейсов в og:image лежит кадр проекта своей
+# пропорции: чужие цифры мессенджер принимает на веру и рисует по ним рамку,
+# так что неверный размер хуже, чем никакого.
+OG_SIZE = ('<meta property="og:image:width" content="1200">\n'
+           '<meta property="og:image:height" content="630">\n')
+
+
+def og_size_fix(text):
+    m = re.search(r'<meta property="og:image" content="([^"]*)">', text)
+    if m and '/assets/og/' in m.group(1):
+        return text
+    return text.replace(OG_SIZE, '')
 ORG_DESC = ('playdisplay проектирует пространства и впечатления, которые люди запоминают: '
             'современные музеи, интерактивные экспозиции, visitor centre, шоурумы и '
             'иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.')
@@ -446,6 +461,8 @@ PAGE = '''<!DOCTYPE html>
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{canon}">
 <meta property="og:image" content="{cover}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:locale" content="{locale}">
 <meta property="og:site_name" content="playdisplay">
 <meta name="twitter:card" content="summary_large_image">
@@ -794,6 +811,38 @@ SRV_CSS = '''
   .crumbs { font:500 13px monospace; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin-bottom:40px; }
   footer { margin-top:80px; color:#9fb4c8; font-size:14px; border-top:1px solid rgba(159,180,200,.22); padding-top:22px; }
 '''
+
+# Превью ссылки в мессенджере — самый используемый носитель студии: основной
+# канал распространения это ссылка, отправленная руками. До сих пор превью
+# были общими (четыре разных раздела показывали одну фотографию) и квадратными
+# 960×960, а Telegram, WhatsApp и VK ждут 1200×630 и квадрат обрезают.
+# Карточки собирает _tools/og.py, здесь только раздаём.
+OG = BASE + '/assets/og/'
+OG_FILES = {
+    'home': 'og-home.jpg',
+    'library': 'og-library.jpg',
+    'library/output': 'og-lib-output.jpg',
+    'library/input': 'og-lib-input.jpg',
+    'library/processing': 'og-lib-proc.jpg',
+    'services': 'og-services.jpg',
+    'services/museum-equipping': 'og-equipping.jpg',
+    'services/museum-equipment': 'og-equipment.jpg',
+    'concepts': 'og-concepts.jpg',
+    'atlas': 'og-atlas.jpg',
+}
+
+
+def og_card(key, code='ru'):
+    """Текст на карточке набран, поэтому у /en/ свой комплект: ссылку на
+    английскую версию шлют иностранцу, и первое, что он видит, — превью."""
+    f = OG_FILES[key]
+    return OG + (f if code == 'ru' else 'en/' + f)
+
+
+def og_for(key, fallback, code='ru'):
+    """карточка раздела, если она нарисована; иначе прежний кадр из кейса"""
+    return og_card(key, code) if key in OG_FILES else fallback
+
 
 def with_chrome(tpl):
     """Добавить шаблону шрифты сайта, его переменные и место под шапку.
@@ -1198,6 +1247,8 @@ SERVICE_PAGE = '''<!DOCTYPE html>
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{canon}">
 <meta property="og:image" content="{cover}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:locale" content="{locale}">
 <meta property="og:site_name" content="playdisplay">
 <meta name="twitter:card" content="summary_large_image">
@@ -1252,6 +1303,8 @@ HUB_PAGE = '''<!DOCTYPE html>
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{canon}">
 <meta property="og:image" content="{cover}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:locale" content="{locale}">
 <meta property="og:site_name" content="playdisplay">
 <meta name="twitter:card" content="summary_large_image">
@@ -1302,7 +1355,7 @@ for L in SRV_LANGS:
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(SERVICE_PAGE.format(
             lang=L.code, title=esc(s['title']), subtitle=esc(s['subtitle']),
             desc=esc(Lang._clip(s['subtitle'])), canon=L.url(tail), alts=srv_alternates(tail),
-            cover=esc(cover_url(s['cases'][0], L.pmap)), locale=L.locale,
+            cover=esc(og_for('services/' + s['slug'], cover_url(s['cases'][0], L.pmap), L.code)), locale=L.locale,
             css=SRV_CSS + LIB_CHROME_CSS,
             chrome=lib_chrome(L, L.up, ('/en/' if L.code == 'ru' else '/') + tail, 'services'),
             chromejs=chrome_js(),
@@ -1340,7 +1393,7 @@ for L in SRV_LANGS:
         css=SRV_CSS + LIB_CHROME_CSS,
         chrome=lib_chrome(L, up_hub, '/en/services/' if L.code == 'ru' else '/services/', 'services'),
         chromejs=chrome_js(),
-        cover=esc(cover_url(L.services[0]['cases'][0], L.pmap)),
+        cover=esc(og_card('services', L.code)),
         jsonld=hub_ld, up=up_hub, home=up_hub + L.prefix,
         lead=esc(HUB_LEAD_EN if L.code == 'en' else HUB_LEAD_RU), items=hub_items,
         cta=esc(L.t('Забронировать креативную сессию →')),
@@ -1511,6 +1564,8 @@ CONCEPT_PAGE = '''<!DOCTYPE html>
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{canon}">
 <meta property="og:image" content="{cover}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:locale" content="{locale}">
 <meta property="og:site_name" content="playdisplay">
 <meta name="twitter:card" content="summary_large_image">
@@ -1610,11 +1665,11 @@ for L in CNC_LANGS:
     open(os.path.join(dh, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(CNC_HUB_PAGE.format(
         lang=L.code, title=esc(L.t('Концепции')),
         desc=esc(Lang._clip(CNC_HUB_LEAD_EN if L.code == 'en' else CNC_HUB_LEAD_RU)),
+        cover=esc(og_card('concepts', L.code)),
         canon=L.url('concepts/'), alts=cnc_alternates('concepts/'), locale=L.locale,
         css=CNC_CSS + LIB_CHROME_CSS,
         chrome=lib_chrome(L, up_hub, '/en/concepts/' if L.code == 'ru' else '/concepts/', 'concepts'),
         chromejs=chrome_js(),
-        cover=esc(cover_url(ORDER[0], L.pmap)),
         jsonld=hub_ld, up=up_hub, home=up_hub + L.prefix,
         lead=esc(CNC_HUB_LEAD_EN if L.code == 'en' else CNC_HUB_LEAD_RU), items=''.join(groups),
         cta=esc(L.t('Забронировать креативную сессию →')),
@@ -1639,6 +1694,8 @@ ATLAS_PAGE = '''<!DOCTYPE html>
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{canon}">
 <meta property="og:image" content="{cover}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:locale" content="{locale}">
 <meta property="og:site_name" content="playdisplay">
 <meta name="twitter:card" content="summary_large_image">
@@ -1747,7 +1804,7 @@ for L in langs:
         chrome=lib_chrome(L, up, '/en/atlas/' if L.code == 'ru' else '/atlas/', 'atlas'),
         chromejs=chrome_js(),
         jsonld=ld,
-        cover=esc(cover_url(ORDER[0], L.pmap)), up=up, home=up + L.prefix,
+        cover=esc(og_card('atlas', L.code)), up=up, home=up + L.prefix,
         cnchome=up + L.prefix + 'concepts/', srvhome=up + L.prefix + 'services/',
         lead=esc(ATLAS_LEAD_EN if L.code == 'en' else ATLAS_LEAD_RU), groups=''.join(groups),
         t_concepts=esc(L.t('Концепции')), t_services=esc(L.t('Услуги')),
@@ -2425,7 +2482,7 @@ for L in langs:
             chrome=lib_chrome(L, up2, ('/en/' if L.code == 'ru' else '/') + tail),
             chromejs='',
             jsonld=lib_jsonld(L, cat, tail, n),
-            cover=esc(cover_url(ORDER[0], L.pmap)), up=up2, home=up2 + L.prefix,
+            cover=esc(og_for(tail.strip('/'), cover_url(ORDER[0], L.pmap), L.code)), up=up2, home=up2 + L.prefix,
             crumb='<a href="%s">%s</a> /' % (up_cat, esc(T['hub'])),
             cnchome=up2 + L.prefix + 'concepts/', srvhome=up2 + L.prefix + 'services/',
             lead=esc(cat['lead']), groups=groups,
@@ -2472,7 +2529,7 @@ for L in langs:
         css=LIB_CSS + LIB_CHROME_CSS,
         chrome=lib_chrome(L, up1, '/en/library/' if L.code == 'ru' else '/library/'),
         chromejs='',
-        jsonld=ld, cover=esc(cover_url(ORDER[0], L.pmap)),
+        jsonld=ld, cover=esc(og_card('library', L.code)),
         up=up1, home=up1 + L.prefix,
         cnchome=up1 + L.prefix + 'concepts/', srvhome=up1 + L.prefix + 'services/',
         lead=esc(lib_lead),
@@ -2760,6 +2817,12 @@ en = re.sub(r'<meta name="twitter:title" content="[^"]*">',
             '<meta name="twitter:title" content="playdisplay — spaces people remember">', en, count=1)
 en = re.sub(r'<meta name="twitter:description" content="[^"]*">',
             '<meta name="twitter:description" content="%s">' % esc(EN_DESC), en, count=1)
+# карточка превью тоже переводная — на ней набран текст
+_og_en = og_card('home', 'en')
+_n_og = en.count(og_card('home'))
+if _n_og != 2:
+    raise SystemExit('в главной ожидались 2 ссылки на карточку превью (og и twitter), найдено %d' % _n_og)
+en = en.replace(og_card('home'), _og_en)
 # язык и словарь — до основного скрипта, поэтому в самом конце head
 # к словарю добавляем отпечаток содержимого: браузер держит его в кэше, и без метки
 # правки перевода доезжали бы до посетителя только после сброса кэша

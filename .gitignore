@@ -39,3 +39,7 @@ site/avtovaz/material/
 # venv для конвертации картинок (Pillow). Создаётся _tools/make_webp.py, в git не нужен.
 _tools/venv/
 __pycache__/
+
+# ttf-версии шрифтов сайта для Pillow. Собираются _tools/mkfonts.py из
+# site/assets/fonts/*.woff2 — дубликат в git не нужен.
+_tools/fonts/
