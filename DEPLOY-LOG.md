@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-26 19:48 — hybrid-v8 @ f464efc
+
+**Коммиты в этой поставке**
+```
+f464efc Джойстик v5 — смещение вместо скорости, мягкий старт игры, кнопка «Сыграть» по центру
+83b3169 Превью ссылок: карточки 1200×630 из атласа концепций, шрифтами сайта
+7feac6e Журнал деплоя: 7bac7f8
+```
+
+**На сервер отправлено файлов:** 147, удалено: 0
+```
+hero-scene.html
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+world-worker.js
+world.js
+api/scene.php
+assets/og/
+assets/og/og-atlas.jpg
+assets/og/og-concepts.jpg
+assets/og/og-equipment.jpg
+assets/og/og-equipping.jpg
+assets/og/og-home.jpg
+assets/og/og-lib-input.jpg
+assets/og/og-lib-output.jpg
+assets/og/og-lib-proc.jpg
+assets/og/og-library.jpg
+assets/og/og-services.jpg
+assets/og/en/
+assets/og/en/og-atlas.jpg
+assets/og/en/og-concepts.jpg
+assets/og/en/og-equipment.jpg
+assets/og/en/og-equipping.jpg
+assets/og/en/og-home.jpg
+assets/og/en/og-lib-input.jpg
+assets/og/en/og-lib-output.jpg
+assets/og/en/og-lib-proc.jpg
+assets/og/en/og-library.jpg
+assets/og/en/og-services.jpg
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+…и ещё 107
+```
+
+
 ## 2026-08-26 18:47 — hybrid-v8 @ 7bac7f8
 
 **Коммиты в этой поставке**
