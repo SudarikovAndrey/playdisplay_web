@@ -26,6 +26,30 @@
   var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
   var NOTRACK = (dnt === '1' || dnt === 'yes' || navigator.globalPrivacyControl === true);
 
+  /* СВОИ ВИЗИТЫ НЕ СЧИТАЕМ. Владелец и студия открывают сайт чаще всех: проверяют
+     правки, показывают клиентам, гоняют ассистента. В статистике это выглядит
+     как настоящие люди и портит ровно то, ради чего она заведена, — на 59 сеансов
+     ассистента приходилось 15 содержательных, остальное могло быть своим.
+
+     Отметка живёт в localStorage, а не в cookie: cookie уезжает на сервер и его
+     чистят «за компанию» при уборке трекеров, а localStorage переживает и это.
+     Ставится один раз переходом по адресу с ?pdoff=1, снимается через ?pdon=1.
+     Отдельно для каждого браузера и устройства — это не баг, а свойство: с телефона
+     нужно открыть ту же ссылку. Параметр из адреса сразу убираем, чтобы он
+     не уехал в чужую вкладку через «поделиться» и не выключил счёт постороннему. */
+  var OWN = 'pd_noanalytics';
+  try {
+    if (/[?&]pdoff=1\b/.test(location.search)) localStorage.setItem(OWN, '1');
+    if (/[?&]pdon=1\b/.test(location.search)) localStorage.removeItem(OWN);
+    if (/[?&]pd(on|off)=1\b/.test(location.search) && history.replaceState) {
+      var clean = location.href.replace(/([?&])pd(on|off)=1(&|$)/, '$1').replace(/[?&]$/, '');
+      history.replaceState(null, '', clean);
+    }
+  } catch (e) {}
+  var OWNER = false;
+  try { OWNER = localStorage.getItem(OWN) === '1'; } catch (e) {}
+  if (OWNER) NOTRACK = true;
+
   // Выходим ДО всего остального, а не гасим отправку внутри track(): при отказе не
   // должно остаться ни счётчиков, ни слушателей кликов, ни таймеров секций. Заодно
   // на боевом сайте такой посетитель не получит поток console.log вместо тишины.
