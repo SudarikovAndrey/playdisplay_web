@@ -211,34 +211,50 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     display: flex; align-items: baseline; gap: 9px; }
   #game-over .gc-bolt { width: 18px; height: 30px; color: #2be0c6; align-self: center; }
   #game-over .gc-l { margin-top: 12px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(220,238,240,0.7); }
-  /* Таблица рекордов */
-  #lb { position: fixed; inset: 0; z-index: 48; display: none; align-items: center;
-    justify-content: center; background: rgba(3,10,14,0.78); backdrop-filter: blur(8px); }
-  #lb.show { display: flex; }
-  .lb-panel { position: relative; width: min(420px, 92vw); max-height: 78vh;
-    display: flex; flex-direction: column; padding: 26px 22px 18px;
-    background: rgba(8,18,24,0.92); border: 1px solid rgba(43,224,198,0.3);
-    border-radius: 4px; box-shadow: 0 30px 90px rgba(0,0,0,0.5); }
-  .lb-title { text-align: center; font-size: 15px; letter-spacing: .56em; color: #2be0c6;
+  /* ТАБЛИЦА РЕКОРДОВ — ВО ВЕСЬ ЭКРАН (28.08), как в мобильных играх: тёмный экран,
+     заголовок сверху, список скроллится на всю высоту.
+     КРЕСТИК НЕ ПРЫГАЕТ ПО УГЛАМ: он стоит РОВНО там же и выглядит РОВНО так же, как
+     крестик выхода из полёта (left/top 16px, круг 36×36) — у игрока одна точка
+     «закрыть» на все игровые слои, закрывается верхний. Панель-карточку с крестиком
+     в её правом углу убрали именно поэтому: в полёте крестик слева, у панели был
+     справа, и рука прыгала между углами. */
+  #lb { position: fixed; inset: 0; z-index: 48; display: none;
+    background: rgba(4,11,15,0.94); backdrop-filter: blur(10px); }
+  #lb.show { display: block; }
+  .lb-panel { width: 100%; height: 100%; display: flex; flex-direction: column; }
+  /* заголовок по центру НА ВЫСОТЕ КРЕСТИКА (у обоих центр на 34px от верха) */
+  .lb-title { flex: none; padding: 16px 64px 0; line-height: 36px; text-align: center;
+    font-size: 15px; letter-spacing: .56em; color: #2be0c6;
     text-shadow: 0 0 22px rgba(43,224,198,0.5); }
-  .lb-me { text-align: center; margin-top: 10px; font-size: 12px; letter-spacing: .2em;
-    color: rgba(241,251,252,0.9); text-transform: uppercase; min-height: 15px; }
-  .lb-list { margin-top: 14px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  .lb-row { display: flex; gap: 12px; align-items: baseline; padding: 8px 10px;
-    font: 500 13px 'Roboto Mono', monospace; color: rgba(220,238,240,0.85);
+  .lb-me { flex: none; text-align: center; margin-top: 8px; font-size: 12px;
+    letter-spacing: .2em; color: rgba(241,251,252,0.9); text-transform: uppercase;
+    min-height: 15px; }
+  .lb-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain; margin-top: 10px;
+    padding: 4px 22px calc(28px + env(safe-area-inset-bottom, 0px));
+    width: 100%; max-width: 560px; margin-left: auto; margin-right: auto;
+    box-sizing: border-box;
+    /* края списка растворяются — видно, что дальше есть строки */
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 18px, #000 calc(100% - 26px), transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 18px, #000 calc(100% - 26px), transparent 100%); }
+  .lb-row { display: flex; gap: 12px; align-items: baseline; padding: 12px 12px;
+    font: 500 14px 'Roboto Mono', monospace; color: rgba(220,238,240,0.85);
     border-bottom: 1px solid rgba(220,238,240,0.07); }
-  .lb-row .p { width: 34px; color: rgba(220,238,240,0.5); text-align: right; flex: none; }
+  .lb-row .p { width: 40px; color: rgba(220,238,240,0.5); text-align: right; flex: none; }
   .lb-row .n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lb-row .s { flex: none; font-weight: 700; color: #f1fbfc; font-variant-numeric: tabular-nums; }
   .lb-row.top1 .p, .lb-row.top1 .s { color: #ffd76a; }
   .lb-row.me { background: rgba(43,224,198,0.12); border-radius: 3px;
     border-bottom-color: transparent; color: #eafffb; }
   .lb-row.me .p, .lb-row.me .s { color: #2be0c6; }
-  .lb-empty { padding: 26px 0; text-align: center; font-size: 12px; letter-spacing: .14em;
+  .lb-empty { padding: 40px 0; text-align: center; font-size: 12px; letter-spacing: .14em;
     color: rgba(220,238,240,0.5); }
-  #lb-close { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px;
-    border-radius: 50%; border: 1px solid rgba(220,238,240,0.3); background: rgba(0,0,0,0.3);
-    color: #f1fbfc; font-size: 14px; cursor: pointer; }
+  /* крестик — двойник #game-exit-btn: та же точка, тот же размер, тот же вид */
+  #lb-close { position: fixed; left: 16px; top: 16px; width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.35); background: rgba(0,0,0,.32); color: #fff;
+    font-size: 15px; line-height: 1; cursor: pointer; padding: 0;
+    -webkit-tap-highlight-color: transparent; }
   /* кнопка «РЕКОРДЫ» в полёте: вверху по центру, на одной высоте с крестиком выхода */
   #lb-btn { display: none; position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
     z-index: 44; padding: 11px 18px; border-radius: 2px; cursor: pointer;
@@ -996,7 +1012,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2708-lb1';</script>
+<script>window.PD_V = 'b2808-lbfull';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -5999,7 +6015,11 @@ applyPlayerSens();
   }
   tapBtn(btn, () => openLB());
   tapBtn(document.getElementById('lb-close'), closeLB);
-  lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+  // Esc закрывает ВЕРХНИЙ слой: пока открыта таблица — её, а не игру. Слушатель в
+  // фазе захвата срабатывает раньше игрового (тот на всплытии) и глушит событие.
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape' && lb.classList.contains('show')) { e.stopPropagation(); closeLB(); }
+  }, true);
 
   // ----- сохранение результата с экрана столкновения -----
   const saveBox = document.getElementById('go-save'), nameIn = document.getElementById('go-name'),
