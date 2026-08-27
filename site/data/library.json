@@ -157,7 +157,8 @@
               ],
               "case": "proryv"
             }
-          ]
+          ],
+          "svc": "projection-mapping"
         },
         {
           "name": "Светодиодные экраны",
@@ -310,7 +311,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "multimedia-equipment"
         },
         {
           "name": "Экраны",
@@ -382,7 +384,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "multimedia-equipment"
         },
         {
           "name": "Объём и иллюзия",
@@ -499,7 +502,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "holographic-showcase"
         },
         {
           "name": "Очки и окна",
@@ -578,7 +582,8 @@
               ],
               "case": "pano360"
             }
-          ]
+          ],
+          "svc": "interactive-exhibition"
         },
         {
           "name": "Звук и тело",
@@ -764,7 +769,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "interactive-exhibition"
         },
         {
           "name": "Движение и материя",
@@ -878,7 +884,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "exhibition-stand"
         }
       ]
     },
@@ -1028,7 +1035,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "museum-equipment"
         },
         {
           "name": "Физическое действие",
@@ -1196,7 +1204,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "museum-equipment"
         },
         {
           "name": "Тело и жест",
@@ -1338,7 +1347,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "interactive-exhibition"
         },
         {
           "name": "Камера и алгоритм",
@@ -1528,7 +1538,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "interactive-exhibition"
         },
         {
           "name": "Устройство посетителя",
@@ -1577,7 +1588,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "exhibition-stand"
         }
       ]
     },
@@ -1787,7 +1799,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "museum-equipping"
         },
         {
           "name": "Медиасерверы",
@@ -1872,7 +1885,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "projection-mapping"
         },
         {
           "name": "Движки и среды",
@@ -2071,7 +2085,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "multimedia-equipment"
         },
         {
           "name": "Связь и эксплуатация",
@@ -2238,7 +2253,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "museum-equipping"
         }
       ]
     }

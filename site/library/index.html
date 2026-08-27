@@ -246,8 +246,11 @@
                      border-top:1px solid rgba(159,180,200,.15); }
   .li-foot .brands ul { gap:7px; }
   .li-foot .brands li { max-width:none; padding:7px 12px; }
-  .libcase { margin:14px 0 0; font-size:15px; }
-  .libcase:before { content:"→"; color:#2be0c6; margin-right:.5em; }
+  .libcase, .libsvc { margin:14px 0 0; font-size:15px; }
+  .libcase:before, .libsvc:before { content:"→"; color:#2be0c6; margin-right:.5em; }
+  /* Ссылка на услугу стоит выше ссылки на кейс и приглушена: кейс — доказательство,
+     услуга — соседняя полка. Одинаково яркими они спорили бы за один взгляд. */
+  .libsvc { margin-top:12px; opacity:.72; }
 
   /* Планшет: колонки складываются, рейка уходит строкой над заголовком */
   @media (max-width:900px) {

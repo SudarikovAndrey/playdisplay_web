@@ -927,7 +927,8 @@ LIB_T = {
   'brands': 'Производители', 'good': 'Когда работает', 'bad': 'Когда не работает',
   'compare': 'Два принципа', 'hw': 'Важно для спецификации', 'spec': 'Как считать',
   'warn': 'Наше мнение', 'principle': 'Принцип категории', 'other': 'Другие категории',
-  'ourcase': 'Как это сделано у нас: ', 'hub': 'Библиотека оборудования',
+  'ourcase': 'Как это сделано у нас: ', 'service': 'Где применяем: ',
+  'hub': 'Библиотека оборудования',
   'cta': 'Прислать спецификацию на проверку →', 'open': 'Открыть раздел',
   'search': 'Поиск по названию, задаче или бренду', 'nothing': 'Ничего не нашлось. Попробуйте другое слово.',
   'work': 'Проекты', 'atlas': 'Атлас', 'hubnav': 'Оборудование',
@@ -943,7 +944,8 @@ LIB_T = {
   'brands': 'Manufacturers', 'good': 'Works when', 'bad': 'Falls short when',
   'compare': 'Two principles', 'hw': 'Watch out in the spec', 'spec': 'How to size it',
   'warn': 'Our take', 'principle': 'The principle here', 'other': 'Other categories',
-  'ourcase': 'How we built it: ', 'hub': 'Equipment library',
+  'ourcase': 'How we built it: ', 'service': 'Where we apply it: ',
+  'hub': 'Equipment library',
   'cta': 'Send us your specification for a free review →', 'open': 'Open the section',
   'search': 'Search by name, job or brand', 'nothing': 'Nothing matched. Try another word.',
   'work': 'Work', 'atlas': 'Atlas', 'hubnav': 'Equipment',
@@ -2043,8 +2045,11 @@ LIB_CSS = CNC_CSS + '''
                      border-top:1px solid rgba(159,180,200,.15); }
   .li-foot .brands ul { gap:7px; }
   .li-foot .brands li { max-width:none; padding:7px 12px; }
-  .libcase { margin:14px 0 0; font-size:15px; }
-  .libcase:before { content:"→"; color:#2be0c6; margin-right:.5em; }
+  .libcase, .libsvc { margin:14px 0 0; font-size:15px; }
+  .libcase:before, .libsvc:before { content:"→"; color:#2be0c6; margin-right:.5em; }
+  /* Ссылка на услугу стоит выше ссылки на кейс и приглушена: кейс — доказательство,
+     услуга — соседняя полка. Одинаково яркими они спорили бы за один взгляд. */
+  .libsvc { margin-top:12px; opacity:.72; }
 
   /* Планшет: колонки складываются, рейка уходит строкой над заголовком */
   @media (max-width:900px) {
@@ -2143,7 +2148,7 @@ def lib_brands(L, item):
 
 
 
-def lib_item(L, item, idx, sec=''):
+def lib_item(L, item, idx, sec='', svc=''):
     """Горизонтальная карточка: слева рейка с номером, справа заголовок,
     ниже описание и «работает / не работает» двумя колонками, внизу производители.
     Плиткой было хуже: карточка в 490 пикселей ширины растягивалась на полторы
@@ -2176,11 +2181,17 @@ def lib_item(L, item, idx, sec=''):
     out.append('<div class="li-side">%s</div>' % side)
 
     foot = [lib_brands(L, item)]
+    if svc and svc in L.smap:
+        _s = L.smap[svc]
+        foot.append('<p class="libsvc">%s<a href="../../services/%s/">%s</a></p>'
+                    % (T['service'], esc(svc), esc(_s.get('nav') or _s['title'])))
     if item.get('case') and item['case'] in L.pmap:
         pr = L.pmap[item['case']]
-        foot.append('<p class="libcase">%s<a href="%swork/%s/">%s</a></p>'
-                    % (T['ourcase'], '../../' if L.code == 'ru' else '../../../',
-                       esc(item['case']), esc(pr.get('title') or item['case'])))
+        # Глубина одна для обоих языков: страница лежит в /<lang>/library/<cat>/,
+        # и «../../» уже приводит в корень своего языка. Лишний «../» у английской
+        # версии уводил читателя на РУССКУЮ страницу кейса, хотя /en/work/ существует.
+        foot.append('<p class="libcase">%s<a href="../../work/%s/">%s</a></p>'
+                    % (T['ourcase'], esc(item['case']), esc(pr.get('title') or item['case'])))
     out.append('<div class="li-foot">%s</div>' % ''.join(foot))
     out.append('</div>')
     return ''.join(out)
@@ -2508,7 +2519,7 @@ for L in langs:
         for s in cat['sections']:
             for it in s['items']:
                 i += 1
-                body.append(lib_item(L, it, '%s.%02d' % (cat['num'], i), s['name']))
+                body.append(lib_item(L, it, '%s.%02d' % (cat['num'], i), s['name'], s.get('svc', '')))
         body = ['<div class="libgrid" id="libgrid">'] + body + ['</div>',
                 '<p class="libempty" id="libempty" hidden>%s</p>' % esc(T['nothing'])]
         nav = ('<div class="libbar"><input id="libq" type="search" placeholder="%s" aria-label="%s">'

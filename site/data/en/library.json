@@ -157,7 +157,8 @@
               ],
               "case": "proryv"
             }
-          ]
+          ],
+          "svc": "projection-mapping"
         },
         {
           "name": "LED screens",
@@ -310,7 +311,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "multimedia-equipment"
         },
         {
           "name": "Panels",
@@ -382,7 +384,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "multimedia-equipment"
         },
         {
           "name": "Volume and illusion",
@@ -501,7 +504,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "holographic-showcase"
         },
         {
           "name": "Headsets and windows",
@@ -580,7 +584,8 @@
               ],
               "case": "pano360"
             }
-          ]
+          ],
+          "svc": "interactive-exhibition"
         },
         {
           "name": "Sound and body",
@@ -766,7 +771,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "interactive-exhibition"
         },
         {
           "name": "Motion and matter",
@@ -880,7 +886,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "exhibition-stand"
         }
       ]
     },
@@ -1030,7 +1037,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "museum-equipment"
         },
         {
           "name": "Physical action",
@@ -1198,7 +1206,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "museum-equipment"
         },
         {
           "name": "Body and gesture",
@@ -1340,7 +1349,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "interactive-exhibition"
         },
         {
           "name": "Camera and algorithm",
@@ -1530,7 +1540,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "interactive-exhibition"
         },
         {
           "name": "The visitor's own device",
@@ -1579,7 +1590,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "exhibition-stand"
         }
       ]
     },
@@ -1789,7 +1801,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "museum-equipping"
         },
         {
           "name": "Media servers",
@@ -1874,7 +1887,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "projection-mapping"
         },
         {
           "name": "Engines and environments",
@@ -2073,7 +2087,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "multimedia-equipment"
         },
         {
           "name": "Signal and operations",
@@ -2240,7 +2255,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "svc": "museum-equipping"
         }
       ]
     }
