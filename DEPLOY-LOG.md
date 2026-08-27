@@ -8,6 +8,62 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-26 21:45 — hybrid-v8 @ ad46346
+
+**Коммиты в этой поставке**
+```
+ad46346 Видео в полёте невозможно тройной защитой; онбординг — анимированный «палец»
+0f5eda6 Перелинковка: 65 позиций библиотеки ведут в услуги, услуги — обратно
+9878357 Микрофоны сайта: шар из частиц, чёткий глиф, окантовки нет
+88b5fcf Журнал деплоя: 372ad50
+```
+
+**На сервер отправлено файлов:** 129, удалено: 0
+```
+hero-scene.html
+index.html
+landing.css
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+data/library.json
+data/services.json
+data/en/library.json
+data/en/services.json
+…и ещё 89
+```
+
+
 ## 2026-08-26 21:34 — hybrid-v8 @ 372ad50
 
 **Коммиты в этой поставке**
