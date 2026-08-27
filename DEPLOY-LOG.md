@@ -8,6 +8,64 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-27 12:26 — hybrid-v8 @ 655faa2
+
+**Коммиты в этой поставке**
+```
+655faa2 Астероиды: мелкое зерно с френелем, тело в цвет неба; золотая нить; кнопка рекордов
+18899c4 Дайджест закупок — письмом, а не страницей на сайте
+231c42a Разведка заказчиков: 130 организаций, которые заказывают экспозиции
+5a56609 Мониторинг закупок: отсев по первому боевому прогону
+23cf945 Мониторинг закупок: ежедневный дайджест по 44-ФЗ и 223-ФЗ
+3dda6a7 Журнал деплоя: 3f7846a
+```
+
+**На сервер отправлено файлов:** 134, удалено: 0
+```
+hero-scene.html
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+.claude/
+.claude/worktrees/
+.claude/worktrees/awesome-diffie-c7c994/
+.claude/worktrees/awesome-diffie-c7c994/.git
+.claude/worktrees/awesome-diffie-c7c994/.gitattributes
+api/lib/mailer.php
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+…и ещё 94
+```
+
+
 ## 2026-08-27 02:00 — hybrid-v8 @ 3f7846a
 
 **Коммиты в этой поставке**
