@@ -3,7 +3,7 @@
   "services": [
     {
       "slug": "museum-concept",
-      "title": "Museum concept design",
+      "title": "Museum concept",
       "nav": "Museum concept",
       "subtitle": "From “why does this museum exist” to an exhibition design ready to be built.",
       "keywords": [
@@ -109,6 +109,94 @@
         {
           "q": "Who writes the scholarly content?",
           "a": "The scholarly content stays with the museum and its specialists — they know the material. Our part is turning that content into an experience: scenario, route, objects, interaction. Accuracy is verified by the client’s academic advisers."
+        }
+      ]
+    },
+    {
+      "slug": "corporate-museum",
+      "title": "Corporate museum",
+      "nav": "Corporate museum",
+      "subtitle": "A company museum people actually look at: one space that works for partners, new hires and school groups — and tells each of them something different.",
+      "keywords": [
+        "corporate museum",
+        "company museum",
+        "brand heritage centre",
+        "corporate heritage exhibition"
+      ],
+      "cases": [
+        "odk-oak",
+        "industry-rf",
+        "sinara",
+        "coalco"
+      ],
+      "flow": [
+        {
+          "t": "p",
+          "text": "A corporate museum almost always starts the same way: there is a history, there is a cabinet of awards, and there is an anniversary on the horizon. And there is a quiet fear that it will end up as a room where guests are walked through while politely waiting for lunch."
+        },
+        {
+          "t": "p",
+          "text": "The fear is justified. These rooms get built by inertia: a case of samples, panels by decade, portraits of directors. Formally complete — and the story it tells is “we have existed for a long time”, which is not worth a hall and a budget."
+        },
+        {
+          "t": "h",
+          "text": "Three audiences, and they are not alike"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "Partners and delegations. Forty minutes, half of it spent talking. They need proof of scale and competence, fast and visual — not a history lecture.",
+            "New hires. Brought in during week one. Here the museum works as an induction: what we do, why it is hard, and where you fit. That visit saves the company a month of onboarding.",
+            "Students and school groups. Career guidance that most plants deliver badly. These are your future engineers, and this is the only way to show the shop floor without taking children into it."
+          ]
+        },
+        {
+          "t": "p",
+          "text": "One exhibition has to serve all three — not with three separate routes, but with one route at different depths: a delegation takes the top layer in forty minutes, a fifteen-year-old spends two hours and touches everything."
+        },
+        {
+          "t": "h",
+          "text": "What keeps it alive"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Doing, not reading. Assemble a part, run a process, take the operator's seat. People remember what they did with their hands.",
+            "A real object at the centre. A part, a tool, a product — with media around it explaining why it matters. A number without an object is dead; an object without explanation is mute.",
+            "People, not just dates. Stories of named employees carry more than a timeline: they have a face and a choice in them.",
+            "Room to change. A company moves on, and a museum of printed panels is dated in two years. Your own staff must be able to update the content."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "How this differs from a public museum"
+        },
+        {
+          "t": "p",
+          "text": "You decide. No procurement law, no six-month tender, no methodological council. There is a client with a budget and a date — usually an anniversary, and it does not move."
+        },
+        {
+          "t": "link",
+          "href": "/en/library/",
+          "text": "Equipment library: what these exhibitions are built from →"
+        }
+      ],
+      "faq": [
+        {
+          "q": "What does a corporate museum cost?",
+          "a": "It depends on floor area and on how much of the room involves doing rather than looking. A small 60–80 m² hall with five or six interactive points is one order of magnitude; a floor with a theatre and large installations is another. We cost from the script, not from an equipment price list, and show the breakdown so you can cut with your eyes open."
+        },
+        {
+          "q": "Our anniversary is eight months away. Is that enough?",
+          "a": "Yes, provided you start with the script rather than the construction. The danger is not the number of months but late content changes: when text and graphics are still being approved in the final weeks, everything burns at once. We freeze content before fit-out, which is why dates usually hold."
+        },
+        {
+          "q": "We have almost no artefacts left. What then?",
+          "a": "Common, and solvable. Missing objects are replaced by reconstruction: a 3D model of a lost product, a revived archive photograph, a recreated process. Sometimes it lands harder than the original — a model can be taken apart in front of the visitor, a museum piece cannot."
+        },
+        {
+          "q": "Who maintains it afterwards?",
+          "a": "Your own staff, and that is designed in. The exhibition must start with one button, report its own faults and allow text changes without a programmer. We hand over source files, machine images and documentation — so that in three years you are not dependent on us."
         }
       ]
     },
@@ -242,7 +330,7 @@
     },
     {
       "slug": "museum-equipment",
-      "title": "Interactive museum equipment",
+      "title": "Interactive equipment",
       "nav": "Museum equipment",
       "subtitle": "A screen, a model or a vitrine tells nobody anything on its own. We build the equipment around the story, not the story around the equipment.",
       "keywords": [
@@ -831,8 +919,8 @@
     },
     {
       "slug": "projection-mapping",
-      "title": "Projection mapping and interactive scale models",
-      "nav": "Mapping and models",
+      "title": "Interactive scale models and projection mapping",
+      "nav": "Models and mapping",
       "subtitle": "Physical form with information laid over it: a territory, a plant, an object.",
       "keywords": [
         "projection mapping",

@@ -192,6 +192,9 @@ CARDS = [
  # Панорамная светодиодная стена и люди перед ней — мультимедиа как система.
  ('og-mm-equipment.jpg', C+'living-panorama/1.jpg',  'Мультимедийное оборудование',
   'Десять коробок или одна система', 'Из чего собирается комплекс, чем профи отличается от бытового, коды ОКПД2'),
+ # Музейный зал с витринами и пультами, без чужих логотипов на кадре.
+ ('og-corp-museum.jpg', C+'living-ship/1.jpg',  'Корпоративный музей',
+  'Не комната, куда водят гостей', 'Партнёры, новички и школьники — одна экспозиция на три аудитории'),
 ]
 
 # Английская версия сайта отдавала те же карточки с русским текстом: ссылку
@@ -219,6 +222,8 @@ CARDS_EN = [
   'How experiences are made', '50 principles the studio works by'),
  ('og-mm-equipment.jpg', C+'living-panorama/1.jpg',  'Multimedia equipment',
   'Ten boxes or one system', 'What the system is made of and how professional gear differs from consumer kit'),
+ ('og-corp-museum.jpg', C+'living-ship/1.jpg',  'Corporate museum',
+  'Not a room guests are walked through', 'Partners, new hires and school groups in one exhibition'),
 ]
 
 

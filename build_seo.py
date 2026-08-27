@@ -883,6 +883,7 @@ OG_FILES = {
     'services/museum-equipping': 'og-equipping.jpg',
     'services/museum-equipment': 'og-equipment.jpg',
     'services/multimedia-equipment': 'og-mm-equipment.jpg',
+    'services/corporate-museum': 'og-corp-museum.jpg',
     'concepts': 'og-concepts.jpg',
     'atlas': 'og-atlas.jpg',
 }
