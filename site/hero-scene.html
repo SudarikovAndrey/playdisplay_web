@@ -915,7 +915,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2708-sens65';</script>
+<script>window.PD_V = 'b2708-tap2';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -5699,25 +5699,27 @@ function gDangerRing(dt, time, alt) {
   g.fillText(spS, spX, spY);
 }
 
-// кнопка «Вернуться на сайт»: плавный выход из полёта (postMessage теперь шлёт сам startExitGame)
-(function(){
-  var gb = document.getElementById('go-back');
-  if (!gb) return;
-  gb.addEventListener('click', function(e){
-    e.stopPropagation();          // не считать это кликом «играть заново»
-    startExitGame();
-  });
-})();
-
-// кнопка «Новый полёт»: сразу рестарт без выхода на сайт
-(function(){
-  var ga = document.getElementById('go-again');
-  if (!ga) return;
-  ga.addEventListener('click', function(e){
-    e.stopPropagation();          // не считать это кликом мимо кнопки
-    restartGame();
-  });
-})();
+// Кнопки экрана результата. НА ТАЧЕ СРАБАТЫВАЮТ ПО TOUCHEND, А НЕ ПО CLICK (27.08).
+// Во время игры (game-over включительно — GAME.on ещё истинно) глобальный touchmove
+// гасит прокрутку через preventDefault, а после preventDefault iOS НЕ синтезирует
+// click, если палец сдвинулся хоть на пару пикселей. Тап по кнопке «через раз не
+// работал» — особенно после возни с бегунком, когда палец мажет. touchend приходит
+// всегда; preventDefault в нём глушит синтетический click — двойного срабатывания нет.
+// click оставлен для мыши и клавиатуры.
+function goBtn(id, action) {
+  var b = document.getElementById(id);
+  if (!b) return;
+  // тач не должен дойти до window: там его приняли бы руль и гаситель прокрутки
+  b.addEventListener('touchstart', function(e){ e.stopPropagation(); }, { passive: true });
+  b.addEventListener('touchend', function(e){
+    e.stopPropagation();
+    if (e.cancelable) e.preventDefault();
+    action();
+  }, { passive: false });
+  b.addEventListener('click', function(e){ e.stopPropagation(); action(); });
+}
+goBtn('go-back', startExitGame);   // плавный выход из полёта (postMessage шлёт сам startExitGame)
+goBtn('go-again', restartGame);    // сразу рестарт без выхода на сайт
 
 // МОБИЛА: крестик-выход во время полёта (палец занят рулём, клика-по-сцене как на компе нет).
 // touchstart гасим отдельно, чтобы этот тап не долетел до window-обработчика руля (иначе
@@ -5725,7 +5727,13 @@ function gDangerRing(dt, time, alt) {
 if (isMobile) (function(){
   var geb = document.getElementById('game-exit-btn');
   if (!geb) return;
+  // тот же приём touchend, что у кнопок результата: синтез click в полёте ненадёжен
   geb.addEventListener('touchstart', function(e){ e.stopPropagation(); }, { passive: true });
+  geb.addEventListener('touchend', function(e){
+    e.stopPropagation();
+    if (e.cancelable) e.preventDefault();
+    if (GAME.over) restartGame(); else startExitGame();
+  }, { passive: false });
   geb.addEventListener('click', function(e){
     e.stopPropagation();
     if (GAME.over) restartGame(); else startExitGame();
