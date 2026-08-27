@@ -62,6 +62,60 @@ def asset_v(name):
     return '?v=' + hashlib.sha1(open(p, 'rb').read()).hexdigest()[:8]
 
 
+# ---------- сборка стилей главной ----------
+# Стили главной жили инлайном в <style> прямо в index.html: 170 КБ, из них 60 —
+# комментарии. Комментарии в этом коде дорогие и нужны, но возить их посетителю
+# незачем: в сжатом виде они были 23 КБ из 43 КБ всего CSS, то есть больше
+# половины. Теперь исходник с комментариями лежит в _src/landing.css, а сюда
+# собирается версия без них.
+#
+# ПОРЯДОК ВАЖЕН: файл должен появиться на диске ДО того, как VERSIONS ниже
+# посчитает отпечатки, иначе в разметку уедет ?v= от прошлой сборки.
+def strip_css_comments(css):
+    """Снять /* */ , не трогая содержимое строк.
+
+    Регулярка тут не годится: comment-like последовательность может лежать
+    внутри content:"…" или url(…), и наивная замена порезала бы стиль."""
+    out, i, n = [], 0, len(css)
+    while i < n:
+        c = css[i]
+        if c in '"\'':
+            j = i + 1
+            while j < n:
+                if css[j] == '\\':
+                    j += 2; continue
+                if css[j] == c:
+                    j += 1; break
+                j += 1
+            out.append(css[i:j]); i = j; continue
+        if c == '/' and i + 1 < n and css[i + 1] == '*':
+            k = css.find('*/', i + 2)
+            i = n if k < 0 else k + 2
+            continue
+        out.append(c); i += 1
+    return ''.join(out)
+
+
+def build_landing_css():
+    src = os.path.join(ROOT, '_src', 'landing.css')
+    if not os.path.exists(src):
+        return
+    css = strip_css_comments(open(src, encoding='utf-8').read())
+    # пустые строки после снятия комментариев — мусор; отступы оставляем,
+    # они жмутся почти в ноль и держат файл читаемым, если в него заглянут
+    lines = [l.rstrip() for l in css.split('\n')]
+    out = '\n'.join(l for l in lines if l.strip()) + '\n'
+    dest = os.path.join(SITE, 'landing.css')
+    old = open(dest, encoding='utf-8').read() if os.path.exists(dest) else None
+    if old != out:
+        open(dest, 'w', encoding='utf-8').write(out)
+    print('landing.css: %.0f КБ из %.0f КБ исходника'
+          % (len(out.encode()) / 1024, os.path.getsize(src) / 1024))
+
+
+build_landing_css()
+
+
 # Список, а не переменная на каждый файл: следующему файлу, которому понадобится
 # отпечаток, хватит одной строки, и его не забудут проставить в трёх местах.
 # Иконки тоже здесь: nginx кэширует их год, а меняются они редко, но метко.
@@ -69,6 +123,7 @@ def asset_v(name):
 # разметку, и версия в адресе до них всё равно не доедет.
 STAMPED = [
     'styles.css',
+    'landing.css',
     'analytics.js',
     'assets/logos/favicon-32.png',
     'assets/logos/favicon-180.png',
