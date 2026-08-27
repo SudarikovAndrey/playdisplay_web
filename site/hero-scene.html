@@ -1027,7 +1027,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2808-belt1';</script>
+<script>window.PD_V = 'b2808-belt2';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -4399,34 +4399,62 @@ function gBeltK(z) {
   }
   return 0;
 }
-// астероид из точек: сфера с рваным радиусом и случайной вытяжкой по осям — от гальки
-// до монолита, каждый со своим силуэтом. Светлые кромки на тёмной заливке дают «материю».
+// АСТЕРОИД — СПЛОШНОЕ ТЕЛО С РЁБРАМИ, а не облако точек (28.08, вторая редакция).
+// Первая версия (перенос из play как есть) рисовала камень точками — на фоне сцены,
+// которая и так вся из точек, астероиды не читались вовсе: «просто облако крупных
+// квадратов, не видно куда лететь» (владелец со скриншотом). Точкам не хватало
+// ГЛАВНОГО свойства камня — заслонять собой то, что позади. Теперь тело — непрозрачный
+// тёмный меш (пишет глубину → даёт настоящий силуэт и перекрывает задний план), поверх —
+// светящиеся рёбра по изломам граней, тем же приёмом, что контуры кораблей (EdgesGeometry).
+// Рваная форма: икосаэдр, вершины выдавлены той же формулой «шишек», что была у точек,
+// плюс случайная вытяжка по осям — двух одинаковых камней нет.
 function gMakeAsteroid(R, rng) {
-  const n = Math.round(Math.min(6500, 110 + R * R * 1.7));
-  const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
   const b1 = rng() * 6.28, b2 = rng() * 6.28, b3 = rng() * 6.28;
   const ax = 0.65 + rng() * 0.9, ay = 0.65 + rng() * 0.9, az = 0.65 + rng() * 0.9;
-  for (let k = 0; k < n; k++) {
-    const th = rng() * Math.PI * 2, ph = Math.acos(2 * rng() - 1);
-    const hi = Math.sin(th * 5 + b3) * Math.sin(ph * 4 + b1);
-    const bump = 1 + 0.34 * Math.sin(th * 2 + b1) * Math.sin(ph * 3 + b2) + 0.2 * hi;
-    const rr = R * bump * (0.9 + rng() * 0.1);
-    pos[k * 3] = Math.sin(ph) * Math.cos(th) * rr * ax;
-    pos[k * 3 + 1] = Math.cos(ph) * rr * ay;
-    pos[k * 3 + 2] = Math.sin(ph) * Math.sin(th) * rr * az;
-    const lit = 0.3 + 0.7 * clamp01(pos[k * 3 + 1] / (rr * ay));
-    if (Math.abs(hi) > 0.72) {   // кромка: светлая, холодная
-      col[k * 3] = 0.5 + 0.3 * lit; col[k * 3 + 1] = 0.56 + 0.3 * lit; col[k * 3 + 2] = 0.62 + 0.3 * lit;
-    } else {                     // заливка: тёмный камень
-      col[k * 3] = 0.1 + 0.13 * lit; col[k * 3 + 1] = 0.11 + 0.14 * lit; col[k * 3 + 2] = 0.13 + 0.16 * lit;
-    }
+  const geo = new THREE.IcosahedronGeometry(R, R > 26 ? 2 : 1);
+  const posA = geo.attributes.position;
+  for (let k = 0; k < posA.count; k++) {
+    let x = posA.getX(k), y = posA.getY(k), z = posA.getZ(k);
+    const L = Math.sqrt(x * x + y * y + z * z) || 1;
+    const th = Math.atan2(z, x), ph = Math.acos(clamp(y / L, -1, 1));
+    // выдавливание зависит только от направления вершины: дублированные вершины
+    // граней (икосаэдр не индексирован) сдвигаются одинаково — швов не появляется
+    const bump = 1 + 0.34 * Math.sin(th * 2 + b1) * Math.sin(ph * 3 + b2)
+                   + 0.2 * Math.sin(th * 5 + b3) * Math.sin(ph * 4 + b1);
+    posA.setXYZ(k, x * bump * ax, y * bump * ay, z * bump * az);
   }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  const o = new THREE.Points(g, new THREE.PointsMaterial({ vertexColors: true, size: 1.45,
-    transparent: true, opacity: 0.96, depthWrite: false, blending: THREE.NormalBlending }));
-  return { o: o, r: R * (ax + ay) / 2 * 0.85 };   // радиус коллизии мягче визуального
+  geo.computeVertexNormals();
+  // тело: тёмный камень ЧУТЬ СВЕТЛЕЕ неба — силуэт виден и там, где рёбра ещё тусклые;
+  // непрозрачный, пишет глубину: заслоняет всё позади, поэтому читается как тело
+  const body = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x18212b }));
+  // рёбра: только изломы круче 14° — читается огранка, а не сплошная сетка
+  const edges = new THREE.LineSegments(
+    new THREE.EdgesGeometry(geo, 14),
+    new THREE.LineBasicMaterial({ color: 0xaed6de, transparent: true, opacity: 0.7 }));
+  const grp = new THREE.Group();
+  grp.add(body);
+  grp.add(edges);
+  // редкая «пыль» по поверхности: тест глубины отсекает её за телом — видна только
+  // передняя полусфера, и камень выглядит объёмным материалом, а не пустым каркасом
+  const dn = Math.round(Math.min(700, 40 + R * R * 0.45));
+  const dp = new Float32Array(dn * 3), dc = new Float32Array(dn * 3);
+  for (let k = 0; k < dn; k++) {
+    const th = rng() * Math.PI * 2, ph = Math.acos(2 * rng() - 1);
+    const bump = 1 + 0.34 * Math.sin(th * 2 + b1) * Math.sin(ph * 3 + b2)
+                   + 0.2 * Math.sin(th * 5 + b3) * Math.sin(ph * 4 + b1);
+    const rr = R * bump * 1.01;   // чуть над гранью, чтобы не тонуть в теле
+    dp[k * 3] = Math.sin(ph) * Math.cos(th) * rr * ax;
+    dp[k * 3 + 1] = Math.cos(ph) * rr * ay;
+    dp[k * 3 + 2] = Math.sin(ph) * Math.sin(th) * rr * az;
+    const lit = 0.35 + 0.65 * clamp01(dp[k * 3 + 1] / (rr * ay));   // свет сверху
+    dc[k * 3] = 0.38 * lit + 0.18; dc[k * 3 + 1] = 0.44 * lit + 0.2; dc[k * 3 + 2] = 0.5 * lit + 0.22;
+  }
+  const dg = new THREE.BufferGeometry();
+  dg.setAttribute('position', new THREE.Float32BufferAttribute(dp, 3));
+  dg.setAttribute('color', new THREE.Float32BufferAttribute(dc, 3));
+  grp.add(new THREE.Points(dg, new THREE.PointsMaterial({ vertexColors: true, size: 1.1,
+    transparent: true, opacity: 0.85 })));
+  return { o: grp, r: R * (ax + ay) / 2 * 0.9, edgeMat: edges.material };
 }
 // строим поле на подлёте, утилизируем позади. Плотность растёт с номером пояса —
 // «постепенно усложняться»: первый пояс редкий, к шестому камней в полтора раза больше.
@@ -4458,7 +4486,7 @@ function gBeltEnsure() {
         const wz = t.a + 40 + rng() * (t.b - t.a - 80);
         a.o.position.set(x, y, 0);
         grp.add(a.o);
-        GAME.meteors.push({ o: a.o, x: x, y: y, wz: wz, r: a.r, bi: t.i,
+        GAME.meteors.push({ o: a.o, x: x, y: y, wz: wz, r: a.r, bi: t.i, em: a.edgeMat,
           sx: (rng() - 0.5) * 0.6, sy: (rng() - 0.5) * 0.6 });
       }
     }
@@ -4479,6 +4507,8 @@ function gMeteorsUpdate(dt) {
     m.o.position.z = sz;
     if (sz > 60 || sz < -700) continue;          // далеко — не крутим и не проверяем
     m.o.rotation.x += dt * m.sx; m.o.rotation.y += dt * m.sy;
+    // рёбра разгораются на подлёте: далёкий камень — тёмный силуэт, ближний — огранка
+    if (m.em) m.em.opacity = 0.35 + 0.6 * clamp01(1 - (-sz) / 520);
     if (!GAME.over && Math.abs(sz - GAME.shipP.z) < m.r * 0.8) {
       const dx = m.x - GAME.shipP.x, dy = m.y - GAME.shipP.y;
       if (dx * dx + dy * dy < m.r * m.r * 0.6) GAME.meteorHit = true;
@@ -5522,6 +5552,13 @@ function updateGame(dt, time) {
         ud._fallsOn = showFalls;
         c.traverse(o => { if (o.material === gFallMat) o.visible = showFalls; });
       }
+    }
+    // задник дальних хребтов в поясе гаснет: чистый космос не должен стоять на фоне гор
+    if (GAME.backdrop) {
+      const bk = 1 - gBeltK(GAME.z);
+      GAME.backdrop.traverse(o => {
+        if (o.material && o.userData.baseOp !== undefined) o.material.opacity = o.userData.baseOp * bk;
+      });
     }
     const inB = gBeltK(GAME.z) > 0.5;
     if (inB !== GAME._inBelt) {
