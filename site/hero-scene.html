@@ -876,7 +876,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2708-drag6y';</script>
+<script>window.PD_V = 'b2708-alt62';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -4135,10 +4135,12 @@ function gWorldRewards(grp, ch, def) {
     const ce = (c.ceil != null && isFinite(c.ceil)) ? c.ceil : null;
     const mode = r();
     let oy;
-    if (mode < 0.33 && fl != null && c.y - fl > 18) oy = fl + 7 + r() * 5;
+    // не глубже −4: дно провалов уходит до −60, и ядро «на дне+7» было бы недосягаемо
+    if (mode < 0.33 && fl != null && c.y - fl > 18) oy = Math.max(fl + 7 + r() * 5, -4);
     else if (mode < 0.58) oy = c.y + 13 + r() * 13;
     else oy = c.y + (r() - 0.5) * 10;
     if (ce != null) oy = Math.min(oy, ce - 5);
+    oy = Math.min(oy, 52);   // потолок корабля 54: выше 52 награда за пределом окна сбора
     orb.position.set(c.x + side * (9 + r() * 10), oy, c.z);
     orb.userData.isOrb = true;
     orb.userData.baseY = orb.position.y;
@@ -4158,10 +4160,11 @@ function gWorldRewards(grp, ch, def) {
     const ce = (c.ceil != null && isFinite(c.ceil)) ? c.ceil : null;
     const mode = r();
     let sy;
-    if (mode < 0.35 && fl != null && c.y - fl > 20) sy = fl + 8 + r() * 6;
+    if (mode < 0.35 && fl != null && c.y - fl > 20) sy = Math.max(fl + 8 + r() * 6, -4);
     else if (mode < 0.6) sy = c.y + 15 + r() * 14;
     else sy = c.y + (r() - 0.5) * 10;
     if (ce != null) sy = Math.min(sy, ce - 6);
+    sy = Math.min(sy, 52);
     // ×30 (по запросу): облако — тысячи частиц, на медленной скорости видно, как
     // струя втягивается в корабль. Обсчитываются только ближние облака.
     const sp = gMakeSpice((def.seed ^ 0x5b1c) + k * 131, 2400 + Math.floor(r() * 1800));
@@ -5165,7 +5168,12 @@ function updateGame(dt, time) {
   // обработчик touchmove у объявления руля, здесь их остаётся только прочитать
   const aimX = isMobile ? touchPX : mousePX, aimY = isMobile ? touchPY : mousePY;
   const tx = (aimX / innerWidth - 0.5) * 120;
-  const ty = clamp((1 - aimY / innerHeight) * 48 + 3, 3, 52); // потолок выше потолка гор (~40) — вверх всегда есть выход
+  // ВЫСОТА: диапазон −8…54, амплитуда 62 (27.08, было 3…51 — расширено на 30% по просьбе).
+  // Вверх запас над потолком гор (~40) стал больше. Вниз корабль теперь может нырять НИЖЕ
+  // гарантированного коридора (world.js обещает проход в полосе 3…52) — это сознательный
+  // риск ради наград в провалах; их высота зажата снизу той же границей −4 (см.
+  // gWorldRewards), иначе треть «нырковых» ядер лежала на дне −60 и была недосягаема ВООБЩЕ.
+  const ty = clamp((1 - aimY / innerHeight) * 62 - 8, -8, 54);
   GAME.shipP.x += (tx - GAME.shipP.x) * (1 - Math.exp(-dt * 6.8)); // отклик ~150мс — без «ватности»
   GAME.shipP.y += (ty - GAME.shipP.y) * (1 - Math.exp(-dt * 6.8));
   GAME.ship.position.copy(GAME.shipP);
