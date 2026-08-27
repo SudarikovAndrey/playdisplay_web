@@ -41,10 +41,14 @@ window.PD_DEV = (function(){
    остаётся прежним. Выключатель нужен потому, что игру нельзя прогнать в стенде —
    обкатывается вживую, и боевой старт при этом не трогается. */
 window.PD_OB = (function(){
-  var re = /[?&]ob=1/;
-  if (re.test(location.search)) return true;
-  try { if (window.parent !== window && re.test(parent.location.search)) return true; } catch (e) {}
-  return false;
+  // Онбординг полёта. С 27.08 включён ПО УМОЛЧАНИЮ на первые два запуска игры в этом
+  // браузере (счётчик пишет enterGame): дальше человек уже умеет, и подсказка не нужна.
+  // ?ob=1 форсит показ всегда (обкатка), ?ob=0 глушит совсем.
+  var q = location.search;
+  try { if (window.parent !== window) q += ' ' + parent.location.search; } catch (e) {}
+  if (/[?&]ob=1/.test(q)) return true;
+  if (/[?&]ob=0/.test(q)) return false;
+  try { return (+localStorage.getItem('pd_ob_runs') || 0) < 2; } catch (e) { return true; }
 })();
 if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
 </script>
@@ -207,13 +211,9 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     display: flex; align-items: baseline; gap: 9px; }
   #game-over .gc-bolt { width: 18px; height: 30px; color: #2be0c6; align-self: center; }
   #game-over .gc-l { margin-top: 12px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(220,238,240,0.7); }
-  /* как играть: одна строка-шпаргалка */
-  #game-over .go-how { display: flex; gap: 26px; margin-top: 30px; opacity: 0; }
-  #game-over.show .go-how { animation: goIn .55s ease .45s forwards; }
-  #game-over .gh { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: rgba(220,238,240,0.72);
-    display: flex; flex-direction: column; gap: 6px; text-align: left; }
-  #game-over .gh b { color: #2be0c6; font-size: 12px; letter-spacing: .2em; }
   #game-over .go-hint { font-size: 12px; letter-spacing: .24em; opacity: 0; margin-top: 30px; }
+  /* на таче ни клика, ни ESC нет — строка врала бы; там те же действия делают кнопки */
+  body.is-mobile #game-over .go-hint { display: none; }
   /* кнопка возврата на сайт — крупная, кликабельная, поверх оверлея */
   #game-over .go-back { margin-top: 26px; opacity: 0; pointer-events: auto; cursor: pointer;
     font: 600 13px 'Roboto Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
@@ -445,7 +445,6 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     #game-exit { display: none; }
     #game-onboard { bottom: 22vh; font-size: 11px; padding: 0 18px; text-align: center; }
     /* подсказки геймовера на узком экране — колонкой, а не строкой */
-    #game-over .go-how { flex-direction: column; gap: 10px; margin-top: 22px; align-items: center; }
     /* #frame — тот же кадр в фазе наведения резкости, маску ему тоже возвращаем */
     #player-close { top: 10px; right: 10px; width: 34px; height: 34px; font-size: 14px;
       background: rgba(0,0,0,.45); border-color: rgba(255,255,255,.45); }
@@ -458,21 +457,30 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   /* Кольцо стоит ТАМ, ГДЕ ПАЛЕЦ И ЛЕЖИТ. По записи видно: руль человек держит внизу
      справа, примерно на 3/4 ширины и 3/4 высоты. Показывать демонстрацию по центру —
      значит учить одному месту, а рулить в другом. */
-  #ob-demo { position: fixed; left: 74%; top: 72%; width: 148px; height: 148px;
+  #ob-demo { position: fixed; left: 50%; top: 62%; width: 148px; height: 148px;
     margin: -74px 0 0 -74px; z-index: 41; pointer-events: none; border-radius: 50%;
     opacity: 0; transition: opacity .45s ease; }
-  #ob-demo i { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px;
-    margin: -29px 0 0 -29px; border-radius: 50%;
-    background: rgba(43,224,198,.34); border: 1.5px solid rgba(43,224,198,.95);
-    box-shadow: 0 0 26px rgba(43,224,198,.55);
-    animation: obDrive 3.2s ease-in-out infinite; }
-  /* ход по кругу: вбок, вверх, вбок, вниз — обе оси показаны за один проход */
+  /* «Палец»: яркая точка касания, за ней два гаснущих призрака — читается как след
+     свайпа, а не как джойстик с границами. Все три бегут по одной траектории,
+     призраки отстают по фазе (animation-delay) и полупрозрачны. */
+  #ob-demo i, #ob-demo::before, #ob-demo::after { content: ''; position: absolute;
+    left: 50%; top: 50%; border-radius: 50%;
+    animation: obDrive 3.2s cubic-bezier(.45,.05,.55,.95) infinite; }
+  #ob-demo i { width: 46px; height: 46px; margin: -23px 0 0 -23px;
+    background: radial-gradient(circle at 38% 34%, rgba(255,255,255,.85), rgba(43,224,198,.55) 55%, rgba(43,224,198,.15));
+    border: 1.5px solid rgba(255,255,255,.9);
+    box-shadow: 0 0 30px rgba(43,224,198,.8), 0 0 70px rgba(43,224,198,.35); }
+  #ob-demo::before { width: 30px; height: 30px; margin: -15px 0 0 -15px;
+    background: rgba(43,224,198,.30); animation-delay: -.12s; }
+  #ob-demo::after { width: 18px; height: 18px; margin: -9px 0 0 -9px;
+    background: rgba(43,224,198,.16); animation-delay: -.24s; }
+  /* траектория свайпов: размашисто вбок, вверх, вбок, вниз — обе оси за один проход */
   @keyframes obDrive {
     0%, 100% { transform: translate(0, 0); }
-    20% { transform: translate(46px, 0); }
-    40% { transform: translate(0, -40px); }
-    60% { transform: translate(-46px, 0); }
-    80% { transform: translate(0, 40px); }
+    20% { transform: translate(64px, -8px); }
+    40% { transform: translate(-12px, -54px); }
+    60% { transform: translate(-64px, 6px); }
+    80% { transform: translate(8px, 52px); }
   }
   /* Строка без тени: подложка под буквами выглядит дёшево. Берём размером и разрядкой,
      в две строки — так она читается на любом фоне без подпорок. */
@@ -480,8 +488,8 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
      о котором она говорит, должны читаться одним взглядом. Над кольцом и по его оси.
      Без тени — подложка под буквами выглядит дёшево; берём кеглем и разрядкой.
      Каретка мигает, пока строка набирается или стирается. */
-  #ob-say { position: fixed; left: 74%; top: 72%; width: 230px;
-    margin: -170px 0 0 -115px; z-index: 41;
+  #ob-say { position: fixed; left: 50%; top: 62%; width: 250px;
+    margin: -170px 0 0 -125px; z-index: 41;
     pointer-events: none; text-align: center; opacity: 0; transition: opacity .3s ease;
     font: 700 19px/1.4 'Roboto Mono', monospace; letter-spacing: .14em;
     text-transform: uppercase; color: #f1fbfc; }
@@ -681,12 +689,9 @@ addEventListener('DOMContentLoaded', function(){
     <div class="go-card"><div class="gc-v" id="go-speed">0</div><div class="gc-l">Макс. скорость, км/ч</div></div>
     <div class="go-card"><div class="gc-v" id="go-combo">×1</div><div class="gc-l">Лучшая серия</div></div>
   </div>
-  <div class="go-how">
-    <div class="gh"><b>Мышь</b>курс и высота</div>
-    <div class="gh"><b>Энергоядра</b>серии дают множитель</div>
-    <div class="gh"><b>Кольца</b>ускорение +5</div>
-    <div class="gh"><b>Бреющий</b>у земли капает бонус</div>
-  </div>
+  <!-- Списка «как играть» здесь больше нет (27.08): четыре строки мелкого текста между
+       цифрами и кнопками не читались и толком не были видны (замечание владельца со
+       скриншотом). Управлению теперь учит анимированный онбординг на старте полёта. -->
   <div class="go-hint">КЛИК — ЕЩЁ РАЗ · ESC — В ПОРТФОЛИО</div>
   <div class="go-btns">
     <button class="go-again" id="go-again">↻ Новый полёт</button>
@@ -876,7 +881,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2708-vidfix';</script>
+<script>window.PD_V = 'b2708-ob2';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -1169,15 +1174,16 @@ function obUpdate(dt) {
     // ДВУХ ДЖОЙСТИКОВ БЫТЬ НЕ ДОЛЖНО. Если палец уже на экране — показывать, как
     // пользоваться рулём, поздно и глупо: человек уже рулит. Отдаём корабль сразу.
     if (obTouching()) { obFinish(); return; }
-    if (OB.t > 3.5) {
+    // 1.2 секунды тишины (было 3.5): человек уже видел шторку и влёт, тянуть нечего
+    if (OB.t > 1.2) {
       OB.phase = 2; OB.t = 0; obEls();
       document.body.classList.add('ob-demo-on');
       obType(OB.aEl, 'ВЕДИ ПАЛЬЦЕМ ПО ЭКРАНУ', 48);
     }
     return;
   }
-  // ФАЗА 2 — показательное кольцо там же, где палец обычно и лежит (низ справа),
-  // ручка сама ходит по кругу, под ним строка. Первое касание — управление ваше.
+  // ФАЗА 2 — показательный «палец» со шлейфом по центру экрана: точка размашисто
+  // свайпает по обеим осям, над ней набирается строка. Первое касание — управление ваше.
   // Страховка: смотрит и не трогает — через 8 секунд отдаём корабль сами.
   if (OB.phase === 2) {
     if (obTouching() || OB.t > 8) obFinish();
@@ -1268,9 +1274,6 @@ if (isMobile) {
   if (obFirst) obFirst.innerHTML = '<b>Ведите пальцем по экрану</b> — корабль повторяет движение';
   const gExit = document.getElementById('game-exit');
   if (gExit) gExit.textContent = 'КРЕСТИК СЛЕВА ВВЕРХУ — ВЕРНУТЬСЯ В ПОРТФОЛИО';
-  // подсказки на экране геймовера говорят «мышь» — на таче это джойстик
-  const ghFirst = document.querySelector('#game-over .gh b');
-  if (ghFirst) ghFirst.textContent = 'Палец';
 }
 
 // ---------- Шейдер воксельных точек ----------
@@ -2687,6 +2690,9 @@ function preloadVideo(i) {
 }
 
 function startPlay() {
+  // в игре и в архиве видео не открывается НИКОГДА: их циклы не гоняют updatePlay,
+  // и открытый слой #player повис бы поверх мира до конца сеанса
+  if (GAME.on || (typeof ARCHIVE !== 'undefined' && ARCHIVE && ARCHIVE.on)) return;
   if (!SHOW_PLAYER) return;
   const i = wrapIdx(gtM); // индекс с учётом зацикливания
   navTarget = targetGT = Math.round(gtM); // точно фиксируем камеру на проекте → видео стыкуется бесшовно
@@ -4911,6 +4917,7 @@ function enterGame() {
     // заставляет корабль мигать на 8 Гц и переписывать прозрачность всего облака точек
     // каждый кадр: при grace=1e9 это шло бесконечно и читалось как тормоза и дёрганье.
     OB.safe = true;
+    try { localStorage.setItem('pd_ob_runs', String((+localStorage.getItem('pd_ob_runs') || 0) + 1)); } catch (e) {}
     obFade();                          // чёрная шторка закрывает стык галереи и полёта
     gameOnboard.classList.remove('show', 'fade');
     document.body.classList.remove('ob-demo-on');
@@ -4920,9 +4927,8 @@ function enterGame() {
     OB.on = false; OB.phase = 0;
     document.body.classList.remove('ob-demo-on');
     // На ТЕЛЕФОНЕ стартовой шпаргалки нет вовсе (решение 11.08): четыре абзаца поверх
-    // полёта никто не читает, они закрывали пол-экрана. Эти же описания человек видит
-    // на экране после столкновения (блок go-how) — там для них есть и время, и место.
-    // Комп остаётся как был: там шпаргалка одной строкой и не мешает.
+    // полёта никто не читает. Управлению учит анимированный онбординг (OB, первые два
+    // полёта). Комп остаётся как был: там шпаргалка одной строкой и не мешает.
     if (!isMobile) {
       gameOnboard.classList.remove('fade');
       gameOnboard.classList.add('show');
@@ -5031,6 +5037,11 @@ function gMetrics(dt) {
 }
 
 function updateGame(dt, time) {
+  // СТРАХОВКА КАЖДЫЙ КАДР: слой видео (#player) не имеет права существовать в полёте.
+  // Закрытие на входе уже есть (closePlayNow в enterGame), но старая страница в памяти
+  // вкладки, гонка сообщений или любой будущий путь запуска не должны возвращать баг
+  // «интерфейс виден, вместо мира — ролик». Проверка при закрытом видео бесплатна.
+  if (play.state !== 0 || play.iframe) closePlayNow();
   // Обучение поверх игры. В try, потому что проверить его в стенде нельзя, а сорваться
   // оно не должно ценой всего кадра: упало — просто идёт обычный полёт.
   try { obUpdate(dt); } catch (e) { OB.on = false; }
