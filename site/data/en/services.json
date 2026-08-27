@@ -1017,8 +1017,8 @@
     },
     {
       "slug": "showroom",
-      "title": "Interactive showroom and brand space",
-      "nav": "Showroom",
+      "title": "Multimedia space",
+      "nav": "Multimedia space",
       "subtitle": "A space where the product is shown through action, not through a brochure.",
       "keywords": [
         "interactive showroom",
@@ -1115,6 +1115,89 @@
         {
           "q": "Does this work in B2B, where no single person decides?",
           "a": "It works differently. In B2B the interactive is not there for emotion but as a shared object to talk around: a group gathers at a model or a configurator and the discussion follows the object rather than the slides. Our projects for industry and rolling stock are built exactly that way."
+        }
+      ]
+    },
+    {
+      "slug": "interactive-website",
+      "title": "Interactive website",
+      "nav": "Interactive website",
+      "subtitle": "A site that behaves like an exhibition: a real-time scene, motion, sound and a story instead of a page of blocks. Our own site is the example.",
+      "keywords": [
+        "interactive website",
+        "3d website",
+        "webgl website",
+        "branded game",
+        "promo game"
+      ],
+      "cases": [
+        "pano360",
+        "bmwx5",
+        "coalco"
+      ],
+      "flow": [
+        {
+          "t": "p",
+          "text": "You are already looking at the example. Everything on this site — the point cloud assembling into objects, the sound reacting to scroll, the flight you can play from the first screen — was built by the same people and the same engine as our museum halls. The projector is simply replaced by a browser."
+        },
+        {
+          "t": "p",
+          "text": "That is the argument. A studio promising interactivity is easy to check: look at its own site. If it is assembled from template blocks, the promise is empty."
+        },
+        {
+          "t": "h",
+          "text": "When a site needs a scene rather than a page"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "The product is complex and needs volume. An object you can turn, take apart and reassemble in the browser explains itself in a minute, where text and photographs cannot.",
+            "A territory, a site, a scale model. A development, a plant, a resort: people need to grasp where things are, not read a description.",
+            "The brand needs people to stay. An ordinary site gets eight seconds. A scene you can turn, launch and play holds minutes."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "Branded games"
+        },
+        {
+          "t": "p",
+          "text": "A separate genre that grew out of this site. The flight engine from the first screen became a full game with levels, fuel and upgrades — it lives at play.playdisplay.com and was built entirely in-house."
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Not gamification with points and badges. A real game people play by choice.",
+            "Timelines differ from a website: simple mechanics take weeks, a game with levels takes months. We say so before the quote, not after.",
+            "A game outlives the campaign if it has a leaderboard and a reason to come back."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "How the work runs"
+        },
+        {
+          "t": "p",
+          "text": "The same way as a hall: first decide what a person should do and feel, then choose the technology. A scene can be WebGL, video with interactive points, or honest real-time 3D — the budgets differ by multiples, and that choice should be deliberate rather than driven by the word “3D” in a brief."
+        },
+        {
+          "t": "link",
+          "href": "/en/atlas/",
+          "text": "Atlas: the principles we design by →"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Will it work on a phone?",
+          "a": "Yes, and that is designed in from the start rather than checked at the end. The scene is built at several weights: a strong phone gets the full version, a weak one a reduced version, and a device without WebGL sees a static version with the same structure. We test on real devices."
+        },
+        {
+          "q": "Do you build the whole site or only the interactive part?",
+          "a": "Usually the whole thing — cheaper and faster, because the scene and the markup do not fight each other. But if you already have a web contractor we can deliver only the scene as a documented module. We have worked that way too."
+        },
+        {
+          "q": "Is the site team the same as the exhibition team?",
+          "a": "The same, and that is the main advantage. The engine that drives a scene in the browser drives it on a screen in a hall. A web project and a spatial project can share one script and one content pipeline instead of being ordered in two places and stitched together later."
         }
       ]
     }

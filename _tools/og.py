@@ -195,6 +195,11 @@ CARDS = [
  # Музейный зал с витринами и пультами, без чужих логотипов на кадре.
  ('og-corp-museum.jpg', C+'living-ship/1.jpg',  'Корпоративный музей',
   'Не комната, куда водят гостей', 'Партнёры, новички и школьники — одна экспозиция на три аудитории'),
+ # Прыжок в цифровой мир: страница про интерактивный сайт и брендированные игры.
+ ('og-web.jpg',  C+'city-flight/1.jpg',     'Интерактивный сайт',
+  'Вы уже на примере', 'Сцена в реальном времени вместо страницы с блоками. И брендированные игры'),
+ ('og-space.jpg', C+'sales-showroom/1.jpg', 'Мультимедийное пространство',
+  'Место, которое продаёт образ жизни', 'Шоурум, бренд-зона, презентационный зал'),
 ]
 
 # Английская версия сайта отдавала те же карточки с русским текстом: ссылку
@@ -224,6 +229,10 @@ CARDS_EN = [
   'Ten boxes or one system', 'What the system is made of and how professional gear differs from consumer kit'),
  ('og-corp-museum.jpg', C+'living-ship/1.jpg',  'Corporate museum',
   'Not a room guests are walked through', 'Partners, new hires and school groups in one exhibition'),
+ ('og-web.jpg',  C+'city-flight/1.jpg',     'Interactive website',
+  'You are looking at the example', 'A real-time scene instead of a page of blocks — and branded games'),
+ ('og-space.jpg', C+'sales-showroom/1.jpg', 'Multimedia space',
+  'A place that sells a way of living', 'Showroom, brand zone, presentation hall'),
 ]
 
 
