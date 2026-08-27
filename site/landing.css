@@ -632,6 +632,9 @@
     transition: transform var(--duration-base) var(--ease-overshoot), filter .4s, opacity .4s; }
   .ai-widget:hover { transform: scale(1.10) translateY(-3px);
     filter: drop-shadow(0 14px 34px rgba(2,8,11,0.7)) drop-shadow(0 0 34px rgba(43,224,198,0.42)); }
+  .ai-widget { opacity: 0; pointer-events: none; transform: scale(.85); }
+  body.past-hero .ai-widget { opacity: 1; pointer-events: auto; transform: scale(1); }
+  body.past-hero .ai-widget:hover { transform: scale(1.10) translateY(-3px); }
   body.ai-session-open .ai-widget, body.arc-on .ai-widget, body.flying .ai-widget { opacity: 0; pointer-events: none; }
   body.mnav-on .ai-widget,
   body:has(.viewer.open) .ai-widget,
@@ -1331,8 +1334,6 @@
     body.game-live .hero, body.game-live .hero-inner, body.game-live #boot { pointer-events: none; }
     .hero .ruler-top, .hero .ruler-left, .hero .readout, .hero .session, .hero .bracket,
     .hero .kicker, .hero-btns { display: none; }
-    .ai-widget { opacity: 0; pointer-events: none; transform: scale(.85); }
-    body.past-hero .ai-widget { opacity: 1; pointer-events: auto; transform: none; }
     .hero-grade { background:
       linear-gradient(180deg, rgba(3,12,16,0.55) 0%, transparent 18%, transparent 80%, rgba(3,12,16,0.55) 100%); }
     .hero-inner { padding-top: 76px; padding-bottom: 0; bottom: 96px; }

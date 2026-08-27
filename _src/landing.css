@@ -844,6 +844,16 @@
     transition: transform var(--duration-base) var(--ease-overshoot), filter .4s, opacity .4s; }
   .ai-widget:hover { transform: scale(1.10) translateY(-3px);
     filter: drop-shadow(0 14px 34px rgba(2,8,11,0.7)) drop-shadow(0 0 34px rgba(43,224,198,0.42)); }
+  /* МИКРОФОН ПОЯВЛЯЕТСЯ СО ВТОРОГО ЭКРАНА — теперь на ВСЕХ ширинах (26.08.2026).
+     Правило жило внутри `@media (max-width: 900px)`, то есть на компьютере кнопка
+     стояла на первом экране всегда. Прежний виджет был тёмной линзой и терялся,
+     а шар из частиц светится — и сразу оказался ровно там, где нужен чистый кадр:
+     рядом с кнопкой ▶ сцены, скобкой и заголовком. Класс past-hero ставит скрипт.
+     Ховер объявлен ОТДЕЛЬНО: `body.past-hero .ai-widget` весомее, чем `.ai-widget:hover`,
+     и без этой строки наведение перестало бы менять масштаб вовсе. */
+  .ai-widget { opacity: 0; pointer-events: none; transform: scale(.85); }
+  body.past-hero .ai-widget { opacity: 1; pointer-events: auto; transform: scale(1); }
+  body.past-hero .ai-widget:hover { transform: scale(1.10) translateY(-3px); }
   body.ai-session-open .ai-widget, body.arc-on .ai-widget, body.flying .ai-widget { opacity: 0; pointer-events: none; }
   /* Микрофон не лежит поверх открытого слоя. На телефоне он попадал на текст кейса,
      на разбор Атласа и на пункты меню — там ему делать нечего, у каждого слоя свой выход.
@@ -1807,11 +1817,6 @@
     body.game-live .hero, body.game-live .hero-inner, body.game-live #boot { pointer-events: none; }
     .hero .ruler-top, .hero .ruler-left, .hero .readout, .hero .session, .hero .bracket,
     .hero .kicker, .hero-btns { display: none; }
-    /* Микрофон ассистента появляется СО ВТОРОГО ЭКРАНА. На первом экране и так тесно:
-       кнопка ▶ сцены, точки галереи, заголовок — плавающий круг в углу добавлял шума
-       ровно там, где нужен чистый кадр. Класс past-hero ставит скрипт ниже. */
-    .ai-widget { opacity: 0; pointer-events: none; transform: scale(.85); }
-    body.past-hero .ai-widget { opacity: 1; pointer-events: auto; transform: none; }
     .hero-grade { background:
       linear-gradient(180deg, rgba(3,12,16,0.55) 0%, transparent 18%, transparent 80%, rgba(3,12,16,0.55) 100%); }
     /* Заголовок прижат к низу экрана, кнопка ▶ сцены — прямо над ним (она живёт в iframe,
