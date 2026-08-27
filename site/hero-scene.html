@@ -211,6 +211,33 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     display: flex; align-items: baseline; gap: 9px; }
   #game-over .gc-bolt { width: 18px; height: 30px; color: #2be0c6; align-self: center; }
   #game-over .gc-l { margin-top: 12px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(220,238,240,0.7); }
+  /* Мобила: четыре карточки результата НЕ ВЛЕЗАЛИ в ряд (min-width 200px на всех) —
+     «энергия» и «серия» стояли за краями экрана, видны были только километры и
+     скорость (видно на скриншоте владельца 27.08). Складываем 2×2 и компактнее. */
+  body.is-mobile #game-over .go-cards { flex-wrap: wrap; justify-content: center;
+    gap: 10px; width: min(340px, 86vw); }
+  body.is-mobile #game-over .go-card { min-width: 0; flex: 1 1 42%; padding: 18px 16px 14px; }
+  body.is-mobile #game-over .gc-v { font-size: 36px; }
+  body.is-mobile #game-over .gc-bolt { width: 12px; height: 20px; }
+  /* бегунок чувствительности: только на таче, в стилистике карточек результата */
+  #go-sens { display: none; margin-top: 26px; width: min(320px, 78vw); opacity: 0; }
+  body.is-mobile #go-sens { display: block; }
+  #game-over.show #go-sens { animation: goIn .55s ease .45s forwards; }
+  #go-sens .gs-l { display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: rgba(220,238,240,0.72); }
+  #go-sens .gs-l b { color: #2be0c6; font-size: 13px; letter-spacing: .12em; }
+  #go-sens .gs-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  #go-sens .gs-cap { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: rgba(220,238,240,0.45); }
+  #go-sens input { flex: 1; -webkit-appearance: none; appearance: none; height: 26px; background: none; }
+  #go-sens input::-webkit-slider-runnable-track { height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, rgba(43,224,198,.55), rgba(43,224,198,.18)); }
+  #go-sens input::-webkit-slider-thumb { -webkit-appearance: none; appearance: none;
+    width: 22px; height: 22px; margin-top: -9.5px; border-radius: 50%;
+    background: #2be0c6; border: 2px solid rgba(255,255,255,.8);
+    box-shadow: 0 0 16px rgba(43,224,198,.6); }
+  #go-sens input::-moz-range-track { height: 3px; border-radius: 2px; background: rgba(43,224,198,.35); }
+  #go-sens input::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%;
+    background: #2be0c6; border: 2px solid rgba(255,255,255,.8); }
   #game-over .go-hint { font-size: 12px; letter-spacing: .24em; opacity: 0; margin-top: 30px; }
   /* на таче ни клика, ни ESC нет — строка врала бы; там те же действия делают кнопки */
   body.is-mobile #game-over .go-hint { display: none; }
@@ -692,6 +719,13 @@ addEventListener('DOMContentLoaded', function(){
   <!-- Списка «как играть» здесь больше нет (27.08): четыре строки мелкого текста между
        цифрами и кнопками не читались и толком не были видны (замечание владельца со
        скриншотом). Управлению теперь учит анимированный онбординг на старте полёта. -->
+  <!-- Чувствительность руля — подбирает сам игрок (27.08). Только на таче: мышь этим
+       числом не пользуется. Живёт на экране результата: сюда попадают после каждого
+       полёта, и именно здесь «руль туповат/дёрганый» ещё свежо в пальцах. -->
+  <div id="go-sens">
+    <div class="gs-l"><span>Чувствительность руля</span><b id="go-sens-v">65%</b></div>
+    <div class="gs-row"><span class="gs-cap">медленнее</span><input type="range" id="go-sens-r" min="0" max="100" step="1"><span class="gs-cap">быстрее</span></div>
+  </div>
   <div class="go-hint">КЛИК — ЕЩЁ РАЗ · ESC — В ПОРТФОЛИО</div>
   <div class="go-btns">
     <button class="go-again" id="go-again">↻ Новый полёт</button>
@@ -881,7 +915,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2708-ob2';</script>
+<script>window.PD_V = 'b2708-sens65';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -5479,6 +5513,7 @@ function updateGame(dt, time) {
     _ringOp = 0; if (gameRing) gameRing.style.opacity = '0';
     gameDanger.classList.remove('on');
     gameOverEl.querySelector('.go-score').textContent = GAME.score;
+    if (window.pdSensSync) pdSensSync();   // бегунок чувствительности — по текущему S
     document.getElementById('go-dist').textContent = ((GAME.z - (GAME.z0 || 0)) * 2.4 / 1000).toFixed(1);
     document.getElementById('go-speed').textContent = Math.round((GAME.maxSpeed || GAME.speed) * 2.4);
     document.getElementById('go-combo').textContent = '×' + (GAME.maxCombo || 1);
@@ -5735,6 +5770,41 @@ function gLabel(t) {
   _lblT = setTimeout(() => { gameLabel.textContent = 'ЭНЕРГИЯ СОБРАНА'; gameLabel.style.opacity = ''; }, 1600);
 }
 const gameOverEl = document.getElementById('game-over');
+// ---------- Чувствительность руля: бегунок игрока на экране результата ----------
+// Шкала 0–100%, ЗАВОДСКОЕ 1.4 СТОИТ РОВНО НА 65% (решение владельца): диапазон
+// 0.5…1.885 линейно, 1.4 = 0.5 + 0.65·(1.885−0.5). Один бегунок на обе оси —
+// вертикаль сверх этого нормируется множителем H/W в touchmove, как и раньше.
+// Выбор игрока живёт в СВОЁМ ключе pd_stick_sens и применяется ПОСЛЕДНИМ — он
+// сильнее и заводских, и общесерверных настроек: это личное ощущение руки.
+const SENS_MIN = 0.5, SENS_DEF = 1.4, SENS_SPAN = (SENS_DEF - SENS_MIN) / 0.65;
+const sensV = p => SENS_MIN + (p / 100) * SENS_SPAN;
+const sensP = v => Math.round((v - SENS_MIN) / SENS_SPAN * 100);
+function applyPlayerSens() {
+  try {
+    const v = parseFloat(localStorage.getItem('pd_stick_sens'));
+    if (isFinite(v) && v > 0) { S.stickrx = v; S.stickry = v; }
+  } catch (e) {}
+}
+applyPlayerSens();
+(function () {
+  const box = document.getElementById('go-sens'), r = document.getElementById('go-sens-r'),
+        lbl = document.getElementById('go-sens-v');
+  if (!box || !r) return;
+  // касания бегунка не должны доходить до window: там их приняли бы руль (touchstart)
+  // и гаситель прокрутки полёта (touchmove с preventDefault — он сломал бы сам драг)
+  ['touchstart', 'touchmove', 'pointerdown'].forEach(ev =>
+    box.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+  const syncUI = () => { const p = Math.max(0, Math.min(100, sensP(S.stickrx))); r.value = p; lbl.textContent = p + '%'; };
+  r.addEventListener('input', () => {
+    const v = sensV(+r.value);
+    S.stickrx = v; S.stickry = v;
+    lbl.textContent = r.value + '%';
+    try { localStorage.setItem('pd_stick_sens', String(v)); } catch (e) {}
+    if (_syncPanel) _syncPanel();   // панель настроек, если открыта, показывает те же числа
+  });
+  window.pdSensSync = syncUI;      // экран результата зовёт при каждом показе
+  syncUI();
+})();
 // вход/выход: сообщение от лендинга, клавиша G; Esc — плавный выход
 addEventListener('message', e => { if (e.data && typeof e.data.pdGame === 'boolean') e.data.pdGame ? enterGame() : startExitGame(); });
 // ПУЛЬС СОСТОЯНИЯ ДЛЯ ЛЕНДИНГА (26.08). События pdPlay:false и pdGameOn:false уходят из
@@ -6521,6 +6591,8 @@ if (_sharedWait) _sharedWait.then(d => {
   if (!d || !d.ok || !d.data || _hadSaved) return;
   Object.assign(S, d.data);
   _hadSaved = true;               // сцена настроена: ручной FOV и заданное кол-во точек, как у сохранённого профиля
+  if (typeof applyPlayerSens === 'function') applyPlayerSens();   // личная чувствительность сильнее общей
+  if (window.pdSensSync) pdSensSync();
   if (window.pdApplySettings) window.pdApplySettings();
 });
 
