@@ -206,7 +206,7 @@ def dkey(s):
     return (m.group(3) + m.group(2) + m.group(1)) if m else '99999999'
 
 
-def interesting(item, min_price, today):
+def interesting(item, min_price, today, skip_date=False):
     t = (item['subject'] + ' ' + item['customer']).lower()
     if any(w in t for w in STOP):
         return False
@@ -217,9 +217,10 @@ def interesting(item, min_price, today):
     # Параметру af=on на стороне ЕИС верить нельзя: с ним в выдачу всё равно
     # приезжают закупки позапрошлого года. Отсекаем по дате сами — единственный
     # надёжный способ не показывать владельцу то, куда уже не подать заявку.
-    d = dkey(item['deadline'])
-    if d == '99999999' or d < today:
-        return False
+    if not skip_date:
+        d = dkey(item['deadline'])
+        if d == '99999999' or d < today:
+            return False
     return score(item) > 0
 
 
@@ -277,6 +278,8 @@ def main():
     ap.add_argument('--all', action='store_true', help='не учитывать память о прошлых запусках')
     ap.add_argument('--min', type=int, default=MIN_PRICE, help='минимальная начальная цена')
     ap.add_argument('--json', action='store_true', help='выдать JSON вместо текста')
+    ap.add_argument('--buyers', action='store_true',
+                    help='кто заказывает экспозиции регулярно — список для прямого выхода')
     ap.add_argument('--html', metavar='ФАЙЛ', default='',
                     help='записать дайджест страницей (её можно открыть с телефона)')
     args = ap.parse_args()
@@ -297,7 +300,7 @@ def main():
             errors.append('%s: %s' % (q, e))
             continue
         for it in parse(page):
-            if not interesting(it, args.min, today):
+            if not interesting(it, args.min, today, args.buyers):
                 continue
             it.setdefault('queries', [])
             if it['num'] in found:
@@ -306,6 +309,32 @@ def main():
                 it['queries'] = [q]
                 found[it['num']] = it
         time.sleep(1.5)          # площадка государственная, вести себя прилично
+
+    if args.buyers:
+        # Режим разведки заказчиков. Действующих закупок в нише мало, но те, кто
+        # заказывал экспозицию однажды, заказывают снова: у музея есть программа,
+        # бюджетный цикл и очередь залов. Такому заказчику можно написать напрямую,
+        # не дожидаясь торгов. Поэтому здесь дата окончания НЕ фильтруется.
+        agg = {}
+        for it in found.values():
+            key = it['customer']
+            if not key:
+                continue
+            a_ = agg.setdefault(key, {'n': 0, 'sum': 0, 'last': '', 'max': ''})
+            a_['n'] += 1
+            a_['sum'] += price_num(it['price'])
+            if dkey(it['placed']) > dkey(a_['last'] or '01.01.1970'):
+                a_['last'] = it['placed']
+                a_['max'] = it['subject'][:110]
+        rows = sorted(agg.items(), key=lambda kv: -kv[1]['sum'])
+        print('ЗАКАЗЧИКИ, КОТОРЫЕ ЗАКАЗЫВАЮТ ЭКСПОЗИЦИИ — %s' % time.strftime('%d.%m.%Y'))
+        print('организаций: %d, закупок учтено: %d\n' % (len(rows), len(found)))
+        for name, a_ in rows:
+            print('%2d закупок · %14s \u20bd всего · последняя %s' % (a_['n'], '{:,}'.format(a_['sum']).replace(',', ' '), a_['last'] or '?'))
+            print('   %s' % name[:110])
+            print('   последний предмет: %s' % a_['max'])
+            print('')
+        return
 
     fresh = [v for k, v in found.items() if k not in seen]
     fresh.sort(key=lambda x: (dkey(x['deadline']), -score(x)))
