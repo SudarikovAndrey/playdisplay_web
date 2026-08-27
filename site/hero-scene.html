@@ -192,6 +192,18 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   #game-over { position: fixed; inset: 0; z-index: 47; display: none;
     flex-direction: column; align-items: center; justify-content: center; gap: 10px;
     background: rgba(8,4,10,.42); backdrop-filter: blur(3px); pointer-events: none; }
+  /* С очками, сохранением и бегунком экран результата стал ВЫШЕ телефонного вьюпорта:
+     кнопки уезжали под панель Safari. На мобиле оверлей скроллится сам (касания к нему
+     не доходят до гасителя прокрутки полёта — см. stopPropagation у gameOverEl), контент
+     прижат к верху, снизу запас под домашнюю полоску. */
+  body.is-mobile #game-over.show { justify-content: flex-start; overflow-y: auto;
+    -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+    padding: 7vh 0 calc(34px + env(safe-area-inset-bottom, 0px)); }
+  body.is-mobile #game-over .go-cards { margin-top: 22px; flex: none; }
+  body.is-mobile #go-total { margin-top: 16px; flex: none; }
+  body.is-mobile #go-save { margin-top: 14px; flex: none; }
+  body.is-mobile #go-sens { margin-top: 16px; flex: none; }
+  body.is-mobile #game-over .go-btns { margin-top: 18px; flex: none; }
   #game-over.show { display: flex; }
   body.game.over #game-over { pointer-events: auto; cursor: auto; }
   body.game.over, body.game.over #stage { cursor: auto !important; } /* после крушения курсор возвращается */
@@ -275,8 +287,11 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   /* сохранение результата: имя + кнопка одной строкой */
   #go-save { display: flex; gap: 10px; margin-top: 20px; opacity: 0; width: min(340px, 86vw); }
   #game-over.show #go-save { animation: goIn .5s ease .7s forwards; }
-  #go-save input { flex: 1; min-width: 0; padding: 13px 14px; border-radius: 2px;
-    font: 600 13px 'Roboto Mono', monospace; letter-spacing: .08em;
+  /* 16px НЕ КОСМЕТИКА: при шрифте поля меньше 16px iOS Safari на фокусе ПРИНУДИТЕЛЬНО
+     зумит страницу и после клавиатуры зум остаётся — весь экран результата уезжал за
+     правый край, кнопки становились недосягаемы («окно висит, ничего не могу нажать»). */
+  #go-save input { flex: 1; min-width: 0; padding: 12px 14px; border-radius: 2px;
+    font: 600 16px 'Roboto Mono', monospace; letter-spacing: .04em;
     color: #f1fbfc; background: rgba(6,16,22,0.72); border: 1px solid rgba(43,224,198,0.35);
     outline: none; }
   #go-save input:focus { border-color: rgba(43,224,198,0.8); }
@@ -1012,7 +1027,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2808-lbfull';</script>
+<script>window.PD_V = 'b2808-zoom4';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -6021,6 +6036,11 @@ applyPlayerSens();
     if (e.key === 'Escape' && lb.classList.contains('show')) { e.stopPropagation(); closeLB(); }
   }, true);
 
+  // экран результата скроллится на мобиле: его касания не должны доходить до window,
+  // где touchmove полёта делает preventDefault и убил бы нативный скролл оверлея
+  ['touchstart', 'touchmove'].forEach(ev =>
+    gameOverEl.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+
   // ----- сохранение результата с экрана столкновения -----
   const saveBox = document.getElementById('go-save'), nameIn = document.getElementById('go-name'),
         saveBtn = document.getElementById('go-save-btn');
@@ -6028,6 +6048,17 @@ applyPlayerSens();
     try { nameIn.value = localStorage.getItem('pd_player_name') || ''; } catch (e) {}
     ['touchstart', 'touchmove', 'pointerdown'].forEach(ev =>
       saveBox.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+    // Токен игрока: случайный ключ этого браузера. Сервер закрепляет имя за токеном —
+    // взять ЧУЖОЕ имя нельзя (придёт «имя занято»), а своим именем можно улучшать
+    // свой же результат: в таблице одна строка на игрока, хранится лучший счёт.
+    let ptok = '';
+    try {
+      ptok = localStorage.getItem('pd_player_token') || '';
+      if (!ptok) {
+        ptok = Array.from({ length: 4 }, () => Math.floor(Math.random() * 0xffff).toString(16)).join('');
+        localStorage.setItem('pd_player_token', ptok);
+      }
+    } catch (e) {}
     let busy = false;
     const doSave = () => {
       if (busy) return;
@@ -6038,11 +6069,19 @@ applyPlayerSens();
       fetch('api/game.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'save', name: name, score: GAME.total || 0 })
+        body: JSON.stringify({ action: 'save', name: name, score: GAME.total || 0, tok: ptok })
       })
-        .then(r => r.json())
-        .then(d => {
+        .then(r => r.json().then(d => ({ d, code: r.status })))
+        .then(({ d, code }) => {
           busy = false; saveBtn.disabled = false; saveBtn.textContent = 'Сохранить';
+          if (d && !d.ok && code === 409) {
+            // имя закреплено за другим игроком — предлагаем выбрать своё
+            saveBtn.textContent = 'Имя занято';
+            setTimeout(() => (saveBtn.textContent = 'Сохранить'), 2200);
+            nameIn.focus();
+            try { nameIn.select(); } catch (e) {}
+            return;
+          }
           if (!d || !d.ok) throw 0;
           myPos = d.pos;
           meEl.textContent = 'ВЫ — ' + d.pos + ' МЕСТО ИЗ ' + d.count;

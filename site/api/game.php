@@ -160,6 +160,10 @@ $name = pd_mask_name($name);
 $score = isset($in['score']) ? (int)$in['score'] : -1;
 if ($score < 0 || $score > 5000000) pd_game_fail('очки вне диапазона');
 
+// токен игрока: случайный ключ браузера. Имя закрепляется за токеном — чужое занятое
+// имя взять нельзя, своё можно улучшать (в таблице одна строка на игрока, лучший счёт)
+$tok = isset($in['tok']) && is_string($in['tok']) && preg_match('/^[0-9a-f]{8,64}$/', $in['tok']) ? $in['tok'] : '';
+
 // лёгкий стоп частым записям: не чаще раза в 5 секунд с адреса
 $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '?';
 $rl = sys_get_temp_dir() . '/pd-game-' . md5($ip);
@@ -168,13 +172,31 @@ if ($last && time() - $last < 5) pd_game_fail('слишком часто, под
 @touch($rl);
 
 $list = pd_game_all();
-$list[] = array('n' => $name, 's' => $score, 't' => date('Y-m-d H:i'));
+// одна строка на имя: ищем существующую (без учёта регистра)
+$key = function_exists('mb_strtolower') ? mb_strtolower($name, 'UTF-8') : strtolower($name);
+$found = -1;
+foreach ($list as $i => $e) {
+  $ek = function_exists('mb_strtolower') ? mb_strtolower($e['n'], 'UTF-8') : strtolower($e['n']);
+  if ($ek === $key) { $found = $i; break; }
+}
+if ($found >= 0) {
+  $own = empty($list[$found]['tok']) || ($tok !== '' && $list[$found]['tok'] === $tok);
+  if (!$own) pd_game_fail('имя занято — выберите другое', 409);
+  // своё имя: лучший счёт остаётся, токен закрепляется
+  if ($score > (int)$list[$found]['s']) { $list[$found]['s'] = $score; $list[$found]['t'] = date('Y-m-d H:i'); }
+  if ($tok !== '') $list[$found]['tok'] = $tok;
+} else {
+  $list[] = array('n' => $name, 's' => $score, 't' => date('Y-m-d H:i'), 'tok' => $tok);
+}
 usort($list, function ($a, $b) { return $b['s'] - $a['s']; });
 $list = array_slice($list, 0, PD_GAME_KEEP);
 
-// позиция свежей записи: первая строка с такими очками и именем
+// позиция строки игрока после сортировки
 $pos = 0;
-foreach ($list as $i => $e) if ($e['s'] === $score && $e['n'] === $name) { $pos = $i + 1; break; }
+foreach ($list as $i => $e) {
+  $ek = function_exists('mb_strtolower') ? mb_strtolower($e['n'], 'UTF-8') : strtolower($e['n']);
+  if ($ek === $key) { $pos = $i + 1; break; }
+}
 if (!$pos) $pos = count($list);   // вытеснили за пределы KEEP — честно последнее место
 
 $tmp = PD_GAME_FILE . '.tmp';
