@@ -8,6 +8,62 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-26 21:23 — hybrid-v8 @ c2dcf2c
+
+**Коммиты в этой поставке**
+```
+c2dcf2c Высота полёта −8…54 (+30%), награды в провалах стали досягаемы
+efcb77a Микрофон виджета: чёткий глиф внутри шара из частиц
+9a59c15 Стили главной вынесены из разметки: −22 КБ первому гостю, −42 КБ повторному
+9382354 Журнал деплоя: 6564a5c
+```
+
+**На сервер отправлено файлов:** 152, удалено: 0
+```
+digital.zip
+hero-scene.html
+index.html
+landing.css
+llms.txt
+robots.txt
+sitemap.xml
+assets/og/og-atlas.jpg
+assets/og/og-concepts.jpg
+assets/og/og-equipment.jpg
+assets/og/og-equipping.jpg
+assets/og/og-home.jpg
+assets/og/og-lib-input.jpg
+assets/og/og-lib-output.jpg
+assets/og/og-lib-proc.jpg
+assets/og/og-library.jpg
+assets/og/og-mm-equipment.jpg
+assets/og/og-services.jpg
+assets/og/en/og-atlas.jpg
+assets/og/en/og-concepts.jpg
+assets/og/en/og-equipment.jpg
+assets/og/en/og-equipping.jpg
+assets/og/en/og-home.jpg
+assets/og/en/og-lib-input.jpg
+assets/og/en/og-lib-output.jpg
+assets/og/en/og-lib-proc.jpg
+assets/og/en/og-library.jpg
+assets/og/en/og-mm-equipment.jpg
+assets/og/en/og-services.jpg
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+…и ещё 112
+```
+
+
 ## 2026-08-26 20:40 — hybrid-v8 @ 6564a5c
 
 **Коммиты в этой поставке**

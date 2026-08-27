@@ -497,6 +497,100 @@
       ]
     },
     {
+      "slug": "multimedia-equipment",
+      "title": "Multimedia equipment",
+      "nav": "Multimedia equipment",
+      "subtitle": "What a multimedia system is actually made of, how professional gear differs from consumer kit, and why the spec matters more than the brand.",
+      "keywords": [
+        "multimedia equipment",
+        "museum multimedia equipment",
+        "multimedia equipment for exhibitions",
+        "audiovisual equipment for museums",
+        "interactive exhibit hardware"
+      ],
+      "cases": [
+        "vdnh-space-center",
+        "proryv",
+        "stalingrad",
+        "industry-rf"
+      ],
+      "flow": [
+        {
+          "t": "p",
+          "text": "“Multimedia equipment” is not a line in a price list. It is everything a living exhibition is assembled from: screens and projectors, sensors and cameras, the machines under the desk that tie it all together, and the cabling nobody ever sees. The list is long, but the length is not the problem. The problem is that you can buy every single item correctly and still end up with ten boxes instead of one system."
+        },
+        {
+          "t": "p",
+          "text": "We do not sell this hardware. We have worked with it for fifteen years, which is why we know the awkward parts: where the datasheet disagrees with the actual room, what fails in year two, and which three-dollar part will one day stop the whole exhibition for a week."
+        },
+        {
+          "t": "h",
+          "text": "What the system is made of"
+        },
+        {
+          "t": "steps",
+          "items": [
+            "What it shows. Panels and video walls, projectors, LED screens in any shape — flat, curved, spherical, kinetic. Holographic showcases and fans belong here too: everything that puts the image in front of a person.",
+            "What responds. Touch screens, cameras and depth sensors, buttons, wheels, encoders, RFID tags, microphones. Everything a visitor answers with, rather than just looking at.",
+            "What ties it together. Players, computers and servers, switching, network, control and monitoring. None of it is visible, and without it an exhibition is a set of unrelated pictures somebody switches on by hand every morning."
+          ]
+        },
+        {
+          "t": "link",
+          "href": "/en/library/",
+          "text": "Equipment library: 65 types, what each one does and where it fails in year two →"
+        },
+        {
+          "t": "h",
+          "text": "Professional versus consumer"
+        },
+        {
+          "t": "notes",
+          "items": [
+            "Duty cycle. A consumer TV is built for a few hours a day. An exhibition runs ten hours a day, seven days a week, and at that load a consumer panel burns in within a season — first as a ghost under a static logo, then across the whole screen.",
+            "Brightness in a real room. A projector with honest lumens is glorious in the dark and looks like a grey rag next to a panoramic window. What matters is the light level in that room at that hour, not the number on the datasheet.",
+            "What happens later. Professional lines stay in production for years, so a failed panel in a video wall can be replaced with the same model. The consumer model is discontinued by then, and you replace the entire wall.",
+            "Control. Professional gear starts on a schedule, answers over the network and reports its own state. Consumer gear waits for a person with a remote — and one day that person calls in sick."
+          ]
+        },
+        {
+          "t": "h",
+          "text": "Our role"
+        },
+        {
+          "t": "p",
+          "text": "We start from the effect we want, not from a model number. First we decide what should happen to a person in the room, and the equipment list follows from that — which turns hardware from an argument into a consequence of the idea."
+        },
+        {
+          "t": "p",
+          "text": "From there our team selects the best solutions for the brief and the budget, and our partners arrange supply on the best terms for the client. We build complex hardware-and-software systems and take responsibility for them working as one system rather than a warehouse of compatible boxes. In our hands an ordinary monitor becomes a first-class showcase — and the most expensive panel in the world, with no script behind it, stays an expensive panel."
+        },
+        {
+          "t": "link",
+          "href": "/en/services/museum-equipping/",
+          "text": "We will write or audit your technical specification — free →"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Do you supply the equipment?",
+          "a": "Not directly, and that is deliberate: a studio earning a margin on hardware is always slightly interested in selling more hardware. We design the system and select the components; our partners handle supply on the best terms for the client, including direct delivery and service. You do not need to find vendors yourself."
+        },
+        {
+          "q": "We already own equipment. Can you work with it?",
+          "a": "Usually yes, and we are glad to. First we look at what is there: models, age, duty cycle, how it is controlled. Then we say plainly what can carry the load, what is in its last season and what has to be replaced — with numbers, not by eye. Building around what you already own is almost always cheaper than starting over."
+        },
+        {
+          "q": "How long does multimedia equipment last in an exhibition?",
+          "a": "Professional panels and LED: five to seven years at a ten-hour day. Projectors are limited by their light source — around twenty thousand hours for laser. Machines go obsolete faster than they break. Plan replacement in advance and as a budget line: an exhibition with no refresh plan starts to look dated around year three."
+        },
+        {
+          "q": "How is this different from an AV integrator?",
+          "a": "An integrator is responsible for the equipment working. We are responsible for the exhibition working. The difference shows at handover: a system can be installed flawlessly and still leave the visitor unmoved. That is why we start with the script and the content, and derive the equipment list from those."
+        }
+      ]
+    },
+    {
       "slug": "exhibition-stand",
       "title": "Interactive exhibition stand",
       "nav": "Exhibition stand",

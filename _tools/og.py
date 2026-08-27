@@ -189,6 +189,9 @@ CARDS = [
  # Один объект останавливает поток — принцип, а не проект. Это и есть атлас.
  ('og-atlas.jpg',       C+'weightlessness/1.jpg',     'Атлас',
   'Как создаются впечатления', '50 принципов, по которым работает студия'),
+ # Панорамная светодиодная стена и люди перед ней — мультимедиа как система.
+ ('og-mm-equipment.jpg', C+'living-panorama/1.jpg',  'Мультимедийное оборудование',
+  'Десять коробок или одна система', 'Из чего собирается комплекс, чем профи отличается от бытового, коды ОКПД2'),
 ]
 
 # Английская версия сайта отдавала те же карточки с русским текстом: ссылку
@@ -214,6 +217,8 @@ CARDS_EN = [
   'A library of solutions', '28 ready formats: intent, script, what it takes'),
  ('og-atlas.jpg',       C+'weightlessness/1.jpg',     'Atlas',
   'How experiences are made', '50 principles the studio works by'),
+ ('og-mm-equipment.jpg', C+'living-panorama/1.jpg',  'Multimedia equipment',
+  'Ten boxes or one system', 'What the system is made of and how professional gear differs from consumer kit'),
 ]
 
 
