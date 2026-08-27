@@ -8,6 +8,60 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-26 23:02 — hybrid-v8 @ e6eb643
+
+**Коммиты в этой поставке**
+```
+e6eb643 Рекорды во весь экран; крестик закрытия — двойник игрового, не прыгает по углам
+98df2a0 Журнал деплоя: 310871f
+```
+
+**На сервер отправлено файлов:** 126, удалено: 0
+```
+hero-scene.html
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/concepts/ar-portal/index.html
+en/concepts/ar-xray/index.html
+…и ещё 86
+```
+
+
 ## 2026-08-26 22:39 — hybrid-v8 @ 310871f
 
 **Коммиты в этой поставке**
