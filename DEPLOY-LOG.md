@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-26 23:25 — hybrid-v8 @ 5106c0d
+
+**Коммиты в этой поставке**
+```
+5106c0d Каталог услуг в разметке главной: 11 позиций вместо 10
+2d9ad2a Направление веба и игр: страница «Интерактивный сайт», шоурум переехал
+3255ab4 Журнал деплоя: dd19d76
+```
+
+**На сервер отправлено файлов:** 159, удалено: 0
+```
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+assets/og/og-atlas.jpg
+assets/og/og-concepts.jpg
+assets/og/og-corp-museum.jpg
+assets/og/og-equipment.jpg
+assets/og/og-equipping.jpg
+assets/og/og-home.jpg
+assets/og/og-lib-input.jpg
+assets/og/og-lib-output.jpg
+assets/og/og-lib-proc.jpg
+assets/og/og-library.jpg
+assets/og/og-mm-equipment.jpg
+assets/og/og-services.jpg
+assets/og/og-space.jpg
+assets/og/og-web.jpg
+assets/og/en/og-atlas.jpg
+assets/og/en/og-concepts.jpg
+assets/og/en/og-corp-museum.jpg
+assets/og/en/og-equipment.jpg
+assets/og/en/og-equipping.jpg
+assets/og/en/og-home.jpg
+assets/og/en/og-lib-input.jpg
+assets/og/en/og-lib-output.jpg
+assets/og/en/og-lib-proc.jpg
+assets/og/en/og-library.jpg
+assets/og/en/og-mm-equipment.jpg
+assets/og/en/og-services.jpg
+assets/og/en/og-space.jpg
+assets/og/en/og-web.jpg
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+…и ещё 119
+```
+
+
 ## 2026-08-26 23:14 — hybrid-v8 @ dd19d76
 
 **Коммиты в этой поставке**
