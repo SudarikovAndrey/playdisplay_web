@@ -876,7 +876,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2708-alt62';</script>
+<script>window.PD_V = 'b2708-vidfix';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -2778,6 +2778,24 @@ function captureVideoFrame() {
 }
 function stopPlay() {
   if (play.state === 1 || play.state === 2) { captureVideoFrame(); play.state = 3; }
+}
+// Закрыть видео МГНОВЕННО, без анимации. Нужно входу в игру: stopPlay() лишь запускает
+// анимацию закрытия (state 3), а её докручивает updatePlay — куда игровой цикл больше
+// не заходит (if (GAME.on) ... return). DOM-слой видео (#player, z-15) оставался на
+// экране весь полёт: HUD выше него, мир НИЖЕ — «интерфейс виден, земли с кораблём нет».
+// Повторяет финал ветки state 3 из updatePlay один в один.
+function closePlayNow() {
+  if (play.state === 0) return;
+  play.state = 0; play.p = 0; playE = 0;
+  playerEl.style.display = 'none';
+  playerEl.classList.remove('live');
+  if (play.iframe) {
+    if (play.iframe.tagName === 'VIDEO') { try { play.iframe.pause(); } catch (e) {} }
+    play.iframe.remove();
+    play.iframe = null;
+  }
+  if (mobDimTop) { mobDimTop.style.opacity = 0; mobDimBottom.style.opacity = 0; }
+  if (EMBEDDED) try { parent.postMessage({ pdPlay: false }, '*'); } catch (e) {}
 }
 playBtn.addEventListener('click', startPlay);
 playerClose.addEventListener('click', stopPlay);
@@ -4802,7 +4820,7 @@ function enterGame() {
   }
   gFallMat.uniforms.uOp.value = 1;
   document.body.classList.add('game');
-  stopPlay();
+  closePlayNow();   // видео гасим МГНОВЕННО: анимацию закрытия игровой цикл не докрутит
   // ВЛЁТ ИЗ СЛАЙДА: галерею не прячем сразу — её точки растворятся в переходе (см. updateGame),
   // а мир полёта проявится из этой пыли. Камера стартует с текущего ракурса.
   GAME.camStart.copy(camera.position);
@@ -5898,7 +5916,7 @@ function enterArchive() {
   ARCHIVE.vel = 0; ARCHIVE.lock = -1; ARCHIVE.lockAmt = 0; ARCHIVE.page = false;
   ARCHIVE.rot = 0; ARCHIVE.target = 0; ARCHIVE.lastIn = 0;
   document.body.classList.add('archive');
-  stopPlay();
+  closePlayNow();   // как у игры: цикл архива в updatePlay не заходит, плавному закрытию доиграть негде
   ARCHIVE.camStart.copy(camera.position);
   ARCHIVE.fovStart = camera.fov;
   ARCHIVE.zenith0 = skyMat.uniforms.uZenith.value.clone(); // вернём небо при выходе
