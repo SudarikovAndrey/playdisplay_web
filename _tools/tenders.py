@@ -5,6 +5,7 @@
     python3 _tools/tenders.py              # только новое с прошлого запуска
     python3 _tools/tenders.py --all        # всё, что нашлось, без учёта памяти
     python3 _tools/tenders.py --min 500000 # поднять порог цены
+    python3 _tools/tenders.py --mail a@b.ru  # прислать письмом
 
 ЗАПУСКАТЬ НА СЕРВЕРЕ. zakupki.gov.ru не отвечает на зарубежные адреса —
 проверено 27.08.2026: с Мака в Бразилии код 000 и таймаут, с vh432.timeweb.ru
@@ -22,6 +23,7 @@
 Зависимостей нет — стандартная библиотека, Python 3.6 (столько на хостинге).
 """
 import argparse
+import base64
 import gzip
 import html as html_mod
 import io
@@ -29,6 +31,7 @@ import json
 import os
 import re
 import ssl
+import subprocess
 import sys
 import time
 import urllib.parse
@@ -224,53 +227,46 @@ def interesting(item, min_price, today, skip_date=False):
     return score(item) > 0
 
 
-def write_html(path, fresh, found, min_price, errors):
-    """Дайджест страницей. Данные ЕИС публичные, прятать нечего, но и в поиск
-    этой странице не надо — отсюда noindex."""
-    rows = []
+def send_mail(to, fresh, found, min_price, errors):
+    """Письмо через sendmail хостинга.
+
+    Почему не через почтовый слой сайта: там свой конфиг, и он как раз был
+    настроен на «складывать в папку». Дайджест не должен зависеть от чужой
+    настройки — sendmail на хостинге есть и работает сам по себе.
+
+    Тема кодируется по RFC 2047, иначе кириллица приезжает крякозябрами.
+    """
+    lines = ['ЗАКУПКИ ПО НАШЕМУ ПРОФИЛЮ — %s' % time.strftime('%d.%m.%Y'),
+             'новых %d, всего подходящих %d, порог %d руб.' % (len(fresh), len(found), min_price),
+             '']
     for it in fresh:
-        rows.append(
-            '<article><h2><a href="{url}" target="_blank" rel="noopener">{subj}</a></h2>'
-            '<p class="meta"><b>{price} \u20bd</b> \u00b7 {law} \u00b7 \u0434\u043e {dl}</p>'
-            '<p class="cust">{cust}</p></article>'.format(
-                url=it['url'],
-                subj=html_mod.escape(it['subject'][:220]),
-                price=html_mod.escape(it['price'] or '?'),
-                law=html_mod.escape(it['law'] or '?'),
-                dl=html_mod.escape(it['deadline'] or '?'),
-                cust=html_mod.escape(it['customer'][:160])))
-    doc = (
-        '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">'
-        '<meta name="viewport" content="width=device-width,initial-scale=1">'
-        '<meta name="robots" content="noindex,nofollow">'
-        '<title>\u0417\u0430\u043a\u0443\u043f\u043a\u0438 \u2014 playdisplay</title><style>'
-        'body{font:16px/1.55 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;'
-        'max-width:760px;margin:0 auto;padding:24px 18px 60px;background:#0b1116;color:#e8eef2}'
-        'h1{font-size:20px;margin:0 0 4px}.sub{color:#8fa3b0;margin:0 0 26px;font-size:14px}'
-        'article{border-top:1px solid #1e2b34;padding:16px 0}'
-        'h2{font-size:16px;margin:0 0 6px;font-weight:600}'
-        'a{color:#2be0c6;text-decoration:none}a:hover{text-decoration:underline}'
-        '.meta{margin:0 0 4px;color:#e8eef2}.meta b{color:#ff9a6b}'
-        '.cust{margin:0;color:#8fa3b0;font-size:14px}'
-        '.none{color:#8fa3b0;padding:20px 0}</style></head><body>'
-        '<h1>\u0417\u0430\u043a\u0443\u043f\u043a\u0438 \u043f\u043e \u043d\u0430\u0448\u0435\u043c\u0443 \u043f\u0440\u043e\u0444\u0438\u043b\u044e</h1>'
-        '<p class="sub">' + time.strftime('%d.%m.%Y %H:%M') +
-        ' \u00b7 \u043d\u043e\u0432\u044b\u0445 {n}, \u0432\u0441\u0435\u0433\u043e \u043f\u043e\u0434\u0445\u043e\u0434\u044f\u0449\u0438\u0445 {a}, '
-        '\u043f\u043e\u0440\u043e\u0433 {p} \u20bd</p>'.format(n=len(fresh), a=len(found), p=min_price) +
-        (''.join(rows) if rows else
-         '<p class="none">\u041d\u043e\u0432\u043e\u0433\u043e \u043d\u0435\u0442. '
-         '\u0417\u043d\u0430\u0447\u0438\u0442 \u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043d\u0438\u0447\u0435\u0433\u043e '
-         '\u043d\u0435 \u043f\u0440\u043e\u043f\u0443\u0449\u0435\u043d\u043e.</p>') +
-        ('<p class="none">\u041d\u0435 \u043e\u043f\u0440\u043e\u0448\u0435\u043d\u043e: ' +
-         html_mod.escape('; '.join(errors)) + '</p>' if errors else '') +
-        '</body></html>')
+        lines.append('%s  %s  до %s' % (it['price'] or '?', it['law'] or '?', it['deadline'] or '?'))
+        lines.append(it['subject'][:200])
+        lines.append(it['customer'][:140])
+        lines.append(it['url'])
+        lines.append('')
+    if errors:
+        lines.append('НЕ ОПРОШЕНО: ' + '; '.join(errors))
+    body = '\n'.join(lines)
+
+    subj = 'Закупки: %d новых на %s' % (len(fresh), time.strftime('%d.%m'))
+    headers = [
+        'From: PlayDisplay <ai@playdisplay.com>',
+        'To: <%s>' % to,
+        'Subject: =?UTF-8?B?%s?=' % base64.b64encode(subj.encode('utf-8')).decode('ascii'),
+        'MIME-Version: 1.0',
+        'Content-Type: text/plain; charset=UTF-8',
+        'Content-Transfer-Encoding: base64',
+        '',
+        base64.b64encode(body.encode('utf-8')).decode('ascii'),
+    ]
     try:
-        d = os.path.dirname(path)
-        if d and not os.path.isdir(d):
-            os.makedirs(d)
-        io.open(path, 'w', encoding='utf-8').write(doc)
+        pr = subprocess.Popen(['/usr/sbin/sendmail', '-t', '-i'], stdin=subprocess.PIPE)
+        pr.communicate('\r\n'.join(headers).encode('utf-8'))
+        if pr.returncode not in (0, None):
+            sys.stderr.write('sendmail вернул код %s\n' % pr.returncode)
     except Exception as e:
-        sys.stderr.write('страница не записалась: %s\n' % e)
+        sys.stderr.write('письмо не ушло: %s\n' % e)
 
 
 def main():
@@ -280,8 +276,8 @@ def main():
     ap.add_argument('--json', action='store_true', help='выдать JSON вместо текста')
     ap.add_argument('--buyers', action='store_true',
                     help='кто заказывает экспозиции регулярно — список для прямого выхода')
-    ap.add_argument('--html', metavar='ФАЙЛ', default='',
-                    help='записать дайджест страницей (её можно открыть с телефона)')
+    ap.add_argument('--mail', metavar='АДРЕС', default='',
+                    help='отправить дайджест письмом (через sendmail хостинга)')
     args = ap.parse_args()
 
     seen = {}
@@ -357,8 +353,8 @@ def main():
             print('  %s' % it['url'])
             print('')
 
-    if args.html:
-        write_html(args.html, fresh, found, args.min, errors)
+    if args.mail and fresh:
+        send_mail(args.mail, fresh, found, args.min, errors)
 
     if not args.all:
         for k in found:

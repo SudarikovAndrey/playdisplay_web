@@ -285,9 +285,6 @@ EXCLUDES=(
   --exclude='/api/config.php'
   --exclude='/api/sessions/'
   --exclude='/api/outbox/'
-  # Дайджест закупок: его пишет _tools/tenders.py по расписанию НА СЕРВЕРЕ,
-  # в репозитории его нет, и rsync --delete снёс бы его при каждой поставке.
-  --exclude='/tenders-daily/'
   --exclude='/api/certs/'
   # Настройки 3D-сцены, сохранённые «для всех» из секретной панели на самом сайте.
   # Файл рождается НА СЕРВЕРЕ (его пишет api/scene.php), в git его нет — без этой строки
