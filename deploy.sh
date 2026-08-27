@@ -284,6 +284,17 @@ EXCLUDES=(
   --exclude='/.well-known/'
   --exclude='/api/config.php'
   --exclude='/api/sessions/'
+  # Архивы на сервер не возим. digital.zip на 2,9 МБ приехал именно так:
+  # он лежит в site/, в .gitignore есть *.zip — но rsync про gitignore
+  # не знает, и файл спокойно уехал в веб-корень, откуда его мог скачать
+  # любой. Правилом в .htaccess это не закрыть: статику на timeweb отдаёт
+  # nginx напрямую, до Apache запрос не доходит.
+  --exclude='*.zip'
+  --exclude='*.tar'
+  --exclude='*.tar.gz'
+  --exclude='*.tgz'
+  --exclude='*.rar'
+  --exclude='*.7z'
   --exclude='/api/outbox/'
   --exclude='/api/certs/'
   # Настройки 3D-сцены, сохранённые «для всех» из секретной панели на самом сайте.
