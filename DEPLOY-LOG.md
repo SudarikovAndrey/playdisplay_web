@@ -8,6 +8,63 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-26 22:39 — hybrid-v8 @ 310871f
+
+**Коммиты в этой поставке**
+```
+310871f Очки, лидерборд с фильтром имён, мягкая стартовая защита со щитом
+aa6f6f4 Кейсы и библиотека подхватили новую услугу и переименования
+42473de Перецелены три страницы и добавлен корпоративный музей — по замеру, не по чутью
+fbe5ec5 Замер частотности: 62 запроса Вордстата и три вывода из них
+b5df703 Журнал деплоя: 7fd36a8
+```
+
+**На сервер отправлено файлов:** 156, удалено: 0
+```
+hero-scene.html
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+api/.htaccess
+api/game.php
+assets/og/og-atlas.jpg
+assets/og/og-concepts.jpg
+assets/og/og-corp-museum.jpg
+assets/og/og-equipment.jpg
+assets/og/og-equipping.jpg
+assets/og/og-home.jpg
+assets/og/og-lib-input.jpg
+assets/og/og-lib-output.jpg
+assets/og/og-lib-proc.jpg
+assets/og/og-library.jpg
+assets/og/og-mm-equipment.jpg
+assets/og/og-services.jpg
+assets/og/en/og-atlas.jpg
+assets/og/en/og-concepts.jpg
+assets/og/en/og-corp-museum.jpg
+assets/og/en/og-equipment.jpg
+assets/og/en/og-equipping.jpg
+assets/og/en/og-home.jpg
+assets/og/en/og-lib-input.jpg
+assets/og/en/og-lib-output.jpg
+assets/og/en/og-lib-proc.jpg
+assets/og/en/og-library.jpg
+assets/og/en/og-mm-equipment.jpg
+assets/og/en/og-services.jpg
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+…и ещё 116
+```
+
+
 ## 2026-08-26 22:14 — hybrid-v8 @ 7fd36a8
 
 **Коммиты в этой поставке**
