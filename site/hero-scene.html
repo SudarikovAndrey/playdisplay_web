@@ -1029,7 +1029,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2808-gold1';</script>
+<script>window.PD_V = 'b2808-camo2';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -4343,9 +4343,11 @@ function gBuildWorldMesh(ch, index, lod) {
 function gWorldRewards(grp, ch, def) {
   const cor = ch.corridor;
   const r = PDWorld.makeRng(def.seed ^ 0x2b1d);
-  const nOrb = 3 + Math.floor(r() * 4);
+  // 2-4 ядра на чанк по ВСЕЙ его длине (было 3-6 на две трети): подряд стоящие через
+  // ~20 юнитов на скорости 250+ км/ч собрать было невозможно — «слишком плотно»
+  const nOrb = 2 + Math.floor(r() * 3);
   for (let k = 0; k < nOrb; k++) {
-    const t = 0.18 + 0.64 * ((k + 0.5) / nOrb);
+    const t = 0.12 + 0.76 * ((k + 0.5) / nOrb);
     const ci = Math.min(cor.length - 1, Math.round(t * (cor.length - 1)));
     const c = cor[ci];
     const orb = gMakeOrb(def.seed + k * 7);
@@ -4464,9 +4466,32 @@ function gBeltK(z) {
 // срезает заднюю полусферу точек; (3) яркость точки зависит от угла к камере, как
 // френель: у силуэта точки активнее, в «лоб» — почти фон. Камень рисуется светящейся
 // кромкой и тёмной серединой — форма читается, стиль остаётся точечным.
+// Тело камня красит себя ТЕМ ЖЕ градиентом, что и небо, по направлению взгляда —
+// пиксель тела почти совпадает с пикселем неба, который оно заслоняет. Один плоский
+// цвет так не умел: у горизонта небо светлее, в зените темнее, и вблизи центр камня
+// проваливался в чёрное пятно (скриншот владельца 28.08). Юниформы — ТЕ ЖЕ объекты,
+// что у skyMat: небо перекрасилось — камни перекрасились в том же кадре.
+// ×0.94 — на волос темнее фона: тело угадывается, но не выбивается.
 let _gAstBody = null;
 function gAstBodyMat() {
-  if (!_gAstBody) _gAstBody = new THREE.MeshBasicMaterial({ color: 0x0a151b });
+  if (!_gAstBody) _gAstBody = new THREE.ShaderMaterial({
+    uniforms: { uHorizon: skyMat.uniforms.uHorizon, uZenith: skyMat.uniforms.uZenith },
+    vertexShader: `
+      varying vec3 vDir;
+      void main() {
+        vec4 wp = modelMatrix * vec4(position, 1.0);
+        vDir = wp.xyz - cameraPosition;
+        gl_Position = projectionMatrix * viewMatrix * wp;
+      }`,
+    fragmentShader: `
+      uniform vec3 uHorizon; uniform vec3 uZenith; varying vec3 vDir;
+      void main() {
+        float t = normalize(vDir).y;
+        vec3 c = mix(uHorizon, uZenith, smoothstep(0.0, 0.55, t));
+        c = mix(uHorizon * 0.94, c, smoothstep(-0.25, 0.02, t));
+        gl_FragColor = vec4(c * 0.94, 1.0);
+      }`
+  });
   return _gAstBody;
 }
 let _gAstMat = null;
@@ -4505,9 +4530,11 @@ function gMakeAsteroid(R, rng) {
   const ax = 0.65 + rng() * 0.9, ay = 0.65 + rng() * 0.9, az = 0.65 + rng() * 0.9;
   const bump = (th, ph) => 1 + 0.34 * Math.sin(th * 2 + b1) * Math.sin(ph * 3 + b2)
                              + 0.2 * Math.sin(th * 5 + b3) * Math.sin(ph * 4 + b1);
-  // заслон: тот же рваный профиль по вершинам икосаэдра, чуть меньше облака точек —
-  // иначе точки не проходят собственный тест глубины и камень исчезает
-  const geo = new THREE.IcosahedronGeometry(R * 0.955, R > 26 ? 2 : 1);
+  // заслон: тот же рваный профиль по вершинам икосаэдра, ЧУТЬ меньше облака точек —
+  // иначе точки не проходят собственный тест глубины и камень исчезает. Зазор был 5%
+  // и на монолитах читался щелью между «скорлупой» точек и телом; теперь 2%, а чтобы
+  // грани между вершинами не срезали формулу «шишек», детализация растёт с калибром.
+  const geo = new THREE.IcosahedronGeometry(R * 0.98, R > 40 ? 3 : R > 14 ? 2 : 1);
   const posA = geo.attributes.position;
   for (let k = 0; k < posA.count; k++) {
     let x = posA.getX(k), y = posA.getY(k), z = posA.getZ(k);
@@ -4528,7 +4555,7 @@ function gMakeAsteroid(R, rng) {
         dl = new Float32Array(n), dsz = new Float32Array(n);
   for (let k = 0; k < n; k++) {
     const th = rng() * Math.PI * 2, ph = Math.acos(2 * rng() - 1);
-    const rr = R * bump(th, ph) * (0.996 + rng() * 0.012);   // точки прижаты к поверхности
+    const rr = R * bump(th, ph) * (1.0 + rng() * 0.008);     // точки прижаты к поверхности
     const dx = Math.sin(ph) * Math.cos(th), dy = Math.cos(ph), dz = Math.sin(ph) * Math.sin(th);
     dp[k * 3] = dx * rr * ax; dp[k * 3 + 1] = dy * rr * ay; dp[k * 3 + 2] = dz * rr * az;
     // нормаль ≈ направление из центра с учётом вытяжки (для точек этого достаточно)
@@ -5640,12 +5667,6 @@ function updateGame(dt, time) {
         ud._fallsOn = showFalls;
         c.traverse(o => { if (o.material === gFallMat) o.visible = showFalls; });
       }
-    }
-    // тело камня каждый кадр красится «в небо» — среднее горизонта и зенита, чуть
-    // темнее: силуэт держится глубиной и кромкой-френелем, а не пятном цвета
-    if (_gAstBody) {
-      _gAstBody.color.copy(skyMat.uniforms.uHorizon.value)
-        .lerp(skyMat.uniforms.uZenith.value, 0.55).multiplyScalar(0.82);
     }
     // задник дальних хребтов в поясе гаснет: чистый космос не должен стоять на фоне гор
     if (GAME.backdrop) {
