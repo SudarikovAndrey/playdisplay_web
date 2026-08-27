@@ -49,7 +49,7 @@
      а не пачка: каждый лишний отнимает полосу у того, что нужно прямо сейчас. -->
 <link rel="preload" href="assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="landing.css?v=90e649ec">
+<link rel="stylesheet" href="landing.css?v=cd447fb3">
 <script>
 /* Выбор подачи проектов на мобиле: ?mob=lenta | grid | more. Ставится на <html> ДО отрисовки,
    иначе сетка успевает мигнуть в старом виде. Без параметра атрибута нет и всё работает как раньше.
@@ -72,6 +72,22 @@
 <script src="data/i18n/en.js?v=21a37a52"></script>
 </head>
 <body class="booting">
+<!-- ГЛИФ МИКРОФОНА — ОДИН НА ВЕСЬ САЙТ. Микрофонов на странице три (виджет,
+     большая кнопка первого экрана сессии, микрофон в разговоре), и раньше они
+     рисовались двумя разными способами: рамками из ::before/::after и отдельным
+     инлайновым svg в виджете. Два похожих, но не одинаковых микрофона — верный
+     способ развести их со временем окончательно. Здесь он один, остальные берут
+     его через <use>. Заливка currentColor: тон задаёт хозяин, а не глиф.
+     xlink:href рядом с href — ради Safari до 13-го, он SVG2-форму не понимает. -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <symbol id="mic-glyph" viewBox="0 0 24 24">
+    <rect x="8.7" y="2.6" width="6.6" height="11.6" rx="3.3" fill="currentColor"/>
+    <path d="M5.9 11.6a6.1 6.1 0 0 0 12.2 0" fill="none" stroke="currentColor"
+      stroke-width="2.7" stroke-linecap="round"/>
+    <rect x="10.9" y="17.4" width="2.2" height="3" rx="1.1" fill="currentColor"/>
+    <rect x="8.2" y="20.2" width="7.6" height="2.2" rx="1.1" fill="currentColor"/>
+  </symbol>
+</svg>
 
 <!-- Стартовый экран: только логотип; яркая заливка = прогресс загрузки.
      Первой грузится игра — когда она готова, появляется кнопка «Сыграть в пространство».
@@ -160,7 +176,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b2708-alt62&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2708-vidfix&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -567,29 +583,13 @@
   </div>
 </footer>
 
-<!-- ===== СКВОЗНОЙ AI-ВИДЖЕТ: выпуклая «линза» с ирис-переливом и живыми частицами ===== -->
+<!-- ===== СКВОЗНОЙ AI-ВИДЖЕТ: шар из частиц с глифом внутри, без окантовки =====
+     Ирис-кант убран 26.08.2026: он замыкал виджет в кружок, и шар внутри читался
+     содержимым пробирки, а не предметом, который хочется нажать. -->
 <button class="ai-widget" id="aiWidget" aria-label="Сформулировать идею вслух" title="Рассказать идею">
-  <span class="aiw-iri" aria-hidden="true"></span>
   <span class="aiw-globe" aria-hidden="true"></span>
   <canvas class="aiw-fx" id="aiwFx" aria-hidden="true"></canvas>
-  <!-- ГЛИФ МИКРОФОНА: СПЛОШНОЙ, А НЕ ШТРИХОВОЙ (26.08.2026).
-       Раньше он был нарисован штрихом 1.7 px тиловым градиентом поверх тёмной
-       глянцевой линзы с вращающимся радужным кантом. На 68 пикселях тонкий штрих
-       в такой среде читался не как микрофон, а как «ноль с вилкой» — проверено
-       растеризацией в настоящем размере, рядом с вариантами.
-       Что изменено и почему именно так:
-         • капсула ЗАЛИТА белым — сплошное пятно опознаётся мгновенно, контур нет;
-         • дуга-держатель толще (2.7 вместо 1.7) — иначе тонет в частицах;
-         • добавлена НОЖКА-ПОДСТАВКА. Она и достраивает силуэт: без неё фигура
-           остаётся абстрактной, с ней это безошибочно микрофон на стойке;
-         • белый вместо градиента: градиент съедал контраст в нижней трети глифа.
-       Индикатор уровня (aiw-lvl) убран: внутри залитой капсулы его не видно. -->
-  <svg class="aiw-mic" viewBox="0 0 24 24" aria-hidden="true">
-    <rect x="8.7" y="2.6" width="6.6" height="11.6" rx="3.3" fill="#ffffff"/>
-    <path d="M5.9 11.6a6.1 6.1 0 0 0 12.2 0" fill="none" stroke="#ffffff" stroke-width="2.7" stroke-linecap="round"/>
-    <rect x="10.9" y="17.4" width="2.2" height="3" rx="1.1" fill="#ffffff"/>
-    <rect x="8.2" y="20.2" width="7.6" height="2.2" rx="1.1" fill="#ffffff"/>
-  </svg>
+  <svg class="mic-i" aria-hidden="true"><use href="#mic-glyph" xlink:href="#mic-glyph"/></svg>
 </button>
 
 <!-- ===== AI-СЕССИЯ (демо-режим): сайт растворяется, смыслы собираются в карточку концепции ===== -->
@@ -603,7 +603,7 @@
       <p>Мы выделим основные смыслы и соберём их в понятное описание проекта.</p>
       <div class="ai-rec-wrap">
         <canvas class="ai-ring" id="aiRing" aria-hidden="true"></canvas>
-        <button class="ai-rec" id="aiRec" aria-label="Включить микрофон"><span class="mic-i big"></span></button>
+        <button class="ai-rec" id="aiRec" aria-label="Включить микрофон"><canvas class="rec-fx" aria-hidden="true"></canvas><svg class="mic-i big" aria-hidden="true"><use href="#mic-glyph" xlink:href="#mic-glyph"/></svg></button>
       </div>
       <div><button class="ai-alt" id="aiAlt">Или написать текстом</button></div>
       <div class="ai-note" id="aiNote">Говорите свободно — ассистент слушает и задаёт вопросы.</div>
@@ -649,7 +649,7 @@
           <button class="ai-say-go" id="aiSayGo" aria-label="Отправить ответ">▶︎</button>
         </div>
         <!-- волны и шарики показываются, только пока думает модель: см. .ai-rec.think -->
-        <button class="ai-rec live" id="aiStop" aria-label="Микрофон: пауза и продолжение"><span class="ai-wave" aria-hidden="true"><i></i><i></i><i></i></span><span class="mic-i big"></span><span class="ai-balls" aria-hidden="true"><i></i><i></i><i></i></span></button>
+        <button class="ai-rec live" id="aiStop" aria-label="Микрофон: пауза и продолжение"><span class="ai-wave" aria-hidden="true"><i></i><i></i><i></i></span><canvas class="rec-fx" aria-hidden="true"></canvas><svg class="mic-i big" aria-hidden="true"><use href="#mic-glyph" xlink:href="#mic-glyph"/></svg><span class="ai-balls" aria-hidden="true"><i></i><i></i><i></i></span></button>
         <button class="btn-line ai-done" id="aiDone"><span class="tri">▶︎</span> Собрать бриф</button>
       </div>
     </div>
@@ -6983,119 +6983,153 @@
     [document.getElementById('aiWidget')].concat([].slice.call(document.querySelectorAll('[data-ai-open]'))).forEach(function(el){
       if (el) el.addEventListener('click', flyIntoAI);
     });
-    // ---- ШАР ИЗ ЧАСТИЦ ВНУТРИ ВИДЖЕТА (26.08.2026) --------------------------
-    // Было: 22 точки на плоских орбитах вокруг глифа. Плоские орбиты не читаются
-    // как объём, и виджет выглядел «кружочком с искорками», а не предметом,
-    // который хочется нажать. Стало: тот же движок точечной сферы, что в разделе
-    // /digital/ (`initPointSpheres` в digital/digital.js) — облако по спирали
-    // Фибоначчи с внутренним ядром, поворотом, перспективой и краевым светом.
-    // Что изменено ПРОТИВ первоисточника и почему:
-    //   • точек 760 + 260 вместо 2400 + 900. Виджет висит на КАЖДОЙ странице и
-    //     крутится всё время, пока сайт открыт; на 68 px разницу в плотности не
-    //     видно, а расход втрое меньше. Плотность считана по площади, не на глаз.
-    //   • середина шара ПРИГЛУШЕНА мягкой маской (`hollow`): ровно там стоит глиф,
-    //     и точки за ним превращали белое пятно в кашу. Именно приглушена, а не
-    //     выключена: первая попытка гасила их в ноль, и шар становился бубликом.
+    // ---- ШАРЫ ИЗ ЧАСТИЦ: виджет и оба микрофона сессии (26.08.2026) ----------
+    // Микрофонов на сайте три, и шар нужен каждому: виджет в углу, большая кнопка
+    // первого экрана сессии и микрофон в самом разговоре. Поэтому здесь ФАБРИКА и
+    // ОДИН цикл кадров на всех: три отдельных requestAnimationFrame считали бы
+    // время и подгонку размеров втройне, а рисуют они одно и то же.
+    //
+    // Движок — тот же, что в разделе /digital/ (`initPointSpheres` в digital/digital.js):
+    // облако по спирали Фибоначчи с внутренним ядром, поворотом, перспективой и
+    // краевым светом. Что изменено против первоисточника и почему:
+    //   • точек меньше (см. PT_S/PT_L). Виджет висит на КАЖДОЙ странице и крутится
+    //     всё время, пока сайт открыт; на 68–108 px разницу в плотности не видно,
+    //     а расход втрое меньше. Плотность считана по площади, не на глаз.
+    //   • середина ПРИГЛУШЕНА под глифом (`hollow`), но НЕ выключена: первая
+    //     попытка гасила точки в ноль, и шар становился бубликом — без лицевой
+    //     стороны не остаётся ни объёма, ни перспективы, одно кольцо.
+    //   • добавлено ДЫХАНИЕ и сильный ответ на наведение: шар раздувается, разгон
+    //     втрое, внешние точки выносит за пределы прежнего радиуса (в кнопке для
+    //     этого и оставлен воздух по краям), тёплых искр становится больше.
     //   • палитра виджета (тил + редкая тёплая искра) вместо холодного белого.
-    //   • кадр раз в 34 мс, как в первоисточнике: 30 к/с хватает, а батарею
-    //     постоянно висящий виджет тратить не должен.
-    // Сторожа сохранены прежние: слабое железо, «меньше движения», скрытая
-    // вкладка, открытая AI-сессия и полёт в кейс — рисовать в этих случаях нечего.
+    //   • кадр раз в 34 мс: 30 к/с хватает, а батарею постоянно висящий виджет
+    //     тратить не должен.
     (function(){
-      var fx = document.getElementById('aiwFx');
-      if (!fx || !widget || isWeakHW) return;
+      if (isWeakHW) return;
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      var g2 = fx.getContext('2d');
-      if (!g2) return;
 
-      var GOLD = Math.PI * (3 - Math.sqrt(5)), SURF = 760, CORE = 260, pts2 = [];
+      var GOLD = Math.PI * (3 - Math.sqrt(5));
       function nz(v){ var r = Math.sin(v * 12.9898 + 78.233) * 43758.5453; return r - Math.floor(r); }
-      var i2, yy, rr0, aa, sh;
-      for (i2 = 0; i2 < SURF; i2++) {
-        yy = 1 - 2 * (i2 + 0.5) / SURF;
-        rr0 = Math.sqrt(Math.max(0, 1 - yy * yy));
-        aa = i2 * GOLD;
-        sh = 0.9 + nz(i2 + 1) * 0.1;                       // толщина оболочки, чтобы не было идеальной скорлупы
-        pts2.push({ x: Math.cos(aa) * rr0 * sh, y: yy * sh, z: Math.sin(aa) * rr0 * sh, shell: sh,
-                    ph: nz(i2 + 41) * 6.2832, sp: 0.66 + nz(i2 + 87) * 0.72,
-                    wb: 0.68 + nz(i2 + 133) * 1.15, op: 0.68 + nz(i2 + 171) * 0.32,
-                    warm: nz(i2 + 509) > 0.93 });          // редкая тёплая искра — акцент виджета
+      // Облако строится один раз на процесс. Два набора, а не один со прореживанием:
+      // у спирали Фибоначчи y линеен по индексу, поэтому взять каждую вторую точку
+      // было бы допустимо, но два готовых набора дешевле и читаются однозначно.
+      function cloud(surf, core){
+        var a = [], i, y, r0, an, sh;
+        for (i = 0; i < surf; i++) {
+          y = 1 - 2 * (i + 0.5) / surf; r0 = Math.sqrt(Math.max(0, 1 - y * y)); an = i * GOLD;
+          sh = 0.9 + nz(i + 1) * 0.1;                    // толщина оболочки: не идеальная скорлупа
+          a.push({ x: Math.cos(an) * r0 * sh, y: y * sh, z: Math.sin(an) * r0 * sh, shell: sh,
+                   ph: nz(i + 41) * 6.2832, sp: 0.66 + nz(i + 87) * 0.72,
+                   wb: 0.68 + nz(i + 133) * 1.15, op: 0.68 + nz(i + 171) * 0.32,
+                   fly: nz(i + 673), warm: nz(i + 509) > 0.93 });
+        }
+        for (i = 0; i < core; i++) {
+          y = 1 - 2 * (i + 0.5) / core; r0 = Math.sqrt(Math.max(0, 1 - y * y));
+          an = i * GOLD + nz(i + 217) * 0.7;
+          sh = 0.32 + Math.pow(nz(i + 263), 0.52) * 0.58;
+          a.push({ x: Math.cos(an) * r0 * sh, y: y * sh, z: Math.sin(an) * r0 * sh, shell: sh,
+                   ph: nz(i + 311) * 6.2832, sp: 0.42 + nz(i + 359) * 1.26,
+                   wb: 0.8 + nz(i + 401) * 1.5, op: 0.34 + nz(i + 449) * 0.42,
+                   fly: nz(i + 727), warm: nz(i + 601) > 0.95 });
+        }
+        return a;
       }
-      for (i2 = 0; i2 < CORE; i2++) {
-        yy = 1 - 2 * (i2 + 0.5) / CORE;
-        rr0 = Math.sqrt(Math.max(0, 1 - yy * yy));
-        aa = i2 * GOLD + nz(i2 + 217) * 0.7;
-        sh = 0.32 + Math.pow(nz(i2 + 263), 0.52) * 0.58;
-        pts2.push({ x: Math.cos(aa) * rr0 * sh, y: yy * sh, z: Math.sin(aa) * rr0 * sh, shell: sh,
-                    ph: nz(i2 + 311) * 6.2832, sp: 0.42 + nz(i2 + 359) * 1.26,
-                    wb: 0.8 + nz(i2 + 401) * 1.5, op: 0.34 + nz(i2 + 449) * 0.42,
-                    warm: nz(i2 + 601) > 0.95 });
-      }
-
-      var hot = 0, mix = 0, px = 0, py = 0, rotY = 0, last = 0;
-      widget.addEventListener('pointerenter', function(){ hot = 1; });
-      widget.addEventListener('pointerleave', function(){ hot = 0; px = py = 0; });
-      widget.addEventListener('pointermove', function(e){
-        var b = widget.getBoundingClientRect();
-        px = Math.max(-1, Math.min(1, (e.clientX - b.left) / Math.max(1, b.width) * 2 - 1));
-        py = Math.max(-1, Math.min(1, (e.clientY - b.top) / Math.max(1, b.height) * 2 - 1));
-      });
+      var PT_S = cloud(760, 260), PT_L = cloud(1500, 520);
 
       var COOL = 'rgb(178,236,228)', WARM = 'rgb(255,150,108)', lastStyle = '';
-      function tick2(now){
-        requestAnimationFrame(tick2);
-        if (now - last < 34) return;
-        var dt = last ? Math.min(80, now - last) : 34;
-        last = now;
-        if (document.hidden || document.body.classList.contains('ai-session-open')
-            || document.body.classList.contains('flying')) {
-          if (fx.width) g2.clearRect(0, 0, fx.width, fx.height);
-          return;
-        }
-        var w2c = fx.clientWidth || 60, DPR2 = Math.min(devicePixelRatio || 1, 2);
-        var W = Math.max(1, Math.round(w2c * DPR2));
-        if (fx.width !== W) { fx.width = fx.height = W; }
+      var socks = [];   // все живые шары
+      function sphere(host, canvas, pts, rad, opt){
+        if (!host || !canvas) return;
+        var g = canvas.getContext('2d');
+        if (!g) return;
+        var o = { host: host, cv: canvas, g: g, pts: pts, rad: rad,
+                  hot: 0, mix: 0, px: 0, py: 0, rot: 0, seed: socks.length * 2.1,
+                  hidden: opt && opt.hidden };
+        host.addEventListener('pointerenter', function(){ o.hot = 1; });
+        host.addEventListener('pointerleave', function(){ o.hot = 0; o.px = o.py = 0; });
+        host.addEventListener('pointermove', function(e){
+          var b = host.getBoundingClientRect();
+          o.px = Math.max(-1, Math.min(1, (e.clientX - b.left) / Math.max(1, b.width) * 2 - 1));
+          o.py = Math.max(-1, Math.min(1, (e.clientY - b.top) / Math.max(1, b.height) * 2 - 1));
+        });
+        socks.push(o);
+      }
 
-        mix += (hot - mix) * Math.min(1, dt * 0.0065);
-        rotY += dt * (hot ? 0.00078 : 0.00023);
-        var C = W / 2, R = W * (0.47 + mix * 0.012), pix = Math.max(1, DPR2);
-        // ГЛИФ занимает середину, и точки под ним ПРИГЛУШАЮТСЯ, а не выключаются.
-        // Первая попытка гасила их в ноль — и шар превращался в бублик: без точек
-        // на лицевой стороне не остаётся ни объёма, ни перспективы, одно кольцо.
-        // Проверено расчётом кадра в настоящие 68 px. Теперь под глифом остаётся
-        // FLOOR яркости: белое пятно с тёмной тенью отделяется и так, а шар цел.
+      function draw(o, now, dt){
+        // Скрытую кнопку не считаем вовсе: панель сессии закрыта большую часть
+        // времени, а виджет спрятан во время разговора и полёта в кейс.
+        if (!o.host.offsetParent || !o.cv.clientWidth) return;
+        if (o.hidden && o.hidden()) { if (o.cv.width) o.g.clearRect(0, 0, o.cv.width, o.cv.height); return; }
+        var DPR = Math.min(devicePixelRatio || 1, 2);
+        var W = Math.max(1, Math.round(o.cv.clientWidth * DPR));
+        if (o.cv.width !== W) { o.cv.width = o.cv.height = W; }
+
+        o.mix += (o.hot - o.mix) * Math.min(1, dt * 0.0075);
+        o.rot += dt * (0.00023 + o.mix * 0.00155);            // на ховере разгон почти в семь раз
+        var mix = o.mix, g = o.g, pts = o.pts;
+        // ДЫХАНИЕ: без него шар в покое стоит и в углу экрана его не замечают.
+        var breath = 1 + Math.sin(now * 0.00085 + o.seed) * 0.035;
+        var C = W / 2, R = W * o.rad * breath * (1 + mix * 0.10);
+        // Глиф занимает середину; точки под ним приглушаются до FLOOR.
         var HOLE = 0.18, FADE = 0.50, FLOOR = 0.28;
-        var rotX = Math.sin(now * 0.00013) * 0.14 + mix * py * 0.07;
-        var cx = Math.cos(rotX), sx = Math.sin(rotX);
-        g2.clearRect(0, 0, W, W);
-        for (var j = 0; j < pts2.length; j++) {
-          var p2 = pts2[j];
-          var lay = rotY * p2.sp + Math.sin(now * 0.00016 * p2.wb + p2.ph) * (0.025 + (1 - p2.shell) * 0.055);
+        var rotX = Math.sin(now * 0.00013) * 0.14 + mix * o.py * 0.10;
+        var cx = Math.cos(rotX), sx = Math.sin(rotX), pix = Math.max(1, DPR);
+        g.clearRect(0, 0, W, W);
+        for (var j = 0; j < pts.length; j++) {
+          var p = pts[j];
+          var lay = o.rot * p.sp + Math.sin(now * 0.00016 * p.wb + p.ph) * (0.025 + (1 - p.shell) * 0.055);
           var cy = Math.cos(lay), sy = Math.sin(lay);
-          var x = p2.x * cy + p2.z * sy;
-          var z = -p2.x * sy + p2.z * cy;
-          var y = p2.y * cx - z * sx;
-          var depth = p2.y * sx + z * cx;
-          var inner = 1 - p2.shell;
-          x += Math.sin(now * 0.00042 * p2.wb + p2.ph + y * 3.4) * (0.008 + inner * 0.025 + mix * 0.018);
-          y += Math.cos(now * 0.00031 * p2.wb + p2.ph + x * 3.1) * (0.005 + inner * 0.018 + mix * 0.012);
-          x += mix * px * (1 - Math.min(1, Math.abs(y))) * 0.026;
-          y += mix * py * (1 - Math.min(1, Math.abs(x))) * 0.018;
+          var x = p.x * cy + p.z * sy;
+          var z = -p.x * sy + p.z * cy;
+          var y = p.y * cx - z * sx;
+          var depth = p.y * sx + z * cx;
+          var inner = 1 - p.shell;
+          x += Math.sin(now * 0.00042 * p.wb + p.ph + y * 3.4) * (0.008 + inner * 0.025 + mix * 0.030);
+          y += Math.cos(now * 0.00031 * p.wb + p.ph + x * 3.1) * (0.005 + inner * 0.018 + mix * 0.022);
+          // ВЫНОС наружу: доля точек на ховере уходит за прежний радиус. Тянет
+          // только внешнюю оболочку — ядро внутри, иначе шар выворачивается.
+          var out = 1 + mix * p.fly * p.shell * 0.26;
+          x *= out; y *= out;
+          x += mix * o.px * (1 - Math.min(1, Math.abs(y))) * 0.060;
+          y += mix * o.py * (1 - Math.min(1, Math.abs(x))) * 0.044;
           var edge = Math.min(1, Math.sqrt(x * x + y * y));
-          // Мягкая дыра под глифом. Резкая граница читалась бы кольцом, поэтому
-          // прозрачность нарастает плавно от HOLE до FADE.
           var hollow = edge <= HOLE ? 0 : (edge >= FADE ? 1 : (edge - HOLE) / (FADE - HOLE));
           hollow = FLOOR + (1 - FLOOR) * hollow * hollow;
-          var persp = 1 + depth * (0.115 + mix * 0.025);
+          var persp = 1 + depth * (0.115 + mix * 0.035);
           var lit = 0.14 + (depth + 1) * 0.27 + Math.pow(edge, 2.5) * 0.29;
-          var st = p2.warm ? WARM : COOL;
-          if (st !== lastStyle) { g2.fillStyle = st; lastStyle = st; }
-          g2.globalAlpha = Math.min(1, lit * p2.op * hollow * (0.85 + mix * 0.6));
-          g2.fillRect(Math.round(C + x * R * persp), Math.round(C + y * R * persp), pix, pix);
+          // На ховере тёплых искр становится больше: разогретая точка меняет цвет,
+          // и рой заметно «оживает», а не просто ускоряется.
+          var st = (p.warm || (mix > 0.35 && p.fly > 0.86)) ? WARM : COOL;
+          if (st !== lastStyle) { g.fillStyle = st; lastStyle = st; }
+          // Улетевшая точка ГАСНЕТ с расстоянием. Без этого рой на ховере
+          // разлетался ровным пятном и терял форму шара — на расчётном кадре
+          // видно, что края пятна выходят квадратом по границе канваса.
+          var fade = Math.max(0.15, 1 - Math.max(0, edge - 0.9) * 1.7);
+          g.globalAlpha = Math.min(1, lit * p.op * hollow * fade * (0.85 + mix * 0.75));
+          g.fillRect(Math.round(C + x * R * persp), Math.round(C + y * R * persp), pix, pix);
         }
-        g2.globalAlpha = 1;
+        g.globalAlpha = 1;
       }
-      requestAnimationFrame(tick2);
+
+      var last = 0;
+      function tick(now){
+        requestAnimationFrame(tick);
+        if (now - last < 34 || document.hidden) return;
+        var dt = last ? Math.min(80, now - last) : 34;
+        last = now;
+        for (var i = 0; i < socks.length; i++) draw(socks[i], now, dt);
+      }
+
+      // Виджет: 84 px, шар 0.40 радиуса — вокруг остаётся воздух под вынос точек.
+      sphere(widget, document.getElementById('aiwFx'), PT_S, 0.40, { hidden: function(){
+        return document.body.classList.contains('ai-session-open')
+            || document.body.classList.contains('flying');
+      } });
+      // Обе большие кнопки: 108 px, плотное облако — площадь вдвое с лишним больше.
+      [].forEach.call(document.querySelectorAll('.ai-rec'), function(btn){
+        sphere(btn, btn.querySelector('.rec-fx'), PT_L, 0.42);
+      });
+      if (socks.length) requestAnimationFrame(tick);
     })();
     document.getElementById('aiClose').addEventListener('click', flyOutOfAI);
     // Большая кнопка на первом экране — начать голосом; ссылка рядом — начать текстом.
