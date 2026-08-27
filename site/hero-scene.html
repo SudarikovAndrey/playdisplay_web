@@ -211,6 +211,65 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     display: flex; align-items: baseline; gap: 9px; }
   #game-over .gc-bolt { width: 18px; height: 30px; color: #2be0c6; align-self: center; }
   #game-over .gc-l { margin-top: 12px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(220,238,240,0.7); }
+  /* Таблица рекордов */
+  #lb { position: fixed; inset: 0; z-index: 48; display: none; align-items: center;
+    justify-content: center; background: rgba(3,10,14,0.78); backdrop-filter: blur(8px); }
+  #lb.show { display: flex; }
+  .lb-panel { position: relative; width: min(420px, 92vw); max-height: 78vh;
+    display: flex; flex-direction: column; padding: 26px 22px 18px;
+    background: rgba(8,18,24,0.92); border: 1px solid rgba(43,224,198,0.3);
+    border-radius: 4px; box-shadow: 0 30px 90px rgba(0,0,0,0.5); }
+  .lb-title { text-align: center; font-size: 15px; letter-spacing: .56em; color: #2be0c6;
+    text-shadow: 0 0 22px rgba(43,224,198,0.5); }
+  .lb-me { text-align: center; margin-top: 10px; font-size: 12px; letter-spacing: .2em;
+    color: rgba(241,251,252,0.9); text-transform: uppercase; min-height: 15px; }
+  .lb-list { margin-top: 14px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .lb-row { display: flex; gap: 12px; align-items: baseline; padding: 8px 10px;
+    font: 500 13px 'Roboto Mono', monospace; color: rgba(220,238,240,0.85);
+    border-bottom: 1px solid rgba(220,238,240,0.07); }
+  .lb-row .p { width: 34px; color: rgba(220,238,240,0.5); text-align: right; flex: none; }
+  .lb-row .n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-row .s { flex: none; font-weight: 700; color: #f1fbfc; font-variant-numeric: tabular-nums; }
+  .lb-row.top1 .p, .lb-row.top1 .s { color: #ffd76a; }
+  .lb-row.me { background: rgba(43,224,198,0.12); border-radius: 3px;
+    border-bottom-color: transparent; color: #eafffb; }
+  .lb-row.me .p, .lb-row.me .s { color: #2be0c6; }
+  .lb-empty { padding: 26px 0; text-align: center; font-size: 12px; letter-spacing: .14em;
+    color: rgba(220,238,240,0.5); }
+  #lb-close { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px;
+    border-radius: 50%; border: 1px solid rgba(220,238,240,0.3); background: rgba(0,0,0,0.3);
+    color: #f1fbfc; font-size: 14px; cursor: pointer; }
+  /* кнопка «РЕКОРДЫ» в полёте: вверху по центру, на одной высоте с крестиком выхода */
+  #lb-btn { display: none; position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 44; padding: 11px 18px; border-radius: 2px; cursor: pointer;
+    font: 600 11px 'Roboto Mono', monospace; letter-spacing: .24em;
+    color: rgba(220,238,240,0.85); background: rgba(4,12,16,0.42);
+    border: 1px solid rgba(220,238,240,0.28); backdrop-filter: blur(4px); }
+  body.game #lb-btn { display: block; }
+  body.game.over #lb-btn { display: none; }   /* на экране результата рекорды открывает сохранение */
+  /* ОЧКИ: главный результат, крупнее всего на экране. Появляется после карточек. */
+  #go-total { margin-top: 26px; text-align: center; opacity: 0; }
+  #game-over.show #go-total { animation: goIn .6s cubic-bezier(.16,1,.3,1) .55s forwards; }
+  #go-total .gt-l { font-size: 12px; letter-spacing: .56em; color: rgba(220,238,240,0.6);
+    text-transform: uppercase; margin-bottom: 2px; }
+  #go-total .gt-v { font-size: 92px; font-weight: 800; line-height: 1; letter-spacing: -.02em;
+    color: #2be0c6; text-shadow: 0 0 34px rgba(43,224,198,0.55), 0 0 90px rgba(43,224,198,0.25);
+    font-variant-numeric: tabular-nums; }
+  body.is-mobile #go-total .gt-v { font-size: 64px; }
+  /* сохранение результата: имя + кнопка одной строкой */
+  #go-save { display: flex; gap: 10px; margin-top: 20px; opacity: 0; width: min(340px, 86vw); }
+  #game-over.show #go-save { animation: goIn .5s ease .7s forwards; }
+  #go-save input { flex: 1; min-width: 0; padding: 13px 14px; border-radius: 2px;
+    font: 600 13px 'Roboto Mono', monospace; letter-spacing: .08em;
+    color: #f1fbfc; background: rgba(6,16,22,0.72); border: 1px solid rgba(43,224,198,0.35);
+    outline: none; }
+  #go-save input:focus { border-color: rgba(43,224,198,0.8); }
+  #go-save input::placeholder { color: rgba(220,238,240,0.4); }
+  #go-save button { padding: 13px 20px; border-radius: 2px; cursor: pointer;
+    font: 600 12px 'Roboto Mono', monospace; letter-spacing: .18em; text-transform: uppercase;
+    color: #2be0c6; background: transparent; border: 1px solid rgba(43,224,198,0.55); }
+  #go-save button:disabled { opacity: .45; cursor: default; }
+  #go-save.saved { display: none; }   /* после сохранения строку сменяет таблица рекордов */
   /* Мобила: четыре карточки результата НЕ ВЛЕЗАЛИ в ряд (min-width 200px на всех) —
      «энергия» и «серия» стояли за краями экрана, видны были только километры и
      скорость (видно на скриншоте владельца 27.08). Складываем 2×2 и компактнее. */
@@ -719,6 +778,15 @@ addEventListener('DOMContentLoaded', function(){
   <!-- Списка «как играть» здесь больше нет (27.08): четыре строки мелкого текста между
        цифрами и кнопками не читались и толком не были видны (замечание владельца со
        скриншотом). Управлению теперь учит анимированный онбординг на старте полёта. -->
+  <!-- ГЛАВНЫЙ РЕЗУЛЬТАТ — ОЧКИ (27.08): производная всех четырёх показателей, самый
+       крупный элемент экрана. Появляется ПОСЛЕ карточек и набирается анимированным
+       счётчиком (см. goTotalRun). Формула — в gTotalScore рядом с блоком столкновения. -->
+  <div id="go-total"><div class="gt-l">ОЧКИ</div><div class="gt-v" id="go-total-v">0</div></div>
+  <!-- Сохранение в таблицу рекордов: имя + кнопка; после сохранения — позиция и таблица -->
+  <div id="go-save">
+    <input id="go-name" type="text" maxlength="24" placeholder="ваше имя" autocomplete="off">
+    <button id="go-save-btn">Сохранить</button>
+  </div>
   <!-- Чувствительность руля — подбирает сам игрок (27.08). Только на таче: мышь этим
        числом не пользуется. Живёт на экране результата: сюда попадают после каждого
        полёта, и именно здесь «руль туповат/дёрганый» ещё свежо в пальцах. -->
@@ -732,6 +800,19 @@ addEventListener('DOMContentLoaded', function(){
     <button class="go-back" id="go-back">← Вернуться на сайт PlayDisplay</button>
   </div>
 </div>
+
+<!-- ТАБЛИЦА РЕКОРДОВ. Оверлей поверх всего игрового (z-48 > game-over 47). Открывается
+     кнопкой «РЕКОРДЫ» в полёте (игра встаёт на паузу) и после сохранения результата.
+     Все кнопки — по touchend (см. правило про синтез click в полёте). -->
+<div id="lb">
+  <div class="lb-panel">
+    <button id="lb-close" aria-label="Закрыть">✕</button>
+    <div class="lb-title">РЕКОРДЫ</div>
+    <div class="lb-me" id="lb-me"></div>
+    <div class="lb-list" id="lb-list"></div>
+  </div>
+</div>
+<button id="lb-btn" type="button">РЕКОРДЫ</button>
 
 <div id="arc-hud">
   <div id="arc-count">РАЗВЕДАНО 00/15</div>
@@ -915,7 +996,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2708-frame3';</script>
+<script>window.PD_V = 'b2708-lb1';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -4985,6 +5066,8 @@ function restartGame() {
   // то же самое: рестарт часто жмут тапом по кнопке внизу экрана — не наследуем эту точку
   if (isMobile) { touchPX = innerWidth / 2; touchPY = innerHeight / 2; }
   GAME.over = false; GAME.overT = 0; GAME.score = 0; GAME.speed = 60; GAME.hurtT = 0;
+  GAME.paused = false;
+  if (window.pdSaveReset) pdSaveReset();   // новая попытка — новое сохранение
   document.body.classList.remove('over');
   GAME.combo = 0; GAME.lastGet = -9; GAME.lowT = 0; GAME.maxCombo = 1; GAME.maxSpeed = 0; GAME.boom = -1; GAME.z0 = GAME.z;
   GAME.spice = 0; if (gameSpiceNum) gameSpiceNum.textContent = '0';
@@ -5038,6 +5121,8 @@ function exitGame() {
   if (typeof _obTypeT !== 'undefined' && _obTypeT) { clearInterval(_obTypeT); _obTypeT = null; }
   if (OB.aEl) OB.aEl.textContent = '';
   stickOn = false;   // выход из игры бросает руль, даже если палец ещё на экране
+  GAME.paused = false;
+  if (window.pdSaveReset) pdSaveReset();
   if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
   applySceneMode(); // корректная видимость окружения по текущему режиму
   gameOverEl.classList.remove('show'); // игровые оверлеи не должны пережить выход
@@ -5486,16 +5571,28 @@ function updateGame(dt, time) {
   // и на десктопе из объявленных 2 секунд игроку доставалось 0.25 — управление ещё
   // не в руках, а неуязвимость уже кончилась. Отсчёт честный: от момента, когда
   // корабль действительно слушается игрока.
+  //
+  // ПОДЪЁМ ЗАЩИТЫ — ПЛАВНЫЙ, НЕ РЫВКОМ (27.08). Раньше стояло shipP.y = groundH + 6
+  // каждый кадр: пружина прицела тянула корабль вниз, защита выдёргивала вверх, и на
+  // тёрке об рельеф корабль ТРЯССЯ на частоте кадров — «дёшево, теряет масштаб и вес»
+  // (слова владельца). Теперь цель подъёма достигается экспоненциальным сглаживанием,
+  // рывка нет, а контакт с защитой подсвечивает КОЛЬЦО HUD бирюзовой вспышкой-щитом
+  // (GAME.protT читает отрисовка кольца).
+  function gSafeLift() {
+    if (alt >= 6) return;
+    GAME.shipP.y += (groundH + 6 - GAME.shipP.y) * Math.min(1, dt * 9);
+    GAME.protT = 1;
+  }
   if (GAME.enter >= 1) GAME.grace = Math.max(0, (GAME.grace || 0) - dt);
   if (GAME.grace > 0) {
-    gShipOpacity(0.35 + 0.65 * Math.abs(Math.sin(time * 8)));
-    // если рельеф под нами вырос — мягко выталкиваем корабль вверх, давая шанс
-    if (alt < 6) GAME.shipP.y = groundH + 6;
+    // мигание реже и мягче: 8 Гц с провалами до 35% читалось как дребезг
+    gShipOpacity(0.62 + 0.38 * (0.5 + 0.5 * Math.sin(time * 4.2)));
+    gSafeLift();   // рельеф вырос под нами — мягко поднимаемся, давая шанс
   } else if ((GAME._shipOp || 1) < 1 && !GAME.over) gShipOpacity(1);
   // столкновение либо с самим рельефом (по высоте), либо с балкой-препятствием (по отрезку,
   // см. gHazardHit — наклонные колонны и мост-арка из gMakeChunk)
   // во время обучения разбиться нельзя — и корабль при этом НЕ мигает (см. OB.safe)
-  if (OB.on && OB.safe && alt < 6) GAME.shipP.y = groundH + 6;   // мягко выталкиваем с рельефа
+  if (OB.on && OB.safe) gSafeLift();   // мягко поднимаем с рельефа
   // О НЕВИДИМОЕ НЕ РАЗБИВАЮТСЯ (24.08). Высоту рельефа отдаёт probe — чистая математика,
   // она есть с первого кадра. А ТОЧКИ чанка строит worker, и на слабом телефоне первые
   // чанки могут отстать на секунду-другую: игрок влетал в гору, которой НА ЭКРАНЕ НЕТ, —
@@ -5507,7 +5604,7 @@ function updateGame(dt, time) {
       if (GAME.chunks[i].userData.wIndex === idx) return true;
     return false;
   })();
-  if (!chunkSeen && alt < 6) GAME.shipP.y = groundH + 6;
+  if (!chunkSeen) gSafeLift();
   if ((alt < 1.3 || gHazardHit()) && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over
       && GAME.grace === 0 && chunkSeen && !(OB.on && OB.safe)) {
     GAME.over = true; // столкновение — гейм-овер
@@ -5521,6 +5618,14 @@ function updateGame(dt, time) {
     gameDanger.classList.remove('on');
     gameOverEl.querySelector('.go-score').textContent = GAME.score;
     if (window.pdSensSync) pdSensSync();   // бегунок чувствительности — по текущему S
+    // ГЛАВНЫЙ РЕЗУЛЬТАТ: одно число из всех четырёх. Энергия — ядро (×25), лучшая
+    // серия УМНОЖАЕТ её (мастерство ценнее охвата), дистанция и скорость добавляют:
+    // ОЧКИ = энергия·25·(1 + серия/10) + км·400 + макс.скорость·2
+    GAME.total = Math.round(
+      GAME.score * 25 * (1 + (GAME.maxCombo || 1) / 10) +
+      ((GAME.z - (GAME.z0 || 0)) * 2.4 / 1000) * 400 +
+      (GAME.maxSpeed || GAME.speed) * 2.4 * 2);
+    if (window.goTotalRun) goTotalRun(GAME.total);
     document.getElementById('go-dist').textContent = ((GAME.z - (GAME.z0 || 0)) * 2.4 / 1000).toFixed(1);
     document.getElementById('go-speed').textContent = Math.round((GAME.maxSpeed || GAME.speed) * 2.4);
     document.getElementById('go-combo').textContent = '×' + (GAME.maxCombo || 1);
@@ -5650,6 +5755,20 @@ function gDangerRing(dt, time, alt) {
     }
     g.shadowBlur = 0;
     g.globalAlpha = 1;
+  }
+  // ЩИТ СТАРТОВОЙ ЗАЩИТЫ: пока корабль трётся о рельеф под защитой (грейс, обучение,
+  // непостроенный чанк), кольцо вспыхивает бирюзой — видно, что удар ПРИНЯТ ЩИТОМ,
+  // а не «корабль просто дёргается». Флаг ставит gSafeLift, здесь он гаснет.
+  if ((GAME.protT || 0) > 0.01) {
+    const p = GAME.protT;
+    g.globalAlpha = Math.min(1, p * 1.2);
+    g.beginPath(); g.arc(C_X, C_Y, R + 5 * SS * (1 - p), 0, Math.PI * 2);
+    g.strokeStyle = 'rgba(43,224,198,0.95)';
+    g.lineWidth = (2.5 + 3.5 * p) * SS;
+    g.shadowColor = 'rgba(43,224,198,0.95)'; g.shadowBlur = 30 * SS * p;
+    g.stroke();
+    g.shadowBlur = 0; g.globalAlpha = 1;
+    GAME.protT = Math.max(0, p - dt * 1.6);
   }
   // авиагоризонт: линии по бокам кольца с контрнаклоном к крену (горизонт остаётся «мировым»)
   const bank = clamp(-GAME.ship.rotation.z * 0.85, -0.45, 0.45);
@@ -5819,6 +5938,129 @@ applyPlayerSens();
   });
   window.pdSensSync = syncUI;      // экран результата зовёт при каждом показе
   syncUI();
+})();
+
+// ---------- Таблица рекордов ----------
+// Сервер — api/game.php (имена фильтруются там). На превью без php fetch вернёт
+// не-JSON — показываем честную заглушку, игра не страдает.
+(function () {
+  const lb = document.getElementById('lb'), listEl = document.getElementById('lb-list'),
+        meEl = document.getElementById('lb-me'), btn = document.getElementById('lb-btn');
+  if (!lb) return;
+  let myPos = 0;   // позиция последнего сохранения — подсветка своей строки
+
+  function render(top, count) {
+    listEl.textContent = '';
+    if (!top || !top.length) {
+      const d = document.createElement('div');
+      d.className = 'lb-empty';
+      d.textContent = 'ПОКА ПУСТО — БУДЬТЕ ПЕРВЫМ';
+      listEl.appendChild(d);
+      return;
+    }
+    top.forEach((e, i) => {
+      const row = document.createElement('div');
+      row.className = 'lb-row' + (i === 0 ? ' top1' : '') + (i + 1 === myPos ? ' me' : '');
+      const pos = document.createElement('span'); pos.className = 'p'; pos.textContent = (i + 1) + '.';
+      const nm = document.createElement('span'); nm.className = 'n'; nm.textContent = e.n;
+      const sc = document.createElement('span'); sc.className = 's'; sc.textContent = (+e.s).toLocaleString('ru-RU');
+      row.appendChild(pos); row.appendChild(nm); row.appendChild(sc);
+      listEl.appendChild(row);
+    });
+  }
+  function openLB(data) {
+    lb.classList.add('show');
+    if (GAME.on && !GAME.over) GAME.paused = true;   // полёт замирает, пока читают таблицу
+    if (data) { render(data.top, data.count); scrollToMe(); return; }
+    meEl.textContent = '';
+    listEl.innerHTML = '<div class="lb-empty">ЗАГРУЗКА…</div>';
+    fetch('api/game.php', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(d => { if (d && d.ok) { render(d.top, d.count); scrollToMe(); } else throw 0; })
+      .catch(() => { listEl.innerHTML = '<div class="lb-empty">ТАБЛИЦА ДОСТУПНА НА БОЕВОМ САЙТЕ</div>'; });
+  }
+  function closeLB() {
+    lb.classList.remove('show');
+    GAME.paused = false;
+  }
+  function scrollToMe() {
+    const me = listEl.querySelector('.lb-row.me');
+    if (me) me.scrollIntoView({ block: 'center' });
+  }
+  // касания оверлея не должны течь в руль и гаситель прокрутки (список должен скроллиться)
+  ['touchstart', 'touchmove', 'pointerdown'].forEach(ev =>
+    lb.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+  // кнопки — по touchend (правило синтеза click в полёте)
+  function tapBtn(el, action) {
+    if (!el) return;
+    el.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+    el.addEventListener('touchend', e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); action(); }, { passive: false });
+    el.addEventListener('click', e => { e.stopPropagation(); action(); });
+  }
+  tapBtn(btn, () => openLB());
+  tapBtn(document.getElementById('lb-close'), closeLB);
+  lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+
+  // ----- сохранение результата с экрана столкновения -----
+  const saveBox = document.getElementById('go-save'), nameIn = document.getElementById('go-name'),
+        saveBtn = document.getElementById('go-save-btn');
+  if (saveBox) {
+    try { nameIn.value = localStorage.getItem('pd_player_name') || ''; } catch (e) {}
+    ['touchstart', 'touchmove', 'pointerdown'].forEach(ev =>
+      saveBox.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+    let busy = false;
+    const doSave = () => {
+      if (busy) return;
+      const name = (nameIn.value || '').trim();
+      if (!name) { nameIn.focus(); return; }
+      busy = true; saveBtn.disabled = true; saveBtn.textContent = 'Сохраняю…';
+      try { localStorage.setItem('pd_player_name', name); } catch (e) {}
+      fetch('api/game.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save', name: name, score: GAME.total || 0 })
+      })
+        .then(r => r.json())
+        .then(d => {
+          busy = false; saveBtn.disabled = false; saveBtn.textContent = 'Сохранить';
+          if (!d || !d.ok) throw 0;
+          myPos = d.pos;
+          meEl.textContent = 'ВЫ — ' + d.pos + ' МЕСТО ИЗ ' + d.count;
+          saveBox.classList.add('saved');       // второй раз тот же полёт не сохраняем
+          openLB(d);
+        })
+        .catch(() => {
+          busy = false; saveBtn.disabled = false;
+          saveBtn.textContent = 'Не вышло — ещё раз';
+          setTimeout(() => (saveBtn.textContent = 'Сохранить'), 2200);
+        });
+    };
+    tapBtn(saveBtn, doSave);
+    nameIn.addEventListener('keydown', e => { if (e.key === 'Enter') doSave(); });
+  }
+  // новый полёт — новая попытка сохранения
+  window.pdSaveReset = () => { if (saveBox) saveBox.classList.remove('saved'); myPos = 0; closeLB(); };
+})();
+
+// ---------- Очки: анимированный набор ----------
+// Сначала игрок видит четыре карточки (их каскад заканчивается к ~0.5с), затем
+// проявляются ОЧКИ и число НАБИРАЕТСЯ за ~1.4с с ease-out — крупный финал экрана.
+// setInterval, а не rAF: на слабом телефоне кадры после краша заняты сценой.
+(function () {
+  const v = document.getElementById('go-total-v');
+  if (!v) return;
+  let timer = 0;
+  window.goTotalRun = function (total) {
+    clearInterval(timer);
+    const t0 = Date.now(), DUR = 1400, DELAY = 650;
+    v.textContent = '0';
+    timer = setInterval(() => {
+      const k = Math.min(1, Math.max(0, (Date.now() - t0 - DELAY) / DUR));
+      const e = 1 - (1 - k) * (1 - k) * (1 - k);          // ease-out cubic
+      v.textContent = Math.round(total * e).toLocaleString('ru-RU');
+      if (k >= 1) clearInterval(timer);
+    }, 33);
+  };
 })();
 // вход/выход: сообщение от лендинга, клавиша G; Esc — плавный выход
 addEventListener('message', e => { if (e.data && typeof e.data.pdGame === 'boolean') e.data.pdGame ? enterGame() : startExitGame(); });
@@ -6264,7 +6506,8 @@ function loop() {
   autoQuality(dt);
   // режим мини-игры: свой апдейт, галерейные системы спят
   if (GAME.on) {
-    updateGame(dt, time);
+    // пауза (открыта таблица рекордов): мир замирает, но продолжает рендериться
+    if (!GAME.paused) updateGame(dt, time);
     // ненавязчивый фон полёта: дрон от скорости, шум потока подчёркивает крен
     Sound.game(Math.min(1, GAME.speed / 315) * (GAME.over ? 0.15 : 1),
                GAME.over ? 0 : Math.min(1, Math.abs(GAME.ship ? GAME.ship.rotation.z : 0) * 1.7));
