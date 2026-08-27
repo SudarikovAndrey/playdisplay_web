@@ -203,7 +203,8 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   body.is-mobile #go-total { margin-top: 16px; flex: none; }
   body.is-mobile #go-save { margin-top: 14px; flex: none; }
   body.is-mobile #go-sens { margin-top: 16px; flex: none; }
-  body.is-mobile #game-over .go-btns { margin-top: 18px; flex: none; }
+  body.is-mobile #game-over .go-btns { margin-top: 18px; flex: none;
+    flex-wrap: wrap; justify-content: center; width: min(340px, 86vw); }
   #game-over.show { display: flex; }
   body.game.over #game-over { pointer-events: auto; cursor: auto; }
   body.game.over, body.game.over #stage { cursor: auto !important; } /* после крушения курсор возвращается */
@@ -828,6 +829,7 @@ addEventListener('DOMContentLoaded', function(){
   <div class="go-hint">КЛИК — ЕЩЁ РАЗ · ESC — В ПОРТФОЛИО</div>
   <div class="go-btns">
     <button class="go-again" id="go-again">↻ Новый полёт</button>
+    <button class="go-again" id="go-lb">Рекорды</button>
     <button class="go-back" id="go-back">← Вернуться на сайт PlayDisplay</button>
   </div>
 </div>
@@ -1027,7 +1029,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2808-belt3';</script>
+<script>window.PD_V = 'b2808-gold1';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -3962,6 +3964,43 @@ function gMakeSpice(seed, n) {
   return pts;
 }
 
+// ЗОЛОТАЯ НИТЬ (28.08, просьба владельца): длинная лента золотых частиц с S-изгибом
+// по горизонтали и дугой по высоте. Радиус пылесоса 18, амплитуда изгиба до ~24 —
+// чтобы собрать нить ЦЕЛИКОМ, корабль должен вести траекторию по её кривой, а не
+// пролететь рядом. Полный сбор даёт бонус к очкам (см. gSpiceUpdate). Механика сбора —
+// тот же спайс-пылесос: у частиц те же дома, тот же дрейф назад, тот же счётчик.
+function gMakeGold(seed, n) {
+  const p = new Float32Array(n * 3), col = new Float32Array(n * 3), sz = new Float32Array(n);
+  const L = 140 + gHash(seed, 5) * 80;               // длина нити вдоль трассы
+  const ax = 15 + gHash(seed, 6) * 9;                // размах изгиба вбок (радиус пылесоса 18!)
+  const ay = 8 + gHash(seed, 7) * 6;                 // и по высоте
+  const k1 = 1.5 + gHash(seed, 8) * 1.2, ph = gHash(999, seed) * 6.2832;
+  for (let k = 0; k < n; k++) {
+    const u = gHash(k, seed);                        // положение вдоль нити
+    const a2 = gHash(seed, k) * 6.2832;
+    const spr = Math.pow(gHash(k * 3, seed), 0.7) * 2.4;   // поперечная толщина
+    p[k * 3]     = Math.sin(u * Math.PI * k1 + ph) * ax + Math.cos(a2) * spr;
+    p[k * 3 + 1] = Math.sin(u * Math.PI * (k1 * 0.7) + ph * 0.6) * ay + Math.sin(a2) * spr * 0.8;
+    p[k * 3 + 2] = u * L + Math.sin(a2 + 1.7) * spr;
+    const heat = 1 - spr / 2.4;
+    const br = 0.55 + 0.75 * heat + 0.25 * gHash(k, seed + 9);
+    // золото: тёплый жёлтый, заметно отличим от оранжевого спайса
+    col[k * 3] = 1.25 * br; col[k * 3 + 1] = 0.92 * br; col[k * 3 + 2] = 0.24 * br;
+    const q = gHash(k * 13, seed + 4);
+    sz[k] = q < 0.7 ? 0.09 + q * 0.1 : q < 0.95 ? 0.2 + (q - 0.7) * 0.4 : 0.38 + (q - 0.95) * 3;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(p, 3));
+  g.setAttribute('aCol', new THREE.BufferAttribute(col, 3));
+  g.setAttribute('aSize', new THREE.BufferAttribute(sz, 1));
+  const m = gSpiceMat(6);
+  const pts = new THREE.Points(g, m);
+  pts.onBeforeRender = function () { m.uniforms.uOp.value = m.opacity; };
+  pts.userData = { isSpice: true, gold: true, span: L, home: p.slice(),
+    state: new Uint8Array(n), n: n, alive: n, baseOp: 0.9 };
+  return pts;
+}
+
 // СПАЙС-ПЫЛЕСОС: частицы в радиусе затягиваются к кораблю (ближе — резко быстрее),
 // у корпуса исчезают и капают в счётчик. Дальние облака не обсчитываются вовсе.
 const SPICE_SUCK = 18, SPICE_EAT = 2.6;
@@ -3973,7 +4012,9 @@ function gSpiceUpdate(o, chunkGrp, dt, time) {
   const D = -wzC;                                       // впереди wzC отрицательный
   const vis = 1 - clamp01((D - 120) / 90);
   o.material.opacity = (0.72 + 0.18 * Math.sin(time * 2.2 + o.position.x)) * vis;
-  if (wzC > 14 || wzC < -90 || !o.userData.alive) return;
+  // золотая нить длинная: окно сбора тянется на всю её длину, иначе хвост несобираем
+  const span = o.userData.span || 0;
+  if (wzC > 14 + span || wzC < -90 || !o.userData.alive) return;
   const pa = o.geometry.attributes.position, arr = pa.array;
   const st = o.userData.state, home = o.userData.home, n = o.userData.n;
   // корабль в ЛОКАЛЬНЫХ координатах облака (мировые оси, сдвиг на позицию облака)
@@ -4010,6 +4051,13 @@ function gSpiceUpdate(o, chunkGrp, dt, time) {
     }
     if (time - (GAME._spiceSndT || 0) > 0.15) { Sound.sfx('collect', 1); GAME._spiceSndT = time; }
     GAME._spiceGlowT = time;   // двигатели вспыхивают, «проглатывая» спайс (см. updateGame)
+    // ЗОЛОТАЯ НИТЬ СОБРАНА ЦЕЛИКОМ: награда за то, что траектория прошла по всей кривой
+    if (o.userData.gold && !o.userData.goldDone && o.userData.alive <= o.userData.n * 0.02) {
+      o.userData.goldDone = true;
+      GAME.score += 200; gameScore.textContent = GAME.score; gScorePulse();
+      gLabel('ЗОЛОТАЯ НИТЬ ЦЕЛИКОМ · +200');
+      Sound.sfx('ring');
+    }
   }
 }
 
@@ -4349,6 +4397,16 @@ function gWorldRewards(grp, ch, def) {
     sp.position.set(c.x + (r() - 0.5) * 30, sy, c.z);
     grp.add(sp);
   }
+  // золотая нить: не на каждом чанке — событие, за которым хочется изогнуться
+  if (r() < 0.36) {
+    const ci = Math.min(cor.length - 1, Math.round(0.2 * (cor.length - 1)));
+    const c = cor[ci];
+    const gold = gMakeGold((def.seed ^ 0x77aa) + 17, 1700 + Math.floor(r() * 900));
+    let gy = c.y + 4 + r() * 10;
+    gy = Math.max(-2, Math.min(46, gy));
+    gold.position.set(c.x, gy, c.z);
+    grp.add(gold);
+  }
   if (r() > 0.55) {
     const ci = Math.round((0.42 + r() * 0.3) * (cor.length - 1));
     const c = cor[Math.min(cor.length - 1, ci)];
@@ -4399,22 +4457,57 @@ function gBeltK(z) {
   }
   return 0;
 }
-// АСТЕРОИД — ПЛОТНЫЕ ТОЧКИ ПОВЕРХ НЕВИДИМОГО ЗАСЛОНА (28.08, третья редакция).
-// История в двух шагах. v1: точки как в play — на фоне сцены из точек камни не
-// читались вовсе («облако крупных квадратов»). v2: сплошной меш с рёбрами — читался,
-// но выпадал из стиля («держи единый стиль, всё точками» — владелец). v3 берёт лучшее
-// из обоих: рисуют КАМЕНЬ снова точки, как рельеф — та же плотность и калибр точек, —
-// а непрозрачность даёт НЕВИДИМЫЙ проход глубины (приём из enemy-lab, раздел OCCL в
-// CLAUDE.md): меш с colorWrite:false пишет только глубину, заслоняет всё позади и
-// отсекает заднюю полусферу точек. Сам заслон чуть меньше облака (×0.94), иначе точки
-// не проходили бы собственный тест глубины и камень исчезал.
+// АСТЕРОИД v4 (28.08): МЕЛКИЕ ГУСТЫЕ ТОЧКИ + ФРЕНЕЛЬ ПО КРОМКЕ + ТЕЛО ЦВЕТА ФОНА.
+// v3 читался, но вблизи крупные точки смотрелись грубо. Теперь: (1) точек в разы
+// больше и они мельче — камень скульптурный; (2) тело-заслон покрашено В ЦВЕТ ФОНА:
+// оно не выбивается пятном, а работает только глубиной — заслоняет задний план и
+// срезает заднюю полусферу точек; (3) яркость точки зависит от угла к камере, как
+// френель: у силуэта точки активнее, в «лоб» — почти фон. Камень рисуется светящейся
+// кромкой и тёмной серединой — форма читается, стиль остаётся точечным.
+let _gAstBody = null;
+function gAstBodyMat() {
+  if (!_gAstBody) _gAstBody = new THREE.MeshBasicMaterial({ color: 0x0a151b });
+  return _gAstBody;
+}
+let _gAstMat = null;
+function gAstMat() {
+  if (_gAstMat) return _gAstMat;
+  _gAstMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false,
+    uniforms: { uPx: PXU },
+    vertexShader: `
+      attribute vec3 aNor;
+      attribute float aLit, aSz;
+      uniform float uPx;
+      varying float vF, vLit;
+      void main() {
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vec3 n = normalize(normalMatrix * aNor);
+        vec3 vd = normalize(-mv.xyz);
+        vF = pow(1.0 - abs(dot(n, vd)), 1.6);      // френель: кромка ярче, лоб гаснет
+        vLit = aLit;
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = clamp(aSz * uPx / max(1.0, -mv.z), 0.5, 4.0);
+      }`,
+    fragmentShader: `
+      varying float vF, vLit;
+      void main() {
+        vec3 base = vec3(0.055, 0.09, 0.105);      // середина — почти фон сцены
+        vec3 rim  = vec3(0.74, 0.88, 0.92);        // кромка — светлая, холодная
+        vec3 col = mix(base, rim, smoothstep(0.1, 0.85, vF)) * (0.55 + 0.45 * vLit);
+        gl_FragColor = vec4(col, 0.92);
+      }`
+  });
+  return _gAstMat;
+}
 function gMakeAsteroid(R, rng) {
   const b1 = rng() * 6.28, b2 = rng() * 6.28, b3 = rng() * 6.28;
   const ax = 0.65 + rng() * 0.9, ay = 0.65 + rng() * 0.9, az = 0.65 + rng() * 0.9;
   const bump = (th, ph) => 1 + 0.34 * Math.sin(th * 2 + b1) * Math.sin(ph * 3 + b2)
                              + 0.2 * Math.sin(th * 5 + b3) * Math.sin(ph * 4 + b1);
-  // заслон: тот же рваный профиль, выдавленный по вершинам икосаэдра
-  const geo = new THREE.IcosahedronGeometry(R * 0.94, R > 26 ? 2 : 1);
+  // заслон: тот же рваный профиль по вершинам икосаэдра, чуть меньше облака точек —
+  // иначе точки не проходят собственный тест глубины и камень исчезает
+  const geo = new THREE.IcosahedronGeometry(R * 0.955, R > 26 ? 2 : 1);
   const posA = geo.attributes.position;
   for (let k = 0; k < posA.count; k++) {
     let x = posA.getX(k), y = posA.getY(k), z = posA.getZ(k);
@@ -4422,36 +4515,35 @@ function gMakeAsteroid(R, rng) {
     const bb = bump(Math.atan2(z, x), Math.acos(clamp(y / L, -1, 1)));
     posA.setXYZ(k, x * bb * ax, y * bb * ay, z * bb * az);
   }
-  // Тело НЕ прозрачное и НЕ чисто-чёрное: colorWrite:false давал «дыру в небе» —
-  // за заслоном не рисовалось даже небо, и силуэт выглядел вырезанным. Тёмный
-  // сине-графитовый цвет читается камнем и не зависит от порядка отрисовки неба.
-  const occl = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x0f161d }));
-  occl.renderOrder = -1;   // глубина пишется ДО всех точек кадра
+  // тело В ЦВЕТ ФОНА: работает заслоном по глубине, а не пятном по цвету.
+  // Материал ОБЩИЙ на все камни, и его цвет каждый кадр подтягивается к живому небу
+  // (см. цикл поясов): небо сцены перекрашивается под слайд и фазы полёта, и статичный
+  // тёмный цвет на светлом небе выбивался чёрными пятнами.
+  const occl = new THREE.Mesh(geo, gAstBodyMat());
+  occl.renderOrder = -1;
   const grp = new THREE.Group();
   grp.add(occl);
-  // точки по поверхности: плотность выше, чем была в v1 (владелец просил), размер
-  // и палитра — как у рельефа: светлый верх, тёмные борта, единый стиль сцены
-  const n = Math.round(Math.min(15000, 140 + R * R * 4.2));
-  const dp = new Float32Array(n * 3), dc = new Float32Array(n * 3);
+  const n = Math.round(Math.min(26000, 300 + R * R * 9));
+  const dp = new Float32Array(n * 3), dn = new Float32Array(n * 3),
+        dl = new Float32Array(n), dsz = new Float32Array(n);
   for (let k = 0; k < n; k++) {
     const th = rng() * Math.PI * 2, ph = Math.acos(2 * rng() - 1);
-    const rr = R * bump(th, ph) * (0.985 + rng() * 0.03);
-    dp[k * 3] = Math.sin(ph) * Math.cos(th) * rr * ax;
-    dp[k * 3 + 1] = Math.cos(ph) * rr * ay;
-    dp[k * 3 + 2] = Math.sin(ph) * Math.sin(th) * rr * az;
-    const lit = 0.25 + 0.75 * clamp01(dp[k * 3 + 1] / (rr * ay) * 0.5 + 0.5);
-    if (rng() < 0.16) {   // редкие тёмные точки — «трещины», фактура камня
-      dc[k * 3] = 0.10 + 0.08 * lit; dc[k * 3 + 1] = 0.12 + 0.09 * lit; dc[k * 3 + 2] = 0.14 + 0.1 * lit;
-    } else {              // светлый камень, как точки рельефа
-      dc[k * 3] = 0.42 + 0.42 * lit; dc[k * 3 + 1] = 0.47 + 0.44 * lit; dc[k * 3 + 2] = 0.52 + 0.46 * lit;
-    }
+    const rr = R * bump(th, ph) * (0.996 + rng() * 0.012);   // точки прижаты к поверхности
+    const dx = Math.sin(ph) * Math.cos(th), dy = Math.cos(ph), dz = Math.sin(ph) * Math.sin(th);
+    dp[k * 3] = dx * rr * ax; dp[k * 3 + 1] = dy * rr * ay; dp[k * 3 + 2] = dz * rr * az;
+    // нормаль ≈ направление из центра с учётом вытяжки (для точек этого достаточно)
+    const nx = dx / ax, ny = dy / ay, nz = dz / az;
+    const nl = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+    dn[k * 3] = nx / nl; dn[k * 3 + 1] = ny / nl; dn[k * 3 + 2] = nz / nl;
+    dl[k] = 0.3 + 0.7 * clamp01(dy * 0.5 + 0.5);             // свет сверху
+    dsz[k] = (0.3 + rng() * 0.28) * (1 + R * 0.004);         // мелкое зерно, чуть крупнее у монолитов
   }
   const dg = new THREE.BufferGeometry();
   dg.setAttribute('position', new THREE.Float32BufferAttribute(dp, 3));
-  dg.setAttribute('color', new THREE.Float32BufferAttribute(dc, 3));
-  // зерно чуть крупнее у больших калибров: монолит с мелкой пылью читался голым
-  grp.add(new THREE.Points(dg, new THREE.PointsMaterial({ vertexColors: true,
-    size: 0.85 + R * 0.012, transparent: true, opacity: 0.95, depthWrite: false })));
+  dg.setAttribute('aNor', new THREE.Float32BufferAttribute(dn, 3));
+  dg.setAttribute('aLit', new THREE.Float32BufferAttribute(dl, 1));
+  dg.setAttribute('aSz', new THREE.Float32BufferAttribute(dsz, 1));
+  grp.add(new THREE.Points(dg, gAstMat()));
   return { o: grp, r: R * (ax + ay) / 2 * 0.9 };
 }
 // строим поле на подлёте, утилизируем позади. Плотность растёт с номером пояса —
@@ -5549,6 +5641,12 @@ function updateGame(dt, time) {
         c.traverse(o => { if (o.material === gFallMat) o.visible = showFalls; });
       }
     }
+    // тело камня каждый кадр красится «в небо» — среднее горизонта и зенита, чуть
+    // темнее: силуэт держится глубиной и кромкой-френелем, а не пятном цвета
+    if (_gAstBody) {
+      _gAstBody.color.copy(skyMat.uniforms.uHorizon.value)
+        .lerp(skyMat.uniforms.uZenith.value, 0.55).multiplyScalar(0.82);
+    }
     // задник дальних хребтов в поясе гаснет: чистый космос не должен стоять на фоне гор
     if (GAME.backdrop) {
       const bk = 1 - gBeltK(GAME.z);
@@ -6085,6 +6183,7 @@ function goBtn(id, action) {
 }
 goBtn('go-back', startExitGame);   // плавный выход из полёта (postMessage шлёт сам startExitGame)
 goBtn('go-again', restartGame);    // сразу рестарт без выхода на сайт
+goBtn('go-lb', () => { if (window.pdOpenLB) pdOpenLB(); });   // таблица рекордов с экрана результата
 
 // МОБИЛА: крестик-выход во время полёта (палец занят рулём, клика-по-сцене как на компе нет).
 // touchstart гасим отдельно, чтобы этот тап не долетел до window-обработчика руля (иначе
@@ -6307,6 +6406,7 @@ applyPlayerSens();
   }
   // новый полёт — новая попытка сохранения
   window.pdSaveReset = () => { if (saveBox) saveBox.classList.remove('saved'); myPos = 0; closeLB(); };
+  window.pdOpenLB = () => openLB();   // кнопка «Рекорды» на экране результата
 })();
 
 // ---------- Очки: анимированный набор ----------
