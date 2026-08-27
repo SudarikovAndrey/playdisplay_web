@@ -1027,7 +1027,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2808-zoom4';</script>
+<script>window.PD_V = 'b2808-belt1';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -4274,7 +4274,8 @@ function gBuildWorldMesh(ch, index, lod) {
   pts.frustumCulled = false;
   const grp = new THREE.Group();
   pts.onBeforeRender = function () {
-    mat.uniforms.uFade.value = (grp.userData.fade === undefined ? 1 : grp.userData.fade) * worldEnvFade;
+    mat.uniforms.uFade.value = (grp.userData.fade === undefined ? 1 : grp.userData.fade) * worldEnvFade
+      * (grp.userData.beltHide === undefined ? 1 : grp.userData.beltHide);   // в поясе астероидов рельеф тает
   };
   grp.scale.z = -1;
   grp.add(pts);
@@ -4356,6 +4357,132 @@ function gWorldRewards(grp, ch, def) {
     ring.userData.isRing = true;
     ring.userData.spin = 0.9 + r() * 0.8;
     grp.add(ring);
+  }
+}
+
+// ═══════════ ПОЯСА АСТЕРОИДОВ (28.08, перенос из SPICE RUN / game-v1) ═══════════
+// Метеоритное пространство вплетено в бесконечный полёт СЕГМЕНТАМИ: время от времени
+// рельеф растворяется, и несколько сотен юнитов трасса идёт сквозь поле камней, потом
+// каньоны возвращаются. Из полной игры взято ТОЛЬКО это (решение владельца): астероид
+// из точек (srMakeAsteroid), поле с коллизиями и калибры S/M/L/XL. Ни топлива, ни
+// уровней, ни корабля-захватчика здесь нет.
+//
+// ГЛАВНОЕ ИНЖЕНЕРНОЕ РЕШЕНИЕ: world.js НЕ ТРОНУТ. План трассы и probe продолжают жить,
+// пояс — это НАДСТРОЙКА сцены: рельеф в поясе прячется (множитель beltHide в uFade),
+// его коллизия выключается (groundH → −∞, gHazardHit — заглушен), а невидимый коридор
+// генератора продолжает вести цепочки ядер и спайса сквозь камни — как в GDD игры.
+// Трогать world.js нельзя ещё и потому, что его копию держит worker: разойдутся планы —
+// коллизия будет мерить один мир, а на экране стоять другой.
+function gBeltPlan(seed) {
+  let s = (seed ^ 0x7be1) | 0;
+  const rng = () => { s = (s * 1664525 + 1013904223) | 0; return ((s >>> 9) / 8388608) % 1; };
+  const belts = [];
+  let z = 2500 + rng() * 700;              // первый пояс — когда игрок уже освоился (~30с)
+  for (let i = 0; i < 18; i++) {
+    const len = 620 + Math.min(i, 6) * 80 + rng() * 160;   // дальше — длиннее
+    belts.push({ i: i, a: z, b: z + len, built: false, grp: null });
+    z += len + Math.max(1500, 2500 - i * 160) + rng() * 700;  // и чаще
+  }
+  return belts;
+}
+const G_BELT_EDGE = 240;   // за столько юнитов до пояса рельеф начинает таять
+// 0 — обычный рельеф, 1 — глубина пояса; края плавные
+function gBeltK(z) {
+  const B = GAME.belts;
+  if (!B) return 0;
+  for (let i = 0; i < B.length; i++) {
+    const t = B[i];
+    if (z < t.a - G_BELT_EDGE) break;
+    if (z > t.b + G_BELT_EDGE) continue;
+    return Math.min(clamp01((z - (t.a - G_BELT_EDGE)) / G_BELT_EDGE),
+                    clamp01(((t.b + G_BELT_EDGE) - z) / G_BELT_EDGE));
+  }
+  return 0;
+}
+// астероид из точек: сфера с рваным радиусом и случайной вытяжкой по осям — от гальки
+// до монолита, каждый со своим силуэтом. Светлые кромки на тёмной заливке дают «материю».
+function gMakeAsteroid(R, rng) {
+  const n = Math.round(Math.min(6500, 110 + R * R * 1.7));
+  const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  const b1 = rng() * 6.28, b2 = rng() * 6.28, b3 = rng() * 6.28;
+  const ax = 0.65 + rng() * 0.9, ay = 0.65 + rng() * 0.9, az = 0.65 + rng() * 0.9;
+  for (let k = 0; k < n; k++) {
+    const th = rng() * Math.PI * 2, ph = Math.acos(2 * rng() - 1);
+    const hi = Math.sin(th * 5 + b3) * Math.sin(ph * 4 + b1);
+    const bump = 1 + 0.34 * Math.sin(th * 2 + b1) * Math.sin(ph * 3 + b2) + 0.2 * hi;
+    const rr = R * bump * (0.9 + rng() * 0.1);
+    pos[k * 3] = Math.sin(ph) * Math.cos(th) * rr * ax;
+    pos[k * 3 + 1] = Math.cos(ph) * rr * ay;
+    pos[k * 3 + 2] = Math.sin(ph) * Math.sin(th) * rr * az;
+    const lit = 0.3 + 0.7 * clamp01(pos[k * 3 + 1] / (rr * ay));
+    if (Math.abs(hi) > 0.72) {   // кромка: светлая, холодная
+      col[k * 3] = 0.5 + 0.3 * lit; col[k * 3 + 1] = 0.56 + 0.3 * lit; col[k * 3 + 2] = 0.62 + 0.3 * lit;
+    } else {                     // заливка: тёмный камень
+      col[k * 3] = 0.1 + 0.13 * lit; col[k * 3 + 1] = 0.11 + 0.14 * lit; col[k * 3 + 2] = 0.13 + 0.16 * lit;
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  const o = new THREE.Points(g, new THREE.PointsMaterial({ vertexColors: true, size: 1.45,
+    transparent: true, opacity: 0.96, depthWrite: false, blending: THREE.NormalBlending }));
+  return { o: o, r: R * (ax + ay) / 2 * 0.85 };   // радиус коллизии мягче визуального
+}
+// строим поле на подлёте, утилизируем позади. Плотность растёт с номером пояса —
+// «постепенно усложняться»: первый пояс редкий, к шестому камней в полтора раза больше.
+function gBeltEnsure() {
+  if (!GAME.belts) return;
+  for (const t of GAME.belts) {
+    if (!t.built && GAME.z > t.a - 900 && GAME.z < t.b + 200) {
+      t.built = true;
+      const grp = new THREE.Group();
+      GAME.group.add(grp);
+      t.grp = grp;
+      let s2 = ((WORLD ? WORLD.seed : 7) ^ (0x3d2b + t.i * 97)) | 0;
+      const rng = () => { s2 = (s2 * 1664525 + 1013904223) | 0; return ((s2 >>> 9) / 8388608) % 1; };
+      const m = Math.min(t.i, 6);
+      // S — галька мельче корабля, M — валуны, L — глыбы; XL — монолиты-ориентиры,
+      // стоят в стороне от оси старта (гигант — стена и веха, а не подлянка)
+      const cls = [
+        { n: 30 + 6 * m, r: [1.6, 3.5], xr: 150, far: 0 },
+        { n: 18 + 5 * m, r: [6, 14],    xr: 160, far: 0 },
+        { n: 6 + 2 * m,  r: [18, 34],   xr: 172, far: 24 },
+        { n: 1 + Math.min(2, t.i), r: [52, 78], xr: 190, far: 58 }
+      ];
+      for (const c of cls) for (let k = 0; k < c.n; k++) {
+        const R = c.r[0] + rng() * (c.r[1] - c.r[0]);
+        const a = gMakeAsteroid(R, rng);
+        let x = (rng() - 0.5) * 2 * c.xr;
+        if (Math.abs(x) < c.far) x = (x < 0 ? -1 : 1) * (c.far + rng() * 40);
+        const y = -4 + rng() * (58 + R * 0.5);
+        const wz = t.a + 40 + rng() * (t.b - t.a - 80);
+        a.o.position.set(x, y, 0);
+        grp.add(a.o);
+        GAME.meteors.push({ o: a.o, x: x, y: y, wz: wz, r: a.r, bi: t.i,
+          sx: (rng() - 0.5) * 0.6, sy: (rng() - 0.5) * 0.6 });
+      }
+    }
+    if (t.built && t.grp && GAME.z > t.b + 500) {
+      GAME.group.remove(t.grp);
+      t.grp.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+      GAME.meteors = GAME.meteors.filter(mm => mm.bi !== t.i);
+      t.grp = null;
+    }
+  }
+}
+// движение/вращение/коллизии поля. Экранная система чанков: z_экр = GAME.z − z_мир.
+// Столкновение НЕ убивает здесь же — ставит флаг, его читает общее условие смерти
+// в updateGame (там же грейс, обучение и кинематографичный краш).
+function gMeteorsUpdate(dt) {
+  for (const m of GAME.meteors) {
+    const sz = GAME.z - m.wz;
+    m.o.position.z = sz;
+    if (sz > 60 || sz < -700) continue;          // далеко — не крутим и не проверяем
+    m.o.rotation.x += dt * m.sx; m.o.rotation.y += dt * m.sy;
+    if (!GAME.over && Math.abs(sz - GAME.shipP.z) < m.r * 0.8) {
+      const dx = m.x - GAME.shipP.x, dy = m.y - GAME.shipP.y;
+      if (dx * dx + dy * dy < m.r * m.r * 0.6) GAME.meteorHit = true;
+    }
   }
 }
 
@@ -4959,6 +5086,11 @@ function enterGame() {
     const mgr = PDWorld.makeManager(seed, 240);
     WORLD = { seed: seed, mgr: mgr, probe: PDWorld.makeHeightProbe(mgr.plan),
               wk: null, pending: {}, inflight: 0 };
+    // пояса астероидов: расписание детерминировано сидом, как и сам мир
+    GAME.belts = gBeltPlan(seed);
+    GAME.meteors = [];
+    GAME.meteorHit = false;
+    GAME._inBelt = false;
     // Worker считает геометрию, главный поток только заливает в GPU. План уровня
     // детерминирован по seed, поэтому у потока и у главного треда он ОДИН И ТОТ ЖЕ —
     // высота под кораблём (probe тут, в главном) совпадает с точками (там, в потоке).
@@ -5152,6 +5284,7 @@ function exitGame() {
   if (typeof _obTypeT !== 'undefined' && _obTypeT) { clearInterval(_obTypeT); _obTypeT = null; }
   if (OB.aEl) OB.aEl.textContent = '';
   stickOn = false;   // выход из игры бросает руль, даже если палец ещё на экране
+  GAME.belts = null; GAME.meteors = []; GAME.meteorHit = false;   // поле уходит вместе с GAME.group
   GAME.paused = false;
   if (window.pdSaveReset) pdSaveReset();
   if (_galleryVis) { _galleryVis.forEach(([o, v]) => o.visible = v); _galleryVis = null; }
@@ -5374,6 +5507,28 @@ function updateGame(dt, time) {
   gMoveChunks(dz);
   gRecycle();   // утилизация позади, генерация впереди
   gSpawnAhead();
+  // пояса астероидов: постройка/утилизация полей, движение и коллизии камней,
+  // растворение рельефа по чанкам (край пояса плавный — G_BELT_EDGE)
+  if (GAME.belts) {
+    gBeltEnsure();
+    gMeteorsUpdate(dt);
+    for (const c of GAME.chunks) {
+      const ud = c.userData;
+      if (ud.zStart === undefined) continue;
+      ud.beltHide = 1 - gBeltK((ud.zStart + ud.zEnd) / 2);
+      // водопады рисуются общим материалом мимо uFade — в поясе гасим их видимостью
+      const showFalls = ud.beltHide > 0.5;
+      if (ud._fallsOn !== showFalls) {
+        ud._fallsOn = showFalls;
+        c.traverse(o => { if (o.material === gFallMat) o.visible = showFalls; });
+      }
+    }
+    const inB = gBeltK(GAME.z) > 0.5;
+    if (inB !== GAME._inBelt) {
+      GAME._inBelt = inB;
+      gLabel(inB ? 'ПОЯС АСТЕРОИДОВ' : 'КАНЬОНЫ ВПЕРЕДИ');
+    }
+  }
   // стрики скорости: головы едут с миром (z += dz), хвост дорисовывается назад по скорости —
   // чем быстрее, тем длиннее штрих и ярче линия; ниже ~110 скорости стрики невидимы вовсе
   if (GAME.streaks) {
@@ -5584,7 +5739,11 @@ function updateGame(dt, time) {
     if (a.t >= 1) { a.o.visible = false; GAME.anims.splice(i, 1); }
   }
   // близость к рельефу: точки САМОЙ земли под кораблём краснеют и пульсируют; касание = ГЕЙМ-ОВЕР
-  const groundH = gTerrainH(GAME.shipP.x, GAME.z);
+  // В ПОЯСЕ АСТЕРОИДОВ пола нет: рельеф спрятан, и его коллизия обязана быть спрятана
+  // тоже — иначе игрок бился бы о невидимые горы (та же грабля, что с непостроенными
+  // чанками). Кромка 0.5 совпадает с серединой растворения рельефа.
+  const beltK = GAME.belts ? gBeltK(GAME.z) : 0;
+  const groundH = beltK > 0.5 ? GAME.shipP.y - 220 : gTerrainH(GAME.shipP.x, GAME.z);
   const alt = GAME.shipP.y - groundH;
   const dangerK = clamp01(1 - alt / 9); // 0 далеко … 1 у самой земли
   gPaintDanger(dangerK, time);
@@ -5636,7 +5795,9 @@ function updateGame(dt, time) {
     return false;
   })();
   if (!chunkSeen) gSafeLift();
-  if ((alt < 1.3 || gHazardHit()) && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over
+  const hitNow = alt < 1.3 || (beltK <= 0.5 && gHazardHit()) || GAME.meteorHit;
+  GAME.meteorHit = false;   // флаг одного кадра: поставил gMeteorsUpdate, потребили здесь
+  if (hitNow && GAME.exit < 0 && GAME.enter >= 1 && !GAME.over
       && GAME.grace === 0 && chunkSeen && !(OB.on && OB.safe)) {
     GAME.over = true; // столкновение — гейм-овер
     GAME.overT = 0;
@@ -5730,9 +5891,23 @@ function gDangerRing(dt, time, alt) {
     const over = gTerrainH(GAME.shipP.x + xOff, GAME.z + 8) - (GAME.shipP.y - 1.5);
     return over > 0 ? Math.min(1, 0.5 + over / 6) : 0;
   }
-  const rF = scanAhead(0);
-  const rL = Math.max(scanAhead(-11) * 0.9, sideOver(-9));
-  const rR = Math.max(scanAhead(11) * 0.9, sideOver(9));
+  // В ПОЯСЕ АСТЕРОИДОВ рельеф спрятан — сканировать его нельзя (кольцо горело бы от
+  // невидимых гор). Риск считается по камням: ближайший по курсу в узком окне.
+  const _bK = GAME.belts ? gBeltK(GAME.z) : 0;
+  function meteorRisk(xOff) {
+    let worst = 0;
+    for (const m of GAME.meteors) {
+      const dzw = m.wz - GAME.z;
+      if (dzw < 8 || dzw > 130) continue;
+      if (Math.abs(m.x - (GAME.shipP.x + xOff * 2)) > m.r + 7) continue;
+      if (Math.abs(m.y - GAME.shipP.y) > m.r + 7) continue;
+      worst = Math.max(worst, 1 - (dzw - 8) / 122);
+    }
+    return worst;
+  }
+  const rF = _bK > 0.5 ? meteorRisk(0) : scanAhead(0);
+  const rL = _bK > 0.5 ? meteorRisk(-11) * 0.9 : Math.max(scanAhead(-11) * 0.9, sideOver(-9));
+  const rR = _bK > 0.5 ? meteorRisk(11) * 0.9 : Math.max(scanAhead(11) * 0.9, sideOver(9));
   const rD = clamp01(1 - alt / 9);
   const maxRisk = Math.max(rF, rD, rL * 0.9, rR * 0.9);
   // приборы (скорость/энергия/горизонт) видны весь полёт; КРУГ и дуги — только при угрозе
