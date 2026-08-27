@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-26 21:34 — hybrid-v8 @ 372ad50
+
+**Коммиты в этой поставке**
+```
+372ad50 Вход в игру закрывает видео мгновенно: анимации закрытия негде доиграть
+52c45a4 Знание: коды ОКПД2 на странице оборудования сверены, и почему на уровне групп
+d9cdc6c Журнал деплоя: c2dcf2c
+```
+
+**На сервер отправлено файлов:** 125, удалено: 0
+```
+hero-scene.html
+index.html
+landing.css
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/concepts/ar-portal/index.html
+…и ещё 85
+```
+
+
 ## 2026-08-26 21:23 — hybrid-v8 @ c2dcf2c
 
 **Коммиты в этой поставке**
