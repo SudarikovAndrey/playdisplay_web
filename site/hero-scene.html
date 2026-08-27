@@ -915,7 +915,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2707-game16"></script>
 <script src="odk_frame.js?v=b2707-game16"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2708-tap2';</script>
+<script>window.PD_V = 'b2708-frame3';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -2825,8 +2825,15 @@ function stopPlay() {
 // экране весь полёт: HUD выше него, мир НИЖЕ — «интерфейс виден, земли с кораблём нет».
 // Повторяет финал ветки state 3 из updatePlay один в один.
 function closePlayNow() {
-  if (play.state === 0) return;
+  if (play.state === 0 && settle === 0) return;
   play.state = 0; play.p = 0; playE = 0;
+  // У ВИДЕО ДВА ЭКРАННЫХ СЛОЯ, и гасить надо ОБА (27.08, второй заход по багу).
+  // Первый — #player с самим роликом. Второй — #frame, «чёткий кадр» поверх точек
+  // (z-12, ВЫШЕ игрового канваса): его прозрачность живёт в settle, а settle опускает
+  // только updateFrameReveal, куда игровой цикл не заходит. Убили один #player —
+  // кадр видео продолжал висеть над миром весь полёт, и баг выглядел живым.
+  settle = 0;
+  frameEl.style.opacity = 0;
   playerEl.style.display = 'none';
   playerEl.classList.remove('live');
   if (play.iframe) {
@@ -5075,7 +5082,7 @@ function updateGame(dt, time) {
   // Закрытие на входе уже есть (closePlayNow в enterGame), но старая страница в памяти
   // вкладки, гонка сообщений или любой будущий путь запуска не должны возвращать баг
   // «интерфейс виден, вместо мира — ролик». Проверка при закрытом видео бесплатна.
-  if (play.state !== 0 || play.iframe) closePlayNow();
+  if (play.state !== 0 || play.iframe || settle > 0) closePlayNow();
   // Обучение поверх игры. В try, потому что проверить его в стенде нельзя, а сорваться
   // оно не должно ценой всего кадра: упало — просто идёт обычный полёт.
   try { obUpdate(dt); } catch (e) { OB.on = false; }
