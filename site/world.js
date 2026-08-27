@@ -269,7 +269,9 @@ function planLevel(seed, count) {
       // словарь растёт по фазам: приёмы вводятся по одному
       let pool = [T.CANYON, T.SPIRES];
       if (phase !== 'LEARN') pool = pool.concat([T.ARCH, T.BRIDGE]);
-      if (phase === 'CHOICE' || phase === 'COMBINATION' || phase === 'CLIMAX') pool.push(T.FORK);
+      // FORK с ДВОЙНЫМ весом (28.08, просьба владельца «хочется развилки»): одна запись
+      // в пуле давала развилку слишком редко — раз в 10-14 чанков в лучшем случае
+      if (phase === 'CHOICE' || phase === 'COMBINATION' || phase === 'CLIMAX') pool.push(T.FORK, T.FORK, T.FORK);
       if (phase === 'PRESSURE' || phase === 'COMBINATION' || phase === 'CLIMAX')
         pool = pool.concat([T.GORGE, T.TUNNEL, T.CLIFF, T.CAVERN, T.WALL]);
       type = pool[Math.floor(r() * pool.length) % pool.length];
@@ -330,7 +332,9 @@ function makeChunkDef(o) {
       def.corridorW = lerp(26, 17, d); def.sway = 12; def.curve = 2.2;
       def.vertical = 0.9; def.yBase = 15; def.risk = true;
       def.params = { wallH: lerp(64, 96, d), ledges: 2 + Math.floor(r() * 3),
-        roughness: lerp(0.5, 1, r()), overhang: r() < 0.55 };
+        // нависание — 80% (28.08, было 55%): «давление со стороны потолка» просили
+        // явно, а ущелий без плиты и так хватает в ранних фазах
+        roughness: lerp(0.5, 1, r()), overhang: r() < 0.8 };
       break;
     case T.TUNNEL:
       def.corridorW = lerp(24, 16, d); def.sway = 14; def.curve = 1.8;
@@ -351,8 +355,13 @@ function makeChunkDef(o) {
       // количества. Выше, толще, почти без наклона — монументы, не частокол.
       def.corridorW = lerp(48, 34, d); def.sway = 24; def.curve = 1.7;
       def.vertical = 0.6; def.yBase = 18;
+      // ДИАГОНАЛЬНЫЕ ШПИЛИ (28.08, просьба владельца): у 45% групп наклон не
+      // монументальный (0.06-0.16), а драматический (0.34-0.58) — игла ложится
+      // по диагонали через кадр. Валидация солидов в коридоре (validate, п.4)
+      // отбраковывает чанк, если наклонённое тело легло на трассу.
       def.params = { count: r() < 0.45 ? 1 : 3, hMin: 46, hMax: lerp(84, 124, d),
-        lean: lerp(0.06, 0.16, r()), cap: lerp(0.2, 0.6, r()) };
+        lean: r() < 0.45 ? lerp(0.34, 0.58, r()) : lerp(0.06, 0.16, r()),
+        cap: lerp(0.2, 0.6, r()) };
       break;
     case T.CLIFF:
       def.corridorW = lerp(50, 38, d); def.sway = 14; def.curve = 1.0;
