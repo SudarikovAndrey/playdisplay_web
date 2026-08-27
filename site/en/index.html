@@ -49,7 +49,7 @@
      а не пачка: каждый лишний отнимает полосу у того, что нужно прямо сейчас. -->
 <link rel="preload" href="assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="landing.css?v=ed735e95">
+<link rel="stylesheet" href="landing.css?v=90e649ec">
 <script>
 /* Выбор подачи проектов на мобиле: ?mob=lenta | grid | more. Ставится на <html> ДО отрисовки,
    иначе сетка успевает мигнуть в старом виде. Без параметра атрибута нет и всё работает как раньше.
@@ -6983,51 +6983,119 @@
     [document.getElementById('aiWidget')].concat([].slice.call(document.querySelectorAll('[data-ai-open]'))).forEach(function(el){
       if (el) el.addEventListener('click', flyIntoAI);
     });
-    // ---- живые частицы внутри линзы виджета: медленный дрейф по орбитам вокруг глифа,
-    // ---- на ховере рой ускоряется и стягивается к центру (слабое железо — без частиц)
+    // ---- ШАР ИЗ ЧАСТИЦ ВНУТРИ ВИДЖЕТА (26.08.2026) --------------------------
+    // Было: 22 точки на плоских орбитах вокруг глифа. Плоские орбиты не читаются
+    // как объём, и виджет выглядел «кружочком с искорками», а не предметом,
+    // который хочется нажать. Стало: тот же движок точечной сферы, что в разделе
+    // /digital/ (`initPointSpheres` в digital/digital.js) — облако по спирали
+    // Фибоначчи с внутренним ядром, поворотом, перспективой и краевым светом.
+    // Что изменено ПРОТИВ первоисточника и почему:
+    //   • точек 760 + 260 вместо 2400 + 900. Виджет висит на КАЖДОЙ странице и
+    //     крутится всё время, пока сайт открыт; на 68 px разницу в плотности не
+    //     видно, а расход втрое меньше. Плотность считана по площади, не на глаз.
+    //   • середина шара ПРИГЛУШЕНА мягкой маской (`hollow`): ровно там стоит глиф,
+    //     и точки за ним превращали белое пятно в кашу. Именно приглушена, а не
+    //     выключена: первая попытка гасила их в ноль, и шар становился бубликом.
+    //   • палитра виджета (тил + редкая тёплая искра) вместо холодного белого.
+    //   • кадр раз в 34 мс, как в первоисточнике: 30 к/с хватает, а батарею
+    //     постоянно висящий виджет тратить не должен.
+    // Сторожа сохранены прежние: слабое железо, «меньше движения», скрытая
+    // вкладка, открытая AI-сессия и полёт в кейс — рисовать в этих случаях нечего.
     (function(){
       var fx = document.getElementById('aiwFx');
       if (!fx || !widget || isWeakHW) return;
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       var g2 = fx.getContext('2d');
       if (!g2) return;
-      var DPR2 = Math.min(devicePixelRatio || 1, 2), hot = 0, raf2 = null;
-      var pts2 = [];
-      for (var i2 = 0; i2 < 22; i2++)
-        pts2.push({ a: Math.random() * 6.2832, r: 0.30 + Math.random() * 0.17,   // орбита в долях радиуса
-                    v: (0.15 + Math.random() * 0.4) * (i2 % 2 ? 1 : -1),          // угловая скорость, встречные потоки
-                    s: 0.6 + Math.random() * 1.3, ph: Math.random() * 6.2832 });  // размер и фаза мерцания
-      widget.addEventListener('mouseenter', function(){ hot = 1; });
-      widget.addEventListener('mouseleave', function(){ hot = 0; });
-      function fit2(){
-        var w2c = fx.clientWidth || 60;
-        if (fx.width !== Math.round(w2c * DPR2)) { fx.width = fx.height = Math.round(w2c * DPR2); }
+
+      var GOLD = Math.PI * (3 - Math.sqrt(5)), SURF = 760, CORE = 260, pts2 = [];
+      function nz(v){ var r = Math.sin(v * 12.9898 + 78.233) * 43758.5453; return r - Math.floor(r); }
+      var i2, yy, rr0, aa, sh;
+      for (i2 = 0; i2 < SURF; i2++) {
+        yy = 1 - 2 * (i2 + 0.5) / SURF;
+        rr0 = Math.sqrt(Math.max(0, 1 - yy * yy));
+        aa = i2 * GOLD;
+        sh = 0.9 + nz(i2 + 1) * 0.1;                       // толщина оболочки, чтобы не было идеальной скорлупы
+        pts2.push({ x: Math.cos(aa) * rr0 * sh, y: yy * sh, z: Math.sin(aa) * rr0 * sh, shell: sh,
+                    ph: nz(i2 + 41) * 6.2832, sp: 0.66 + nz(i2 + 87) * 0.72,
+                    wb: 0.68 + nz(i2 + 133) * 1.15, op: 0.68 + nz(i2 + 171) * 0.32,
+                    warm: nz(i2 + 509) > 0.93 });          // редкая тёплая искра — акцент виджета
       }
-      var t2 = 0, k2 = 0; // k2 плавно тянется к hot — рой разгоняется и тормозит без рывков
+      for (i2 = 0; i2 < CORE; i2++) {
+        yy = 1 - 2 * (i2 + 0.5) / CORE;
+        rr0 = Math.sqrt(Math.max(0, 1 - yy * yy));
+        aa = i2 * GOLD + nz(i2 + 217) * 0.7;
+        sh = 0.32 + Math.pow(nz(i2 + 263), 0.52) * 0.58;
+        pts2.push({ x: Math.cos(aa) * rr0 * sh, y: yy * sh, z: Math.sin(aa) * rr0 * sh, shell: sh,
+                    ph: nz(i2 + 311) * 6.2832, sp: 0.42 + nz(i2 + 359) * 1.26,
+                    wb: 0.8 + nz(i2 + 401) * 1.5, op: 0.34 + nz(i2 + 449) * 0.42,
+                    warm: nz(i2 + 601) > 0.95 });
+      }
+
+      var hot = 0, mix = 0, px = 0, py = 0, rotY = 0, last = 0;
+      widget.addEventListener('pointerenter', function(){ hot = 1; });
+      widget.addEventListener('pointerleave', function(){ hot = 0; px = py = 0; });
+      widget.addEventListener('pointermove', function(e){
+        var b = widget.getBoundingClientRect();
+        px = Math.max(-1, Math.min(1, (e.clientX - b.left) / Math.max(1, b.width) * 2 - 1));
+        py = Math.max(-1, Math.min(1, (e.clientY - b.top) / Math.max(1, b.height) * 2 - 1));
+      });
+
+      var COOL = 'rgb(178,236,228)', WARM = 'rgb(255,150,108)', lastStyle = '';
       function tick2(now){
-        raf2 = requestAnimationFrame(tick2);
-        if (document.hidden || document.body.classList.contains('ai-session-open') || document.body.classList.contains('flying')) {
-          g2.clearRect(0, 0, fx.width, fx.height); return;
+        requestAnimationFrame(tick2);
+        if (now - last < 34) return;
+        var dt = last ? Math.min(80, now - last) : 34;
+        last = now;
+        if (document.hidden || document.body.classList.contains('ai-session-open')
+            || document.body.classList.contains('flying')) {
+          if (fx.width) g2.clearRect(0, 0, fx.width, fx.height);
+          return;
         }
-        fit2();
-        t2 += 0.016; k2 += (hot - k2) * 0.06;
-        var R = fx.width / 2;
-        g2.clearRect(0, 0, fx.width, fx.height);
+        var w2c = fx.clientWidth || 60, DPR2 = Math.min(devicePixelRatio || 1, 2);
+        var W = Math.max(1, Math.round(w2c * DPR2));
+        if (fx.width !== W) { fx.width = fx.height = W; }
+
+        mix += (hot - mix) * Math.min(1, dt * 0.0065);
+        rotY += dt * (hot ? 0.00078 : 0.00023);
+        var C = W / 2, R = W * (0.47 + mix * 0.012), pix = Math.max(1, DPR2);
+        // ГЛИФ занимает середину, и точки под ним ПРИГЛУШАЮТСЯ, а не выключаются.
+        // Первая попытка гасила их в ноль — и шар превращался в бублик: без точек
+        // на лицевой стороне не остаётся ни объёма, ни перспективы, одно кольцо.
+        // Проверено расчётом кадра в настоящие 68 px. Теперь под глифом остаётся
+        // FLOOR яркости: белое пятно с тёмной тенью отделяется и так, а шар цел.
+        var HOLE = 0.18, FADE = 0.50, FLOOR = 0.28;
+        var rotX = Math.sin(now * 0.00013) * 0.14 + mix * py * 0.07;
+        var cx = Math.cos(rotX), sx = Math.sin(rotX);
+        g2.clearRect(0, 0, W, W);
         for (var j = 0; j < pts2.length; j++) {
           var p2 = pts2[j];
-          p2.a += p2.v * 0.016 * (1 + k2 * 3.2);
-          var rr = (p2.r - k2 * 0.09) * fx.width;                       // на ховере орбиты стягиваются
-          var wob = Math.sin(t2 * 1.7 + p2.ph) * 2.4 * DPR2;            // лёгкое дыхание орбиты
-          var x2 = R + Math.cos(p2.a) * (rr + wob);
-          var y2 = R + Math.sin(p2.a) * (rr + wob);
-          var tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t2 * 2.3 + p2.ph * 3.0));
-          g2.globalAlpha = (0.25 + 0.5 * tw) * (0.55 + k2 * 0.45);
-          g2.fillStyle = j % 5 === 0 ? '#ff8a5c' : '#2be0c6';
-          g2.beginPath(); g2.arc(x2, y2, p2.s * DPR2 * (1 + k2 * 0.3), 0, 6.2832); g2.fill();
+          var lay = rotY * p2.sp + Math.sin(now * 0.00016 * p2.wb + p2.ph) * (0.025 + (1 - p2.shell) * 0.055);
+          var cy = Math.cos(lay), sy = Math.sin(lay);
+          var x = p2.x * cy + p2.z * sy;
+          var z = -p2.x * sy + p2.z * cy;
+          var y = p2.y * cx - z * sx;
+          var depth = p2.y * sx + z * cx;
+          var inner = 1 - p2.shell;
+          x += Math.sin(now * 0.00042 * p2.wb + p2.ph + y * 3.4) * (0.008 + inner * 0.025 + mix * 0.018);
+          y += Math.cos(now * 0.00031 * p2.wb + p2.ph + x * 3.1) * (0.005 + inner * 0.018 + mix * 0.012);
+          x += mix * px * (1 - Math.min(1, Math.abs(y))) * 0.026;
+          y += mix * py * (1 - Math.min(1, Math.abs(x))) * 0.018;
+          var edge = Math.min(1, Math.sqrt(x * x + y * y));
+          // Мягкая дыра под глифом. Резкая граница читалась бы кольцом, поэтому
+          // прозрачность нарастает плавно от HOLE до FADE.
+          var hollow = edge <= HOLE ? 0 : (edge >= FADE ? 1 : (edge - HOLE) / (FADE - HOLE));
+          hollow = FLOOR + (1 - FLOOR) * hollow * hollow;
+          var persp = 1 + depth * (0.115 + mix * 0.025);
+          var lit = 0.14 + (depth + 1) * 0.27 + Math.pow(edge, 2.5) * 0.29;
+          var st = p2.warm ? WARM : COOL;
+          if (st !== lastStyle) { g2.fillStyle = st; lastStyle = st; }
+          g2.globalAlpha = Math.min(1, lit * p2.op * hollow * (0.85 + mix * 0.6));
+          g2.fillRect(Math.round(C + x * R * persp), Math.round(C + y * R * persp), pix, pix);
         }
         g2.globalAlpha = 1;
       }
-      raf2 = requestAnimationFrame(tick2);
+      requestAnimationFrame(tick2);
     })();
     document.getElementById('aiClose').addEventListener('click', flyOutOfAI);
     // Большая кнопка на первом экране — начать голосом; ссылка рядом — начать текстом.
@@ -7142,7 +7210,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#05141a"/><g fill="#2be0c6"><circle cx="34" cy="42" r="2"/><circle cx="44" cy="36" r="2"/><circle cx="54" cy="44" r="2"/><circle cx="64" cy="38" r="2"/><circle cx="40" cy="52" r="2"/><circle cx="52" cy="56" r="2"/><circle cx="62" cy="52" r="2"/></g><circle cx="50" cy="50" r="16" fill="none" stroke="#ff6a3d" stroke-width="1.5"/><path d="M46 44l10 6-10 6z" fill="#f1fbfc"/></svg>
 </template>
 <!--SEO-->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay", "url": "https://playdisplay.com/", "description": "playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "email": "info@playdisplay.com", "foundingDate": "2011", "areaServed": "Worldwide", "knowsAbout": ["museum concept design", "interactive exhibition design", "multimedia installations", "immersive exhibitions", "visitor centre design", "projection mapping", "augmented and virtual reality", "interactive showrooms"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "email": "info@playdisplay.com", "availableLanguage": ["Russian", "English", "Portuguese"]}, "founder": {"@type": "Person", "name": "Andrey Sudarikov"}, "hasOfferCatalog": {"@type": "OfferCatalog", "name": "playdisplay services", "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Museum concept design", "description": "From “why does this museum exist” to an exhibition design ready to be built.", "url": "https://playdisplay.com/en/services/museum-concept/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Interactive exhibition design", "description": "An exhibition the visitor does not read but explores.", "url": "https://playdisplay.com/en/services/interactive-exhibition/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Interactive museum equipment", "description": "A screen, a model or a vitrine tells nobody anything on its own. We build the equipment around the story, not the story around the equipment.", "url": "https://playdisplay.com/en/services/museum-equipment/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Technical fit-out for museums", "description": "We write and audit the specification, put together the equipment list, and answer for all of it working as one system.", "url": "https://playdisplay.com/en/services/museum-equipping/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Interactive exhibition stand", "description": "A stand people stop at — and stay at long enough for someone to talk to them.", "url": "https://playdisplay.com/en/services/exhibition-stand/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Holographic showcases and volumetric displays", "description": "An object that looks impossible — and therefore stops the crowd.", "url": "https://playdisplay.com/en/services/holographic-showcase/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Projection mapping and interactive scale models", "description": "Physical form with information laid over it: a territory, a plant, an object.", "url": "https://playdisplay.com/en/services/projection-mapping/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Interactive showroom and brand space", "description": "A space where the product is shown through action, not through a brochure.", "url": "https://playdisplay.com/en/services/showroom/"}}]}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay", "url": "https://playdisplay.com/", "description": "playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "email": "info@playdisplay.com", "foundingDate": "2011", "areaServed": "Worldwide", "knowsAbout": ["museum concept design", "interactive exhibition design", "multimedia installations", "immersive exhibitions", "visitor centre design", "projection mapping", "augmented and virtual reality", "interactive showrooms"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "email": "info@playdisplay.com", "availableLanguage": ["Russian", "English", "Portuguese"]}, "founder": {"@type": "Person", "name": "Andrey Sudarikov"}, "hasOfferCatalog": {"@type": "OfferCatalog", "name": "playdisplay services", "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Museum concept design", "description": "From “why does this museum exist” to an exhibition design ready to be built.", "url": "https://playdisplay.com/en/services/museum-concept/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Interactive exhibition design", "description": "An exhibition the visitor does not read but explores.", "url": "https://playdisplay.com/en/services/interactive-exhibition/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Interactive museum equipment", "description": "A screen, a model or a vitrine tells nobody anything on its own. We build the equipment around the story, not the story around the equipment.", "url": "https://playdisplay.com/en/services/museum-equipment/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Technical fit-out for museums", "description": "We write and audit the specification, put together the equipment list, and answer for all of it working as one system.", "url": "https://playdisplay.com/en/services/museum-equipping/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Multimedia equipment", "description": "What a multimedia system is actually made of, how professional gear differs from consumer kit, and why the spec matters more than the brand.", "url": "https://playdisplay.com/en/services/multimedia-equipment/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Interactive exhibition stand", "description": "A stand people stop at — and stay at long enough for someone to talk to them.", "url": "https://playdisplay.com/en/services/exhibition-stand/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Holographic showcases and volumetric displays", "description": "An object that looks impossible — and therefore stops the crowd.", "url": "https://playdisplay.com/en/services/holographic-showcase/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Projection mapping and interactive scale models", "description": "Physical form with information laid over it: a territory, a plant, an object.", "url": "https://playdisplay.com/en/services/projection-mapping/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Interactive showroom and brand space", "description": "A space where the product is shown through action, not through a brochure.", "url": "https://playdisplay.com/en/services/showroom/"}}]}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "playdisplay", "url": "https://playdisplay.com/en/", "inLanguage": "en"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "playdisplay projects", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://playdisplay.com/en/work/industry-rf/", "name": "Russian Industry"}, {"@type": "ListItem", "position": 2, "url": "https://playdisplay.com/en/work/airports/", "name": "Russian Airports"}, {"@type": "ListItem", "position": 3, "url": "https://playdisplay.com/en/work/odk-oak/", "name": "UEC UAC"}, {"@type": "ListItem", "position": 4, "url": "https://playdisplay.com/en/work/proryv/", "name": "Proryv"}, {"@type": "ListItem", "position": 5, "url": "https://playdisplay.com/en/work/rostec/", "name": "Rostec Expo"}, {"@type": "ListItem", "position": 6, "url": "https://playdisplay.com/en/work/ptk-group/", "name": "PTK Group"}, {"@type": "ListItem", "position": 7, "url": "https://playdisplay.com/en/work/mig2019/", "name": "MiG-35 Booth"}, {"@type": "ListItem", "position": 8, "url": "https://playdisplay.com/en/work/bmwx5/", "name": "BMW X5"}, {"@type": "ListItem", "position": 9, "url": "https://playdisplay.com/en/work/pano360/", "name": "Panorama 360"}, {"@type": "ListItem", "position": 10, "url": "https://playdisplay.com/en/work/urban-forum-2018/", "name": "Urban Forum 2018"}, {"@type": "ListItem", "position": 11, "url": "https://playdisplay.com/en/work/stalingrad/", "name": "Password to Victory: Stalingrad"}, {"@type": "ListItem", "position": 12, "url": "https://playdisplay.com/en/work/coalco/", "name": "COALCO Dry Port"}, {"@type": "ListItem", "position": 13, "url": "https://playdisplay.com/en/work/sinara/", "name": "Sinara Transport Machines"}, {"@type": "ListItem", "position": 14, "url": "https://playdisplay.com/en/work/vdnh-space/", "name": "VDNH Space"}, {"@type": "ListItem", "position": 15, "url": "https://playdisplay.com/en/work/vdnh-space-center/", "name": "Cosmonautics and Aviation Center"}]}</script>
 <noscript><section><h2>playdisplay projects</h2><ul><li><a href="/en/work/industry-rf/">Russian Industry</a> — 2M visitors in eight months. An industry you can examine up close. The country has ambitious plans for shipbuilding: a new generation of civilian vessels…</li><li><a href="/en/work/airports/">Russian Airports</a> — 600,000 visitors to the exhibition. A space that takes you by the hand. Present three of Russia’s international airports at Russia Expo so that each one…</li><li><a href="/en/work/odk-oak/">UEC UAC</a> — 135,000 visitors to MAKS-2021 over six days. A complex product is sold by whoever lets you touch it. MAKS, the International Aviation and Space Salon, is…</li><li><a href="/en/work/proryv/">Proryv</a> — 7,000 delegates over three days. Tomorrow’s technology told in the language of experience. Build an installation that shows in plain visual terms how…</li><li><a href="/en/work/rostec/">Rostec Expo</a> — The scale of a corporation held in one space. Create the centerpiece exhibit at the entrance to the Rostec Expo pavilion and bring the products of every…</li><li><a href="/en/work/ptk-group/">PTK Group</a> — A presentation people take part in. PTK Group builds modern track machines — equipment for constructing, repairing and maintaining railways. Almost all…</li><li><a href="/en/work/mig2019/">MiG-35 Booth</a> — 578,810 visitors to MAKS-2019. The jet was already a star — we built it a stage. Make the MiG-35 stand out among the other manufacturers’ aircraft…</li><li><a href="/en/work/bmwx5/">BMW X5</a> — The car you built yourself is the one you want to buy. Equip the sales office with an interactive tool for choosing and configuring a car.</li><li><a href="/en/work/pano360/">Panorama 360</a> — 200,000+ downloads of the AR Moscow City app. Not a window into history — a way in. Give visitors to one of Europe’s highest observation decks — Panorama…</li><li><a href="/en/work/urban-forum-2018/">Urban Forum 2018</a> — 200,000 visitors to the forum programme. A queue at the installation is the best metric there is. A booth for a city government that speaks to residents…</li><li><a href="/en/work/stalingrad/">Password to Victory: Stalingrad</a> — Play can speak about serious things too. Draw public attention to a heritage site of federal significance and tell the story of the Battle of Stalingrad…</li><li><a href="/en/work/coalco/">COALCO Dry Port</a> — Logistics you can see instead of reading about it in a brochure. The dry port is on such a scale that it only makes sense shown whole: how this new…</li><li><a href="/en/work/sinara/">Sinara Transport Machines</a> — Heavy machinery shown in the palm of your hand. Sinara Transport Machines builds a new generation of locomotives. The task was to show not only the machines…</li><li><a href="/en/work/vdnh-space/">VDNH Space</a> — The visitor does not read the exhibition — they explore it. The whole history of spaceflight in one playable system: 115 exhibits, interactive 3D models…</li><li><a href="/en/work/vdnh-space-center/">Cosmonautics and Aviation Center</a> — A museum that answers with movement. Tell the history of spaceflight and rocketry through high-technology solutions.</li></ul></section><section><h2>Concepts</h2><ul><li><a href="/en/concepts/ar-portal/">Portal Into a Space That Doesn&#x27;t Exist Yet</a> — When you need to show an unbuilt project, a vanished world or an unreachable space — and let people explore it on their own.</li><li><a href="/en/concepts/ar-xray/">See What&#x27;s Hidden Inside</a> — When what&#x27;s inside an object matters more than its outer shell.</li><li><a href="/en/concepts/art-portrait/">Visitor Becomes Part of the Exhibition</a> — When an exhibition needs a personal takeaway that people will want to keep and show to others.</li><li><a href="/en/concepts/media-vitrage/">Facade That Reacts to People</a> — When an architectural surface has to become the main media object of the space.</li><li><a href="/en/concepts/cabin-hologram/">Complex Object, One Synchronized Show</a> — When a large group has to move quickly through a dense product presentation.</li><li><a href="/en/concepts/cubic-expo/">Exhibition as Spatial Composition</a> — When you want to break out of the usual row of screens and build the space around one visual idea.</li><li><a href="/en/concepts/living-model/">Future Building, Right Above the Model</a> — When a buyer needs to see a future property in more depth than renders and brochures allow.</li><li><a href="/en/concepts/panorama-dive/">Property at the Scale of Being There</a> — When a project has to be shown to a whole group with a sense of full immersion.</li><li><a href="/en/concepts/sales-showroom/">Showroom That Sells a Way of Life</a> — When the sales office has to be part of the project&#x27;s brand and back up the work of the sales team.</li><li><a href="/en/concepts/living-panorama/">A Big Journey for a Big Audience</a> — When dozens or hundreds of viewers have to step inside the same story at the same time.</li><li><a href="/en/concepts/heli-model/">A Physical Object Comes to Life</a> — When a scale model has to show not just a shape, but action, environment and the processes around it.</li><li><a href="/en/concepts/team-mission/">Team Quest Around One Table</a> — When visitors need a shared task — and each of them a role of their own.</li><li><a href="/en/concepts/floating-object/">An Object That Looks Impossible</a> — When a product or an exhibit has to own the room and be explored in three dimensions.</li><li><a href="/en/concepts/living-interior/">Show How a Space Will Live</a> — When what you&#x27;re selling is not an interior as a set of finishes, but the life that will happen inside it.</li><li><a href="/en/concepts/threshold/">Immersion Starts at the Door</a> — When the first impression has to set the mood for the whole space, instantly.</li><li><a href="/en/concepts/living-lines/">The Space Starts Speaking</a> — When an interior needs a live information layer built into the architecture itself.</li><li><a href="/en/concepts/weightlessness/">One Object Stops the Crowd</a> — When you need a simple, physically convincing center of attention.</li><li><a href="/en/concepts/mars/">Museum as a Working Space Base</a> — When an educational subject has to become a sequence of personal missions.</li><li><a href="/en/concepts/living-monolith/">A Wall That Lives With the Space</a> — When a large architectural volume has to hold both a permanent identity and content that keeps changing.</li><li><a href="/en/concepts/mind-canvas/">Artwork Painted by a State of Mind</a> — When you want to give visitors an unexpected way to see and express what&#x27;s going on inside them.</li><li><a href="/en/concepts/street-portal/">The Street Gets a Window Into Somewhere Else</a> — When passers-by need a reason to care about a place or an event before they&#x27;ve decided to go in.</li><li><a href="/en/concepts/form-library/">Screens Become Architecture</a> — When a space needs a form of its own and content has to escape the standard rectangle.</li><li><a href="/en/concepts/living-ship/">A Ship&#x27;s Story Unfolds Around Its Model</a> — When a physical exhibit needs movement, scale and events added to it.</li><li><a href="/en/concepts/safe-training/">Skill Through Action and Full Presence</a> — When someone has to train or run missions in a controlled virtual environment.</li><li><a href="/en/concepts/motion-game/">Training Turns Into a Game</a> — When people need a reason to move longer, more often and with more appetite.</li><li><a href="/en/concepts/motion-architecture/">Every Step Becomes Part of the Message</a> — When an everyday route should turn into a visual and narrative event.</li><li><a href="/en/concepts/control-center/">A Space Mission for a Real Crew</a> — When you need a flagship attraction with a long scenario, repeat visits and strong group dynamics.</li><li><a href="/en/concepts/city-flight/">A Real Jump Lands You in a Digital World</a> — When you need a spectacular attraction that reads at a glance and runs on real physical movement.</li></ul></section><p><a href="/en/atlas/">Atlas: how we think about space</a></p></noscript>

@@ -48,7 +48,7 @@
      а не пачка: каждый лишний отнимает полосу у того, что нужно прямо сейчас. -->
 <link rel="preload" href="assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="landing.css?v=ed735e95">
+<link rel="stylesheet" href="landing.css?v=90e649ec">
 <script>
 /* Выбор подачи проектов на мобиле: ?mob=lenta | grid | more. Ставится на <html> ДО отрисовки,
    иначе сетка успевает мигнуть в старом виде. Без параметра атрибута нет и всё работает как раньше.
@@ -6980,51 +6980,119 @@
     [document.getElementById('aiWidget')].concat([].slice.call(document.querySelectorAll('[data-ai-open]'))).forEach(function(el){
       if (el) el.addEventListener('click', flyIntoAI);
     });
-    // ---- живые частицы внутри линзы виджета: медленный дрейф по орбитам вокруг глифа,
-    // ---- на ховере рой ускоряется и стягивается к центру (слабое железо — без частиц)
+    // ---- ШАР ИЗ ЧАСТИЦ ВНУТРИ ВИДЖЕТА (26.08.2026) --------------------------
+    // Было: 22 точки на плоских орбитах вокруг глифа. Плоские орбиты не читаются
+    // как объём, и виджет выглядел «кружочком с искорками», а не предметом,
+    // который хочется нажать. Стало: тот же движок точечной сферы, что в разделе
+    // /digital/ (`initPointSpheres` в digital/digital.js) — облако по спирали
+    // Фибоначчи с внутренним ядром, поворотом, перспективой и краевым светом.
+    // Что изменено ПРОТИВ первоисточника и почему:
+    //   • точек 760 + 260 вместо 2400 + 900. Виджет висит на КАЖДОЙ странице и
+    //     крутится всё время, пока сайт открыт; на 68 px разницу в плотности не
+    //     видно, а расход втрое меньше. Плотность считана по площади, не на глаз.
+    //   • середина шара ПРИГЛУШЕНА мягкой маской (`hollow`): ровно там стоит глиф,
+    //     и точки за ним превращали белое пятно в кашу. Именно приглушена, а не
+    //     выключена: первая попытка гасила их в ноль, и шар становился бубликом.
+    //   • палитра виджета (тил + редкая тёплая искра) вместо холодного белого.
+    //   • кадр раз в 34 мс, как в первоисточнике: 30 к/с хватает, а батарею
+    //     постоянно висящий виджет тратить не должен.
+    // Сторожа сохранены прежние: слабое железо, «меньше движения», скрытая
+    // вкладка, открытая AI-сессия и полёт в кейс — рисовать в этих случаях нечего.
     (function(){
       var fx = document.getElementById('aiwFx');
       if (!fx || !widget || isWeakHW) return;
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       var g2 = fx.getContext('2d');
       if (!g2) return;
-      var DPR2 = Math.min(devicePixelRatio || 1, 2), hot = 0, raf2 = null;
-      var pts2 = [];
-      for (var i2 = 0; i2 < 22; i2++)
-        pts2.push({ a: Math.random() * 6.2832, r: 0.30 + Math.random() * 0.17,   // орбита в долях радиуса
-                    v: (0.15 + Math.random() * 0.4) * (i2 % 2 ? 1 : -1),          // угловая скорость, встречные потоки
-                    s: 0.6 + Math.random() * 1.3, ph: Math.random() * 6.2832 });  // размер и фаза мерцания
-      widget.addEventListener('mouseenter', function(){ hot = 1; });
-      widget.addEventListener('mouseleave', function(){ hot = 0; });
-      function fit2(){
-        var w2c = fx.clientWidth || 60;
-        if (fx.width !== Math.round(w2c * DPR2)) { fx.width = fx.height = Math.round(w2c * DPR2); }
+
+      var GOLD = Math.PI * (3 - Math.sqrt(5)), SURF = 760, CORE = 260, pts2 = [];
+      function nz(v){ var r = Math.sin(v * 12.9898 + 78.233) * 43758.5453; return r - Math.floor(r); }
+      var i2, yy, rr0, aa, sh;
+      for (i2 = 0; i2 < SURF; i2++) {
+        yy = 1 - 2 * (i2 + 0.5) / SURF;
+        rr0 = Math.sqrt(Math.max(0, 1 - yy * yy));
+        aa = i2 * GOLD;
+        sh = 0.9 + nz(i2 + 1) * 0.1;                       // толщина оболочки, чтобы не было идеальной скорлупы
+        pts2.push({ x: Math.cos(aa) * rr0 * sh, y: yy * sh, z: Math.sin(aa) * rr0 * sh, shell: sh,
+                    ph: nz(i2 + 41) * 6.2832, sp: 0.66 + nz(i2 + 87) * 0.72,
+                    wb: 0.68 + nz(i2 + 133) * 1.15, op: 0.68 + nz(i2 + 171) * 0.32,
+                    warm: nz(i2 + 509) > 0.93 });          // редкая тёплая искра — акцент виджета
       }
-      var t2 = 0, k2 = 0; // k2 плавно тянется к hot — рой разгоняется и тормозит без рывков
+      for (i2 = 0; i2 < CORE; i2++) {
+        yy = 1 - 2 * (i2 + 0.5) / CORE;
+        rr0 = Math.sqrt(Math.max(0, 1 - yy * yy));
+        aa = i2 * GOLD + nz(i2 + 217) * 0.7;
+        sh = 0.32 + Math.pow(nz(i2 + 263), 0.52) * 0.58;
+        pts2.push({ x: Math.cos(aa) * rr0 * sh, y: yy * sh, z: Math.sin(aa) * rr0 * sh, shell: sh,
+                    ph: nz(i2 + 311) * 6.2832, sp: 0.42 + nz(i2 + 359) * 1.26,
+                    wb: 0.8 + nz(i2 + 401) * 1.5, op: 0.34 + nz(i2 + 449) * 0.42,
+                    warm: nz(i2 + 601) > 0.95 });
+      }
+
+      var hot = 0, mix = 0, px = 0, py = 0, rotY = 0, last = 0;
+      widget.addEventListener('pointerenter', function(){ hot = 1; });
+      widget.addEventListener('pointerleave', function(){ hot = 0; px = py = 0; });
+      widget.addEventListener('pointermove', function(e){
+        var b = widget.getBoundingClientRect();
+        px = Math.max(-1, Math.min(1, (e.clientX - b.left) / Math.max(1, b.width) * 2 - 1));
+        py = Math.max(-1, Math.min(1, (e.clientY - b.top) / Math.max(1, b.height) * 2 - 1));
+      });
+
+      var COOL = 'rgb(178,236,228)', WARM = 'rgb(255,150,108)', lastStyle = '';
       function tick2(now){
-        raf2 = requestAnimationFrame(tick2);
-        if (document.hidden || document.body.classList.contains('ai-session-open') || document.body.classList.contains('flying')) {
-          g2.clearRect(0, 0, fx.width, fx.height); return;
+        requestAnimationFrame(tick2);
+        if (now - last < 34) return;
+        var dt = last ? Math.min(80, now - last) : 34;
+        last = now;
+        if (document.hidden || document.body.classList.contains('ai-session-open')
+            || document.body.classList.contains('flying')) {
+          if (fx.width) g2.clearRect(0, 0, fx.width, fx.height);
+          return;
         }
-        fit2();
-        t2 += 0.016; k2 += (hot - k2) * 0.06;
-        var R = fx.width / 2;
-        g2.clearRect(0, 0, fx.width, fx.height);
+        var w2c = fx.clientWidth || 60, DPR2 = Math.min(devicePixelRatio || 1, 2);
+        var W = Math.max(1, Math.round(w2c * DPR2));
+        if (fx.width !== W) { fx.width = fx.height = W; }
+
+        mix += (hot - mix) * Math.min(1, dt * 0.0065);
+        rotY += dt * (hot ? 0.00078 : 0.00023);
+        var C = W / 2, R = W * (0.47 + mix * 0.012), pix = Math.max(1, DPR2);
+        // ГЛИФ занимает середину, и точки под ним ПРИГЛУШАЮТСЯ, а не выключаются.
+        // Первая попытка гасила их в ноль — и шар превращался в бублик: без точек
+        // на лицевой стороне не остаётся ни объёма, ни перспективы, одно кольцо.
+        // Проверено расчётом кадра в настоящие 68 px. Теперь под глифом остаётся
+        // FLOOR яркости: белое пятно с тёмной тенью отделяется и так, а шар цел.
+        var HOLE = 0.18, FADE = 0.50, FLOOR = 0.28;
+        var rotX = Math.sin(now * 0.00013) * 0.14 + mix * py * 0.07;
+        var cx = Math.cos(rotX), sx = Math.sin(rotX);
+        g2.clearRect(0, 0, W, W);
         for (var j = 0; j < pts2.length; j++) {
           var p2 = pts2[j];
-          p2.a += p2.v * 0.016 * (1 + k2 * 3.2);
-          var rr = (p2.r - k2 * 0.09) * fx.width;                       // на ховере орбиты стягиваются
-          var wob = Math.sin(t2 * 1.7 + p2.ph) * 2.4 * DPR2;            // лёгкое дыхание орбиты
-          var x2 = R + Math.cos(p2.a) * (rr + wob);
-          var y2 = R + Math.sin(p2.a) * (rr + wob);
-          var tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t2 * 2.3 + p2.ph * 3.0));
-          g2.globalAlpha = (0.25 + 0.5 * tw) * (0.55 + k2 * 0.45);
-          g2.fillStyle = j % 5 === 0 ? '#ff8a5c' : '#2be0c6';
-          g2.beginPath(); g2.arc(x2, y2, p2.s * DPR2 * (1 + k2 * 0.3), 0, 6.2832); g2.fill();
+          var lay = rotY * p2.sp + Math.sin(now * 0.00016 * p2.wb + p2.ph) * (0.025 + (1 - p2.shell) * 0.055);
+          var cy = Math.cos(lay), sy = Math.sin(lay);
+          var x = p2.x * cy + p2.z * sy;
+          var z = -p2.x * sy + p2.z * cy;
+          var y = p2.y * cx - z * sx;
+          var depth = p2.y * sx + z * cx;
+          var inner = 1 - p2.shell;
+          x += Math.sin(now * 0.00042 * p2.wb + p2.ph + y * 3.4) * (0.008 + inner * 0.025 + mix * 0.018);
+          y += Math.cos(now * 0.00031 * p2.wb + p2.ph + x * 3.1) * (0.005 + inner * 0.018 + mix * 0.012);
+          x += mix * px * (1 - Math.min(1, Math.abs(y))) * 0.026;
+          y += mix * py * (1 - Math.min(1, Math.abs(x))) * 0.018;
+          var edge = Math.min(1, Math.sqrt(x * x + y * y));
+          // Мягкая дыра под глифом. Резкая граница читалась бы кольцом, поэтому
+          // прозрачность нарастает плавно от HOLE до FADE.
+          var hollow = edge <= HOLE ? 0 : (edge >= FADE ? 1 : (edge - HOLE) / (FADE - HOLE));
+          hollow = FLOOR + (1 - FLOOR) * hollow * hollow;
+          var persp = 1 + depth * (0.115 + mix * 0.025);
+          var lit = 0.14 + (depth + 1) * 0.27 + Math.pow(edge, 2.5) * 0.29;
+          var st = p2.warm ? WARM : COOL;
+          if (st !== lastStyle) { g2.fillStyle = st; lastStyle = st; }
+          g2.globalAlpha = Math.min(1, lit * p2.op * hollow * (0.85 + mix * 0.6));
+          g2.fillRect(Math.round(C + x * R * persp), Math.round(C + y * R * persp), pix, pix);
         }
         g2.globalAlpha = 1;
       }
-      raf2 = requestAnimationFrame(tick2);
+      requestAnimationFrame(tick2);
     })();
     document.getElementById('aiClose').addEventListener('click', flyOutOfAI);
     // Большая кнопка на первом экране — начать голосом; ссылка рядом — начать текстом.
@@ -7139,7 +7207,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#05141a"/><g fill="#2be0c6"><circle cx="34" cy="42" r="2"/><circle cx="44" cy="36" r="2"/><circle cx="54" cy="44" r="2"/><circle cx="64" cy="38" r="2"/><circle cx="40" cy="52" r="2"/><circle cx="52" cy="56" r="2"/><circle cx="62" cy="52" r="2"/></g><circle cx="50" cy="50" r="16" fill="none" stroke="#ff6a3d" stroke-width="1.5"/><path d="M46 44l10 6-10 6z" fill="#f1fbfc"/></svg>
 </template>
 <!--SEO-->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay", "url": "https://playdisplay.com/", "description": "playdisplay проектирует пространства и впечатления, которые люди запоминают: современные музеи, интерактивные экспозиции, visitor centre, шоурумы и иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "email": "info@playdisplay.com", "foundingDate": "2011", "areaServed": "Worldwide", "knowsAbout": ["разработка концепции музея", "дизайн интерактивной экспозиции", "мультимедийные инсталляции", "иммерсивные выставки", "visitor centre", "проекционный маппинг", "дополненная и виртуальная реальность", "интерактивные шоурумы"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "email": "info@playdisplay.com", "availableLanguage": ["Russian", "English", "Portuguese"]}, "founder": {"@type": "Person", "name": "Андрей Судариков"}, "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Услуги playdisplay", "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Разработка концепции музея", "description": "От «зачем этот музей существует» до готового к реализации проекта экспозиции.", "url": "https://playdisplay.com/services/museum-concept/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Интерактивная экспозиция", "description": "Экспозиция, которую посетитель не читает, а исследует.", "url": "https://playdisplay.com/services/interactive-exhibition/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Интерактивное оборудование для музея", "description": "Экран, макет и витрина сами по себе не рассказывают ничего. Собираем оборудование вокруг сценария, а не сценарий вокруг оборудования.", "url": "https://playdisplay.com/services/museum-equipment/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Техническое оснащение музея", "description": "Пишем и проверяем техническое задание, подбираем состав оборудования и отвечаем за то, чтобы всё это работало как одна система.", "url": "https://playdisplay.com/services/museum-equipping/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Интерактивный выставочный стенд", "description": "Стенд, у которого останавливаются, — и остаются достаточно долго, чтобы поговорить.", "url": "https://playdisplay.com/services/exhibition-stand/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Голографические витрины и объёмные показы", "description": "Объект, который выглядит невозможным, — и потому останавливает поток.", "url": "https://playdisplay.com/services/holographic-showcase/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Проекционный маппинг и интерактивные макеты", "description": "Физическая форма, на которую ложится информация: территория, производство, объект.", "url": "https://playdisplay.com/services/projection-mapping/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Интерактивный шоурум и бренд-пространство", "description": "Пространство, где продукт показывают действием, а не буклетом.", "url": "https://playdisplay.com/services/showroom/"}}]}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay", "url": "https://playdisplay.com/", "description": "playdisplay проектирует пространства и впечатления, которые люди запоминают: современные музеи, интерактивные экспозиции, visitor centre, шоурумы и иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.", "logo": "https://playdisplay.com/assets/logos/logo.svg", "sameAs": ["https://www.facebook.com/playdisplay/", "https://vimeo.com/playdisplay5", "https://www.instagram.com/play.display/", "https://www.youtube.com/channel/UCVSeH8Y8m-_OLTm5coboICQ"], "email": "info@playdisplay.com", "foundingDate": "2011", "areaServed": "Worldwide", "knowsAbout": ["разработка концепции музея", "дизайн интерактивной экспозиции", "мультимедийные инсталляции", "иммерсивные выставки", "visitor centre", "проекционный маппинг", "дополненная и виртуальная реальность", "интерактивные шоурумы"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "email": "info@playdisplay.com", "availableLanguage": ["Russian", "English", "Portuguese"]}, "founder": {"@type": "Person", "name": "Андрей Судариков"}, "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Услуги playdisplay", "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Разработка концепции музея", "description": "От «зачем этот музей существует» до готового к реализации проекта экспозиции.", "url": "https://playdisplay.com/services/museum-concept/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Интерактивная экспозиция", "description": "Экспозиция, которую посетитель не читает, а исследует.", "url": "https://playdisplay.com/services/interactive-exhibition/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Интерактивное оборудование для музея", "description": "Экран, макет и витрина сами по себе не рассказывают ничего. Собираем оборудование вокруг сценария, а не сценарий вокруг оборудования.", "url": "https://playdisplay.com/services/museum-equipment/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Техническое оснащение музея", "description": "Пишем и проверяем техническое задание, подбираем состав оборудования и отвечаем за то, чтобы всё это работало как одна система.", "url": "https://playdisplay.com/services/museum-equipping/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Мультимедийное оборудование", "description": "Разбираем, из чего состоит мультимедийный комплекс, чем профессиональная техника отличается от бытовой и какими кодами ОКПД2 всё это закупается.", "url": "https://playdisplay.com/services/multimedia-equipment/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Интерактивный выставочный стенд", "description": "Стенд, у которого останавливаются, — и остаются достаточно долго, чтобы поговорить.", "url": "https://playdisplay.com/services/exhibition-stand/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Голографические витрины и объёмные показы", "description": "Объект, который выглядит невозможным, — и потому останавливает поток.", "url": "https://playdisplay.com/services/holographic-showcase/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Проекционный маппинг и интерактивные макеты", "description": "Физическая форма, на которую ложится информация: территория, производство, объект.", "url": "https://playdisplay.com/services/projection-mapping/"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Интерактивный шоурум и бренд-пространство", "description": "Пространство, где продукт показывают действием, а не буклетом.", "url": "https://playdisplay.com/services/showroom/"}}]}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "playdisplay", "url": "https://playdisplay.com/", "inLanguage": "ru"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "Проекты playdisplay", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://playdisplay.com/work/industry-rf/", "name": "Промышленность РФ"}, {"@type": "ListItem", "position": 2, "url": "https://playdisplay.com/work/airports/", "name": "Аэропорты России"}, {"@type": "ListItem", "position": 3, "url": "https://playdisplay.com/work/odk-oak/", "name": "ОДК ОАК"}, {"@type": "ListItem", "position": 4, "url": "https://playdisplay.com/work/proryv/", "name": "Прорыв"}, {"@type": "ListItem", "position": 5, "url": "https://playdisplay.com/work/rostec/", "name": "Ростех-Экспо"}, {"@type": "ListItem", "position": 6, "url": "https://playdisplay.com/work/ptk-group/", "name": "PTK Group"}, {"@type": "ListItem", "position": 7, "url": "https://playdisplay.com/work/mig2019/", "name": "Стенд МИГ-35"}, {"@type": "ListItem", "position": 8, "url": "https://playdisplay.com/work/bmwx5/", "name": "BMW X5"}, {"@type": "ListItem", "position": 9, "url": "https://playdisplay.com/work/pano360/", "name": "Панорама 360"}, {"@type": "ListItem", "position": 10, "url": "https://playdisplay.com/work/urban-forum-2018/", "name": "Urban Forum 2018"}, {"@type": "ListItem", "position": 11, "url": "https://playdisplay.com/work/stalingrad/", "name": "Пароль победы «Сталинград»"}, {"@type": "ListItem", "position": 12, "url": "https://playdisplay.com/work/coalco/", "name": "Сухой порт COALCO"}, {"@type": "ListItem", "position": 13, "url": "https://playdisplay.com/work/sinara/", "name": "Синара Транспортные Машины"}, {"@type": "ListItem", "position": 14, "url": "https://playdisplay.com/work/vdnh-space/", "name": "ВДНХ Космос"}, {"@type": "ListItem", "position": 15, "url": "https://playdisplay.com/work/vdnh-space-center/", "name": "Центр «Космонавтика и авиация»"}]}</script>
 <noscript><section><h2>Проекты playdisplay</h2><ul><li><a href="work/industry-rf/">Промышленность РФ</a> — 2 млн посетителей за восемь месяцев. Отрасль, которую можно рассмотреть вблизи. У государства — масштабные планы по развитию судостроения: новейшие…</li><li><a href="work/airports/">Аэропорты России</a> — 600 000 посетителей экспозиции. Пространство, которое ведёт за руку. Показать три международных аэропорта России на Форуме «Россия» так, чтобы каждый…</li><li><a href="work/odk-oak/">ОДК ОАК</a> — 135 000 посетителей МАКС-2021 за шесть дней. Сложный продукт продаёт тот, кто дал его потрогать. МАКС — Международный авиационно-космический салон, одно…</li><li><a href="work/proryv/">Прорыв</a> — 7 000 участников Конгресса за три дня. О технологии будущего — на языке впечатления. Создание инсталляции, в наглядном виде демонстрирующей принцип работы…</li><li><a href="work/rostec/">Ростех-Экспо</a> — Масштаб корпорации — в одном пространстве. Создать центральный экспонат у входа в павильон «Ростех Экспо» и объединить продукцию всех предприятий холдинга…</li><li><a href="work/ptk-group/">PTK Group</a> — Презентация, в которую вовлекаются. Группа ПТК выпускает современную путевую технику — машины для строительства, ремонта и обслуживания железных дорог…</li><li><a href="work/mig2019/">Стенд МИГ-35</a> — 578 810 посетителей МАКС-2019. Самолёт и так звезда — мы построили ему сцену. Выделить МИГ-35 среди представленной продукции других производителей…</li><li><a href="work/bmwx5/">BMW X5</a> — Машину, которую собрал сам, хочется купить. Оснастить офис продаж интерактивным решением для выбора и кастомизации автомобиля.</li><li><a href="work/pano360/">Панорама 360</a> — 200 000+ загрузок приложения AR Moscow City. Не окно в историю, а вход в неё. Дать гостям одной из самых высоких смотровых площадок Европы — «Панорама 360»…</li><li><a href="work/urban-forum-2018/">Urban Forum 2018</a> — 200 000 посетителей программы форума. Очередь к инсталляции — лучшая метрика. Стенд для Правительства Москвы, которое говорит с горожанами на одном языке…</li><li><a href="work/stalingrad/">Пароль победы «Сталинград»</a> — Игра умеет говорить и о серьёзном. Популяризация объекта культурного наследия федерального значения и достоверный рассказ о Сталинградской битве 1942–1943…</li><li><a href="work/coalco/">Сухой порт COALCO</a> — Логистику видно, а не читаешь в буклете. Масштаб проекта сухого порта столь велик, что показать его нужно целиком: как устроен новый…</li><li><a href="work/sinara/">Синара Транспортные Машины</a> — Тяжёлую технику показываем в ладони. Холдинг «Синара — Транспортные Машины» строит новейшие локомотивы. Показать нужно было не только сами машины…</li><li><a href="work/vdnh-space/">ВДНХ Космос</a> — Посетитель не читает экспозицию — он исследует её. Вся история космонавтики — в единой играбельной системе: 115 инсталляций, интерактивные 3D-модели…</li><li><a href="work/vdnh-space-center/">Центр «Космонавтика и авиация»</a> — Музей, который отвечает движением. Рассказать историю космонавтики и ракетостроения благодаря высокотехнологичным решениям.</li></ul></section><section><h2>Концепции</h2><ul><li><a href="concepts/ar-portal/">Портал в пространство, которого пока нет</a> — Когда нужно показать будущий объект, исчезнувший мир или недоступное пространство так, чтобы человек мог исследовать его сам.</li><li><a href="concepts/ar-xray/">Показать то, что скрыто внутри</a> — Когда внутреннее устройство объекта важнее его внешней оболочки.</li><li><a href="concepts/art-portrait/">Посетитель становится частью экспозиции</a> — Когда выставке нужен персональный результат, который человек захочет сохранить и показать другим.</li><li><a href="concepts/media-vitrage/">Фасад, который реагирует на людей</a> — Когда архитектурная поверхность должна стать главным медиаобъектом пространства.</li><li><a href="concepts/cabin-hologram/">Сложный объект — одним синхронным шоу</a> — Когда большую группу людей нужно быстро провести через насыщенную презентацию продукта.</li><li><a href="concepts/cubic-expo/">Экспозиция как пространственная композиция</a> — Когда нужно уйти от привычного ряда экранов и собрать пространство вокруг единого визуального образа.</li><li><a href="concepts/living-model/">Будущий объект — прямо над макетом</a> — Когда покупателю нужно увидеть будущую недвижимость глубже, чем позволяют рендеры и буклеты.</li><li><a href="concepts/panorama-dive/">Недвижимость в масштабе присутствия</a> — Когда проект нужно показывать группе людей с ощущением полного погружения.</li><li><a href="concepts/sales-showroom/">Шоурум, который продаёт образ жизни</a> — Когда офис продаж должен стать частью бренда проекта и поддерживать работу менеджера.</li><li><a href="concepts/living-panorama/">Большое путешествие для большой аудитории</a> — Когда десятки или сотни зрителей должны одновременно оказаться внутри одной истории.</li><li><a href="concepts/heli-model/">Материальный объект оживает на глазах</a> — Когда макет должен показать не только форму, но и действие, среду и процессы вокруг себя.</li><li><a href="concepts/team-mission/">Командный квест вокруг одного стола</a> — Когда посетителей нужно объединить общей задачей и дать каждому личную роль.</li><li><a href="concepts/floating-object/">Объект, который выглядит невозможным</a> — Когда продукт или экспонат должен стать центром внимания и раскрываться в объёме.</li><li><a href="concepts/living-interior/">Показать, как пространство будет жить</a> — Когда важно продать не интерьер как набор материалов, а будущую жизнь внутри него.</li><li><a href="concepts/threshold/">Погружение начинается у входа</a> — Когда первое впечатление должно мгновенно задать настроение всему пространству.</li><li><a href="concepts/living-lines/">Пространство начинает говорить</a> — Когда интерьеру нужен живой информационный слой, встроенный в архитектуру.</li><li><a href="concepts/weightlessness/">Один объект останавливает поток</a> — Когда нужен простой, физически убедительный центр притяжения внимания.</li><li><a href="concepts/mars/">Музей как настоящая космическая база</a> — Когда образовательную тему нужно превратить в последовательность личных миссий.</li><li><a href="concepts/living-monolith/">Стена, которая живёт вместе с пространством</a> — Когда большой архитектурный объём должен сочетать постоянную идентичность и обновляемый контент.</li><li><a href="concepts/mind-canvas/">Произведение, созданное состоянием человека</a> — Когда посетителю нужно дать необычный способ увидеть и выразить своё внутреннее состояние.</li><li><a href="concepts/street-portal/">Улица получает окно в другое пространство</a> — Когда прохожих нужно заинтересовать событием или местом ещё до того, как они решили войти.</li><li><a href="concepts/form-library/">Экраны становятся архитектурой</a> — Когда пространство должно иметь собственную форму, а контент — выходить за рамки обычного прямоугольника.</li><li><a href="concepts/living-ship/">История корабля разворачивается вокруг макета</a> — Когда физический экспонат нужно дополнить движением, масштабом и событиями.</li><li><a href="concepts/safe-training/">Навык через действие и полное присутствие</a> — Когда человеку нужно тренироваться или проходить миссии в контролируемой виртуальной среде.</li><li><a href="concepts/motion-game/">Тренировка превращается в игру</a> — Когда людям нужна мотивация двигаться дольше, чаще и с большим азартом.</li><li><a href="concepts/motion-architecture/">Каждый шаг становится частью сообщения</a> — Когда привычный маршрут должен превратиться в заметный смысловой и визуальный элемент.</li><li><a href="concepts/control-center/">Космическая миссия для настоящей команды</a> — Когда нужен флагманский аттракцион с длинным сценарием, повторными посещениями и сильной групповой динамикой.</li><li><a href="concepts/city-flight/">Физический прыжок переносит в цифровой мир</a> — Когда нужен зрелищный аттракцион, понятный с первого взгляда и основанный на настоящем движении.</li></ul></section><p><a href="atlas/">Атлас: как мы думаем о пространстве</a></p></noscript>
