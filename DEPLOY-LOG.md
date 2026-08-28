@@ -8,6 +8,64 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-28 12:20 — hybrid-v8 @ 3b4a22d
+
+**Коммиты в этой поставке**
+```
+3b4a22d Кадры проектов из base64 в файлы; лендинг их больше не грузит
+ef2f4be Кадры проектов вынесены из base64 в файлы: первая загрузка −1.6 МБ
+d4eae8b Карточка каталогов: имя строчными и телефон
+65e7b41 Карточка компании для каталогов — единый текст и реквизиты
+b338867 Архивы не возим на сервер: правило в .htaccess статику не закрывает
+3b0cd1c Журнал деплоя: b58d94f
+```
+
+**На сервер отправлено файлов:** 151, удалено: 0
+```
+.htaccess
+hero-scene.html
+index.html
+llms.txt
+odk_frame.js
+robots.txt
+sitemap.xml
+textures.js
+assets/frames/
+assets/frames/scene-00.jpg
+assets/frames/scene-01.jpg
+assets/frames/scene-02.jpg
+assets/frames/scene-06.jpg
+assets/frames/scene-09.jpg
+assets/frames/scene-10.jpg
+assets/frames/scene-11.jpg
+assets/frames/scene-12.jpg
+assets/frames/work-00.jpg
+assets/frames/work-01.jpg
+assets/frames/work-02.jpg
+assets/frames/work-03.jpg
+assets/frames/work-04.jpg
+assets/frames/work-05.jpg
+assets/frames/work-06.jpg
+assets/frames/work-07.jpg
+assets/frames/work-08.jpg
+assets/frames/work-09.jpg
+assets/frames/work-10.jpg
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+…и ещё 111
+```
+
+
 ## 2026-08-27 13:22 — hybrid-v8 @ b58d94f
 
 **Коммиты в этой поставке**
