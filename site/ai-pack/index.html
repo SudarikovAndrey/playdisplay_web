@@ -78,7 +78,33 @@
     .hero .lockup { gap: clamp(12px, 1.6vw, 24px); margin-bottom: clamp(16px, 2vw, 28px); }
     .hero .lockup img { height: clamp(20px, 2vw, 30px); }
     .hero .lockup-x { font-size: clamp(15px, 1.5vw, 22px); }
-    @media (max-width: 1000px) { .only-wide { display: none; } }
+
+    /* Коробка Сперотона за телефоном: выглядывает слева из-за рамки, наклонена
+       и отвечает на курсор сильнее телефона (амплитуды у corner-cast__hover) */
+    .hero-pack {
+      position: absolute;
+      right: clamp(190px, 21vw, 400px);
+      top: 0; bottom: 0;
+      z-index: 3;                       /* телефон стоит на 4 – коробка позади */
+      display: flex;
+      align-items: center;
+      margin: 0;
+      pointer-events: none;
+    }
+    .hero-pack img {
+      display: block;
+      width: clamp(280px, 26vw, 410px);
+      transform: rotate(-8deg);
+      filter: drop-shadow(0 46px 80px rgba(0, 0, 0, .6)) drop-shadow(0 0 70px rgba(75, 104, 255, .14));
+    }
+    .hero-pack .corner-cast__hover { --amp: 30px; --spin: 1.4deg; }
+    .hero-phone .corner-cast__hover { --amp: 10px; --spin: .4deg; }
+    /* Кит растягивает hover-обёртку на 100 % под слои corner-cast; здесь она должна
+       быть ПО СОДЕРЖИМОМУ – иначе flex-центрирование телефона центрирует обёртку,
+       а сам телефон прилипает к её верху (замер: top −5 вместо 162) */
+    .hero-phone .corner-cast__hover,
+    .hero-pack .corner-cast__hover { width: auto; height: auto; }
+    @media (max-width: 1000px) { .hero-pack { display: none; } }
 
     /* ═══ ГРАФИКА ПРОТОТИПА НА ПЕРВОМ ЭКРАНЕ ═══
        Стартовый экран speroton-ar.sudarikov.chatgpt.site, воссозданный CSS в рамке
@@ -149,6 +175,24 @@
        высота, чем в hero: бюджет экрана делится с заголовком и подписью. */
     .ask-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) auto; gap: clamp(24px, 3.5vw, 56px); align-items: center; max-width: 1220px; }
     #s04 .chat-phone { height: min(42svh, 385px); }
+
+    /* Чат в цветах ПРОТОТИПА: петроль экрана и салатовые реплики гостя – телефон
+       на слайде должен выглядеть нашим приложением, а не абстрактным мессенджером */
+    .chat-phone--spero .chat-phone__screen {
+      background: radial-gradient(circle at 82% -8%, rgba(58, 110, 132, .5), transparent 55%),
+                  linear-gradient(175deg, #143343, #0d2836 70%);
+    }
+    .chat-phone--spero .chat-phone__ava {
+      background: radial-gradient(circle at 32% 28%, #e9f795, #d7ee66 55%, #b9d84c);
+      box-shadow: 0 0 16px rgba(215, 238, 102, .4);
+    }
+    .chat-phone--spero .chat-phone__ava::after { border-color: #143343; }
+    .chat-phone--spero .chat-phone__head { border-bottom-color: rgba(255, 255, 255, .1); }
+    .chat-phone--spero .chat-phone__head span,
+    .chat-phone--spero .chat-phone__scan { color: #8fa3ab; }
+    .chat-phone--spero .chat-msg--user { background: linear-gradient(150deg, #e2f27f, #c6e055); color: #12303f; }
+    .chat-phone--spero .chat-msg--ai { border-color: rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .07); color: #dfe9ec; }
+    .chat-phone--spero .chat-typing i { background: #a9bfc9; }
     /* Заголовок мельче кит-размера: с телефоном справа бюджет высоты слайда
        делится на троих, и на 66px шапка занимала 274px (замер 1440×900) */
     #s04 .slide-head h2 { font-size: clamp(26px, 3.6vw, 58px); }
@@ -210,6 +254,9 @@
     /* Карточка инсайта: вывод и СЛЕДУЮЩЕЕ ДЕЙСТВИЕ бизнеса в одной карточке –
        действие прижато к низу и выделено, это половина смысла слайда */
     .review .review__act { margin-top: auto; padding-top: 10px; color: #9fb2ff; font-size: 14px; line-height: 1.45; }
+    /* Колода начинается У КОЛОНКИ, а не у кромки окна: с убранным боковым меню
+       вылет влево шёл до края экрана, и первая карточка читалась обрезанной */
+    #s08 .strip-wrap { margin-left: 0; }
 
     /* 10: высоту ряда задавала ПЛАШКА ЦЕНЫ – у offer-card своя минимальная
        высота под книжную вёрстку, снимаем */
@@ -263,7 +310,10 @@
          скриптом кита (chatphone.js). Статичный скриншот чата читался бы как «у них
          есть макет», живой диалог – как «у них есть продукт». -->
     <section class="hero">
-      <div class="hero-intro">
+      <!-- data-cast: cast.js пишет на контейнер два числа (--mx/--my) от курсора,
+           а амплитуду каждого слоя задаёт CSS – коробка отвечает сильнее телефона,
+           и разница откликов читается как глубина -->
+      <div class="hero-intro" data-cast>
         <div class="hero-copy hero-copy--narrow reveal">
           <p class="overline hero-overline" data-parallax="0.03">Подготовлено специально для&nbsp;компании «Аквион»</p>
           <!-- Знак Аквиона приходит с чёрными буквами: на тёмном фоне его красит
@@ -287,7 +337,15 @@
              микрофона с кольцами, подписи и строка ввода взяты оттуда один в один.
              Воссоздание, а не скриншот: рисунок остаётся резким на любом экране,
              а кольца тихо дышат – скриншот этого не умеет. -->
+        <!-- Коробка Сперотона ЗА телефоном: три преобразования на трёх элементах,
+             как у corner-cast, – прокрутку двигает figure (parallax), курсор двигает
+             обёртку hover, наклон живёт на самой картинке. Два из них на одном
+             элементе затирали бы друг друга: все пишут в transform. -->
+        <figure class="hero-pack" data-parallax="0.15" aria-hidden="true">
+          <span class="corner-cast__hover"><img src="assets/speroton-pack.png" alt=""></span>
+        </figure>
         <figure class="hero-phone" data-parallax="0.08">
+          <span class="corner-cast__hover">
           <div class="chat-phone spero-phone">
             <div class="chat-phone__screen spero-app" aria-hidden="true">
               <p class="spero-app__brand">АКВИОН</p>
@@ -302,10 +360,8 @@
               <p class="spero-app__legal">БАД · не является лекарством</p>
             </div>
           </div>
+          </span>
         </figure>
-        <!-- Вторая фраза только там, где телефон виден: ниже 1000px кит его прячет,
-             и «на телефоне» указывало бы на пустое место -->
-        <p class="hero-status" data-parallax="0.02">Предложение студии PLAYDISPLAY для&nbsp;компании «Аквион». <span class="only-wide">На&nbsp;телефоне – стартовый экран живого прототипа AI-ассистента Сперотона.</span></p>
         <a class="scroll-cue" href="#s01"><span>Смотреть</span><i></i></a>
       </div>
     </section>
@@ -413,11 +469,13 @@
             </ul>
             <p class="chips-after"><b>После покупки ассистент остаётся рядом:</b> он открывается с&nbsp;той же упаковки в&nbsp;любой момент. Не&nbsp;человек ищет информацию о&nbsp;продукте – продукт сам отвечает человеку.</p>
           </div>
-          <div class="chat-phone" data-chat-phone>
+          <!-- Диалог оформлен КАК ПРОТОТИП (палитра и салатовые реплики оттуда),
+               а ответы ассистента печатаются посимвольно – data-chat-stream -->
+          <div class="chat-phone chat-phone--spero" data-chat-phone data-chat-stream>
             <div class="chat-phone__screen">
               <div class="chat-phone__head">
                 <i class="chat-phone__ava" aria-hidden="true"></i>
-                <p><b>Сперотон</b><span>AI-ассистент · 24/7</span></p>
+                <p><b>Сперотон</b><span>Аквион · AI-ассистент · 24/7</span></p>
               </div>
               <div class="chat-phone__feed" data-chat-feed>
                 <p class="chat-phone__scan"><svg viewBox="0 0 15 15" aria-hidden="true" fill-rule="evenodd"><path d="M0 0h6v6H0zM1.5 1.5v3h3v-3zM9 0h6v6H9zM10.5 1.5v3h3v-3zM0 9h6v6H0zM1.5 10.5v3h3v-3zM8 8h2v2H8zM12 8h3v2h-3zM10 10h2v3h-2zM13 11h2v4h-2zM8 12h2v3H8z"/></svg>QR-код отсканирован</p>
@@ -639,6 +697,7 @@
   <script defer src="../kit/js/lists.js"></script>
   <script defer src="../kit/js/chatphone.js"></script>
   <script defer src="../kit/js/strip.js"></script>
+  <script defer src="../kit/js/cast.js"></script>
   <script defer src="../kit/js/ui.js"></script>
 </body>
 </html>

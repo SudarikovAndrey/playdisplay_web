@@ -3114,6 +3114,10 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   background: rgba(255, 255, 255, .06);
 }
 .chat-msg--still { animation: none; }
+/* Каретка на время посимвольной печати (data-chat-stream): без неё пауза между
+   порциями текста читается как подвисание, а не как «ассистент пишет» */
+.chat-msg--live::after { content: "▍"; margin-left: 1px; opacity: .8; animation: chat-caret 1s steps(2) infinite; }
+@keyframes chat-caret { 50% { opacity: 0; } }
 @keyframes chat-in { from { opacity: 0; transform: translateY(12px) scale(.96); } }
 .chat-typing { display: flex; gap: 4px; padding: 12px 14px; }
 .chat-typing i {

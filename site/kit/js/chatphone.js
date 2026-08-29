@@ -29,9 +29,14 @@
       script.push({
         from: src[i].getAttribute('data-from') === 'user' ? 'user' : 'ai',
         html: src[i].innerHTML,
+        text: src[i].textContent,
         len: src[i].textContent.length
       });
     }
+    /* data-chat-stream: ответы ассистента ПЕЧАТАЮТСЯ посимвольно, как в живом
+       приложении. Реплики гостя приходят целиком – человек не печатает у нас
+       на глазах, а «отправляет» готовое сообщение. */
+    var stream = phone.hasAttribute('data-chat-stream');
 
     function bubble(msg, still) {
       var p = document.createElement('p');
@@ -93,10 +98,30 @@
         feed.appendChild(typing);
         schedule(function () {
           feed.removeChild(typing); typing = null;
-          feed.appendChild(bubble(msg));
-          prune();
-          step++;
-          schedule(next, Math.min(700 + msg.len * 22, 2600));
+          if (stream) {
+            /* Печать идёт через ТОТ ЖЕ планировщик schedule, что и остальные шаги:
+               пауза (ушли со слайда, свернули вкладку) останавливает и её. Свой
+               setInterval продолжал бы печатать в фоне и ломал бы возобновление. */
+            var el = bubble(msg); el.textContent = '';
+            el.className += ' chat-msg--live';
+            feed.appendChild(el);
+            prune();
+            var shown = 0;
+            (function typeStep() {
+              shown += 2;
+              el.textContent = msg.text.slice(0, shown);
+              if (shown < msg.text.length) { schedule(typeStep, 26); return; }
+              el.innerHTML = msg.html;           // вернуть неразрывные пробелы
+              el.className = el.className.replace(' chat-msg--live', '');
+              step++;
+              schedule(next, Math.min(500 + msg.len * 12, 1800));
+            })();
+          } else {
+            feed.appendChild(bubble(msg));
+            prune();
+            step++;
+            schedule(next, Math.min(700 + msg.len * 22, 2600));
+          }
         }, Math.min(650 + msg.len * 9, 1700));
       } else {
         feed.appendChild(bubble(msg));
