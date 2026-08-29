@@ -113,6 +113,7 @@
       if (window.kitLists) window.kitLists(document);
       if (window.kitHotspots) window.kitHotspots(document);
       if (window.kitArmScrub) window.kitArmScrub(document);
+      if (window.kitChatPhone) window.kitChatPhone(document);
       dispatchEvent(new Event('resize'));
     })
     .catch(function (e) {

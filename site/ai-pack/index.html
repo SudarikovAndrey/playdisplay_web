@@ -1,0 +1,470 @@
+<!doctype html>
+<!-- deck – режим презентации: класс обязан стоять на <html>, а не на <body>:
+     scroll-snap-type с тела к области просмотра не поднимается и молча не работает -->
+<html lang="ru" class="deck">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#06070a">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="AI-ассистент для каждого продукта компании: QR на упаковке открывает диалог с продуктом. Предложение PLAYDISPLAY.">
+  <title>Продукт, который умеет говорить</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Onest обязателен: именно он объявлен основным в typography.css -->
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Unbounded:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Аналитика: один файл на весь сайт, путь абсолютный. Считает только боевые домены -->
+  <script src="/analytics.js" defer></script>
+  <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
+  <link rel="stylesheet" href="../kit/css/layout.css">
+  <link rel="stylesheet" href="../kit/css/typography.css">
+  <link rel="stylesheet" href="../kit/css/components.css">
+  <link rel="stylesheet" href="../kit/css/animations.css">
+  <!-- Стили страницы: правки, которые не относятся к киту, живут здесь, а не в kit/css -->
+  <style>
+    /* Боковое меню убрано по решению владельца (28.08): десять слайдов листаются
+       подряд, а полоса разделов съедала левый край. Ширину полосы обнуляем токеном –
+       вся раскладка кита (шапка, слайды, главы) отталкивается от него. */
+    :root { --nav-width: 0px; }
+
+    /* Кит задаёт .slide-head p max-width:780px – узко для абзацев с длинным текстом.
+       Кит не трогаем, перекрываем здесь (тот же приём, что в компреде АвтоВАЗу). */
+    .slide .slide-head p { max-width: 1024px; }
+
+    /* Мелкие тексты крупнее – просьба владельца (28.08): подписи кита (13–14px)
+       на большом экране читались с трудом. Поднимаем служебный кегль по всей странице. */
+    .slide-note { font-size: 16.5px; line-height: 1.55; max-width: 900px; }
+    .timeline span { font-size: 16px; line-height: 1.5; }
+    .journey-diagram span { font-size: 15.5px; line-height: 1.45; }
+    .collection-diagram--tight span { font-size: 14.5px; line-height: 1.4; }
+    .reviews .review p { font-size: 15px; line-height: 1.5; }
+    .chat-chips li { font-size: clamp(15.5px, 1.25vw, 19px); }
+    .hero-facts span { font-size: 13px; }
+    .hero-status { font-size: 15px; }
+
+    /* Кит-кегль заголовка (11+vw) рассчитан на короткие слова во всю ширину экрана.
+       Здесь колонка узкая (рядом телефон), а слова длинные – «ПРОДУКТ, КОТОРЫЙ»
+       на кит-кегле ломался на четыре строки и съедал весь первый экран.
+       ТОЛЬКО там, где телефон виден: ниже 1000px кит прячет телефон и сам ведёт
+       мобильный кегль – мой размер там накладывал строки друг на друга. */
+    @media (min-width: 1001px) {
+      .hero-copy--narrow h1 { font-size: clamp(30px, 4.3vw, 70px); }
+    }
+
+    /* Цепочка точек контакта: семь звеньев вместо трёх-четырёх обычных. На базовом
+       кегле (32px) семь слов с соединителями не помещаются в полосу содержания,
+       поэтому у этой цепочки свой кегль и разрешён перенос строки. */
+    .touch-flow { flex-wrap: wrap; row-gap: 16px; max-width: 1120px; }
+    .touch-flow b { font-size: clamp(16px, 1.7vw, 26px); white-space: nowrap; }
+    .touch-flow i { min-width: 22px; }
+
+    /* Абзац-продолжение после чипов вопросов: по весу равен пояснению заголовка,
+       но стоит ПОСЛЕ содержания слайда, поэтому ему нужен свой отступ сверху */
+    .chips-after { max-width: 900px; margin: clamp(20px, 2.6vw, 34px) 0 0; color: #c3c9d4; font-size: clamp(15px, 1.2vw, 19px); line-height: 1.5; }
+    .chips-after b { color: var(--paper); font-weight: 600; }
+
+    /* Слайд пилота: вопросы слева, плашка цены справа. Столбиком не влезает –
+       в режиме слайдов высота дефицитна, а ширины как раз много. */
+    .pilot-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .95fr); gap: clamp(20px, 3vw, 44px); align-items: start; max-width: 1180px; }
+    @media (max-width: 900px) { .pilot-grid { grid-template-columns: 1fr; } }
+
+    /* Финал: одна фраза по центру экрана. Панч кита ограничен 1000px под слайды
+       с содержанием – финальной фразе отдаём больше и убираем нижний отступ. */
+    .slide--fin .slide-shell { display: grid; align-content: center; justify-items: start; min-height: calc(100svh - 160px); }
+    .slide--fin .slide-punch { max-width: 1240px; margin: 0 0 clamp(28px, 4vw, 56px); }
+
+    /* Вопрос-акцент ПОСЛЕ содержания слайда: тот же панч кита, но мельче и с отступом
+       сверху – это реплика в конце мысли, а не заголовок экрана */
+    .slide-punch--q { margin: clamp(20px, 2.4vw, 32px) 0 0; font-size: clamp(20px, 2.3vw, 38px); }
+
+    /* 01: карточки барьеров плотнее – с панчом внизу слайд перелетал бюджет на 32px */
+    #s01 .clean-list--cards li { padding: 14px 18px 16px; }
+
+    /* Дальше – подгонка слайдов под бюджет высоты. Бюджет = innerHeight МИНУС паддинги
+       слайда (на 1440×900 это 756px), сверка с полным экраном врёт – см. кит. */
+
+    /* 05: четыре канала В ОДИН ряд – кит-сетка в три колонки давала два ряда
+       и перелёт 154px (замер 1440×900) */
+    #s05 .concept-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); width: min(1280px, 100%); }
+    #s05 .concept-card { min-height: 230px; }
+    /* Заголовки карточек по ВЕРХУ, текст по низу (просьба владельца): кит прижимает
+       h4 к низу через margin: auto, и в четырёх карточках разной длины заголовки
+       плясали по высоте – глаз сравнивал их дольше, чем читал. */
+    #s05 .concept-card h4 { margin: 12px 0 0; }
+    #s05 .concept-card p { margin-top: auto; padding-top: 18px; }
+    #s05 .concept-card p, .slide .concept-card p { font-size: 16.5px; line-height: 1.55; }
+
+    /* 06: десять карточек – два ряда по пять; auto-fit раскладывал в три ряда,
+       перелёт 96px */
+    #s06 .clean-list--cards { grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: 1280px; }
+    #s06 .clean-list--cards li { padding: 14px 16px 16px; font-size: clamp(14.5px, 1.15vw, 17px); }
+
+    /* 07: плашки портрета ниже кит-высоты (190px и крупный кегль дают перелёт 361px),
+       а заголовку из шести слов нужен кегль меньше кит-размера – на нём он занимал
+       три строки, и одна шапка съедала 439px */
+    #s07 .slide-head h2 { font-size: clamp(26px, 3.4vw, 56px); }
+    #s07 .stats-grid { width: min(100%, 1080px); }
+    #s07 .stat-line { min-height: 0; padding: 13px 20px; font-size: clamp(15px, 1.15vw, 18px); }
+    #s07 .stat-line > p { font-size: 16.5px; line-height: 1.5; }
+
+    /* 10: высоту ряда задавала ПЛАШКА ЦЕНЫ, а не шаги, – у offer-card своя
+       минимальная высота под книжную вёрстку. Снимаем её, шаги заодно плотнее. */
+    #s10 .offer-card { min-height: 0; padding: 28px; }
+    #s10 .clean-list--steps li { padding: 14px 0 16px; }
+    #s10 .slide-note { margin-top: 14px; }
+
+    @media (max-width: 1000px) {
+      #s05 .concept-grid, #s06 .clean-list--cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      #s05 .concept-grid, #s06 .clean-list--cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Заставка лежит В РАЗМЕТКЕ, а не создаётся скриптом: иначе между показом страницы
+       и запуском скрипта мигает недогруженная вёрстка. Тяжёлых кадров на странице нет,
+       поэтому ждём только шрифты – заставка мелькнёт и уйдёт. -->
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <img class="boot-logo" src="../kit/assets/demo/logo.webp" alt="">
+      <div class="boot-bar"><i id="bootBar"></i></div>
+      <p class="boot-note">Продукт, который умеет говорить</p>
+    </div>
+  </div>
+
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="cursor-core" aria-hidden="true"></div>
+  <div class="brand-particles" id="brandParticles" aria-hidden="true"></div>
+  <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="../kit/assets/demo/logo.webp" alt="Playdisplay"></a>
+    <div class="book-mark"><span>AI-ассистент продукта</span><span>Предложение · 0.1</span><button class="to-full" id="toFull" type="button" aria-pressed="false" aria-label="Во весь экран"><i aria-hidden="true"></i><span>Во весь экран</span></button></div>
+  </header>
+
+  <main id="top">
+
+    <!-- ═══ ПЕРВЫЙ ЭКРАН ═══════════════════════════════════════════════════
+         Справа не кадр, а ЖИВОЙ ДИАЛОГ: телефон нарисован CSS, реплики проигрываются
+         скриптом кита (chatphone.js). Статичный скриншот чата читался бы как «у них
+         есть макет», живой диалог – как «у них есть продукт». -->
+    <section class="hero">
+      <div class="hero-intro">
+        <div class="hero-copy hero-copy--narrow reveal">
+          <p class="overline hero-overline" data-parallax="0.03">PLAYDISPLAY · AI-ассистент для&nbsp;продуктов компании</p>
+          <h1><span class="l1" data-parallax="0.075">ПРОДУКТ, КОТОРЫЙ</span><span class="l2" data-parallax="0.05">УМЕЕТ ГОВОРИТЬ</span></h1>
+          <p class="hero-statement hero-statement--float" data-parallax="0.04">Покупатель сканирует QR-код на&nbsp;упаковке или POS-материале – и&nbsp;мгновенно получает персонального AI-консультанта, который знает о&nbsp;продукте всё.</p>
+          <p class="hero-facts-title">Упаковка становится цифровым каналом</p>
+          <ul class="hero-facts hero-facts--accent" data-parallax="0.05">
+            <li><b>1&nbsp;скан</b><span>от вопроса до&nbsp;ответа</span></li>
+            <li><b>24/7</b><span>у каждой упаковки</span></li>
+            <li><b>100&nbsp;%</b><span>ответов – из утверждённой базы</span></li>
+          </ul>
+        </div>
+        <figure class="hero-phone" data-parallax="0.08">
+          <div class="chat-phone" data-chat-phone>
+            <div class="chat-phone__screen">
+              <div class="chat-phone__head">
+                <i class="chat-phone__ava" aria-hidden="true"></i>
+                <p><b>Ассистент продукта</b><span>на связи · 24/7</span></p>
+              </div>
+              <div class="chat-phone__feed" data-chat-feed>
+                <p class="chat-phone__scan"><svg viewBox="0 0 15 15" aria-hidden="true" fill-rule="evenodd"><path d="M0 0h6v6H0zM1.5 1.5v3h3v-3zM9 0h6v6H9zM10.5 1.5v3h3v-3zM0 9h6v6H0zM1.5 10.5v3h3v-3zM8 8h2v2H8zM12 8h3v2h-3zM10 10h2v3h-2zM13 11h2v4h-2zM8 12h2v3H8z"/></svg>QR-код отсканирован</p>
+              </div>
+              <!-- Реплики диалога: скрипт кита проигрывает их по одной. Текст живёт
+                   в разметке, а не в js – править его должен тот, кто правит текст -->
+              <ol class="chat-phone__script" hidden>
+                <li data-from="ai">Здравствуйте! Я&nbsp;ассистент этого продукта. Спрашивайте – отвечу простым языком.</li>
+                <li data-from="user">Как его принимать?</li>
+                <li data-from="ai">По одной капсуле в&nbsp;день во&nbsp;время еды. Курс – месяц.</li>
+                <li data-from="user">А чем отличается версия «форте»?</li>
+                <li data-from="ai">Дозировкой – она вдвое выше и&nbsp;рассчитана на&nbsp;приём по&nbsp;рекомендации специалиста. Для профилактики достаточно базовой.</li>
+                <li data-from="user">Можно вместе с витамином D?</li>
+                <li data-from="ai">Да, они хорошо сочетаются. Если вы принимаете лекарства – уточните у&nbsp;врача.</li>
+              </ol>
+            </div>
+          </div>
+        </figure>
+        <p class="hero-status" data-parallax="0.02">Предложение подготовлено студией PLAYDISPLAY. Черновик для обсуждения.</p>
+        <a class="scroll-cue" href="#s01"><span>Смотреть</span><i></i></a>
+      </div>
+    </section>
+
+    <!-- ═══ 01. ПРОБЛЕМА ═══════════════════════════════════════════════════
+         Пять барьеров карточками (clean-list раскладывает сам), внизу – вопрос,
+         на который отвечает вся презентация. -->
+    <section class="slide" id="s01" data-slide="01">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Проблема</p>
+          <h2>Сегодня продукт молчит</h2>
+          <p>Покупатель стоит перед полкой и&nbsp;принимает решение за&nbsp;несколько минут. Ответить на&nbsp;его вопросы в&nbsp;этот момент некому:</p>
+        </div>
+        <ul class="clean-list">
+          <li>Упаковка ограничена площадью – всё важное на ней не помещается.</li>
+          <li>POS-материал привлекает внимание, но не отвечает на вопрос.</li>
+          <li>QR-код обычно ведёт на сайт, где ответ ещё нужно найти.</li>
+          <li>Фармацевт не может знать всё о каждом продукте и уделить каждому покупателю время.</li>
+          <li>Интернет отвечает охотно, но качество ответов производитель не контролирует.</li>
+        </ul>
+        <p class="slide-punch slide-punch--q">Покупатель остаётся один на&nbsp;один с&nbsp;вопросами. <em>А&nbsp;что, если продукт ответит сам?</em></p>
+      </div>
+    </section>
+
+    <!-- ═══ 02. ЭВОЛЮЦИЯ ═══════════════════════════════════════════════════
+         Три поколения носителя – лентой времени: у эволюции есть направление,
+         и timeline показывает его лучше трёх равных карточек. -->
+    <section class="slide slide--dark" id="s02" data-slide="02">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Эволюция упаковки и POS</p>
+          <h2>Показывает → переводит → разговаривает</h2>
+        </div>
+        <div class="timeline">
+          <div>
+            <em>POS / PACK 1.0</em>
+            <b>Показывает</b>
+            <span>Упаковка, плакат, воблер, шелфтокер, стойка. Задача – привлечь внимание и&nbsp;передать короткое сообщение.</span>
+          </div>
+          <div>
+            <em>POS / PACK 2.0</em>
+            <b>Переводит</b>
+            <span>QR-код → сайт → инструкция → видео. Информации стало больше, но&nbsp;нужный ответ покупатель по-прежнему ищет сам.</span>
+          </div>
+          <div>
+            <em>POS / PACK 3.0</em>
+            <b>Разговаривает</b>
+            <span>QR-код → AI-ассистент. Человек задаёт свой вопрос и&nbsp;получает конкретный ответ здесь и&nbsp;сейчас.</span>
+          </div>
+        </div>
+        <p class="slide-note">Из статичного рекламного носителя – в умный, интерактивный и измеряемый канал коммуникации.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 03. ОДИН AI – ВСЕ ТОЧКИ КОНТАКТА ═══════════════════════════════
+         Цепочка носителей плюс четыре свойства единого интеллекта. Плитка плотная
+         (--tight): в полный рост она вместе с цепочкой не помещается в экран. -->
+    <section class="slide" id="s03" data-slide="03">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Архитектура</p>
+          <h2>Один AI – все точки контакта</h2>
+          <p>Это не&nbsp;просто «чат в&nbsp;QR-коде». Мы&nbsp;создаём <b>единый цифровой интеллект бренда</b>, который сопровождает покупателя везде, где тот встречает продукт.</p>
+        </div>
+        <div class="flow-diagram touch-flow">
+          <div><b>Упаковка</b></div><i></i>
+          <div><b>POS</b></div><i></i>
+          <div><b>Сайт</b></div><i></i>
+          <div><b>Промостраницы</b></div><i></i>
+          <div><b>Маркетплейсы</b></div><i></i>
+          <div><b>Соцсети</b></div><i></i>
+          <div><b>Реклама</b></div>
+        </div>
+        <div class="diagram collection-diagram collection-diagram--tight" style="margin-top: clamp(22px, 3vw, 40px)">
+          <div><b>01</b><span>Одна проверенная база знаний</span></div>
+          <div><b>02</b><span>Единые правила коммуникации</span></div>
+          <div><b>03</b><span>Единый голос бренда</span></div>
+          <div><b>04</b><span>Круглосуточная доступность</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 04. ПОКУПАТЕЛЮ ═════════════════════════════════════════════════
+         Вопросы покупателя – чипами-репликами (блок кита chat-chips): это его живая
+         речь, а не меню возможностей. -->
+    <section class="slide slide--dark" id="s04" data-slide="04">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Что получает покупатель</p>
+          <h2>Не&nbsp;разбираться, а&nbsp;спросить</h2>
+          <p>До покупки не&nbsp;нужно изучать состав мелким шрифтом и&nbsp;сравнивать вслепую – можно просто задать вопрос:</p>
+        </div>
+        <ul class="chat-chips">
+          <li>Что это за продукт?</li>
+          <li>Чем отличаются эти два?</li>
+          <li>Какой состав?</li>
+          <li>Как применяется?</li>
+          <li>В чём особенности?</li>
+          <li>Как выбрать из нескольких вариантов?</li>
+        </ul>
+        <p class="chips-after"><b>После покупки ассистент остаётся рядом:</b> он открывается с&nbsp;той же упаковки в&nbsp;любой момент. Не&nbsp;человек ищет информацию о&nbsp;продукте – продукт сам отвечает человеку.</p>
+        <p class="slide-note">Для БАДов AI работает исключительно в рамках утверждённой производителем информации и не подменяет консультацию врача.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 05. КОМПАНИИ ═══════════════════════════════════════════════════ -->
+    <section class="slide" id="s05" data-slide="05">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Что получает компания</p>
+          <h2>Четыре новых канала</h2>
+          <p>Один QR на&nbsp;упаковке открывает сразу четыре направления работы с&nbsp;покупателем.</p>
+        </div>
+        <div class="concept-grid">
+          <article class="concept-card">
+            <span>Канал 01</span>
+            <h4>Продажи</h4>
+            <p>AI объясняет сложные и&nbsp;премиальные продукты, ведёт по&nbsp;ассортименту, поддерживает кросс-продажи и&nbsp;повторные покупки.</p>
+          </article>
+          <article class="concept-card">
+            <span>Канал 02</span>
+            <h4>Сервис</h4>
+            <p>24/7, единое качество консультации, тысячи одновременных диалогов, меньше типовых вопросов на&nbsp;живых сотрудниках.</p>
+          </article>
+          <article class="concept-card">
+            <span>Канал 03</span>
+            <h4>Маркетинг</h4>
+            <p>Контент меняется мгновенно – без перепечатки упаковки и&nbsp;POS-материалов.</p>
+          </article>
+          <article class="concept-card">
+            <span>Канал 04</span>
+            <h4>Данные</h4>
+            <p>Главное: физический контакт человека с&nbsp;продуктом впервые становится измеряемым.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 06. ДАННЫЕ ═════════════════════════════════════════════════════
+         Десять измеримых вопросов карточками: clean-list сам разложит короткие
+         пункты набором. Видно ОБЪЁМ того, что раньше не измерялось вовсе. -->
+    <section class="slide slide--dark" id="s06" data-slide="06">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Исследование рынка</p>
+          <h2>Каждая упаковка – точка исследования</h2>
+          <p>Сегодня производитель почти ничего не&nbsp;знает о&nbsp;человеке, который взял упаковку с&nbsp;полки. AI-слой позволяет увидеть:</p>
+        </div>
+        <ul class="clean-list">
+          <li>Сколько людей сканируют QR</li>
+          <li>Сколько начинают диалог</li>
+          <li>Сколько вопросов задают</li>
+          <li>Как долго общаются</li>
+          <li>Какие продукты вызывают интерес</li>
+          <li>Что спрашивают чаще всего</li>
+          <li>Какие характеристики непонятны</li>
+          <li>Что сравнивают между собой</li>
+          <li>Какие вопросы остаются без ответа</li>
+          <li>Возвращаются ли пользователи</li>
+        </ul>
+        <p class="slide-note">Дополнительно – допустимые агрегированные данные: география, язык, устройства, время и точки контакта. Каждый разговор превращается в данные.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 07. АУДИТОРИЯ ══════════════════════════════════════════════════ -->
+    <section class="slide" id="s07" data-slide="07">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Портрет аудитории</p>
+          <h2>Из&nbsp;анонимного покупателя – в&nbsp;понятную аудиторию</h2>
+          <p>С согласия пользователя AI узнаёт значительно больше. В&nbsp;обмен на&nbsp;ценность – подбор, бонус, промокод, программу лояльности – покупатель сам рассказывает о&nbsp;себе. И&nbsp;это не&nbsp;анкета: AI получает информацию естественно, в&nbsp;процессе разговора.</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-line"><span>01</span><strong>Кто он</strong><p>Возрастная группа, регион, новый или постоянный покупатель, выбирает для себя или для другого человека.</p></div>
+          <div class="stat-line"><span>02</span><strong>Что ему нужно</strong><p>Цель выбора продукта, ожидаемый результат, самые важные характеристики, возникающие вопросы.</p></div>
+          <div class="stat-line"><span>03</span><strong>Как он выбирает</strong><p>Что рассматривает и сравнивает, что влияет на решение, где предпочитает покупать, насколько важна цена.</p></div>
+          <div class="stat-line"><span>04</span><strong>Отношения с брендом</strong><p>Первое знакомство или повторная покупка, какие продукты уже использовал, удовлетворённость, интерес к другим.</p></div>
+        </div>
+        <p class="slide-note">Не персональные медицинские досье, а карта потребностей, предпочтений и покупательского поведения – при соответствующем согласии и правилах обработки данных.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 08. AI INSIGHT ENGINE ══════════════════════════════════════════
+         Инсайты – колодой карточек (лента кита strip.js): их листают рукой, и видно,
+         что выводов МНОГО. Цифры в карточках условные, о чём сказано в подводке. -->
+    <section class="slide slide--dark" id="s08" data-slide="08">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">AI Insight Engine</p>
+          <h2>AI отвечает – и&nbsp;исследует</h2>
+          <p>После сотен и&nbsp;тысяч диалогов компания начинает видеть то, чего раньше практически не&nbsp;видела. Вместо массива диалогов руководство получает готовые выводы.</p>
+        </div>
+        <p class="strip-title"><b>Примеры инсайтов</b><i>цифры условные – так выглядят готовые выводы</i></p>
+        <div class="strip-wrap" data-strip-wrap>
+          <div class="reviews" data-strip="insights" data-strip-deck>
+            <figure class="review"><b>38&nbsp;%</b><p>диалогов перед покупкой связаны с&nbsp;вопросом X – его стоит закрывать прямо на&nbsp;упаковке.</p></figure>
+            <figure class="review"><b>Каждый четвёртый</b><p>новый покупатель сравнивает продукты A и&nbsp;B – повод для сравнительной таблицы в&nbsp;базе знаний.</p></figure>
+            <figure class="review"><b>Вопрос №1</b><p>по продукту C – про&nbsp;совместимость. Раньше об&nbsp;этом никто не&nbsp;догадывался.</p></figure>
+            <figure class="review"><b>X&nbsp;→&nbsp;Y</b><p>после вопроса X пользователи чаще всего интересуются продуктом Y – готовая связка для кросс-продаж.</p></figure>
+            <figure class="review"><b>Регион ≠ регион</b><p>в регионе X структура интереса отличается от&nbsp;региона Y – аргумент для локальных кампаний.</p></figure>
+            <figure class="review"><b>7&nbsp;%</b><p>вопросов не покрыты существующей базой знаний – готовый план доработки контента.</p></figure>
+          </div>
+          <button class="strip-arrow strip-arrow--prev" type="button" data-strip-prev aria-label="Назад">‹</button>
+          <button class="strip-arrow strip-arrow--next" type="button" data-strip-next aria-label="Вперёд">›</button>
+        </div>
+        <p class="slide-note">Что хотят покупатели, что им непонятно, что мешает выбору, какие новые потребности появляются – AI одновременно консультирует аудиторию и исследует её.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 09. ПИЛОТ ══════════════════════════════════════════════════════
+         Пять составляющих пилота – полосой пути: это последовательность поставки,
+         а не набор равных опций. -->
+    <section class="slide" id="s09" data-slide="09">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Пилот</p>
+          <h2>30 дней на&nbsp;проверку гипотезы</h2>
+          <p>Мы предлагаем не&nbsp;начинать с&nbsp;большой платформы: берём 2–3&nbsp;продукта и&nbsp;проверяем гипотезу на&nbsp;реальных пользователях. За&nbsp;месяц создаём:</p>
+        </div>
+        <div class="diagram journey-diagram">
+          <div><b>01</b><span>Рабочий AI-ассистент: QR на&nbsp;упаковке и&nbsp;POS → диалог с&nbsp;продуктом</span></div>
+          <div><b>02</b><span>Контролируемую базу знаний: только проверенная и&nbsp;утверждённая информация</span></div>
+          <div><b>03</b><span>Аналитику: сканирования, диалоги, вопросы, темы, вовлечённость</span></div>
+          <div><b>04</b><span>Dashboard: руководство видит происходящее почти в&nbsp;реальном времени</span></div>
+          <div><b>05</b><span>AI Insight Engine: накопленные диалоги превращаются в&nbsp;выводы</span></div>
+        </div>
+        <p class="slide-note">Ассистент соблюдает ограничения и фиксирует вопросы, на которые не может корректно ответить, – они уходят в доработку базы.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 10. РЕШЕНИЕ ════════════════════════════════════════════════════
+         Три вопроса пилота шагами слева, цена плашкой справа: решение и его
+         стоимость должны стоять в одном кадре. -->
+    <section class="slide slide--dark" id="s10" data-slide="10">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Решение</p>
+          <h2>Что мы узнаем за&nbsp;месяц</h2>
+        </div>
+        <div class="pilot-grid">
+          <ul class="clean-list">
+            <li>1. Пользуются ли этим покупатели?</li>
+            <li>2. Получает ли компания новые ценные данные и возможности?</li>
+            <li>3. Имеет ли смысл масштабировать технологию на весь ассортимент и все каналы?</li>
+          </ul>
+          <article class="offer-card">
+            <span>Пилот · 30 дней</span>
+            <h4>Работающая технология на&nbsp;2–3 продуктах</h4>
+            <p>QR на упаковке и POS, контролируемая база знаний, аналитика, dashboard, AI Insight Engine. Реальные пользователи и&nbsp;реальные данные.</p>
+            <p class="offer-price">1&nbsp;000&nbsp;000&nbsp;₽</p>
+          </article>
+        </div>
+        <p class="slide-note">Стоимость ориентировочная. Результат пилота – не прототип: работающая технология, реальные пользователи, реальные данные и решение о масштабировании.</p>
+      </div>
+    </section>
+
+    <!-- ═══ ФИНАЛ ══════════════════════════════════════════════════════════
+         Одна фраза на весь экран – ей отдана вся презентация, и делить финал
+         с чем-то ещё нельзя. -->
+    <section class="slide slide--fin" id="fin" data-slide="11">
+      <div class="slide-shell">
+        <div class="reveal">
+          <p class="slide-punch">Сегодня компания продаёт миллионы упаковок. <em>Завтра каждая из&nbsp;них сможет разговаривать с&nbsp;покупателем.</em></p>
+          <p class="slide-note">PLAYDISPLAY · студия интерактивного опыта · Андрей Судариков · a.sudarikov@playdisplay.ru</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
+
+  <script defer src="../kit/js/boot.js"></script>
+  <script defer src="../kit/js/reveal-cursor.js"></script>
+  <script defer src="../kit/js/parallax.js"></script>
+  <script defer src="../kit/js/lists.js"></script>
+  <script defer src="../kit/js/chatphone.js"></script>
+  <script defer src="../kit/js/strip.js"></script>
+  <script defer src="../kit/js/ui.js"></script>
+</body>
+</html>

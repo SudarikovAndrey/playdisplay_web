@@ -3001,3 +3001,164 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
   .vstate.is-loading .vstate__spin { width: 44px; height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) { .vstate.is-loading .vstate__spin { animation: none; } }
+
+/* ═══ ЧАТ-ТЕЛЕФОН: живой диалог с продуктом (kit/js/chatphone.js) ═══
+   Телефон нарисован CSS целиком — у страниц про AI-ассистента нет фотографий, а кадр
+   чужого мессенджера читался бы как чужой продукт. Размер задаётся ВЫСОТОЙ (доля
+   экрана), как у hero-phone: при ширине рамка на низком ноутбуке вылезала бы за
+   нижнюю грань. */
+.chat-phone {
+  position: relative;
+  height: min(64svh, 610px);
+  aspect-ratio: 9 / 18.6;
+  padding: 11px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 44px;
+  background: linear-gradient(165deg, #10141d, #05070c 70%);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+/* Динамик поверх экрана: без него рамка читается как «скруглённый прямоугольник»,
+   а не как телефон */
+.chat-phone::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 20px;
+  width: 64px; height: 5px;
+  margin-left: -32px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .13);
+  z-index: 2;
+}
+.chat-phone__screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 34px;
+  background: radial-gradient(circle at 82% -8%, rgba(75, 104, 255, .2), transparent 55%), #070a11;
+}
+.chat-phone__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 34px 16px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.chat-phone__ava {
+  position: relative;
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #9db1ff, var(--electric) 58%, #2338b8);
+  box-shadow: 0 0 16px rgba(75, 104, 255, .5);
+}
+/* Зелёная точка присутствия: «на связи» должно читаться и без слов */
+.chat-phone__ava::after {
+  content: "";
+  position: absolute;
+  right: -1px; bottom: -1px;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #43d17c;
+  border: 2px solid #070a11;
+}
+.chat-phone__head p { display: grid; gap: 3px; margin: 0; min-width: 0; }
+.chat-phone__head b { color: var(--paper); font-size: 13px; font-weight: 600; line-height: 1.1; }
+.chat-phone__head span { color: var(--muted); font: 500 9.5px/1 "Roboto Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
+/* Лента прижата к низу и обрезается экраном: новое сообщение не двигает раскладку,
+   старые уходят за верхнюю кромку сами — как в настоящем мессенджере */
+.chat-phone__feed {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 12px 16px;
+  overflow: hidden;
+}
+.chat-phone__scan {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  padding: 7px 12px;
+  border: 1px dashed rgba(255, 255, 255, .24);
+  border-radius: 99px;
+  color: var(--muted);
+  font: 500 9.5px/1 "Roboto Mono", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.chat-phone__scan svg { width: 15px; height: 15px; fill: currentColor; opacity: .9; }
+.chat-msg {
+  max-width: 86%;
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: 15px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  animation: chat-in .45s cubic-bezier(.16, 1, .3, 1) both;
+}
+.chat-msg--user {
+  align-self: flex-end;
+  border-bottom-right-radius: 5px;
+  color: #f2f5ff;
+  background: linear-gradient(150deg, #5570ff, #3348d9);
+}
+.chat-msg--ai {
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+  color: #d9dfeb;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .06);
+}
+.chat-msg--still { animation: none; }
+@keyframes chat-in { from { opacity: 0; transform: translateY(12px) scale(.96); } }
+.chat-typing { display: flex; gap: 4px; padding: 12px 14px; }
+.chat-typing i {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #93a2c4;
+  animation: chat-dot 1s infinite ease-in-out;
+}
+.chat-typing i:nth-child(2) { animation-delay: .15s; }
+.chat-typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes chat-dot {
+  0%, 60%, 100% { opacity: .35; transform: none; }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+/* Наклон живёт на самом телефоне: обёртку .hero-phone каждый кадр двигает параллакс,
+   и transform на ней перезаписывается (та же история, что у кадра-картинки) */
+.hero-phone .chat-phone { transform: rotate(2deg); }
+@media (prefers-reduced-motion: reduce) {
+  .chat-msg { animation: none; }
+  .chat-typing i { animation: none; }
+}
+
+/* ЧИПЫ ВОПРОСОВ: реплики покупателя без телефона — когда нужен сам набор вопросов,
+   а не диалог. Скруглённый «хвост» пузыря чередуется по сторонам: ровная сетка
+   одинаковых плашек читалась бы как меню, а не как живая речь. */
+.chat-chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin: 0;
+  padding: 0;
+  max-width: 980px;
+}
+.chat-chips li {
+  padding: 12px 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px 18px 18px 5px;
+  background: rgba(255, 255, 255, .05);
+  color: #d5dbe8;
+  font-size: clamp(14px, 1.1vw, 17px);
+  line-height: 1.4;
+}
+.chat-chips li:nth-child(2n) {
+  border-radius: 18px 18px 5px 18px;
+  background: rgba(75, 104, 255, .14);
+  border-color: rgba(110, 134, 255, .35);
+}

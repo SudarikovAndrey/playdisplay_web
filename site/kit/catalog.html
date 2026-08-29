@@ -372,6 +372,29 @@
 
     <div data-block="scene-dissolve" data-live="Живой пример — гараж с NIVA: site/avtovaz/garage.html. Стены рассыпаются перед камерой, машину видно со всех сторон."></div>
 
+    <div data-block="chat-phone">
+      <div style="display:flex;justify-content:center;padding:10px 0">
+        <div class="chat-phone" data-chat-phone style="height:480px">
+          <div class="chat-phone__screen">
+            <div class="chat-phone__head">
+              <i class="chat-phone__ava" aria-hidden="true"></i>
+              <p><b>Ассистент продукта</b><span>на связи · 24/7</span></p>
+            </div>
+            <div class="chat-phone__feed" data-chat-feed>
+              <p class="chat-phone__scan"><svg viewBox="0 0 15 15" aria-hidden="true" fill-rule="evenodd"><path d="M0 0h6v6H0zM1.5 1.5v3h3v-3zM9 0h6v6H9zM10.5 1.5v3h3v-3zM0 9h6v6H0zM1.5 10.5v3h3v-3zM8 8h2v2H8zM12 8h3v2h-3zM10 10h2v3h-2zM13 11h2v4h-2zM8 12h2v3H8z"/></svg>QR-код отсканирован</p>
+            </div>
+            <ol class="chat-phone__script" hidden>
+              <li data-from="ai">Здравствуйте! Я ассистент этого продукта. Спрашивайте – отвечу простым языком.</li>
+              <li data-from="user">Как его принимать?</li>
+              <li data-from="ai">По одной капсуле в день во время еды. Курс – месяц.</li>
+              <li data-from="user">Можно вместе с витамином D?</li>
+              <li data-from="ai">Да, они хорошо сочетаются. Если принимаете лекарства – уточните у врача.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div data-block="final-credits">
       <footer class="final-credits" style="min-height:0;margin:0;padding:48px 28px">
         <div class="final-credits__main">
@@ -387,6 +410,7 @@
   </template>
 
   <script defer src="js/catalog.js"></script>
+  <script defer src="js/chatphone.js"></script>
   <script defer src="js/reveal-cursor.js"></script>
   <script defer src="js/nav.js"></script>
   <script defer src="js/parallax.js"></script>
