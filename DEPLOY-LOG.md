@@ -8,6 +8,67 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-29 01:04 — hybrid-v8 @ 28e41a3
+
+**Коммиты в этой поставке**
+```
+28e41a3 Деплой не трогает серверные бэкапы /layer-backup-*
+1a17591 Презентация AI-ассистента для Аквиона: /ai-pack/ и обновления кита
+a57575e Слайд «Попробуем сейчас» с фото стойки; кнопка прототипа вместо второго телефона
+6da242e Первый экран: коробка Сперотона с курсорным параллаксом; чат печатает как прототип
+c601ba9 Точечные правки презентации по замечаниям владельца
+c1e30d7 Убран служебный маркер сессии из site/.claude
+e055c19 Презентация ai-pack адресована Аквиону: графика прототипа Сперотона на первом экране
+3953c96 Презентация AI-ассистента продукта (/ai-pack/) и блок «чат-телефон» в ките
+ce0f03a Журнал деплоя: 3b4a22d
+```
+
+**На сервер отправлено файлов:** 139, удалено: 5
+```
+llms.txt
+robots.txt
+sitemap.xml
+ai-pack/
+ai-pack/index.html
+ai-pack/assets/
+ai-pack/assets/akvion.png
+ai-pack/assets/qr-counter.jpg
+ai-pack/assets/speroton-pack.png
+atlas/index.html
+avtovaz/private/page.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+…и ещё 99
+```
+
+
 ## 2026-08-28 12:20 — hybrid-v8 @ 3b4a22d
 
 **Коммиты в этой поставке**
