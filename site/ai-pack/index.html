@@ -174,25 +174,50 @@
     /* 04: вопросы слева, живой диалог справа. Телефону в слайде отдана меньшая
        высота, чем в hero: бюджет экрана делится с заголовком и подписью. */
     .ask-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) auto; gap: clamp(24px, 3.5vw, 56px); align-items: center; max-width: 1220px; }
-    #s04 .chat-phone { height: min(42svh, 385px); }
 
-    /* Чат в цветах ПРОТОТИПА: петроль экрана и салатовые реплики гостя – телефон
-       на слайде должен выглядеть нашим приложением, а не абстрактным мессенджером */
-    .chat-phone--spero .chat-phone__screen {
-      background: radial-gradient(circle at 82% -8%, rgba(58, 110, 132, .5), transparent 55%),
-                  linear-gradient(175deg, #143343, #0d2836 70%);
+    /* КНОПКА ИЗ ПРОТОТИПА на слайде «Покупателю»: кольца дышат со сдвигом фаз,
+       вокруг всплывают частицы – ровно то, что видит человек после сканирования QR */
+    .spero-orb { position: relative; width: min(42svh, 380px); aspect-ratio: 1; display: grid; place-items: center; }
+    .spero-orb__ring { position: absolute; border: 1px solid rgba(215, 238, 102, .18); border-radius: 50%; }
+    .spero-orb__ring--1 { inset: 9%; }
+    .spero-orb__ring--2 { inset: 0; border-color: rgba(255, 255, 255, .1); }
+    .spero-orb__ring--3 { inset: -10%; border-color: rgba(255, 255, 255, .06); }
+    .spero-orb__mic {
+      width: 58%;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #12303f;
+      background: radial-gradient(circle at 38% 30%, #e9f795, #d7ee66 55%, #b9d84c);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .5), 0 0 90px rgba(215, 238, 102, .25);
     }
-    .chat-phone--spero .chat-phone__ava {
-      background: radial-gradient(circle at 32% 28%, #e9f795, #d7ee66 55%, #b9d84c);
-      box-shadow: 0 0 16px rgba(215, 238, 102, .4);
+    .spero-orb__mic svg { width: 42%; height: 42%; }
+    /* Частицы: позиции и задержки разложены по nth-of-type – формула одна, но фазы
+       и длительности разные, иначе видно, что точки ходят строем */
+    .spero-orb__p { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: rgba(215, 238, 102, .8); box-shadow: 0 0 10px rgba(215, 238, 102, .7); }
+    .spero-orb__p:nth-of-type(1) { left: 6%;  top: 30%; }
+    .spero-orb__p:nth-of-type(2) { left: 88%; top: 22%; width: 4px; height: 4px; }
+    .spero-orb__p:nth-of-type(3) { left: 96%; top: 58%; background: rgba(255,255,255,.65); box-shadow: 0 0 8px rgba(255,255,255,.5); }
+    .spero-orb__p:nth-of-type(4) { left: 12%; top: 78%; width: 4px; height: 4px; }
+    .spero-orb__p:nth-of-type(5) { left: 50%; top: -4%; width: 5px; height: 5px; }
+    .spero-orb__p:nth-of-type(6) { left: 76%; top: 92%; background: rgba(255,255,255,.55); box-shadow: 0 0 8px rgba(255,255,255,.4); }
+    .spero-orb__p:nth-of-type(7) { left: -3%; top: 52%; width: 4px; height: 4px; }
+    .spero-orb__p:nth-of-type(8) { left: 30%; top: 96%; }
+    @media (prefers-reduced-motion: no-preference) {
+      .spero-orb__ring--1 { animation: spero-breathe 3.6s ease-in-out infinite; }
+      .spero-orb__ring--2 { animation: spero-breathe 3.6s ease-in-out 1.2s infinite; }
+      .spero-orb__ring--3 { animation: spero-breathe 3.6s ease-in-out 2.4s infinite; }
+      .spero-orb__p { animation: spero-float 5.2s ease-in-out infinite alternate; }
+      .spero-orb__p:nth-of-type(2n) { animation-duration: 6.4s; animation-delay: 1.1s; }
+      .spero-orb__p:nth-of-type(3n) { animation-duration: 7.3s; animation-delay: 2.3s; }
+      .spero-orb__p:nth-of-type(5),
+      .spero-orb__p:nth-of-type(7) { animation-delay: 3.1s; }
     }
-    .chat-phone--spero .chat-phone__ava::after { border-color: #143343; }
-    .chat-phone--spero .chat-phone__head { border-bottom-color: rgba(255, 255, 255, .1); }
-    .chat-phone--spero .chat-phone__head span,
-    .chat-phone--spero .chat-phone__scan { color: #8fa3ab; }
-    .chat-phone--spero .chat-msg--user { background: linear-gradient(150deg, #e2f27f, #c6e055); color: #12303f; }
-    .chat-phone--spero .chat-msg--ai { border-color: rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .07); color: #dfe9ec; }
-    .chat-phone--spero .chat-typing i { background: #a9bfc9; }
+    @keyframes spero-float {
+      from { transform: translate3d(0, 8px, 0); opacity: .4; }
+      to   { transform: translate3d(0, -14px, 0); opacity: 1; }
+    }
     /* Заголовок мельче кит-размера: с телефоном справа бюджет высоты слайда
        делится на троих, и на 66px шапка занимала 274px (замер 1440×900) */
     #s04 .slide-head h2 { font-size: clamp(26px, 3.6vw, 58px); }
@@ -269,6 +294,20 @@
     .offer-under { margin: 10px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
     .crit-line { margin: clamp(16px, 2vw, 26px) 0 0; color: #c3c9d4; font-size: 15.5px; }
     .crit-line b { color: var(--paper); font: 600 12px/1 "Roboto Mono", monospace; letter-spacing: .16em; text-transform: uppercase; margin-right: 8px; }
+
+    /* Фото-слайд: кадр во весь экран, заголовок поверх. Затемнение – растяжкой
+       снизу и слева, ровно там, где лежит текст: ровная плёнка по всему кадру
+       глушила бы и стойку с QR – главный предмет фотографии */
+    .slide--photo { padding: 0; }
+    .slide--photo__shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+    .slide--photo::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(12deg, rgba(4, 8, 12, .78), transparent 46%),
+                  linear-gradient(100deg, rgba(4, 8, 12, .55), transparent 40%);
+    }
+    .slide--photo .slide-shell { position: relative; z-index: 1; display: grid; align-content: end; min-height: 100svh; padding-bottom: clamp(48px, 7svh, 90px); }
+    .slide--photo .slide-head { margin-bottom: 0; }
 
     /* Финал: заключительная строка под панчем */
     .fin-line { margin: 0 0 clamp(20px, 2.6vw, 36px); color: #9fb2ff; font: 500 clamp(15px, 1.3vw, 20px)/1.4 "Roboto Mono", monospace; letter-spacing: .06em; }
@@ -469,27 +508,16 @@
             </ul>
             <p class="chips-after"><b>После покупки ассистент остаётся рядом:</b> он открывается с&nbsp;той же упаковки в&nbsp;любой момент. Не&nbsp;человек ищет информацию о&nbsp;продукте – продукт сам отвечает человеку.</p>
           </div>
-          <!-- Диалог оформлен КАК ПРОТОТИП (палитра и салатовые реплики оттуда),
-               а ответы ассистента печатаются посимвольно – data-chat-stream -->
-          <div class="chat-phone chat-phone--spero" data-chat-phone data-chat-stream>
-            <div class="chat-phone__screen">
-              <div class="chat-phone__head">
-                <i class="chat-phone__ava" aria-hidden="true"></i>
-                <p><b>Сперотон</b><span>Аквион · AI-ассистент · 24/7</span></p>
-              </div>
-              <div class="chat-phone__feed" data-chat-feed>
-                <p class="chat-phone__scan"><svg viewBox="0 0 15 15" aria-hidden="true" fill-rule="evenodd"><path d="M0 0h6v6H0zM1.5 1.5v3h3v-3zM9 0h6v6H9zM10.5 1.5v3h3v-3zM0 9h6v6H0zM1.5 10.5v3h3v-3zM8 8h2v2H8zM12 8h3v2h-3zM10 10h2v3h-2zM13 11h2v4h-2zM8 12h2v3H8z"/></svg>QR-код отсканирован</p>
-              </div>
-              <ol class="chat-phone__script" hidden>
-                <li data-from="ai">Здравствуйте! Я&nbsp;ассистент Сперотона. Спрашивайте – отвечу простым языком.</li>
-                <li data-from="user">Как его принимать?</li>
-                <li data-from="ai">Одно саше растворите в&nbsp;стакане воды и&nbsp;выпейте во&nbsp;время еды, раз в&nbsp;день.</li>
-                <li data-from="user">А чем отличается Сперотон Форте?</li>
-                <li data-from="ai">Составом и&nbsp;содержанием компонентов. Могу показать основные различия по&nbsp;пунктам.</li>
-                <li data-from="user">Можно вместе с витамином D?</li>
-                <li data-from="ai">В инструкции ограничений на&nbsp;этот счёт нет. Если вы принимаете лекарства – лучше уточнить у&nbsp;врача.</li>
-              </ol>
-            </div>
+          <!-- Кнопка микрофона ИЗ ПРОТОТИПА – с кольцами и частицами: второй телефон
+               рядом с вопросами читался как чужой мессенджер, а кнопка – это сам жест
+               «нажми и спроси», за который презентация и агитирует -->
+          <div class="spero-orb" aria-hidden="true">
+            <i class="spero-orb__p"></i><i class="spero-orb__p"></i><i class="spero-orb__p"></i><i class="spero-orb__p"></i>
+            <i class="spero-orb__p"></i><i class="spero-orb__p"></i><i class="spero-orb__p"></i><i class="spero-orb__p"></i>
+            <i class="spero-orb__ring spero-orb__ring--1"></i>
+            <i class="spero-orb__ring spero-orb__ring--2"></i>
+            <i class="spero-orb__ring spero-orb__ring--3"></i>
+            <span class="spero-orb__mic"><svg viewBox="0 0 24 24"><path d="M12 3.2a3.1 3.1 0 0 1 3.1 3.1v4.9a3.1 3.1 0 1 1-6.2 0V6.3A3.1 3.1 0 0 1 12 3.2z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6.6 11.4a5.4 5.4 0 0 0 10.8 0M12 16.8v2.6M9.8 19.4h4.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
           </div>
         </div>
         <!-- Принцип демо: AI объясняет, сравнивает и помогает разобраться,
@@ -618,10 +646,24 @@
       </div>
     </section>
 
-    <!-- ═══ 09. ПИЛОТ ══════════════════════════════════════════════════════
+    <!-- ═══ 09. ПОПРОБУЕМ СЕЙЧАС ═══════════════════════════════════════════
+         Фото стойки с QR и линейкой Сперотона во весь экран: перед разговором
+         о пилоте человек видит, КАК это стоит в аптеке. Заголовок поверх кадра,
+         низ прикрыт растяжкой затемнения – иначе текст тонет в мраморе прилавка. -->
+    <section class="slide slide--photo" id="s09try" data-slide="09">
+      <img class="slide--photo__shot" src="assets/qr-counter.jpg" alt="Стойка «Спроси про Сперотон» с QR-кодом рядом с линейкой продукта на аптечном прилавке">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Живое демо</p>
+          <h2>Попробуем сейчас</h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 10. ПИЛОТ ══════════════════════════════════════════════════════
          Восемь поставок карточками. Класс cards поставлен РУКАМИ: lists.js тогда
          список пропускает и не нумерует – это набор, а не последовательность. -->
-    <section class="slide" id="s09" data-slide="09">
+    <section class="slide" id="s09" data-slide="10">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Пилот · 2–3 продукта</p>
@@ -649,7 +691,7 @@
          Слева семь результатов простыми строками (класс plain поставлен руками,
          чтобы lists.js не раскладывал их карточками – рядом уже стоит плашка цены),
          справа – коммерческое предложение с ценой. -->
-    <section class="slide slide--dark" id="s10" data-slide="10">
+    <section class="slide slide--dark" id="s10" data-slide="11">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Результат пилота</p>
@@ -678,7 +720,7 @@
     <!-- ═══ ФИНАЛ ══════════════════════════════════════════════════════════
          Одна фраза на весь экран – ей отдана вся презентация, и делить финал
          с чем-то ещё нельзя. -->
-    <section class="slide slide--fin" id="fin" data-slide="11">
+    <section class="slide slide--fin" id="fin" data-slide="12">
       <div class="slide-shell">
         <div class="reveal">
           <p class="slide-punch">Сегодня компания продаёт миллионы упаковок. <em>Завтра каждая из&nbsp;них сможет разговаривать с&nbsp;покупателем.</em></p>
@@ -695,7 +737,6 @@
   <script defer src="../kit/js/reveal-cursor.js"></script>
   <script defer src="../kit/js/parallax.js"></script>
   <script defer src="../kit/js/lists.js"></script>
-  <script defer src="../kit/js/chatphone.js"></script>
   <script defer src="../kit/js/strip.js"></script>
   <script defer src="../kit/js/cast.js"></script>
   <script defer src="../kit/js/ui.js"></script>
