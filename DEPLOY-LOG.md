@@ -8,6 +8,62 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-30 12:14 — hybrid-v8 @ fbfc526
+
+**Коммиты в этой поставке**
+```
+fbfc526 Деплой не трогает чужой Next-экспорт внутри /ai-pack/ на сервере
+8e111df Презентация в стиле ВТФ на /akvion/
+6515e62 Презентация в фирменном стиле ВТФ – /akvion/, тема theme-vtf в ките
+7c6cef4 Журнал деплоя: 09cd029
+```
+
+**На сервер отправлено файлов:** 134, удалено: 0
+```
+llms.txt
+robots.txt
+sitemap.xml
+akvion/
+akvion/index.html
+akvion/assets/
+akvion/assets/akvion.png
+akvion/assets/qr-counter.jpg
+akvion/assets/speroton-pack.png
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+en/index.html
+…и ещё 94
+```
+
+
 ## 2026-08-30 11:41 — hybrid-v8 @ 09cd029
 
 **Коммиты в этой поставке**
