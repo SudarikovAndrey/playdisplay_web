@@ -1,0 +1,848 @@
+<!doctype html>
+<!-- deck – режим презентации: класс обязан стоять на <html>, а не на <body class="theme-vtf">:
+     scroll-snap-type с тела к области просмотра не поднимается и молча не работает -->
+<html lang="ru" class="deck">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f9fc">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="AI-ассистент для каждого продукта компании: QR на упаковке открывает диалог с продуктом. Предложение PLAYDISPLAY для компании «Аквион».">
+  <title>Продукт, который умеет говорить</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Onest обязателен: именно он объявлен основным в typography.css -->
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Unbounded:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Аналитика: один файл на весь сайт, путь абсолютный. Считает только боевые домены -->
+  <script src="/analytics.js" defer></script>
+  <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
+  <link rel="stylesheet" href="../kit/css/layout.css?v=74ee8427">
+  <link rel="stylesheet" href="../kit/css/typography.css?v=720384aa">
+  <link rel="stylesheet" href="../kit/css/components.css?v=84d978f6">
+  <link rel="stylesheet" href="../kit/css/animations.css?v=8019a710">
+  <!-- Тема ВТФ подключается ПОСЛЕ кита: светлая бумага, синие строчные
+       заголовки, розовый акцент – по гайдлайну VTF_Guide_2025 -->
+  <link rel="stylesheet" href="../kit/css/theme-vtf.css">
+  <!-- Стили страницы: правки, которые не относятся к киту, живут здесь, а не в kit/css -->
+  <style>
+    /* Боковое меню убрано по решению владельца (28.08): десять слайдов листаются
+       подряд, а полоса разделов съедала левый край. Ширину полосы обнуляем токеном –
+       вся раскладка кита (шапка, слайды, главы) отталкивается от него. */
+    :root { --nav-width: 0px; }
+
+    /* Кит задаёт .slide-head p max-width:780px – узко для абзацев с длинным текстом.
+       Кит не трогаем, перекрываем здесь (тот же приём, что в компреде АвтоВАЗу). */
+    .slide .slide-head p { max-width: 1024px; }
+
+    /* Мелкие тексты крупнее – просьба владельца (28.08): подписи кита (13–14px)
+       на большом экране читались с трудом. Поднимаем служебный кегль по всей странице. */
+    .slide-note { font-size: 16.5px; line-height: 1.55; max-width: 900px; }
+    .timeline span { font-size: 16px; line-height: 1.5; }
+    .journey-diagram span { font-size: 15.5px; line-height: 1.45; }
+    .collection-diagram--tight span { font-size: 14.5px; line-height: 1.4; }
+    .chat-chips li { font-size: clamp(15.5px, 1.25vw, 19px); }
+    .hero-facts span { font-size: 13px; }
+    .hero-status { font-size: 15px; }
+
+    /* Кит-кегль заголовка (11+vw) рассчитан на короткие слова во всю ширину экрана.
+       Здесь колонка узкая (рядом телефон), а слова длинные – «ПРОДУКТ, КОТОРЫЙ»
+       на кит-кегле ломался на четыре строки и съедал весь первый экран.
+       ТОЛЬКО там, где телефон виден: ниже 1000px кит прячет телефон и сам ведёт
+       мобильный кегль – мой размер там накладывал строки друг на друга. */
+    @media (min-width: 1001px) {
+      .hero-copy--narrow h1 { font-size: clamp(30px, 4.3vw, 70px); }
+    }
+
+    /* Цепочка точек контакта: семь звеньев вместо трёх-четырёх обычных. На базовом
+       кегле (32px) семь слов с соединителями не помещаются в полосу содержания,
+       поэтому у этой цепочки свой кегль и разрешён перенос строки. */
+    .touch-flow { flex-wrap: wrap; row-gap: 16px; max-width: 1120px; }
+    .touch-flow b { font-size: clamp(16px, 1.7vw, 26px); white-space: nowrap; }
+    .touch-flow i { min-width: 22px; }
+
+    /* Абзац-продолжение после чипов вопросов: по весу равен пояснению заголовка,
+       но стоит ПОСЛЕ содержания слайда, поэтому ему нужен свой отступ сверху */
+    .chips-after { max-width: 900px; margin: clamp(20px, 2.6vw, 34px) 0 0; color: #c3c9d4; font-size: clamp(15px, 1.2vw, 19px); line-height: 1.5; }
+    .chips-after b { color: var(--paper); font-weight: 600; }
+
+
+    /* Финал: одна фраза по центру экрана. Панч кита ограничен 1000px под слайды
+       с содержанием – финальной фразе отдаём больше и убираем нижний отступ. */
+    /* Вычет 200px – с запасом больше паддингов слайда на любом экране (на 1080
+       они 186px): с прежними 160px финал перерастал бюджет ровно на разницу */
+    .slide--fin .slide-shell { display: grid; align-content: center; justify-items: start; min-height: calc(100svh - 200px); }
+    .slide--fin .slide-punch { max-width: 1240px; margin: 0 0 clamp(28px, 4vw, 56px); }
+
+    /* Связка знаков на первом экране: оба знака – широкие словесные, на кит-высоте
+       (44–84px) они не помещались в узкую колонку рядом с телефоном и переносились */
+    .hero .lockup { gap: clamp(12px, 1.6vw, 24px); margin-bottom: clamp(16px, 2vw, 28px); }
+    .hero .lockup img { height: clamp(20px, 2vw, 30px); }
+    .hero .lockup-x { font-size: clamp(15px, 1.5vw, 22px); }
+
+    /* Коробка Сперотона за телефоном: выглядывает слева из-за рамки, наклонена
+       и отвечает на курсор сильнее телефона (амплитуды у corner-cast__hover) */
+    .hero-pack {
+      position: absolute;
+      right: clamp(190px, 21vw, 400px);
+      top: 0; bottom: 0;
+      z-index: 3;                       /* телефон стоит на 4 – коробка позади */
+      display: flex;
+      align-items: center;
+      margin: 0;
+      pointer-events: none;
+    }
+    .hero-pack img {
+      display: block;
+      width: clamp(280px, 26vw, 410px);
+      transform: rotate(-8deg);
+      filter: drop-shadow(0 46px 80px rgba(0, 0, 0, .6)) drop-shadow(0 0 70px rgba(75, 104, 255, .14));
+    }
+    .hero-pack .corner-cast__hover { --amp: 30px; --spin: 1.4deg; }
+    .hero-phone .corner-cast__hover { --amp: 10px; --spin: .4deg; }
+    /* Кит растягивает hover-обёртку на 100 % под слои corner-cast; здесь она должна
+       быть ПО СОДЕРЖИМОМУ – иначе flex-центрирование телефона центрирует обёртку,
+       а сам телефон прилипает к её верху (замер: top −5 вместо 162) */
+    .hero-phone .corner-cast__hover,
+    .hero-pack .corner-cast__hover { width: auto; height: auto; }
+    @media (max-width: 1000px) { .hero-pack { display: none; } }
+
+    /* ═══ ГРАФИКА ПРОТОТИПА НА ПЕРВОМ ЭКРАНЕ ═══
+       Стартовый экран speroton-ar.sudarikov.chatgpt.site, воссозданный CSS в рамке
+       кит-телефона. Палитра снята с прототипа: глубокий петроль фона и салатовая
+       кнопка микрофона – это же цвета упаковки Сперотона. */
+    .spero-app {
+      --spero-lime: #d7ee66;
+      --spero-deep: #0d2836;
+      justify-content: space-between;
+      padding: 34px 18px 14px;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(38, 82, 100, .55), transparent 62%),
+        linear-gradient(175deg, #143343, var(--spero-deep) 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .spero-app__brand { margin: 6px 0 0; color: #93a8b1; font: 600 12px/1 "Roboto Mono", monospace; letter-spacing: .34em; text-indent: .34em; }
+    .spero-app__stage { position: relative; width: 62%; aspect-ratio: 1; margin: auto 0; display: grid; place-items: center; }
+    .spero-app__ring { position: absolute; inset: 0; border: 1px solid rgba(215, 238, 102, .16); border-radius: 50%; }
+    .spero-app__ring--2 { inset: -13%; border-color: rgba(255, 255, 255, .1); }
+    /* Кольца тихо дышат – это и отличает воссоздание от скриншота */
+    @media (prefers-reduced-motion: no-preference) {
+      .spero-app__ring--1 { animation: spero-breathe 3.6s ease-in-out infinite; }
+      .spero-app__ring--2 { animation: spero-breathe 3.6s ease-in-out 1.8s infinite; }
+    }
+    @keyframes spero-breathe { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.07); opacity: .5; } }
+    .spero-app__mic {
+      width: 74%;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--spero-deep);
+      background: radial-gradient(circle at 38% 30%, #e9f795, var(--spero-lime) 55%, #b9d84c);
+      box-shadow: 0 18px 46px rgba(0, 0, 0, .45), 0 0 60px rgba(215, 238, 102, .22);
+    }
+    .spero-app__mic svg { width: 42%; height: 42%; }
+    .spero-app__cta { margin: 0 0 8px; color: #f1fbfc; font-size: 17px; font-weight: 700; }
+    .spero-app__sub { margin: 0 0 18px; color: #b7c7cd; font-size: 14px; }
+    .spero-app__input {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 10px 10px 16px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 99px;
+      color: #8fa3ab;
+      font-size: 13.5px;
+      background: rgba(255, 255, 255, .05);
+    }
+    .spero-app__input i {
+      flex: 0 0 auto;
+      width: 30px; height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-style: normal;
+      color: var(--spero-deep);
+      background: var(--spero-lime);
+      opacity: .85;
+    }
+    .spero-app__legal { margin: 10px 0 4px; color: #7d929b; font: 500 9px/1 "Roboto Mono", monospace; letter-spacing: .1em; text-transform: uppercase; }
+
+    /* 04: вопросы слева, живой диалог справа. Телефону в слайде отдана меньшая
+       высота, чем в hero: бюджет экрана делится с заголовком и подписью. */
+    .ask-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) auto; gap: clamp(24px, 3.5vw, 56px); align-items: center; max-width: 1220px; }
+
+    /* КНОПКА ИЗ ПРОТОТИПА на слайде «Покупателю»: кольца дышат со сдвигом фаз,
+       вокруг всплывают частицы – ровно то, что видит человек после сканирования QR */
+    .spero-orb { position: relative; width: min(42svh, 380px); aspect-ratio: 1; display: grid; place-items: center; }
+    .spero-orb__ring { position: absolute; border: 1px solid rgba(215, 238, 102, .18); border-radius: 50%; }
+    .spero-orb__ring--1 { inset: 9%; }
+    .spero-orb__ring--2 { inset: 0; border-color: rgba(255, 255, 255, .1); }
+    .spero-orb__ring--3 { inset: -10%; border-color: rgba(255, 255, 255, .06); }
+    .spero-orb__mic {
+      width: 58%;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #12303f;
+      background: radial-gradient(circle at 38% 30%, #e9f795, #d7ee66 55%, #b9d84c);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .5), 0 0 90px rgba(215, 238, 102, .25);
+    }
+    .spero-orb__mic svg { width: 42%; height: 42%; }
+    /* Частицы: позиции и задержки разложены по nth-of-type – формула одна, но фазы
+       и длительности разные, иначе видно, что точки ходят строем */
+    .spero-orb__p { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: rgba(215, 238, 102, .8); box-shadow: 0 0 10px rgba(215, 238, 102, .7); }
+    .spero-orb__p:nth-of-type(1) { left: 6%;  top: 30%; }
+    .spero-orb__p:nth-of-type(2) { left: 88%; top: 22%; width: 4px; height: 4px; }
+    .spero-orb__p:nth-of-type(3) { left: 96%; top: 58%; background: rgba(255,255,255,.65); box-shadow: 0 0 8px rgba(255,255,255,.5); }
+    .spero-orb__p:nth-of-type(4) { left: 12%; top: 78%; width: 4px; height: 4px; }
+    .spero-orb__p:nth-of-type(5) { left: 50%; top: -4%; width: 5px; height: 5px; }
+    .spero-orb__p:nth-of-type(6) { left: 76%; top: 92%; background: rgba(255,255,255,.55); box-shadow: 0 0 8px rgba(255,255,255,.4); }
+    .spero-orb__p:nth-of-type(7) { left: -3%; top: 52%; width: 4px; height: 4px; }
+    .spero-orb__p:nth-of-type(8) { left: 30%; top: 96%; }
+    @media (prefers-reduced-motion: no-preference) {
+      .spero-orb__ring--1 { animation: spero-breathe 3.6s ease-in-out infinite; }
+      .spero-orb__ring--2 { animation: spero-breathe 3.6s ease-in-out 1.2s infinite; }
+      .spero-orb__ring--3 { animation: spero-breathe 3.6s ease-in-out 2.4s infinite; }
+      .spero-orb__p { animation: spero-float 5.2s ease-in-out infinite alternate; }
+      .spero-orb__p:nth-of-type(2n) { animation-duration: 6.4s; animation-delay: 1.1s; }
+      .spero-orb__p:nth-of-type(3n) { animation-duration: 7.3s; animation-delay: 2.3s; }
+      .spero-orb__p:nth-of-type(5),
+      .spero-orb__p:nth-of-type(7) { animation-delay: 3.1s; }
+    }
+    @keyframes spero-float {
+      from { transform: translate3d(0, 8px, 0); opacity: .4; }
+      to   { transform: translate3d(0, -14px, 0); opacity: 1; }
+    }
+    /* Заголовок мельче кит-размера: с телефоном справа бюджет высоты слайда
+       делится на троих, и на 66px шапка занимала 274px (замер 1440×900) */
+    #s04 .slide-head h2 { font-size: clamp(26px, 3.6vw, 58px); }
+    @media (max-width: 1000px) {
+      .ask-grid { grid-template-columns: 1fr; }
+      .ask-grid > div:last-child { display: none; }  /* телефону на узком экране места нет */
+    }
+
+    /* Вопрос-акцент ПОСЛЕ содержания слайда: тот же панч кита, но мельче и с отступом
+       сверху – это реплика в конце мысли, а не заголовок экрана */
+    .slide-punch--q { margin: clamp(20px, 2.4vw, 32px) 0 0; font-size: clamp(20px, 2.3vw, 38px); }
+
+    /* 01: карточки барьеров плотнее – с панчом внизу слайд перелетал бюджет на 32px */
+    #s01 .clean-list--cards li { padding: 14px 18px 16px; }
+
+    /* Дальше – подгонка слайдов под бюджет высоты. Бюджет = innerHeight МИНУС паддинги
+       слайда (на 1440×900 это 756px), сверка с полным экраном врёт – см. кит. */
+
+    /* 05: пять источников В ОДИН ряд – кит-сетка в три колонки давала два ряда
+       и перелёт 154px (замер 1440×900) */
+    #s05 .concept-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); width: min(1340px, 100%); gap: 10px; }
+    #s05 .concept-card { min-height: 230px; padding: 20px; }
+    #s05 .concept-card h4 { font-size: clamp(17px, 1.45vw, 23px); }
+    /* Заголовки карточек по ВЕРХУ, текст по низу (просьба владельца): кит прижимает
+       h4 к низу через margin: auto, и в четырёх карточках разной длины заголовки
+       плясали по высоте – глаз сравнивал их дольше, чем читал. */
+    #s05 .concept-card h4 { margin: 12px 0 0; }
+    #s05 .concept-card p { margin-top: auto; padding-top: 18px; }
+    #s05 .concept-card p, .slide .concept-card p { font-size: 16.5px; line-height: 1.55; }
+
+    /* 06: десять карточек – два ряда по пять; auto-fit раскладывал в три ряда,
+       перелёт 96px */
+    #s06 .clean-list--cards { grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: 1280px; }
+    #s06 .clean-list--cards li { padding: 14px 16px 16px; font-size: clamp(14.5px, 1.15vw, 17px); }
+
+    /* 07: плашки портрета ниже кит-высоты (190px и крупный кегль дают перелёт 361px),
+       а заголовку из шести слов нужен кегль меньше кит-размера – на нём он занимал
+       три строки, и одна шапка съедала 439px */
+    #s07 .slide-head h2 { font-size: clamp(26px, 3.4vw, 56px); }
+    #s07 .stats-grid { width: min(100%, 1080px); }
+    #s07 .stat-line { min-height: 0; padding: 13px 20px; font-size: clamp(15px, 1.15vw, 18px); }
+    #s07 .stat-line > p { font-size: 16.5px; line-height: 1.5; }
+
+    /* 09: восемь поставок – два ряда по четыре; auto-fit на этой ширине давал
+       три ряда и перелёт бюджета */
+    #s09 .clean-list--cards { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 1280px; }
+    #s09 .clean-list--cards li { padding: 16px 18px 18px; font-size: clamp(14.5px, 1.15vw, 17px); }
+    @media (max-width: 1000px) { #s09 .clean-list--cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 680px) { #s09 .clean-list--cards { grid-template-columns: 1fr; } }
+
+    /* Формула Insight Engine и цепочка этапов пути: та же цепочка кита, что и
+       точки контакта, но мельче – это пояснение, а не заголовочный ряд */
+    .stage-flow, .insight-flow { flex-wrap: wrap; row-gap: 12px; max-width: 1160px; margin-top: clamp(16px, 2vw, 26px); }
+    .stage-flow b { font-size: clamp(14px, 1.25vw, 19px); white-space: nowrap; }
+    .insight-flow b { font-size: clamp(17px, 1.6vw, 25px); white-space: nowrap; }
+    .stage-flow i, .insight-flow i { min-width: 18px; }
+    .stage-title { margin: clamp(16px, 2vw, 26px) 0 0; color: var(--paper); font: 600 12px/1 "Roboto Mono", monospace; letter-spacing: .18em; text-transform: uppercase; }
+    #s07 .slide-note { margin-top: 14px; }
+
+    /* Пары «инсайт → действие»: находка слева стеклом, решение справа акцентом.
+       Ширины колонок разные (1.05fr / 1fr) – ряд не выглядит таблицей */
+    .insight-rows { display: grid; gap: 9px; max-width: 1200px; }
+    .insight-rows > div { display: grid; grid-template-columns: minmax(0, 1.05fr) auto minmax(0, 1fr); align-items: center; gap: 6px 14px; }
+    .insight-rows p { margin: 0; padding: 12px 18px; border-radius: 13px; font-size: clamp(14.5px, 1.15vw, 17px); line-height: 1.45; }
+    .insight-rows .iq { color: #c6cdda; border: 1px solid var(--line); background: linear-gradient(140deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .012)); }
+    .insight-rows .iq b { color: var(--electric); font-weight: 600; }
+    .insight-rows .ia { color: #e8edff; border: 1px solid rgba(120, 143, 255, .42); background: linear-gradient(140deg, rgba(75, 104, 255, .22), rgba(75, 104, 255, .08)); }
+    .insight-rows > div > i { color: var(--electric); font-style: normal; font-size: clamp(17px, 1.4vw, 22px); }
+    @media (max-width: 900px) {
+      .insight-rows > div { grid-template-columns: 1fr; }
+      .insight-rows > div > i { display: none; }
+    }
+
+    /* 12: результаты – простыми строками с чертой (plain кита) В ДВЕ КОЛОНКИ:
+       шесть строк столбиком оставляли правую половину слайда пустой */
+    .result-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; max-width: 1120px; border-top: 0; }
+    .result-list li { padding: 13px 26px 13px 22px; border-top: 1px solid var(--line); }
+    .result-list li::after { top: 13px; }
+    @media (max-width: 900px) { .result-list { grid-template-columns: 1fr; } }
+    .crit-line { margin: clamp(16px, 2vw, 26px) 0 0; color: #c3c9d4; font-size: 15.5px; }
+    .crit-line b { color: var(--paper); font: 600 12px/1 "Roboto Mono", monospace; letter-spacing: .16em; text-transform: uppercase; margin-right: 8px; }
+
+    /* СЛОИ ИНФОРМАЦИИ: ступенчатая стопка. Каждая полоса сдвинута правее
+       предыдущей – «слои» читаются буквально. Сдвиг в процентах, а не пикселях:
+       на узкой колонке пиксельная лесенка съедала бы половину ширины. */
+    .info-layers { display: grid; gap: 8px; max-width: 1080px; }
+    .info-layers > div {
+      display: grid;
+      grid-template-columns: minmax(210px, 280px) 1fr;
+      gap: 10px 28px;
+      align-items: baseline;
+      padding: 13px 22px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(140deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .012));
+    }
+    .info-layers > div:nth-child(2) { margin-left: 4%; }
+    .info-layers > div:nth-child(3) { margin-left: 8%; border-color: rgba(135, 156, 255, .4); background: linear-gradient(140deg, rgba(75, 104, 255, .14), rgba(75, 104, 255, .03)); }
+    .info-layers > div:nth-child(4) { margin-left: 12%; }
+    .info-layers b { display: grid; gap: 5px; color: var(--paper); font-family: Unbounded, "Arial Black", sans-serif; font-size: clamp(15px, 1.25vw, 19px); font-weight: 600; line-height: 1.15; letter-spacing: -.02em; }
+    .info-layers b i { color: var(--electric); font: 500 10.5px/1 "Roboto Mono", monospace; font-style: normal; letter-spacing: .18em; text-transform: uppercase; }
+    .info-layers p { margin: 0; color: #b9c2d2; font-size: clamp(14.5px, 1.1vw, 16.5px); line-height: 1.5; }
+    @media (max-width: 900px) {
+      .info-layers > div { grid-template-columns: 1fr; gap: 8px; }
+      .info-layers > div:nth-child(n) { margin-left: 0; }
+    }
+
+    /* Фото-слайд: кадр во весь экран, заголовок поверх. Затемнение – растяжкой
+       снизу и слева, ровно там, где лежит текст: ровная плёнка по всему кадру
+       глушила бы и стойку с QR – главный предмет фотографии */
+    .slide--photo { padding: 0; }
+    .slide--photo__shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+    .slide--photo::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(12deg, rgba(4, 8, 12, .78), transparent 46%),
+                  linear-gradient(100deg, rgba(4, 8, 12, .55), transparent 40%);
+    }
+    .slide--photo .slide-shell { position: relative; z-index: 1; display: grid; align-content: end; min-height: 100svh; padding-bottom: clamp(48px, 7svh, 90px); }
+    .slide--photo .slide-head { margin-bottom: 0; }
+
+    /* Финал: заключительная строка под панчем */
+    .fin-line { margin: 0 0 clamp(20px, 2.6vw, 36px); color: #9fb2ff; font: 500 clamp(15px, 1.3vw, 20px)/1.4 "Roboto Mono", monospace; letter-spacing: .06em; }
+
+    @media (max-width: 1000px) {
+      #s05 .concept-grid, #s06 .clean-list--cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      #s05 .concept-grid, #s06 .clean-list--cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="theme-vtf">
+  <!-- Заставка лежит В РАЗМЕТКЕ, а не создаётся скриптом: иначе между показом страницы
+       и запуском скрипта мигает недогруженная вёрстка. Тяжёлых кадров на странице нет,
+       поэтому ждём только шрифты – заставка мелькнёт и уйдёт. -->
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <img class="boot-logo" src="../kit/assets/demo/logo.webp" alt="">
+      <div class="boot-bar"><i id="bootBar"></i></div>
+      <p class="boot-note">Для компании «Аквион» · AI-ассистент продукта</p>
+    </div>
+  </div>
+
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="cursor-core" aria-hidden="true"></div>
+  <div class="brand-particles" id="brandParticles" aria-hidden="true"></div>
+  <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="../kit/assets/demo/logo.webp" alt="Playdisplay"></a>
+    <div class="book-mark"><span>AI-ассистент продукта</span><span>Для «Аквион» · 0.2</span><button class="to-full" id="toFull" type="button" aria-pressed="false" aria-label="Во весь экран"><i aria-hidden="true"></i><span>Во весь экран</span></button></div>
+  </header>
+
+  <main id="top">
+
+    <!-- ═══ ПЕРВЫЙ ЭКРАН ═══════════════════════════════════════════════════
+         Справа не кадр, а ЖИВОЙ ДИАЛОГ: телефон нарисован CSS, реплики проигрываются
+         скриптом кита (chatphone.js). Статичный скриншот чата читался бы как «у них
+         есть макет», живой диалог – как «у них есть продукт». -->
+    <section class="hero">
+      <!-- data-cast: cast.js пишет на контейнер два числа (--mx/--my) от курсора,
+           а амплитуду каждого слоя задаёт CSS – коробка отвечает сильнее телефона,
+           и разница откликов читается как глубина -->
+      <div class="hero-intro" data-cast>
+      <svg class="vtf-chevron vtf-chevron--hero" viewBox="0 0 420 420" aria-hidden="true">
+        <defs><linearGradient id="vtfg1" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#4ba6dd" stop-opacity=".14"/>
+          <stop offset="1" stop-color="#047bc1" stop-opacity=".42"/>
+        </linearGradient></defs>
+        <g fill="none" stroke="url(#vtfg1)" stroke-width="30" stroke-linecap="round">
+          <path d="M15,405 V80 Q15,15 80,15 H405"/>
+          <path d="M95,405 V160 Q95,95 160,95 H405"/>
+          <path d="M175,405 V240 Q175,175 240,175 H405"/>
+          <path d="M255,405 V320 Q255,255 320,255 H405"/>
+        </g>
+      </svg>
+
+        <div class="hero-copy hero-copy--narrow reveal">
+          <p class="overline hero-overline" data-parallax="0.03">Подготовлено специально для&nbsp;компании «Аквион»</p>
+          <!-- Знак Аквиона приходит с чёрными буквами: на тёмном фоне его красит
+               в белый кит-класс on-dark (brightness(0) invert(1), прозрачность цела) -->
+          <div class="lockup" data-parallax="0.06">
+            <img src="assets/akvion.png" alt="Аквион">
+            <span class="lockup-x">×</span>
+            <img src="../kit/assets/demo/logo.webp" alt="Playdisplay">
+          </div>
+          <h1><span class="l1" data-parallax="0.075">ПРОДУКТ, КОТОРЫЙ</span><span class="l2" data-parallax="0.05">УМЕЕТ ГОВОРИТЬ</span></h1>
+          <p class="hero-statement hero-statement--float" data-parallax="0.04">Покупатель сканирует QR-код на&nbsp;упаковке или POS-материале – и&nbsp;мгновенно получает персонального AI-консультанта, который знает о&nbsp;продукте всё.</p>
+          <p class="hero-facts-title">Упаковка становится цифровым каналом</p>
+          <ul class="hero-facts hero-facts--accent" data-parallax="0.05">
+            <li><b>1&nbsp;скан</b><span>от вопроса до&nbsp;ответа</span></li>
+            <li><b>24/7</b><span>у каждой упаковки</span></li>
+            <li><b>100&nbsp;%</b><span>ответов – из утверждённой базы</span></li>
+          </ul>
+        </div>
+        <!-- ГРАФИКА ПЕРВОГО ЭКРАНА – стартовый экран живого прототипа для Сперотона
+             (speroton-ar.sudarikov.chatgpt.site), воссозданный CSS: палитра, кнопка
+             микрофона с кольцами, подписи и строка ввода взяты оттуда один в один.
+             Воссоздание, а не скриншот: рисунок остаётся резким на любом экране,
+             а кольца тихо дышат – скриншот этого не умеет. -->
+        <!-- Коробка Сперотона ЗА телефоном: три преобразования на трёх элементах,
+             как у corner-cast, – прокрутку двигает figure (parallax), курсор двигает
+             обёртку hover, наклон живёт на самой картинке. Два из них на одном
+             элементе затирали бы друг друга: все пишут в transform. -->
+        <figure class="hero-pack" data-parallax="0.15" aria-hidden="true">
+          <span class="corner-cast__hover"><img src="assets/speroton-pack.png" alt=""></span>
+        </figure>
+        <figure class="hero-phone" data-parallax="0.08">
+          <span class="corner-cast__hover">
+          <div class="chat-phone spero-phone">
+            <div class="chat-phone__screen spero-app" aria-hidden="true">
+              <p class="spero-app__brand">АКВИОН</p>
+              <div class="spero-app__stage">
+                <i class="spero-app__ring spero-app__ring--1"></i>
+                <i class="spero-app__ring spero-app__ring--2"></i>
+                <span class="spero-app__mic"><svg viewBox="0 0 24 24"><path d="M12 3.2a3.1 3.1 0 0 1 3.1 3.1v4.9a3.1 3.1 0 1 1-6.2 0V6.3A3.1 3.1 0 0 1 12 3.2z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6.6 11.4a5.4 5.4 0 0 0 10.8 0M12 16.8v2.6M9.8 19.4h4.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+              <p class="spero-app__cta">Нажмите и&nbsp;говорите</p>
+              <p class="spero-app__sub">Спросите о&nbsp;Сперотоне</p>
+              <div class="spero-app__input"><span>Написать вопрос</span><i>↑</i></div>
+              <p class="spero-app__legal">БАД · не является лекарством</p>
+            </div>
+          </div>
+          </span>
+        </figure>
+        <a class="scroll-cue" href="#s01"><span>Смотреть</span><i></i></a>
+      </div>
+    </section>
+
+    <!-- ═══ 01. ПРОБЛЕМА ═══════════════════════════════════════════════════
+         Пять барьеров карточками (clean-list раскладывает сам), внизу – вопрос,
+         на который отвечает вся презентация. -->
+    <section class="slide" id="s01" data-slide="01">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Проблема</p>
+          <h2>Сегодня продукт молчит</h2>
+          <p>Покупатель стоит перед полкой и&nbsp;принимает решение за&nbsp;несколько минут. Ответить на&nbsp;его вопросы в&nbsp;этот момент некому:</p>
+        </div>
+        <ul class="clean-list">
+          <li>Упаковка ограничена площадью – всё важное на ней не помещается.</li>
+          <li>POS-материал привлекает внимание, но не отвечает на вопрос.</li>
+          <li>QR-код обычно ведёт на сайт, где ответ ещё нужно найти.</li>
+          <li>Фармацевт не может знать всё о каждом продукте и уделить каждому покупателю время.</li>
+          <li>Интернет отвечает охотно, но качество ответов производитель не контролирует.</li>
+        </ul>
+        <p class="slide-punch slide-punch--q">Покупатель остаётся один на&nbsp;один с&nbsp;вопросами. <em>А&nbsp;что, если продукт ответит сам?</em></p>
+      </div>
+    </section>
+
+    <!-- ═══ 02. ЭВОЛЮЦИЯ ═══════════════════════════════════════════════════
+         Три поколения носителя – лентой времени: у эволюции есть направление,
+         и timeline показывает его лучше трёх равных карточек. -->
+    <section class="slide slide--dark" id="s02" data-slide="02">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Эволюция упаковки и POS</p>
+          <h2>Показывает → переводит → разговаривает</h2>
+        </div>
+        <div class="timeline">
+          <div>
+            <em>POS / PACK 1.0</em>
+            <b>Показывает</b>
+            <span>Упаковка, плакат, воблер, шелфтокер, стойка. Задача – привлечь внимание и&nbsp;передать короткое сообщение.</span>
+          </div>
+          <div>
+            <em>POS / PACK 2.0</em>
+            <b>Переводит</b>
+            <span>QR-код → сайт → инструкция → видео. Информации стало больше, но&nbsp;нужный ответ покупатель по-прежнему ищет сам.</span>
+          </div>
+          <div>
+            <em>POS / PACK 3.0</em>
+            <b>Разговаривает</b>
+            <span>QR-код → AI-ассистент. Человек задаёт свой вопрос и&nbsp;получает конкретный ответ здесь и&nbsp;сейчас.</span>
+          </div>
+        </div>
+        <p class="slide-note">Из статичного рекламного носителя – в умный, интерактивный и измеряемый канал коммуникации.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 03. ОДИН AI – ВСЕ ТОЧКИ КОНТАКТА ═══════════════════════════════
+         Цепочка носителей плюс четыре свойства единого интеллекта. Плитка плотная
+         (--tight): в полный рост она вместе с цепочкой не помещается в экран. -->
+    <section class="slide" id="s03" data-slide="03">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">AI Product Layer</p>
+          <h2>Один AI – все точки контакта</h2>
+          <p>QR – только вход. Мы&nbsp;создаём <b>единый цифровой интеллект бренда</b>, который сопровождает покупателя везде, где тот встречает продукт.</p>
+        </div>
+        <div class="flow-diagram touch-flow">
+          <div><b>Упаковка</b></div><i></i>
+          <div><b>POS</b></div><i></i>
+          <div><b>Сайт</b></div><i></i>
+          <div><b>Промостраницы</b></div><i></i>
+          <div><b>Маркетплейсы</b></div><i></i>
+          <div><b>Соцсети</b></div><i></i>
+          <div><b>Реклама</b></div>
+        </div>
+        <div class="diagram collection-diagram collection-diagram--tight" style="margin-top: clamp(22px, 3vw, 40px)">
+          <div><b>01</b><span>Одна проверенная база знаний</span></div>
+          <div><b>02</b><span>Единые правила коммуникации</span></div>
+          <div><b>03</b><span>Единый голос бренда</span></div>
+          <div><b>04</b><span>Круглосуточная доступность</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 04. ПОКУПАТЕЛЮ ═════════════════════════════════════════════════
+         Вопросы покупателя – чипами-репликами (блок кита chat-chips): это его живая
+         речь, а не меню возможностей. -->
+    <section class="slide slide--dark" id="s04" data-slide="04">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Что получает покупатель</p>
+          <h2>Не&nbsp;разбираться, а&nbsp;спросить</h2>
+          <p>До покупки не&nbsp;нужно изучать состав мелким шрифтом и&nbsp;сравнивать вслепую – можно просто задать вопрос:</p>
+        </div>
+        <!-- Слева вопросы-реплики, справа ЖИВОЙ ДИАЛОГ с Сперотоном: реплики
+             проигрываются скриптом кита (chatphone.js), текст лежит в разметке -->
+        <div class="ask-grid">
+          <div>
+            <ul class="chat-chips">
+              <li>Что это за продукт?</li>
+              <li>Чем отличаются эти два?</li>
+              <li>Какой состав?</li>
+              <li>Как применяется?</li>
+              <li>В чём особенности?</li>
+              <li>Как выбрать из нескольких вариантов?</li>
+            </ul>
+            <p class="chips-after"><b>После покупки ассистент остаётся рядом:</b> он открывается с&nbsp;той же упаковки в&nbsp;любой момент. Не&nbsp;человек ищет информацию о&nbsp;продукте – продукт сам отвечает человеку.</p>
+          </div>
+          <!-- Кнопка микрофона ИЗ ПРОТОТИПА – с кольцами и частицами: второй телефон
+               рядом с вопросами читался как чужой мессенджер, а кнопка – это сам жест
+               «нажми и спроси», за который презентация и агитирует -->
+          <div class="spero-orb" aria-hidden="true">
+            <i class="spero-orb__p"></i><i class="spero-orb__p"></i><i class="spero-orb__p"></i><i class="spero-orb__p"></i>
+            <i class="spero-orb__p"></i><i class="spero-orb__p"></i><i class="spero-orb__p"></i><i class="spero-orb__p"></i>
+            <i class="spero-orb__ring spero-orb__ring--1"></i>
+            <i class="spero-orb__ring spero-orb__ring--2"></i>
+            <i class="spero-orb__ring spero-orb__ring--3"></i>
+            <span class="spero-orb__mic"><svg viewBox="0 0 24 24"><path d="M12 3.2a3.1 3.1 0 0 1 3.1 3.1v4.9a3.1 3.1 0 1 1-6.2 0V6.3A3.1 3.1 0 0 1 12 3.2z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6.6 11.4a5.4 5.4 0 0 0 10.8 0M12 16.8v2.6M9.8 19.4h4.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+          </div>
+        </div>
+        <!-- Принцип демо: AI объясняет, сравнивает и помогает разобраться,
+             но не ставит диагноз и не назначает продукт -->
+        <p class="slide-note">Ассистент работает только в рамках утверждённой производителем базы знаний и заданных правил коммуникации. Он объясняет и сравнивает, но не назначает продукт и не подменяет врача.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 05. ПОПРОБУЕМ СЕЙЧАС ═══════════════════════════════════════════
+         Фото стойки с QR и линейкой Сперотона во весь экран – сразу после слайда
+         о покупателе: человек только что видел кнопку «спроси» и тут же видит,
+         КАК это стоит в аптеке. Заголовок поверх кадра, низ прикрыт растяжкой
+         затемнения – иначе текст тонет в мраморе прилавка. -->
+    <section class="slide slide--photo" id="s09try" data-slide="05">
+      <img class="slide--photo__shot" src="assets/qr-counter.jpg" alt="Стойка «Спроси про Сперотон» с QR-кодом рядом с линейкой продукта на аптечном прилавке">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Живое демо</p>
+          <h2>Попробуем сейчас</h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 06. КОМПАНИИ ═══════════════════════════════════════════════════ -->
+    <section class="slide" id="s05" data-slide="06">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Что получает компания</p>
+          <h2>Один AI – пять источников ценности</h2>
+        </div>
+        <div class="concept-grid">
+          <article class="concept-card">
+            <span>Источник 01</span>
+            <h4>Продажи</h4>
+            <p>Лучше объясняет сложные продукты. Помогает сравнивать и&nbsp;выбирать. Создаёт возможности для кросс-продаж и&nbsp;повторных покупок.</p>
+          </article>
+          <article class="concept-card">
+            <span>Источник 02</span>
+            <h4>Клиентский сервис</h4>
+            <p>24/7. Единое качество консультации. Тысячи одновременных диалогов. Снижение количества типовых вопросов.</p>
+          </article>
+          <article class="concept-card">
+            <span>Источник 03</span>
+            <h4>Маркетинг</h4>
+            <p>Новый интерактивный канал коммуникации. Контент и&nbsp;сценарии можно менять без перепечатки упаковки и&nbsp;POS-материалов.</p>
+          </article>
+          <article class="concept-card">
+            <span>Источник 04</span>
+            <h4>Персонал и&nbsp;продавцы</h4>
+            <p>Обучение сотрудников и&nbsp;полевых сил: тренажёр вопросов, свежие материалы, единый стандарт консультации в&nbsp;каждой точке.</p>
+          </article>
+          <!-- Consumer Intelligence стоит последним намеренно: из него вырастает
+               панч про измеряемый контакт строкой ниже -->
+          <article class="concept-card">
+            <span>Источник 05</span>
+            <h4>Consumer Intelligence</h4>
+            <p>Каждый диалог превращается в&nbsp;данные о&nbsp;вопросах, потребностях, сомнениях и&nbsp;поведении покупателей.</p>
+          </article>
+        </div>
+        <p class="slide-punch slide-punch--q">Физический контакт покупателя с&nbsp;продуктом <em>впервые становится измеряемым.</em></p>
+      </div>
+    </section>
+
+    <!-- ═══ 06. СЛОИ ИНФОРМАЦИИ ════════════════════════════════════════════
+         Тот же интеллект – другие аудитории: персонал, врачи и фармацевты,
+         онбординг. Подача – СТУПЕНЧАТАЯ СТОПКА: каждая полоса сдвинута правее
+         предыдущей, и «слои информации» читаются буквально, а не метафорой. -->
+    <section class="slide" id="s05b" data-slide="07">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Не только покупателю · разным группам пользователей</p>
+          <h2>Разные слои информации</h2>
+          <p>Тот же цифровой интеллект бренда поворачивается к&nbsp;каждой аудитории своей стороной: покупателю – простым языком, профессионалам – с&nbsp;глубиной и&nbsp;документами.</p>
+        </div>
+        <div class="info-layers">
+          <div>
+            <b><i>Слой 01</i>Покупатель</b>
+            <p>Ответы простым языком, сравнение и&nbsp;помощь в&nbsp;выборе – слой, который вы уже видели.</p>
+          </div>
+          <div>
+            <b><i>Слой 02</i>Персонал и&nbsp;полевые силы</b>
+            <p>Обучение продукту без сбора всех в&nbsp;одном зале: тренажёр вопросов, проверка знаний, всегда актуальные материалы.</p>
+          </div>
+          <div>
+            <b><i>Слой 03</i>Врачи и&nbsp;фармацевты</b>
+            <p>Профессиональный слой: составы, исследования, инструкции. Любой материал можно выгрузить или получить ссылкой.</p>
+          </div>
+          <div>
+            <b><i>Слой 04</i>Онбординг сотрудников</b>
+            <p>Новый человек осваивает ассортимент диалогом, а&nbsp;не&nbsp;папкой PDF, – и&nbsp;учится в&nbsp;темпе разговора.</p>
+          </div>
+        </div>
+        <p class="slide-note">Слои разводятся правами доступа: покупатель не увидит служебных материалов, а персонал получает их с того же QR.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 07. ДАННЫЕ ═════════════════════════════════════════════════════
+         Десять измеримых вопросов карточками: clean-list сам разложит короткие
+         пункты набором. Видно ОБЪЁМ того, что раньше не измерялось вовсе. -->
+    <section class="slide slide--dark" id="s06" data-slide="08">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Исследование рынка</p>
+          <h2>Каждая упаковка – точка исследования</h2>
+          <p>Сегодня производитель почти ничего не&nbsp;знает о&nbsp;человеке, который взял упаковку с&nbsp;полки. AI-слой позволяет увидеть:</p>
+        </div>
+        <ul class="clean-list">
+          <li>Сколько людей сканируют QR</li>
+          <li>Сколько начинают диалог</li>
+          <li>Сколько вопросов задают</li>
+          <li>Как долго общаются</li>
+          <li>Какие продукты вызывают интерес</li>
+          <li>Что спрашивают чаще всего</li>
+          <li>Какие характеристики непонятны</li>
+          <li>Что сравнивают между собой</li>
+          <li>Какие вопросы остаются без ответа</li>
+          <li>Возвращаются ли пользователи</li>
+        </ul>
+        <p class="slide-note">Дополнительно – допустимые агрегированные данные: география, язык, устройства, время и точки контакта. Каждый разговор превращается в данные.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 07. АУДИТОРИЯ ══════════════════════════════════════════════════ -->
+    <section class="slide" id="s07" data-slide="09">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Портрет аудитории</p>
+          <h2>Из&nbsp;анонимного покупателя – в&nbsp;понятную аудиторию</h2>
+          <!-- Согласие вшито сюда: отдельная строка внизу не помещалась по высоте
+               на широких экранах, а обещание добровольности терять нельзя -->
+          <p>AI помогает понять не&nbsp;только <b>кто</b> покупатель и&nbsp;<b>что</b> ему нужно, но&nbsp;и <b>на&nbsp;каком этапе решения</b> он находится. Рассказывает он это сам – добровольно и&nbsp;с&nbsp;согласия, в&nbsp;обмен на&nbsp;подбор, бонус или программу лояльности.</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-line"><span>01</span><strong>Кто он</strong><p>Возрастная группа, регион, новый или постоянный, выбирает для себя или для другого.</p></div>
+          <div class="stat-line"><span>02</span><strong>Что ему нужно</strong><p>Цель выбора, ожидаемый результат, важные характеристики, возникающие вопросы.</p></div>
+          <div class="stat-line"><span>03</span><strong>Как он выбирает</strong><p>Что рассматривает и сравнивает, что влияет на решение, где предпочитает покупать.</p></div>
+          <div class="stat-line"><span>04</span><strong>Отношения с брендом</strong><p>Первое знакомство или повторная покупка, что уже использовал, интерес к другим продуктам.</p></div>
+        </div>
+        <!-- Пятое измерение – ЭТАП ПУТИ – показано цепочкой, а не пятой плашкой:
+             это последовательность состояний, а не ещё одна рубрика анкеты -->
+        <p class="stage-title">Этап покупательского пути</p>
+        <div class="flow-diagram stage-flow">
+          <div><b>Интересуется</b></div><i></i>
+          <div><b>Изучает</b></div><i></i>
+          <div><b>Выбирает</b></div><i></i>
+          <div><b>Сравнивает</b></div><i></i>
+          <div><b>Готов купить</b></div><i></i>
+          <div><b>Купил</b></div><i></i>
+          <div><b>Повторная покупка</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 09. AI INSIGHT ENGINE ══════════════════════════════════════════
+         Система анализа УЖЕ собранных диалогов. Формула сверху, под ней пары
+         «инсайт → действие» строками со стрелкой – продолжение той же формулы. -->
+    <section class="slide slide--dark" id="s08" data-slide="10">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">AI Insight Engine</p>
+          <h2>Не&nbsp;графики, а&nbsp;действия</h2>
+          <p>Insight Engine – аналитическая система поверх УЖЕ собранных диалогов: она находит в&nbsp;накопленных данных закономерности и&nbsp;превращает их в&nbsp;готовые рекомендации для бизнес-решений.</p>
+        </div>
+        <!-- Центральная формула слайда: путь от разговора до бизнес-результата -->
+        <div class="flow-diagram insight-flow">
+          <div><b>Диалог</b></div><i></i>
+          <div><b>Инсайт</b></div><i></i>
+          <div><b>Действие</b></div><i></i>
+          <div><b>Бизнес-результат</b></div>
+        </div>
+        <!-- Пары «инсайт → действие» СТРОКАМИ со стрелкой: слева находка в данных,
+             справа акцентная плашка с решением. Прежние четыре одинаковые карточки
+             читались монотонно, а здесь виден сам конвейер из формулы выше. -->
+        <p class="stage-title">Примеры · цифры условные</p>
+        <div class="insight-rows">
+          <div>
+            <p class="iq"><b>18&nbsp;%</b> покупателей продукта A спрашивают о&nbsp;продукте B.</p>
+            <i>→</i>
+            <p class="ia">Обнаружена возможность кросс-продажи – связка уходит в&nbsp;сценарии ассистента.</p>
+          </div>
+          <div>
+            <p class="iq"><b>Главный барьер</b> перед покупкой продукта C – вопрос о&nbsp;X.</p>
+            <i>→</i>
+            <p class="ia">Маркетинг получает конкретную задачу изменить коммуникацию.</p>
+          </div>
+          <div>
+            <p class="iq"><b>A&nbsp;↔&nbsp;C:</b> покупатели регулярно сравнивают эти продукты.</p>
+            <i>→</i>
+            <p class="ia">Появляется основание создать отдельный сценарий сравнения.</p>
+          </div>
+          <div>
+            <p class="iq"><b>7&nbsp;%</b> вопросов не&nbsp;покрыты существующей базой знаний.</p>
+            <i>→</i>
+            <p class="ia">Продуктовая команда знает, какую информацию дополнить.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 11. ПИЛОТ ══════════════════════════════════════════════════════
+         Восемь поставок карточками. Класс cards поставлен РУКАМИ: lists.js тогда
+         список пропускает и не нумерует – это набор, а не последовательность. -->
+    <section class="slide" id="s09" data-slide="11">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Пилот · 2–3 продукта</p>
+          <h2>За&nbsp;30 дней – от&nbsp;прототипа к&nbsp;реальному пилоту</h2>
+          <p>Технология уже существует в&nbsp;виде рабочего прототипа. Следующий этап – вывести её на&nbsp;реальные продукты и&nbsp;проверить на&nbsp;реальных покупателях. За&nbsp;месяц реализуем:</p>
+        </div>
+        <!-- is-in стоит в разметке: ручной класс cards выключает разбор lists.js,
+             а вместе с ним и его наблюдатель появления – без is-in пункты
+             оставались прозрачными навсегда (opacity 0 у .clean-list:not(.is-in)) -->
+        <ul class="clean-list clean-list--cards is-in">
+          <li>Рабочий AI-ассистент</li>
+          <li>QR на упаковке и POS-материалах</li>
+          <li>Утверждённая база знаний</li>
+          <li>Ограничения и контроль ответов AI</li>
+          <li>Продуктовая и поведенческая аналитика</li>
+          <li>Dashboard для компании</li>
+          <li>AI Insight Engine</li>
+          <li>Отчёт и рекомендации по масштабированию</li>
+        </ul>
+        <p class="slide-punch slide-punch--q">Прототип уже создан. <em>Пилот – проверка технологии на&nbsp;рынке.</em></p>
+      </div>
+    </section>
+
+    <!-- ═══ 12. РЕЗУЛЬТАТ ══════════════════════════════════════════════════
+         Шесть результатов простыми строками в две колонки (класс plain поставлен
+         руками, чтобы lists.js не раскладывал их карточками). Цена убрана
+         по решению владельца (29.08) – обсуждается голосом, не слайдом. -->
+    <section class="slide slide--dark" id="s10" data-slide="12">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Результат пилота</p>
+          <h2>Через 30 дней компания получает:</h2>
+        </div>
+        <ul class="clean-list clean-list--plain result-list is-in">
+          <li>Работающую технологию</li>
+          <li>Реальных пользователей и реальные диалоги</li>
+          <li>Карту вопросов и потребностей аудитории</li>
+          <li>Первые бизнес-инсайты</li>
+          <li>Экономику реального использования AI</li>
+          <li>Данные для решения о масштабировании</li>
+        </ul>
+        <p class="crit-line"><b>Критерии успеха:</b> люди пользуются? · компания получает ценность? · есть основания масштабировать?</p>
+      </div>
+    </section>
+
+    <!-- ═══ ФИНАЛ ══════════════════════════════════════════════════════════
+         Одна фраза на весь экран – ей отдана вся презентация, и делить финал
+         с чем-то ещё нельзя. -->
+    <section class="slide slide--fin" id="fin" data-slide="13">
+      <svg class="vtf-chevron vtf-chevron--fin" viewBox="0 0 420 420" aria-hidden="true">
+        <defs><linearGradient id="vtfg2" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#f0699b" stop-opacity=".2"/>
+          <stop offset="1" stop-color="#ee2e5d" stop-opacity=".55"/>
+        </linearGradient></defs>
+        <g fill="none" stroke="url(#vtfg2)" stroke-width="30" stroke-linecap="round">
+          <path d="M15,405 V80 Q15,15 80,15 H405"/>
+          <path d="M95,405 V160 Q95,95 160,95 H405"/>
+          <path d="M175,405 V240 Q175,175 240,175 H405"/>
+          <path d="M255,405 V320 Q255,255 320,255 H405"/>
+        </g>
+      </svg>
+
+      <div class="slide-shell">
+        <div class="reveal">
+          <p class="slide-punch">Сегодня компания продаёт миллионы упаковок. <em>Завтра каждая из&nbsp;них сможет разговаривать с&nbsp;покупателем.</em></p>
+          <p class="fin-line">Один интеллект бренда. Миллионы персональных диалогов.</p>
+          <p class="slide-note">PLAYDISPLAY · Андрей Судариков · a.sudarikov@playdisplay.ru</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
+
+  <script defer src="../kit/js/boot.js?v=6879978b"></script>
+  <script defer src="../kit/js/reveal-cursor.js?v=fc2f75e6"></script>
+  <script defer src="../kit/js/parallax.js?v=cf3b0f2e"></script>
+  <script defer src="../kit/js/lists.js?v=8493dc93"></script>
+  <script defer src="../kit/js/cast.js?v=1cd6a1ee"></script>
+  <script defer src="../kit/js/ui.js?v=a37ebc4f"></script>
+</body>
+</html>

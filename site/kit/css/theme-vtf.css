@@ -1,0 +1,180 @@
+/* ═══ ТЕМА «ВТФ» — светлый фирменный стиль по гайдлайну VTF_Guide_2025 ═══
+ *
+ * Кит тёмный по рождению, а фирменный стиль ВТФ — белая бумага, тёмно-синий
+ * текст #192543, СИНИЕ ЗАГОЛОВКИ СТРОЧНЫМИ (Loos ExtraWide Light; ближайший
+ * свободный аналог с кириллицей — Unbounded 300), розовый акцент #ee2e5d
+ * и градиенты под 45°. Тема, как и theme-street, меняет ТОЛЬКО токены
+ * и поверхности: разметку блоков не трогаем, класс theme-vtf на <body>
+ * снимается — и страница возвращается к фирменному тёмному виду.
+ *
+ * Наборный шрифт гайда — Tilda Sans (Paratype); в вебе без самохостинга его
+ * нет, ближайший по рисунку из уже подключённых — Onest, он и остаётся.
+ *
+ * ВАЖНО ПРО КАСКАД: правки страниц (свои <style>) пишутся без префикса темы,
+ * поэтому селекторы темы носят префикс .theme-vtf — они сильнее странице
+ * специфичностью, а не порядком подключения.
+ */
+
+.theme-vtf {
+  /* токены кита перекрываются НА BODY: пользовательские свойства наследуются,
+     и всем блокам внутри достаются светлые значения */
+  --paper: #192543;
+  --muted: #64748f;
+  --ultra: #ee2e5d;
+  --electric: #047bc1;
+  --coral: #ee2e5d;
+  --line: rgba(25, 37, 67, .16);
+  --glass: rgba(25, 37, 67, .04);
+  color: #192543;
+  background: #f6f9fc;
+}
+/* html красит фон сам (var(--black) на :root) — на длинной инерции прокрутки
+   из-под светлого тела выглядывал бы чёрный. Класс на html не вешаем, поэтому
+   тело обязано быть непрозрачным и доставать до краёв. */
+.theme-vtf::before { content: ""; position: fixed; inset: 0; z-index: -1; background: #f6f9fc; }
+
+/* ── Заставка и шапка ── */
+.theme-vtf .boot { background: #f6f9fc; }
+.theme-vtf .boot-note { color: var(--muted); }
+.theme-vtf .boot-bar { background: rgba(25, 37, 67, .12); }
+.theme-vtf .boot-logo { filter: none; }
+.theme-vtf .masthead { background: rgba(246, 249, 252, .86); border-bottom: 1px solid var(--line); backdrop-filter: blur(14px); }
+/* Кит красит знак студии в белый инверсией — на бумаге он должен остаться тёмным */
+.theme-vtf .playdisplay-logo--top img { filter: none; }
+.theme-vtf .book-mark { color: var(--muted); }
+.theme-vtf .to-full, .theme-vtf .to-top { color: #192543; border-color: var(--line); background: #fff; }
+.theme-vtf .reading-progress { background: linear-gradient(90deg, #047bc1, #4ba6dd); box-shadow: none; }
+
+/* Курсор-точка: тёмное ядро на светлом, свечение голубое и слабее */
+.theme-vtf .cursor-core { background: #192543; }
+.theme-vtf .cursor-glow { background: radial-gradient(circle, rgba(4, 123, 193, .22), transparent 60%); }
+
+/* ── Типографика: строчные широкие заголовки синим, как в гайде ── */
+.theme-vtf h1,
+.theme-vtf .slide-head h2,
+.theme-vtf .slide-punch {
+  text-transform: lowercase;
+  font-weight: 300;
+  letter-spacing: .015em;
+}
+.theme-vtf h1 span, .theme-vtf .slide-head h2 {
+  color: transparent;
+  background: linear-gradient(92deg, #0862ae, #31a2e0);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.theme-vtf .slide-punch { color: #192543; }
+.theme-vtf .slide-punch em { color: transparent; background: linear-gradient(92deg, #c81e50, #f0699b); -webkit-background-clip: text; background-clip: text; }
+.theme-vtf .overline { color: var(--ultra); }
+/* Розовый «уголок» из айдентики при надзаголовке — фирменная метка страницы гайда */
+.theme-vtf .slide-head .overline::after,
+.theme-vtf .hero-overline::after {
+  content: "";
+  display: inline-block;
+  width: 9px; height: 9px;
+  margin-left: 10px;
+  border-top: 2.5px solid var(--ultra);
+  border-right: 2.5px solid var(--ultra);
+  vertical-align: super;
+}
+.theme-vtf .hero-statement, .theme-vtf .slide-head p { color: #3c4a6b; }
+.theme-vtf .slide-note { color: var(--muted); }
+
+/* ── Поверхности слайдов ── */
+.theme-vtf .hero, .theme-vtf .hero-intro, .theme-vtf .slide { background: transparent; }
+.theme-vtf .slide { border-color: var(--line); }
+.theme-vtf .slide--dark { background: linear-gradient(160deg, rgba(4, 123, 193, .07), rgba(75, 166, 221, .03) 55%); }
+.theme-vtf .slide::before { color: rgba(4, 123, 193, .08); font-weight: 300; }
+.theme-vtf .hero-facts b { color: #047bc1; }
+.theme-vtf .hero-facts span, .theme-vtf .hero-status, .theme-vtf .hero-facts-title { color: var(--muted); }
+.theme-vtf .scroll-cue { color: var(--muted); }
+
+/* ── Карточки и плитки: белая бумага, скруглённые углы из гайда ── */
+.theme-vtf .concept-card,
+.theme-vtf .clean-list--cards li,
+.theme-vtf .chat-chips li,
+.theme-vtf .info-layers > div,
+.theme-vtf .insight-rows p,
+.theme-vtf .collection-diagram div,
+.theme-vtf .stat-line,
+.theme-vtf .offer-card {
+  color: #2c3a5e;
+  border-color: var(--line);
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(25, 37, 67, .07);
+}
+.theme-vtf .concept-card { border-radius: 20px; }
+.theme-vtf .concept-card::after { background: rgba(75, 166, 221, .25); }
+.theme-vtf .concept-card h4 { color: #192543; }
+.theme-vtf .concept-card > span { color: var(--ultra); }
+.theme-vtf .slide .concept-card p { color: #4a5878; }
+.theme-vtf .clean-list li { color: #2c3a5e; border-color: var(--line); }
+.theme-vtf .clean-list--cards li { border-radius: 16px; }
+.theme-vtf .clean-list--cards .card-num, .theme-vtf .clean-list li::after { color: var(--ultra); }
+.theme-vtf .diagram { border-color: var(--line); background: #fff; box-shadow: 0 10px 30px rgba(25, 37, 67, .07); }
+.theme-vtf .collection-diagram div { box-shadow: none; }
+.theme-vtf .collection-diagram b { color: #047bc1; }
+.theme-vtf .stats-grid { background: var(--line); border-color: var(--line); }
+.theme-vtf .stat-line { box-shadow: none; }
+.theme-vtf .stat-line > strong { color: #192543; }
+.theme-vtf .stat-line > span { color: var(--ultra); }
+.theme-vtf .chapter-copy .stat-line > p, .theme-vtf .stat-line > p { color: #4a5878; }
+
+/* Абзацы страниц, набранные светло-серым под тёмный фон */
+.theme-vtf .chips-after, .theme-vtf .crit-line { color: #3c4a6b; }
+.theme-vtf .chips-after b, .theme-vtf .crit-line b { color: #192543; }
+.theme-vtf .info-layers p { color: #4a5878; }
+.theme-vtf .info-layers b { color: #192543; }
+.theme-vtf .info-layers b i { color: var(--ultra); }
+.theme-vtf .info-layers > div:nth-child(3) { border-color: rgba(4, 123, 193, .4); background: linear-gradient(140deg, rgba(4, 123, 193, .1), #fff 60%); }
+.theme-vtf .insight-rows .iq b { color: var(--ultra); }
+.theme-vtf .insight-rows .ia { color: #0d3555; border-color: rgba(4, 123, 193, .38); background: linear-gradient(140deg, rgba(4, 123, 193, .14), rgba(75, 166, 221, .05)); }
+.theme-vtf .insight-rows > div > i { color: #047bc1; }
+.theme-vtf .fin-line { color: #8fd4ff; }
+
+/* Ленты и цепочки */
+.theme-vtf .flow-diagram b { color: #047bc1; }
+.theme-vtf .flow-diagram i { background: linear-gradient(90deg, #047bc1, rgba(25, 37, 67, .12)); }
+.theme-vtf .timeline b { color: #192543; }
+.theme-vtf .timeline em { color: var(--ultra); }
+.theme-vtf .timeline span { color: #4a5878; }
+.theme-vtf .timeline > div::before { background: var(--line); }
+.theme-vtf .timeline > div::after { background: #047bc1; }
+.theme-vtf .stage-title { color: #192543; }
+
+/* Чипы вопросов: реплики на бумаге, каждая вторая — фирменный голубой */
+.theme-vtf .chat-chips li { color: #2c3a5e; }
+.theme-vtf .chat-chips li:nth-child(2n) { border-color: rgba(4, 123, 193, .35); background: linear-gradient(140deg, rgba(4, 123, 193, .1), rgba(75, 166, 221, .05)); }
+
+/* Финал — тёмно-синяя «обложка» из шаблона презентации ВТФ */
+.theme-vtf .slide--fin { background: #192543; }
+.theme-vtf .slide--fin .slide-punch { color: #f4f7ff; }
+.theme-vtf .slide--fin .slide-punch em { background: linear-gradient(92deg, #f0699b, #f9a870); -webkit-background-clip: text; background-clip: text; }
+.theme-vtf .slide--fin .slide-note { color: rgba(244, 247, 255, .55); }
+
+/* Телефон и кнопка прототипа остаются тёмным УСТРОЙСТВОМ на светлом столе —
+   это экран продукта, а не поверхность страницы. Тени мягче: чёрная клякса
+   на белом фоне читается грязью. */
+.theme-vtf .chat-phone { box-shadow: 0 30px 70px rgba(25, 37, 67, .35), inset 0 1px 0 rgba(255, 255, 255, .08); }
+.theme-vtf .hero-pack img { filter: drop-shadow(0 36px 60px rgba(25, 37, 67, .35)); }
+.theme-vtf .spero-orb__mic { box-shadow: 0 24px 60px rgba(25, 37, 67, .25), 0 0 90px rgba(180, 214, 60, .35); }
+.theme-vtf .spero-orb__ring { border-color: rgba(25, 37, 67, .14); }
+.theme-vtf .spero-orb__ring--2, .theme-vtf .spero-orb__ring--3 { border-color: rgba(25, 37, 67, .08); }
+.theme-vtf .spero-orb__p { background: rgba(4, 123, 193, .65); box-shadow: 0 0 10px rgba(4, 123, 193, .45); }
+
+/* Фото-слайд: заголовок поверх кадра остаётся белым — синий градиент
+   на фотографии не читается */
+.theme-vtf .slide--photo .slide-head h2 { color: #fff; background: none; -webkit-background-clip: initial; background-clip: initial; -webkit-text-fill-color: initial; }
+.theme-vtf .slide--photo .overline { color: #ffd7e4; }
+
+/* Фирменная графика: ШЕВРОН из вложенных Г-полос с градиентом 45°.
+   Слой рисует страница (инлайн-SVG с классом vtf-chevron), тема только
+   размещает и глушит: элемент декоративный и не должен спорить с текстом. */
+.theme-vtf .vtf-chevron { position: absolute; z-index: 1; pointer-events: none; }
+/* Угол смотрит в свой угол экрана: у героя — в правый верхний (зеркалим),
+   у финала — в левый нижний. Отрицательные отступы срезают часть полос краем:
+   в шаблоне ВТФ графика всегда уходит за обрез. */
+.theme-vtf .vtf-chevron--hero { right: -70px; top: -70px; width: min(37vw, 560px); transform: scaleX(-1); }
+.theme-vtf .vtf-chevron--fin { left: -70px; bottom: -70px; width: min(38vw, 600px); transform: scaleY(-1); }
+.theme-vtf .slide--fin { overflow: hidden; }
+@media (max-width: 1000px) { .theme-vtf .vtf-chevron--hero { display: none; } }
