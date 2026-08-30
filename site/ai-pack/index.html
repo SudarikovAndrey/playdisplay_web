@@ -236,10 +236,11 @@
     /* Дальше – подгонка слайдов под бюджет высоты. Бюджет = innerHeight МИНУС паддинги
        слайда (на 1440×900 это 756px), сверка с полным экраном врёт – см. кит. */
 
-    /* 05: четыре канала В ОДИН ряд – кит-сетка в три колонки давала два ряда
+    /* 05: пять источников В ОДИН ряд – кит-сетка в три колонки давала два ряда
        и перелёт 154px (замер 1440×900) */
-    #s05 .concept-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); width: min(1280px, 100%); }
-    #s05 .concept-card { min-height: 230px; }
+    #s05 .concept-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); width: min(1340px, 100%); gap: 10px; }
+    #s05 .concept-card { min-height: 230px; padding: 20px; }
+    #s05 .concept-card h4 { font-size: clamp(17px, 1.45vw, 23px); }
     /* Заголовки карточек по ВЕРХУ, текст по низу (просьба владельца): кит прижимает
        h4 к низу через margin: auto, и в четырёх карточках разной длины заголовки
        плясали по высоте – глаз сравнивал их дольше, чем читал. */
@@ -556,7 +557,7 @@
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Что получает компания</p>
-          <h2>Один AI – четыре источника ценности</h2>
+          <h2>Один AI – пять источников ценности</h2>
         </div>
         <div class="concept-grid">
           <article class="concept-card">
@@ -576,6 +577,13 @@
           </article>
           <article class="concept-card">
             <span>Источник 04</span>
+            <h4>Персонал и&nbsp;продавцы</h4>
+            <p>Обучение сотрудников и&nbsp;полевых сил: тренажёр вопросов, свежие материалы, единый стандарт консультации в&nbsp;каждой точке.</p>
+          </article>
+          <!-- Consumer Intelligence стоит последним намеренно: из него вырастает
+               панч про измеряемый контакт строкой ниже -->
+          <article class="concept-card">
+            <span>Источник 05</span>
             <h4>Consumer Intelligence</h4>
             <p>Каждый диалог превращается в&nbsp;данные о&nbsp;вопросах, потребностях, сомнениях и&nbsp;поведении покупателей.</p>
           </article>
