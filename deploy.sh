@@ -289,6 +289,13 @@ EXCLUDES=(
   # процесс при своих выкладках. 29.08.2026 деплой сайта предлагал снести свежий
   # утренний бэкап целиком — логика та же, что у /layer/: не наша территория.
   --exclude='/layer-backup-*'
+  # Внутри /ai-pack/ на сервере живёт ЧУЖОЙ Next.js-экспорт (team/, materials/,
+  # _next/ — прототип соседнего чата, замечен 29.08.2026). Наш статичный
+  # index.html едет как обычно, а их подпапки не трогаем: кто выкладывал —
+  # тот и убирает. Переедут в site/ — строки снять.
+  --exclude='/ai-pack/_next/'
+  --exclude='/ai-pack/team/'
+  --exclude='/ai-pack/materials/'
   --exclude='/.git/'
   --exclude='/.well-known/'
   --exclude='/api/config.php'
