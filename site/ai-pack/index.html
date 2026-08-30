@@ -295,6 +295,31 @@
     .crit-line { margin: clamp(16px, 2vw, 26px) 0 0; color: #c3c9d4; font-size: 15.5px; }
     .crit-line b { color: var(--paper); font: 600 12px/1 "Roboto Mono", monospace; letter-spacing: .16em; text-transform: uppercase; margin-right: 8px; }
 
+    /* СЛОИ ИНФОРМАЦИИ: ступенчатая стопка. Каждая полоса сдвинута правее
+       предыдущей – «слои» читаются буквально. Сдвиг в процентах, а не пикселях:
+       на узкой колонке пиксельная лесенка съедала бы половину ширины. */
+    .info-layers { display: grid; gap: 8px; max-width: 1080px; }
+    .info-layers > div {
+      display: grid;
+      grid-template-columns: minmax(210px, 280px) 1fr;
+      gap: 10px 28px;
+      align-items: baseline;
+      padding: 13px 22px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(140deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .012));
+    }
+    .info-layers > div:nth-child(2) { margin-left: 4%; }
+    .info-layers > div:nth-child(3) { margin-left: 8%; border-color: rgba(135, 156, 255, .4); background: linear-gradient(140deg, rgba(75, 104, 255, .14), rgba(75, 104, 255, .03)); }
+    .info-layers > div:nth-child(4) { margin-left: 12%; }
+    .info-layers b { display: grid; gap: 5px; color: var(--paper); font-family: Unbounded, "Arial Black", sans-serif; font-size: clamp(15px, 1.25vw, 19px); font-weight: 600; line-height: 1.15; letter-spacing: -.02em; }
+    .info-layers b i { color: var(--electric); font: 500 10.5px/1 "Roboto Mono", monospace; font-style: normal; letter-spacing: .18em; text-transform: uppercase; }
+    .info-layers p { margin: 0; color: #b9c2d2; font-size: clamp(14.5px, 1.1vw, 16.5px); line-height: 1.5; }
+    @media (max-width: 900px) {
+      .info-layers > div { grid-template-columns: 1fr; gap: 8px; }
+      .info-layers > div:nth-child(n) { margin-left: 0; }
+    }
+
     /* Фото-слайд: кадр во весь экран, заголовок поверх. Затемнение – растяжкой
        снизу и слева, ровно там, где лежит текст: ровная плёнка по всему кадру
        глушила бы и стойку с QR – главный предмет фотографии */
@@ -559,10 +584,43 @@
       </div>
     </section>
 
-    <!-- ═══ 06. ДАННЫЕ ═════════════════════════════════════════════════════
+    <!-- ═══ 06. СЛОИ ИНФОРМАЦИИ ════════════════════════════════════════════
+         Тот же интеллект – другие аудитории: персонал, врачи и фармацевты,
+         онбординг. Подача – СТУПЕНЧАТАЯ СТОПКА: каждая полоса сдвинута правее
+         предыдущей, и «слои информации» читаются буквально, а не метафорой. -->
+    <section class="slide" id="s05b" data-slide="06">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Не только покупателю · разным группам пользователей</p>
+          <h2>Разные слои информации</h2>
+          <p>Тот же цифровой интеллект бренда поворачивается к&nbsp;каждой аудитории своей стороной: покупателю – простым языком, профессионалам – с&nbsp;глубиной и&nbsp;документами.</p>
+        </div>
+        <div class="info-layers">
+          <div>
+            <b><i>Слой 01</i>Покупатель</b>
+            <p>Ответы простым языком, сравнение и&nbsp;помощь в&nbsp;выборе – слой, который вы уже видели.</p>
+          </div>
+          <div>
+            <b><i>Слой 02</i>Персонал и&nbsp;полевые силы</b>
+            <p>Обучение продукту без сбора всех в&nbsp;одном зале: тренажёр вопросов, проверка знаний, всегда актуальные материалы.</p>
+          </div>
+          <div>
+            <b><i>Слой 03</i>Врачи и&nbsp;фармацевты</b>
+            <p>Профессиональный слой: составы, исследования, инструкции. Любой материал можно выгрузить или получить ссылкой.</p>
+          </div>
+          <div>
+            <b><i>Слой 04</i>Онбординг сотрудников</b>
+            <p>Новый человек осваивает ассортимент диалогом, а&nbsp;не&nbsp;папкой PDF, – и&nbsp;учится в&nbsp;темпе разговора.</p>
+          </div>
+        </div>
+        <p class="slide-note">Слои разводятся правами доступа: покупатель не увидит служебных материалов, а персонал получает их с того же QR.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 07. ДАННЫЕ ═════════════════════════════════════════════════════
          Десять измеримых вопросов карточками: clean-list сам разложит короткие
          пункты набором. Видно ОБЪЁМ того, что раньше не измерялось вовсе. -->
-    <section class="slide slide--dark" id="s06" data-slide="06">
+    <section class="slide slide--dark" id="s06" data-slide="07">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Исследование рынка</p>
@@ -586,7 +644,7 @@
     </section>
 
     <!-- ═══ 07. АУДИТОРИЯ ══════════════════════════════════════════════════ -->
-    <section class="slide" id="s07" data-slide="07">
+    <section class="slide" id="s07" data-slide="08">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Портрет аудитории</p>
@@ -618,7 +676,7 @@
     <!-- ═══ 08. AI INSIGHT ENGINE ══════════════════════════════════════════
          Инсайты – колодой карточек (лента кита strip.js): их листают рукой, и видно,
          что выводов МНОГО. Цифры в карточках условные, о чём сказано в подводке. -->
-    <section class="slide slide--dark" id="s08" data-slide="08">
+    <section class="slide slide--dark" id="s08" data-slide="09">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">AI Insight Engine</p>
@@ -650,7 +708,7 @@
          Фото стойки с QR и линейкой Сперотона во весь экран: перед разговором
          о пилоте человек видит, КАК это стоит в аптеке. Заголовок поверх кадра,
          низ прикрыт растяжкой затемнения – иначе текст тонет в мраморе прилавка. -->
-    <section class="slide slide--photo" id="s09try" data-slide="09">
+    <section class="slide slide--photo" id="s09try" data-slide="10">
       <img class="slide--photo__shot" src="assets/qr-counter.jpg" alt="Стойка «Спроси про Сперотон» с QR-кодом рядом с линейкой продукта на аптечном прилавке">
       <div class="slide-shell">
         <div class="slide-head reveal">
@@ -663,7 +721,7 @@
     <!-- ═══ 10. ПИЛОТ ══════════════════════════════════════════════════════
          Восемь поставок карточками. Класс cards поставлен РУКАМИ: lists.js тогда
          список пропускает и не нумерует – это набор, а не последовательность. -->
-    <section class="slide" id="s09" data-slide="10">
+    <section class="slide" id="s09" data-slide="11">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Пилот · 2–3 продукта</p>
@@ -691,7 +749,7 @@
          Слева семь результатов простыми строками (класс plain поставлен руками,
          чтобы lists.js не раскладывал их карточками – рядом уже стоит плашка цены),
          справа – коммерческое предложение с ценой. -->
-    <section class="slide slide--dark" id="s10" data-slide="11">
+    <section class="slide slide--dark" id="s10" data-slide="12">
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">Результат пилота</p>
@@ -720,7 +778,7 @@
     <!-- ═══ ФИНАЛ ══════════════════════════════════════════════════════════
          Одна фраза на весь экран – ей отдана вся презентация, и делить финал
          с чем-то ещё нельзя. -->
-    <section class="slide slide--fin" id="fin" data-slide="12">
+    <section class="slide slide--fin" id="fin" data-slide="13">
       <div class="slide-shell">
         <div class="reveal">
           <p class="slide-punch">Сегодня компания продаёт миллионы упаковок. <em>Завтра каждая из&nbsp;них сможет разговаривать с&nbsp;покупателем.</em></p>
