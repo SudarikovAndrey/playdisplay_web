@@ -99,6 +99,7 @@ const t = k => (I18N[lang][k] || k);
 const slug = new URLSearchParams(location.search).get('p');
 let product = PRODUCTS.find(p=>p.slug===slug) || PRODUCTS[0];
 let activeSize = null;
+let shotIdx = 0;
 
 function card(p){
   const tag = p.tag ? `<span class="card__tag">${p.tag==='new'?(lang==='ru'?'НОВОЕ':'NEW'):p.tag.toUpperCase()}</span>` : '';
@@ -119,8 +120,11 @@ function card(p){
 function renderPDP(){
   const p = product;
   document.title = `${p.name[lang]} — Boxing Cartel`;
+  shotIdx = 0;
   const thumbs = p.gallery.length>1
-    ? `<div class="pdp__thumbs">${p.gallery.map((g,i)=>`<div class="t${i===0?' active':''}" onclick="setShot('${g}',this)"><img src="${BASE}${g}" alt=""></div>`).join('')}</div>` : '';
+    ? `<div class="pdp__thumbs">${p.gallery.map((g,i)=>`<div class="t${i===0?' active':''}" onclick="setShot(${i})"><img src="${BASE}${g}" alt=""></div>`).join('')}</div>` : '';
+  const nav = p.gallery.length>1
+    ? `<button class="pdp__nav pdp__nav--prev" aria-label="prev" onclick="navShot(-1)">&#8249;</button><button class="pdp__nav pdp__nav--next" aria-label="next" onclick="navShot(1)">&#8250;</button>` : '';
   document.getElementById('pdp').innerHTML = `
     <a class="pdp__back" href="index.html#collection">${t('pdp_back')}</a>
     <div class="crumb">
@@ -130,7 +134,7 @@ function renderPDP(){
     </div>
     <div class="pdp__main">
       <div class="pdp__gallery">
-        <div class="pdp__shot"><img id="main-shot" src="${BASE}${p.gallery[0]}" alt="${p.name[lang]}"></div>
+        <div class="pdp__shot"><img id="main-shot" src="${BASE}${p.gallery[0]}" alt="${p.name[lang]}">${nav}</div>
         ${thumbs}
       </div>
       <div class="pdp__info">
@@ -152,11 +156,13 @@ function renderPDP(){
   document.getElementById('grid-related').innerHTML = pool.map(card).join('');
   document.getElementById('related-sec').style.display = pool.length ? 'block' : 'none';
 }
-function setShot(img,el){
-  document.getElementById('main-shot').src = BASE+img;
-  document.querySelectorAll('.pdp__thumbs .t').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
+function setShot(i){
+  const g = product.gallery;
+  shotIdx = (i+g.length)%g.length;
+  document.getElementById('main-shot').src = BASE+g[shotIdx];
+  document.querySelectorAll('.pdp__thumbs .t').forEach((t,idx)=>t.classList.toggle('active',idx===shotIdx));
 }
+function navShot(d){ if(product.gallery.length>1) setShot(shotIdx+d); }
 function pickSize(s,el){
   activeSize=s;
   document.querySelectorAll('.sizes button').forEach(b=>b.classList.remove('active'));
