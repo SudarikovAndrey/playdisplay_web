@@ -355,6 +355,25 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
   body.game #lensring, body.game #autobar, body.game #play-btn { display: none !important; }
   body.game #pluscursor { opacity: 0 !important; } /* курсор = корабль в сцене */
 
+  /* ДВА КУРСОРА СРАЗУ — почему так выходило и чем лечится (28.08.2026).
+     Свой «плюс» рисует сцена и у себя же прячет системный курсор. Но заголовок
+     героя, кнопки «Сыграть»/«Проекты», шапка и счётчики — элементы ЛЕНДИНГА, они
+     лежат ПОВЕРХ этого iframe. Стоит указателю зайти на любой из них, сцена
+     перестаёт его видеть: mousemove через границу документа не проходит. «Плюс»
+     замирал на последнем месте и продолжал висеть на экране, а поверх появлялась
+     системная стрелка — вот это и видел владелец.
+     Сама сцена узнать об уходе не может, поэтому ей сообщает лендинг: pdCursor.
+     Замирать «плюсу» больше нельзя — либо он под мышью, либо его нет. */
+  body.cur-away #pluscursor { opacity: 0 !important; }
+  /* ОБЩЕЕ ПРАВИЛО, а не заплатка на каждый элемент: «плюс» виден ТОЛЬКО там, где
+     системный курсор скрыт. Иначе их видно двоих сразу. Дыр было несколько и они
+     копились: панель настроек объявляет `cursor: auto` у себя и у всех потомков,
+     отладочная кнопка и панель архива — `cursor: pointer`, и над каждым из них
+     стрелка соседствовала с «плюсом». Латать поштучно бессмысленно: следующий
+     элемент со своим курсором заведут завтра и снова забудут. Класс cur-sys
+     ставит скрипт, сверяясь с вычисленным стилем под указателем. */
+  body.cur-sys #pluscursor { opacity: 0 !important; }
+
   /* ===== АРХИВ ПРОЕКТОВ «Спейс-индекс»: кольцо стел из точек ===== */
   body.archive #scrub, body.archive #dots, body.archive #scene-info, body.archive #corner-status,
   body.archive #lensring, body.archive #autobar, body.archive #play-btn, body.archive #hint { display: none !important; }
@@ -1238,6 +1257,7 @@ const PXU = { value: 800 };                  // пикселей на юнит (
 const MOUSE_UV = { value: new THREE.Vector2(0.5, 0.5) }; // курсор в координатах кадра
 const LENS = { value: 0 };                   // сила линзы (растёт у идеальной точки)
 let mousePX = innerWidth / 2, mousePY = innerHeight / 2;
+let curHost = null;   // элемент под указателем на прошлом движении — см. cur-sys ниже
 addEventListener('mousemove', e => {
   mousePX = e.clientX; mousePY = e.clientY;
   // свой курсор встаёт под мышь СРАЗУ (не дожидаясь цикла рендера) — и только затем
@@ -1245,7 +1265,32 @@ addEventListener('mousemove', e => {
   const pc = document.getElementById('pluscursor');
   if (pc) pc.style.transform = 'translate(' + mousePX + 'px,' + mousePY + 'px)';
   if (!document.body.classList.contains('cur-live')) document.body.classList.add('cur-live');
+  // Под указателем сменился элемент — заново решаем, кому показывать курсор.
+  // Сверка идёт ТОЛЬКО на смене цели: над канвасом элемент один и тот же, и в
+  // обычном полёте мыши эта ветка не выполняется вовсе. Иначе чтение стиля на
+  // каждом движении дёргало бы раскладку в кадровом бюджете сцены.
+  // Порядок важен: cur-live добавлен ВЫШЕ, иначе на самом первом движении
+  // курсор канваса ещё `auto` и «плюс» спрятался бы сам от себя.
+  if (e.target !== curHost) {
+    curHost = e.target;
+    document.body.classList.toggle('cur-sys',
+      getComputedStyle(curHost).cursor !== 'none');
+  }
+  // Указатель вернулся на сцену. Сообщаем лендингу, чтобы он снова отследил уход:
+  // одно сообщение на переход, а не поток на каждое движение мыши.
+  if (document.body.classList.contains('cur-away')) {
+    document.body.classList.remove('cur-away');
+    try { parent.postMessage({ pdCursorBack: true }, '*'); } catch (e) {}
+  }
 }, { passive: true });
+// Уход указателя со сцены — быстрый путь. Срабатывает не во всех браузерах
+// (событие зависит от того, как посчитано попадание в перекрывающий элемент
+// родителя), поэтому это ДОПОЛНЕНИЕ к сообщению pdCursor, а не замена ему.
+document.addEventListener('mouseleave', () => document.body.classList.add('cur-away'));
+addEventListener('message', e => {
+  if (!e.data || typeof e.data.pdCursor !== 'boolean') return;
+  document.body.classList.toggle('cur-away', !e.data.pdCursor);
+});
 // МОБИЛА: полёт касанием — палец целится кораблём, как курсор мыши на компе. Только
 // во время игры (иначе тач продолжает крутить галерею — этим занят другой touchmove ниже,
 // он сам себя гасит через onInput при GAME.on, конфликта нет). Комп эти строки не выполняет.

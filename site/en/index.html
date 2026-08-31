@@ -176,7 +176,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b2808-camo2&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b2808-cursor&lang=en" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1348,6 +1348,29 @@
     function active(){
       return document.hasFocus() || document.activeElement === fr;
     }
+
+    // ===== ПЕРЕДАЧА КУРСОРА ЛЕНДИНГУ И ОБРАТНО (28.08.2026) =====
+    // Свой «плюс» рисует СЦЕНА, внутри iframe, и системный курсор она прячет у
+    // себя. Но заголовок героя, кнопки и шапка — элементы ЛЕНДИНГА, лежащие
+    // ПОВЕРХ iframe. Заходя на них, указатель пропадает из виду сцены: mousemove
+    // через границу документа не проходит. «Плюс» замирал и продолжал висеть,
+    // а поверх него появлялась системная стрелка — два курсора одновременно.
+    //
+    // Сигнал берём точный и без координат: ЛЮБОЙ mousemove, дошедший до лендинга,
+    // означает, что указатель НЕ над сценой — события над iframe родителю не
+    // приходят вовсе. Хватает одного сообщения на переход: обратно курсор сцена
+    // забирает сама, на первом своём mousemove, и отвечает pdCursorBack.
+    var curAway = false;
+    function curOff(){
+      if (curAway) return;
+      curAway = true;
+      try { fr.contentWindow.postMessage({ pdCursor: false }, '*'); } catch (err) {}
+    }
+    addEventListener('mousemove', curOff, { passive: true });
+    document.addEventListener('mouseleave', curOff);   // ушли со страницы совсем
+    addEventListener('message', function(e){
+      if (e.data && e.data.pdCursorBack) curAway = false;
+    });
     function send(){
       var on = heroVis && !document.hidden && active();
       if (on !== lastOn) {
