@@ -237,7 +237,7 @@ footer{border-top:1px solid var(--line);padding:80px 0 38px;background:#000}
 .crumb span{color:#3a3a3a}
 .pdp__main{display:grid;grid-template-columns:1.15fr 1fr;gap:72px;align-items:start}
 .pdp__gallery{display:flex;flex-direction:column;gap:10px}
-.pdp__shot{position:relative;aspect-ratio:1/1;max-height:64vh;background:var(--photo-bg);overflow:hidden}
+.pdp__shot{position:relative;aspect-ratio:1/1;background:var(--photo-bg);overflow:hidden}
 .pdp__shot img{width:100%;height:100%;object-fit:cover;filter:var(--photo-filter)}
 .pdp__nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:none;border-radius:50%;background:rgba(0,0,0,.42);color:#fff;font-size:24px;line-height:1;cursor:pointer;z-index:3;display:flex;align-items:center;justify-content:center;transition:background .25s,opacity .25s}
 .pdp__nav:hover{background:rgba(0,0,0,.75)}
@@ -273,7 +273,8 @@ footer{border-top:1px solid var(--line);padding:80px 0 38px;background:#000}
   .philo{gap:36px}
   .pdp__info{position:static}
   .pdp__main{gap:26px}
-  .pdp__shot{max-height:56vh}
+  .pdp__gallery{align-items:center}
+  .pdp__shot{width:100%;max-width:74vh;align-self:center}
   .foot{grid-template-columns:1fr 1fr;gap:34px}
   .wrap{padding:0 22px}
   section{padding:78px 0}
