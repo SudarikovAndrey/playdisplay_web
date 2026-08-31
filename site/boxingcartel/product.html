@@ -126,7 +126,7 @@ function renderPDP(){
   const nav = p.gallery.length>1
     ? `<button class="pdp__nav pdp__nav--prev" aria-label="prev" onclick="navShot(-1)">&#8249;</button><button class="pdp__nav pdp__nav--next" aria-label="next" onclick="navShot(1)">&#8250;</button>` : '';
   document.getElementById('pdp').innerHTML = `
-    <a class="pdp__back" href="index.html#collection">${t('pdp_back')}</a>
+    <a class="pdp__back" href="index.html#collection" onclick="goBack(event)">${t('pdp_back')}</a>
     <div class="crumb">
       <a href="index.html">${t('crumb_home')}</a><span>/</span>
       <a href="index.html#collection">${t('crumb_shop')}</a><span>/</span>
@@ -163,6 +163,14 @@ function setShot(i){
   document.querySelectorAll('.pdp__thumbs .t').forEach((t,idx)=>t.classList.toggle('active',idx===shotIdx));
 }
 function navShot(d){ if(product.gallery.length>1) setShot(shotIdx+d); }
+function goBack(e){
+  if(e) e.preventDefault();
+  var ref = document.referrer || '';
+  // Пришли с нашего же сайта (магазин прокручен) — возвращаемся историей: браузер
+  // восстановит позицию скролла на сетке товаров. Иначе — на раздел коллекции.
+  if(history.length > 1 && ref.indexOf(location.host) !== -1){ history.back(); }
+  else { location.href = 'index.html#collection'; }
+}
 function pickSize(s,el){
   activeSize=s;
   document.querySelectorAll('.sizes button').forEach(b=>b.classList.remove('active'));
