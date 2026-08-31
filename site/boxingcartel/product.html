@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Boxing Cartel</title>
+<meta name="description" content="Boxing Cartel — combatwear в чёрном.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="ticker"><div class="ticker__track"><span data-i18n="ticker"></span><span data-i18n="ticker"></span></div></div>
+
+<header>
+  <div class="wrap nav">
+    <a href="index.html" class="logo">BOXING&nbsp;CARTEL</a>
+    <ul class="nav__links">
+      <li><a href="index.html#drop" data-i18n="nav_drop"></a></li>
+      <li><a href="index.html#collection" data-i18n="nav_shop"></a></li>
+      <li><a href="index.html#philosophy" data-i18n="nav_philo"></a></li>
+      <li><a href="index.html#contact" data-i18n="nav_contact"></a></li>
+    </ul>
+    <div class="nav__right">
+      <div class="lang"><button data-lang="ru" class="active">RU</button><span style="color:#3a3a3a">/</span><button data-lang="en">EN</button></div>
+      <svg class="icn" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <svg class="icn" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6L5 3H2"/></svg>
+      <button class="burger" aria-label="menu" onclick="toggleMenu(true)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap pdp" id="pdp"><!-- injected --></main>
+
+<!-- recommended -->
+<section id="related-sec" style="padding-top:0;display:none">
+  <div class="wrap">
+    <div class="sec-head"><h2 class="heading" data-i18n="pdp_related"></h2></div>
+    <div class="grid" id="grid-related"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="foot__brand"><span class="logo">BOXING CARTEL</span><p data-i18n="foot_about"></p></div>
+      <div><h4 data-i18n="foot_shop"></h4><ul>
+        <li><a href="index.html#collection" data-i18n="cat_tees"></a></li>
+        <li><a href="index.html#collection" data-i18n="cat_hoodies"></a></li>
+        <li><a href="index.html#collection" data-i18n="cat_rash"></a></li>
+        <li><a href="index.html#collection" data-i18n="cat_caps"></a></li></ul></div>
+      <div><h4 data-i18n="foot_info"></h4><ul>
+        <li><a href="index.html#philosophy" data-i18n="nav_philo"></a></li>
+        <li><a href="#" data-i18n="foot_delivery"></a></li>
+        <li><a href="#" data-i18n="foot_returns"></a></li>
+        <li><a href="#" data-i18n="foot_size"></a></li></ul></div>
+      <div><h4 data-i18n="foot_contact"></h4><ul>
+        <li><a href="#" data-i18n="addr"></a></li>
+        <li><a href="tel:+79182034343">+7 (918) 203-43-43</a></li>
+        <li><a href="mailto:info@boxingcartel.ru">info@boxingcartel.ru</a></li></ul></div>
+    </div>
+    <div class="foot__bottom">
+      <span data-i18n="copyright"></span>
+      <div class="socials"><a href="https://vk.com/boxingcartel">VK</a><a href="https://www.youtube.com/boxingcartel">YouTube</a><a href="#">Instagram</a></div>
+    </div>
+  </div>
+</footer>
+
+<div class="mmenu" id="mmenu">
+  <div class="mmenu__top"><span class="logo">BC</span><button class="modal__close" onclick="toggleMenu(false)">&times;</button></div>
+  <a href="index.html#drop" data-i18n="nav_drop"></a>
+  <a href="index.html#collection" data-i18n="nav_shop"></a>
+  <a href="index.html#philosophy" data-i18n="nav_philo"></a>
+  <a href="index.html#contact" data-i18n="nav_contact"></a>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal__box">
+    <button class="modal__close" onclick="closeModal()">&times;</button>
+    <h3 data-i18n="order_title"></h3>
+    <p class="prod" id="modal-prod"></p>
+    <form onsubmit="event.preventDefault();closeModal();alert(t('order_done'))">
+      <label data-i18n="order_name"></label><input type="text" required>
+      <label data-i18n="order_phone"></label><input type="tel" required>
+      <label data-i18n="order_size"></label><select id="modal-size"></select>
+      <button class="btn" type="submit" data-i18n="order_send"></button>
+    </form>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let lang = store.get('bc_lang') || 'ru';
+const t = k => (I18N[lang][k] || k);
+const slug = new URLSearchParams(location.search).get('p');
+let product = PRODUCTS.find(p=>p.slug===slug) || PRODUCTS[0];
+let activeSize = null;
+
+function card(p){
+  const tag = p.tag ? `<span class="card__tag">${p.tag==='new'?(lang==='ru'?'НОВОЕ':'NEW'):p.tag.toUpperCase()}</span>` : '';
+  return `<a class="card" href="product.html?p=${p.slug}">
+    <div class="card__media">${tag}
+      <img src="${BASE}${p.img}" alt="${p.name[lang]}" loading="lazy">
+      <div class="card__add">${t('add_cart')}</div>
+    </div>
+    <div class="card__info">
+      <div class="card__l">
+        <div class="card__name">${p.name[lang]}</div>
+        <div class="card__cat">${p.cat[lang]}</div>
+      </div>
+      <div class="card__price">${p.price}</div>
+    </div></a>`;
+}
+
+function renderPDP(){
+  const p = product;
+  document.title = `${p.name[lang]} — Boxing Cartel`;
+  const thumbs = p.gallery.length>1
+    ? `<div class="pdp__thumbs">${p.gallery.map((g,i)=>`<div class="t${i===0?' active':''}" onclick="setShot('${g}',this)"><img src="${BASE}${g}" alt=""></div>`).join('')}</div>` : '';
+  document.getElementById('pdp').innerHTML = `
+    <a class="pdp__back" href="index.html#collection">${t('pdp_back')}</a>
+    <div class="crumb">
+      <a href="index.html">${t('crumb_home')}</a><span>/</span>
+      <a href="index.html#collection">${t('crumb_shop')}</a><span>/</span>
+      <a href="#">${p.name[lang]}</a>
+    </div>
+    <div class="pdp__main">
+      <div class="pdp__gallery">
+        <div class="pdp__shot"><img id="main-shot" src="${BASE}${p.gallery[0]}" alt="${p.name[lang]}"></div>
+        ${thumbs}
+      </div>
+      <div class="pdp__info">
+        <div class="pdp__cat">${p.cat[lang]}</div>
+        <h1 class="pdp__name">${p.name[lang]}</h1>
+        <div class="pdp__price">${p.price}</div>
+        <p class="pdp__short">${p.short[lang]}</p>
+        <div class="pdp__lbl">${t('pdp_sizes')}</div>
+        <div class="sizes">${p.sizes.map(s=>`<button onclick="pickSize('${s}',this)">${s}</button>`).join('')}</div>
+        <button class="btn pdp__order" onclick="openOrder()">${t('pdp_order')}</button>
+        <div class="pdp__ships">${t('pdp_ships')}</div>
+        <p class="pdp__desc">${p.desc[lang]}</p>
+        <div class="pdp__specs"><h4>${t('pdp_specs')}</h4><ul>${p.specs[lang].map(s=>`<li>${s}</li>`).join('')}</ul></div>
+      </div>
+    </div>`;
+  // related
+  const related = PRODUCTS.filter(x=>x.slug!==p.slug && x.cat.en===p.cat.en).slice(0,4);
+  const pool = related.length ? related : PRODUCTS.filter(x=>x.slug!==p.slug).slice(0,4);
+  document.getElementById('grid-related').innerHTML = pool.map(card).join('');
+  document.getElementById('related-sec').style.display = pool.length ? 'block' : 'none';
+}
+function setShot(img,el){
+  document.getElementById('main-shot').src = BASE+img;
+  document.querySelectorAll('.pdp__thumbs .t').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+function pickSize(s,el){
+  activeSize=s;
+  document.querySelectorAll('.sizes button').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function openOrder(){
+  document.getElementById('modal-prod').textContent = `${product.name[lang]} — ${product.price}`;
+  const sel=document.getElementById('modal-size');
+  sel.innerHTML = product.sizes.map(s=>`<option${s===activeSize?' selected':''}>${s}</option>`).join('');
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function toggleMenu(o){document.getElementById('mmenu').classList.toggle('open',o);}
+
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.innerHTML=t(el.getAttribute('data-i18n')).replace(/\n/g,'<br>'));
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  renderPDP();
+}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{lang=b.dataset.lang;store.set('bc_lang',lang);activeSize=null;applyLang();});
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+
+applyLang();
+</script>
+</body>
+</html>
