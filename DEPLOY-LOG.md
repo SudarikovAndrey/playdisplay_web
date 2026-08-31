@@ -8,6 +8,60 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-31 14:54 — hybrid-v8 @ ac9590a
+
+**Коммиты в этой поставке**
+```
+ac9590a boxingcartel: светлее hero, фикс кнопок и карточки
+e2146db Журнал деплоя: e9c09ee
+```
+
+**На сервер отправлено файлов:** 135, удалено: 0
+```
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+boxingcartel/hero-1.jpg
+boxingcartel/hero-3.jpg
+boxingcartel/hero-4.jpg
+boxingcartel/hero-5.jpg
+boxingcartel/hero-6.jpg
+boxingcartel/hero-7.jpg
+boxingcartel/hero-8.jpg
+boxingcartel/product.html
+boxingcartel/styles.css
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+…и ещё 95
+```
+
+
 ## 2026-08-31 13:24 — hybrid-v8 @ e9c09ee
 
 **Коммиты в этой поставке**
