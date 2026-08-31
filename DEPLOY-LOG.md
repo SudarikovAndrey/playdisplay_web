@@ -8,6 +8,60 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-08-31 13:24 — hybrid-v8 @ e9c09ee
+
+**Коммиты в этой поставке**
+```
+e9c09ee boxingcartel: добавил статический сайт бренда в site/boxingcartel/ (каталог 20 товаров, hero-слайдер, эффект капель)
+be5e735 Журнал деплоя: fbfc526
+```
+
+**На сервер отправлено файлов:** 180, удалено: 0
+```
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+boxingcartel/
+boxingcartel/bag-model.jpg
+boxingcartel/bag.jpg
+boxingcartel/bag2.jpg
+boxingcartel/cap-dark-2.jpg
+boxingcartel/cap-dark.jpg
+boxingcartel/cap-light-2.jpg
+boxingcartel/cap-light-back.jpg
+boxingcartel/cap-light.jpg
+boxingcartel/cat-essential-hoodie.jpg
+boxingcartel/cat-faded-tee.jpg
+boxingcartel/cat-gloves-tee.jpg
+boxingcartel/cat-half-zip.jpg
+boxingcartel/cat-legacy-hoodie.jpg
+boxingcartel/cat-mesh-shorts.jpg
+boxingcartel/cat-sweatpants.jpg
+boxingcartel/cat-tank-top.jpg
+boxingcartel/cat-unity-longsleeve.jpg
+boxingcartel/data.js
+boxingcartel/hero-1.jpg
+boxingcartel/hero-3.jpg
+boxingcartel/hero-4.jpg
+boxingcartel/hero-5.jpg
+boxingcartel/hero-6.jpg
+boxingcartel/hero-7.jpg
+boxingcartel/hero-8.jpg
+boxingcartel/hero-bg-2.jpg
+boxingcartel/hero-bg-3.jpg
+boxingcartel/hero-bg.jpg
+boxingcartel/hoody.jpg
+boxingcartel/hoody2.jpg
+boxingcartel/index.html
+boxingcartel/logo-bc.png
+boxingcartel/ls-model.jpg
+boxingcartel/ls1.jpg
+boxingcartel/man1.jpg
+…и ещё 140
+```
+
+
 ## 2026-08-30 12:14 — hybrid-v8 @ fbfc526
 
 **Коммиты в этой поставке**
