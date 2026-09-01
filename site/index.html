@@ -1302,10 +1302,31 @@
         }
       } catch (e) {}
     }
-    function upd(){ setActive(document.hasFocus() && !document.hidden); }
+    // ЧТО СЧИТАТЬ «ЧЕЛОВЕК ЗДЕСЬ». Голого hasFocus() МАЛО, и это стоило зависшей
+    // пыли на сетке проектов (28.08.2026). Клик по сцене в герое уводит фокус в
+    // iframe: у родителя срабатывает blur, а hasFocus() в этот момент читается
+    // по-разному в разных браузерах. Там, где он вернул false, pdActive залипал
+    // на false НАВСЕГДА — событие focus больше не придёт, пока фокус внутри
+    // iframe, и цикл пыли умирал на первом же кадре. Оживало только после клика
+    // по карточке: он возвращал фокус документу. Ровно это владелец и описал —
+    // «зайти в проект и выйти, и опять летят».
+    // Тот же обход уже стоял этажом ниже, у pdVisible, — сюда его забыли донести.
+    function alive(){
+      var fr = document.querySelector('iframe.hero-scene');
+      return (document.hasFocus() || (fr && document.activeElement === fr)) && !document.hidden;
+    }
+    function upd(){ setActive(alive()); }
     addEventListener('blur', function(){ setTimeout(upd, 120); }); // таймаут: blur при клике в iframe — не считается уходом
     addEventListener('focus', upd);
     addEventListener('visibilitychange', upd);
+    // САМОЛЕЧЕНИЕ, а не ещё одна догадка о фокусе. Мышь ходит по странице —
+    // значит человек перед ней, чем бы ни ответил hasFocus(). Любая будущая
+    // ошибка в определении фокуса перестаёт быть смертельной: она живёт до
+    // первого движения мыши, а не до перезагрузки. Проверка стоит первой и
+    // выходит сразу, пока флаг и так поднят, — на обычное движение расход нулевой.
+    addEventListener('mousemove', function(){
+      if (window.pdActive === false && !document.hidden) setActive(true);
+    }, { passive: true });
   })();
 
   // header scroll state
@@ -2636,6 +2657,13 @@
     cardsEl.addEventListener('mousemove', function(e){
       var cr = cardsEl.getBoundingClientRect();
       mx = e.clientX - cr.left; my = e.clientY - cr.top;
+      // Цикл будят ТОЛЬКО mouseover по карточке, а он не повторяется, пока мышь
+      // ходит внутри одной и той же. Если цикл почему-то встал под наведённой
+      // карточкой (так было при залипшем pdActive), пыль оставалась мёртвой до
+      // перехода на СОСЕДНЮЮ. Движение внутри карточки — тоже повод жить.
+      // wake() сам выходит, когда кадр уже заказан: на обычное движение это одна
+      // проверка истинности.
+      if (hovered) wake();
     });
     cardsEl.addEventListener('mouseover', function(e){
       var c = e.target.closest ? e.target.closest('.card') : null;
