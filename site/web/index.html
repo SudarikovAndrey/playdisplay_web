@@ -76,8 +76,12 @@
       title:'Boxing Cartel', desc:'Монохромный combatwear-бренд: дисциплина, которую носят в чёрном.' },
     { url:'https://sudarikov.space/',       shot:'shots/sudarikov.jpg', kind:'Арт-архив', when:'внешний', open:true,
       title:'sudarikov.space', desc:'Архив «Gravity and Desire»: 68 работ — рисунок, цифровое искусство, умозрительные пространства.' },
-    { url:'https://sudarikov.space/world/', shot:'shots/world.jpg',     kind:'Портфолио', when:'внешний', open:true,
-      title:'sudarikov.space · world', desc:'Интерактивное портфолио: работы разложены по трёхмерному миру, по нему ходят.' },
+    // Метка ?v=2 обязательна: кадр переснят 30.08.2026, а имя файла осталось тем же.
+    // Статику отдаёт nginx с годовым кэшем — без метки вернувшийся гость целый год
+    // видел бы прежний подводный кадр. Меняете картинку под тем же именем — двигайте
+    // и метку.
+    { url:'https://sudarikov.space/world/', shot:'shots/world.jpg?v=2', kind:'Портфолио', when:'внешний', open:true,
+      title:'sudarikov.space · world', desc:'Интерактивное портфолио-игра: работы разложены по трёхмерному миру, по нему ходят и находят.' },
 
     { hidden:true, url:'/digital/',  shot:'shots/digital.jpg',  kind:'Лендинг',    when:'2026', open:true,
       title:'Цифровой слой', desc:'Интерактивная среда вокруг продукта, события, места, человека или идеи.' },
