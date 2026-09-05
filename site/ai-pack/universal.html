@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070810">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="AI-pack — персональный AI-консультант продукта на упаковке, POS-материалах, сайте, маркетплейсах и в рекламе.">
+  <title>AI-pack — продукт, который умеет отвечать</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=Roboto+Mono:wght@400;500;600&amp;family=Unbounded:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="/analytics.js" defer></script>
+  <style>
+    :root {
+      --bg: #070810;
+      --bg-soft: #0c0e18;
+      --paper: #f4f6ff;
+      --muted: #a7afc0;
+      --line: rgba(255, 255, 255, .13);
+      --blue: #5572ff;
+      --blue-light: #9eafff;
+      --violet: #8b5cff;
+      --lime: #d7ee66;
+      --page: min(1320px, calc(100vw - 96px));
+      --radius: 26px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body {
+      margin: 0;
+      color: var(--paper);
+      background:
+        radial-gradient(circle at 78% 3%, rgba(70, 92, 255, .16), transparent 32rem),
+        linear-gradient(180deg, #070810 0%, #090b13 55%, #05060b 100%);
+      font: 400 18px/1.55 Onest, system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .16;
+      background-image: radial-gradient(rgba(255,255,255,.24) .55px, transparent .55px);
+      background-size: 7px 7px;
+      mask-image: linear-gradient(to bottom, black, transparent 78%);
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    img { display: block; max-width: 100%; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { text-wrap: balance; }
+
+    .topbar {
+      position: fixed;
+      z-index: 100;
+      inset: 0 0 auto;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,.09);
+      background: rgba(7, 8, 16, .74);
+      backdrop-filter: blur(22px) saturate(130%);
+    }
+    .topbar__inner {
+      width: var(--page);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+    .brand { display: flex; align-items: center; gap: 18px; min-width: 0; }
+    .brand img { width: 142px; height: auto; filter: brightness(0) invert(1); }
+    .brand i { width: 1px; height: 23px; background: var(--line); }
+    .brand span { color: var(--blue-light); font: 600 11px/1 Roboto Mono, monospace; letter-spacing: .18em; text-transform: uppercase; }
+    .topbar__nav { display: flex; align-items: center; gap: 28px; color: #c5cad6; font-size: 14px; }
+    .topbar__nav a { transition: color .2s ease; }
+    .topbar__nav a:hover { color: white; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .full-btn {
+      min-width: 42px;
+      min-height: 42px;
+      padding: 0 12px;
+      color: #c5cad6;
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      background: rgba(255,255,255,.035);
+      cursor: pointer;
+    }
+    .full-btn:hover { color: white; border-color: rgba(255,255,255,.36); }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-height: 52px;
+      padding: 0 23px;
+      border: 1px solid transparent;
+      border-radius: 99px;
+      color: white;
+      background: linear-gradient(120deg, #3157ff, #7252ff);
+      box-shadow: 0 14px 42px rgba(63, 84, 255, .3);
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .button:hover { transform: translateY(-2px); box-shadow: 0 18px 52px rgba(63, 84, 255, .42); }
+    .button--small { min-height: 42px; padding: 0 18px; font-size: 14px; }
+    .button--ghost { color: #d8dcef; border-color: var(--line); background: rgba(255,255,255,.035); box-shadow: none; }
+    .button--ghost:hover { border-color: rgba(255,255,255,.35); box-shadow: none; }
+
+    .section {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      align-items: center;
+      padding: 132px 0 88px;
+      border-bottom: 1px solid var(--line);
+      overflow: clip;
+    }
+    .section__inner { width: var(--page); margin: 0 auto; }
+    .section-num {
+      position: absolute;
+      left: max(24px, calc((100vw - min(1320px, 100vw - 96px)) / 2 - 76px));
+      top: 112px;
+      color: rgba(255,255,255,.045);
+      font: 700 clamp(80px, 11vw, 170px)/1 Unbounded, sans-serif;
+      pointer-events: none;
+    }
+    .eyebrow {
+      margin: 0 0 22px;
+      color: var(--blue-light);
+      font: 600 11px/1.2 Roboto Mono, monospace;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .section-title {
+      max-width: 1100px;
+      margin: 0;
+      font: 700 clamp(38px, 5.1vw, 78px)/1.02 Unbounded, sans-serif;
+      letter-spacing: -.045em;
+      text-transform: uppercase;
+    }
+    .section-lead {
+      max-width: 880px;
+      margin: 26px 0 0;
+      color: #c2c8d5;
+      font-size: clamp(18px, 1.55vw, 23px);
+      line-height: 1.55;
+    }
+    .section-lead b { color: white; font-weight: 600; }
+
+    .hero { padding-top: 120px; }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(90deg, rgba(7,8,16,.96) 0%, rgba(7,8,16,.84) 41%, rgba(7,8,16,.15) 72%, rgba(7,8,16,.45) 100%);
+    }
+    .hero-media { position: absolute; z-index: -2; inset: 0; margin: 0; }
+    .hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .hero-copy { position: relative; z-index: 2; width: min(790px, 62vw); }
+    .hero h1 {
+      margin: 0;
+      font: 700 clamp(48px, 6.4vw, 104px)/.98 Unbounded, sans-serif;
+      letter-spacing: -.055em;
+      text-transform: uppercase;
+    }
+    .hero h1 em { display: block; color: var(--blue-light); font-style: normal; }
+    .hero-lead { max-width: 720px; margin: 32px 0 0; color: #d4d8e2; font-size: clamp(19px, 1.7vw, 26px); line-height: 1.42; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+    .hero-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; max-width: 760px; margin: 54px 0 0; border: 1px solid var(--line); background: var(--line); }
+    .hero-facts div { min-height: 112px; padding: 20px; background: rgba(7,8,16,.74); backdrop-filter: blur(10px); }
+    .hero-facts b { display: block; margin-bottom: 10px; color: white; font: 600 17px/1.25 Unbounded, sans-serif; }
+    .hero-facts span { display: block; color: #9ea7ba; font-size: 14px; line-height: 1.45; }
+
+    .problem-grid { display: grid; grid-template-columns: .82fr 1.18fr; gap: clamp(40px, 7vw, 110px); align-items: center; }
+    .question-stack { display: grid; gap: 12px; }
+    .question {
+      position: relative;
+      max-width: 620px;
+      padding: 18px 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px 18px 18px 5px;
+      color: #dde2ef;
+      background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+      font-size: clamp(17px, 1.3vw, 20px);
+      transform: translateX(var(--offset, 0));
+    }
+    .question:nth-child(2) { --offset: 8%; }
+    .question:nth-child(3) { --offset: 3%; }
+    .question:nth-child(4) { --offset: 12%; }
+    .question:nth-child(5) { --offset: 6%; }
+    .answer-orb { display: flex; align-items: center; gap: 18px; margin-top: 24px; color: var(--blue-light); font-weight: 600; }
+    .orb {
+      position: relative;
+      width: 54px;
+      aspect-ratio: 1;
+      flex: none;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, #bed0ff, #536dff 24%, #4428b6 58%, #11142c 76%);
+      box-shadow: 0 0 36px rgba(89, 101, 255, .7);
+    }
+    .orb::after { content: ""; position: absolute; inset: -9px; border: 1px solid rgba(149,166,255,.3); border-radius: 50%; animation: breathe 3s ease-in-out infinite; }
+    @keyframes breathe { 50% { transform: scale(1.12); opacity: .35; } }
+
+    .media-story { margin-top: 58px; display: grid; grid-template-columns: 1.32fr .68fr; gap: 16px; }
+    .media-card { position: relative; min-height: 540px; margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-soft); }
+    .media-card--small { min-height: 540px; }
+    .media-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s cubic-bezier(.16,1,.3,1); }
+    .media-card:hover img { transform: scale(1.025); }
+    .media-card figcaption { position: absolute; inset: auto 18px 18px; padding: 17px 18px; border: 1px solid rgba(255,255,255,.16); border-radius: 16px; background: rgba(7,8,16,.74); backdrop-filter: blur(16px); }
+    .media-card figcaption b { display: block; margin-bottom: 5px; font-family: Unbounded, sans-serif; font-size: 16px; }
+    .media-card figcaption span { color: #acb4c5; font-size: 14px; }
+
+    .touchpoints { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 34px; }
+    .touchpoint { min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; padding: 19px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.035); }
+    .touchpoint i { color: var(--blue-light); font: 600 11px/1 Roboto Mono, monospace; font-style: normal; letter-spacing: .12em; }
+    .touchpoint b { font: 600 clamp(15px, 1.25vw, 19px)/1.18 Unbounded, sans-serif; }
+
+    .app-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(28px, 5vw, 74px); align-items: center; }
+    .app-visual { min-height: 620px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #080a12; box-shadow: 0 32px 90px rgba(0,0,0,.38); }
+    .app-visual img { width: 100%; height: 100%; object-fit: cover; }
+    .custom-list { display: grid; gap: 1px; margin-top: 38px; border: 1px solid var(--line); background: var(--line); }
+    .custom-list div { display: grid; grid-template-columns: 42px 1fr; gap: 16px; padding: 18px; background: #0b0d16; }
+    .custom-list span { color: var(--blue-light); font: 600 12px/1 Roboto Mono, monospace; }
+    .custom-list b { display: block; margin-bottom: 5px; font-size: 17px; }
+    .custom-list p { margin: 0; color: #9fa8ba; font-size: 14px; line-height: 1.45; }
+
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 48px; }
+    .scenario { min-height: 230px; display: flex; flex-direction: column; padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: radial-gradient(circle at 100% 0, rgba(79,99,255,.16), transparent 48%), rgba(255,255,255,.025); }
+    .scenario span { color: var(--blue-light); font: 600 11px/1 Roboto Mono, monospace; letter-spacing: .13em; text-transform: uppercase; }
+    .scenario h3 { margin: auto 0 12px; font: 600 21px/1.15 Unbounded, sans-serif; }
+    .scenario p { margin: 0; color: #a9b1c2; font-size: 15px; line-height: 1.5; }
+
+    .value-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 48px; }
+    .value { position: relative; min-height: 190px; padding: 25px 26px 25px 82px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,.03); }
+    .value > b { position: absolute; left: 24px; top: 26px; color: var(--blue-light); font: 600 13px/1 Roboto Mono, monospace; }
+    .value h3 { margin: 0 0 12px; font: 600 clamp(19px, 1.6vw, 25px)/1.18 Unbounded, sans-serif; }
+    .value p { margin: 0; color: #aab2c2; font-size: 16px; }
+
+    .build-flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; margin-top: 58px; }
+    .build-step { position: relative; min-height: 250px; padding: 24px 22px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); background: rgba(255,255,255,.025); }
+    .build-step:first-child { border-radius: 20px 0 0 20px; }
+    .build-step:last-child { border-right: 1px solid var(--line); border-radius: 0 20px 20px 0; }
+    .build-step span { color: var(--blue-light); font: 600 12px/1 Roboto Mono, monospace; }
+    .build-step h3 { margin: 82px 0 12px; font: 600 clamp(16px, 1.25vw, 20px)/1.2 Unbounded, sans-serif; }
+    .build-step p { margin: 0; color: #99a2b5; font-size: 14px; line-height: 1.45; }
+
+    .pilot-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(40px, 8vw, 120px); align-items: center; }
+    .pilot-card { padding: clamp(28px, 4vw, 54px); border: 1px solid rgba(126,145,255,.35); border-radius: 28px; background: radial-gradient(circle at 100% 0, rgba(73,92,255,.25), transparent 46%), rgba(255,255,255,.035); }
+    .pilot-card__tag { color: var(--blue-light); font: 600 11px/1 Roboto Mono, monospace; letter-spacing: .18em; text-transform: uppercase; }
+    .pilot-card strong { display: block; margin: 20px 0 22px; font: 600 clamp(32px, 4vw, 62px)/1 Unbounded, sans-serif; letter-spacing: -.05em; }
+    .pilot-card p { margin: 0; color: #b9c0cf; }
+    .pilot-checks { display: grid; gap: 10px; margin-top: 36px; }
+    .pilot-checks div { display: flex; gap: 15px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 15px; background: rgba(255,255,255,.025); }
+    .pilot-checks b { color: var(--lime); }
+    .pilot-checks span { color: #c0c6d3; }
+
+    .contact { background: radial-gradient(circle at 76% 35%, rgba(73,92,255,.2), transparent 30rem); }
+    .contact-grid { display: grid; grid-template-columns: .82fr 1.18fr; gap: clamp(42px, 8vw, 120px); align-items: start; }
+    .contact-copy { position: sticky; top: 130px; }
+    .contact-copy .section-title { font-size: clamp(38px, 4.4vw, 68px); }
+    .contact-copy .section-lead { font-size: 19px; }
+    .contact-note { margin-top: 34px; color: #8f99ac; font: 500 12px/1.6 Roboto Mono, monospace; }
+    .contact-note a { color: var(--blue-light); }
+    .lead-form { padding: clamp(26px, 4vw, 48px); border: 1px solid var(--line); border-radius: 28px; background: rgba(12,14,24,.86); box-shadow: 0 35px 100px rgba(0,0,0,.34); }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+    .field { display: grid; gap: 9px; }
+    .field--wide { grid-column: 1 / -1; }
+    .field label { color: #c8ceda; font-size: 14px; }
+    .field input, .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 15px 16px;
+      color: white;
+      background: rgba(255,255,255,.035);
+      outline: none;
+      transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .field textarea { min-height: 154px; resize: vertical; }
+    .field input:focus, .field textarea:focus { border-color: rgba(126,145,255,.8); background: rgba(255,255,255,.055); box-shadow: 0 0 0 4px rgba(79,101,255,.12); }
+    .field input::placeholder, .field textarea::placeholder { color: #697286; }
+    .form-agree { display: flex; align-items: flex-start; gap: 11px; margin: 20px 0; color: #8f99ac; font-size: 13px; line-height: 1.45; }
+    .form-agree input { margin-top: 3px; accent-color: var(--blue); }
+    .form-agree a { color: #bdc8ff; text-decoration: underline; text-underline-offset: 3px; }
+    .form-actions { display: flex; align-items: center; gap: 18px; }
+    .form-status { min-height: 22px; margin: 0; color: #aeb7ca; font-size: 14px; }
+    .form-status.is-error { color: #ff9eaa; }
+    .form-status.is-success { color: var(--lime); }
+    .honeypot { position: absolute !important; left: -9999px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
+    .lead-form.is-sent .form-grid, .lead-form.is-sent .form-agree, .lead-form.is-sent .form-actions { display: none; }
+    .success-card { display: none; min-height: 350px; align-content: center; }
+    .lead-form.is-sent .success-card { display: grid; }
+    .success-card b { font: 600 clamp(28px, 3vw, 46px)/1.12 Unbounded, sans-serif; }
+    .success-card p { max-width: 560px; margin: 20px 0 0; color: #aeb7c8; }
+
+    .footer { min-height: 170px; display: flex; align-items: center; border-top: 1px solid var(--line); color: #7f899c; }
+    .footer__inner { width: var(--page); margin: 0 auto; display: flex; justify-content: space-between; gap: 24px; font: 500 11px/1.5 Roboto Mono, monospace; letter-spacing: .08em; text-transform: uppercase; }
+
+    .reveal { opacity: 0; transform: translateY(24px); filter: blur(6px); transition: opacity .8s ease, transform .9s cubic-bezier(.16,1,.3,1), filter .8s ease; }
+    .reveal.is-visible { opacity: 1; transform: none; filter: none; }
+
+    @media (min-width: 1001px) {
+      html { scroll-snap-type: y proximity; }
+      .section { scroll-snap-align: start; }
+    }
+    @media (max-width: 1100px) {
+      :root { --page: calc(100vw - 48px); }
+      .topbar__nav { display: none; }
+      .hero-copy { width: min(760px, 76vw); }
+      .media-story, .app-grid { grid-template-columns: 1fr; }
+      .media-story { grid-template-columns: 1fr 1fr; }
+      .app-visual { min-height: 520px; }
+      .touchpoints, .build-flow { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+      .build-step, .build-step:first-child, .build-step:last-child { min-height: 210px; border: 1px solid var(--line); border-radius: 18px; }
+      .build-step h3 { margin-top: 48px; }
+      .build-step:last-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 760px) {
+      :root { --page: calc(100vw - 36px); --radius: 20px; }
+      body { font-size: 16px; }
+      .topbar { height: 66px; }
+      .brand img { width: 116px; }
+      .brand i, .brand span, .full-btn { display: none; }
+      .button--small { min-height: 40px; padding: 0 15px; }
+      .section { min-height: auto; padding: 102px 0 72px; }
+      .section-num { top: 84px; left: 12px; font-size: 92px; }
+      .section-title { font-size: clamp(30px, 9.4vw, 46px); }
+      .section-lead { font-size: 17px; }
+      .hero { min-height: 100svh; padding-top: 108px; }
+      .hero::after { background: linear-gradient(180deg, rgba(7,8,16,.78), rgba(7,8,16,.86) 44%, #070810 88%); }
+      .hero-media img { object-position: 66% center; opacity: .7; }
+      .hero-copy { width: 100%; }
+      .hero h1 { font-size: clamp(40px, 12vw, 62px); }
+      .hero-lead { font-size: 18px; }
+      .hero-actions { align-items: stretch; }
+      .hero-actions .button { flex: 1 1 180px; }
+      .hero-facts { grid-template-columns: 1fr; margin-top: 40px; }
+      .hero-facts div { min-height: 0; }
+      .problem-grid, .pilot-grid, .contact-grid { grid-template-columns: 1fr; }
+      .question:nth-child(n) { transform: none; }
+      .media-story { grid-template-columns: 1fr; }
+      .media-card, .media-card--small { min-height: 380px; }
+      .touchpoints, .scenario-grid, .value-grid, .build-flow { grid-template-columns: 1fr; }
+      .touchpoint { min-height: 118px; }
+      .app-visual { min-height: 380px; }
+      .scenario { min-height: 205px; }
+      .value { padding-left: 68px; }
+      .build-step:last-child { grid-column: auto; }
+      .build-step { min-height: 190px; }
+      .contact-copy { position: static; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field--wide { grid-column: auto; }
+      .form-actions { align-items: stretch; flex-direction: column; }
+      .form-actions .button { width: 100%; }
+      .footer__inner { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; filter: none; transition: none; }
+      .orb::after { animation: none; }
+      .media-card img, .button { transition: none; }
+    }
+    @media print {
+      .topbar, .hero-actions, .lead-form { display: none !important; }
+      .section { min-height: auto; break-inside: avoid; padding: 60px 0; }
+      .reveal { opacity: 1; transform: none; filter: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="#top" aria-label="AI-pack — в начало">
+        <img src="../kit/assets/demo/logo.webp" alt="Playdisplay">
+        <i aria-hidden="true"></i>
+        <span>AI-pack</span>
+      </a>
+      <nav class="topbar__nav" aria-label="Разделы страницы">
+        <a href="#how">Как работает</a>
+        <a href="#touchpoints">Точки контакта</a>
+        <a href="#pilot">Пилот</a>
+      </nav>
+      <div class="header-actions">
+        <button class="full-btn" id="fullBtn" type="button" aria-label="Открыть на весь экран" title="На весь экран">⛶</button>
+        <a class="button button--small" href="#order">Заказать AI-pack <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="section hero">
+      <figure class="hero-media" aria-hidden="true"><img src="assets/ai-pack-hero.jpg" alt=""></figure>
+      <div class="section__inner">
+        <div class="hero-copy reveal">
+          <p class="eyebrow">AI-pack · цифровой слой продукта</p>
+          <h1>Продукт, который <em>умеет отвечать</em></h1>
+          <p class="hero-lead">Персональный AI-консультант для вашего продукта. Покупатель задаёт вопрос прямо на упаковке, POS-материале, сайте или маркетплейсе — и получает понятный ответ из утверждённой базы бренда.</p>
+          <div class="hero-actions">
+            <a class="button" href="#order">Заказать себе <span aria-hidden="true">↗</span></a>
+            <a class="button button--ghost" href="#how">Посмотреть, как работает</a>
+          </div>
+          <div class="hero-facts">
+            <div><b>Не искать</b><span>Человек спрашивает своими словами и сразу получает ответ.</span></div>
+            <div><b>Не придумывать</b><span>AI работает в рамках материалов и правил компании.</span></div>
+            <div><b>Не ограничивать</b><span>Один ассистент подключается ко всем точкам контакта.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <span class="section-num" aria-hidden="true">01</span>
+      <div class="section__inner problem-grid">
+        <div class="reveal">
+          <p class="eyebrow">Вместо каталога и длинной инструкции</p>
+          <h2 class="section-title">Не разбираться. Просто спросить.</h2>
+          <p class="section-lead">AI-pack переводит весь объём информации о продукте в привычный разговор. Человек спрашивает то, что важно именно ему, — до покупки или после неё.</p>
+          <div class="answer-orb"><i class="orb" aria-hidden="true"></i><span>Ответ — здесь и сейчас</span></div>
+        </div>
+        <div class="question-stack reveal" aria-label="Примеры вопросов покупателей">
+          <div class="question">Чем отличаются эти два продукта?</div>
+          <div class="question">Какой вариант подойдёт для моей задачи?</div>
+          <div class="question">Как использовать продукт правильно?</div>
+          <div class="question">Что входит в состав и почему?</div>
+          <div class="question">Можно ли сочетать его с тем, что у меня уже есть?</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="touchpoints">
+      <span class="section-num" aria-hidden="true">02</span>
+      <div class="section__inner">
+        <div class="reveal">
+          <p class="eyebrow">Один AI · много входов</p>
+          <h2 class="section-title">Любая точка контакта становится диалогом</h2>
+          <p class="section-lead">QR-код — только один из способов входа. Тот же AI можно встроить в сайт, карточку продукта, промостраницу, маркетплейс или рекламную кампанию.</p>
+        </div>
+        <div class="media-story reveal">
+          <figure class="media-card">
+            <img src="assets/ai-pack-pos.jpg" alt="Покупатель сканирует QR-код на POS-материале и открывает AI-консультанта">
+            <figcaption><b>В физическом пространстве</b><span>Упаковка · POS · витрина · выставка · сервисная точка</span></figcaption>
+          </figure>
+          <figure class="media-card media-card--small">
+            <img src="assets/ai-pack-omnichannel.jpg" alt="Один AI-интерфейс на сайте, планшете и смартфоне">
+            <figcaption><b>В цифровых каналах</b><span>Сайт · маркетплейс · реклама · соцсети</span></figcaption>
+          </figure>
+        </div>
+        <div class="touchpoints reveal" aria-label="Точки контакта AI-pack">
+          <div class="touchpoint"><i>01</i><b>Упаковка</b></div>
+          <div class="touchpoint"><i>02</i><b>POS-материалы</b></div>
+          <div class="touchpoint"><i>03</i><b>Сайт бренда</b></div>
+          <div class="touchpoint"><i>04</i><b>Маркетплейсы</b></div>
+          <div class="touchpoint"><i>05</i><b>Реклама</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-num" aria-hidden="true">03</span>
+      <div class="section__inner app-grid">
+        <div class="app-visual reveal"><img src="assets/ai-pack-omnichannel.jpg" alt="Кастомизированный AI-консультант на нескольких устройствах"></div>
+        <div class="reveal">
+          <p class="eyebrow">Кастомизация под бренд</p>
+          <h2 class="section-title">Меняется не только страница. Меняется само AI-приложение.</h2>
+          <p class="section-lead">Для каждого проекта мы собираем самостоятельный продуктовый интерфейс — с характером, визуальным языком и логикой конкретного бренда.</p>
+          <div class="custom-list">
+            <div><span>01</span><p><b>Визуальный образ</b>Цвета, графика, персонаж, голос и анимация бренда.</p></div>
+            <div><span>02</span><p><b>База знаний</b>Утверждённые описания, инструкции, документы и продуктовые данные.</p></div>
+            <div><span>03</span><p><b>Сценарии разговора</b>Выбор, сравнение, применение, обучение и поддержка после покупки.</p></div>
+            <div><span>04</span><p><b>Правила и ограничения</b>Что ассистент может объяснять, а где должен остановиться или передать контакт.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-num" aria-hidden="true">04</span>
+      <div class="section__inner">
+        <div class="reveal">
+          <p class="eyebrow">Прикладные сценарии</p>
+          <h2 class="section-title">AI-pack берёт на себя вопросы, которые мешают выбрать</h2>
+          <p class="section-lead">Набор сценариев зависит от продукта. Мы не переносим один и тот же чат между клиентами — мы проектируем полезный разговор под конкретную задачу.</p>
+        </div>
+        <div class="scenario-grid reveal">
+          <article class="scenario"><span>Сценарий 01</span><h3>Объяснить сложный продукт</h3><p>Перевести характеристики и профессиональные термины в понятный ответ без упрощения смысла.</p></article>
+          <article class="scenario"><span>Сценарий 02</span><h3>Помочь выбрать</h3><p>Задать несколько уточняющих вопросов и показать подходящие варианты из линейки.</p></article>
+          <article class="scenario"><span>Сценарий 03</span><h3>Сравнить варианты</h3><p>Объяснить различия не таблицей параметров, а через реальную задачу пользователя.</p></article>
+          <article class="scenario"><span>Сценарий 04</span><h3>Поддержать после покупки</h3><p>Подсказать порядок использования, уход, обслуживание или следующий полезный шаг.</p></article>
+          <article class="scenario"><span>Сценарий 05</span><h3>Обучить продавца</h3><p>Дать персоналу быстрый доступ к актуальным материалам и потренировать ответы на вопросы.</p></article>
+          <article class="scenario"><span>Сценарий 06</span><h3>Передать человека дальше</h3><p>Собрать контекст и направить заявку консультанту, в магазин, сервис или нужный отдел.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-num" aria-hidden="true">05</span>
+      <div class="section__inner">
+        <div class="reveal">
+          <p class="eyebrow">Что получает компания</p>
+          <h2 class="section-title">Не «ещё один чат». Новый продуктовый канал.</h2>
+          <p class="section-lead">AI-pack соединяет консультацию, контент и обратную связь. Его ценность не в технологии самой по себе, а в том, что она делает полезного в каждой точке контакта.</p>
+        </div>
+        <div class="value-grid reveal">
+          <article class="value"><b>01</b><h3>Управляемая консультация</h3><p>Одна актуальная база знаний и единые правила ответа вместо случайной информации из интернета.</p></article>
+          <article class="value"><b>02</b><h3>Помощь в выборе</h3><p>Пользователь получает ответ по своей ситуации, а не ещё одну страницу, которую нужно изучить.</p></article>
+          <article class="value"><b>03</b><h3>Контент без перепечатки</h3><p>Сценарии и материалы обновляются в цифровом слое, даже если упаковка уже находится в продаже.</p></article>
+          <article class="value"><b>04</b><h3>Карта реальных вопросов</h3><p>Диалоги показывают, что людям непонятно, что они сравнивают и каких сведений им не хватает.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="section-num" aria-hidden="true">06</span>
+      <div class="section__inner">
+        <div class="reveal">
+          <p class="eyebrow">Как запускается</p>
+          <h2 class="section-title">От материалов бренда до работающего AI-pack</h2>
+          <p class="section-lead">Начинаем не с «давайте прикрутим AI», а с вопросов пользователей и роли, которую ассистент должен выполнять в бизнес-процессе.</p>
+        </div>
+        <div class="build-flow reveal">
+          <article class="build-step"><span>01</span><h3>Определяем задачу</h3><p>Для кого работает ассистент, в какой момент и какой результат должен дать.</p></article>
+          <article class="build-step"><span>02</span><h3>Собираем знания</h3><p>Продуктовые данные, инструкции, ограничения, документы и ответы экспертов.</p></article>
+          <article class="build-step"><span>03</span><h3>Проектируем диалог</h3><p>Сценарии, тон общения, подсказки, переходы и правила безопасного ответа.</p></article>
+          <article class="build-step"><span>04</span><h3>Создаём приложение</h3><p>Интерфейс в стиле бренда и подключения к нужным точкам контакта.</p></article>
+          <article class="build-step"><span>05</span><h3>Запускаем пилот</h3><p>Проверяем вопросы, использование, качество ответов и ценность для команды.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pilot">
+      <span class="section-num" aria-hidden="true">07</span>
+      <div class="section__inner pilot-grid">
+        <div class="reveal">
+          <p class="eyebrow">Стартовый формат</p>
+          <h2 class="section-title">Сначала пилот. Потом масштабирование.</h2>
+          <p class="section-lead">У AI-pack пока нет универсальной «доказанной цифры» — и мы не будем её придумывать. Первый запуск нужен, чтобы получить честные данные именно на вашем продукте и вашей аудитории.</p>
+          <div class="pilot-checks">
+            <div><b>✓</b><span>Какие вопросы люди действительно задают?</span></div>
+            <div><b>✓</b><span>Помогает ли ассистент быстрее принять решение?</span></div>
+            <div><b>✓</b><span>Какие сценарии и точки контакта работают лучше?</span></div>
+            <div><b>✓</b><span>Есть ли смысл подключать другие продукты?</span></div>
+          </div>
+        </div>
+        <aside class="pilot-card reveal">
+          <span class="pilot-card__tag">Пилот AI-pack</span>
+          <strong>1–3 продукта</strong>
+          <p>Рабочее AI-приложение, утверждённая база знаний, выбранные точки входа, аналитика диалогов и рекомендации по следующему этапу. Срок и состав фиксируем после знакомства с материалами и интеграциями.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section contact" id="order">
+      <span class="section-num" aria-hidden="true">08</span>
+      <div class="section__inner contact-grid">
+        <div class="contact-copy reveal">
+          <p class="eyebrow">Заказать AI-pack</p>
+          <h2 class="section-title">Расскажите, какой продукт должен заговорить</h2>
+          <p class="section-lead">Опишите проект в свободной форме. Мы посмотрим на продукт, аудиторию и точки контакта — и предложим реалистичный формат первого запуска.</p>
+          <p class="contact-note">Или напишите напрямую:<br><a href="mailto:a.sudarikov@playdisplay.ru">a.sudarikov@playdisplay.ru</a></p>
+        </div>
+
+        <form class="lead-form reveal" id="leadForm" novalidate>
+          <div class="form-grid">
+            <div class="field"><label for="leadName">Как к вам обращаться *</label><input id="leadName" name="name" autocomplete="name" placeholder="Имя" required></div>
+            <div class="field"><label for="leadCompany">Компания</label><input id="leadCompany" name="company" autocomplete="organization" placeholder="Название компании"></div>
+            <div class="field field--wide"><label for="leadContact">Email, телефон или Telegram *</label><input id="leadContact" name="contact" autocomplete="email" placeholder="Как с вами связаться" required></div>
+            <div class="field field--wide"><label for="leadAbout">Что у вас за продукт или проект? *</label><textarea id="leadAbout" name="about" placeholder="Что вы продаёте, кому и где покупатель встречает продукт" required></textarea></div>
+            <div class="honeypot" aria-hidden="true"><label for="leadWebsite">Ваш сайт</label><input id="leadWebsite" name="website" tabindex="-1" autocomplete="off"></div>
+          </div>
+          <label class="form-agree"><input id="leadAgree" type="checkbox"><span>Согласен на обработку персональных данных в соответствии с <a href="/privacy.html" target="_blank" rel="noopener">политикой конфиденциальности</a>.</span></label>
+          <div class="form-actions">
+            <button class="button" id="leadSend" type="submit">Отправить проект <span aria-hidden="true">↗</span></button>
+            <p class="form-status" id="leadStatus" role="status" aria-live="polite"></p>
+          </div>
+          <div class="success-card">
+            <b>Спасибо. Проект уже у нас.</b>
+            <p>Посмотрим материалы и свяжемся с вами, чтобы обсудить, где AI-pack принесёт больше всего пользы.</p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner"><span>PLAYDISPLAY · AI-pack</span><span>Продукт, который умеет отвечать</span></div>
+  </footer>
+
+  <script>
+    (function () {
+      var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var reveals = document.querySelectorAll('.reveal');
+      if (reduced || !window.IntersectionObserver) {
+        reveals.forEach(function (el) { el.classList.add('is-visible'); });
+      } else {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        }, { threshold: .08, rootMargin: '0px 0px -8% 0px' });
+        reveals.forEach(function (el) { observer.observe(el); });
+      }
+
+      var full = document.getElementById('fullBtn');
+      if (full && document.documentElement.requestFullscreen) {
+        full.addEventListener('click', function () {
+          if (document.fullscreenElement) document.exitFullscreen();
+          else document.documentElement.requestFullscreen().catch(function () {});
+        });
+        document.addEventListener('fullscreenchange', function () {
+          var on = !!document.fullscreenElement;
+          full.textContent = on ? '×' : '⛶';
+          full.setAttribute('aria-label', on ? 'Выйти из полноэкранного режима' : 'Открыть на весь экран');
+          full.title = on ? 'Свернуть' : 'На весь экран';
+        });
+      } else if (full) {
+        full.hidden = true;
+      }
+
+      var form = document.getElementById('leadForm');
+      var status = document.getElementById('leadStatus');
+      var send = document.getElementById('leadSend');
+      var busy = false;
+
+      function setStatus(text, type) {
+        status.textContent = text || '';
+        status.className = 'form-status' + (type ? ' is-' + type : '');
+      }
+      function value(id) {
+        var el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+      }
+      function fail(message, id) {
+        setStatus(message, 'error');
+        var el = document.getElementById(id);
+        if (el) el.focus();
+      }
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (busy) return;
+
+        var name = value('leadName');
+        var contact = value('leadContact');
+        var about = value('leadAbout');
+        if (!name) return fail('Скажите, как к вам обращаться.', 'leadName');
+        if (!contact) return fail('Оставьте email, телефон или Telegram.', 'leadContact');
+        if (!about) return fail('Коротко расскажите о продукте или проекте.', 'leadAbout');
+        if (!document.getElementById('leadAgree').checked) return fail('Нужно согласие на обработку данных.', 'leadAgree');
+
+        busy = true;
+        send.disabled = true;
+        setStatus('Отправляем…');
+
+        fetch('/api/ai.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'book',
+            name: name,
+            company: value('leadCompany'),
+            contact: contact,
+            about: about,
+            when: 'Заявка со страницы AI-pack',
+            website: value('leadWebsite'),
+            agree: true,
+            lang: 'ru'
+          })
+        }).then(function (response) {
+          var type = response.headers.get('content-type') || '';
+          if (type.indexOf('application/json') === -1) throw new Error('Форма сейчас недоступна. Напишите нам по почте.');
+          return response.json().then(function (data) {
+            if (!response.ok || !data.ok) throw new Error(data.error || 'Не удалось отправить заявку.');
+            return data;
+          });
+        }).then(function () {
+          form.classList.add('is-sent');
+          setStatus('', 'success');
+        }).catch(function (error) {
+          busy = false;
+          send.disabled = false;
+          setStatus(error.message || 'Не удалось отправить заявку. Попробуйте ещё раз.', 'error');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
