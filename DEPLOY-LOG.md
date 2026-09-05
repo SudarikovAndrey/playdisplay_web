@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-05 17:50 — hybrid-v8 @ 01dd487
+
+**Коммиты в этой поставке**
+```
+01dd487 Витрина /web — простая галерея карточек, заведён MARÉ
+b49a3d4 Витрина /web упрощена до галереи карточек; заведён MARÉ
+d87894c Журнал деплоя: 1daf1a3
+```
+
+**На сервер отправлено файлов:** 132, удалено: 0
+```
+llms.txt
+robots.txt
+sitemap.xml
+ai-pack/index.html
+akvion/index.html
+atlas/index.html
+avtovaz/private/page.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+digital/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+…и ещё 92
+```
+
+
 ## 2026-09-05 17:36 — hybrid-v8 @ 1daf1a3
 
 **Коммиты в этой поставке**
