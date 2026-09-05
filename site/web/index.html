@@ -29,10 +29,6 @@
                   text-transform: uppercase; color: var(--muted); }
     .lead { margin: 34px 0 0; max-width: 62ch; font-size: 15px; line-height: 1.65; color: var(--muted); }
     .lead b { color: var(--paper); font-weight: 500; }
-    .labs { margin: 54px 0 0; padding-top: 22px; border-top: 1px solid var(--line);
-            font-size: 12.5px; line-height: 1.9; color: var(--muted); }
-    .labs a { color: var(--electric); text-decoration: none; }
-    .labs a:hover { text-decoration: underline; }
     @media (max-width: 700px) { .wrap { width: calc(100vw - 36px); padding: 28px 0 60px; } }
   </style>
 </head>
@@ -50,7 +46,6 @@
 
     <div class="proto-grid" id="protoGrid"></div>
 
-    <p class="labs" id="labs"></p>
   </div>
 
   <script>
@@ -68,38 +63,39 @@
      достают и «сохранить изображение», и прямой ссылкой, а по размытому кадру
      читаются вёрстка и фирменный стиль заказчика. Поэтому рисуется пятно в цвете
      проекта, а настоящее название видно уже за паролем. */
+  /* СЕЙЧАС ПОКАЗЫВАЕМ ПЯТЬ. Остальные не удалены, а СПРЯТАНЫ полем hidden:
+     вернуть карточку — снять одно слово, а не собирать её заново вместе с превью.
+     Их кадры так и лежат в shots/ по той же причине. */
   var PROTOS = [
-    { url:'/digital/',      shot:'shots/digital.jpg',      kind:'Лендинг',      when:'2026', open:true,
-      title:'Цифровой слой', desc:'Интерактивная среда вокруг продукта, события, места, человека или идеи.' },
-    { url:'/library/',      shot:'shots/library.jpg',      kind:'Справочник',   when:'2026', open:true,
-      title:'Библиотека оборудования', desc:'65 типов техники: что каждая умеет и обо что спотыкаются на второй год.' },
-    { url:'/immersive/',                                   kind:'Презентация',  when:'2026', open:true,
-      title:'MR One', desc:'Интерактивная презентация главного инструмента продаж иммерсивной комнаты.' },
-    { url:'/layer/',        shot:'shots/layer.jpg',        kind:'AI-помощник',  when:'2026', open:true,
-      title:'Сперотон AR', desc:'Голосовой помощник: о продукте, составе, применении и мужском здоровье.' },
-    { url:'/ai-pack/',      shot:'shots/ai-pack.jpg',      kind:'Предложение',  when:'2026', open:true,
-      title:'AI Pack', desc:'QR на упаковке открывает диалог с продуктом. Предложение для компании «Аквион».' },
-    { url:'/akvion/',       shot:'shots/akvion.jpg',       kind:'Предложение',  when:'2026', open:true,
-      title:'AI Pack · светлая версия', desc:'То же предложение в светлой теме — вторая сборка того же материала.' },
+    { url:'/immersive/',    shot:'shots/immersive.jpg',    kind:'Презентация',  when:'2026', open:true,
+      title:'MR One', desc:'Иммерсивная комната как инструмент продаж: сценарии, экраны, свет.' },
+    // Превью снято с живого dev-сервера соседнего воркtree: WebGPU поднимается
+    // только с GPU, поэтому кадр брался Chrome без --disable-gpu и с ANGLE/Metal.
+    {                       shot:'shots/mare.jpg',         kind:'WebGPU-опыт',  when:'не опубликован', open:true, tint:'#2f7fa8',
+      title:'MARÉ · океан', desc:'Вода на three/webgpu и шейдерах WGSL: якорная стоянка, облёт, свободный полёт.' },
     { url:'/boxingcartel/', shot:'shots/boxingcartel.jpg', kind:'Бренд',        when:'2026', open:true,
       title:'Boxing Cartel', desc:'Монохромный combatwear-бренд: дисциплина, которую носят в чёрном.' },
-    // MARÉ. Адреса пока нет намеренно, а не по забывчивости: демо собрано под Node
-    // и Cloudflare Workers (dist/server, wrangler.json), а timeweb умеет только
-    // статику и PHP. Появится опубликованный адрес — вписать сюда url и shot.
-    {                       kind:'WebGPU-опыт',  when:'не опубликован', open:true, tint:'#2f7fa8',
-      title:'MARÉ · океан', desc:'Вода на three/webgpu и шейдерах WGSL: якорная стоянка, облёт, свободный полёт.' },
-    { url:'/avtovaz/', kind:'Компред', when:'под паролем', open:false, tint:'#c8a24a',
-      title:'Закрытый проект', desc:'Коммерческое предложение автомобильному бренду. Ссылку и пароль даёт студия.' },
-    { url:'/ball/',    kind:'Концепция', when:'под паролем', open:false, tint:'#2be0c6',
-      title:'Закрытый проект', desc:'Концепция музея, свёрстанная книгой. Ссылку и пароль даёт студия.' }
+    { url:'https://sudarikov.space/',       shot:'shots/sudarikov.jpg', kind:'Арт-архив', when:'внешний', open:true,
+      title:'sudarikov.space', desc:'Архив «Gravity and Desire»: 68 работ — рисунок, цифровое искусство, умозрительные пространства.' },
+    { url:'https://sudarikov.space/world/', shot:'shots/world.jpg',     kind:'Портфолио', when:'внешний', open:true,
+      title:'sudarikov.space · world', desc:'Интерактивное портфолио: работы разложены по трёхмерному миру, по нему ходят.' },
+
+    { hidden:true, url:'/digital/',  shot:'shots/digital.jpg',  kind:'Лендинг',    when:'2026', open:true,
+      title:'Цифровой слой', desc:'Интерактивная среда вокруг продукта, события, места, человека или идеи.' },
+    { hidden:true, url:'/library/',  shot:'shots/library.jpg',  kind:'Справочник', when:'2026', open:true,
+      title:'Библиотека оборудования', desc:'65 типов техники: что каждая умеет и обо что спотыкаются на второй год.' },
+    { hidden:true, url:'/layer/',    shot:'shots/layer.jpg',    kind:'AI-помощник',when:'2026', open:true,
+      title:'Сперотон AR', desc:'Голосовой помощник: о продукте, составе, применении и мужском здоровье.' },
+    { hidden:true, url:'/ai-pack/',  shot:'shots/ai-pack.jpg',  kind:'Предложение',when:'2026', open:true,
+      title:'AI Pack', desc:'QR на упаковке открывает диалог с продуктом.' },
+    { hidden:true, url:'/akvion/',   shot:'shots/akvion.jpg',   kind:'Предложение',when:'2026', open:true,
+      title:'AI Pack · светлая версия', desc:'То же предложение в светлой теме.' },
+    { hidden:true, url:'/avtovaz/',  kind:'Компред',   when:'под паролем', open:false, tint:'#c8a24a',
+      title:'Закрытый проект', desc:'Коммерческое предложение автомобильному бренду.' },
+    { hidden:true, url:'/ball/',     kind:'Концепция', when:'под паролем', open:false, tint:'#2be0c6',
+      title:'Закрытый проект', desc:'Концепция музея, свёрстанная книгой.' }
   ];
 
-  var LABS = [
-    { url:'/ship-lab.html',  title:'ship-lab',  desc:'корабль игрока' },
-    { url:'/enemy-lab.html', title:'enemy-lab', desc:'вражеский корабль' },
-    { url:'/shape-lab.html', title:'shape-lab', desc:'формы ландшафта' },
-    { url:'/world-lab.html', title:'world-lab', desc:'чанки трассы' }
-  ];
 
   (function(){
     function esc(s){
@@ -110,7 +106,10 @@
     var LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'
       + '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
     var grid = document.getElementById('protoGrid');
-    grid.innerHTML = PROTOS.map(function(p){
+    // Спрятанные не рисуем вовсе: они остаются в списке, чтобы вернуть карточку
+    // можно было снятием одного слова.
+    var SHOWN = PROTOS.filter(function(p){ return !p.hidden; });
+    grid.innerHTML = SHOWN.map(function(p){
       var ext = p.url && /^https?:/.test(p.url);
       var shot;
       if (!p.open) {
@@ -137,13 +136,8 @@
         + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + shot + body + '</a>';
     }).join('');
 
-    document.getElementById('labs').innerHTML = 'Лаборатории — инструменты, не страницы сайта: '
-      + LABS.map(function(l){
-          return '<a href="' + esc(l.url) + '">' + esc(l.title) + '</a> (' + esc(l.desc) + ')';
-        }).join(', ') + '.';
-
-    var live = PROTOS.filter(function(p){ return p.url; }).length;
-    document.getElementById('protoCount').textContent = live + ' из ' + PROTOS.length + ' в сети';
+    var live = SHOWN.filter(function(p){ return p.url; }).length;
+    document.getElementById('protoCount').textContent = live + ' из ' + SHOWN.length + ' в сети';
   })();
   </script>
 </body>
