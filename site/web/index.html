@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#06070a">
+  <!-- Витрина черновиков в поиске не нужна: сырой прототип в выдаче работает против
+       студии и разбавляет запросы, по которым ищут работы. Страница открыта всем,
+       кому дали ссылку, но поисковикам не показывается и в sitemap не входит. -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Прототипы на вебе · playdisplay</title>
+  <link rel="icon" href="/assets/logos/favicon-32.png" sizes="32x32">
+  <!-- Шрифты СВОИ, а не с Google Fonts: site/ самодостаточен и наружу не ходит.
+       Заодно это на один внешний хост меньше — из-за них страница ждала чужую сеть. -->
+  <link rel="stylesheet" href="/assets/fonts/fonts.css">
+  <script src="/analytics.js" defer></script>
+  <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
+  <link rel="stylesheet" href="../kit/css/layout.css">
+  <link rel="stylesheet" href="../kit/css/typography.css">
+  <link rel="stylesheet" href="../kit/css/components.css">
+  <link rel="stylesheet" href="../kit/css/animations.css">
+  <style>
+    /* Кегль первого экрана уменьшен ТОЛЬКО на этой странице. В ките он рассчитан
+       на слова в 6-7 знаков («ПЕРВАЯ», «СТРОКА»), а здесь «ПРОТОТИПЫ» — девять,
+       и на 1400 px последняя буква уезжала за правый край. Проверено кадром,
+       а не на глаз. Правку держим у страницы: менять кит ради одного слова
+       значит ломать вёрстку всем, кто на нём уже собран. */
+    .hero-copy h1 { font-size: clamp(44px, 7.4vw, 108px); }
+  </style>
+</head>
+<body>
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <img class="boot-logo" src="/assets/logos/playdisplay-logo-white.png" alt="">
+      <div class="boot-bar"><i id="bootBar"></i></div>
+      <p class="boot-note">Прототипы на вебе</p>
+    </div>
+  </div>
+
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="cursor-core" aria-hidden="true"></div>
+  <div class="brand-particles" id="brandParticles" aria-hidden="true"></div>
+  <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="/assets/logos/playdisplay-logo-white.png" alt="Playdisplay"></a>
+    <div class="book-mark"><span>Прототипы на вебе</span><span id="protoCount">—</span></div>
+  </header>
+
+  <nav class="chapter-nav" aria-label="Навигация по разделам">
+    <a href="#s01" data-section="s01"><span>01</span><small>Витрина</small></a>
+    <a href="#s02" data-section="s02"><span>02</span><small>Лаборатории</small></a>
+    <p class="nav-legal">© Playdisplay</p>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-intro">
+        <div class="hero-copy reveal">
+          <p class="overline hero-overline" data-parallax="0.03">Внутренняя витрина · обновляется</p>
+          <h1><span class="l1" data-parallax="0.075">ПРОТОТИПЫ</span><span class="l2" data-parallax="0.05">НА ВЕБЕ</span></h1>
+          <p class="hero-statement hero-statement--float" data-parallax="0.04">Всё, что студия собрала и выложила в сеть: лендинги, предложения, ассистенты, справочники.</p>
+        </div>
+        <p class="hero-status" data-parallax="0.02">Открытые проекты открываются сразу. Закрытые — по паролю, у каждого свой.</p>
+        <a class="scroll-cue" href="#s01"><span>Смотреть</span><i></i></a>
+      </div>
+    </section>
+
+    <section id="s01" class="chapter" data-chapter="01">
+      <div class="chapter-shell">
+        <header class="chapter-header reveal">
+          <span class="chapter-number">01</span>
+          <span class="chapter-rule"></span>
+          <span class="chapter-meta">Витрина</span>
+        </header>
+        <article class="chapter-copy">
+          <h2>ЧТО УЖЕ СТОИТ В СЕТИ</h2>
+          <p>Каждая карточка ведёт на живой адрес — не на макет и не на видео.
+             Превью снято с самой страницы, поэтому оно устаревает вместе с ней.</p>
+        </article>
+        <!-- Список ОДНИМ массивом, а не разметкой на каждую карточку: добавить прототип
+             должно стоить одной строки, иначе витрину перестанут пополнять. Разметку
+             печатает скрипт ниже. -->
+        <div class="proto-grid" id="protoGrid"></div>
+      </div>
+    </section>
+
+    <section id="s02" class="chapter" data-chapter="02">
+      <div class="chapter-shell">
+        <header class="chapter-header reveal">
+          <span class="chapter-number">02</span>
+          <span class="chapter-rule"></span>
+          <span class="chapter-meta">Инструменты</span>
+        </header>
+        <article class="chapter-copy">
+          <h2>ЛАБОРАТОРИИ</h2>
+          <p>Это не страницы сайта, а инструменты: панель ползунков слева, сцена справа,
+             готовый пресет копируется в JSON. Показывать их заказчику незачем — они
+             нужны, чтобы подбирать то, что потом попадает в игру и в сцену.</p>
+          <ul class="clean-list" id="labList"></ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="final-credits" id="contacts">
+    <div class="final-credits__main">
+      <p class="final-credits__line">playdisplay · студия интерактивного опыта</p>
+    </div>
+    <span class="final-credits__index">Прототипы на вебе</span>
+  </footer>
+
+  <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
+
+  <script>
+  /* ===== СПИСОК ПРОТОТИПОВ =====================================================
+     Одна запись — один живой адрес. Поля:
+       url   — куда ведём (свой раздел или поддомен)
+       shot  — превью в shots/. У закрытых его НЕТ и быть не должно (см. ниже)
+       kind  — тип работы, короткой строкой
+       when  — год или состояние
+       title — как называется
+       desc  — одна строка: что это и зачем
+       open  — false у закрытых: карточка становится размытой и ведёт к паролю
+       tint  — цвет пятна у закрытых
+
+     ПОЧЕМУ У ЗАКРЫТЫХ НЕТ КАДРА. Соблазн велик: снять настоящую страницу и размыть.
+     Так делать нельзя. Размытие в CSS — оформление, а не защита: файл лежит целиком,
+     его достают и «сохранить изображение», и прямой ссылкой. Да и по размытому кадру
+     читаются вёрстка и фирменный стиль заказчика. Поэтому у закрытых рисуется пятно
+     в цвете проекта, а название общее — настоящее видно уже за паролем. */
+  var PROTOS = [
+    { url:'/digital/',      shot:'shots/digital.jpg',      kind:'Лендинг',      when:'2026', open:true,
+      title:'Цифровой слой', desc:'Интерактивная среда вокруг продукта, события, места, человека или идеи.' },
+    { url:'/library/',      shot:'shots/library.jpg',      kind:'Справочник',   when:'2026', open:true,
+      title:'Библиотека оборудования', desc:'65 типов техники: что каждая умеет и обо что спотыкаются на второй год.' },
+    // Без превью намеренно: страница вешает безголовый Chrome — снять кадр не вышло.
+    // Появится способ — добавить сюда shot:'shots/immersive.jpg'.
+    { url:'/immersive/',                                   kind:'Презентация',  when:'2026', open:true,
+      title:'MR One', desc:'Интерактивная презентация главного инструмента продаж иммерсивной комнаты.' },
+    { url:'/layer/',        shot:'shots/layer.jpg',        kind:'AI-помощник',  when:'2026', open:true,
+      title:'Сперотон AR', desc:'Голосовой помощник: о продукте, составе, применении и мужском здоровье.' },
+    { url:'/ai-pack/',      shot:'shots/ai-pack.jpg',      kind:'Предложение',  when:'2026', open:true,
+      title:'AI Pack', desc:'QR на упаковке открывает диалог с продуктом. Предложение для компании «Аквион».' },
+    { url:'/akvion/',       shot:'shots/akvion.jpg',       kind:'Предложение',  when:'2026', open:true,
+      title:'AI Pack · светлая версия', desc:'То же предложение в светлой теме — вторая сборка того же материала.' },
+    { url:'/boxingcartel/', shot:'shots/boxingcartel.jpg', kind:'Бренд',        when:'2026', open:true,
+      title:'Boxing Cartel', desc:'Монохромный combatwear-бренд: дисциплина, которую носят в чёрном.' },
+    // SPICE RUN сюда НЕ ВНЕСЕНА, хотя просилась первой: 30.08.2026 проверено —
+    // поддомен play.playdisplay.com не резолвится вовсе, папки play_html на сервере
+    // нет. Игра живёт только в ветке game-v1. Появится адрес — добавить строкой.
+    { url:'/avtovaz/', kind:'Компред', when:'под паролем', open:false, tint:'#c8a24a',
+      title:'Закрытый проект', desc:'Коммерческое предложение автомобильному бренду. Ссылку и пароль даёт студия.' },
+    { url:'/ball/',    kind:'Концепция', when:'под паролем', open:false, tint:'#2be0c6',
+      title:'Закрытый проект', desc:'Концепция музея, свёрстанная книгой. Ссылку и пароль даёт студия.' }
+  ];
+
+  var LABS = [
+    { url:'/ship-lab.html',  title:'ship-lab',  desc:'корабль игрока' },
+    { url:'/enemy-lab.html', title:'enemy-lab', desc:'вражеский корабль, вокселизация своей модели' },
+    { url:'/shape-lab.html', title:'shape-lab', desc:'формы ландшафта' },
+    { url:'/world-lab.html', title:'world-lab', desc:'чанки трассы' }
+  ];
+
+  (function(){
+    function esc(s){
+      return String(s).replace(/[&<>"]/g, function(c){
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c];
+      });
+    }
+    var LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'
+      + '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+    var grid = document.getElementById('protoGrid');
+    if (grid) {
+      grid.innerHTML = PROTOS.map(function(p){
+        // Внешний адрес открываем новой вкладкой, свой — в этой же: уходить с витрины
+        // на соседний раздел сайта незачем, а поддомен с игрой — уже другое место.
+        var ext = /^https?:/.test(p.url);
+        // Превью может не быть: у закрытых его не должно быть вовсе, а у открытого
+        // прототипа кадр иногда ещё не снят. Пустая рамка выглядела бы поломкой,
+        // поэтому вместо кадра рисуется то же пятно — только не размытое.
+        var shot;
+        if (!p.open) {
+          shot = '<span class="proto-shot proto-shot--blur"></span>'
+               + '<span class="proto-lock">' + LOCK + 'под паролем</span>';
+        } else if (p.shot) {
+          shot = '<span class="proto-shot"><img src="' + esc(p.shot) + '" alt="" loading="lazy"></span>';
+        } else {
+          shot = '<span class="proto-shot proto-shot--plate"></span>';
+        }
+        var body = '<span class="proto-body">'
+          + '<span class="proto-meta"><b>' + esc(p.kind) + '</b><i>' + esc(p.when) + '</i></span>'
+          + '<h4>' + esc(p.title) + '</h4>'
+          + '<p>' + esc(p.desc) + '</p>'
+          + '<span class="proto-go">' + (p.open ? 'Открыть' : 'Ввести пароль') + ' &rarr;</span>'
+          + '</span>';
+        return '<a class="proto-card' + (p.open ? '' : ' proto-card--locked') + '"'
+          + (p.tint ? ' style="--tint:' + esc(p.tint) + '"' : '')
+          + ' href="' + esc(p.url) + '"'
+          + (ext ? ' target="_blank" rel="noopener"' : '')
+          + '>' + shot + body + '</a>';
+      }).join('');
+    }
+    var labs = document.getElementById('labList');
+    if (labs) {
+      labs.innerHTML = LABS.map(function(l){
+        return '<li><a href="' + esc(l.url) + '">' + esc(l.title) + '</a> — ' + esc(l.desc) + '</li>';
+      }).join('');
+    }
+    var n = document.getElementById('protoCount');
+    if (n) n.textContent = PROTOS.length + ' проектов';
+  })();
+  </script>
+
+  <script defer src="../kit/js/boot.js"></script>
+  <script defer src="../kit/js/reveal-cursor.js"></script>
+  <script defer src="../kit/js/nav.js"></script>
+  <script defer src="../kit/js/parallax.js"></script>
+  <script defer src="../kit/js/ui.js"></script>
+</body>
+</html>
