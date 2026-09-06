@@ -8,6 +8,64 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-06 15:58 — hybrid-v8 @ 7ff60bf
+
+**Коммиты в этой поставке**
+```
+7ff60bf MARÉ: камень кольца не мерцает, сцена в разы легче для телефона
+4bdc77f CLAUDE.md: HDR в игре не делаем — решение владельца, итоги замера WebGL/WebGPU
+10bff29 Янтарь ярче белого: кнопки, точки и янтарные надписи в HDR
+374667b HDR-логотип: шапка и стартовый экран светятся ярче белого на HDR-экранах
+f5b2e4d Синхронизация POEMIQ с gold-proto: скрипт вместо ручного переноса
+82d4538 Журнал деплоя: 2434dd6
+```
+
+**На сервер отправлено файлов:** 152, удалено: 9
+```
+index.html
+landing.css
+llms.txt
+robots.txt
+sitemap.xml
+assets/hdr/
+assets/hdr/amber-light.png
+assets/hdr/amber.png
+assets/logos/playdisplay-logo-white-hdr.png
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+en/index.html
+…и ещё 112
+```
+
+
 ## 2026-09-06 12:06 — hybrid-v8 @ 2434dd6
 
 **Коммиты в этой поставке**
