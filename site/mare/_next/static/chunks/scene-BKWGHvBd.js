@@ -551,25 +551,31 @@ fn oceanColor(p: vec3f, eye: vec3f, t: f32, wind: f32, warmth: f32) -> vec3f {
 `))&&a<t&&r<e.byteLength;)o+=s,a+=s.length,r+=128,s+=String.fromCharCode.apply(null,new Uint16Array(e.subarray(r,r+128)));return-1<i?(!1!==n&&(e.pos+=a+i+1),o+s.slice(0,i)):!1},r=function(e){let r=/^#\?(\S+)/,i=/^\s*GAMMA\s*=\s*(\d+(\.\d+)?)\s*$/,a=/^\s*EXPOSURE\s*=\s*(\d+(\.\d+)?)\s*$/,o=/^\s*FORMAT=(\S+)\s*$/,s=/^\s*\-Y\s+(\d+)\s+\+X\s+(\d+)\s*$/,c={valid:0,string:``,comments:``,programtype:`RGBE`,format:``,gamma:1,exposure:1,width:0,height:0},l,u;for((e.pos>=e.byteLength||!(l=n(e)))&&t(1,`no header found`),(u=l.match(r))||t(3,`bad initial token`),c.valid|=1,c.programtype=u[1],c.string+=l+`
 `;l=n(e),!1!==l;){if(c.string+=l+`
 `,l.charAt(0)===`#`){c.comments+=l+`
-`;continue}if((u=l.match(i))&&(c.gamma=parseFloat(u[1])),(u=l.match(a))&&(c.exposure=parseFloat(u[1])),(u=l.match(o))&&(c.valid|=2,c.format=u[1]),(u=l.match(s))&&(c.valid|=4,c.height=parseInt(u[1],10),c.width=parseInt(u[2],10)),c.valid&2&&c.valid&4)break}return c.valid&2||t(3,`missing format specifier`),c.valid&4||t(3,`missing image size specifier`),c},i=function(e,n,r){let i=n;if(i<8||i>32767||e[0]!==2||e[1]!==2||e[2]&128)return new Uint8Array(e);i!==(e[2]<<8|e[3])&&t(3,`wrong scanline width`);let a=new Uint8Array(4*n*r);a.length||t(4,`unable to allocate buffer space`);let o=0,s=0,c=4*i,l=new Uint8Array(4),u=new Uint8Array(c),d=r;for(;d>0&&s<e.byteLength;){s+4>e.byteLength&&t(1),l[0]=e[s++],l[1]=e[s++],l[2]=e[s++],l[3]=e[s++],(l[0]!=2||l[1]!=2||(l[2]<<8|l[3])!=i)&&t(3,`bad rgbe scanline format`);let n=0,r;for(;n<c&&s<e.byteLength;){r=e[s++];let i=r>128;if(i&&(r-=128),(r===0||n+r>c)&&t(3,`bad scanline data`),i){let t=e[s++];for(let e=0;e<r;e++)u[n++]=t}else u.set(e.subarray(s,s+r),n),n+=r,s+=r}let f=i;for(let e=0;e<f;e++){let t=0;a[o]=u[e+t],t+=i,a[o+1]=u[e+t],t+=i,a[o+2]=u[e+t],t+=i,a[o+3]=u[e+t],o+=4}d--}return a},a=function(e,t,n,r){let i=2**(e[t+3]-128)/255;n[r+0]=e[t+0]*i,n[r+1]=e[t+1]*i,n[r+2]=e[t+2]*i,n[r+3]=1},o=function(e,t,n,r){let i=2**(e[t+3]-128)/255;n[r+0]=Hr.toHalfFloat(Math.min(e[t+0]*i,65504)),n[r+1]=Hr.toHalfFloat(Math.min(e[t+1]*i,65504)),n[r+2]=Hr.toHalfFloat(Math.min(e[t+2]*i,65504)),n[r+3]=Hr.toHalfFloat(1)},s=new Uint8Array(e);s.pos=0;let c=r(s),l=c.width,u=c.height,d=i(s.subarray(s.pos),l,u),f,p,m;switch(this.type){case x:m=d.length/4;let e=new Float32Array(m*4);for(let t=0;t<m;t++)a(d,t*4,e,t*4);f=e,p=x;break;case S:m=d.length/4;let t=new Uint16Array(m*4);for(let e=0;e<m;e++)o(d,e*4,t,e*4);f=t,p=S;break;default:throw Error(`THREE.HDRLoader: Unsupported type: `+this.type)}return{width:l,height:u,data:f,header:c.string,gamma:c.gamma,exposure:c.exposure,type:p}}setDataType(e){return this.type=e,this}load(e,t,n,r){function i(e,n){switch(e.type){case x:case S:e.colorSpace=et,e.minFilter=d,e.magFilter=d,e.generateMipmaps=!1,e.flipY=!0;break}t&&t(e,n)}return super.load(e,i,n,r)}};function gF(e,t,n){let r=e.getAttribute(`position`),i=e.getIndex(),a=[];for(let e=0;e<(i?.count??r.count);e+=3){let t=new D().fromBufferAttribute(r,i?i.getX(e):e),n=new D().fromBufferAttribute(r,i?i.getX(e+1):e+1),o=new D().fromBufferAttribute(r,i?i.getX(e+2):e+2),s=n.sub(t).cross(o.sub(t)).normalize(),c=s.dot(t);a.some(e=>e.n.distanceTo(s)<1e-4&&Math.abs(e.d-c)<1e-5)||a.push({n:s,d:c})}let o=e=>e.toFixed(9),s=a.map(({n:e,d:t})=>`vec4f(${[e.x,e.y,e.z,t].map(o).join(`,`)})`).join(`,
-`),c=ON(`fn skyDiamond(p0:vec3f,n0:vec3f,eye:vec3f,world:mat4x4f,inverseWorld:mat4x4f,metal:texture_2d<f32>,metalSampler:sampler,gem:texture_2d<f32>,gemSampler:sampler)->vec3f {
-    let planes=array<vec4f,${a.length}>(${s});
+`;continue}if((u=l.match(i))&&(c.gamma=parseFloat(u[1])),(u=l.match(a))&&(c.exposure=parseFloat(u[1])),(u=l.match(o))&&(c.valid|=2,c.format=u[1]),(u=l.match(s))&&(c.valid|=4,c.height=parseInt(u[1],10),c.width=parseInt(u[2],10)),c.valid&2&&c.valid&4)break}return c.valid&2||t(3,`missing format specifier`),c.valid&4||t(3,`missing image size specifier`),c},i=function(e,n,r){let i=n;if(i<8||i>32767||e[0]!==2||e[1]!==2||e[2]&128)return new Uint8Array(e);i!==(e[2]<<8|e[3])&&t(3,`wrong scanline width`);let a=new Uint8Array(4*n*r);a.length||t(4,`unable to allocate buffer space`);let o=0,s=0,c=4*i,l=new Uint8Array(4),u=new Uint8Array(c),d=r;for(;d>0&&s<e.byteLength;){s+4>e.byteLength&&t(1),l[0]=e[s++],l[1]=e[s++],l[2]=e[s++],l[3]=e[s++],(l[0]!=2||l[1]!=2||(l[2]<<8|l[3])!=i)&&t(3,`bad rgbe scanline format`);let n=0,r;for(;n<c&&s<e.byteLength;){r=e[s++];let i=r>128;if(i&&(r-=128),(r===0||n+r>c)&&t(3,`bad scanline data`),i){let t=e[s++];for(let e=0;e<r;e++)u[n++]=t}else u.set(e.subarray(s,s+r),n),n+=r,s+=r}let f=i;for(let e=0;e<f;e++){let t=0;a[o]=u[e+t],t+=i,a[o+1]=u[e+t],t+=i,a[o+2]=u[e+t],t+=i,a[o+3]=u[e+t],o+=4}d--}return a},a=function(e,t,n,r){let i=2**(e[t+3]-128)/255;n[r+0]=e[t+0]*i,n[r+1]=e[t+1]*i,n[r+2]=e[t+2]*i,n[r+3]=1},o=function(e,t,n,r){let i=2**(e[t+3]-128)/255;n[r+0]=Hr.toHalfFloat(Math.min(e[t+0]*i,65504)),n[r+1]=Hr.toHalfFloat(Math.min(e[t+1]*i,65504)),n[r+2]=Hr.toHalfFloat(Math.min(e[t+2]*i,65504)),n[r+3]=Hr.toHalfFloat(1)},s=new Uint8Array(e);s.pos=0;let c=r(s),l=c.width,u=c.height,d=i(s.subarray(s.pos),l,u),f,p,m;switch(this.type){case x:m=d.length/4;let e=new Float32Array(m*4);for(let t=0;t<m;t++)a(d,t*4,e,t*4);f=e,p=x;break;case S:m=d.length/4;let t=new Uint16Array(m*4);for(let e=0;e<m;e++)o(d,e*4,t,e*4);f=t,p=S;break;default:throw Error(`THREE.HDRLoader: Unsupported type: `+this.type)}return{width:l,height:u,data:f,header:c.string,gamma:c.gamma,exposure:c.exposure,type:p}}setDataType(e){return this.type=e,this}load(e,t,n,r){function i(e,n){switch(e.type){case x:case S:e.colorSpace=et,e.minFilter=d,e.magFilter=d,e.generateMipmaps=!1,e.flipY=!0;break}t&&t(e,n)}return super.load(e,i,n,r)}};function gF(e,t,n){let r=e.getAttribute(`position`),i=e.getIndex(),a=[];for(let e=0;e<(i?.count??r.count);e+=3){let t=new D().fromBufferAttribute(r,i?i.getX(e):e),n=new D().fromBufferAttribute(r,i?i.getX(e+1):e+1),o=new D().fromBufferAttribute(r,i?i.getX(e+2):e+2),s=n.sub(t).cross(o.sub(t)).normalize(),c=s.dot(t);a.some(e=>e.n.distanceTo(s)<1e-4&&Math.abs(e.d-c)<1e-5)||a.push({n:s,d:c})}let o=new ga(new Float32Array(a.flatMap(({n:e,d:t})=>[e.x,e.y,e.z,t])),a.length,1,ae,x);o.minFilter=o.magFilter=c,o.generateMipmaps=!1,o.needsUpdate=!0;let s=ON(`fn skyDiamond(p0:vec3f,n0:vec3f,eye:vec3f,world:mat4x4f,inverseWorld:mat4x4f,metal:texture_2d<f32>,metalSampler:sampler,gem:texture_2d<f32>,gemSampler:sampler,planes:texture_2d<f32>)->vec3f {
     let eyeLocal=(inverseWorld*vec4f(eye,1.0)).xyz;
-    let incident=normalize(p0-eyeLocal); let n=normalize(n0);
+    let n=normalize(n0);
     let f0=pow((2.42-1.0)/(2.42+1.0),2.0);
-    let F=f0+(1.0-f0)*pow(1.0-clamp(dot(-incident,n),0.0,1.0),5.0);
     let rotation=4.363323;
-    var rd=normalize((world*vec4f(reflect(incident,n),0.0)).xyz);
+    let incident0=normalize(p0-eyeLocal);
+    let F0=f0+(1.0-f0)*pow(1.0-clamp(dot(-incident0,n),0.0,1.0),5.0);
+    var rd=normalize((world*vec4f(reflect(incident0,n),0.0)).xyz);
     var envUv=vec2f(fract(atan2(rd.z,rd.x)/6.2831853+0.5+rotation/6.2831853),asin(clamp(rd.y,-1.0,1.0))/3.14159265+0.5);
-    var col=textureSampleLevel(metal,metalSampler,envUv,0.0).rgb*F*0.55;
+    var col=textureSampleLevel(metal,metalSampler,envUv,0.0).rgb*F0*0.55;
+    // Surface footprint of one pixel, taken before any divergent control flow.
+    let px=dpdx(p0); let py=dpdy(p0);
     let iors=vec3f(2.39,2.42,2.45);
-    for(var channel=0;channel<3;channel++) {
-      let ior=iors[channel]; var d=refract(incident,n,1.0/ior);
-      var p=p0+d*0.000006; var energy=1.0-F; var accum=0.0;
+    var interior=vec3f(0.0);
+    for(var s=0;s<3;s++) {
+      let angle=f32(s)*2.0943951; let off=vec2f(cos(angle),sin(angle))*0.3;
+      let ps=p0+px*off.x+py*off.y;
+      let incident=normalize(ps-eyeLocal);
+      let F=f0+(1.0-f0)*pow(1.0-clamp(dot(-incident,n),0.0,1.0),5.0);
+      var d=refract(incident,n,1.0/2.42);
+      var p=ps+d*0.000006; var energy=1.0-F;
       for(var bounce=0;bounce<6;bounce++) {
         var nearest=10000.0; var hitNormal=vec3f(0.0,1.0,0.0);
         for(var facet=0;facet<${a.length};facet++) {
-          let plane=planes[facet]; let denom=dot(plane.xyz,d);
+          let plane=textureLoad(planes,vec2i(facet,0),0); let denom=dot(plane.xyz,d);
           if(denom>0.000001) {
             let dist=(plane.w-dot(plane.xyz,p))/denom;
             if(dist>0.000001 && dist<nearest) { nearest=dist;hitNormal=plane.xyz; }
@@ -577,20 +583,31 @@ fn oceanColor(p: vec3f, eye: vec3f, t: f32, wind: f32, warmth: f32) -> vec3f {
         }
         if(nearest>9999.0) { break; }
         p+=d*nearest;
-        let tr=refract(d,-hitNormal,ior); var Fr=1.0;
-        if(dot(tr,tr)>0.000001) {
-          Fr=f0+(1.0-f0)*pow(1.0-clamp(dot(d,hitNormal),0.0,1.0),5.0);
-          rd=normalize((world*vec4f(tr,0.0)).xyz);
-          envUv=vec2f(fract(atan2(rd.z,rd.x)/6.2831853+0.5+rotation/6.2831853),asin(clamp(rd.y,-1.0,1.0))/3.14159265+0.5);
-          let illumination=mix(textureSampleLevel(gem,gemSampler,envUv,0.0).rgb,textureSampleLevel(metal,metalSampler,envUv,0.0).rgb,0.45);
-          accum+=energy*(1.0-Fr)*(illumination[channel]+0.04);
+        // Total internal reflection is decided for the middle wavelength; the
+        // outer wavelengths differ only within a fraction of a degree of it.
+        let trG=refract(d,-hitNormal,2.42);
+        if(dot(trG,trG)>0.000001) {
+          let Fr=f0+(1.0-f0)*pow(1.0-clamp(dot(d,hitNormal),0.0,1.0),5.0);
+          for(var channel=0;channel<3;channel++) {
+            let tr=refract(d,-hitNormal,iors[channel]);
+            if(dot(tr,tr)>0.000001) {
+              rd=normalize((world*vec4f(tr,0.0)).xyz);
+              envUv=vec2f(fract(atan2(rd.z,rd.x)/6.2831853+0.5+rotation/6.2831853),asin(clamp(rd.y,-1.0,1.0))/3.14159265+0.5);
+              let illumination=mix(textureSampleLevel(gem,gemSampler,envUv,0.0).rgb,textureSampleLevel(metal,metalSampler,envUv,0.0).rgb,0.45);
+              interior[channel]+=energy*(1.0-Fr)*(illumination[channel]+0.04);
+            }
+          }
+          energy*=Fr;
         }
-        energy*=Fr; d=reflect(d,hitNormal); p+=d*0.000006;
+        d=reflect(d,hitNormal); p+=d*0.000006;
+        // Two partial exits leave under 3% of the energy: further bounces cost
+        // a full facet scan each and add nothing visible.
+        if(energy<0.02) { break; }
       }
-      col[channel]+=accum;
     }
+    col+=interior/3.0;
     return pow(max(col*1.35,vec3f(0.0)),vec3f(1.3));
-  }`),l=xN(t),u=xN(n);return c({p0:hN,n0:uN,eye:ZM,world:sN,inverseWorld:cN,metal:l,metalSampler:_N(l),gem:u,gemSampler:_N(u)})}async function _F(e){let t=new Fi;t.name=`Solitaire — five kilometre radius`;let n=SN(0),r=SN(0),i=DN(pF),o=ON(`fn ringHaze(base:vec3f,p:vec3f,eye:vec3f,t:f32,warmth:f32)->vec3f {
+  }`),l=xN(t),u=xN(n);return s({p0:hN,n0:uN,eye:ZM,world:sN,inverseWorld:cN,metal:l,metalSampler:_N(l),gem:u,gemSampler:_N(u),planes:xN(o)})}async function _F(e){let t=new Fi;t.name=`Solitaire — five kilometre radius`;let n=SN(0),r=SN(0),i=DN(pF),o=ON(`fn ringHaze(base:vec3f,p:vec3f,eye:vec3f,t:f32,warmth:f32)->vec3f {
       let rd=normalize(p-eye);
       let q=p.xy*0.00038+vec2f(t*0.002,0.0);
       let veil=noiseCloud(q)*0.65+noiseCloud(q*2.17+9.0)*0.35;
@@ -603,7 +620,7 @@ fn oceanColor(p: vec3f, eye: vec3f, t: f32, wind: f32, warmth: f32) -> vec3f {
     return smoothstep(0.31,0.69,f)*edges*0.84;
   }`,[i]),m=ON(`fn ringMistColor(p:vec3f,eye:vec3f,warmth:f32)->vec3f {
     return atmosphere(normalize(p-eye),warmth)*1.025+vec3f(0.012,0.010,0.006);
-  }`,[i]);for(let[e,i,a,o]of[[300,3300,-6300,3.7],[-1100,4200,-9500,21.4]]){let s=new Ny({transparent:!0,depthWrite:!1});s.fog=!1,s.colorNode=m({p:gN,eye:ZM,warmth:r}),s.opacityNode=p({q:CN(),p:gN,t:n,seed:SN(o)});let c=new gi(new js(19e3,6500),s);c.position.set(e,i,a),t.add(c)}return{group:t,dispose(){d.dispose(),c.dispose(),l.dispose()},update(e,t){n.value=e,r.value=t,f.position.y=2200+Math.sin(e*.24)*23+Math.sin(e*.137)*9,f.rotation.x=1.32+Math.sin(e*.19)*.006,f.rotation.y=Math.sin(e*.143)*.004,f.rotation.z=-.12+Math.sin(e*.17)*.003}}}function vF(){let e=new Fi;e.name=`Distant gulls`;let t=Array.from({length:18},(e,t)=>({flock:t<7?0:t<13?1:2,phase:t*2.399963,offsetX:Math.sin(t*7.17)*47,offsetZ:Math.cos(t*4.93)*32,offsetY:Math.sin(t*3.71)*11,size:1.1+(Math.sin(t*9.3)*.5+.5)*.3})),n=new Ny({color:`#454e4b`,side:2}),r=new ii;r.setAttribute(`position`,new Xr([.08,0,.3,.65,.1,.28,1.55,.03,-.35,.95,.04,-.31,.42,.05,-.18,.08,0,-.24],3)),r.setIndex([0,1,4,1,2,3,1,3,4,0,4,5]),r.computeVertexNormals();let i=new Oa(new As(1,1),n,t.length),a=new Oa(r,n,t.length*2);i.name=`Gull bodies`,a.name=`Swept gull wings`,i.frustumCulled=a.frustumCulled=!1,i.instanceMatrix.setUsage(dt),a.instanceMatrix.setUsage(dt),e.add(i,a);let o=new hr,s=new hr;o.add(s);function c(e){t.forEach((t,n)=>{let r=[-.36,.26,.82][t.flock],c=t.flock===1?-1:1,l=r+e*(.012+t.flock*.001)*c,u=[230,370,540][t.flock];o.position.set(170+Math.sin(l)*430+t.offsetX,40+t.flock*26+t.offsetY+Math.sin(e*.23+t.phase)*2.2,-u+Math.cos(l)*100+t.offsetZ),o.rotation.set(Math.sin(e*.23+t.phase)*.025,Math.atan2(430*Math.cos(l)*c,-100*Math.sin(l)*c),Math.sin(e*.17+t.phase)*.11),o.scale.setScalar(t.size),s.position.set(0,-.035,0),s.rotation.set(0,0,0),s.scale.set(.14,.13,.52),o.updateMatrixWorld(!0),i.setMatrixAt(n,s.matrixWorld);let d=Math.sin(e*(7.4+n*.047)+t.phase),f=Vt.smoothstep(Math.sin(e*.43+t.phase),0,.7),p=.1+d*.47*f;for(let e of[-1,1])s.position.set(0,0,0),s.rotation.set(0,0,e*p),s.scale.set(e,1,1),o.updateMatrixWorld(!0),a.setMatrixAt(n*2+ +(e===1),s.matrixWorld)}),i.instanceMatrix.needsUpdate=!0,a.instanceMatrix.needsUpdate=!0}return c(0),{group:e,update:c}}async function yF(i,a,o){if(!navigator.gpu)throw Error(`This browser does not provide WebGPU. Please use a WebGPU-enabled browser on a supported device.`);let s=new HM({antialias:!0,alpha:!1,powerPreference:`high-performance`});if(await s.init(),!(`isWebGPUBackend`in s.backend&&s.backend.isWebGPUBackend))throw s.dispose(),Error(`No WebGPU adapter is available. This scene requires WebGPU; a WebGL fallback is not enabled.`);s.backend.device.addEventListener(`uncapturederror`,e=>console.error(`WebGPU validation:`,e.error.message)),i.appendChild(s.domElement),s.domElement.dataset.backend=`WebGPUBackend`,s.domElement.tabIndex=0,s.domElement.setAttribute(`aria-label`,`Three-dimensional ocean and yachts — drag to look around`),s.toneMapping=4,s.toneMappingExposure=1.03;let c=new zi;c.fog=new Ri(`#afb3a8`,7e-4);let l=new ki(39,1,.12,4e4);l.position.set(101,3.4,37),l.lookAt(124,6,-25);let u=SN(0),d=SN(1),f=SN(0),p=SN(new D(10,0,100)),m=DN(dP),h=DN(pF),g=ON(`fn displace(p:vec3f,t:f32,wind:f32,center:vec3f,eye:vec3f,spacing:f32)->vec3f {
+  }`,[i]);for(let[e,i,a,o]of[[300,3300,-6300,3.7],[-1100,4200,-9500,21.4]]){let s=new Ny({transparent:!0,depthWrite:!1});s.fog=!1,s.colorNode=m({p:gN,eye:ZM,warmth:r}),s.opacityNode=p({q:CN(),p:gN,t:n,seed:SN(o)});let c=new gi(new js(19e3,6500),s);c.position.set(e,i,a),t.add(c)}return{group:t,dispose(){d.dispose(),c.dispose(),l.dispose()},update(e,t){n.value=e,r.value=t}}}function vF(){let e=new Fi;e.name=`Distant gulls`;let t=Array.from({length:18},(e,t)=>({flock:t<7?0:t<13?1:2,phase:t*2.399963,offsetX:Math.sin(t*7.17)*47,offsetZ:Math.cos(t*4.93)*32,offsetY:Math.sin(t*3.71)*11,size:1.1+(Math.sin(t*9.3)*.5+.5)*.3})),n=new Ny({color:`#454e4b`,side:2}),r=new ii;r.setAttribute(`position`,new Xr([.08,0,.3,.65,.1,.28,1.55,.03,-.35,.95,.04,-.31,.42,.05,-.18,.08,0,-.24],3)),r.setIndex([0,1,4,1,2,3,1,3,4,0,4,5]),r.computeVertexNormals();let i=new Oa(new As(1,1),n,t.length),a=new Oa(r,n,t.length*2);i.name=`Gull bodies`,a.name=`Swept gull wings`,i.frustumCulled=a.frustumCulled=!1,i.instanceMatrix.setUsage(dt),a.instanceMatrix.setUsage(dt),e.add(i,a);let o=new hr,s=new hr;o.add(s);function c(e){t.forEach((t,n)=>{let r=[-.36,.26,.82][t.flock],c=t.flock===1?-1:1,l=r+e*(.012+t.flock*.001)*c,u=[230,370,540][t.flock];o.position.set(170+Math.sin(l)*430+t.offsetX,40+t.flock*26+t.offsetY+Math.sin(e*.23+t.phase)*2.2,-u+Math.cos(l)*100+t.offsetZ),o.rotation.set(Math.sin(e*.23+t.phase)*.025,Math.atan2(430*Math.cos(l)*c,-100*Math.sin(l)*c),Math.sin(e*.17+t.phase)*.11),o.scale.setScalar(t.size),s.position.set(0,-.035,0),s.rotation.set(0,0,0),s.scale.set(.14,.13,.52),o.updateMatrixWorld(!0),i.setMatrixAt(n,s.matrixWorld);let d=Math.sin(e*(7.4+n*.047)+t.phase),f=Vt.smoothstep(Math.sin(e*.43+t.phase),0,.7),p=.1+d*.47*f;for(let e of[-1,1])s.position.set(0,0,0),s.rotation.set(0,0,e*p),s.scale.set(e,1,1),o.updateMatrixWorld(!0),a.setMatrixAt(n*2+ +(e===1),s.matrixWorld)}),i.instanceMatrix.needsUpdate=!0,a.instanceMatrix.needsUpdate=!0}return c(0),{group:e,update:c}}async function yF(i,a,o){if(!navigator.gpu)throw Error(`This browser does not provide WebGPU. Please use a WebGPU-enabled browser on a supported device.`);let s=new HM({antialias:!0,alpha:!1,powerPreference:`high-performance`});if(await s.init(),!(`isWebGPUBackend`in s.backend&&s.backend.isWebGPUBackend))throw s.dispose(),Error(`No WebGPU adapter is available. This scene requires WebGPU; a WebGL fallback is not enabled.`);s.backend.device.addEventListener(`uncapturederror`,e=>console.error(`WebGPU validation:`,e.error.message)),i.appendChild(s.domElement),s.domElement.dataset.backend=`WebGPUBackend`,s.domElement.tabIndex=0,s.domElement.setAttribute(`aria-label`,`Three-dimensional ocean and yachts — drag to look around`),s.toneMapping=4,s.toneMappingExposure=1.03;let c=new zi;c.fog=new Ri(`#afb3a8`,7e-4);let l=new ki(39,1,.12,4e4);l.position.set(101,3.4,37),l.lookAt(124,6,-25);let u=SN(0),d=SN(1),f=SN(0),p=SN(new D(10,0,100)),m=DN(dP),h=DN(pF),g=ON(`fn displace(p:vec3f,t:f32,wind:f32,center:vec3f,eye:vec3f,spacing:f32)->vec3f {
       let q=p+center;
       let w=oceanWaveFiltered(q.xz,t,wind,spacing);
       let dist=max(abs(q.x-eye.x),abs(q.z-eye.z));
