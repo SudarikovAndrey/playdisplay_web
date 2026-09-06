@@ -1,0 +1,1 @@
+function e(e){let t=[104,112,128,160,256,512,2048,6500],n=Array.from({length:192/e+1},(t,n)=>-96+n*e);return[...t.toReversed().map(e=>-e),...n,...t]}function t(e){return Math.floor(e/8)*8}var n=.3,r=1.8*1.5;export{t as i,n,e as r,r as t};
