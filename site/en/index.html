@@ -49,7 +49,7 @@
      а не пачка: каждый лишний отнимает полосу у того, что нужно прямо сейчас. -->
 <link rel="preload" href="assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="landing.css?v=7b21737c">
+<link rel="stylesheet" href="landing.css?v=2ddf951e">
 <script>
 /* Выбор подачи проектов на мобиле: ?mob=lenta | grid | more. Ставится на <html> ДО отрисовки,
    иначе сетка успевает мигнуть в старом виде. Без параметра атрибута нет и всё работает как раньше.
@@ -99,7 +99,14 @@
          букв, плотный белый ореол, резкая копия и блик на фронте заливки -->
     <div class="tint" aria-hidden="true"></div>
     <img class="b1" src="assets/logos/playdisplay-logo-white.png" alt="" aria-hidden="true">
-    <img class="lit" src="assets/logos/playdisplay-logo-white.png" alt="playdisplay">
+    <!-- Резкая копия — HDR-файл (PQ, 600 нит): на HDR-экране в Chrome/Safari логотип
+         светится ЯРЧЕ белого интерфейса, остальным <picture> отдаёт обычный PNG.
+         Ореол .b1 остаётся SDR намеренно: у него opacity, а с opacity Chrome
+         сводит слой в SDR — HDR там пропал бы всё равно (замер 06.09.2026). -->
+    <picture>
+      <source media="(dynamic-range: high)" srcset="assets/logos/playdisplay-logo-white-hdr.png">
+      <img class="lit" src="assets/logos/playdisplay-logo-white.png" alt="playdisplay">
+    </picture>
     <div class="flare" aria-hidden="true"></div>
     <!-- Частицы, слетающиеся от курсора и заполняющие логотип. Канвас последним
          слоем: он ПОДСВЕЧИВАЕТ надпись, а не закрывает её (mix-blend-mode: screen). -->
@@ -111,7 +118,7 @@
 
 <header id="hdr">
   <div class="nav-inner">
-    <a href="#start" class="logo-home" aria-label="playdisplay — на главную"><img class="logo" src="assets/logos/playdisplay-logo-black.png" alt="playdisplay"></a>
+    <a href="#start" class="logo-home" aria-label="playdisplay — на главную"><picture><source media="(dynamic-range: high)" srcset="assets/logos/playdisplay-logo-white-hdr.png"><img class="logo" src="assets/logos/playdisplay-logo-white.png" alt="playdisplay"></picture></a>
     <nav class="links">
       <!-- Услуги — единственный пункт меню, ведущий НЕ на хэш, а на отдельные статические
            страницы /services/*. Появился 21.08.2026: страницы под запросы об услугах уже

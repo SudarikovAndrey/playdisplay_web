@@ -58,6 +58,8 @@
   #boot.out { opacity: 0; pointer-events: none; }
   #boot .bl { position: relative; width: min(58vw, 340px); --p: 0%; }
   #boot .bl img { width: 100%; display: block; -webkit-user-drag: none; user-select: none; }
+  /* <picture> вокруг .lit — display: contents, иначе inline-строка под .dim добавит высоту */
+  #boot .bl picture { display: contents; }
   #boot .bl .dim { opacity: .12; }
   /* Заливка идёт слева направо по одной переменной --p, её ведёт скрипт.
      ВАЖНО: отступы в clip-path отрицательные. С нулевыми свечение срезалось ровно
@@ -156,7 +158,10 @@
   body.booting header { opacity: 0; transform: translateY(-100%); pointer-events: none; }
   .logo-home { display: inline-flex; align-items: center; cursor: pointer; }
   .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 22px 64px; }
-  .logo { height: 19px; filter: brightness(0) invert(1); }
+  /* Логотип в шапке — белый PNG напрямую, а не чёрный через brightness(0) invert(1):
+     фильтр сводил бы HDR-версию (см. <picture> в разметке) обратно в SDR-белый. */
+  .logo { height: 19px; }
+  .logo-home picture { display: contents; }
   nav.links { display: flex; gap: 34px; }
   nav.links a { font: 700 12.5px "Blender Pro", var(--font-body); letter-spacing: 0.24em; text-transform: uppercase; color: var(--scan-white-dim); transition: color var(--duration-fast); }
   nav.links a:hover { color: var(--scan-white); }
