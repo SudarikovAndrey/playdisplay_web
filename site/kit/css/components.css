@@ -3168,108 +3168,150 @@ html.deck .final-credits { scroll-snap-align: start; scroll-snap-stop: normal; }
 }
 
 /* ===== proto-cards: витрина веб-прототипов =====================================
-   Сетка карточек, у каждой превью-кадр, тип, название и строка пояснения. Сделана
-   для страницы /web, где студия складывает всё, что выложено в сеть.
+   Оформление перенесено с «Библиотеки решений» лендинга (секция #concepts,
+   плитки .c-tile) по просьбе владельца — чтобы витрина читалась как часть сайта,
+   а не как отдельная страница. Что взято оттуда и почему именно это:
 
-   ПОЧЕМУ ОТДЕЛЬНЫЙ БЛОК, а не concept-cards: у тех карточек нет кадра, а здесь
-   кадр — главное. Витрину веб-работ смотрят глазами, названия мало.
+     • срезанные углы (clip-path) и градиентный кант в 1 пиксель. Кант сделан НЕ
+       рамкой, а внешним слоем с padding:1px: у clip-path нет border, который
+       повторял бы срез, и обычная рамка резалась бы по прямой поперёк угла;
+     • кадру отдан ВЕСЬ объём, подпись выезжает снизу по наведению. Карточка
+       сначала работает как изображение и только потом как подпись;
+     • картинка приглушена (grayscale .35) и оживает в полный цвет по наведению;
+     • номер-маркировка в срезанном углу и косой блик, пробегающий по кадру.
 
-   ЗАКРЫТЫЕ ПРОЕКТЫ. У карточки есть вид --locked: вместо кадра — размытая
-   абстракция в цвете проекта, название общее, переход ведёт на собственную
-   проверку пароля этого проекта.
+   ЧЕМ ОТЛИЧАЕТСЯ ОТ БИБЛИОТЕКИ: там лента из четырёх рядов, которая едет вбок и
+   рассчитана на сотню карточек, здесь — обычная сетка, и плитки КРУПНЕЕ (от 420
+   против 215–300 у ленты). Прототипов десяток, а не сотня: их показывают, а не
+   пролистывают, и мелкий кадр веб-страницы просто нечитаем.
+
+   ЗАКРЫТЫЕ ПРОЕКТЫ. У карточки есть вид --locked: вместо кадра размытое пятно в
+   цвете проекта, переход ведёт на собственную проверку пароля.
    ВАЖНО И НЕ ОЧЕВИДНО: размывать НАСТОЯЩИЙ кадр закрытой работы нельзя. Размытие
-   в CSS — это оформление, а не защита: картинка целиком лежит в файле, её видно
-   и через «сохранить изображение», и по прямой ссылке, а по размытому кадру всё
-   равно читаются вёрстка и фирменный стиль заказчика. Поэтому у закрытых карточек
-   кадра НЕТ вовсе — рисуется пятно из точек в цвете проекта. */
+   в CSS — оформление, а не защита: картинка целиком лежит в файле, её видно и
+   через «сохранить изображение», и по прямой ссылке, а по размытому кадру всё
+   равно читаются вёрстка и фирменный стиль заказчика. Поэтому у закрытых кадра
+   НЕТ вовсе — рисуется пятно из градиентов. */
 .proto-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 26px;
-  margin: 48px 0 0;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 16px;
+  margin: 44px 0 0;
+  perspective: 1400px;
 }
 .proto-card {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--line);
-  background: var(--glass);
-  text-decoration: none;
-  color: inherit;
-  overflow: hidden;
-  transition: transform .5s cubic-bezier(.16,1,.3,1), border-color .3s, background .3s;
-}
-a.proto-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(134,160,255,.42);
-  background: rgba(255,255,255,.075);
-}
-/* Кадр 16:10: у веб-страницы горизонтальная пропорция, а 16:9 в сетке из трёх
-   колонок даёт слишком низкую полоску — заголовок прототипа в ней не читается. */
-.proto-shot {
-  position: relative;
   display: block;
   aspect-ratio: 16 / 10;
-  background: #0a0f16;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
   overflow: hidden;
+  --pt-clip: polygon(22px 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 22px),
+    calc(100% - 22px) 100%, 9px 100%, 0 calc(100% - 9px), 0 22px);
+  clip-path: var(--pt-clip);
+  background: linear-gradient(135deg, rgba(159,180,200,0.28), rgba(159,180,200,0.10) 45%, rgba(43,224,198,0.16));
+  padding: 1px;
+  transition: background .45s ease, transform .5s cubic-bezier(.16,1,.3,1);
 }
+a.proto-card:hover {
+  background: linear-gradient(135deg, rgba(43,224,198,0.85), rgba(43,224,198,0.25) 40%, #ff8a5c);
+  transform: translateY(-5px);
+  z-index: 2;
+}
+.proto-in { position: absolute; inset: 1px; clip-path: var(--pt-clip); background: #081014; overflow: hidden; }
+/* Косой блик пробегает по кадру при наведении — тот же приём, что у библиотеки. */
+.proto-in::after {
+  content: ""; position: absolute; top: -20%; bottom: -20%; left: -30%; width: 24%;
+  background: linear-gradient(105deg, transparent, rgba(43,224,198,0.13), transparent);
+  transform: skewX(-12deg); opacity: 0; transition: opacity .3s;
+}
+a.proto-card:hover .proto-in::after { opacity: 1; animation: protoScan 1.1s ease forwards; }
+@keyframes protoScan { from { left: -30%; } to { left: 120%; } }
+
+.proto-shot { position: absolute; inset: 0; display: block; overflow: hidden; background: #0a1216; }
 .proto-shot img {
-  width: 100%; height: 100%;
-  object-fit: cover;
+  width: 100%; height: 100%; object-fit: cover;
   object-position: 50% 0;      /* верх страницы важнее низа: там первый экран */
   display: block;
-  transition: transform .8s cubic-bezier(.16,1,.3,1);
+  filter: grayscale(0.35) brightness(1.06) contrast(1.04);
+  transform: scale(1.02);
+  transition: filter .45s ease, transform .6s cubic-bezier(.16,1,.3,1);
 }
-a.proto-card:hover .proto-shot img { transform: scale(1.03); }
+a.proto-card:hover .proto-shot img { filter: none; transform: scale(1.06); }
+
 /* Пятно вместо кадра у закрытых. Цвет задаётся переменной --tint у карточки. */
 .proto-shot--blur {
   background:
     radial-gradient(60% 70% at 30% 30%, color-mix(in srgb, var(--tint, #86a0ff) 55%, transparent), transparent 70%),
     radial-gradient(50% 60% at 72% 66%, color-mix(in srgb, var(--tint, #86a0ff) 35%, transparent), transparent 72%),
     #080c12;
-  filter: blur(18px);
-  transform: scale(1.15);      /* размытие съедает края — растягиваем, чтобы не было светлой каймы */
+  filter: blur(20px);
+  transform: scale(1.15);      /* размытие съедает края — растягиваем, иначе светлая кайма */
 }
-.proto-lock {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  gap: 9px;
-  font: 500 10px/1 var(--font-mono, 'Roboto Mono', monospace);
-  letter-spacing: .22em; text-transform: uppercase;
-  color: rgba(241,251,252,.82);
-}
-.proto-lock svg { width: 13px; height: 13px; opacity: .8; }
-.proto-body { padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
-.proto-meta {
-  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
-  font: 500 9.5px/1 var(--font-mono, 'Roboto Mono', monospace);
-  letter-spacing: .2em; text-transform: uppercase;
-}
-.proto-meta b { color: var(--electric); font-weight: 500; }
-.proto-meta i { color: var(--muted); font-style: normal; }
-.proto-card h4 { margin: 0; font-size: 19px; line-height: 1.22; letter-spacing: -.01em; }
-.proto-card p { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--muted); }
-.proto-go {
-  margin-top: auto; padding-top: 14px;
-  font: 500 10px/1 var(--font-mono, 'Roboto Mono', monospace);
-  letter-spacing: .2em; text-transform: uppercase; color: var(--muted);
-  transition: color .3s;
-}
-a.proto-card:hover .proto-go { color: var(--paper); }
-.proto-card--locked .proto-go { color: rgba(134,160,255,.75); }
-@media (max-width: 640px) {
-  .proto-grid { grid-template-columns: 1fr; gap: 18px; margin-top: 32px; }
-}
-/* Прототип без снятого кадра: то же пятно, что у закрытых, но без размытия —
-   пустая рамка читалась бы как поломка вёрстки. */
+/* Прототип без снятого кадра: то же пятно, но без размытия. Пустая рамка
+   читалась бы как поломка вёрстки. */
 .proto-shot--plate {
   background:
     radial-gradient(58% 68% at 32% 30%, rgba(134,160,255,.30), transparent 70%),
     radial-gradient(48% 58% at 70% 68%, rgba(43,224,198,.16), transparent 72%),
     #080c12;
 }
-/* Прототип, у которого ещё нет адреса: карточка не ссылка и приглушена, чтобы её
-   не пытались нажать. Отдельный вид нужен именно потому, что клик в никуда
-   обманывает — а спрятать такую работу до публикации значит про неё забыть. */
-.proto-card--soon { opacity: .62; }
-.proto-card--soon .proto-go { color: rgba(154,164,184,.7); }
+.proto-lock {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  font: 500 10px/1 'Roboto Mono', monospace;
+  letter-spacing: .22em; text-transform: uppercase; color: rgba(241,251,252,.82);
+}
+.proto-lock svg { width: 14px; height: 14px; opacity: .8; }
+
+/* Маркировка в срезанном углу: сериальность, как номер на корпусе. */
+.proto-hud {
+  position: absolute; top: 9px; right: 15px; z-index: 3;
+  font: 500 9.5px 'Roboto Mono', monospace; letter-spacing: .18em;
+  color: rgba(220,238,240,.5); text-shadow: 0 1px 6px rgba(0,0,0,.8);
+  transition: color .4s;
+}
+a.proto-card:hover .proto-hud { color: #2be0c6; }
+
+/* Подпись выезжает снизу. По умолчанию её НЕ ВИДНО — весь объём отдан кадру. */
+.proto-body {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  padding: 12px 18px 15px;
+  background: linear-gradient(180deg, rgba(6,13,17,0.5), rgba(6,13,17,0.94));
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+  border-top: 1px solid rgba(43,224,198,0.18);
+  transform: translateY(101%); opacity: 0;
+  transition: transform .45s cubic-bezier(.16,1,.3,1), opacity .28s ease, border-color .4s;
+}
+.proto-card:hover .proto-body, .proto-card:focus-within .proto-body { transform: none; opacity: 1; }
+.proto-card:hover .proto-body { border-top-color: rgba(43,224,198,0.6); }
+.proto-meta {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  font: 600 8.5px/1 'Roboto Mono', monospace; letter-spacing: .24em; text-transform: uppercase;
+}
+.proto-meta b { color: #2be0c6; font-weight: 600; }
+.proto-meta i { color: rgba(154,164,184,.9); font-style: normal; }
+.proto-card h4 { margin: 5px 0 0; font-size: 19px; line-height: 1.18; letter-spacing: -.015em; color: #F1FBFC; }
+.proto-card p { margin: 5px 0 0; font-size: 13px; line-height: 1.5; color: rgba(200,214,220,.72); }
+.proto-go {
+  display: block; margin-top: 9px;
+  font: 500 9.5px/1 'Roboto Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(154,164,184,.85); transition: color .3s;
+}
+a.proto-card:hover .proto-go { color: #F1FBFC; }
+.proto-card--locked .proto-go { color: rgba(134,160,255,.8); }
+/* Без адреса карточка не ссылка и приглушена, чтобы её не пытались нажать. */
+.proto-card--soon { opacity: .66; }
+
+/* Каскадное «вываливание» плиток, как в библиотеке: падают из глубины с наклоном. */
+.proto-card.tile-in { opacity: 0; transform: translateY(46px) scale(.86) rotateX(-16deg);
+  transform-origin: 50% 120%;
+  transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+.proto-card.tile-in.on { opacity: 1; transform: none; }
+.proto-card--soon.tile-in.on { opacity: .66; }
+
+@media (max-width: 900px) {
+  .proto-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 30px; }
+}
