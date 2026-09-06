@@ -356,6 +356,15 @@ Chrome и Safari светится ЯРЧЕ белого интерфейса. П
   дан только резкой копии `.lit` стартового экрана: у ореола `.b1` стоит `opacity: .8`.
   **Переживают HDR:** `clip-path`, `mask`, `blur`, `drop-shadow`, `brightness(>1)`,
   `mix-blend-mode: screen`, `transform`.
+- **Янтарный цвет кнопок и цифр тоже HDR** — блок `@media (dynamic-range: high)` в конце
+  `_src/landing.css`. CSS-цвет ярче белого не бывает, поэтому заливки (`.cta-play`, `.wa`,
+  `.bf-send`, `.eq-go`, точки, черта кикера) берут `background-image: assets/hdr/amber.png`
+  (8×8 px, 1000 нит), а янтарный текст (`.press-note`, цифры результата, кикеры) —
+  `background-clip: text`. Замерено: HDR в фоне переживает `clip-path`, `transform`,
+  `box-shadow`, `border-radius`, `border-image`, `background-clip: text`, `position: fixed`.
+  Не переведены намеренно: `.rec` (пульс через opacity), `:disabled` (opacity .5),
+  градиенты teal→amber, `::selection`, рамки-кольца. Сделать ярче/тише — перегенерить
+  `amber.png` и `amber-light.png` с другим `--nits`, CSS не трогать.
 - **Скриншоты и превью — всегда SDR**, HDR там не видно; это свойство HDR, не баг.
 - **`site/landing.css` — СОБРАННЫЙ файл**, править надо `_src/landing.css` и запускать
   `python3 build_seo.py`: он же обновляет `?v=` у стилей. Правка в `site/` затирается

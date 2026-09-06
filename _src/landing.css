@@ -2029,3 +2029,27 @@
   .tv i { font: 600 10px/1 var(--font-mono); font-style: normal;
           letter-spacing: var(--tracking-hud); text-transform: uppercase; }
   @media (max-width: 700px) { .tv { gap: 6px; } .tv li { padding: 7px 10px; } }
+
+  /* ---------- HDR: янтарь ярче белого (06.09.2026) ----------
+     CSS-цвет не бывает ярче белого экрана, а картинка с профилем BT.2100 PQ — бывает.
+     Поэтому на HDR-экранах янтарные заливки и крупные янтарные надписи берут цвет не из
+     var(--signal-amber), а из assets/hdr/amber.png (8×8 px, 1000 нит, делается
+     _tools/hdr-png.py): фон — background-image, текст — background-clip: text.
+     Замер в Chrome: HDR переживает clip-path, transform, box-shadow, border-radius,
+     background-clip: text; УБИВАЕТ его opacity < 1 — поэтому .rec (пульс прозрачностью)
+     и :disabled не трогаем, там HDR не выжил бы. Градиенты и ::selection — тоже мимо.
+     Вне HDR-экрана этот блок не применяется вовсе, там всё как было. */
+  @media (dynamic-range: high) {
+    .cta-play, .wa, .bf-send, .eq-go, .kicker::before, .wm-pin .wm-dot {
+      background-image: url("assets/hdr/amber.png"); background-size: cover; }
+    .kicker.teal::before { background-image: none; }
+    .c-note { border-left-color: transparent;
+      background: url("assets/hdr/amber.png") left top / 2px 100% no-repeat;
+      background-origin: border-box; background-clip: border-box; }
+    .studio .press-note, .v-res-fig .sv, .v-result .v-goal-k, .bf-msg.err, .bf-f .req, .kicker {
+      background: url("assets/hdr/amber.png") center / cover;
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    /* у кикера свой, более светлый тон, и тень под прозрачным текстом просвечивала бы сквозь буквы */
+    .kicker { background-image: url("assets/hdr/amber-light.png"); text-shadow: none; }
+    .kicker.teal { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--signal-teal); }
+  }
