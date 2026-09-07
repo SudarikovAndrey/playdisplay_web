@@ -307,6 +307,7 @@ EXCLUDES=(
   --exclude='/.well-known/'
   --exclude='/api/config.php'
   --exclude='/api/sessions/'
+  --exclude='/poemiq/settings.json'   # общие настройки рендера POEMIQ, рождаются на сервере
   # Архивы на сервер не возим. digital.zip на 2,9 МБ приехал именно так:
   # он лежит в site/, в .gitignore есть *.zip — но rsync про gitignore
   # не знает, и файл спокойно уехал в веб-корень, откуда его мог скачать

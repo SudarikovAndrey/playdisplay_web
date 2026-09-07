@@ -147,7 +147,8 @@
   /* ---- settings panel ---- */
   .panel{position:fixed;right:clamp(22px,3.4vw,48px);top:calc(clamp(22px,3.2vw,44px) + 52px);width:250px;
     padding:22px 22px 16px;background:var(--panel);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-    display:flex;flex-direction:column;gap:14px;font-size:11.5px;color:var(--fg);box-sizing:border-box}
+    display:flex;flex-direction:column;gap:14px;font-size:11.5px;color:var(--fg);box-sizing:border-box;
+    max-height:calc(100vh - 120px);overflow:auto} /* short screens: the panel scrolls instead of running off the bottom */
   .panel[hidden]{display:none}
   .panel .row{display:grid;grid-template-columns:1fr 46px;column-gap:10px;row-gap:8px;align-items:center}
   .panel .row span{color:var(--muted);letter-spacing:.04em}
@@ -162,9 +163,15 @@
   .panel .checks{display:flex;flex-direction:column;gap:10px;padding:4px 0}
   .panel .checks label{display:flex;align-items:center;gap:10px;color:var(--muted);letter-spacing:.04em;cursor:pointer}
   .panel .checks input{accent-color:var(--fg);margin:0;width:13px;height:13px}
-  .panel .foot{display:flex;justify-content:flex-end;gap:22px;padding-top:6px;border-top:1px solid var(--faint)}
+  .panel .foot{display:flex;justify-content:space-between;gap:14px;padding-top:6px;border-top:1px solid var(--faint)}
   .panel .foot button{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:6px 0 0}
   .panel .foot button:hover{color:var(--fg)}
+  .passrow{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .passrow[hidden]{display:none}
+  .passrow input{flex:1;min-width:0;background:transparent;border:0;border-bottom:1px solid var(--faint);color:var(--fg);font:inherit;font-size:12px;padding:6px 0;outline:none}
+  .passrow input:focus{border-bottom-color:var(--fg)}
+  .passrow button{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg)}
+  .passrow .tiny{font-size:9.5px;letter-spacing:.12em;color:var(--accent)}
 
   /* ---- page below the hero ---- */
   .page{position:relative;z-index:1;background:var(--bg);transition:background-color .6s}
@@ -465,7 +472,9 @@
     <label><input type="checkbox" id="s-rotate"> Автовращение</label>
     <label><input type="checkbox" id="s-envlock"> Свет за камерой</label>
   </div>
-  <div class="foot"><button id="s-save">Сохранить</button><button id="s-reset">Сбросить</button></div>
+  <div class="tiny" id="s-which" style="margin-top:12px">Набор тёмной темы</div>
+  <div class="foot"><button id="s-save">Себе</button><button id="s-global">Для всех…</button><button id="s-reset">Сброс</button></div>
+  <form class="passrow" id="passrow" hidden autocomplete="off"><input type="password" id="s-pass" placeholder="Пароль владельца" autocomplete="current-password"><button type="submit">Записать</button><span class="tiny" id="s-pass-msg"></span></form>
 </aside>
 
 <script>window.ASSETS = {
@@ -736,21 +745,34 @@ const brilliant = brilliantGeometry();
 brilliant.computeBoundingBox();
 const BRILLIANT_CENTER_Y = (brilliant.boundingBox.min.y + brilliant.boundingBox.max.y) / 2; // ≈ -0.28
 
+// per-stone data (camera in object space, the stone's rotation) is derived from the built-in modelMatrix in the vertex
+// shader — NOT passed as material uniforms: stones share one material, and three.js uploads a material's uniforms only
+// when the material changes, so per-object uniforms set in onBeforeRender reached only the first stone drawn and every
+// other stone rendered with a stranger's camera/rotation; as the depth sort reshuffled the order, all stones jumped at once
 const gemVert = `
-  varying vec3 vPos; varying vec3 vNor;
-  void main(){ vPos = position; vNor = normal; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+  varying vec3 vPos; varying vec3 vNor; varying vec3 vCamObj; varying mat3 vRot;
+  void main(){
+    vPos = position; vNor = normal;
+    mat3 R = mat3(modelMatrix);                       // rotation × uniform scale
+    vec3 d = cameraPosition - modelMatrix[3].xyz;
+    float s2 = dot(R[0], R[0]);                       // scale²
+    vCamObj = vec3(dot(R[0], d), dot(R[1], d), dot(R[2], d)) / s2; // R^T (cam − t) / s: camera in object space
+    vRot = R;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }`;
 const gemFrag = `
   precision highp float;
   uniform samplerCube tEnv, tEnvRefl, tNormals;
-  uniform vec3 uCamObj, uColor; uniform mat3 uModelRot, uEnvRot;
+  uniform vec3 uColor; uniform mat3 uEnvRot;
+  varying vec3 vCamObj; varying mat3 vRot;
   uniform float uIor, uDispersion, uIntensity, uAbsorption, uRadius, uGamma, uReflGain, uSat, uAmbient;
   varying vec3 vPos; varying vec3 vNor;
-  vec3 env(vec3 dObj){ vec3 w = uEnvRot * normalize(uModelRot * dObj); return mix(textureCube(tEnv, w).rgb, textureCube(tEnvRefl, w).rgb, 0.45); }
-  vec3 envRefl(vec3 dObj){ vec3 w = uEnvRot * normalize(uModelRot * dObj); return textureCube(tEnvRefl, w).rgb; }
+  vec3 env(vec3 dObj){ vec3 w = uEnvRot * normalize(vRot * dObj); return mix(textureCube(tEnv, w).rgb, textureCube(tEnvRefl, w).rgb, 0.45); }
+  vec3 envRefl(vec3 dObj){ vec3 w = uEnvRot * normalize(vRot * dObj); return textureCube(tEnvRefl, w).rgb; }
   float raySphere(vec3 p, vec3 d, float r){ float b = dot(p, d); float c = dot(p, p) - r * r; float h = b * b - c; return -b + sqrt(max(h, 0.0)); }
   void main(){
     vec3 n = normalize(vNor);
-    vec3 v = normalize(vPos - uCamObj);
+    vec3 v = normalize(vPos - vCamObj);
     float cosI = clamp(dot(-v, n), 0.0, 1.0);
     float f0 = pow((uIor - 1.0) / (uIor + 1.0), 2.0);
     float F = f0 + (1.0 - f0) * pow(1.0 - cosI, 5.0);
@@ -820,8 +842,7 @@ const gemMat = new THREE.ShaderMaterial({
   uniforms: {
     tEnv: { value: GEM_ENVS.studio.dark }, tEnvRefl: { value: GEM_ENVS.studio.dark }, tNormals: { value: gemNormalCube(brilliant) },
     uGamma: { value: 1.3 }, uReflGain: { value: 1.0 }, uSat: { value: 1.0 },
-    uCamObj: { value: new THREE.Vector3() }, uColor: { value: new THREE.Vector3(1, 1, 1) },
-    uModelRot: { value: new THREE.Matrix3() }, uEnvRot: { value: new THREE.Matrix3() },
+    uColor: { value: new THREE.Vector3(1, 1, 1) }, uEnvRot: { value: new THREE.Matrix3() },
     uIor: { value: 2.42 }, uDispersion: { value: 0.034 }, uIntensity: { value: 1.6 }, uAbsorption: { value: 0 }, uRadius: { value: 1.0 }, uAmbient: { value: 0.05 }
   }
 });
@@ -874,11 +895,10 @@ function makeRealGem(srcMesh) {
   const mat = gemMat.clone();
   mat.uniforms.tNormals.value = gemNormalCube(g, 256);
   mat.uniforms.uRadius.value = g.boundingSphere.radius * 1.02;
-  mat.uniforms.uCamObj = { value: new THREE.Vector3() }; mat.uniforms.uModelRot = { value: new THREE.Matrix3() }; mat.uniforms.uEnvRot = { value: new THREE.Matrix3() };
+  mat.uniforms.uEnvRot = { value: new THREE.Matrix3() };
   gemMats.push(mat);
   const m = new THREE.Mesh(g, mat);
   m.castShadow = true;
-  m.onBeforeRender = (r, sc, cam) => { m.worldToLocal(mat.uniforms.uCamObj.value.copy(cam.position)); mat.uniforms.uModelRot.value.setFromMatrix4(m.matrixWorld); };
   return { mesh: m, center: c, axis: gemAxis(g) };
 }
 const gemTarget = { color: new THREE.Vector3(1, 1, 1), ior: 2.42, dispersion: 0.030, absorption: 0, intensity: 1.0, sat: 1.0 };
@@ -891,10 +911,6 @@ function makeGem(radius) {
   const m = new THREE.Mesh(brilliant, gemMat);
   m.scale.setScalar(radius);
   m.castShadow = true;
-  m.onBeforeRender = (r, s, cam) => {
-    m.worldToLocal(gemMat.uniforms.uCamObj.value.copy(cam.position));
-    gemMat.uniforms.uModelRot.value.setFromMatrix4(m.matrixWorld);
-  };
   return m;
 }
 
@@ -1269,7 +1285,7 @@ const ORDER = ['vine3', 'classic', 'solitaire', 'coil', 'chain', 'clasp']; // th
   const g = new THREE.Group();
   if (A.chain) loadPiece(g, A.chain, { width: 64, raw: true, orient: (inner) => { inner.rotation.set(0, 0.35, 0); } }); // the file already lies in XZ: just turn it so the clasp faces the camera
   PRODUCTS.chain = { object: g, eyebrow: 'Цепи · 585 проба', title: 'Цепь <em>Бисмарк</em>',
-    meta: 'Двухрядное плетение, карабин с пружиной<br>Длина 45 см · вес 8,6 г', price: '74 300 ₽', metal: 'rose', gem: null,
+    meta: 'Двухрядное плетение, карабин с пружиной<br>Длина 45 см · вес 8,6 г', price: '74 300 ₽', metal: 'rose', gem: null, noShadow: true, // a flat necklace casts a smeared oval that reads as dirt on the floor
     views: [
       { label: 'Вся цепь', dist: 118, polar: 0.62 },
       { label: 'Застёжка', dist: 13, polar: 1.2, maxPolar: 1.62, anchor: (o) => o.geometry.attributes.position.count > 8000 } // the clasp is the only dense mesh; the camera may sink a little lower here
@@ -1372,6 +1388,7 @@ function startBake() {
   shadow.done = 0; shadow.total = 40; shadow.active = true;
   // camera framing for this piece
   applyView(box);
+  if (PRODUCTS[currentProduct].noShadow) { shadow.active = false; shadow.done = 0; } // framing done, no shadow for this piece
 }
 // views: a piece may offer several framings (the whole necklace / its clasp); without them the piece is framed by its box
 const PORTRAIT_SHIFT = 0.36; // portrait: the camera window is the bottom of a frame taller by this share of the height → the piece sits higher, above the card
@@ -1606,7 +1623,7 @@ function setScheme(name) {
   schemeTarget = SCHEMES[name];
   document.documentElement.dataset.scheme = name;
   document.querySelectorAll('#scheme button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.scheme === name)));
-  const save = document.getElementById('s-save'); if (save) save.textContent = 'Сохранить · ' + (name === 'dark' ? 'тёмная' : 'светлая');
+  const which = document.getElementById('s-which'); if (which) which.textContent = 'Набор ' + (name === 'dark' ? 'тёмной' : 'светлой') + ' темы';
   applySettings(); // includes applyEnvironment()
 }
 document.getElementById('scheme').addEventListener('click', (ev) => { const btn = ev.target.closest('button'); if (btn) setScheme(btn.dataset.scheme); });
@@ -1689,8 +1706,9 @@ const music = (() => {
     clearInterval(st.fade); const v0 = el.volume, t0 = performance.now();
     st.fade = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / ms); el.volume = v0 + (target - v0) * k; if (k >= 1) { clearInterval(st.fade); if (target === 0) { el.pause(); st.playing = false; } } }, 50);
   };
+  const active = () => !document.hidden && document.hasFocus(); // heard only while the site is the active window/tab
   const start = () => {
-    if (!st.want) return;
+    if (!st.want || !active()) return;
     clearInterval(st.fade);
     if (!el.paused) { st.playing = true; fadeTo(0.38, 1200); return; } // toggled back on while fading out
     st.playing = false;
@@ -1700,7 +1718,9 @@ const music = (() => {
   let armed = false;
   const armGesture = () => { if (armed) return; armed = true; const once = () => { window.removeEventListener('pointerdown', once, true); window.removeEventListener('keydown', once, true); armed = false; start(); }; window.addEventListener('pointerdown', once, true); window.addEventListener('keydown', once, true); };
   btn.addEventListener('click', (e) => { e.stopPropagation(); st.want = !st.want; localStorage.setItem('poemiq.sound', st.want ? 'on' : 'off'); reflect(); if (st.want) start(); else fadeTo(0, 900); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden && st.playing) el.volume = 0.12; else if (st.playing) el.volume = 0.38; });
+  // another tab, another window or a hidden tab pause it; coming back resumes
+  const onActivity = () => { if (active()) { if (st.want && !st.playing) start(); } else if (st.playing) fadeTo(0, 350); };
+  document.addEventListener('visibilitychange', onActivity); window.addEventListener('blur', onActivity); window.addEventListener('focus', onActivity);
   reflect();
   return { start };
 })();
@@ -1775,6 +1795,30 @@ document.getElementById('s-save').addEventListener('click', (e) => {
   const b = e.currentTarget, old = b.textContent; b.textContent = ok ? 'Сохранено' : 'Не удалось'; setTimeout(() => { b.textContent = old; }, 1400);
 });
 setScheme(STORE.scheme); // the scheme that was on when the settings were saved, with its own set
+// settings shared with every visitor live on the server (settings.php next to the page; the owner's password is the one
+// of the main site's scene panel). A visitor's own local save is stronger than the shared set, as in the scene panel.
+// Where there is no PHP (artifact, python http.server) the request fails or is not JSON — the page keeps its defaults.
+const GLOBAL_URL = new URL('settings.php', location.href).href;
+fetch(GLOBAL_URL, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => {
+  if (!j || !j.ok || !j.data) return;
+  const g = j.data; let touched = false;
+  for (const t of ['dark', 'light']) if (g[t] && !STORE[t]) { LIVE[t] = pickSettings(g[t]); touched = true; }
+  if (!STORE.dark && !STORE.light && (g.scheme === 'dark' || g.scheme === 'light') && g.scheme !== currentScheme) { LIVE[currentScheme] = { ...S }; setScheme(g.scheme); }
+  else if (touched && !STORE[currentScheme]) { Object.assign(S, LIVE[currentScheme]); applySettings(); }
+}).catch(() => {});
+{
+  const row = document.getElementById('passrow'), msg = document.getElementById('s-pass-msg'), pass = document.getElementById('s-pass');
+  document.getElementById('s-global').addEventListener('click', () => { row.hidden = !row.hidden; msg.textContent = ''; if (!row.hidden) pass.focus(); });
+  row.addEventListener('submit', (e) => {
+    e.preventDefault();
+    LIVE[currentScheme] = { ...S };
+    msg.textContent = '…';
+    fetch(GLOBAL_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'save', pass: pass.value, data: { dark: LIVE.dark, light: LIVE.light, scheme: currentScheme } }) })
+      .then(r => r.json().then(j => ({ ok: r.ok && j.ok, status: r.status })).catch(() => ({ ok: false, status: r.status })))
+      .then(({ ok, status }) => { msg.textContent = ok ? 'Сохранено для всех' : (status === 403 ? 'Неверный пароль' : 'Не удалось'); if (ok) { pass.value = ''; setTimeout(() => { row.hidden = true; msg.textContent = ''; }, 1600); } })
+      .catch(() => { msg.textContent = 'Нет связи с сервером'; });
+  });
+}
 requestBake();
 if (new URLSearchParams(location.search).has('debug')) window.__dbg = { PRODUCTS, S, controls, camera, shadow, renderer, scene, composer, bloom, accum, ssr, gbuf, gold, gemMat, tick: () => frameBody() };
 
@@ -1868,7 +1912,7 @@ function frameBody() {
   key.intensity = cur.key * S.key; kick.intensity = cur.kick * S.key * 0.6; bloom.strength = cur.bloom * S.bloom;
   bloom.enabled = bloom.strength > 0.01;
   shadow.plane.material.opacity = cur.shadow * S.shadow;
-  shadow.plane.visible = S.shadow > 0.001;
+  shadow.plane.visible = S.shadow > 0.001 && !PRODUCTS[currentProduct].noShadow;
 
   popT = Math.min(1, popT + 0.06);
   rig.scale.setScalar(0.9 + 0.1 * (1 - Math.pow(1 - popT, 3)));
