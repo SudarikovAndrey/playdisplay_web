@@ -8,6 +8,63 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-07 09:29 — hybrid-v8 @ 2698d4b
+
+**Коммиты в этой поставке**
+```
+2698d4b MARÉ: кольцо запечено в PNG-карточки, море до горизонта (снимок ocean-demo)
+3d4d858 Журнал деплоя: 110cb45 (точечная заливка poemiq)
+110cb45 POEMIQ: панель настроек со своим скроллом поверх интерфейса, отдельный пароль владельца для общих настроек
+48d58ad MARÉ: море до горизонта без полосы (снимок сборки ocean-demo)
+6f7744b Журнал деплоя: a551390
+```
+
+**На сервер отправлено файлов:** 93, удалено: 9
+```
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/library/index.html
+en/library/input/index.html
+en/library/output/index.html
+en/library/processing/index.html
+en/services/index.html
+en/services/corporate-museum/index.html
+en/services/exhibition-stand/index.html
+en/services/holographic-showcase/index.html
+en/services/interactive-exhibition/index.html
+en/services/interactive-website/index.html
+en/services/multimedia-equipment/index.html
+en/services/museum-concept/index.html
+en/services/museum-equipment/index.html
+en/services/museum-equipping/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+library/index.html
+…и ещё 53
+```
+
+
 ## 2026-09-06 23:10 — hybrid-v8 @ a551390
 
 **Коммиты в этой поставке**
