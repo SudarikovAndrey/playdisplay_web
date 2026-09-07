@@ -1,17 +1,3 @@
-<!-- POEMIQ — витрина ювелирного бренда. ЭТО СНИМОК СБОРКИ, не живая страница.
-     Источник: gold-proto/ в корне репозитория (свой CLAUDE.md и README.md там же).
-     Пересобрать и обновить: ./sync-poemiq.sh, затем ./deploy.sh "что сделали".
-
-     ОДИН ФАЙЛ И БОЛЬШЕ НИЧЕГО. build.py вшивает сюда base64-ом модели колец,
-     HDR-окружения, пять фотографий и ролик логотипа — отсюда 10 МБ (5 МБ в
-     сжатом виде). Локальных ссылок на файлы у страницы нет, копировать models/
-     и product/ на сайт не нужно.
-
-     ЧТО ОНА ТЯНЕТ СНАРУЖИ, и это стоит поправить отдельной правкой:
-     three@0.168 и meshoptimizer@0.21 с cdn.jsdelivr.net, шрифты с
-     fonts.googleapis.com. Расходится с правилом «site/ самодостаточен» и делает
-     страницу заложником чужой сети — тем самым, из-за чего сайт вставал в Азии.
-     Исходник для правки — gold-proto/template.html. -->
 <!doctype html>
 <html lang="ru" class="intro-on">
 <head>
@@ -43,7 +29,7 @@
     font-family:Inter,system-ui,-apple-system,sans-serif;font-weight:300;
     -webkit-font-smoothing:antialiased;transition:background-color .6s,color .6s}
   #stage{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;z-index:0}
-  .hero{position:relative;height:100vh;min-height:640px;pointer-events:none}
+  .hero{position:relative;height:100vh;height:100svh;min-height:640px;pointer-events:none}
   *{-webkit-user-select:none;user-select:none}
   .hero .ui a,.hero .ui button,.hero .ui select,.hero .scrollcue{pointer-events:auto}
   html.flat .hero{height:760px;min-height:0} /* test hook: ?flat renders the hero at a fixed height for full-page captures */
@@ -185,7 +171,7 @@
   .lede p{margin:0 0 16px}
   .note{font-size:12.5px;line-height:1.7;color:var(--muted);max-width:52ch}
   section[hidden]{display:none}
-  .photo{position:relative;background:#0d1522;overflow:hidden}
+  .photo{position:relative;background:#0d1522;overflow:hidden;margin:0} /* browsers give <figure> 40px side margins */
   .photo img{display:block;width:100%;height:100%;object-fit:cover;transform:scale(var(--zoom,1.3));object-position:var(--pos,50% 55%);transition:transform 1.2s ease}
   .photo:hover img{transform:scale(calc(var(--zoom,1.3) * 1.04))}
   .photo.tall{aspect-ratio:3/4}
@@ -236,14 +222,43 @@
     .grid2,.buy{grid-template-columns:1fr}
     .gallery .g1,.gallery .g2,.gallery .g3,.gallery .g4,.gallery .g5{grid-column:span 6;margin-top:0}
     .scrollcue{display:none}
-    .buyrow{gap:16px}
-    nav,.sep{display:none}
-    footer{grid-template-columns:1fr;gap:26px}
-    .switch{justify-self:start}
-    .pickers{justify-self:start;gap:28px}
-    .picker{align-items:flex-start}
+    nav,.sep,#gear{display:none} /* settings are a desktop tool */
+    .top{padding:14px 18px}
+    .right{gap:18px}
+    .scheme{gap:14px}
+    .scheme button{font-size:9.5px;letter-spacing:.18em}
     .hint{display:none}
     .panel{width:calc(100% - 44px);right:22px}
+    .sec{padding:56px 20px}
+    .specs div{grid-template-columns:1fr 1.2fr;gap:14px;padding:12px 0}
+    .perks{grid-template-columns:1fr;gap:18px}
+    .site-footer{padding:36px 20px 44px}
+    /* ---- hero on a phone: the ring lives in the upper part of the screen (camera is shifted in app.module.js),
+       the card sits on a soft scrim at the bottom, controls in one row above it ---- */
+    .ui{padding:0}
+    .ui footer{display:grid;grid-template-columns:1fr auto;grid-template-areas:"switch pickers" "product product";
+      align-items:center;gap:14px 12px;padding:26px 18px calc(18px + env(safe-area-inset-bottom));
+      background:linear-gradient(to top, color-mix(in srgb, var(--bg) 96%, transparent) 55%, color-mix(in srgb, var(--bg) 70%, transparent) 82%, transparent)}
+    .switch{grid-area:switch;justify-self:start;gap:14px}
+    .switch button{width:30px;height:30px}
+    .switch .count{font-size:15px;min-width:50px}
+    .pickers{grid-area:pickers;justify-self:end;gap:16px;flex-wrap:wrap;justify-content:flex-end}
+    .picker{align-items:flex-end;gap:8px}
+    .picker .tiny{font-size:9px;letter-spacing:.2em}
+    .dots{gap:12px}
+    .sw{width:15px;height:15px}
+    .product{grid-area:product;max-width:none}
+    .product .eyebrow{margin-bottom:8px;font-size:9.5px}
+    .product h1{font-size:30px;margin-bottom:8px}
+    .product .meta{font-size:12px;line-height:1.55;max-width:none}
+    .product .price{margin-top:10px;font-size:15px}
+    .buyrow{margin-top:12px;gap:14px}
+    .buyrow .sizes{display:none} /* sizes live in the buy block below; the hero card stays short */
+    .cta{padding:12px 20px}
+  }
+  @media (max-width:820px) and (max-height:700px){
+    .product .meta{display:none}
+    .product h1{font-size:26px}
   }
 </style>
 </head>
@@ -479,6 +494,7 @@ if (TEST_SCROLL) setTimeout(() => window.scrollTo(0, TEST_SCROLL), 300);
 // =====================================================================
 //  renderer / scene / camera
 // =====================================================================
+let sceneReady = false; // set once PRODUCTS and the camera framing exist (resize() may run before that)
 const canvas = document.getElementById('stage');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // full resolution always: the adaptive dpr for moving frames (06.09) visibly softened the ring while it turns, the owner asked for the original quality back
@@ -489,7 +505,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.shadowMap.autoUpdate = false; // shadows are baked, see below
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 200);
+const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 400); // far 400: portrait phones frame pieces from further away
 camera.position.set(62 * Math.sin(0.55), 11, 62 * Math.cos(0.55));
 
 const LAYER_BAKE = 1; // objects only seen by the shadow-bake camera
@@ -1344,6 +1360,7 @@ function startBake() {
   applyView(box);
 }
 // views: a piece may offer several framings (the whole necklace / its clasp); without them the piece is framed by its box
+const PORTRAIT_SHIFT = 0.36; // portrait: the camera window is the bottom of a frame taller by this share of the height → the piece sits higher, above the card
 let currentView = 0, restorePolar = null; // after a piece with its own framings, the next piece brings the camera back to eye level once
 const DEFAULT_POLAR = Math.acos(11 / 62);
 function applyView(box) {
@@ -1357,7 +1374,13 @@ function applyView(box) {
     if (best) c.copy(new THREE.Box3().setFromObject(best, true).getCenter(new THREE.Vector3()));
   } else c.set(0, c.y, 0);
   frameTarget.pos.copy(c);
-  frameTarget.dist = v && v.dist ? v.dist : THREE.MathUtils.clamp((Math.max(size.y, size.x * 0.8) * 0.8) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), 44, 92);
+  const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), tanH = tanV * camera.aspect;
+  const portrait = camera.aspect < 0.85;
+  // on a phone the visible window is the lower part of a taller frame (see portraitShift), so the effective vertical
+  // fov shrinks by that factor — the distance grows to match, and the piece must also fit the narrow width
+  const lift = portrait ? 1 + PORTRAIT_SHIFT : 1;
+  frameTarget.dist = v && v.dist ? v.dist * (portrait ? Math.max(1, 0.62 / camera.aspect) : 1)
+    : THREE.MathUtils.clamp(Math.max((Math.max(size.y, size.x * 0.8) * 0.8) / tanV, (size.x * 0.62) / tanH), 44, portrait ? 190 : 92) * lift;
   frameTarget.polar = v && v.polar != null ? v.polar : restorePolar;
   controls.minDistance = Math.min(34, frameTarget.dist); controls.maxDistance = Math.max(95, frameTarget.dist);
   controls.maxPolarAngle = v && v.maxPolar ? v.maxPolar : 1.5;
@@ -1432,6 +1455,7 @@ controls.minDistance = 34; controls.maxDistance = 95;
 controls.minPolarAngle = 0.35; controls.maxPolarAngle = 1.5; // never below the floor
 controls.autoRotate = true; controls.autoRotateSpeed = 0.55;
 controls.rotateSpeed = 0.8;
+canvas.style.touchAction = 'pan-y'; // OrbitControls sets 'none'; on a phone a vertical swipe must still scroll the page, horizontal turns the piece
 controls.target.set(0, 0, 0);
 let camMoved = true, dragging = false, resumeTimer = 0;
 controls.addEventListener('change', () => { camMoved = true; });
@@ -1524,12 +1548,20 @@ function resize() {
   bloom.resolution.set(Math.round(w / 2), Math.round(h / 2)); // bloom is soft by nature: half-res mip chain, a third of the cost
   W = canvas.width; H = canvas.height;
   camera.aspect = w / h; camera.updateProjectionMatrix();
+  if (sceneReady) applyView(); // after the pieces exist: re-frame for the new aspect (orientation change)
   accum.reset();
 }
 window.addEventListener('resize', resize); resize();
 const topBar = document.getElementById('top');
 const setBar = () => { topBar.style.setProperty('--sp', Math.min(1, Math.max(0, (window.scrollY - 10) / 160)).toFixed(3)); };
 window.addEventListener('scroll', setBar, { passive: true }); setBar();
+// the camera's window: on portrait screens the lower part of a taller frame, so the piece is drawn in the upper part of
+// the phone screen and the card below does not cover it; jitter offsets for the accumulation ride along
+function setWindow(jx, jy) {
+  const shift = camera.aspect < 0.85 ? Math.round(H * PORTRAIT_SHIFT) : 0;
+  if (shift === 0 && jx === 0 && jy === 0) camera.clearViewOffset();
+  else camera.setViewOffset(W, H + shift, jx, jy + shift, W, H);
+}
 function halton(i, b) { let f = 1, r = 0; while (i > 0) { f /= b; r += f * (i % b); i = Math.floor(i / b); } return r; }
 
 // =====================================================================
@@ -1569,6 +1601,7 @@ document.getElementById('scheme').addEventListener('click', (ev) => { const btn 
 //  product switching
 // =====================================================================
 let currentProduct = ORDER[0], popT = 1;
+sceneReady = true; // from here on resize() may re-frame the current piece
 { // the first piece's chrome without waiting for a switch
   const p = PRODUCTS[currentProduct];
   document.getElementById('p-index').textContent = 1;
@@ -1846,9 +1879,9 @@ function frameBody() {
   else if (accum.frame >= accum.max) return;
   if (accum.frame > 0) {
     const i = accum.frame;
-    camera.setViewOffset(W, H, halton(i, 2) - 0.5, halton(i, 3) - 0.5, W, H);
+    setWindow(halton(i, 2) - 0.5, halton(i, 3) - 0.5);
     bgMat.uniforms.uTime.value = i * 17.3;
-  } else { camera.clearViewOffset(); bgMat.uniforms.uTime.value = t; }
+  } else { setWindow(0, 0); bgMat.uniforms.uTime.value = t; }
   composer.render();
 }
 frame();
