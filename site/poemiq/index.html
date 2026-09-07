@@ -944,11 +944,11 @@ const DEFAULTS = { expo: 0.78, rough: 0.08, envRot: 250, env: 1.0, key: 0.5, blo
 // render settings are kept per light scheme: a dark set and a light set, plus the scheme that was on when saving.
 // Saved sets come back on every later visit in this browser (v2 single-set saves are migrated into both schemes).
 const SAVE_KEY = 'poemiq.settings.v3';
-const STORE = { dark: null, light: null, scheme: 'dark' };
+const STORE = { dark: null, light: null, scheme: 'dark', savedAt: null };
 try {
   const v3 = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
-  if (v3 && typeof v3 === 'object') { for (const t of ['dark', 'light']) if (v3[t] && typeof v3[t] === 'object') STORE[t] = v3[t]; if (v3.scheme === 'light' || v3.scheme === 'dark') STORE.scheme = v3.scheme; }
-  else { const v2 = JSON.parse(localStorage.getItem('poemiq.settings.v2') || 'null'); if (v2 && typeof v2 === 'object') STORE.dark = STORE.light = v2; }
+  if (v3 && typeof v3 === 'object') { for (const t of ['dark', 'light']) if (v3[t] && typeof v3[t] === 'object') STORE[t] = v3[t]; if (v3.scheme === 'light' || v3.scheme === 'dark') STORE.scheme = v3.scheme; if (v3.savedAt) STORE.savedAt = v3.savedAt; }
+  localStorage.removeItem('poemiq.settings.v2'); // the single-set save of the first sessions: stale, and it used to shadow the shared set
 } catch (e) { /* storage unavailable: defaults */ }
 const pickSettings = (src) => { const o = { ...DEFAULTS }; if (src) for (const k in DEFAULTS) if (k in src) o[k] = src[k]; return o; };
 const LIVE = { dark: pickSettings(STORE.dark), light: pickSettings(STORE.light) }; // the working set of each scheme (edited, maybe unsaved)
@@ -1790,7 +1790,7 @@ document.getElementById('s-envlock').addEventListener('change', (e) => { S.envLo
 function writeStore() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(STORE)); return true; } catch (err) { return false; } }
 document.getElementById('s-reset').addEventListener('click', () => { Object.assign(S, DEFAULTS); STORE[currentScheme] = null; writeStore(); applySettings(); }); // only the current scheme
 document.getElementById('s-save').addEventListener('click', (e) => {
-  STORE[currentScheme] = { ...S }; STORE.scheme = currentScheme; LIVE[currentScheme] = { ...S };
+  STORE[currentScheme] = { ...S }; STORE.scheme = currentScheme; STORE.savedAt = new Date().toISOString(); LIVE[currentScheme] = { ...S };
   const ok = writeStore();
   const b = e.currentTarget, old = b.textContent; b.textContent = ok ? 'Сохранено' : 'Не удалось'; setTimeout(() => { b.textContent = old; }, 1400);
 });
@@ -1801,10 +1801,16 @@ setScheme(STORE.scheme); // the scheme that was on when the settings were saved,
 const GLOBAL_URL = new URL('settings.php', location.href).href;
 fetch(GLOBAL_URL, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => {
   if (!j || !j.ok || !j.data) return;
-  const g = j.data; let touched = false;
-  for (const t of ['dark', 'light']) if (g[t] && !STORE[t]) { LIVE[t] = pickSettings(g[t]); touched = true; }
-  if (!STORE.dark && !STORE.light && (g.scheme === 'dark' || g.scheme === 'light') && g.scheme !== currentScheme) { LIVE[currentScheme] = { ...S }; setScheme(g.scheme); }
-  else if (touched && !STORE[currentScheme]) { Object.assign(S, LIVE[currentScheme]); applySettings(); }
+  const g = j.data;
+  // the shared set wins when it is newer than this browser's own save (or there is no own save); an own save made
+  // after the shared one keeps winning — that is what "Себе" is for
+  const sharedNewer = !STORE.savedAt || !g.savedAt || Date.parse(g.savedAt) >= Date.parse(STORE.savedAt);
+  let touched = false;
+  for (const t of ['dark', 'light']) if (g[t] && (!STORE[t] || sharedNewer)) { LIVE[t] = pickSettings(g[t]); if (sharedNewer) STORE[t] = null; touched = true; }
+  if (!touched) return;
+  const useScheme = (g.scheme === 'dark' || g.scheme === 'light') && (sharedNewer || (!STORE.dark && !STORE.light));
+  if (useScheme && g.scheme !== currentScheme) { LIVE[currentScheme] = { ...S }; setScheme(g.scheme); }
+  else { Object.assign(S, LIVE[currentScheme]); applySettings(); }
 }).catch(() => {});
 {
   const row = document.getElementById('passrow'), msg = document.getElementById('s-pass-msg'), pass = document.getElementById('s-pass');
@@ -1815,7 +1821,7 @@ fetch(GLOBAL_URL, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(
     msg.textContent = '…';
     fetch(GLOBAL_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'save', pass: pass.value, data: { dark: LIVE.dark, light: LIVE.light, scheme: currentScheme } }) })
       .then(r => r.json().then(j => ({ ok: r.ok && j.ok, status: r.status })).catch(() => ({ ok: false, status: r.status })))
-      .then(({ ok, status }) => { msg.textContent = ok ? 'Сохранено для всех' : (status === 403 ? 'Неверный пароль' : 'Не удалось'); if (ok) { pass.value = ''; setTimeout(() => { row.hidden = true; msg.textContent = ''; }, 1600); } })
+      .then(({ ok, status }) => { msg.textContent = ok ? 'Сохранено для всех' : (status === 403 ? 'Неверный пароль' : 'Не удалось'); if (ok) { STORE.dark = null; STORE.light = null; STORE.scheme = currentScheme; STORE.savedAt = null; writeStore(); pass.value = ''; setTimeout(() => { row.hidden = true; msg.textContent = ''; }, 1600); } }) // own stale save is dropped: the owner must see what everyone sees
       .catch(() => { msg.textContent = 'Нет связи с сервером'; });
   });
 }
