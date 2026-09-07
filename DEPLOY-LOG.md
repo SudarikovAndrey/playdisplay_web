@@ -5922,3 +5922,5 @@ work/vdnh-space-center/index.html
 work/vdnh-space/index.html
 ```
 
+
+- 2026-09-07 09:24 — POEMIQ: панель настроек со скроллом, отдельный пароль владельца (site/poemiq/pass.php). Залито ТОЧЕЧНО (`rsync site/poemiq/ → public_html/poemiq/`, без --delete): полный deploy.sh остановился на удалении 9 старых чанков MARÉ (`mare/_next/static/...`), подтверждать за владельца не стал. Коммит 110cb45.
