@@ -189,6 +189,16 @@ RewriteRule ^projects(/.*)?$ https://playdisplay.com/#work [R=301,L,NE]
 RewriteRule ^about/?$ https://playdisplay.com/#studio [R=301,L,NE]
 RewriteRule ^contact/?$ https://playdisplay.com/#contact [R=301,L,NE]
 
+# Сам /work/ и /en/work/ отдавали 403 (проверено на боевом 07.09.2026). Своей
+# страницы у этой папки нет, листинг закрыт — Apache и возвращал запрет. А адрес
+# ходовой: под ним лежат ВСЕ кейсы, и его набирают руками, обрезая ссылку вида
+# /work/vdnh-space-center/ до корня. Краулер делает то же самое.
+#
+# Правило ниже правила ^work/(.+?)/?$ на /old/ работать не может — там обязателен
+# слаг после work/, и пустой путь тем правилом не ловится.
+RewriteRule ^work/?$ https://playdisplay.com/#work [R=301,L,NE]
+RewriteRule ^en/work/?$ https://playdisplay.com/en/#work [R=301,L,NE]
+
 # ---------- ещё четыре семейства старых адресов (23.08.2026) ----------
 # Найдено в отчёте Search Console «Не найдено (404)»: 16 адресов, и это не 16 случаев,
 # а четыре семейства. Правим семьями — отдельные адреса пришлось бы дописывать вечно.
