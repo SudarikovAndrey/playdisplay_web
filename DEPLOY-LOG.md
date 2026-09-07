@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-06 22:25 — hybrid-v8 @ 817accd
+
+**Коммиты в этой поставке**
+```
+817accd Лёгкие копии видео — не только телефону, но и медленному каналу
+bcb9224 MARÉ: кольцо в небе рисуется карточками, телефону не нужно трассировать камень
+058d93d Журнал деплоя: 22a577f
+```
+
+**На сервер отправлено файлов:** 147, удалено: 8
+```
+hero-scene.html
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+concepts/ar-portal/index.html
+concepts/ar-xray/index.html
+concepts/art-portrait/index.html
+concepts/cabin-hologram/index.html
+concepts/city-flight/index.html
+concepts/control-center/index.html
+concepts/cubic-expo/index.html
+concepts/floating-object/index.html
+concepts/form-library/index.html
+concepts/heli-model/index.html
+concepts/living-interior/index.html
+concepts/living-lines/index.html
+concepts/living-model/index.html
+concepts/living-monolith/index.html
+concepts/living-panorama/index.html
+concepts/living-ship/index.html
+concepts/mars/index.html
+concepts/media-vitrage/index.html
+concepts/mind-canvas/index.html
+concepts/motion-architecture/index.html
+concepts/motion-game/index.html
+concepts/panorama-dive/index.html
+concepts/safe-training/index.html
+concepts/sales-showroom/index.html
+concepts/street-portal/index.html
+concepts/team-mission/index.html
+concepts/threshold/index.html
+concepts/weightlessness/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/concepts/ar-portal/index.html
+en/concepts/ar-xray/index.html
+…и ещё 107
+```
+
+
 ## 2026-09-06 21:25 — hybrid-v8 @ 22a577f
 
 **Коммиты в этой поставке**
