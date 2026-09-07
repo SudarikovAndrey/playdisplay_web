@@ -92,6 +92,27 @@ GOOD = [
     'виртуальн', 'контент', 'сценар',
 ]
 
+# Слова, по которым закупка попадает в ГЛАВНЫЙ блок дайджеста. Ищутся только
+# в ПРЕДМЕТЕ, не в названии заказчика: это и есть вся разница между «музей
+# заказывает экспозицию» и «музей заказывает ручной инструмент для столярки».
+# Проверено на живой выдаче 07.09.2026 — из девяти закупок правило верно
+# развело пять наших и четыре смежных, ошибок не было.
+PROFILE = [
+    'мультимедиа', 'мультимедий', 'интерактив', 'инсталляц', 'экспозиц',
+    'выставк', 'выставочн', 'экспонат', 'визуализац', 'аудиогид',
+    'виртуальн', 'голограф', 'видеостен', 'проекцион', 'панорам', 'диорам',
+]
+
+# Признак того, что заказчику нужна РАБОТА, а не коробка с оборудованием.
+# Мы студия, а не поставщик: «оказание услуг по созданию инсталляций» — наше,
+# «поставка мультимедийного оборудования» — как правило чужое, но в дайджест
+# всё равно идёт: по такому предмету видно, что музей взялся за экспозицию,
+# и это повод написать ему до следующей закупки.
+WORKS = [
+    'оказание услуг', 'выполнение работ', 'создани', 'разработк',
+    'изготовлени', 'монтаж', 'проектирован', 'оформительск', 'доработк',
+]
+
 UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36')
 
@@ -203,6 +224,38 @@ def score(item):
     return sum(1 for w in GOOD if w in t)
 
 
+def tier(item):
+    """'A' — предмет закупки про экспозицию, 'B' — совпало только по заказчику.
+
+    Раньше дайджест был одним списком, отсортированным по сроку, и закупка
+    на 13 млн по мультимедийным инсталляциям стояла в нём ниже ручного
+    инструмента для столярной мастерской, у которого срок был на день раньше.
+    Разбор глазами владельца — самая дорогая операция в этой схеме, поэтому
+    сортировку по важности делает скрипт.
+    """
+    return 'A' if any(w in item['subject'].lower() for w in PROFILE) else 'B'
+
+
+def kind(item):
+    """'услуги' или 'поставка' — по предмету. Влияет только на подпись
+    в дайджесте: решает всё равно человек."""
+    return 'услуги' if any(w in item['subject'].lower() for w in WORKS) else 'поставка'
+
+
+def days_left(item, today=None):
+    """Сколько дней до окончания приёма заявок. None, если даты нет."""
+    d = dkey(item['deadline'])
+    if d == '99999999':
+        return None
+    t = today or time.strftime('%Y%m%d')
+    try:
+        fmt = '%Y%m%d'
+        return int((time.mktime(time.strptime(d, fmt))
+                    - time.mktime(time.strptime(t, fmt))) // 86400)
+    except Exception:
+        return None
+
+
 def dkey(s):
     """Дата ДД.ММ.ГГГГ -> сортируемая строка. Пустая уезжает в конец."""
     m = re.match(r'(\d{2})\.(\d{2})\.(\d{4})', s or '')
@@ -227,6 +280,44 @@ def interesting(item, min_price, today, skip_date=False):
     return score(item) > 0
 
 
+def fmt_item(it, wide=True):
+    """Одна закупка текстом. Один рендер на письмо и на консоль, чтобы
+    дайджест в почте и в терминале нельзя было случайно развести."""
+    d = days_left(it)
+    when = it['deadline'] or '?'
+    if d is not None:
+        when += ' (%s)' % ('сегодня' if d == 0 else
+                           'остался день' if d == 1 else
+                           'осталось %d дн.' % d)
+    if d is not None and d <= 5:
+        when = 'ГОРИТ · до ' + when
+    else:
+        when = 'до ' + when
+    lines = ['— %s' % it['subject'][:150 if wide else 200],
+             '  %s · %s · %s · %s · размещено %s'
+             % (it['price'] or 'цена не указана', kind(it),
+                it['law'] or '?', when, it['placed'] or '?'),
+             '  %s' % it['customer'][:120 if wide else 140],
+             '  %s' % it['url'], '']
+    return lines
+
+
+def digest_lines(fresh, wide=True):
+    """Дайджест двумя блоками: сначала то, что мы делаем сами, потом смежное."""
+    a = [i for i in fresh if tier(i) == 'A']
+    b = [i for i in fresh if tier(i) == 'B']
+    out = []
+    if a:
+        out += ['НАШ ПРОФИЛЬ — %d' % len(a), '']
+        for it in a:
+            out += fmt_item(it, wide)
+    if b:
+        out += ['СМЕЖНОЕ (совпало по заказчику, а не по предмету) — %d' % len(b), '']
+        for it in b:
+            out += fmt_item(it, wide)
+    return out
+
+
 def send_mail(to, fresh, found, min_price, errors):
     """Письмо через sendmail хостинга.
 
@@ -239,19 +330,16 @@ def send_mail(to, fresh, found, min_price, errors):
     lines = ['ЗАКУПКИ ПО НАШЕМУ ПРОФИЛЮ — %s' % time.strftime('%d.%m.%Y'),
              'новых %d, всего подходящих %d, порог %d руб.' % (len(fresh), len(found), min_price),
              '']
-    for it in fresh:
-        lines.append('%s  %s  до %s' % (it['price'] or '?', it['law'] or '?', it['deadline'] or '?'))
-        lines.append(it['subject'][:200])
-        lines.append(it['customer'][:140])
-        lines.append(it['url'])
-        lines.append('')
+    lines += digest_lines(fresh, wide=False)
     if errors:
         lines.append('НЕ ОПРОШЕНО: ' + '; '.join(errors))
     body = '\n'.join(lines)
 
-    subj = 'Закупки: %d новых на %s' % (len(fresh), time.strftime('%d.%m'))
+    core = len([i for i in fresh if tier(i) == 'A'])
+    subj = ('Закупки: %d новых, наш профиль %d — %s'
+            % (len(fresh), core, time.strftime('%d.%m')))
     headers = [
-        'From: PlayDisplay <ai@playdisplay.com>',
+        'From: playdisplay <ai@playdisplay.com>',
         'To: <%s>' % to,
         'Subject: =?UTF-8?B?%s?=' % base64.b64encode(subj.encode('utf-8')).decode('ascii'),
         'MIME-Version: 1.0',
@@ -333,7 +421,7 @@ def main():
         return
 
     fresh = [v for k, v in found.items() if k not in seen]
-    fresh.sort(key=lambda x: (dkey(x['deadline']), -score(x)))
+    fresh.sort(key=lambda x: (tier(x), dkey(x['deadline']), -score(x)))
 
     if args.json:
         print(json.dumps(fresh, ensure_ascii=False, indent=1))
@@ -344,14 +432,8 @@ def main():
         if errors:
             print('НЕ ОПРОШЕНО: ' + '; '.join(errors))
         print('')
-        for it in fresh:
-            print('— %s' % it['subject'][:150])
-            print('  %s · %s · до %s · размещено %s'
-                  % (it['price'] or 'цена не указана', it['law'] or '?',
-                     it['deadline'] or '?', it['placed'] or '?'))
-            print('  %s' % it['customer'][:120])
-            print('  %s' % it['url'])
-            print('')
+        for line in digest_lines(fresh):
+            print(line)
 
     if args.mail and fresh:
         send_mail(args.mail, fresh, found, args.min, errors)
