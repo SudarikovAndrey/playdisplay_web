@@ -29,6 +29,19 @@ RedirectMatch 404 \.(zip|tar|tar\.gz|tgz|rar|7z|bz2)$
   </FilesMatch>
 </IfModule>
 
+# Прототипы на вебе. Их индексная страница /web/ закрыта мета-тегом, и четыре
+# прототипа из шести — тоже. У /mare/ и /poemiq/ мета-тега не оказалось, и они
+# отдавались поисковику открытыми: витрина ювелирных изделий и демо с океаном
+# на домене студии мультимедийных экспозиций размывают тему сайта, а Google
+# 31.08.2026 уже пожаловался на страницу без канонического адреса.
+#
+# Закрываем заголовком, а не правкой их разметки: страницы собраны
+# конструктором site/kit, и следующая пересборка правку бы стёрла.
+<IfModule mod_headers.c>
+  SetEnvIf Request_URI "^/(mare|poemiq)(/|$)" PD_PROTO_NOINDEX=1
+  Header set X-Robots-Tag "noindex, nofollow, noarchive" env=PD_PROTO_NOINDEX
+</IfModule>
+
 # ---------- типы ----------
 AddType video/mp4 .mp4
 AddType font/woff2 .woff2
