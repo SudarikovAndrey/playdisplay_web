@@ -268,6 +268,21 @@ if (window.PD_DEV) document.documentElement.classList.add('pd-dev');
     border: 1px solid rgba(255,255,255,.35); background: rgba(0,0,0,.32); color: #fff;
     font-size: 15px; line-height: 1; cursor: pointer; padding: 0;
     -webkit-tap-highlight-color: transparent; }
+  /* кнопки полёта справа вверху: музыка и фулскрин — двойники крестика */
+  #gm-tools { display: none; position: fixed; top: 16px; right: 16px; z-index: 44; gap: 10px; }
+  body.game #gm-tools { display: flex; }
+  body.game.over #gm-tools { display: none; }   /* на экране результата не нажать под оверлеем */
+  #gm-tools button { width: 36px; height: 36px; display: flex; align-items: center;
+    justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,.35);
+    background: rgba(0,0,0,.32); color: #fff; cursor: pointer; padding: 0;
+    -webkit-tap-highlight-color: transparent; }
+  #gm-tools svg { width: 18px; height: 18px; }
+  #gm-music .mx { display: none; }
+  #gm-music.off .mx { display: block; }
+  #gm-music.off .mn { opacity: .45; }
+  #gm-fs .fs-out { display: none; }
+  #gm-fs.on .fs-in { display: none; }
+  #gm-fs.on .fs-out { display: block; }
   /* кнопка «РЕКОРДЫ» в полёте: вверху по центру, на одной высоте с крестиком выхода */
   #lb-btn { display: none; position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
     z-index: 44; padding: 11px 18px; border-radius: 2px; cursor: pointer;
@@ -865,6 +880,20 @@ addEventListener('DOMContentLoaded', function(){
   </div>
 </div>
 <button id="lb-btn" type="button">РЕКОРДЫ</button>
+<!-- Кнопки полёта справа вверху: музыка и полный экран. Двойники крестика по
+     геометрии (круг 36, отступ 16) — весь верхний ряд игры живёт на одной высоте. -->
+<div id="gm-tools">
+  <button id="gm-music" type="button" aria-label="Музыка">
+    <svg viewBox="0 0 24 24"><path class="mn" d="M9 17.5V6.2l8-1.7v10.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle class="mn" cx="7" cy="17.5" r="2.2" fill="currentColor"/><circle class="mn" cx="15" cy="15.3" r="2.2" fill="currentColor"/>
+    <path class="mx" d="M5 5l14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <button id="gm-fs" type="button" aria-label="Во весь экран">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path class="fs-in" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+      <path class="fs-out" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+  </button>
+</div>
 
 <div id="arc-hud">
   <div id="arc-count">РАЗВЕДАНО 00/15</div>
@@ -1054,7 +1083,7 @@ addEventListener('DOMContentLoaded', function(){
 <script src="textures.js?v=b2808-frames"></script>
 <script src="odk_frame.js?v=b2808-frames"></script>
 <script src="model.js?v=b2707-game16"></script>
-<script>window.PD_V = 'b2808-camo2';</script>
+<script>window.PD_V = 'b0609-music1';</script>
 <script>
 // Зависимости подключаем с ЕДИНОЙ версией. document.write здесь осознанно: он
 // выполняется на этапе парсинга и сохраняет синхронный порядок загрузки, а сборщика
@@ -5332,6 +5361,7 @@ function enterGame() {
   }
   gFallMat.uniforms.uOp.value = 1;
   document.body.classList.add('game');
+  gMusic.start();   // музыка полёта (ленивая загрузка, фейды ведёт updateGame)
   closePlayNow();   // видео гасим МГНОВЕННО: анимацию закрытия игровой цикл не докрутит
   // ВЛЁТ ИЗ СЛАЙДА: галерею не прячем сразу — её точки растворятся в переходе (см. updateGame),
   // а мир полёта проявится из этой пыли. Камера стартует с текущего ракурса.
@@ -5505,6 +5535,7 @@ function exitGame() {
   if (typeof _obTypeT !== 'undefined' && _obTypeT) { clearInterval(_obTypeT); _obTypeT = null; }
   if (OB.aEl) OB.aEl.textContent = '';
   stickOn = false;   // выход из игры бросает руль, даже если палец ещё на экране
+  if (gMusic.a) { try { gMusic.a.pause(); } catch (e) {} gMusic.v = 0; }
   GAME.belts = null; GAME.meteors = []; GAME.meteorHit = false;   // поле уходит вместе с GAME.group
   GAME.paused = false;
   if (window.pdSaveReset) pdSaveReset();
@@ -5548,6 +5579,7 @@ function gMetrics(dt) {
 }
 
 function updateGame(dt, time) {
+  gMusic.frame(dt);   // громкость музыки: фейды входа/выхода, приглушение паузы и краша
   // СТРАХОВКА КАЖДЫЙ КАДР: слой видео (#player) не имеет права существовать в полёте.
   // Закрытие на входе уже есть (closePlayNow в enterGame), но старая страница в памяти
   // вкладки, гонка сообщений или любой будущий путь запуска не должны возвращать баг
@@ -6278,6 +6310,77 @@ function goBtn(id, action) {
   }, { passive: false });
   b.addEventListener('click', function(e){ e.stopPropagation(); action(); });
 }
+// ---------- МУЗЫКА ПОЛЁТА ----------
+// Ленивая: файл (2.8 МБ) не трогается, пока игру не запустили. Громкость ведёт
+// updateGame: фейд на влёте, приглушение на паузе и после краша, затухание на выходе.
+// Уважает и глобальный звук сайта (S.sound), и свою кнопку (localStorage pd_music).
+// На мобиле play() требует жеста, а вход в игру приходит postMessage'м — поэтому
+// после старта ставятся одноразовые слушатели: первое же касание руля запускает трек.
+const gMusic = {
+  a: null, v: 0,
+  on() { try { return localStorage.getItem('pd_music') !== '0'; } catch (e) { return true; } },
+  setOn(v) { try { localStorage.setItem('pd_music', v ? '1' : '0'); } catch (e) {} },
+  kick() {
+    if (!gMusic.a || !GAME.on || !gMusic.on() || !S.sound) return;
+    if (gMusic.a.paused) gMusic.a.play().catch(() => {});
+  },
+  start() {
+    if (!gMusic.a) {
+      gMusic.a = new Audio('audio/deep-space-tension.mp3');
+      gMusic.a.loop = true;
+      gMusic.a.preload = 'auto';
+    }
+    gMusic.a.volume = 0; gMusic.v = 0;
+    gMusic.kick();
+    // жест мог не долететь (postMessage) — первое касание/клавиша запускает трек
+    ['touchstart', 'pointerdown', 'keydown'].forEach(ev =>
+      addEventListener(ev, gMusic.kick, { once: true, capture: true, passive: true }));
+  },
+  frame(dt) {
+    if (!gMusic.a) return;
+    let want = 0;
+    if (GAME.on && gMusic.on() && S.sound && GAME.enter > 0.25) {
+      want = GAME.over ? 0.14 : GAME.paused ? 0.1 : 0.42;
+      if (GAME.exit >= 0) want *= Math.max(0, 1 - GAME.exit);
+    }
+    gMusic.v += (want - gMusic.v) * Math.min(1, dt * 1.6);
+    if (Math.abs(gMusic.a.volume - gMusic.v) > 0.005) gMusic.a.volume = clamp01(gMusic.v);
+    if (want === 0 && gMusic.v < 0.01 && !gMusic.a.paused) gMusic.a.pause();
+    else if (want > 0 && gMusic.a.paused) gMusic.kick();
+  }
+};
+(function () {
+  const mb = document.getElementById('gm-music');
+  if (!mb) return;
+  const syncM = () => mb.classList.toggle('off', !gMusic.on());
+  goBtn('gm-music', () => { gMusic.setOn(!gMusic.on()); syncM(); gMusic.kick(); });
+  syncM();
+})();
+
+// ---------- ПОЛНЫЙ ЭКРАН ----------
+// Фулскрин просится у ВЕРХНЕГО документа (лендинга): сцена живёт в iframe, и фулскрин
+// самого iframe оставил бы сайт за бортом. Доступ к top легален — same-origin.
+// На iPhone Fullscreen API нет вовсе — кнопка прячется.
+function gFsDoc() { try { return window.top.document; } catch (e) { return document; } }
+function gFsOn(d) { return !!(d.fullscreenElement || d.webkitFullscreenElement); }
+function gToggleFs() {
+  try {
+    const d = gFsDoc(), el = d.documentElement;
+    if (gFsOn(d)) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+    else (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+  } catch (e) {}
+}
+(function () {
+  const fb = document.getElementById('gm-fs');
+  if (!fb) return;
+  const d = gFsDoc(), el = d.documentElement;
+  if (!el.requestFullscreen && !el.webkitRequestFullscreen) { fb.style.display = 'none'; return; }
+  goBtn('gm-fs', gToggleFs);
+  const syncF = () => fb.classList.toggle('on', gFsOn(d));
+  d.addEventListener('fullscreenchange', syncF);
+  d.addEventListener('webkitfullscreenchange', syncF);
+})();
+
 goBtn('go-back', startExitGame);   // плавный выход из полёта (postMessage шлёт сам startExitGame)
 goBtn('go-again', restartGame);    // сразу рестарт без выхода на сайт
 goBtn('go-lb', () => { if (window.pdOpenLB) pdOpenLB(); });   // таблица рекордов с экрана результата

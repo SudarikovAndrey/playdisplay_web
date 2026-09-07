@@ -5,6 +5,9 @@
   .lang a:hover { color: var(--scan-white); }
   .lang a.on { color: var(--space-void); background: var(--scan-white); }
   .lang .sep { color: rgba(159,180,200,.35); font-size: 10px; }
+  #fsBtn .fs-out { display: none; }
+  #fsBtn.on .fs-in { display: none; }
+  #fsBtn.on .fs-out { display: block; }
   .snd { margin-left: 14px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
     background: none; border: 1px solid transparent; color: var(--scan-white-dim); cursor: pointer;
     transition: color var(--duration-fast), border-color var(--duration-fast); }

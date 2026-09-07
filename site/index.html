@@ -48,7 +48,7 @@
      а не пачка: каждый лишний отнимает полосу у того, что нужно прямо сейчас. -->
 <link rel="preload" href="assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="landing.css?v=5974f1a5">
+<link rel="stylesheet" href="landing.css?v=bb1828d7">
 <script>
 /* Выбор подачи проектов на мобиле: ?mob=lenta | grid | more. Ставится на <html> ДО отрисовки,
    иначе сетка успевает мигнуть в старом виде. Без параметра атрибута нет и всё работает как раньше.
@@ -135,6 +135,14 @@
     </nav>
     <button class="cta-play" onclick="location.hash='#contact'">▶︎ Обсудить идею</button>
     <div class="lang" id="lang"></div>
+    <!-- Полный экран — весь сайт целиком (documentElement). На iPhone Fullscreen API
+         нет вовсе — кнопка прячет себя сама (см. скрипт fsBtn). -->
+    <button class="snd" id="fsBtn" type="button" aria-label="Во весь экран" title="Во весь экран">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path class="fs-in" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+        <path class="fs-out" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>
+      </svg>
+    </button>
     <button class="snd" id="sndBtn" type="button" aria-label="Выключить звук" title="Выключить звук">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 9.5h3.2L12 5.5v13L7.2 14.5H4z"/>
@@ -180,7 +188,7 @@
   <!-- Версия в адресе — единственный способ заставить браузер перечитать сцену: телефон
        держит hero-scene.html в кэше по этому URL и правки до него не доезжают.
        ПРИ ЛЮБОЙ ПРАВКЕ hero-scene.html ВЕРСИЮ ЗДЕСЬ НАДО МЕНЯТЬ. -->
-  <iframe class="hero-scene" src="hero-scene.html?v=b0609-slownet" title="playdisplay — облако точек" loading="eager"></iframe>
+  <iframe class="hero-scene" src="hero-scene.html?v=b0609-music1" title="playdisplay — облако точек" loading="eager"></iframe>
   <div class="hero-grade"></div>
   <div class="ruler-top"></div>
   <div class="ruler-left"></div>
@@ -1569,6 +1577,26 @@
       else if (inBand && x0 > w * 0.84) frame.contentWindow.postMessage({ pdStep: 1 }, '*');
       else                              frame.contentWindow.postMessage({ pdTapPlay: true }, '*');
     }, { passive: true });
+  })();
+
+  // ПОЛНЫЙ ЭКРАН — весь сайт (documentElement). Кнопка в шапке; та же операция
+  // доступна из полёта (кнопка в сцене зовёт fullscreen у этого же документа —
+  // состояние у документа одно, конфликта нет). На iPhone API нет — прячемся.
+  (function(){
+    var b = document.getElementById('fsBtn');
+    if (!b) return;
+    var el = document.documentElement;
+    if (!el.requestFullscreen && !el.webkitRequestFullscreen) { b.hidden = true; return; }
+    function on(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+    b.addEventListener('click', function(){
+      try {
+        if (on()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        else (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+      } catch (e) {}
+    });
+    function sync(){ b.classList.toggle('on', on()); }
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
   })();
 
   // Панель настроек 3D-сцены. Открывается двумя путями: ссылкой ?cam=1 (или #cam) и
