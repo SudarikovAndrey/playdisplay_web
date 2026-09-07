@@ -321,6 +321,7 @@ window.PD_I18N = {
  "Открыть интерактивную версию →": "Open the interactive version →",
  "На главную": "Home",
  "Все проекты": "All projects",
+ "Наверх": "Back to top",
  "Смотреть видео проекта →": "Watch the project video →",
  "мультимедиа инсталляция": "multimedia installation",
  "Как удобнее ответить?": "How should we reply?",

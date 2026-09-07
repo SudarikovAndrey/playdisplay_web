@@ -1498,7 +1498,8 @@ for L in langs:
         L.srv_foot += ' · <a href="%sconcepts/">%s</a>' % (L.up + L.prefix, esc(L.t('Концепции')))
     if os.path.exists(os.path.join(SITE, L.data, 'atlas.json')):
         L.srv_foot += ' · <a href="%satlas/">%s</a>' % (L.up + L.prefix, esc(L.t('Атлас')))
-CNC_ORDER = [c['id'] for c in CNC_LANGS[0].concepts] if CNC_LANGS else []
+# CNC_ORDER убран 06.09.2026: он существовал только чтобы перечислить
+# отдельные адреса концепций в sitemap, а их больше нет.
 
 # Страницы работ отрисованы до загрузки концепций, а их подвал теперь содержит и
 # ссылку на /concepts/. Перерисовываем — это тот же цикл, что выше, и он дешевле,
@@ -1607,6 +1608,26 @@ CNC_CSS = SRV_CSS + '''
   ul.cncs li:before { content:"\\2192"; position:absolute; left:0; color:#2be0c6; }
   ul.cncs b { color:#fff; }
   h3.cat { font-size:15px; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin:38px 0 10px; }
+  /* Раздел одной страницей (06.09.2026): сверху оглавление по якорям, ниже сами
+     концепции целиком. Оглавление отделено рамкой — иначе на длинной странице
+     непонятно, где список кончается и начинается содержание. */
+  nav.cnc-toc { margin:0 0 54px; padding-bottom:30px; border-bottom:1px solid rgba(159,180,200,.22); }
+  h2.cat-sec { font-size:13px; letter-spacing:.2em; text-transform:uppercase; color:#2be0c6;
+               margin:64px 0 0; padding-bottom:10px; border-bottom:1px solid rgba(43,224,198,.28); }
+  article.cnc { padding:38px 0 34px; border-bottom:1px solid rgba(159,180,200,.14); }
+  /* scroll-margin-top — чтобы после перехода по якорю заголовок не уезжал под
+     закреплённую шапку: она перекрывает первые ~70 px области просмотра. */
+  article.cnc { scroll-margin-top:88px; }
+  article.cnc h3 { font-size:30px; line-height:1.15; letter-spacing:-.01em; color:#fff; margin:6px 0 0;
+                   text-transform:none; }
+  .cnc-cat { font:500 11px monospace; letter-spacing:.2em; text-transform:uppercase; color:#2be0c6; }
+  p.cnc-line { font-size:19px; line-height:1.5; color:#cfe0e6; margin:12px 0 0; }
+  article.cnc h2 { font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:#9fb4c8;
+                   margin:26px 0 8px; }
+  p.cnc-up { margin:26px 0 0; }
+  p.cnc-up a { font:500 11px monospace; letter-spacing:.16em; text-transform:uppercase; color:#9fb4c8;
+               text-decoration:none; }
+  p.cnc-up a:hover { color:#2be0c6; }
 '''
 
 
@@ -1673,47 +1694,58 @@ CNC_HUB_LEAD_RU = ('Двадцать восемь готовых к реализ
 CNC_HUB_LEAD_EN = ('Twenty-eight concepts ready to be built: the idea, what it solves, how it works and '
                    'where it applies. Not a portfolio — formats you can take into a project.')
 
+# КОНЦЕПЦИИ — ОДНОЙ СТРАНИЦЕЙ, отдельных больше нет (06.09.2026).
+#
+# Почему. Search Console прислал: «Страница является копией. Канонические версии,
+# выбранные Google и вами, не совпадают» — про адреса из sitemap. Замер показал,
+# в чём дело: у 28 страниц концепций было по 841–1193 знака своего текста
+# (медиана 949) при одинаковой структуре. Google склеивал их и выбирал канон сам.
+#
+# Это ровно тот случай, который в паспорте проекта уже описан про Атлас: «50
+# страниц по 140 знаков — ровно то тонкое содержание, за которое поисковики
+# понижают САЙТ ЦЕЛИКОМ». Атлас поэтому сознательно оставили ОДНОЙ страницей, и
+# он индексируется нормально. С концепциями поступили наоборот — исправлено.
+#
+# Содержание НЕ ПОТЕРЯНО: раньше хаб печатал у каждой концепции только line и
+# need, а разбор жил на отдельной странице. Теперь хаб печатает полное тело тем
+# же cnc_body, у каждой концепции свой якорь, а старые адреса отдают 301 на этот
+# якорь (правило в site/.htaccess, одно на язык, с флагом NE — иначе Apache
+# экранирует решётку и посетитель попадает на %23).
+#
+# Для зрителя не изменилось НИЧЕГО: раздел «Библиотека решений» на главной —
+# это SPA в index.html, с этими страницами он никогда не был связан. Отдельные
+# адреса существовали только для поисковиков.
 for L in CNC_LANGS:
     by_cat = {}
     for c in L.concepts:
         by_cat.setdefault(c.get('cat') or 'other', []).append(c)
-    for c in L.concepts:
-        tail = 'concepts/%s/' % c['id']
-        d = os.path.join(SITE, L.prefix, 'concepts', c['id'])
-        os.makedirs(d, exist_ok=True)
-        # соседи по той же категории: перелинковка внутри раздела, а не только в хаб
-        sib = [o for o in by_cat.get(c.get('cat'), []) if o['id'] != c['id']][:5]
-        siblings = ''.join('<li><a href="%s%s/">%s</a></li>' % (L.up_srv + L.prefix + 'concepts/', o['id'], esc(o.get('title')))
-                           for o in sib)
-        cov = c.get('cover') or ''
-        cover = (BASE + '/' + cov.lstrip('/')) if cov and os.path.exists(os.path.join(SITE, cov)) else esc(cover_url(ORDER[0], L.pmap))
-        open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(CONCEPT_PAGE.format(
-            lang=L.code, title=esc(c.get('title')), lead=esc(c.get('line') or ''),
-            desc=esc(Lang._clip(c.get('line') or '')), canon=L.url(tail), alts=cnc_alternates(tail),
-            cover=esc(cover), locale=L.locale, css=CNC_CSS + LIB_CHROME_CSS,
-            chrome=lib_chrome(L, L.up, ('/en/' if L.code == 'ru' else '/') + tail, 'concepts'),
-            chromejs=chrome_js(),
-            jsonld=cnc_jsonld(L, c),
-            up=L.up_srv, home=L.up_srv + L.prefix, cnchome=L.up_srv + L.prefix + 'concepts/',
-            atlashome=L.up_srv + L.prefix + 'atlas/', t_atlas=esc(L.t('Атлас')),
-            srvhome=L.up_srv + L.prefix + 'services/',
-            catlabel=esc(c.get('catLabel') or ''), body=cnc_body(L, c), gallery=cnc_gallery(L, c),
-            t_concepts=esc(L.t('Концепции')), t_services=esc(L.t('Услуги')),
-            t_more=esc(L.t('Ещё концепции этого типа')), siblings=siblings,
-            cta=esc(L.t('Забронировать креативную сессию →')),
-            footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
-            f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
     # хаб /concepts/: группируем по категориям — так список из 28 читается
+    # Оглавление сверху — по нему прыгают к нужной концепции, и оно же
+    # показывает объём раздела. Ссылки на якоря, а не на адреса: адресов больше нет.
     groups = []
+    toc = []
     for cat in [x['id'] for x in [{'id': k} for k in ('museum', 'brand', 'public', 'future')] if x['id'] in by_cat]:
-        items = ''.join('<li><a href="%s/"><b>%s</b></a> — %s</li>' % (o['id'], esc(o.get('title')), esc(o.get('line') or ''))
-                        for o in by_cat[cat])
-        groups.append('<h3 class="cat">%s</h3><ul class="cncs">%s</ul>' % (esc(L.cat_labels.get(cat, cat)), items))
+        toc.append('<h3 class="cat">%s</h3><ul class="cncs">%s</ul>' % (
+            esc(L.cat_labels.get(cat, cat)),
+            ''.join('<li><a href="#%s"><b>%s</b></a> — %s</li>' % (o['id'], esc(o.get('title')), esc(o.get('line') or ''))
+                    for o in by_cat[cat])))
+    groups.append('<nav class="cnc-toc">%s</nav>' % ''.join(toc))
+    # И сами концепции полностью: тем же cnc_body, что рисовал отдельные страницы,
+    # поэтому разбор переехал сюда без потерь до знака.
+    for cat in [x['id'] for x in [{'id': k} for k in ('museum', 'brand', 'public', 'future')] if x['id'] in by_cat]:
+        groups.append('<h2 class="cat cat-sec">%s</h2>' % esc(L.cat_labels.get(cat, cat)))
+        for o in by_cat[cat]:
+            groups.append(
+                '<article class="cnc" id="%s">'
+                '<div class="cnc-cat">%s</div><h3>%s</h3><p class="cnc-line">%s</p>%s'
+                '<p class="cnc-up"><a href="#top">%s</a></p></article>'
+                % (o['id'], esc(o.get('catLabel') or ''), esc(o.get('title')),
+                   esc(o.get('line') or ''), cnc_body(L, o), esc(L.t('Наверх'))))
     hub_ld = json.dumps([
         {"@context": "https://schema.org", "@type": "ItemList",
          "name": L.t('Концепции playdisplay'),
          "itemListElement": [{"@type": "ListItem", "position": i + 1,
-                              "url": L.url('concepts/%s/' % c['id']), "name": c.get('title')}
+                              "url": L.url('concepts/') + '#' + c['id'], "name": c.get('title')}
                              for i, c in enumerate(L.concepts)]},
         {"@context": "https://schema.org", "@type": "BreadcrumbList",
          "itemListElement": [
@@ -1736,7 +1768,7 @@ for L in CNC_LANGS:
         cta=esc(L.t('Забронировать креативную сессию →')),
         footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
         f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
-    print('concept pages [%s]: %d + хаб' % (L.code, len(L.concepts)))
+    print('концепции [%s]: одна страница, %d концепций на ней' % (L.code, len(L.concepts)))
 
 
 
@@ -2640,7 +2672,8 @@ for tail, prio in [('services/', '0.9')] + [('services/%s/' % s, '0.9') for s in
 def sm_cnc_alts(tail):
     return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.code, BASE, L.prefix, tail)
                    for L in CNC_LANGS)
-for tail, prio in [('concepts/', '0.8')] + [('concepts/%s/' % c, '0.7') for c in CNC_ORDER]:
+# Только хаб: отдельные адреса концепций сняты 06.09.2026 (см. пояснение выше).
+for tail, prio in [('concepts/', '0.9')]:
     for L in CNC_LANGS:
         urls.append('<url><loc>%s/%s%s</loc>%s<changefreq>monthly</changefreq><priority>%s</priority></url>'
                     % (BASE, L.prefix, tail, sm_cnc_alts(tail), prio))
@@ -2719,10 +2752,10 @@ if _res:
 # ---- Концепции: 28 готовых форматов, у каждого свой адрес ----
 if RU.concepts:
     lines += ['', '## Концепции / Concepts', '',
-              'Готовые к реализации форматы. У каждого своя страница с разбором: что решает, '
-              'как устроено, где применимо.', '']
+              'Готовые к реализации форматы. Все на одной странице, у каждого свой якорь: '
+              'что решает, как устроено, где применимо.', '']
     for _c in RU.concepts:
-        lines.append('- [%s](%s/concepts/%s/): %s' % (_c.get('title'), BASE, _c['id'], _c.get('line') or ''))
+        lines.append('- [%s](%s/concepts/#%s): %s' % (_c.get('title'), BASE, _c['id'], _c.get('line') or ''))
 
 if os.path.exists(os.path.join(SITE, RU.data, 'atlas.json')):
     lines += ['', '## Атлас — принципы студии / Studio principles', '',
@@ -2806,7 +2839,7 @@ def home_block(L):
     if getattr(L, 'concepts', None):
         ns_cnc = ('<section><h2>%s</h2><ul>%s</ul></section>'
                   % (esc(L.t('Концепции')),
-                     ''.join('<li><a href="%sconcepts/%s/">%s</a> — %s</li>'
+                     ''.join('<li><a href="%sconcepts/#%s">%s</a> — %s</li>'
                              % ('' if L.code == 'ru' else '/' + L.prefix, c['id'],
                                 esc(c.get('title')), esc(c.get('line') or ''))
                              for c in L.concepts)))
