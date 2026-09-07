@@ -6,8 +6,7 @@
  *   POST {action:'save',  pass, data:{dark,light,scheme}} → {ok}
  *   POST {action:'clear', pass}                    → {ok}       вернуть заводские
  *
- * Пароль — тот же, что у кнопки «Сохранить для всех» панели 3D-сцены главной:
- * соль и отпечаток PBKDF2 в ../api/scene-pass.php, сменить — python3 _tools/scene-pass.py.
+ * Пароль владельца — соль и отпечаток PBKDF2 в pass.php рядом (как сменить — там в шапке).
  * Файл settings.json рождается на сервере, в git его нет, в deploy.sh он исключён —
  * иначе первая же поставка снесла бы подобранный вид.
  *
@@ -48,7 +47,7 @@ function pq_fail($msg, $code = 400) { pq_out(array('ok' => false, 'error' => $ms
 
 function pq_pass_ok($pass) {
   if (!is_string($pass) || $pass === '') return false;
-  $f = dirname(__DIR__) . '/api/scene-pass.php';
+  $f = __DIR__ . '/pass.php'; // свой пароль страницы POEMIQ (не тот, что у панели сцены главной)
   if (!is_file($f)) return false;
   $p = include $f;
   if (!is_array($p) || empty($p['salt']) || empty($p['hash'])) return false;
