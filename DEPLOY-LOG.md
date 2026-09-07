@@ -8,6 +8,62 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-07 11:59 — hybrid-v8 @ 60770a5
+
+**Коммиты в этой поставке**
+```
+60770a5 Ссылки: каталоги их не дают — исправляю свой прежний вывод
+fd9ef05 Письма: три новых адресата из живых закупок, «Артек» откликнулся
+3bb3d7e Дайджест закупок: два блока вместо плоского списка
+c1d3d9b Журнал деплоя: 1ad8f9b
+```
+
+**На сервер отправлено файлов:** 71, удалено: 0
+```
+.htaccess
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/library/index.html
+en/library/input/index.html
+en/library/output/index.html
+en/library/processing/index.html
+en/services/index.html
+en/services/corporate-museum/index.html
+en/services/exhibition-stand/index.html
+en/services/holographic-showcase/index.html
+en/services/interactive-exhibition/index.html
+en/services/interactive-website/index.html
+en/services/multimedia-equipment/index.html
+en/services/museum-concept/index.html
+en/services/museum-equipment/index.html
+en/services/museum-equipping/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+…и ещё 31
+```
+
+
 ## 2026-09-07 11:43 — hybrid-v8 @ 1ad8f9b
 
 **Коммиты в этой поставке**
