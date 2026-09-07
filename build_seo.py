@@ -1608,6 +1608,13 @@ CNC_CSS = SRV_CSS + '''
   ul.cncs li:before { content:"\\2192"; position:absolute; left:0; color:#2be0c6; }
   ul.cncs b { color:#fff; }
   h3.cat { font-size:15px; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin:38px 0 10px; }
+'''
+
+
+# Стили ТОЛЬКО для хаба концепций. В общий CNC_CSS их класть нельзя: его
+# наследуют Атлас (строка ниже) и Библиотека, и на 11 страницах оказалось
+# 20 строк мёртвых правил — поймано по диффу сборки.
+CNC_HUB_CSS = '''
   /* Раздел одной страницей (06.09.2026): сверху оглавление по якорям, ниже сами
      концепции целиком. Оглавление отделено рамкой — иначе на длинной странице
      непонятно, где список кончается и начинается содержание. */
@@ -1760,7 +1767,7 @@ for L in CNC_LANGS:
         desc=esc(Lang._clip(CNC_HUB_LEAD_EN if L.code == 'en' else CNC_HUB_LEAD_RU)),
         cover=esc(og_card('concepts', L.code)),
         canon=L.url('concepts/'), alts=cnc_alternates('concepts/'), locale=L.locale,
-        css=CNC_CSS + LIB_CHROME_CSS,
+        css=CNC_CSS + CNC_HUB_CSS + LIB_CHROME_CSS,
         chrome=lib_chrome(L, up_hub, '/en/concepts/' if L.code == 'ru' else '/concepts/', 'concepts'),
         chromejs=chrome_js(),
         jsonld=hub_ld, up=up_hub, home=up_hub + L.prefix,
