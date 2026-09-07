@@ -8,6 +8,64 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-07 11:36 — hybrid-v8 @ d593e48
+
+**Коммиты в этой поставке**
+```
+d593e48 MARÉ: джойстик и кнопки отвечают на касание, без выделения при долгом нажатии (снимок ocean-demo)
+6933274 Журнал деплоя: точечная заливка poemiq
+b918273 POEMIQ: прелоадер на чёрном экране до старта заставки (CSS, работает до загрузки скриптов)
+03a6e68 Журнал деплоя: точечная заливка poemiq
+3a95ed6 POEMIQ: общий набор настроек побеждает устаревший локальный (savedAt), миграция v2 убрана
+fe9e5e0 Журнал деплоя: 2698d4b
+```
+
+**На сервер отправлено файлов:** 92, удалено: 8
+```
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/library/index.html
+en/library/input/index.html
+en/library/output/index.html
+en/library/processing/index.html
+en/services/index.html
+en/services/corporate-museum/index.html
+en/services/exhibition-stand/index.html
+en/services/holographic-showcase/index.html
+en/services/interactive-exhibition/index.html
+en/services/interactive-website/index.html
+en/services/multimedia-equipment/index.html
+en/services/museum-concept/index.html
+en/services/museum-equipment/index.html
+en/services/museum-equipping/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+en/work/vdnh-space-center/index.html
+en/work/vdnh-space/index.html
+library/index.html
+…и ещё 52
+```
+
+
 ## 2026-09-07 09:29 — hybrid-v8 @ 2698d4b
 
 **Коммиты в этой поставке**
