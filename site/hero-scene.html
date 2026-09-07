@@ -1108,7 +1108,32 @@ const LOCAL_VIDEO = { 0: 'videos/VDNH.mp4', 1: 'videos/bmw.mp4', 2: 'videos/mig.
 const LIGHT_OK = { 'videos/bmw.mp4': 1, 'videos/mig.mp4': 1, 'videos/coalco.mp4': 1,
                    'videos/VDNH.mp4': 1, 'videos/ODK.mp4': 1, 'videos/ra.mp4': 1,
                    'videos/VDNH_airports.mp4': 1, 'videos/rostec.mp4': 1 };
-function vLight(p){ return (isMobile && LIGHT_OK[p]) ? p.replace(/\.mp4$/, '-m.mp4') : p; }
+// ЛЁГКИЕ КОПИИ ТЕПЕРЬ НЕ ТОЛЬКО ТЕЛЕФОНУ, НО И МЕДЛЕННОМУ КАНАЛУ (06.09.2026).
+// Условие «это телефон» было неверным по смыслу: тяжесть роликов — свойство СЕТИ,
+// а не экрана. Замер: карусель на десктопе тянет 89 МБ, лёгкие копии — 34 МБ.
+// Из Вьетнама при задержке ~300 мс это и выглядело как «сайт не грузится»:
+// владелец ждал по пять минут и не дожидался.
+//
+// Сигналы берём у Network Information API: saveData (человек сам попросил economy),
+// effectiveType (2g/3g) и downlink ниже 3 Мбит/с. Считается ОДИН РАЗ при загрузке,
+// а не на каждый ролик: свойство читается синхронно, но дёргать его из кадрового
+// цикла незачем, а переключать качество посреди карусели — только мешать.
+//
+// ЧЕГО ЭТОТ ПРИЁМ НЕ УМЕЕТ, и это важно знать: Safari и Firefox navigator.connection
+// не отдают вовсе. Там останется прежнее поведение — лёгкие копии только на таче.
+// Полноценно это лечится замером скорости первой загрузки, но такой замер сам стоит
+// времени и на быстром канале вредит. Chrome (и Android) покрывают большинство.
+var SLOW_NET = (function(){
+  try {
+    var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (!c) return false;
+    if (c.saveData) return true;
+    if (/^(slow-2g|2g|3g)$/.test(c.effectiveType || '')) return true;
+    if (typeof c.downlink === 'number' && c.downlink > 0 && c.downlink < 3) return true;
+  } catch (e) {}
+  return false;
+})();
+function vLight(p){ return ((isMobile || SLOW_NET) && LIGHT_OK[p]) ? p.replace(/\.mp4$/, '-m.mp4') : p; }
 
 // СТАРТОВАЯ КАРУСЕЛЬ = только проекты с подготовленными клипами. Привязываем локальный
 // ролик к записи по ИСХОДНОМУ индексу и выкидываем проекты без клипа (Панорама 360,
