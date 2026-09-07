@@ -8,6 +8,61 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-06 22:42 — hybrid-v8 @ a52c45c
+
+**Коммиты в этой поставке**
+```
+a52c45c Стили хаба концепций вынесены из общей базы
+278936e Концепции — одной страницей: 56 адресов схлопнуты в хаб с якорями
+4f1ecc0 Журнал деплоя: 817accd
+```
+
+**На сервер отправлено файлов:** 73, удалено: 112
+```
+.htaccess
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+concepts/index.html
+data/i18n/en.js
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/library/index.html
+en/library/input/index.html
+en/library/output/index.html
+en/library/processing/index.html
+en/services/index.html
+en/services/corporate-museum/index.html
+en/services/exhibition-stand/index.html
+en/services/holographic-showcase/index.html
+en/services/interactive-exhibition/index.html
+en/services/interactive-website/index.html
+en/services/multimedia-equipment/index.html
+en/services/museum-concept/index.html
+en/services/museum-equipment/index.html
+en/services/museum-equipping/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+en/work/urban-forum-2018/index.html
+…и ещё 33
+```
+
+
 ## 2026-09-06 22:25 — hybrid-v8 @ 817accd
 
 **Коммиты в этой поставке**
