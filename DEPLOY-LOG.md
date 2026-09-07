@@ -8,6 +8,60 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-06 23:04 — hybrid-v8 @ eb5804d
+
+**Коммиты в этой поставке**
+```
+eb5804d Музыка полёта с кнопкой вкл/выкл и полный экран на весь сайт
+a159509 Журнал деплоя: 4dd6435
+```
+
+**На сервер отправлено файлов:** 75, удалено: 0
+```
+hero-scene.html
+index.html
+landing.css
+llms.txt
+robots.txt
+sitemap.xml
+atlas/index.html
+audio/
+audio/deep-space-tension.mp3
+concepts/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/library/index.html
+en/library/input/index.html
+en/library/output/index.html
+en/library/processing/index.html
+en/services/index.html
+en/services/corporate-museum/index.html
+en/services/exhibition-stand/index.html
+en/services/holographic-showcase/index.html
+en/services/interactive-exhibition/index.html
+en/services/interactive-website/index.html
+en/services/multimedia-equipment/index.html
+en/services/museum-concept/index.html
+en/services/museum-equipment/index.html
+en/services/museum-equipping/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+…и ещё 35
+```
+
+
 ## 2026-09-06 22:56 — hybrid-v8 @ 4dd6435
 
 **Коммиты в этой поставке**
