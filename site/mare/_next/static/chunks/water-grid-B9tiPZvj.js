@@ -1,0 +1,1 @@
+var e=38e3;function t(t){let n=[104,112,128,160,256,512,2048,6500,14e3,24e3,e],r=Array.from({length:192/t+1},(e,n)=>-96+n*t);return[...n.toReversed().map(e=>-e),...r,...n]}function n(e){return Math.floor(e/8)*8}var r=.3,i=1.8*1.5;export{n as i,r as n,t as r,i as t};
