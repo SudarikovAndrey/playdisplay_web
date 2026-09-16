@@ -203,15 +203,6 @@
     .fin-lockup i { color: var(--muted); font-style: normal; font-size: 20px; }
     .fin-lockup b { font: 600 clamp(17px, 1.7vw, 26px)/1 Unbounded, "Arial Black", sans-serif; letter-spacing: .02em; }
 
-    /* Служебная строка внизу слайда: статус документа. Он черновик, и это должно
-       быть видно на каждом экране, а не только на первом. */
-    .deck-status {
-      position: absolute; left: 50%; bottom: clamp(18px, 2.4vh, 30px);
-      transform: translateX(-50%); width: var(--page);
-      color: rgba(154,164,184,.62); font: 500 10.5px/1 'Roboto Mono', monospace;
-      letter-spacing: .18em; text-transform: uppercase; pointer-events: none;
-    }
-    @media (max-width: 760px) { .deck-status { display: none; } }
   </style>
 </head>
 <body>
@@ -261,7 +252,6 @@
              data-trace="s01" data-trace-box="0.45,0.10,0.99,0.92" data-trace-box-m="0.04,0.14,0.98,0.86">
       <div class="slide-shell">
         <div class="slide-head reveal">
-          <p class="overline">Playdisplay · новое продуктовое направление</p>
           <h1 class="deck-title">Цифровой<br>слой</h1>
           <p class="deck-sub">Цифровое продолжение пространств, событий и&nbsp;программ.</p>
         </div>
@@ -273,9 +263,7 @@
           </p>
           <p class="slide-punch">Физическое пространство становится точкой входа, <em>а&nbsp;не точкой завершения.</em></p>
         </div>
-        <a class="scroll-cue" href="#s02"><span>Дальше</span><i></i></a>
       </div>
-      <p class="deck-status">Черновик концепции · для обсуждения</p>
     </section>
 
     <!-- ═══ 02 · ПРОБЛЕМА ═══════════════════════════════════════════════════
@@ -301,7 +289,6 @@
         </div>
         <p class="slide-punch reveal punch-gap">Мы знаем, сколько людей пришло. <em>Но не знаем, что произошло с&nbsp;ними дальше.</em></p>
       </div>
-      <p class="deck-status">02 / 10 · проблема</p>
     </section>
 
     <!-- ═══ 03 · ПУТЬ ═══════════════════════════════════════════════════════
@@ -328,7 +315,6 @@
           <li>Непрерывная траектория</li>
         </ul>
       </div>
-      <p class="deck-status">03 / 10 · путь</p>
     </section>
 
     <!-- ═══ 04 · ПРОСТРАНСТВО ═══════════════════════════════════════════════
@@ -360,7 +346,6 @@
         <p class="slide-note reveal">Пространство реагирует не только на действие человека. Оно учитывает его интересы,
            цели и уже пройденный путь.</p>
       </div>
-      <p class="deck-status">04 / 10 · пространство</p>
     </section>
 
     <!-- ═══ 05 · ОНЛАЙН ═════════════════════════════════════════════════════ -->
@@ -392,7 +377,6 @@
         </div>
         <p class="slide-punch reveal punch-gap">Физический и цифровой формат – не два проекта. <em>Это один опыт с&nbsp;разными точками входа.</em></p>
       </div>
-      <p class="deck-status">05 / 10 · онлайн</p>
     </section>
 
     <!-- ═══ 06 · ВОЗМОЖНОСТИ ════════════════════════════════════════════════
@@ -429,7 +413,6 @@
           </ul>
         </div>
       </div>
-      <p class="deck-status">06 / 10 · возможности</p>
     </section>
 
     <!-- ═══ 07 · СЦЕНАРИИ ═══════════════════════════════════════════════════
@@ -479,7 +462,6 @@
           </div>
         </div>
       </div>
-      <p class="deck-status">07 / 10 · сценарии</p>
     </section>
 
     <!-- ═══ 08 · РЕЗУЛЬТАТ ══════════════════════════════════════════════════ -->
@@ -507,7 +489,6 @@
         <p class="slide-punch reveal punch-gap">Мы измеряем не только контакт. <em>Мы видим развитие взаимодействия.</em></p>
         <p class="slide-note reveal">Процентов и графиков в этом документе нет намеренно: до пилота любая цифра здесь была&nbsp;бы выдуманной.</p>
       </div>
-      <p class="deck-status">08 / 10 · результат</p>
     </section>
 
     <!-- ═══ 09 · МАСШТАБ ════════════════════════════════════════════════════ -->
@@ -538,7 +519,6 @@
         <p class="slide-note reveal">Это масштабируемый подход и набор технологий, а не предложение заменить
            существующую цифровую инфраструктуру города.</p>
       </div>
-      <p class="deck-status">09 / 10 · масштаб</p>
     </section>
 
     <!-- ═══ 10 · ФИНАЛ ══════════════════════════════════════════════════════
