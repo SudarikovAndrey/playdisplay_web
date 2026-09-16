@@ -27,6 +27,9 @@
   <link rel="stylesheet" href="../kit/css/components.css">
   <link rel="stylesheet" href="../kit/css/animations.css">
   <link rel="stylesheet" href="../kit/css/trace.css">
+  <!-- Светлая тема: включается классом theme-light на body (kit/js/theme.js).
+       Подключается ПОСЛЕ остальных стилей кита — иначе её перебьют они же -->
+  <link rel="stylesheet" href="../kit/css/theme-light.css">
   <style>
     /* ── Стили страницы. Всё, что не относится к киту, живёт здесь ───────────── */
 
@@ -100,6 +103,19 @@
       .compare-col { padding: 18px 20px; }
       .punch-gap { margin-top: clamp(14px, 1.6vw, 22px); }
     }
+
+    /* Связка знаков в шапке: партнёрство видно с первого экрана, а не только в финале.
+       Выравнивание по ОСНОВАНИЮ букв, а не по середине: у знака студии длинная
+       надпись, у партнёра короткое слово, и по центру они читаются съехавшими. */
+    .mast-lockup { display: flex; align-items: baseline; gap: clamp(8px, 1vw, 14px); }
+    .mast-lockup i { color: rgba(154,164,184,.7); font-style: normal; font-size: 15px; }
+    .mast-lockup b {
+      font: 700 clamp(15px, 1.35vw, 21px)/1 Unbounded, "Arial Black", sans-serif;
+      letter-spacing: -.01em; color: var(--paper);
+    }
+    /* На телефоне в шапке остаётся только логотип: три надписи в 375 px не помещаются
+       рядом с меткой документа и кнопкой полного экрана. */
+    @media (max-width: 760px) { .mast-lockup i, .mast-lockup b { display: none; } }
 
     /* Заголовок первого экрана крупнее заголовка слайда: это название направления,
        а не название раздела. Кегль слайдовой h2 (до 76px) на нём выглядел подписью. */
@@ -222,10 +238,16 @@
   <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
 
   <header class="masthead">
-    <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="../kit/assets/demo/logo.webp" alt="Playdisplay"></a>
+    <div class="mast-lockup">
+      <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="../kit/assets/demo/logo.webp" alt="Playdisplay"></a>
+      <i>×</i>
+      <b>ВИЖУ</b>
+    </div>
     <div class="book-mark">
       <span>Цифровой слой</span>
       <span>Версия 0.1</span>
+      <button class="music-toggle" type="button" data-music="bgMusic" data-volume="0.28" aria-pressed="false" aria-label="Включить музыку"><i aria-hidden="true"><b></b></i><span data-music-label>Музыка</span></button>
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Включить светлую тему"><i aria-hidden="true"></i><span data-theme-label>Светлая тема</span></button>
       <button class="to-full" id="toFull" type="button" aria-pressed="false"><i></i><span>Во весь экран</span></button>
     </div>
   </header>
@@ -257,11 +279,11 @@
         </div>
         <div class="reveal">
           <p class="deck-body">
-            Персональная цифровая среда, которая сопровождает человека до, во время и после
-            взаимодействия с физическим проектом. Она объединяет пространство, цифровые сервисы,
-            ИИ, интерактивные механики и данные в&nbsp;единый непрерывный опыт.
+            Персональная цифровая среда, которая сопровождает человека до, во&nbsp;время и&nbsp;после
+            взаимодействия с&nbsp;физическим проектом. Она объединяет пространство, цифровые сервисы,
+            ИИ, интерактивные механики и&nbsp;данные в&nbsp;единый непрерывный опыт.
           </p>
-          <p class="slide-punch">Физическое пространство становится точкой входа, <em>а&nbsp;не точкой завершения.</em></p>
+          <p class="slide-punch">Физическое пространство становится точкой входа, <em>а&nbsp;не&nbsp;точкой завершения.</em></p>
         </div>
       </div>
     </section>
@@ -276,7 +298,7 @@
           <p class="overline">02 · Проблема</p>
           <h2>Контакт заканчивается слишком&nbsp;рано</h2>
           <p>Выставка заканчивается. Фестиваль заканчивается. Посещение образовательного или
-             молодёжного центра заканчивается. Человек выходит из пространства – и вместе с этим
+             молодёжного центра заканчивается. Человек выходит из&nbsp;пространства – и&nbsp;вместе с&nbsp;этим
              часто заканчивается взаимодействие.</p>
         </div>
         <div class="flow-diagram break-flow reveal">
@@ -287,7 +309,7 @@
           <div><b>Ушёл</b><span>контакт прерван</span></div>
           <i class="flow-cut"></i>
         </div>
-        <p class="slide-punch reveal punch-gap">Мы знаем, сколько людей пришло. <em>Но не знаем, что произошло с&nbsp;ними дальше.</em></p>
+        <p class="slide-punch reveal punch-gap">Мы&nbsp;знаем, сколько людей пришло. <em>Но&nbsp;не&nbsp;знаем, что&nbsp;произошло с&nbsp;ними дальше.</em></p>
       </div>
     </section>
 
@@ -299,13 +321,12 @@
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">03 · Путь</p>
-          <h2>Мы продолжаем путь человека</h2>
-          <p>Одна траектория вместо четырёх отдельных продуктов: то, что человек сделал на
-             предыдущем этапе, известно на следующем.</p>
+          <h2>Мы&nbsp;продолжаем путь человека</h2>
+          <p>Одна траектория вместо четырёх отдельных продуктов: то, что человек сделал на&nbsp;предыдущем этапе, известно на&nbsp;следующем.</p>
         </div>
         <div class="diagram journey-diagram journey-diagram--four">
           <div><b>01</b><span><strong>До</strong>Интерес. Знакомство. Цели. Первичная персонализация.</span></div>
-          <div><b>02</b><span><strong>В пространстве</strong>Персональный маршрут. ИИ-помощник. Интерактивы. Игровые механики.</span></div>
+          <div><b>02</b><span><strong>В&nbsp;пространстве</strong>Персональный маршрут. ИИ-помощник. Интерактивы. Игровые механики.</span></div>
           <div><b>03</b><span><strong>Онлайн</strong>Виртуальное посещение. Дополнительный контент. Обучение. Общение.</span></div>
           <div><b>04</b><span><strong>После</strong>Задания. Развитие навыков. Рекомендации. Новые активности. Следующий шаг.</span></div>
         </div>
@@ -326,8 +347,8 @@
           <p class="overline">04 · Пространство</p>
           <h2>Пространство начинает понимать человека</h2>
         </div>
-        <p class="persona reveal"><b>Аня, 19 лет.</b> Интересуется дизайном и цифровыми технологиями.
-           Пока не определилась с профессией. Любит игры и визуальные форматы.</p>
+        <p class="persona reveal"><b>Аня, 19 лет.</b> Интересуется дизайном и&nbsp;цифровыми технологиями.
+           Пока не&nbsp;определилась с&nbsp;профессией. Любит игры и&nbsp;визуальные форматы.</p>
         <ul class="clean-list">
           <li>1. Аня входит в пространство.</li>
           <li>2. Цифровой слой понимает её интересы и цели.</li>
@@ -343,8 +364,8 @@
           <li>ИИ</li><li><i>↔</i></li>
           <li>Данные</li>
         </ul>
-        <p class="slide-note reveal">Пространство реагирует не только на действие человека. Оно учитывает его интересы,
-           цели и уже пройденный путь.</p>
+        <p class="slide-note reveal">Пространство реагирует не&nbsp;только на&nbsp;действие человека. Оно учитывает его интересы,
+           цели и&nbsp;уже пройденный путь.</p>
       </div>
     </section>
 
@@ -354,28 +375,28 @@
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">05 · Онлайн</p>
-          <h2>Пространство больше не ограничено стенами</h2>
-          <p>Участвовать в проекте можно независимо от физического присутствия. Вход – телефон,
-             браузер или QR-код, а не шлем виртуальной реальности.</p>
+          <h2>Пространство больше не&nbsp;ограничено стенами</h2>
+          <p>Участвовать в&nbsp;проекте можно независимо от&nbsp;физического присутствия. Вход – телефон,
+             браузер или QR-код, а&nbsp;не&nbsp;шлем виртуальной реальности.</p>
         </div>
         <div class="concept-grid">
           <article class="concept-card concept-card--entry">
             <span>01</span>
-            <h4>Не можешь приехать?</h4>
+            <h4>Не&nbsp;можешь приехать?</h4>
             <p>Посети пространство онлайн: виртуальная выставка, 3D-пространство, интерактивный контент, ИИ-гид.</p>
           </article>
           <article class="concept-card concept-card--entry">
             <span>02</span>
             <h4>Начал знакомство онлайн?</h4>
-            <p>При физическом посещении пространство продолжит уже начатую траекторию, а не начнёт её заново.</p>
+            <p>При физическом посещении пространство продолжит уже начатую траекторию, а&nbsp;не&nbsp;начнёт её заново.</p>
           </article>
           <article class="concept-card concept-card--entry">
             <span>03</span>
-            <h4>Уже был?</h4>
+            <h4>Уже&nbsp;был?</h4>
             <p>Продолжай дома: обучение, задания, мини-игры, челленджи, соревнования, дополнительный контент.</p>
           </article>
         </div>
-        <p class="slide-punch reveal punch-gap">Физический и цифровой формат – не два проекта. <em>Это один опыт с&nbsp;разными точками входа.</em></p>
+        <p class="slide-punch reveal punch-gap">Физический и&nbsp;цифровой формат – не&nbsp;два проекта. <em>Это&nbsp;один опыт с&nbsp;разными точками входа.</em></p>
       </div>
     </section>
 
@@ -388,12 +409,12 @@
         <div class="slide-head reveal">
           <p class="overline">06 · Возможности</p>
           <h2>Конструктор цифрового опыта</h2>
-          <p>Для каждого проекта собирается собственный сценарий из единого набора возможностей.</p>
+          <p>Для каждого проекта собирается собственный сценарий из&nbsp;единого набора возможностей.</p>
         </div>
         <div class="core-map" data-core-map>
           <div class="core-map__core">
             <b>Цифровой слой</b>
-            <p class="core-map__note">Наведите на модуль, чтобы увидеть, что он делает.</p>
+            <p class="core-map__note">Наведите на модуль – рядом с ним появится, что он делает.</p>
           </div>
           <ul class="core-map__ring">
             <li><button type="button">ИИ-помощник<i>Отвечает на вопросы и сопровождает человека.</i></button></li>
@@ -423,7 +444,7 @@
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">07 · Сценарии</p>
-          <h2>Одна основа – разные задачи города</h2>
+          <h2>Одна основа –<br>разные задачи города</h2>
         </div>
         <div class="switcher" data-switcher="s07">
           <div class="switcher__tabs" role="tablist" aria-label="Сценарии применения">
@@ -434,28 +455,28 @@
           <div class="switcher__panels">
             <section role="tabpanel" id="p1" aria-labelledby="t1" tabindex="0">
               <div class="diagram journey-diagram journey-diagram--four">
-                <div><b>01</b><span><strong>Интерес</strong>Диалог и тестирование на входе.</span></div>
+                <div><b>01</b><span><strong>Интерес</strong>Диалог и&nbsp;тестирование на&nbsp;входе.</span></div>
                 <div><b>02</b><span><strong>Выбор направления</strong>Симуляции, мастер-классы, интерактивы.</span></div>
                 <div><b>03</b><span><strong>Развитие навыков</strong>Обучение, задания, практика.</span></div>
                 <div><b>04</b><span><strong>Реальная возможность</strong>Стажировка, вакансия, проект.</span></div>
               </div>
-              <p class="slide-note">От посещения профориентационного пространства – к реальному следующему шагу.</p>
+              <p class="slide-note">От&nbsp;посещения профориентационного пространства – к&nbsp;реальному следующему шагу.</p>
             </section>
             <section role="tabpanel" id="p2" aria-labelledby="t2" tabindex="0" class="is-off">
               <div class="diagram journey-diagram journey-diagram--four">
-                <div><b>01</b><span><strong>Интересы посетителя</strong>Короткое знакомство до входа в зал.</span></div>
-                <div><b>02</b><span><strong>Персональный маршрут</strong>ИИ-гид ведёт по экспозиции.</span></div>
+                <div><b>01</b><span><strong>Интересы посетителя</strong>Короткое знакомство до&nbsp;входа в&nbsp;зал.</span></div>
+                <div><b>02</b><span><strong>Персональный маршрут</strong>ИИ-гид ведёт по&nbsp;экспозиции.</span></div>
                 <div><b>03</b><span><strong>Интерактивы</strong>История посещения сохраняется.</span></div>
-                <div><b>04</b><span><strong>Возвращение к теме</strong>Дополнительный контент после визита.</span></div>
+                <div><b>04</b><span><strong>Возвращение к&nbsp;теме</strong>Дополнительный контент после визита.</span></div>
               </div>
-              <p class="slide-note">Экспозиция превращается из одинакового рассказа для всех в персональный диалог.</p>
+              <p class="slide-note">Экспозиция превращается из&nbsp;одинакового рассказа для всех в&nbsp;персональный диалог.</p>
             </section>
             <section role="tabpanel" id="p3" aria-labelledby="t3" tabindex="0" class="is-off">
               <div class="diagram journey-diagram journey-diagram--four">
                 <div><b>01</b><span><strong>Интересы</strong>Персональная программа события.</span></div>
                 <div><b>02</b><span><strong>Маршрут</strong>Что посмотреть именно этому человеку.</span></div>
-                <div><b>03</b><span><strong>Квесты и задания</strong>Соревнования между участниками.</span></div>
-                <div><b>04</b><span><strong>Награды</strong>И новые городские активности следом.</span></div>
+                <div><b>03</b><span><strong>Квесты и&nbsp;задания</strong>Соревнования между участниками.</span></div>
+                <div><b>04</b><span><strong>Награды</strong>И&nbsp;новые городские активности следом.</span></div>
               </div>
               <p class="slide-note">Событие заканчивается. Вовлечение продолжается.</p>
             </section>
@@ -470,7 +491,7 @@
       <div class="slide-shell">
         <div class="slide-head reveal">
           <p class="overline">08 · Результат</p>
-          <h2>От посещения – к результату</h2>
+          <h2>От&nbsp;посещения – к&nbsp;результату</h2>
         </div>
         <div class="compare">
           <div class="compare-col">
@@ -480,14 +501,14 @@
           </div>
           <div class="compare-col compare-col--strong">
             <span>Цифровой слой</span>
-            <b>Что произошло с человеком</b>
+            <b>Что произошло с&nbsp;человеком</b>
             <p>Что заинтересовало? <em>·</em> Что попробовал? <em>·</em> Что узнал? <em>·</em> Какие навыки развивал?
-               <em>·</em> Что завершил? <em>·</em> К чему вернулся? <em>·</em> Какие возможности выбрал?
+               <em>·</em> Что завершил? <em>·</em> К&nbsp;чему вернулся? <em>·</em> Какие возможности выбрал?
                <em>·</em> Какой следующий шаг сделал?</p>
           </div>
         </div>
-        <p class="slide-punch reveal punch-gap">Мы измеряем не только контакт. <em>Мы видим развитие взаимодействия.</em></p>
-        <p class="slide-note reveal">Процентов и графиков в этом документе нет намеренно: до пилота любая цифра здесь была&nbsp;бы выдуманной.</p>
+        <p class="slide-punch reveal punch-gap">Мы&nbsp;измеряем не&nbsp;только контакт. <em>Мы&nbsp;видим развитие взаимодействия.</em></p>
+        <p class="slide-note reveal">Процентов и&nbsp;графиков в&nbsp;этом документе нет намеренно: до&nbsp;пилота любая цифра здесь была&nbsp;бы&nbsp;выдуманной.</p>
       </div>
     </section>
 
@@ -498,8 +519,8 @@
         <div class="slide-head reveal">
           <p class="overline">09 · Масштаб</p>
           <h2>Одна основа – десятки сценариев</h2>
-          <p>Не создавать отдельный цифровой продукт для каждого проекта, а собирать новые
-             сценарии на общей технологической основе. При этом каждый проект остаётся
+          <p>Не&nbsp;создавать отдельный цифровой продукт для каждого проекта, а&nbsp;собирать новые
+             сценарии на&nbsp;общей технологической основе. При этом каждый проект остаётся
              самостоятельным.</p>
         </div>
         <ul class="tag-row domains reveal" aria-label="Области применения">
@@ -516,7 +537,7 @@
           <li>Выставки</li>
           <li>Общественные пространства</li>
         </ul>
-        <p class="slide-note reveal">Это масштабируемый подход и набор технологий, а не предложение заменить
+        <p class="slide-note reveal">Это масштабируемый подход и&nbsp;набор технологий, а&nbsp;не&nbsp;предложение заменить
            существующую цифровую инфраструктуру города.</p>
       </div>
     </section>
@@ -546,6 +567,9 @@
 
   </main>
 
+  <!-- Музыка: качается только по нажатию (preload="none"), играет по кругу -->
+  <audio id="bgMusic" loop preload="none"><source src="../audio/deep-space-tension.mp3" type="audio/mpeg"></audio>
+
   <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
 
   <script defer src="../kit/js/boot.js"></script>
@@ -557,6 +581,8 @@
   <script defer src="../kit/js/coremap.js"></script>
   <script defer src="../kit/js/switcher.js"></script>
   <script defer src="../kit/js/trace.js"></script>
+  <script defer src="../kit/js/music.js"></script>
+  <script defer src="../kit/js/theme.js"></script>
   <script defer src="../kit/js/ui.js"></script>
 
   <!-- ═══ СЦЕНЫ ОБЛАКА ТОЧЕК ══════════════════════════════════════════════
