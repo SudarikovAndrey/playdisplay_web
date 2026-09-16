@@ -1,0 +1,590 @@
+<!doctype html>
+<!-- deck – режим презентации: класс обязан стоять на <html>, а не на <body>:
+     scroll-snap-type с тела к области просмотра не поднимается и молча не работает -->
+<html lang="ru" class="deck">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#06070a">
+  <meta name="description" content="Цифровой слой – цифровое продолжение пространств, событий и программ: физический проект становится точкой входа в длительное персональное взаимодействие с человеком. Направление студии Playdisplay.">
+  <link rel="canonical" href="https://playdisplay.com/digital-layer/">
+  <meta property="og:title" content="Цифровой слой – цифровое продолжение пространств, событий и программ">
+  <meta property="og:description" content="Физическое пространство становится точкой входа, а не точкой завершения. Как выглядит непрерывная траектория человека: до, внутри, онлайн и после.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://playdisplay.com/digital-layer/">
+  <title>Цифровой слой – цифровое продолжение пространств, событий и программ | Playdisplay</title>
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" href="/assets/logos/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/logos/favicon-180.png">
+  <!-- Шрифты у нас, не с fonts.googleapis.com: внешний запрос на первом экране и
+       адрес посетителя, уходящий третьей стороне (см. assets/fonts/fonts.css) -->
+  <link rel="stylesheet" href="../assets/fonts/fonts.css">
+  <!-- Аналитика: один файл на весь сайт, путь абсолютный. Считает только боевые домены -->
+  <script src="/analytics.js" defer></script>
+  <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
+  <link rel="stylesheet" href="../kit/css/layout.css">
+  <link rel="stylesheet" href="../kit/css/typography.css">
+  <link rel="stylesheet" href="../kit/css/components.css">
+  <link rel="stylesheet" href="../kit/css/animations.css">
+  <link rel="stylesheet" href="../kit/css/trace.css">
+  <style>
+    /* ── Стили страницы. Всё, что не относится к киту, живёт здесь ───────────── */
+
+    /* На телефоне у панча межстрочное 1.06 из кита рассчитано на крупный кегль:
+       на 22 px строки почти смыкаются, и «ВХОДА» читается наложенным на строку выше.
+       Тот же случай, что записан в ките у крупной фразы: 0.98 стыкует строки. */
+    @media (max-width: 760px) {
+      .slide-punch { line-height: 1.16; }
+      .deck-title { line-height: 1.0; }
+    }
+
+    /* ── БЮДЖЕТ ВЫСОТЫ СЛАЙДА ────────────────────────────────────────────────
+       Замер на 1440×900: у .slide-shell остаётся 756 px (900 минус отступы слайда
+       81 + 63). В первой сборке шесть слайдов из десяти перерастали этот бюджет на
+       16–240 px, и главный виновник – панч: в узкой колонке слайда с графикой
+       (max-width 620) фраза ломалась на шесть строк по 55 px. В режиме слайдов
+       переросший слайд становится труднодоступным – браузер утягивает обратно к его
+       началу, – поэтому кегли и отступы здесь подрезаны замером, а не на глаз. */
+    .slide-head { margin-bottom: clamp(20px, 2.4vw, 32px); }
+    .slide-head h2 { font-size: clamp(28px, 4.1vw, 60px); }
+    .slide-punch { font-size: clamp(22px, 2.9vw, 42px); }
+    /* Панчу отдаём больше ширины, чем тексту: 700 против 620 – иначе он рвётся
+       на шесть строк там, где текст рядом занимает четыре. ТОЛЬКО на широком
+       экране: без этого условия 52vw на телефоне превращаются в 195 px, и слово
+       «ПРОСТРАНСТВО» ломается пополам – поймано на 375×812. */
+    @media (min-width: 900px) {
+      .slide--trace .slide-punch { max-width: min(52vw, 700px); }
+    }
+    .punch-gap { margin-bottom: 0; }
+    .slide .concept-card { min-height: 200px; padding: 20px 22px; }
+    .slide .concept-card h4 { margin-bottom: 12px; font-size: clamp(17px, 1.5vw, 22px); }
+    .slide .concept-card p { font-size: 14.5px; line-height: 1.5; }
+    /* Служебные подписи слайда ближе к содержанию: у кита отступ рассчитан на книгу */
+    .slide-note { margin-top: clamp(14px, 1.6vw, 22px); }
+    .slide .compare-col { gap: 12px; }
+    .core-map { height: min(46svh, 430px); }
+
+    /* ── НИЗКИЙ ЭКРАН (ноутбук 1280×720 и подобные) ──────────────────────────
+       Замер: при высоте окна 720 отступы слайда из кита (80 сверху + 56 снизу)
+       съедают 136 px – почти пятую часть экрана, и бюджет .slide-shell падает с
+       756 до 584. Пять слайдов из десяти перерастали его на 40–89 px. Кегли здесь
+       не «уменьшены на глаз», а подобраны так, чтобы самый плотный слайд (04, шесть
+       шагов) укладывался с запасом. Порог 820 px, а не 800: между 800 и 820 лежат
+       окна ноутбуков с открытой панелью закладок. Условие по ширине обязательно:
+       у телефона высота тоже меньше 820, но там работает мобильная раскладка кита,
+       и подрезанные отступы налезли бы на нижнюю ленту разделов. */
+    @media (max-height: 820px) and (min-width: 900px) {
+      .slide { padding-top: 88px; padding-bottom: 40px; }
+      .slide-head { margin-bottom: 16px; }
+      .slide-head h2 { font-size: clamp(26px, 3.4vw, 48px); }
+      .slide-head p { font-size: clamp(14.5px, 1.15vw, 17px); }
+      .slide-punch { font-size: clamp(20px, 2.4vw, 34px); }
+      .deck-title { font-size: clamp(32px, 5.2vw, 76px); }
+      .deck-sub { font-size: clamp(15px, 1.25vw, 19px); }
+      .deck-body { font-size: 14.5px; }
+      .slide .concept-card { min-height: 168px; padding: 16px 18px; }
+      .slide .concept-card h4 { font-size: clamp(16px, 1.35vw, 19px); margin-bottom: 10px; }
+      .slide .concept-card p { font-size: 13.5px; }
+      /* Шаги Ани: на низком экране шесть штук в две колонки давали 108 px на строку –
+         столько занимает крупная цифра кита (33 px) плюс её отступы. Ужимаем и цифру,
+         и колонку под неё; линию, соединяющую шаги, сдвигаем следом за отступом,
+         иначе она начинается ниже цифры и висит в воздухе. */
+      .steps-tight .clean-list--steps li { grid-template-columns: 44px 1fr; gap: 14px; padding: 6px 18px 7px 0; font-size: 14.5px; line-height: 1.45; }
+      .steps-tight .clean-list--steps .step-num { font-size: 26px; }
+      .steps-tight .clean-list--steps li:not(:last-child) .step-num::after { left: 22px; top: calc(6px + 1.15em); }
+      .chain { margin-top: 12px; }
+      .persona { margin-bottom: 12px; }
+      .slide-note { margin-top: 12px; }
+      .journey-diagram div { min-height: 150px; padding: 18px; }
+      .core-map { height: min(44svh, 360px); }
+      .compare-col { padding: 18px 20px; }
+      .punch-gap { margin-top: clamp(14px, 1.6vw, 22px); }
+    }
+
+    /* Заголовок первого экрана крупнее заголовка слайда: это название направления,
+       а не название раздела. Кегль слайдовой h2 (до 76px) на нём выглядел подписью. */
+    .deck-title {
+      margin: 0;
+      font-family: Unbounded, "Arial Black", sans-serif;
+      font-size: clamp(36px, 6.2vw, 96px);
+      font-weight: 700; line-height: .94; letter-spacing: -.045em;
+      text-transform: uppercase;
+    }
+    /* Абзац-пояснение первого экрана: уже, чем пояснение слайда, потому что справа
+       от него стоит облако точек */
+    .deck-body {
+      max-width: min(46vw, 620px); margin: 0 0 clamp(16px, 2vw, 26px);
+      color: #c3c9d4; font-size: clamp(15px, 1.2vw, 19px); line-height: 1.55;
+    }
+    @media (max-width: 899px) { .deck-body { max-width: none; } }
+    /* Панч после содержания слайда, а не перед ним: ему нужен отступ сверху */
+    .punch-gap { margin-top: clamp(18px, 2.2vw, 30px); }
+
+    .deck-sub {
+      margin: clamp(12px, 1.6vw, 20px) 0 0; max-width: 620px;
+      color: #c3c9d4; font-size: clamp(16px, 1.45vw, 23px); line-height: 1.4;
+    }
+
+    /* Цепочка звеньев одной строкой: «человек ↔ телефон ↔ пространство ↔ ИИ ↔ данные».
+       Это не диаграмма, а фраза – поэтому строка, а не плитки: техническая схема на
+       слайде про Аню читалась бы как архитектура системы, а не как её опыт. */
+    .chain {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      margin: clamp(14px, 1.8vw, 22px) 0 0; padding: 0; list-style: none;
+    }
+    .chain li { color: #dbe2f2; font: 500 12.5px/1 'Roboto Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+    .chain i { color: var(--electric); font-style: normal; }
+
+    /* Цепочка «пришёл – посмотрел – ушёл» занимает левую половину: правая отдана
+       облаку точек, где эта же линия обрывается. */
+    @media (min-width: 900px) {
+      .break-flow { max-width: 620px; }
+    }
+    .flow-diagram span { display: block; color: var(--muted); font-size: 13px; line-height: 1.4; }
+    /* Обрыв: последнее звено уходит в ничто. Пунктир, а не сплошная линия – сплошная
+       читается как «продолжение есть, просто оно за краем». */
+    .flow-cut { flex: 0 0 64px; height: 1px; background: none; border-top: 1px dashed rgba(255,255,255,.22); }
+
+    /* Этап пути: у клетки есть название и способ. Кит даёт только номер и подпись. */
+    .journey-diagram strong {
+      display: block; margin-bottom: 7px; color: var(--paper);
+      font-size: clamp(14px, 1.15vw, 17px); font-weight: 600;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+    /* Пояснение этапа — ФРАЗА, а не подпись, поэтому строчными. Кит держит весь
+       блок .diagram в капители с разрядкой (12 px, .08em): для двух слов это верно,
+       а «Персональный маршрут. ИИ-помощник. Интерактивы. Игровые механики.» в капители
+       на телефоне превращается в стену из заглавных. Название этапа (strong) капителью
+       остаётся — оно и есть подпись. */
+    .journey-diagram span { font-size: 13.5px; line-height: 1.45; color: #aeb6c6; text-transform: none; letter-spacing: .01em; }
+
+    /* Персона: короткая строка перед шагами. Отдельная карточка на слайде с шестью
+       шагами не помещалась, а сам человек важнее рамки вокруг него. */
+    .persona { margin: 0 0 clamp(12px, 1.5vw, 18px); color: #c3c9d4; font-size: clamp(15px, 1.2vw, 18px); line-height: 1.5; }
+    .persona b { color: var(--paper); font-weight: 600; }
+
+    /* Шаги Ани в две колонки: шесть штук в столбик перерастают экран слайда */
+    .steps-tight .clean-list { margin: 0; max-width: none; }
+    .steps-tight .clean-list--steps li { padding-top: 9px; padding-bottom: 9px; }
+
+    /* Три карточки входа: на слайде им не нужен книжный отступ сверху */
+    .slide .concept-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 900px) { .slide .concept-grid { grid-template-columns: 1fr; } }
+    .concept-card--entry h4 { font-size: clamp(17px, 1.5vw, 22px); }
+
+    /* Сопоставление обычной аналитики и цифрового слоя: вопросы идут перечнем внутри
+       колонки, поэтому абзацу тут нужен свой размер (см. ловушку блока compare). */
+    .compare-col p { font-size: 14.5px; line-height: 1.6; }
+    .compare-col p em { font-style: normal; color: #7f8ba0; }
+
+    /* Области применения: двенадцать названий рядом. Плитки по 220px дали бы три
+       ряда во весь экран, а это перечисление, а не витрина. */
+    .domains { max-width: 700px; }
+
+    /* ФИНАЛ ПОЯВЛЯЕТСЯ ПО ОЧЕРЕДИ. В режиме слайдов внутри экрана прокрутки нет, и
+       «при прокрутке появляется вторая мысль» пришлось бы разносить на два экрана –
+       между ними получился бы пустой кадр. Вместо этого задержки у одного и того же
+       проявления кита: строки приходят через 0.9 и 1.8 секунды после того, как слайд
+       попал в кадр. */
+    .fin-1 { transition-delay: .05s; }
+    .fin-2 { transition-delay: .95s; }
+    .fin-3 { transition-delay: 1.85s; }
+    .fin-3 { margin-top: clamp(26px, 3.6vw, 48px); }
+    .fin-mark { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    .fin-mark b {
+      font-family: Unbounded, "Arial Black", sans-serif; font-weight: 700;
+      font-size: clamp(22px, 2.4vw, 38px); letter-spacing: -.03em; text-transform: uppercase;
+    }
+    .fin-mark span { color: var(--muted); font-size: clamp(14px, 1.1vw, 17px); }
+    /* Связка знаков: логотип студии и партнёр текстом – на стадии прототипа
+       совместного знака нет, и рисовать его за партнёра нельзя. */
+    .fin-lockup { display: flex; align-items: center; gap: 16px; margin-top: clamp(22px, 3vw, 38px); }
+    .fin-lockup img { width: clamp(120px, 11vw, 168px); filter: invert(1); }
+    .fin-lockup i { color: var(--muted); font-style: normal; font-size: 20px; }
+    .fin-lockup b { font: 600 clamp(17px, 1.7vw, 26px)/1 Unbounded, "Arial Black", sans-serif; letter-spacing: .02em; }
+
+    /* Служебная строка внизу слайда: статус документа. Он черновик, и это должно
+       быть видно на каждом экране, а не только на первом. */
+    .deck-status {
+      position: absolute; left: 50%; bottom: clamp(18px, 2.4vh, 30px);
+      transform: translateX(-50%); width: var(--page);
+      color: rgba(154,164,184,.62); font: 500 10.5px/1 'Roboto Mono', monospace;
+      letter-spacing: .18em; text-transform: uppercase; pointer-events: none;
+    }
+    @media (max-width: 760px) { .deck-status { display: none; } }
+  </style>
+</head>
+<body>
+  <!-- Заставка лежит В РАЗМЕТКЕ, а не создаётся скриптом: иначе между показом
+       страницы и запуском скрипта мигает недогруженная вёрстка -->
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <img class="boot-logo" src="../kit/assets/demo/logo.webp" alt="">
+      <div class="boot-bar"><i id="bootBar"></i></div>
+      <p class="boot-note">Цифровой слой</p>
+    </div>
+  </div>
+
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="cursor-core" aria-hidden="true"></div>
+  <div class="brand-particles" id="brandParticles" aria-hidden="true"></div>
+  <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="../kit/assets/demo/logo.webp" alt="Playdisplay"></a>
+    <div class="book-mark">
+      <span>Цифровой слой</span>
+      <span>Версия 0.1</span>
+      <button class="to-full" id="toFull" type="button" aria-pressed="false"><i></i><span>Во весь экран</span></button>
+    </div>
+  </header>
+
+  <nav class="chapter-nav" aria-label="Навигация по разделам">
+    <a href="#s01" data-section="s01"><span>01</span><small>Идея</small></a>
+    <a href="#s02" data-section="s02"><span>02</span><small>Проблема</small></a>
+    <a href="#s03" data-section="s03"><span>03</span><small>Путь</small></a>
+    <a href="#s04" data-section="s04"><span>04</span><small>Пространство</small></a>
+    <a href="#s05" data-section="s05"><span>05</span><small>Онлайн</small></a>
+    <a href="#s06" data-section="s06"><span>06</span><small>Возможности</small></a>
+    <a href="#s07" data-section="s07"><span>07</span><small>Сценарии</small></a>
+    <a href="#s08" data-section="s08"><span>08</span><small>Результат</small></a>
+    <a href="#s09" data-section="s09"><span>09</span><small>Масштаб</small></a>
+    <a href="#s10" data-section="s10"><span>10</span><small>Будущее</small></a>
+    <p class="nav-legal">© Playdisplay</p>
+  </nav>
+
+  <main id="top">
+
+    <!-- ═══ 01 · ИДЕЯ ═══════════════════════════════════════════════════════
+         Название направления и одна формула под ним. Всё остальное – дальше. -->
+    <section class="slide slide--trace" id="s01" data-slide="01"
+             data-trace="s01" data-trace-box="0.45,0.10,0.99,0.92" data-trace-box-m="0.04,0.14,0.98,0.86">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Playdisplay · новое продуктовое направление</p>
+          <h1 class="deck-title">Цифровой<br>слой</h1>
+          <p class="deck-sub">Цифровое продолжение пространств, событий и&nbsp;программ.</p>
+        </div>
+        <div class="reveal">
+          <p class="deck-body">
+            Персональная цифровая среда, которая сопровождает человека до, во время и после
+            взаимодействия с физическим проектом. Она объединяет пространство, цифровые сервисы,
+            ИИ, интерактивные механики и данные в&nbsp;единый непрерывный опыт.
+          </p>
+          <p class="slide-punch">Физическое пространство становится точкой входа, <em>а&nbsp;не точкой завершения.</em></p>
+        </div>
+        <a class="scroll-cue" href="#s02"><span>Дальше</span><i></i></a>
+      </div>
+      <p class="deck-status">Черновик концепции · для обсуждения</p>
+    </section>
+
+    <!-- ═══ 02 · ПРОБЛЕМА ═══════════════════════════════════════════════════
+         Тот же путь, что на первом экране, но здесь он обрывается. Облако точек
+         рвёт линию справа, цепочка слева называет это словами. -->
+    <section class="slide slide--dark slide--trace" id="s02" data-slide="02"
+             data-trace="s02" data-trace-box="0.45,0.10,0.99,0.92" data-trace-box-m="0.04,0.14,0.98,0.86">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">02 · Проблема</p>
+          <h2>Контакт заканчивается слишком&nbsp;рано</h2>
+          <p>Выставка заканчивается. Фестиваль заканчивается. Посещение образовательного или
+             молодёжного центра заканчивается. Человек выходит из пространства – и вместе с этим
+             часто заканчивается взаимодействие.</p>
+        </div>
+        <div class="flow-diagram break-flow reveal">
+          <div><b>Пришёл</b><span>интерес, ожидание</span></div>
+          <i></i>
+          <div><b>Посмотрел</b><span>сильное впечатление</span></div>
+          <i></i>
+          <div><b>Ушёл</b><span>контакт прерван</span></div>
+          <i class="flow-cut"></i>
+        </div>
+        <p class="slide-punch reveal punch-gap">Мы знаем, сколько людей пришло. <em>Но не знаем, что произошло с&nbsp;ними дальше.</em></p>
+      </div>
+      <p class="deck-status">02 / 10 · проблема</p>
+    </section>
+
+    <!-- ═══ 03 · ПУТЬ ═══════════════════════════════════════════════════════
+         Центральный экран концепции: оборванная линия предыдущего слайда идёт
+         дальше и проходит через четыре состояния. -->
+    <section class="slide" id="s03" data-slide="03"
+             data-trace="s03" data-trace-box="0.04,0.10,0.98,0.94" data-trace-dim="0.5">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">03 · Путь</p>
+          <h2>Мы продолжаем путь человека</h2>
+          <p>Одна траектория вместо четырёх отдельных продуктов: то, что человек сделал на
+             предыдущем этапе, известно на следующем.</p>
+        </div>
+        <div class="diagram journey-diagram journey-diagram--four">
+          <div><b>01</b><span><strong>До</strong>Интерес. Знакомство. Цели. Первичная персонализация.</span></div>
+          <div><b>02</b><span><strong>В пространстве</strong>Персональный маршрут. ИИ-помощник. Интерактивы. Игровые механики.</span></div>
+          <div><b>03</b><span><strong>Онлайн</strong>Виртуальное посещение. Дополнительный контент. Обучение. Общение.</span></div>
+          <div><b>04</b><span><strong>После</strong>Задания. Развитие навыков. Рекомендации. Новые активности. Следующий шаг.</span></div>
+        </div>
+        <ul class="chain reveal" aria-label="Итоговая формула">
+          <li>Один человек</li><li><i>·</i></li>
+          <li>Один контекст</li><li><i>·</i></li>
+          <li>Непрерывная траектория</li>
+        </ul>
+      </div>
+      <p class="deck-status">03 / 10 · путь</p>
+    </section>
+
+    <!-- ═══ 04 · ПРОСТРАНСТВО ═══════════════════════════════════════════════
+         Та же идея на одном человеке: абстракция проверяется именем. -->
+    <section class="slide slide--dark steps-tight" id="s04" data-slide="04"
+             data-trace="s04" data-trace-box="0.52,0.10,0.99,0.92" data-trace-dim="0.75" data-trace-box-m="0.04,0.14,0.98,0.86">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">04 · Пространство</p>
+          <h2>Пространство начинает понимать человека</h2>
+        </div>
+        <p class="persona reveal"><b>Аня, 19 лет.</b> Интересуется дизайном и цифровыми технологиями.
+           Пока не определилась с профессией. Любит игры и визуальные форматы.</p>
+        <ul class="clean-list">
+          <li>1. Аня входит в пространство.</li>
+          <li>2. Цифровой слой понимает её интересы и цели.</li>
+          <li>3. Предлагает персональный маршрут.</li>
+          <li>4. Аня проходит интерактив, тест или профессиональную симуляцию.</li>
+          <li>5. Результат сохраняется в её цифровом профиле.</li>
+          <li>6. Следующий этап уже учитывает полученный опыт.</li>
+        </ul>
+        <ul class="chain reveal" aria-label="Что с чем связано">
+          <li>Человек</li><li><i>↔</i></li>
+          <li>Телефон</li><li><i>↔</i></li>
+          <li>Пространство</li><li><i>↔</i></li>
+          <li>ИИ</li><li><i>↔</i></li>
+          <li>Данные</li>
+        </ul>
+        <p class="slide-note reveal">Пространство реагирует не только на действие человека. Оно учитывает его интересы,
+           цели и уже пройденный путь.</p>
+      </div>
+      <p class="deck-status">04 / 10 · пространство</p>
+    </section>
+
+    <!-- ═══ 05 · ОНЛАЙН ═════════════════════════════════════════════════════ -->
+    <section class="slide" id="s05" data-slide="05"
+             data-trace="s05" data-trace-box="0.04,0.08,0.98,0.94" data-trace-dim="0.45">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">05 · Онлайн</p>
+          <h2>Пространство больше не ограничено стенами</h2>
+          <p>Участвовать в проекте можно независимо от физического присутствия. Вход – телефон,
+             браузер или QR-код, а не шлем виртуальной реальности.</p>
+        </div>
+        <div class="concept-grid">
+          <article class="concept-card concept-card--entry">
+            <span>01</span>
+            <h4>Не можешь приехать?</h4>
+            <p>Посети пространство онлайн: виртуальная выставка, 3D-пространство, интерактивный контент, ИИ-гид.</p>
+          </article>
+          <article class="concept-card concept-card--entry">
+            <span>02</span>
+            <h4>Начал знакомство онлайн?</h4>
+            <p>При физическом посещении пространство продолжит уже начатую траекторию, а не начнёт её заново.</p>
+          </article>
+          <article class="concept-card concept-card--entry">
+            <span>03</span>
+            <h4>Уже был?</h4>
+            <p>Продолжай дома: обучение, задания, мини-игры, челленджи, соревнования, дополнительный контент.</p>
+          </article>
+        </div>
+        <p class="slide-punch reveal punch-gap">Физический и цифровой формат – не два проекта. <em>Это один опыт с&nbsp;разными точками входа.</em></p>
+      </div>
+      <p class="deck-status">05 / 10 · онлайн</p>
+    </section>
+
+    <!-- ═══ 06 · ВОЗМОЖНОСТИ ════════════════════════════════════════════════
+         Конструктор: в середине то, из чего всё собрано, по кольцу – то, что
+         подключается. Пояснение модуля приходит в середину карты. -->
+    <section class="slide slide--dark" id="s06" data-slide="06"
+             data-trace="s06" data-trace-box="0.21,0.40,0.97,0.96" data-trace-dim="0.45">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">06 · Возможности</p>
+          <h2>Конструктор цифрового опыта</h2>
+          <p>Для каждого проекта собирается собственный сценарий из единого набора возможностей.</p>
+        </div>
+        <div class="core-map" data-core-map>
+          <div class="core-map__core">
+            <b>Цифровой слой</b>
+            <p class="core-map__note">Наведите на модуль, чтобы увидеть, что он делает.</p>
+          </div>
+          <ul class="core-map__ring">
+            <li><button type="button">ИИ-помощник<i>Отвечает на вопросы и сопровождает человека.</i></button></li>
+            <li><button type="button">Персональный гид<i>Формирует маршрут с учётом интересов.</i></button></li>
+            <li><button type="button">Персонализация<i>Адаптирует содержание под конкретного человека.</i></button></li>
+            <li><button type="button">Виртуальное пространство<i>Позволяет участвовать дистанционно.</i></button></li>
+            <li><button type="button">Обучение<i>Продолжает развитие после физического посещения.</i></button></li>
+            <li><button type="button">Тестирование<i>Помогает определить интересы, знания и прогресс.</i></button></li>
+            <li><button type="button">Задания и испытания<i>Поддерживают регулярное участие.</i></button></li>
+            <li><button type="button">Квесты<i>Связывают цифровой и физический опыт.</i></button></li>
+            <li><button type="button">Мини-игры<i>Помогают вовлекать через действие.</i></button></li>
+            <li><button type="button">Соревнования<i>Создают социальную мотивацию.</i></button></li>
+            <li><button type="button">Достижения и награды<i>Фиксируют прогресс.</i></button></li>
+            <li><button type="button">Интерактивы в пространстве<i>Обмениваются данными с цифровым профилем.</i></button></li>
+            <li><button type="button">Профиль участника<i>Сохраняет историю взаимодействия.</i></button></li>
+            <li><button type="button">Аналитика<i>Показывает путь от первого контакта до результата.</i></button></li>
+          </ul>
+        </div>
+      </div>
+      <p class="deck-status">06 / 10 · возможности</p>
+    </section>
+
+    <!-- ═══ 07 · СЦЕНАРИИ ═══════════════════════════════════════════════════
+         Одна основа в трёх задачах города. Вкладки, а не три экрана подряд:
+         рядом лежащие сценарии читаются как разные продукты. -->
+    <section class="slide" id="s07" data-slide="07"
+             data-trace="s07" data-trace-box="0.04,0.08,0.98,0.94" data-trace-dim="0.55">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">07 · Сценарии</p>
+          <h2>Одна основа – разные задачи города</h2>
+        </div>
+        <div class="switcher" data-switcher="s07">
+          <div class="switcher__tabs" role="tablist" aria-label="Сценарии применения">
+            <button type="button" role="tab" id="t1" aria-controls="p1" aria-selected="true">01 / Молодёжь и профессии</button>
+            <button type="button" role="tab" id="t2" aria-controls="p2" aria-selected="false">02 / Культура и выставки</button>
+            <button type="button" role="tab" id="t3" aria-controls="p3" aria-selected="false">03 / Фестивали и события</button>
+          </div>
+          <div class="switcher__panels">
+            <section role="tabpanel" id="p1" aria-labelledby="t1" tabindex="0">
+              <div class="diagram journey-diagram journey-diagram--four">
+                <div><b>01</b><span><strong>Интерес</strong>Диалог и тестирование на входе.</span></div>
+                <div><b>02</b><span><strong>Выбор направления</strong>Симуляции, мастер-классы, интерактивы.</span></div>
+                <div><b>03</b><span><strong>Развитие навыков</strong>Обучение, задания, практика.</span></div>
+                <div><b>04</b><span><strong>Реальная возможность</strong>Стажировка, вакансия, проект.</span></div>
+              </div>
+              <p class="slide-note">От посещения профориентационного пространства – к реальному следующему шагу.</p>
+            </section>
+            <section role="tabpanel" id="p2" aria-labelledby="t2" tabindex="0" class="is-off">
+              <div class="diagram journey-diagram journey-diagram--four">
+                <div><b>01</b><span><strong>Интересы посетителя</strong>Короткое знакомство до входа в зал.</span></div>
+                <div><b>02</b><span><strong>Персональный маршрут</strong>ИИ-гид ведёт по экспозиции.</span></div>
+                <div><b>03</b><span><strong>Интерактивы</strong>История посещения сохраняется.</span></div>
+                <div><b>04</b><span><strong>Возвращение к теме</strong>Дополнительный контент после визита.</span></div>
+              </div>
+              <p class="slide-note">Экспозиция превращается из одинакового рассказа для всех в персональный диалог.</p>
+            </section>
+            <section role="tabpanel" id="p3" aria-labelledby="t3" tabindex="0" class="is-off">
+              <div class="diagram journey-diagram journey-diagram--four">
+                <div><b>01</b><span><strong>Интересы</strong>Персональная программа события.</span></div>
+                <div><b>02</b><span><strong>Маршрут</strong>Что посмотреть именно этому человеку.</span></div>
+                <div><b>03</b><span><strong>Квесты и задания</strong>Соревнования между участниками.</span></div>
+                <div><b>04</b><span><strong>Награды</strong>И новые городские активности следом.</span></div>
+              </div>
+              <p class="slide-note">Событие заканчивается. Вовлечение продолжается.</p>
+            </section>
+          </div>
+        </div>
+      </div>
+      <p class="deck-status">07 / 10 · сценарии</p>
+    </section>
+
+    <!-- ═══ 08 · РЕЗУЛЬТАТ ══════════════════════════════════════════════════ -->
+    <section class="slide slide--dark" id="s08" data-slide="08"
+             data-trace="s08" data-trace-box="0.04,0.08,0.98,0.94" data-trace-dim="0.42">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">08 · Результат</p>
+          <h2>От посещения – к результату</h2>
+        </div>
+        <div class="compare">
+          <div class="compare-col">
+            <span>Обычная аналитика</span>
+            <b>Сколько было</b>
+            <p>Сколько пришло? <em>·</em> Сколько зарегистрировалось? <em>·</em> Сколько времени провели?</p>
+          </div>
+          <div class="compare-col compare-col--strong">
+            <span>Цифровой слой</span>
+            <b>Что произошло с человеком</b>
+            <p>Что заинтересовало? <em>·</em> Что попробовал? <em>·</em> Что узнал? <em>·</em> Какие навыки развивал?
+               <em>·</em> Что завершил? <em>·</em> К чему вернулся? <em>·</em> Какие возможности выбрал?
+               <em>·</em> Какой следующий шаг сделал?</p>
+          </div>
+        </div>
+        <p class="slide-punch reveal punch-gap">Мы измеряем не только контакт. <em>Мы видим развитие взаимодействия.</em></p>
+        <p class="slide-note reveal">Процентов и графиков в этом документе нет намеренно: до пилота любая цифра здесь была&nbsp;бы выдуманной.</p>
+      </div>
+      <p class="deck-status">08 / 10 · результат</p>
+    </section>
+
+    <!-- ═══ 09 · МАСШТАБ ════════════════════════════════════════════════════ -->
+    <section class="slide slide--trace" id="s09" data-slide="09"
+             data-trace="s09" data-trace-box="0.48,0.08,0.99,0.94" data-trace-box-m="0.04,0.14,0.98,0.86">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">09 · Масштаб</p>
+          <h2>Одна основа – десятки сценариев</h2>
+          <p>Не создавать отдельный цифровой продукт для каждого проекта, а собирать новые
+             сценарии на общей технологической основе. При этом каждый проект остаётся
+             самостоятельным.</p>
+        </div>
+        <ul class="tag-row domains reveal" aria-label="Области применения">
+          <li>Образование</li>
+          <li>Профориентация</li>
+          <li>Трудоустройство</li>
+          <li>Культура</li>
+          <li>Музеи</li>
+          <li>Туризм</li>
+          <li>Молодёжные центры</li>
+          <li>Предпринимательство</li>
+          <li>Спорт</li>
+          <li>Фестивали</li>
+          <li>Выставки</li>
+          <li>Общественные пространства</li>
+        </ul>
+        <p class="slide-note reveal">Это масштабируемый подход и набор технологий, а не предложение заменить
+           существующую цифровую инфраструктуру города.</p>
+      </div>
+      <p class="deck-status">09 / 10 · масштаб</p>
+    </section>
+
+    <!-- ═══ 10 · ФИНАЛ ══════════════════════════════════════════════════════
+         Сеть тает, остаётся одна мысль. Строки приходят по очереди – задержки
+         у проявления, см. .fin-1/2/3 в стилях страницы. -->
+    <section class="slide" id="s10" data-slide="10"
+             data-trace="s10" data-trace-box="0.06,0.06,0.94,0.94">
+      <div class="slide-shell">
+        <p class="slide-punch reveal fin-1">Физический проект заканчивается.</p>
+        <p class="slide-punch reveal fin-2">Взаимодействие с&nbsp;человеком – <em>продолжается.</em></p>
+        <div class="reveal fin-3">
+          <div class="fin-mark">
+            <b>Цифровой слой</b>
+            <span>цифровое продолжение пространств, событий и программ</span>
+          </div>
+          <div class="fin-lockup">
+            <img src="../kit/assets/demo/logo.webp" alt="Playdisplay">
+            <i>×</i>
+            <b>ВИЖУ</b>
+          </div>
+          <p class="slide-note">Черновик концепции для обсуждения · Андрей Судариков · a.sudarikov@playdisplay.ru</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
+
+  <script defer src="../kit/js/boot.js"></script>
+  <script defer src="../kit/js/reveal-cursor.js"></script>
+  <script defer src="../kit/js/nav.js"></script>
+  <script defer src="../kit/js/parallax.js"></script>
+  <script defer src="../kit/js/lists.js"></script>
+  <script defer src="../kit/js/deck.js"></script>
+  <script defer src="../kit/js/coremap.js"></script>
+  <script defer src="../kit/js/switcher.js"></script>
+  <script defer src="../kit/js/trace.js"></script>
+  <script defer src="../kit/js/ui.js"></script>
+
+  <!-- ═══ СЦЕНЫ ОБЛАКА ТОЧЕК ══════════════════════════════════════════════
+       Формы задаются в долях рамки слайда (data-trace-box), движок сам ведёт
+       переход между ними по прокрутке. Порядок сцен = порядок слайдов, поэтому
+       линия, оборванная на 02, продолжается на 03 теми же точками.
+       defer у скрипта обязателен: kitTrace объявлен в файле выше, а сцены
+       регистрируются до старта. -->
+  <script defer src="scenes.js"></script>
+</body>
+</html>
