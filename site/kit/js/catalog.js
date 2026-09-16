@@ -62,6 +62,15 @@
         groups[g].push(bl);
       });
 
+      /* Поля описи читаем ЗАЩИЩЁННО. Опись правят руками из разных чатов, и одна
+         запись без заголовка или с css строкой вместо списка роняла ВЕСЬ каталог в
+         «не удалось прочитать blocks.json» — сообщение уводило в сторону, а блок с
+         опечаткой было не найти (поймано 16.09.2026). */
+      function list(v) { return v == null ? [] : (typeof v === 'string' ? [v] : v); }
+
+      /* title и what подставляем с запасом: одна запись без заголовка роняла ВЕСЬ
+         каталог в «не удалось прочитать blocks.json» — сообщение уводило в сторону,
+         и блок, добавленный без поля, было не найти (поймано 16.09.2026). */
       var navHtml = '', bodyHtml = '', missingDemo = [];
       order.forEach(function (g) {
         var title = (doc.groups && doc.groups[g]) || g;
@@ -76,15 +85,15 @@
           bodyHtml +=
             '<article class="kb-card" id="b-' + bl.id + '">' +
               '<header class="kb-card__head"><span class="kb-id">' + bl.id + '</span>' +
-              '<h3>' + esc(bl.title) + '</h3><p class="kb-what">' + esc(bl.what) + '</p></header>' +
+              '<h3>' + esc(bl.title || bl.id) + '</h3><p class="kb-what">' + esc(bl.what || '') + '</p></header>' +
               (inner ? '<div class="kb-stage" data-stage="' + bl.id + '">' + inner + '</div>' : '') +
               (liveNote ? '<p class="kb-note">' + esc(liveNote) + '</p>' : '') +
               '<details class="kb-code"><summary>Разметка</summary><pre>' +
                 esc(inner || bl.markup) + '</pre></details>' +
               '<div class="kb-meta">' +
                 '<div class="kb-files"><h4>Файлы</h4><code>' +
-                  (bl.css.map(function (f) { return 'css/' + f; })
-                    .concat(bl.js.map(function (f) { return 'js/' + f; })).join('  ·  ') || '—') +
+                  (list(bl.css).map(function (f) { return 'css/' + f; })
+                    .concat(list(bl.js).map(function (f) { return 'js/' + f; })).join('  ·  ') || '—') +
                 '</code></div>' +
                 list('Опции', bl.options) +
                 list('Подводные камни', bl.traps, 'kb-traps') +
@@ -114,6 +123,8 @@
       if (window.kitHotspots) window.kitHotspots(document);
       if (window.kitArmScrub) window.kitArmScrub(document);
       if (window.kitChatPhone) window.kitChatPhone(document);
+      if (window.kitCoreMap) window.kitCoreMap();
+      if (window.kitSwitcher) window.kitSwitcher();
       dispatchEvent(new Event('resize'));
     })
     .catch(function (e) {

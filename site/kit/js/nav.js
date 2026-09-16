@@ -1,6 +1,8 @@
 (() => {
   const links = [...document.querySelectorAll('.chapter-nav a')];
-  const sections = [...document.querySelectorAll('.chapter, .final-credits')];
+  /* `.slide` в списке — ради страниц в режиме презентации: там разделы это слайды,
+     и без них полоса разделов подсвечивала бы первый пункт на всём документе. */
+  const sections = [...document.querySelectorAll('.chapter, .slide, .final-credits')];
   if (!links.length || !sections.length) return;
 
   const setActive = (id) => {

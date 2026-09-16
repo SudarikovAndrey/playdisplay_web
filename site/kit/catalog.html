@@ -418,6 +418,68 @@
       </div>
     </div>
 
+    <div data-block="core-map">
+      <div class="core-map" data-core-map style="height:380px">
+        <div class="core-map__core">
+          <b>Ядро</b>
+          <p class="core-map__note">Наведите на модуль, чтобы увидеть пояснение.</p>
+        </div>
+        <ul class="core-map__ring">
+          <li><button type="button">Первый модуль<i>Что делает первый модуль.</i></button></li>
+          <li><button type="button">Второй модуль<i>Что делает второй модуль.</i></button></li>
+          <li><button type="button">Третий модуль<i>Что делает третий модуль.</i></button></li>
+          <li><button type="button">Четвёртый модуль<i>Что делает четвёртый модуль.</i></button></li>
+          <li><button type="button">Пятый модуль<i>Что делает пятый модуль.</i></button></li>
+          <li><button type="button">Шестой модуль<i>Что делает шестой модуль.</i></button></li>
+          <li><button type="button">Седьмой модуль<i>Что делает седьмой модуль.</i></button></li>
+          <li><button type="button">Восьмой модуль<i>Что делает восьмой модуль.</i></button></li>
+        </ul>
+      </div>
+    </div>
+
+    <div data-block="switcher">
+      <div class="switcher" data-switcher="demo">
+        <div class="switcher__tabs" role="tablist" aria-label="Сценарии">
+          <button type="button" role="tab" id="kbT1" aria-controls="kbP1" aria-selected="true">01 / Первый</button>
+          <button type="button" role="tab" id="kbT2" aria-controls="kbP2" aria-selected="false">02 / Второй</button>
+          <button type="button" role="tab" id="kbT3" aria-controls="kbP3" aria-selected="false">03 / Третий</button>
+        </div>
+        <div class="switcher__panels">
+          <section role="tabpanel" id="kbP1" aria-labelledby="kbT1" tabindex="0">
+            <div class="diagram journey-diagram journey-diagram--three" style="margin:0">
+              <div><b>01</b><span>Первый шаг сценария</span></div>
+              <div><b>02</b><span>Второй шаг сценария</span></div>
+              <div><b>03</b><span>Третий шаг сценария</span></div>
+            </div>
+          </section>
+          <section role="tabpanel" id="kbP2" aria-labelledby="kbT2" tabindex="0" class="is-off">
+            <div class="diagram journey-diagram journey-diagram--three" style="margin:0">
+              <div><b>01</b><span>Другой первый шаг</span></div>
+              <div><b>02</b><span>Другой второй шаг</span></div>
+              <div><b>03</b><span>Другой третий шаг, подлиннее, чтобы было видно: высота блока не меняется</span></div>
+            </div>
+          </section>
+          <section role="tabpanel" id="kbP3" aria-labelledby="kbT3" tabindex="0" class="is-off">
+            <div class="diagram journey-diagram journey-diagram--three" style="margin:0">
+              <div><b>01</b><span>Третий сценарий</span></div>
+              <div><b>02</b><span>Его второй шаг</span></div>
+              <div><b>03</b><span>Его третий шаг</span></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div data-block="tag-row">
+      <ul class="tag-row" aria-label="Области применения">
+        <li>Образование</li><li>Культура</li><li>Музеи</li><li>Туризм</li>
+        <li>Спорт</li><li>Фестивали</li><li>Выставки</li><li>Общественные пространства</li>
+      </ul>
+    </div>
+
+    <div data-block="deck" data-live="Живой пример — «Цифровой слой»: site/digital-layer/. Страховка проявления и листание стрелками включаются сами на странице с классом deck."></div>
+    <div data-block="trace" data-live="Живой пример — «Цифровой слой»: site/digital-layer/. Десять сцен одного облака точек, сцены лежат рядом со страницей в scenes.js."></div>
+
     <div data-block="final-credits">
       <footer class="final-credits" style="min-height:0;margin:0;padding:48px 28px">
         <div class="final-credits__main">
@@ -438,6 +500,8 @@
   <script defer src="js/nav.js"></script>
   <script defer src="js/parallax.js"></script>
   <script defer src="js/lists.js"></script>
+  <script defer src="js/coremap.js"></script>
+  <script defer src="js/switcher.js"></script>
   <script defer src="js/hotspots.js"></script>
   <script defer src="js/xray.js"></script>
   <script defer src="js/ball.js"></script>

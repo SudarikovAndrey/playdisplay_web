@@ -3315,3 +3315,131 @@ a.proto-card:hover .proto-go { color: #F1FBFC; }
 @media (max-width: 900px) {
   .proto-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 30px; }
 }
+
+/* ─── ЯДРО И МОДУЛИ ──────────────────────────────────────────────────────────
+   Набор возможностей вокруг одного центра. Сетка одинаковых карточек показывает
+   ПЕРЕЧЕНЬ, а здесь нужно показать СИСТЕМУ: в середине то, из чего всё собрано,
+   по кольцу — то, что к нему подключается. Расстановку по эллипсу ведёт
+   kit/js/coremap.js: углы зависят от числа модулей, в CSS их не задать.          */
+.core-map { position: relative; width: 100%; height: min(50svh, 470px); }
+/* Кольцо рисуем рамкой ТОГО ЖЕ эллипса, по которому скрипт ставит модули
+   (rx 42 %, ry 40 % от середины) — иначе линия и подписи разъезжаются. */
+.core-map::before {
+  content: "";
+  position: absolute; left: 8%; right: 8%; top: 10%; bottom: 10%;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 50%;
+}
+.core-map__core {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(340px, 40%); text-align: center; z-index: 2;
+}
+.core-map__core b {
+  display: block;
+  font-family: Unbounded, "Arial Black", sans-serif;
+  font-size: clamp(15px, 1.5vw, 21px); font-weight: 700;
+  letter-spacing: -.02em; text-transform: uppercase;
+}
+/* У пояснения СВОЯ минимальная высота: без неё появление текста при наведении
+   дёргает центр карты, и модули кажутся плавающими. */
+.core-map__core p {
+  margin: 12px 0 0; min-height: 4.2em;
+  color: var(--muted); font-size: 13.5px; line-height: 1.45;
+}
+.core-map__ring { list-style: none; margin: 0; padding: 0; }
+.core-map__ring li { position: absolute; transform: translate(-50%, -50%); }
+.core-map__ring button {
+  display: block; max-width: 168px; padding: 7px 10px;
+  color: #cfd6e6; background: rgba(9,11,18,.72);
+  border: 1px solid var(--line); border-radius: 999px;
+  font: 500 11.5px/1.25 'Roboto Mono', monospace;
+  letter-spacing: .04em; text-transform: uppercase; text-align: center;
+  cursor: pointer; transition: color .25s, border-color .25s, background .25s;
+}
+.core-map__ring button:hover,
+.core-map__ring button:focus-visible,
+.core-map__ring button.is-on {
+  color: var(--paper); border-color: rgba(122,145,255,.65); background: rgba(35,70,255,.18);
+}
+/* Пояснение живёт В КНОПКЕ, а не в атрибуте: один и тот же текст показывается в
+   середине карты на большом экране и прямо под названием на телефоне. Два места —
+   один источник. */
+.core-map__ring button i { display: none; }
+
+@media (max-width: 900px) {
+  /* На телефоне эллипс не работает: подписи в 11 px на 390 пикселях ширины
+     налезают друг на друга. Карта становится обычным списком, а пояснение —
+     видимым сразу: наводить там нечем. */
+  .core-map { height: auto; }
+  .core-map::before { display: none; }
+  .core-map__core { position: static; transform: none; width: auto; text-align: left; }
+  .core-map__core p { display: none; }
+  .core-map__ring { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+  .core-map__ring li { position: static; transform: none; }
+  .core-map__ring button {
+    max-width: none; width: 100%; padding: 10px 12px; text-align: left;
+    border-radius: 12px; font-style: normal;
+  }
+  .core-map__ring button i {
+    display: block; margin-top: 5px;
+    color: var(--muted); font: 400 11px/1.35 'Roboto Mono', monospace;
+    letter-spacing: 0; text-transform: none; font-style: normal;
+  }
+}
+
+/* ─── ПЕРЕКЛЮЧАЕМЫЕ СЦЕНАРИИ ────────────────────────────────────────────────
+   Одна система, показанная в трёх задачах. Вкладки, а не три экрана подряд:
+   рядом лежащие сценарии читаются как РАЗНЫЕ продукты, переключаемые — как один.  */
+.switcher__tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 clamp(18px, 2.4vw, 30px); }
+.switcher__tabs button {
+  padding: 10px 16px; color: var(--muted); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px;
+  font: 500 11.5px/1 'Roboto Mono', monospace; letter-spacing: .12em; text-transform: uppercase;
+  cursor: pointer; transition: color .25s, border-color .25s, background .25s;
+}
+.switcher__tabs button:hover { color: #dce3f2; }
+.switcher__tabs button[aria-selected="true"] {
+  color: var(--paper); border-color: rgba(122,145,255,.65); background: rgba(35,70,255,.18);
+}
+/* ВСЕ ПАНЕЛИ В ОДНОЙ ЯЧЕЙКЕ СЕТКИ. Высота блока равна самой высокой панели и не
+   меняется при переключении: иначе слайд прыгает под рукой, а в режиме слайдов
+   прыжок высоты сбивает прилипание. */
+.switcher__panels { display: grid; }
+.switcher__panels > * {
+  grid-area: 1 / 1;
+  transition: opacity .34s ease, transform .34s cubic-bezier(.16,1,.3,1);
+}
+/* visibility, а НЕ display: скрытый через display элемент выпадает из сетки, и
+   высота снова начинает прыгать. Заодно visibility прячет панель от скринридера. */
+.switcher__panels > .is-off { visibility: hidden; opacity: 0; transform: translateY(10px); pointer-events: none; }
+
+/* ─── ЧЕТЫРЕ ШАГА ВМЕСТО ПЯТИ ──────────────────────────────────────────────
+   У пути посетителя пять колонок жёстко. Четыре этапа в сетке из пяти оставляют
+   пустую клетку, и полоса читается как незаконченная — тот же случай, что у
+   коллекции с пятой плиткой. */
+.journey-diagram--four { grid-template-columns: repeat(4, 1fr); }
+.journey-diagram--three { grid-template-columns: repeat(3, 1fr); }
+/* ПОРЯДОК ВАЖНЕЕ НАМЕРЕНИЯ: мобильное правило .journey-diagram { 1fr } стоит ВЫШЕ
+   по файлу (в блоке max-width: 760px) и имеет ту же силу, поэтому модификаторы,
+   объявленные здесь, перебили бы его и оставили четыре колонки на телефоне.
+   Повторяем свёртку в столбик после них — тот же случай, что с прилипанием слайдов. */
+@media (max-width: 760px) {
+  .journey-diagram--four, .journey-diagram--three { grid-template-columns: 1fr; }
+}
+
+/* ─── РЯД ОБЛАСТЕЙ ──────────────────────────────────────────────────────────
+   Перечисление в одну ленту: двенадцать направлений, отраслей или форматов.
+   Плитками (по 220 px) тот же список занял бы три ряда во весь экран и читался
+   как витрина, хотя это именно перечисление – объём важнее каждого пункта.      */
+.tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.tag-row li {
+  padding: 10px 16px; color: #cfd6e6;
+  background: rgba(255,255,255,.035); border: 1px solid var(--line); border-radius: 999px;
+  font: 500 12.5px/1 'Roboto Mono', monospace; letter-spacing: .08em; text-transform: uppercase;
+}
+@media (max-width: 760px) {
+  /* На телефоне длинные названия («общественные пространства») переносятся внутри
+     плашки; без выравнивания по левому краю перенос читается как два пункта. */
+  .tag-row { gap: 8px; }
+  .tag-row li { padding: 8px 12px; font-size: 11.5px; letter-spacing: .06em; }
+}
