@@ -3340,31 +3340,62 @@ a.proto-card:hover .proto-go { color: #F1FBFC; }
   font-size: clamp(15px, 1.5vw, 21px); font-weight: 700;
   letter-spacing: -.02em; text-transform: uppercase;
 }
-/* У пояснения СВОЯ минимальная высота: без неё появление текста при наведении
-   дёргает центр карты, и модули кажутся плавающими. */
+/* Строка под названием ядра ПОСТОЯННАЯ — расшифровки модулей с 16.09.2026
+   показываются у самих модулей. Прежде текст здесь подменялся при наведении, и ему
+   приходилось держать запас высоты в 4.2em, иначе центр карты дёргался. */
 .core-map__core p {
-  margin: 12px 0 0; min-height: 4.2em;
+  margin: 12px 0 0;
   color: var(--muted); font-size: 13.5px; line-height: 1.45;
 }
 .core-map__ring { list-style: none; margin: 0; padding: 0; }
-.core-map__ring li { position: absolute; transform: translate(-50%, -50%); }
+/* Пункт двигает скрипт (соседи разъезжаются от выбранного), поэтому переход стоит
+   на transform самого пункта, а базовый translate(-50%,-50%) обязан сохраняться в
+   инлайновом значении: без него пункт слетит с точки. */
+.core-map__ring li {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: transform .42s cubic-bezier(.16, 1, .3, 1);
+}
+.core-map__ring li.is-on { z-index: 4; }
 .core-map__ring button {
   display: block; max-width: 168px; padding: 7px 10px;
   color: #cfd6e6; background: rgba(9,11,18,.72);
   border: 1px solid var(--line); border-radius: 999px;
   font: 500 11.5px/1.25 'Roboto Mono', monospace;
   letter-spacing: .04em; text-transform: uppercase; text-align: center;
-  cursor: pointer; transition: color .25s, border-color .25s, background .25s;
+  cursor: pointer;
+  transition: transform .34s cubic-bezier(.16, 1, .3, 1), color .25s, border-color .25s, background .25s;
 }
 .core-map__ring button:hover,
 .core-map__ring button:focus-visible,
 .core-map__ring button.is-on {
   color: var(--paper); border-color: rgba(122,145,255,.65); background: rgba(35,70,255,.18);
 }
-/* Пояснение живёт В КНОПКЕ, а не в атрибуте: один и тот же текст показывается в
-   середине карты на большом экране и прямо под названием на телефоне. Два места —
-   один источник. */
-.core-map__ring button i { display: none; }
+/* Выбранный модуль крупнее на пятую часть — ровно настолько, чтобы читалось как
+   «этот», а не как «этот прыгнул». */
+.core-map__ring button.is-on { transform: scale(1.2); }
+
+/* РАСШИФРОВКА ЛЕЖИТ В ПУНКТЕ, А НЕ В КНОПКЕ (наружу её выносит coremap.js): внутри
+   кнопки её забрал бы с собой масштаб выбранного, и текст стал бы крупнее соседних.
+   В разметке она остаётся внутри кнопки — на телефоне показывается прямо под
+   названием, и оба места должны питаться одним источником. */
+.core-map__ring i {
+  position: absolute; left: 50%; top: calc(100% + 14px);
+  width: 220px; margin-left: -110px;          /* сдвиг у краёв карты досчитывает скрипт */
+  padding: 11px 13px;
+  color: #cfd6e6; background: rgba(8,10,16,.96);
+  border: 1px solid rgba(122,145,255,.38); border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0,0,0,.55);
+  font: 400 12px/1.45 'Roboto Mono', monospace;
+  letter-spacing: 0; text-transform: none; font-style: normal; text-align: left;
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: opacity .22s ease, transform .22s cubic-bezier(.16, 1, .3, 1);
+  pointer-events: none; z-index: 5;
+}
+.core-map__ring li.is-on i { opacity: 1; visibility: visible; transform: none; }
+/* У модулей нижней половины окно открывается вверх: снизу у них край карты */
+.core-map__ring li.up i { top: auto; bottom: calc(100% + 14px); transform: translateY(6px); }
+.core-map__ring li.up.is-on i { transform: none; }
 
 @media (max-width: 900px) {
   /* На телефоне эллипс не работает: подписи в 11 px на 390 пикселях ширины
@@ -3376,15 +3407,23 @@ a.proto-card:hover .proto-go { color: #F1FBFC; }
   .core-map__core p { display: none; }
   .core-map__ring { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
   .core-map__ring li { position: static; transform: none; }
+  .core-map__ring li { transition: none; }
   .core-map__ring button {
-    max-width: none; width: 100%; padding: 10px 12px; text-align: left;
-    border-radius: 12px; font-style: normal;
+    max-width: none; width: 100%; padding: 10px 12px 0; text-align: left;
+    border-radius: 12px 12px 0 0; font-style: normal;
   }
-  .core-map__ring button i {
-    display: block; margin-top: 5px;
+  .core-map__ring button.is-on { transform: none; }
+  /* На телефоне расшифровка стоит на месте, а не всплывает: наводить там нечем.
+     Селектор без указания родителя — текст может лежать и в кнопке (как в разметке),
+     и в пункте (туда его переносит скрипт). */
+  .core-map__ring i {
+    position: static; display: block; width: auto; margin: 0;
+    padding: 2px 12px 10px; background: rgba(9,11,18,.72);
+    border: 1px solid var(--line); border-top: 0; border-radius: 0 0 12px 12px;
+    box-shadow: none; opacity: 1; visibility: visible; transform: none;
     color: var(--muted); font: 400 11px/1.35 'Roboto Mono', monospace;
-    letter-spacing: 0; text-transform: none; font-style: normal;
   }
+  .core-map__ring li.up i { top: auto; bottom: auto; transform: none; }
 }
 
 /* ─── ПЕРЕКЛЮЧАЕМЫЕ СЦЕНАРИИ ────────────────────────────────────────────────
@@ -3442,4 +3481,39 @@ a.proto-card:hover .proto-go { color: #F1FBFC; }
      плашки; без выравнивания по левому краю перенос читается как два пункта. */
   .tag-row { gap: 8px; }
   .tag-row li { padding: 8px 12px; font-size: 11.5px; letter-spacing: .06em; }
+}
+
+
+/* ─── ПЕРЕКЛЮЧАТЕЛЬ СВЕТЛОЙ ТЕМЫ ───────────────────────────────────────────
+   Стоит рядом с музыкой и «во весь экран»: это три кнопки режима показа, и жить
+   им надо вместе. Значок — кружок с вырезанной долькой (месяц/солнце); при
+   светлой теме он заливается, то есть показывает ТЕКУЩИЙ свет, а надпись рядом
+   называет ДЕЙСТВИЕ. Подробности — блок theme-light в описи.                  */
+.masthead .theme-toggle {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 8px 12px;
+  border: 1px solid rgba(159, 180, 200, .28); border-radius: 3px;
+  background: transparent; color: var(--muted);
+  font: 500 9.5px/1 "Roboto Mono", monospace; letter-spacing: .14em; text-transform: uppercase;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
+}
+.masthead .theme-toggle:hover { color: var(--paper); border-color: rgba(159,180,200,.6); background: rgba(255,255,255,.05); }
+.theme-toggle i {
+  position: relative; display: block; width: 11px; height: 11px;
+  border: 1.5px solid currentColor; border-radius: 50%;
+  overflow: hidden;
+}
+/* Долька: половина кружка залита цветом текста — получается месяц, и он же
+   становится «солнцем», когда тема светлая и заливка уходит. */
+.theme-toggle i::after {
+  content: ""; position: absolute; inset: -1px auto -1px -1px; width: 55%;
+  background: currentColor;
+}
+.theme-toggle[aria-pressed="true"] i::after { display: none; }
+.theme-toggle[aria-pressed="true"] i { box-shadow: 0 0 0 2px rgba(255,255,255,.12); }
+@media (max-width: 760px) {
+  /* На телефоне подписи у кнопок режима не помещаются — остаются значки */
+  .masthead .music-toggle span, .masthead .theme-toggle span { display: none; }
+  .masthead .music-toggle, .masthead .theme-toggle { padding: 8px 9px; }
 }
