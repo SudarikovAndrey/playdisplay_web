@@ -667,6 +667,18 @@ img, video { -webkit-user-drag: none; user-drag: none; }
   .hero-visual { height: 68svh; }
   .hero-visual img { object-position: 50% 50%; filter: none; }
   .playdisplay-logo img { width: 135px; }
+  /* ПОЛОСА РАЗДЕЛОВ НА ТЕЛЕФОНЕ — ЛЕНТА, А НЕ ЦЕНТРИРОВАННЫЙ РЯД. Базовое правило
+     выше ставит justify-content: center; десять пунктов по 42 px в 374 доступных
+     не влезают, и центрирование выносит ПЕРВЫЙ и ПОСЛЕДНИЙ за края — прокруткой
+     их уже не достать (замер на 390×844: у активного пункта left −22). */
+  .chapter-nav { justify-content: flex-start; }
+  /* Отметка активного пункта в ленте — тонкая черта сверху, а не столбик. Правило
+     `height: 26px` объявлено НИЖЕ мобильного блока и перебивало его: отметка
+     вырастала в брусок 18×26 и накрывала цифру пункта целиком. */
+  .chapter-nav a.active::before { height: 2px; }
+  /* Сдвиг вправо на 2 px читается в вертикальной полосе; в горизонтальной ленте
+     он просто дёргает пункт вбок при переходе между слайдами */
+  .chapter-nav a:hover, .chapter-nav a.active { transform: none; }
 }
 
 @media print {

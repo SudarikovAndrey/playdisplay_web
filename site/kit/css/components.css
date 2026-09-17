@@ -232,6 +232,10 @@
    мобильного media-блока сознательно — там .collection-diagram переводится в две
    колонки, и при равной специфичности побеждает то, что ниже: телефон должен выиграть. */
 .collection-diagram--five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+/* Три плитки в ряд. Нужен там, где метрик ровно три: в сетке из четырёх третья
+   оставляет пустую клетку, и полоса читается как незаконченная — ради этого же
+   когда-то появился модификатор --five. */
+.collection-diagram--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .collection-diagram--five b { font-size: 38px; }
 /* ПЛОТНЫЙ ВАРИАНТ ПЛИТКИ. Нужен, когда на слайде под цифрами живёт ещё один блок –
    например лента отзывов. В полный рост (220 px на плитку плюс кегль 46) плитка съедает
@@ -973,7 +977,16 @@ html.deck { scroll-snap-type: y mandatory; }
    1152 px при экране 900. */
 .steps-2col .clean-list--steps { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(20px, 3vw, 52px); }
 .steps-2col .clean-list--steps li:nth-last-child(2) { border-bottom: 0; }
-@media (max-width: 760px) { .steps-2col .clean-list--steps { grid-template-columns: 1fr; } }
+/* Вертикальный поводок от номера к следующему шагу в две колонки ВРЁТ: он тянется
+   вниз, а следующий шаг стоит справа. У шагов 1 и 3 поводок указывал на 3 и 5,
+   а у 5 висел в пустоту (поймано на презентации Jurerê, шесть шагов). Цепочка
+   вертикальна только в один столбец — там правило и остаётся. */
+.steps-2col .clean-list--steps li .step-num::after { content: none; }
+@media (max-width: 760px) {
+  .steps-2col .clean-list--steps { grid-template-columns: 1fr; }
+  /* В столбик цепочка снова честная — поводок возвращается */
+  .steps-2col .clean-list--steps li:not(:last-child) .step-num::after { content: ""; }
+}
 
 /* СЛАЙД-КАДР: игровая картинка во весь экран, текст поверх.
    ГЛАВНАЯ ЛОВУШКА — ПРОПОРЦИИ ИСХОДНИКА. Кадры мобильной игры вертикальные (1282×2778),

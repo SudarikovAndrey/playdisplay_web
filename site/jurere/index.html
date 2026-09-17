@@ -1,0 +1,594 @@
+<!doctype html>
+<!-- deck – режим презентации: класс обязан стоять на <html>, а не на <body class="theme-jurere">:
+     scroll-snap-type с тела к области просмотра не поднимается и молча не работает -->
+<html lang="ru" class="deck">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f4fafd">
+  <!-- Страница открыта по прямому адресу, но из выдачи исключена: это предложение
+       конкретной компании, а не материал сайта студии -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Farmácia Jurerê AI — персональный AI-ассистент продукта: покупатель фотографирует упаковку и получает ответы о составе, приёме и ограничениях. Предложение PLAYDISPLAY.">
+  <title>Ваш продукт теперь говорит сам · Farmácia Jurerê AI</title>
+  <!-- Inter — наборный шрифт САМОЙ Farmácia Jurerê (снят с их сайта). Вторая их
+       гарнитура, Sora, здесь не подключается СОЗНАТЕЛЬНО: у неё нет кириллицы,
+       и русские заголовки молча уехали бы на системный шрифт. Подробнее — в шапке
+       kit/css/theme-jurere.css. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Аналитика: один файл на весь сайт, путь абсолютный. Считает только боевые домены -->
+  <script src="/analytics.js" defer></script>
+  <!-- Порядок обязателен: layout задаёт токены и сетку, на которые опирается остальное -->
+  <link rel="stylesheet" href="../kit/css/layout.css">
+  <link rel="stylesheet" href="../kit/css/typography.css">
+  <link rel="stylesheet" href="../kit/css/components.css">
+  <link rel="stylesheet" href="../kit/css/animations.css">
+  <!-- Тема Jurerê подключается ПОСЛЕ кита: белая бумага, бирюза #0086ad,
+       сливовый акцент #5d1e66 — цвета сняты с боевого farmaciajurere.com.br -->
+  <link rel="stylesheet" href="../kit/css/theme-jurere.css">
+  <!-- Стили страницы: правки, которые не относятся к киту, живут здесь, а не в kit/css -->
+  <style>
+    /* ── БЮДЖЕТ ВЫСОТЫ СЛАЙДА ────────────────────────────────────────────────
+       В режиме колоды переросший слайд становится труднодоступным: браузер
+       утягивает обратно к его началу, и нижняя часть содержания не видна вовсе.
+       Поэтому кегли и отступы подрезаны замером против высоты окна, а не на глаз
+       (тот же приём и те же числа, что в site/digital-layer/). */
+    .slide-head { margin-bottom: clamp(18px, 2.2vw, 30px); }
+    .slide-head h2 { font-size: clamp(28px, 4vw, 58px); }
+    /* Панч на слайде стоит РЯДОМ с заголовком, а не вместо него: на кит-кегле
+       (до 58 px) две крупные фразы на одном экране спорят между собой и слайд
+       читается как два заголовка. Плюс свой отступ сверху — у кита его нет,
+       и панч прилипал к карточкам вплотную. */
+    .slide-punch { font-size: clamp(20px, 2.4vw, 34px); margin-top: clamp(20px, 2.6vw, 34px); }
+    .slide .slide-head p { max-width: 1040px; }
+    /* Служебные подписи кита рассчитаны на книгу, где их читают вблизи.
+       На проекторе 13–14 px не читаются — поднимаем служебный кегль по странице. */
+    .slide-note { margin-top: clamp(12px, 1.5vw, 20px); font-size: 16px; line-height: 1.55; max-width: 1000px; }
+    .clean-list { max-width: 1000px; margin: 22px 0 26px; }
+    .clean-list li { padding: 13px 30px 13px 0; }
+    .slide .concept-card { min-height: 0; padding: 22px 24px; }
+    /* Кит прижимает заголовок карточки к низу (margin-top: auto) — при его
+       min-height 310 все карточки равны и это ровно. Здесь высота снята, карточки
+       тянутся по самой длинной, и заголовки вставали на РАЗНОЙ высоте (замер:
+       вторая карточка выше соседних на 43 px). Ставим заголовок сразу под меткой. */
+    .slide .concept-card h4 { margin: 14px 0 12px; font-size: clamp(17px, 1.5vw, 22px); }
+    .slide .concept-card p { font-size: 14.5px; line-height: 1.5; }
+
+    /* ── ЦЕПОЧКА С ПЕРЕНОСОМ ──────────────────────────────────────────────
+       У кит-цепочки звенья стоят в один ряд. Здесь их шесть-семь, и на базовом
+       кегле (32 px) ряд не помещается в полосу содержания: последнее звено
+       уезжало за правый край. Свой кегль плюс разрешённый перенос строки. */
+    .jr-chain { flex-wrap: wrap; justify-content: flex-start; row-gap: 12px; }
+    .jr-chain b { font-size: clamp(14px, 1.3vw, 19px); white-space: nowrap; }
+    /* Соединитель кита тянется (flex: 1) и на переносе растягивался до конца строки:
+       после последнего влезшего звена оставалась длинная черта в пустоту. Здесь он
+       фиксированной длины, а строка пакуется влево — перенос читается как
+       продолжение цепочки, а не как оборванная связь. */
+    .jr-chain i { flex: 0 0 auto; width: clamp(16px, 2.2vw, 46px); min-width: 16px; }
+
+    /* Абзац-продолжение после чипов вопросов: по весу равен пояснению заголовка,
+       но стоит ПОСЛЕ содержания слайда, поэтому ему нужен свой отступ сверху */
+    .chips-after { max-width: 1000px; margin: clamp(16px, 2.2vw, 28px) 0 0; color: #46525d; font-size: clamp(15px, 1.2vw, 18px); line-height: 1.5; }
+    .chips-after b { color: #26323c; font-weight: 600; }
+
+    /* Сноска к условным цифрам. Она ОБЯЗАНА выглядеть служебной: цифры на слайде
+       выдуманы как пример визуализации, и спутать их с замером нельзя. */
+    .jr-star { margin: 14px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .jr-star b { color: var(--jr-plum); }
+
+    /* Первый экран: колонке текста рядом с телефоном нужна своя ширина, иначе
+       заголовок доезжает до кадра и налезает на него уже на 1500 px (ловушка кита).
+       Кит-кегель h1 рассчитан на короткие слова во всю ширину экрана — здесь
+       колонка узкая, а слова длинные. ТОЛЬКО там, где телефон виден: ниже 1000 px
+       кит его прячет и сам ведёт мобильный кегль. */
+    @media (min-width: 1001px) {
+      .hero-copy--narrow h1 { font-size: clamp(30px, 4.2vw, 68px); }
+    }
+    /* Связка знаков: оба знака широкие словесные, на кит-высоте (44–84 px) они
+       не помещаются в узкую колонку рядом с телефоном и переносятся */
+    .hero .lockup { gap: clamp(12px, 1.6vw, 24px); margin-bottom: clamp(14px, 1.8vw, 26px); }
+    .hero .lockup img { height: clamp(20px, 2vw, 30px); }
+    .hero .lockup-x { font-size: clamp(15px, 1.5vw, 22px); }
+    /* Место под знак заказчика: файл знака приходит от владельца, в репозитории
+       его нет — ровно как со знаком LADA в компреде АвтоВАЗу */
+    .hero .lockup-slot { font-size: 12px; padding: 7px 14px; }
+    /* Обёртка отклика на курсор (corner-cast__hover) растянута китом на 100 % под
+       слои персонажа. Здесь она обязана быть ПО СОДЕРЖИМОМУ: иначе центрирование
+       кадра центрирует ОБЁРТКУ, а телефон прилипает к её верху и уезжает под шапку
+       (замер: верх телефона −60 вместо 162). Ловушка записана в ките у hero-proof;
+       та же правка стоит в site/akvion/. */
+    .hero-phone .corner-cast__hover { width: auto; height: auto; }
+
+    /* ── НИЗКИЙ ЭКРАН (ноутбук 1280×720 и подобные) ──────────────────────────
+       При высоте окна 720 отступы слайда из кита съедают почти пятую часть экрана.
+       Порог 820 px, а не 800: между 800 и 820 лежат окна ноутбуков с открытой
+       панелью закладок. Условие по ширине обязательно — у телефона высота тоже
+       меньше 820, но там работает мобильная раскладка кита, и подрезанные отступы
+       налезли бы на нижнюю ленту разделов. */
+    @media (max-height: 820px) and (min-width: 900px) {
+      .slide { padding-top: 84px; padding-bottom: 38px; }
+      .slide-head { margin-bottom: 12px; }
+      .slide-head h2 { font-size: clamp(26px, 3.2vw, 44px); }
+      .slide-punch { font-size: clamp(20px, 2.2vw, 30px); }
+      .clean-list { margin: 16px 0 20px; }
+      .clean-list li { padding: 10px 28px 10px 0; }
+      .slide .concept-card { padding: 18px 20px; }
+      /* Замер на 1280×720: бюджет слайда падает с 756 до 598, и четыре слайда
+         перерастали его — от 13 до 115 пикселей (хуже всех 07: семь карточек,
+         три плитки и сноска). Подрезано не «на глаз», а ровно там, где лежал
+         лишний воздух: поля карточек, кегль числа в плитке и служебные отступы. */
+      .clean-list--cards li { padding: 9px 14px 11px; }
+      .clean-list--cards .card-num { margin-bottom: 5px; }
+      .chat-chips li { padding: 8px 14px; }
+      .compare-col { padding: 20px 22px; }
+      .collection-diagram--tight div { min-height: 0; padding: 9px 11px; gap: 4px; }
+      .collection-diagram--tight b { font-size: 24px; }
+      .collection-diagram--tight span { font-size: 11px; }
+      .slide-punch { margin-top: 14px; }
+      .slide-note { margin-top: 10px; font-size: 14.5px; }
+      .jr-star { margin-top: 8px; font-size: 13px; }
+      #s07 .clean-list { margin: 8px 0 8px; }
+      #s07 .clean-list li { padding-top: 8px; padding-bottom: 8px; }
+    }
+
+    /* Слайд 07 — самый плотный: семь пунктов, три плитки и сноска. Замер на
+       1440×900: содержание 789 px против бюджета 756. Шаг строки списка здесь
+       свой, а общий не трогаем — на остальных слайдах он выверен. */
+    #s07 .clean-list { margin: 16px 0 16px; }
+    #s07 .clean-list li { padding-top: 10px; padding-bottom: 10px; }
+    #s07 .jr-star { margin-top: 10px; }
+
+    /* На телефоне у панча межстрочное 1.06 из кита рассчитано на крупный кегль:
+       на 21 px строки почти смыкаются и читаются наложенными друг на друга */
+    @media (max-width: 760px) {
+      .slide-punch { line-height: 1.16; }
+      /* Кит-межстрочное у h1 рассчитано на две строки во всю ширину экрана.
+         На телефоне заголовок ломается на четыре, и у «ПРОДУКТ» хвост Д упирался
+         в «ГОВОРИТ» строкой ниже */
+      .hero h1 { line-height: 1.02; }
+      /* Связка знаков в строку на телефон не помещается: рамка-пропуск занимает
+         всю ширину, знак студии переносится, и крест остаётся висеть в конце
+         первой строки — между рамкой и пустотой. В столбик крест не нужен вовсе:
+         принадлежность документа уже сказана надстрочником над связкой. */
+      .hero .lockup { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .hero .lockup-x { display: none; }
+      .hero .lockup-slot { font-size: 11px; }
+    }
+  </style>
+</head>
+<body class="theme-jurere">
+  <!-- Заставка лежит В РАЗМЕТКЕ, а не создаётся скриптом: иначе между показом
+       страницы и запуском скрипта мигает недогруженная вёрстка -->
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <img class="boot-logo" src="../kit/assets/demo/logo.webp" alt="">
+      <div class="boot-bar"><i id="bootBar"></i></div>
+      <p class="boot-note">Для Farmácia Jurerê · AI-ассистент продукта</p>
+    </div>
+  </div>
+
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="cursor-core" aria-hidden="true"></div>
+  <div class="brand-particles" id="brandParticles" aria-hidden="true"></div>
+  <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <div class="mast-lockup">
+      <a class="playdisplay-logo playdisplay-logo--top" href="#top" data-brand-logo aria-label="В начало"><img src="../kit/assets/demo/logo.webp" alt="Playdisplay"></a>
+      <i>×</i>
+      <b>JURERÊ</b>
+    </div>
+    <div class="book-mark">
+      <span>AI-ассистент продукта</span>
+      <span>Версия 0.1</span>
+      <button class="to-full" id="toFull" type="button" aria-pressed="false"><i></i><span>Во весь экран</span></button>
+    </div>
+  </header>
+
+  <nav class="chapter-nav" aria-label="Навигация по разделам">
+    <a href="#s01" data-section="s01"><span>01</span><small>Упаковка</small></a>
+    <a href="#s02" data-section="s02"><span>02</span><small>Фото</small></a>
+    <a href="#s03" data-section="s03"><span>03</span><small>Знания</small></a>
+    <a href="#s04" data-section="s04"><span>04</span><small>Аудитории</small></a>
+    <a href="#s05" data-section="s05"><span>05</span><small>Продажи</small></a>
+    <a href="#s06" data-section="s06"><span>06</span><small>Каналы</small></a>
+    <a href="#s07" data-section="s07"><span>07</span><small>Данные</small></a>
+    <a href="#s08" data-section="s08"><span>08</span><small>Отношения</small></a>
+    <a href="#s09" data-section="s09"><span>09</span><small>Прототип</small></a>
+    <a href="#fin" data-section="fin"><span>10</span><small>Итог</small></a>
+    <p class="nav-legal">© Playdisplay</p>
+  </nav>
+
+  <main id="top">
+
+    <!-- ═══ ПЕРВЫЙ ЭКРАН ═══════════════════════════════════════════════════
+         Справа не скриншот, а ЖИВОЙ ДИАЛОГ: телефон нарисован CSS, реплики
+         проигрываются скриптом кита (chatphone.js). Статичный кадр чата читается
+         как «у них есть макет», живой диалог — как «у них есть продукт».
+         Реплики лежат в разметке: это текст презентации, а не данные скрипта. -->
+    <section class="hero">
+      <!-- data-cast: cast.js пишет на контейнер два числа (--mx/--my) от курсора,
+           амплитуду слоя задаёт CSS — отклик телефона читается как глубина -->
+      <div class="hero-intro" data-cast>
+        <!-- Мотив знака Jurerê: повёрнутый квадрат из диагональных полос.
+             ДЕКОРАЦИЯ, а не логотип — сам знак стоит в связке ниже -->
+        <svg class="jr-mark jr-mark--hero" viewBox="0 0 420 420" aria-hidden="true">
+          <defs>
+            <linearGradient id="jrg1" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#5d1e66" stop-opacity=".14"/>
+              <stop offset="1" stop-color="#0086ad" stop-opacity=".42"/>
+            </linearGradient>
+            <clipPath id="jrc1"><rect x="82" y="82" width="256" height="256" rx="46" transform="rotate(45 210 210)"/></clipPath>
+          </defs>
+          <g clip-path="url(#jrc1)" stroke="url(#jrg1)" stroke-width="30" stroke-linecap="round">
+            <path d="M-20,230 L230,-20"/>
+            <path d="M30,280 L280,30"/>
+            <path d="M80,330 L330,80"/>
+            <path d="M130,380 L380,130"/>
+            <path d="M180,430 L430,180"/>
+          </g>
+        </svg>
+
+        <div class="hero-copy hero-copy--narrow reveal">
+          <p class="overline hero-overline" data-parallax="0.03">Подготовлено специально для&nbsp;Farmácia Jurerê</p>
+          <!-- Знак Farmácia Jurerê приходит файлом от владельца: чужой логотип
+               в репозитории студии не лежит. До тех пор — рамка-пропуск, ровно
+               как со знаком LADA в компреде АвтоВАЗу -->
+          <div class="lockup" data-parallax="0.06">
+            <span class="lockup-slot">Место под знак Farmácia Jurerê</span>
+            <span class="lockup-x">×</span>
+            <img src="../kit/assets/demo/logo.webp" alt="Playdisplay">
+          </div>
+          <h1><span class="l1" data-parallax="0.075">ВАШ ПРОДУКТ</span><span class="l2" data-parallax="0.05">ГОВОРИТ САМ</span></h1>
+          <p class="hero-statement hero-statement--float" data-parallax="0.04">Персональный AI-ассистент, который знает продукты Farmácia&nbsp;Jurerê, отвечает на&nbsp;вопросы, помогает с&nbsp;выбором и&nbsp;продолжает взаимодействие после покупки.</p>
+          <p class="hero-facts-title">Каждая упаковка становится началом персонального диалога</p>
+          <ul class="hero-facts hero-facts--accent" data-parallax="0.05">
+            <li><b>1&nbsp;фото</b><span>от упаковки до&nbsp;ответа</span></li>
+            <li><b>24/7</b><span>рядом с&nbsp;каждым продуктом</span></li>
+            <li><b>1&nbsp;база</b><span>знаний на&nbsp;все каналы</span></li>
+          </ul>
+        </div>
+
+        <figure class="hero-phone" data-parallax="0.08">
+          <span class="corner-cast__hover">
+            <div class="chat-phone" data-chat-phone data-chat-stream>
+              <div class="chat-phone__screen">
+                <div class="chat-phone__head">
+                  <i class="chat-phone__ava" aria-hidden="true"></i>
+                  <p><b>Farmácia Jurerê AI</b><span>о&nbsp;вашем продукте</span></p>
+                </div>
+                <div class="chat-phone__feed" data-chat-feed>
+                  <p class="chat-phone__scan">Упаковка распознана по&nbsp;фото</p>
+                </div>
+                <ol class="chat-phone__script" hidden>
+                  <li data-from="user">Я купил этот магний. Расскажи простыми словами, для чего он и как его правильно принимать?</li>
+                  <li data-from="ai">Конечно. Давайте разберём ваш продукт. В упаковке — магний в форме треоната, 30 капсул, вместе с триптофаном, L-теанином и родиолой.</li>
+                  <li data-from="ai">Расскажу по порядку: за что отвечает каждый компонент, в какое время его обычно принимают и с чем сочетать не стоит.</li>
+                  <li data-from="user">А вечером можно?</li>
+                  <li data-from="ai">Да, в инструкции указан приём после ужина. Показать полный состав и ограничения?</li>
+                </ol>
+              </div>
+            </div>
+          </span>
+        </figure>
+
+        <a class="scroll-cue" href="#s01"><span>Смотреть</span><i></i></a>
+      </div>
+    </section>
+
+    <!-- ═══ 01. УПАКОВКА ═══════════════════════════════════════════════════
+         Сопоставление, а не перечисление: слева привычная этикетка, справа то же
+         место с ассистентом. Две колонки читаются с одного взгляда, а два списка
+         подряд заставили бы сравнивать самому. -->
+    <section class="slide" id="s01" data-slide="01">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Проблема</p>
+          <h2>На&nbsp;упаковке невозможно рассказать всё</h2>
+          <p>У&nbsp;продукта есть состав, активные вещества, особенности применения, ограничения и&nbsp;научная информация. Но&nbsp;на&nbsp;этикетке мало места, а&nbsp;у&nbsp;покупателя всегда остаются вопросы.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-col">
+            <span>Как сейчас</span>
+            <b>Этикетка молчит</b>
+            <p>Площадь ограничена, шрифт мелкий, формулировки обязательные. После покупки значительная часть знаний о&nbsp;продукте просто не&nbsp;доходит до&nbsp;человека.</p>
+          </div>
+          <div class="compare-col compare-col--strong">
+            <span>Как с&nbsp;AI</span>
+            <b>Упаковка отвечает</b>
+            <p>Та&nbsp;же упаковка становится персональным консультантом Farmácia&nbsp;Jurerê: человек получает именно ту&nbsp;информацию, которая нужна ему сейчас&nbsp;— простым и&nbsp;понятным языком.</p>
+          </div>
+        </div>
+        <div class="flow-diagram jr-chain" style="margin-top: clamp(20px, 2.8vw, 36px)">
+          <div><b>Упаковка</b></div><i></i>
+          <div><b>AI</b></div><i></i>
+          <div><b>Диалог</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 02. ФОТО ═══════════════════════════════════════════════════════
+         Главное отличие от QR: искать и выбирать не нужно вовсе. Сверху — сам
+         жест цепочкой, ниже — живая речь покупателя чипами (это его вопросы,
+         а не меню возможностей). -->
+    <section class="slide slide--dark" id="s02" data-slide="02">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Как это работает</p>
+          <h2>Просто сфотографировать продукт</h2>
+          <p>Не&nbsp;нужно искать название или выбирать продукт в&nbsp;каталоге. Покупатель открывает Farmácia&nbsp;Jurerê&nbsp;AI и&nbsp;фотографирует упаковку: AI распознаёт продукт, читает информацию на&nbsp;этикетке, определяет состав и&nbsp;начинает диалог именно о&nbsp;нём.</p>
+        </div>
+        <div class="flow-diagram jr-chain">
+          <div><b>Фото упаковки</b></div><i></i>
+          <div><b>Распознавание</b></div><i></i>
+          <div><b>Состав и&nbsp;этикетка</b></div><i></i>
+          <div><b>Разговор о&nbsp;продукте</b></div>
+        </div>
+        <ul class="chat-chips" style="margin-top: clamp(18px, 2.4vw, 32px)">
+          <li>Для чего нужен этот продукт?</li>
+          <li>Как его правильно принимать?</li>
+          <li>Есть ли противопоказания?</li>
+          <li>Можно ли сочетать с&nbsp;другими добавками?</li>
+          <li>Что принимать для улучшения памяти?</li>
+          <li>Чем усилить действие этого БАДа?</li>
+        </ul>
+        <p class="chips-after"><b>Не&nbsp;каталог с&nbsp;FAQ. Настоящий разговор о&nbsp;продукте.</b> Если вопрос выходит за&nbsp;рамки конкретного продукта, AI обращается к&nbsp;базе знаний и&nbsp;объясняет доступные варианты&nbsp;— с&nbsp;учётом заданных правил безопасности.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 03. ЗНАНИЯ ═════════════════════════════════════════════════════
+         Три источника карточками. Последней стоит сама модель: она не источник,
+         а то, что связывает первые два, — и панч внизу растёт именно из неё. -->
+    <section class="slide" id="s03" data-slide="03">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">База знаний</p>
+          <h2>Знания Farmácia&nbsp;Jurerê + научные данные</h2>
+          <p>AI работает не&nbsp;только с&nbsp;текстом на&nbsp;упаковке&nbsp;— он&nbsp;объединяет несколько источников знаний.</p>
+        </div>
+        <div class="concept-grid">
+          <article class="concept-card">
+            <span>Источник 01</span>
+            <h4>Данные Farmácia&nbsp;Jurerê</h4>
+            <p>Состав продукта, дозировки, способ применения, описание и&nbsp;свойства, внутренние материалы компании.</p>
+          </article>
+          <article class="concept-card">
+            <span>Источник 02</span>
+            <h4>Независимые источники</h4>
+            <p>Научные публикации, данные об&nbsp;ингредиентах и&nbsp;формах веществ, известные взаимодействия, ограничения и&nbsp;противопоказания, уровень доказательности.</p>
+          </article>
+          <article class="concept-card">
+            <span>Источник 03</span>
+            <h4>Искусственный интеллект</h4>
+            <p>Понимает вопрос&nbsp;→ находит нужные данные&nbsp;→ сопоставляет информацию&nbsp;→ объясняет её человеку понятным языком.</p>
+          </article>
+        </div>
+        <p class="slide-punch slide-punch--q">Один продукт&nbsp;— <em>гораздо больше знаний, чем помещается на&nbsp;его упаковке.</em></p>
+        <p class="slide-note">Система разделяет информацию производителя и независимые научные данные: покупатель всегда видит, откуда взят ответ. Ассистент объясняет и сравнивает, но не ставит диагноз и не назначает продукт.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 04. АУДИТОРИИ ══════════════════════════════════════════════════
+         Переключатель, а не три колонки: три колонки читаются как три разных
+         продукта, а вкладки над ОДНОЙ панелью показывают ровно то, что нужно
+         доказать, — база знаний одна, поворачивается разными сторонами. -->
+    <section class="slide slide--dark" id="s04" data-slide="04">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Один AI · разные аудитории</p>
+          <h2>Одна база знаний&nbsp;— разные уровни доступа</h2>
+          <p>В&nbsp;основе системы находится единая база знаний Farmácia&nbsp;Jurerê. Но&nbsp;разные пользователи получают разные интерфейсы, уровень информации и&nbsp;возможности.</p>
+        </div>
+        <div class="switcher" data-switcher="s04">
+          <div class="switcher__tabs" role="tablist" aria-label="Аудитории">
+            <button type="button" role="tab" id="t1" aria-controls="p1" aria-selected="true">01 / Покупатель</button>
+            <button type="button" role="tab" id="t2" aria-controls="p2" aria-selected="false">02 / Фармацевт и&nbsp;партнёр</button>
+            <button type="button" role="tab" id="t3" aria-controls="p3" aria-selected="false">03 / Сотрудник и&nbsp;представитель</button>
+          </div>
+          <div class="switcher__panels">
+            <section role="tabpanel" id="p1" aria-labelledby="t1" tabindex="0">
+              <ul class="clean-list clean-list--cards is-in">
+                <li>Простой язык</li>
+                <li>Помощь в понимании продукта</li>
+                <li>Ответы на вопросы</li>
+                <li>Сопровождение после покупки</li>
+                <li>Подбор релевантной информации</li>
+              </ul>
+            </section>
+            <section role="tabpanel" id="p2" aria-labelledby="t2" tabindex="0" class="is-off">
+              <ul class="clean-list clean-list--cards is-in">
+                <li>Профессиональная информация</li>
+                <li>Состав и активные вещества</li>
+                <li>Научные материалы</li>
+                <li>Аргументация</li>
+                <li>Ответы на сложные вопросы</li>
+              </ul>
+            </section>
+            <section role="tabpanel" id="p3" aria-labelledby="t3" tabindex="0" class="is-off">
+              <ul class="clean-list clean-list--cards is-in">
+                <li>Быстрый доступ к знаниям</li>
+                <li>Подготовка к встречам</li>
+                <li>Подсказки во время разговора</li>
+                <li>Обучение и тестирование</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+        <p class="slide-note">Слои разводятся правами доступа: покупатель не увидит служебных материалов, а персонал получает их из того же ассистента.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 05. МОДЕЛЬ ПРОДАЖ ══════════════════════════════════════════════ -->
+    <section class="slide" id="s05" data-slide="05">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Команда и рост</p>
+          <h2>AI может изменить саму модель продаж</h2>
+          <p>Чтобы расширять продажи, не&nbsp;обязательно одновременно создавать большую команду экспертов. Представителю не&nbsp;нужно держать в&nbsp;памяти весь ассортимент, ингредиенты, исследования и&nbsp;ответы на&nbsp;сотни возможных вопросов. Его задача&nbsp;— понимать клиента, партнёра и&nbsp;бизнес. А&nbsp;когда возникает сложный вопрос, рядом всегда находится эксперт Farmácia&nbsp;Jurerê&nbsp;AI.</p>
+        </div>
+        <!-- is-in стоит в разметке: ручной класс cards выключает разбор lists.js,
+             а вместе с ним и его наблюдатель появления — без is-in пункты
+             оставались бы прозрачными навсегда -->
+        <ul class="clean-list clean-list--cards is-in">
+          <li>Сократить время обучения новых сотрудников</li>
+          <li>Снизить требования к первоначальной продуктовой экспертизе</li>
+          <li>Быстрее подключать новых представителей и партнёров</li>
+          <li>Давать одинаково качественную информацию независимо от опыта человека</li>
+          <li>Помогать представителю непосредственно во время встречи</li>
+        </ul>
+        <p class="slide-punch slide-punch--q">Один сотрудник и&nbsp;AI&nbsp;— <em>возможности значительно более сильной продуктовой команды.</em></p>
+      </div>
+    </section>
+
+    <!-- ═══ 06. КАНАЛЫ ═════════════════════════════════════════════════════
+         Цепочка точек входа плюс четыре свойства единого интеллекта плиткой.
+         Плитка плотная (--tight): в полный рост она вместе с цепочкой не
+         помещается в экран. -->
+    <section class="slide slide--dark" id="s06" data-slide="06">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Точки контакта</p>
+          <h2>Один интеллект во&nbsp;всех точках контакта</h2>
+          <p>Farmácia&nbsp;Jurerê&nbsp;AI не&nbsp;привязан только к&nbsp;упаковке: <b>одна база знаний работает одновременно во&nbsp;всех каналах</b>. Не&nbsp;нужно создавать отдельную систему для каждого из&nbsp;них.</p>
+        </div>
+        <div class="flow-diagram jr-chain">
+          <div><b>Упаковка / QR</b></div><i></i>
+          <div><b>Сайт и&nbsp;магазин</b></div><i></i>
+          <div><b>WhatsApp</b></div><i></i>
+          <div><b>Точка продажи</b></div><i></i>
+          <div><b>Партнёры</b></div><i></i>
+          <div><b>Сотрудники</b></div>
+        </div>
+        <div class="diagram collection-diagram collection-diagram--tight" style="margin-top: clamp(20px, 2.8vw, 36px)">
+          <div><b>01</b><span>Одна проверенная база знаний</span></div>
+          <div><b>02</b><span>Единые правила коммуникации</span></div>
+          <div><b>03</b><span>Единый голос бренда</span></div>
+          <div><b>04</b><span>Круглосуточная доступность</span></div>
+        </div>
+        <p class="slide-note">Один интеллект Farmácia Jurerê. Много точек входа. И самое важное — везде продукт говорит одним языком и использует одну контролируемую базу знаний.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 07. ДАННЫЕ ═════════════════════════════════════════════════════
+         Семь вопросов, на которые сегодня ответа нет, и три условные доли рядом.
+         Доли помечены сноской ЯВНО: цифры выдуманы как пример визуализации,
+         и спутать их с замером на защите бюджета нельзя. -->
+    <section class="slide" id="s07" data-slide="07">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Исследование аудитории</p>
+          <h2>Каждый вопрос становится данными</h2>
+          <p>Сегодня производитель видит продажи. Но&nbsp;часто не&nbsp;видит, почему человек купил продукт, чего он&nbsp;не&nbsp;понял и&nbsp;что ещё хотел найти. Каждый диалог помогает понять:</p>
+        </div>
+        <ul class="clean-list">
+          <li>Что люди чаще всего спрашивают</li>
+          <li>Какие свойства продукта для них наиболее важны</li>
+          <li>Какие сомнения мешают покупке</li>
+          <li>Какие продукты они сравнивают</li>
+          <li>Что хотят принимать вместе</li>
+          <li>Какие задачи пытаются решить</li>
+          <li>Чего не находят в существующем ассортименте</li>
+        </ul>
+        <div class="diagram collection-diagram collection-diagram--three collection-diagram--tight">
+          <div><b>18&nbsp;%</b><span>спрашивают о&nbsp;сне</span></div>
+          <div><b>14&nbsp;%</b><span>о&nbsp;памяти и&nbsp;концентрации</span></div>
+          <div><b>11&nbsp;%</b><span>о&nbsp;совместимости продуктов</span></div>
+        </div>
+        <p class="jr-star"><b>*</b> Цифры приведены только как пример визуализации будущей аналитики — настоящие доли даст пилот. Вопросы покупателей превращаются в данные для маркетинга, продаж и разработки новых продуктов.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 08. ОТНОШЕНИЯ ══════════════════════════════════════════════════ -->
+    <section class="slide slide--dark" id="s08" data-slide="08">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">После покупки</p>
+          <h2>От&nbsp;одной покупки&nbsp;— к&nbsp;отношениям с&nbsp;клиентом</h2>
+          <p>Сегодня взаимодействие часто заканчивается в&nbsp;момент покупки. С&nbsp;AI оно только начинается.</p>
+        </div>
+        <div class="flow-diagram jr-chain">
+          <div><b>Покупка</b></div><i></i>
+          <div><b>Знакомство с&nbsp;AI</b></div><i></i>
+          <div><b>Помощь с&nbsp;продуктом</b></div><i></i>
+          <div><b>Повторные вопросы</b></div><i></i>
+          <div><b>Другие продукты</b></div><i></i>
+          <div><b>Повторная покупка</b></div>
+        </div>
+        <p class="slide-punch slide-punch--q" style="margin-top: clamp(22px, 3vw, 40px)">Упаковка перестаёт быть концом продажи. <em>Она становится началом отношений с&nbsp;клиентом.</em></p>
+        <p class="slide-note">В перспективе система может помнить историю взаимодействия пользователя — с его согласия, — персонализировать информацию, помогать ориентироваться в ассортименте и возвращать человека к бренду.</p>
+      </div>
+    </section>
+
+    <!-- ═══ 09. ПРОТОТИП ═══════════════════════════════════════════════════
+         Шесть шагов: lists.js сам превращает нумерованный список в шаги.
+         steps-2col — две колонки по три шага: в один столбец шесть шагов
+         перерастают экран слайда. -->
+    <section class="slide steps-2col" id="s09" data-slide="09">
+      <div class="slide-shell">
+        <div class="slide-head reveal">
+          <p class="overline">Предложение</p>
+          <h2>Давайте проверим это на&nbsp;Farmácia&nbsp;Jurerê</h2>
+          <p>Не&nbsp;нужно начинать с&nbsp;большой и&nbsp;дорогой системы. Начнём с&nbsp;небольшого прототипа.</p>
+        </div>
+        <ul class="clean-list">
+          <li>1. Выберем 5–10 продуктов Farmácia Jurerê</li>
+          <li>2. Создадим для них базу знаний</li>
+          <li>3. Добавим независимые научные источники</li>
+          <li>4. Научим систему распознавать продукт по упаковке</li>
+          <li>5. Запустим AI-ассистента в вебе</li>
+          <li>6. Дадим людям возможность задавать реальные вопросы</li>
+        </ul>
+        <p class="slide-punch slide-punch--q">И&nbsp;посмотрим, <em>как люди на&nbsp;самом деле взаимодействуют с&nbsp;продуктами Farmácia&nbsp;Jurerê.</em></p>
+      </div>
+    </section>
+
+    <!-- ═══ ФИНАЛ ══════════════════════════════════════════════════════════
+         Одна фраза на весь экран — ей отдана вся презентация, и делить финал
+         с чем-то ещё нельзя. -->
+    <section class="slide slide--fin" id="fin" data-slide="10">
+      <svg class="jr-mark jr-mark--fin" viewBox="0 0 420 420" aria-hidden="true">
+        <defs>
+          <linearGradient id="jrg2" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="#ffffff" stop-opacity=".08"/>
+            <stop offset="1" stop-color="#ade5fc" stop-opacity=".5"/>
+          </linearGradient>
+          <clipPath id="jrc2"><rect x="82" y="82" width="256" height="256" rx="46" transform="rotate(45 210 210)"/></clipPath>
+        </defs>
+        <g clip-path="url(#jrc2)" stroke="url(#jrg2)" stroke-width="30" stroke-linecap="round">
+          <path d="M-20,230 L230,-20"/>
+          <path d="M30,280 L280,30"/>
+          <path d="M80,330 L330,80"/>
+          <path d="M130,380 L380,130"/>
+          <path d="M180,430 L430,180"/>
+        </g>
+      </svg>
+
+      <div class="slide-shell">
+        <div class="reveal">
+          <p class="overline">Farmácia Jurerê AI</p>
+          <p class="slide-punch">Продукт, который умеет <em>объяснять · продавать · обучать · слушать.</em></p>
+          <p class="fin-line">Одна AI-система, которая связывает производителя, сотрудников, партнёров и покупателей.</p>
+          <p class="slide-note">PLAYDISPLAY · Андрей Судариков · a.sudarikov@playdisplay.ru</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button class="to-top" id="toTop" type="button" aria-label="Вернуться в начало"><i></i><span>В начало</span></button>
+
+  <script defer src="../kit/js/boot.js"></script>
+  <script defer src="../kit/js/reveal-cursor.js"></script>
+  <script defer src="../kit/js/nav.js"></script>
+  <script defer src="../kit/js/parallax.js"></script>
+  <script defer src="../kit/js/lists.js"></script>
+  <script defer src="../kit/js/cast.js"></script>
+  <script defer src="../kit/js/chatphone.js"></script>
+  <script defer src="../kit/js/switcher.js"></script>
+  <!-- deck ПОСЛЕ остальных: он страхует проявление тех, кто уже в кадре, —
+       значит должен видеть блоки, которые lists.js уже разобрал -->
+  <script defer src="../kit/js/deck.js"></script>
+  <script defer src="../kit/js/ui.js"></script>
+</body>
+</html>

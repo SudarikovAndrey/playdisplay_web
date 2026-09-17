@@ -1,0 +1,263 @@
+/* ═══ ТЕМА «JURERÊ» — светлый стиль Farmácia Jurerê (Флорианополис, Бразилия) ═══
+ *
+ * Палитра НЕ подобрана на глаз по скриншоту, а снята с боевого сайта
+ * farmaciajurere.com.br 16.09.2026: тема магазина (Tiendanube/Toluca) объявляет
+ * свои цвета переменными, и взяты именно они —
+ *   --header-background      #0086ad   бирюзово-синяя шапка, главный знак бренда
+ *   --accent-color           #5d1e66   сливовый акцент (им же набрано «bem-estar»)
+ *   --nav-desktop-background #ade5fc   светлое небо, заливка полос и плашек
+ *   --main-foreground        #333333   наборный текст
+ *   --warning                #dc8f38   золото, им же проведена черта под баннером
+ * Брать их объявленные токены важнее, чем пипетку по картинке: на баннере цвета
+ * художника, в токенах — решение бренда, и оно одно на весь магазин.
+ *
+ * ШРИФТ — ОТДЕЛЬНАЯ ИСТОРИЯ, И ЭТО ГЛАВНАЯ ЛОВУШКА ТЕМЫ. Сайт набран парой
+ * Sora (заголовки) + Inter (текст). У Sora НЕТ КИРИЛЛИЦЫ — латиница и latin-ext,
+ * и только. Поставив её заголовкам русской презентации, мы получили бы молчаливый
+ * откат на системный шрифт: вёрстка цела, стиль потерян, и заметно это не сразу.
+ * Поэтому здесь ОДИН Inter на всё — он тоже их, кириллицу несёт, а в 700–800
+ * с поджатым трекингом держит заголовок не хуже Sora. Появится португальская
+ * версия — заголовкам можно честно вернуть Sora, кириллицы там не будет.
+ *
+ * ВАЖНО ПРО КАСКАД: правки страниц (свои <style>) пишутся без префикса темы,
+ * поэтому селекторы темы носят префикс .theme-jurere — они сильнее странице
+ * специфичностью, а не порядком подключения.
+ */
+
+.theme-jurere {
+  /* фирменные цвета — отдельными именами, чтобы страница могла брать их сама */
+  --jr-teal: #0086ad;
+  --jr-teal-deep: #00566f;
+  --jr-plum: #5d1e66;
+  --jr-sky: #ade5fc;
+  --jr-gold: #dc8f38;
+  --jr-ink: #333333;
+
+  /* токены кита перекрываются НА BODY: пользовательские свойства наследуются,
+     и всем блокам внутри достаются светлые значения */
+  --paper: #1d2830;
+  --muted: #6d7d89;
+  --ultra: #5d1e66;
+  --electric: #0086ad;
+  --coral: #dc8f38;
+  --line: rgba(20, 60, 78, .16);
+  --glass: rgba(0, 134, 173, .05);
+  color: #333;
+  background: #f4fafd;
+  font-family: Inter, Onest, "Helvetica Neue", Arial, sans-serif;
+}
+/* html красит фон сам (var(--black) на :root) — на длинной инерции прокрутки
+   из-под светлого тела выглядывал бы чёрный. Класс на html не вешаем, поэтому
+   тело обязано быть непрозрачным и доставать до краёв. */
+.theme-jurere::before { content: ""; position: fixed; inset: 0; z-index: -1; background: #f4fafd; }
+
+/* ── Заставка и шапка ── */
+.theme-jurere .boot { background: #f4fafd; }
+.theme-jurere .boot-note { color: var(--muted); }
+.theme-jurere .boot-bar { background: rgba(20, 60, 78, .12); }
+.theme-jurere .boot-logo { filter: none; }
+.theme-jurere .masthead { background: rgba(244, 250, 253, .88); border-bottom: 1px solid var(--line); backdrop-filter: blur(14px); }
+/* Кит красит знак студии в белый инверсией — на бумаге фильтр надо снять,
+   иначе логотип белый на белом и его попросту нет */
+.theme-jurere .playdisplay-logo--top img { filter: none; }
+.theme-jurere .mast-lockup i { color: var(--muted); }
+.theme-jurere .mast-lockup b { color: var(--jr-teal); }
+.theme-jurere .book-mark { color: var(--muted); }
+.theme-jurere .to-full, .theme-jurere .to-top { color: #26323c; border-color: var(--line); background: #fff; }
+.theme-jurere .reading-progress { background: linear-gradient(90deg, var(--jr-teal), var(--jr-plum)); box-shadow: none; }
+
+/* ── Полоса разделов ───────────────────────────────────────────────────────
+   Активный пункт кит красит БЕЛЫМ по коралловой подсветке — на бумаге это белый
+   текст на светлом, то есть пустое место: на телефоне первый пункт выглядел
+   глухой золотой плашкой без цифры (поймано на снимке 800 px). Поэтому у темы
+   активное состояние переписано целиком, а не подкрашено. Класс именно
+   `active` — его ставит kit/js/nav.js. */
+.theme-jurere .chapter-nav { border-color: var(--line); background: rgba(244, 250, 253, .92); }
+.theme-jurere .chapter-nav a { color: var(--muted); }
+.theme-jurere .chapter-nav a::before { background: var(--jr-teal); box-shadow: 0 0 14px rgba(0, 134, 173, .45); }
+.theme-jurere .chapter-nav a:hover { color: #26323c; background: rgba(0, 134, 173, .08); }
+.theme-jurere .chapter-nav a.active { color: var(--jr-teal-deep); background: linear-gradient(90deg, rgba(0, 134, 173, .13), rgba(173, 229, 252, .28)); box-shadow: inset 0 0 0 1px rgba(0, 134, 173, .2); }
+.theme-jurere .chapter-nav a.active span,
+.theme-jurere .chapter-nav a.active small { color: var(--jr-teal-deep); }
+/* Кит красит знак в полосе инверсией — на бумаге он от этого исчезает */
+.theme-jurere .chapter-nav .playdisplay-logo--nav img { filter: none; }
+.theme-jurere .nav-legal { color: rgba(51, 51, 51, .45); }
+/* На телефоне полоса становится лентой, и отметка активного пункта — черта сверху
+   у ВСЕХ пунктов одинаковой высоты (так устроен кит). Чтобы активный всё-таки
+   отличался, ему черта шире и в полный цвет, остальным — приглушённая. */
+@media (max-width: 680px) {
+  .theme-jurere .chapter-nav a::before { background: rgba(0, 134, 173, .3); box-shadow: none; }
+  .theme-jurere .chapter-nav a.active::before { width: 26px; height: 3px; background: var(--jr-teal); }
+}
+
+/* Курсор-точка: тёмное ядро на светлом, свечение бирюзовое и слабее */
+.theme-jurere .cursor-core { background: var(--jr-teal-deep); }
+.theme-jurere .cursor-glow { background: radial-gradient(circle, rgba(0, 134, 173, .2), transparent 60%); }
+
+/* ── Типографика ───────────────────────────────────────────────────────────
+   Кит набирает заголовки Unbounded — широкой витринной гарнитурой. Рядом с
+   аптечным стилем она читается как чужой голос студии, поэтому заголовки тоже
+   уходят в Inter: у бренда ОДНА гарнитура на всё, как на их сайте. */
+.theme-jurere h1,
+.theme-jurere .slide-head h2,
+.theme-jurere .slide-punch,
+.theme-jurere .chapter-copy h3,
+.theme-jurere .stat-line > strong,
+.theme-jurere .concept-card h4,
+.theme-jurere .art-title,
+.theme-jurere .opening-statement {
+  font-family: Inter, Onest, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -.028em;
+}
+.theme-jurere h1 { font-weight: 800; }
+.theme-jurere h1 span, .theme-jurere .slide-head h2 { color: var(--jr-teal-deep); }
+/* Акцентное слово сливовым — ровно так на их баннере выделено «bem-estar» */
+.theme-jurere .slide-punch { color: #26323c; }
+.theme-jurere .slide-punch em { color: var(--jr-plum); font-style: normal; }
+.theme-jurere h1 em { color: var(--jr-plum); font-style: normal; }
+.theme-jurere .overline { color: var(--jr-plum); }
+/* Золотая черта при надзаголовке — та же, что отделяет баннер на их главной */
+.theme-jurere .slide-head .overline::after,
+.theme-jurere .hero-overline::after {
+  content: "";
+  display: inline-block;
+  width: 26px;
+  height: 3px;
+  margin-left: 12px;
+  border-radius: 2px;
+  background: var(--jr-gold);
+  vertical-align: middle;
+}
+.theme-jurere .hero-statement, .theme-jurere .slide-head p { color: #46525d; }
+.theme-jurere .slide-note { color: var(--muted); }
+.theme-jurere .slide-head p b, .theme-jurere .slide-note b { color: #26323c; }
+
+/* ── Поверхности слайдов ── */
+.theme-jurere .hero, .theme-jurere .hero-intro, .theme-jurere .slide { background: transparent; }
+.theme-jurere .slide { border-color: var(--line); }
+.theme-jurere .slide--dark { background: linear-gradient(160deg, rgba(173, 229, 252, .5), rgba(0, 134, 173, .05) 60%); }
+/* Номер слайда крупно и почти невидимо. На бумаге кит-прозрачность читается
+   не как водяной знак, а как пятно под текстом — доля снижена замером по снимку */
+.theme-jurere .slide::before { color: rgba(0, 134, 173, .055); font-weight: 800; }
+.theme-jurere .hero-facts b { color: var(--jr-teal); }
+.theme-jurere .hero-facts span, .theme-jurere .hero-status, .theme-jurere .hero-facts-title { color: var(--muted); }
+.theme-jurere .scroll-cue { color: var(--muted); }
+
+/* ── Карточки и плитки: белая бумага со скруглением и мягкой тенью ─────────
+   Скругление 16–20 px, а не кит-острый угол: их магазин целиком собран из
+   скруглённых белых карточек, это половина узнаваемости стиля. */
+.theme-jurere .concept-card,
+.theme-jurere .clean-list--cards li,
+.theme-jurere .chat-chips li,
+.theme-jurere .collection-diagram div,
+.theme-jurere .stat-line,
+.theme-jurere .compare-col,
+.theme-jurere .offer-card {
+  color: #3a4650;
+  border-color: var(--line);
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(20, 60, 78, .07);
+}
+.theme-jurere .concept-card { border-radius: 20px; }
+.theme-jurere .concept-card::after { background: rgba(0, 134, 173, .25); }
+.theme-jurere .concept-card:hover { border-color: rgba(0, 134, 173, .45); }
+.theme-jurere .concept-card h4 { color: var(--jr-teal-deep); }
+.theme-jurere .concept-card > span { color: var(--jr-plum); }
+.theme-jurere .slide .concept-card p { color: #4d5964; }
+.theme-jurere .clean-list li { color: #3a4650; border-color: var(--line); }
+.theme-jurere .clean-list--cards li { border-radius: 16px; }
+.theme-jurere .clean-list--cards .card-num, .theme-jurere .clean-list li::after { color: var(--jr-plum); }
+.theme-jurere .clean-list--steps .step-num { color: var(--jr-teal); }
+.theme-jurere .diagram { border-color: var(--line); background: #fff; box-shadow: 0 10px 28px rgba(20, 60, 78, .07); }
+.theme-jurere .collection-diagram div { border-radius: 14px; box-shadow: none; }
+.theme-jurere .collection-diagram b { color: var(--jr-teal); }
+.theme-jurere .stats-grid { background: var(--line); border-color: var(--line); }
+.theme-jurere .stat-line { box-shadow: none; }
+.theme-jurere .stat-line > strong { color: var(--jr-teal-deep); }
+.theme-jurere .stat-line > span { color: var(--jr-plum); }
+.theme-jurere .chapter-copy .stat-line > p, .theme-jurere .stat-line > p { color: #4d5964; }
+
+/* Сопоставление «как сейчас / как с AI»: левая колонка намеренно тусклее */
+.theme-jurere .compare-col { border-radius: 18px; }
+.theme-jurere .compare-col span { color: var(--muted); }
+.theme-jurere .compare-col b { color: #26323c; }
+.theme-jurere .compare-col p { color: #4d5964; }
+.theme-jurere .compare-col--strong { border-color: rgba(0, 134, 173, .4); background: linear-gradient(150deg, rgba(173, 229, 252, .55), #fff 62%); }
+.theme-jurere .compare-col--strong b { color: var(--jr-teal-deep); }
+
+/* Ленты и цепочки */
+.theme-jurere .flow-diagram b { color: var(--jr-teal); }
+.theme-jurere .flow-diagram i { background: linear-gradient(90deg, var(--jr-teal), rgba(20, 60, 78, .14)); }
+.theme-jurere .timeline b { color: #26323c; }
+.theme-jurere .timeline em { color: var(--jr-plum); }
+.theme-jurere .timeline span { color: #4d5964; }
+.theme-jurere .timeline > div::before { background: var(--line); }
+.theme-jurere .timeline > div::after { background: var(--jr-teal); }
+.theme-jurere .stage-title { color: #26323c; }
+.theme-jurere .tag-row li { color: #3a4650; border-color: var(--line); background: #fff; }
+
+/* Чипы вопросов: реплики покупателя на бумаге, каждая вторая — фирменным небом */
+.theme-jurere .chat-chips li { color: #3a4650; border-radius: 16px; }
+.theme-jurere .chat-chips li:nth-child(2n) { border-color: rgba(0, 134, 173, .32); background: linear-gradient(140deg, rgba(173, 229, 252, .6), rgba(255, 255, 255, .9)); }
+
+/* Переключатель аудиторий */
+.theme-jurere .switcher__tabs button { color: var(--muted); border-color: var(--line); background: #fff; }
+.theme-jurere .switcher__tabs button[aria-selected="true"] { color: #fff; border-color: var(--jr-teal); background: var(--jr-teal); }
+
+/* Финал — бирюза бренда, уходящая в сливовый: их два фирменных цвета рядом */
+.theme-jurere .slide--fin { background: linear-gradient(140deg, var(--jr-teal-deep), #0086ad 42%, var(--jr-plum)); }
+.theme-jurere .slide--fin .slide-punch { color: #fff; }
+.theme-jurere .slide--fin .slide-punch em { color: var(--jr-sky); }
+.theme-jurere .slide--fin .overline { color: var(--jr-sky); }
+.theme-jurere .slide--fin .overline::after { background: var(--jr-sky); }
+.theme-jurere .slide--fin .slide-note { color: rgba(255, 255, 255, .62); }
+.theme-jurere .fin-line { color: var(--jr-sky); }
+
+/* ── ТЕЛЕФОН: ТЁМНЫЙ ОСТРОВ ВНУТРИ СВЕТЛОЙ ТЕМЫ ───────────────────────────
+   Телефон остаётся тёмным УСТРОЙСТВОМ на светлом столе — это экран продукта,
+   а не поверхность страницы. И отсюда ловушка, стоившая невидимой шапки чата:
+   токены кита объявлены НА BODY и наследуются внутрь, поэтому на тёмном экране
+   --paper становится почти чёрным, --line тёмной, --muted серо-синим. Имя
+   ассистента, подпись «отвечает о вашем продукте», рамка пузыря и чип
+   «упаковка распознана» пропадали целиком. Лечится не подкраской каждой
+   строчки, а ВОЗВРАТОМ ТЁМНОГО НАБОРА ТОКЕНОВ на самом устройстве: внутри него
+   кит снова работает так, как задуман. Любой тёмный остров в светлой теме
+   (плеер, терминал, экран прибора) лечится этим же приёмом.
+   Тень мягче кит-чёрной: чёрная клякса на белом читается грязью. */
+.theme-jurere .chat-phone {
+  --paper: #eef7fb;
+  --muted: #8fb7c4;
+  --line: rgba(173, 229, 252, .18);
+  box-shadow: 0 30px 70px rgba(20, 60, 78, .3), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+/* Свечение экрана и пузыри — в фирменную бирюзу: индиговый пузырь кита рядом
+   с бирюзовой страницей читается как чужое приложение в чужом кадре */
+.theme-jurere .chat-phone__screen { background: radial-gradient(circle at 82% -8%, rgba(0, 134, 173, .3), transparent 55%), #061218; }
+.theme-jurere .chat-msg--user { color: #f1fbff; background: linear-gradient(150deg, #0fa0c8, #00637f); }
+.theme-jurere .chat-msg--ai { color: #dcecf2; background: rgba(173, 229, 252, .09); }
+.theme-jurere .chat-phone__scan { color: var(--jr-sky); border-color: rgba(173, 229, 252, .3); }
+.theme-jurere .chat-phone__ava { box-shadow: 0 0 16px rgba(0, 134, 173, .55); }
+.theme-jurere .chat-phone__ava::after { border-color: #061218; }
+.theme-jurere .chat-typing i { background: #7fc4da; }
+/* Второй и третий факт кит приглушает прозрачностью под тёмный фон; на бумаге
+   та же прозрачность читается как «ещё не доделали» */
+.theme-jurere .hero-facts--accent li:not(:first-child) b { opacity: .95; }
+.theme-jurere .hero-facts--accent li:not(:first-child) span { opacity: .9; }
+
+/* Фото-слайд: заголовок поверх кадра белый — бирюза на фотографии не читается */
+.theme-jurere .slide--photo .slide-head h2 { color: #fff; }
+.theme-jurere .slide--photo .overline { color: var(--jr-sky); }
+
+/* ── ФИРМЕННЫЙ ЗНАК-МОТИВ ──────────────────────────────────────────────────
+   У Jurerê эмблема — повёрнутый на 45° скруглённый квадрат, набранный
+   параллельными диагональными полосами. Здесь он живёт как ДЕКОРАЦИЯ, а не
+   как логотип: полосы те же, буквы и пропорции знака не копируются. Сам знак
+   приходит файлом от владельца и стоит в связке (.lockup) на первом экране.
+   Слой рисует страница (инлайн-SVG с классом jr-mark), тема только размещает
+   и глушит: элемент декоративный и не должен спорить с текстом. */
+.theme-jurere .jr-mark { position: absolute; z-index: 1; pointer-events: none; }
+.theme-jurere .jr-mark--hero { right: -60px; top: -40px; width: min(34vw, 480px); }
+.theme-jurere .jr-mark--fin { left: -70px; bottom: -70px; width: min(36vw, 540px); }
+.theme-jurere .slide--fin { overflow: hidden; }
+@media (max-width: 1000px) { .theme-jurere .jr-mark--hero { display: none; } }
