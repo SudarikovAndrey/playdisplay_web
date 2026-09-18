@@ -8,6 +8,59 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-18 13:21 — hybrid-v8 @ 69e2f2b
+
+**Коммиты в этой поставке**
+```
+69e2f2b Журнал деплоя: 4c7d0f4
+```
+
+**На сервер отправлено файлов:** 76, удалено: 0
+```
+.htaccess
+llms.txt
+robots.txt
+sitemap.xml
+.claude/
+.claude/worktrees/
+.claude/worktrees/stoic-lalande-0446c5/
+.claude/worktrees/stoic-lalande-0446c5/.git
+.claude/worktrees/stoic-lalande-0446c5/.gitattributes
+atlas/index.html
+concepts/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/library/index.html
+en/library/input/index.html
+en/library/output/index.html
+en/library/processing/index.html
+en/services/index.html
+en/services/corporate-museum/index.html
+en/services/exhibition-stand/index.html
+en/services/holographic-showcase/index.html
+en/services/interactive-exhibition/index.html
+en/services/interactive-website/index.html
+en/services/multimedia-equipment/index.html
+en/services/museum-concept/index.html
+en/services/museum-equipment/index.html
+en/services/museum-equipping/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+…и ещё 36
+```
+
+
 ## 2026-09-18 11:33 — hybrid-v8 @ 4c7d0f4
 
 **Коммиты в этой поставке**
