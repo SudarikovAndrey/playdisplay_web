@@ -42,6 +42,20 @@ RedirectMatch 404 \.(zip|tar|tar\.gz|tgz|rar|7z|bz2)$
   Header set X-Robots-Tag "noindex, nofollow, noarchive" env=PD_PROTO_NOINDEX
 </IfModule>
 
+# Папки вида layer-backup-pre-vNNN-ДАТА — снимки /layer/, которые оставляет
+# его сборка. Лежат в вебруте, отдают 200 и своей разметкой почти совпадают
+# с живым /layer/. Ровно из такого Google и делает вывод «страница является
+# копией, канонический вариант не выбран» — жалоба на это в Search Console
+# уже была. Правило написано по маске, а не по двум именам: следующая сборка
+# положит третий снимок, и про него никто не вспомнит.
+#
+# Это только про индексацию. Сами папки из вебрута надо убирать, но их кладёт
+# чужая сборка, и решение об удалении за владельцем.
+<IfModule mod_headers.c>
+  SetEnvIf Request_URI "^/[a-z0-9-]+-backup-" PD_BACKUP_NOINDEX=1
+  Header set X-Robots-Tag "noindex, nofollow, noarchive" env=PD_BACKUP_NOINDEX
+</IfModule>
+
 # ---------- типы ----------
 AddType video/mp4 .mp4
 AddType font/woff2 .woff2
@@ -187,7 +201,22 @@ RewriteRule ^en/concepts/([a-z0-9-]+)/?$ https://playdisplay.com/en/concepts/#$1
 
 RewriteRule ^projects(/.*)?$ https://playdisplay.com/#work [R=301,L,NE]
 RewriteRule ^about/?$ https://playdisplay.com/#studio [R=301,L,NE]
-RewriteRule ^contact/?$ https://playdisplay.com/#contact [R=301,L,NE]
+RewriteRule ^contacts?/?$ https://playdisplay.com/#contact [R=301,L,NE]
+
+# ---------- ещё два семейства старого сайта (18.09.2026) ----------
+# Найдено не в Search Console, а в живой выдаче: по запросам про нас Google
+# до сих пор показывает /ru/technology/videomapping/ и /ru/contacts/. Правило
+# ^ru(/(.*))?$ снимает префикс — и посетитель приезжал на /technology/videomapping/
+# и /contacts/, которых нет НИ в новом сайте, НИ в архиве /old/. То есть человек,
+# который нашёл нас по запросу «видео мэппинг», получал 404. Множественное число
+# в /contacts/ правило ^contact/?$ не ловило — поэтому выше добавлено «s?».
+#
+# Видеомэппинг у нас есть отдельной услугой, туда и ведём. Остальные страницы
+# раздела technology разошлись по услугам неоднозначно — их отправляем в общий
+# список, это честнее, чем угадывать.
+RewriteRule ^technology/videomapping/?$ https://playdisplay.com/services/projection-mapping/ [R=301,L]
+RewriteRule ^technology/(holo|hologram|holocube)[a-z_-]*/?$ https://playdisplay.com/services/holographic-showcase/ [R=301,L]
+RewriteRule ^technology(/.*)?$ https://playdisplay.com/services/ [R=301,L]
 
 # Сам /work/ и /en/work/ отдавали 403 (проверено на боевом 07.09.2026). Своей
 # страницы у этой папки нет, листинг закрыт — Apache и возвращал запрет. А адрес
