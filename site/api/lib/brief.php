@@ -43,7 +43,7 @@ function pd_block_labels($lang) {
       'scenario' => 'O que acontece ao visitante', 'format' => 'Formato', 'place' => 'Espaço',
       'scale' => 'Escala', 'timeline' => 'Prazos', 'budget' => 'Orçamento',
       'constraints' => 'Restrições', 'success' => 'O que conta como sucesso',
-      '_open' => 'Ainda a esclarecer', '_quotes' => 'Nas suas palavras',
+      '_open' => 'Ainda a definir', '_quotes' => 'Nas suas palavras',
       '_none' => 'não discutido', '_all' => 'O resumo até agora',
     ),
   );
@@ -342,9 +342,9 @@ function pd_guest_labels($lang) {
       'subj' => 'A sua ideia, resumida num briefing',
       'kicker' => 'A sua cópia',
       'who' => 'Para quem é', 'feel' => 'O que o visitante deve sentir',
-      'said' => 'O que nos contou', 'files' => 'Anexado', 'link' => 'Ligação',
-      'lead' => 'Recebemos o seu pedido e já o estamos a ler. Abaixo está o mesmo resumo que chegou ao estúdio.',
-      'foot' => 'Responderemos para este endereço. Se algo estiver impreciso, basta responder a este email.',
+      'said' => 'O que você nos contou', 'files' => 'Anexado', 'link' => 'Link',
+      'lead' => 'Recebemos o seu pedido e já estamos lendo. Abaixo está o mesmo resumo que chegou ao estúdio.',
+      'foot' => 'Vamos responder para este endereço. Se algo estiver impreciso, é só responder este e-mail.',
     ),
   );
   return isset($all[$lang]) ? $all[$lang] : $all['ru'];

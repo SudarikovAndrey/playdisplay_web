@@ -38,10 +38,13 @@ function pd_langs() {
   return array(
     'ru' => array('name' => 'русском', 'speech' => 'ru-RU', 'first' => 'Расскажите про вашу идею.', 'sub' => 'Мы будем собирать основные смыслы.'),
     'en' => array('name' => 'английском', 'speech' => 'en-US', 'first' => 'Tell us about your idea.', 'sub' => 'We will collect the key meanings.'),
-    // pt-PT, а не pt-BR: студия работает с Португалией. Для Бразилии поменять здесь
-    // на pt-BR — распознавание речи различает эти локали, и на бразильской модели
-    // португальская речь распознаётся заметно хуже.
-    'pt' => array('name' => 'португальском', 'speech' => 'pt-PT', 'first' => 'Conte-nos sobre a sua ideia.', 'sub' => 'Vamos reunir os pontos principais.'),
+    // pt-BR, а не pt-PT (18.09.2026, решение владельца): рынок бразильский.
+    // Локаль тут не косметика — распознавание речи различает их, и на португальской
+    // модели бразильская речь разбирается заметно хуже. Обратно на Португалию —
+    // поменять 'pt-BR' на 'pt-PT' здесь И переписать тексты ниже: они бразильские.
+    // Язык назван ПОЛНОСТЬЮ («бразильском португальском»), а не просто
+    // «португальском»: на коротком названии модель отдаёт европейский вариант.
+    'pt' => array('name' => 'бразильском португальском', 'speech' => 'pt-BR', 'first' => 'Conte para nós sobre a sua ideia.', 'sub' => 'Vamos reunir os pontos principais.'),
   );
 }
 function pd_lang_ok($code) {
@@ -228,19 +231,20 @@ TXT;
   }
   if ($lang === 'pt') {
     return <<<TXT
-És um tradutor. Traduz todos os valores do JSON recebido para PORTUGUÊS.
+Você é um tradutor. Traduza todos os valores do JSON recebido para PORTUGUÊS DO BRASIL.
 
-Este é o resumo de um projeto que será mostrado no ecrã a uma pessoa que fala português.
-Traduz o sentido, não as palavras: deve ler-se como se tivesse sido escrito em português.
+Este é o resumo de um projeto que será mostrado na tela para uma pessoa que fala
+português do Brasil. Traduza o sentido, não as palavras: tem que soar como se tivesse
+sido escrito em português brasileiro, não europeu.
 
 REGRAS:
-- TODOS os campos, sem exceção. Deixar algo em russo é precisamente o erro a corrigir.
-  Verifica cada campo antes de responder.
-- Não traduzas nomes de cidades, marcas ou pessoas (Moscow City, VDNH, playdisplay).
-- Não acrescentes nem retires nada: as mesmas chaves, a mesma estrutura, o mesmo número
+- TODOS os campos, sem exceção. Deixar algo em russo é exatamente o erro a corrigir.
+  Confira cada campo antes de responder.
+- Não traduza nomes de cidades, marcas ou pessoas (Moscow City, VDNH, playdisplay).
+- Não acrescente nem retire nada: as mesmas chaves, a mesma estrutura, o mesmo número
   de itens nas listas.
 
-Responde apenas com o JSON — a mesma forma do que recebeste, sem explicações e sem ``` .
+Responda apenas com o JSON — no mesmo formato que recebeu, sem explicações e sem ``` .
 TXT;
   }
   // Русский путь не используется (переводить не нужно), но пусть будет осмысленным.
