@@ -178,6 +178,30 @@ def item_note(path):
     return None
 
 
+# Строки, обёрнутые в перевод прямо в коде: PD_T('…') в сцене, T('…') на лендинге.
+# Обёртка И ЕСТЬ пометка «это увидит человек» — отдельного списка держать не надо,
+# и забыть внести строку в словарь невозможно: обернул — она сама приедет в выгрузку.
+# Комментарии не трогаем: искать надо вызов, а не любую кириллицу рядом.
+TCALL = re.compile(r"""(?<![A-Za-z0-9_$.])(?:PD_T|T)\(\s*(['"])((?:[^'"\\]|\\.)*?)\1""")
+
+
+def wrapped_strings(paths):
+    """русские строки, обёрнутые в PD_T()/T() в коде страниц"""
+    out, seen = [], set()
+    for rel in paths:
+        full = os.path.join(SITE, rel)
+        if not os.path.exists(full):
+            continue
+        src = open(full, encoding='utf-8').read()
+        for m in TCALL.finditer(src):
+            t = m.group(2).replace('\\n', ' ').replace("\\'", "'").replace('\\"', '"')
+            t = ' '.join(t.split())
+            if t and CYR.search(t) and t not in seen:
+                seen.add(t)
+                out.append(t)
+    return out
+
+
 def load_dict(code):
     """словарь site/data/i18n/<code>.js: русская строка → перевод"""
     p = os.path.join(SITE, 'data/i18n/%s.js' % code)
@@ -251,6 +275,11 @@ def collect(code):
     for _kind, text in scan_file(os.path.join(SITE, 'index.html'), skip_meta=True):
         t = ' '.join(text.split())
         if t and t not in seen:
+            seen.add(t)
+            extra.append(t)
+    # и строки, обёрнутые в перевод в коде лендинга и сцены
+    for t in wrapped_strings(('index.html', 'hero-scene.html')):
+        if t not in seen:
             seen.add(t)
             extra.append(t)
     items += [('dict+/%d' % i, t, None) for i, t in enumerate(extra)]
