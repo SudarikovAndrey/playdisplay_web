@@ -203,6 +203,15 @@ RewriteRule ^projects(/.*)?$ https://playdisplay.com/#work [R=301,L,NE]
 RewriteRule ^about/?$ https://playdisplay.com/#studio [R=301,L,NE]
 RewriteRule ^contacts?/?$ https://playdisplay.com/#contact [R=301,L,NE]
 
+# Своя страница 404. До 18.09.2026 на несуществующем адресе отдавалась голая
+# страница Apache: белый лист, «Not Found» и ни одной ссылки. А приходят на неё
+# постоянно — по ссылкам со старого сайта, которые Google до сих пор держит
+# в выдаче, с визиток и из чужих статей. Человек упирался в тупик и уходил.
+#
+# Путь абсолютный: ErrorDocument с относительным путём Apache считает текстом,
+# а не адресом, и показал бы саму строку.
+ErrorDocument 404 /404.html
+
 # ---------- ещё два семейства старого сайта (18.09.2026) ----------
 # Найдено не в Search Console, а в живой выдаче: по запросам про нас Google
 # до сих пор показывает /ru/technology/videomapping/ и /ru/contacts/. Правило

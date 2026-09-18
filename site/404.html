@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Страница не найдена — playdisplay</title>
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/assets/logos/favicon-32.png" sizes="32x32">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  /* Страница отдаётся с кодом 404 и с ЛЮБОЙ глубины вложенности, поэтому все
+     адреса здесь абсолютные. Относительные сломались бы на /work/что-то/. */
+  body { margin:0; background:var(--space-void); color:var(--scan-white);
+         font:400 18px/1.7 var(--font-body); }
+  .wrap { max-width:840px; margin:0 auto; padding:14vh 24px 100px; }
+  .code { font:500 13px/1 monospace; letter-spacing:.2em; text-transform:uppercase;
+          color:#9fb4c8; margin:0 0 26px; }
+  h1 { font-family:var(--font-display); font-weight:800; letter-spacing:-.02em;
+       font-size:clamp(32px,6vw,58px); line-height:1.05; margin:0 0 18px; color:#F1FBFC; }
+  .lead { color:#9fb4c8; font-size:21px; line-height:1.5; margin:0 0 14px; }
+  .lead b { color:#c8d8e2; font-weight:500; }
+  h2 { font-family:var(--font-display); font-weight:800; font-size:15px;
+       letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8;
+       margin:52px 0 18px; }
+  ul { list-style:none; padding:0; margin:0; display:grid; gap:2px;
+       grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+  li a { display:block; padding:15px 18px; text-decoration:none; color:#F1FBFC;
+         border:1px solid rgba(159,180,200,.2); font-weight:500;
+         transition:border-color .2s, background .2s; }
+  li a span { display:block; color:#9fb4c8; font-size:15px; font-weight:400;
+              margin-top:3px; }
+  li a:hover { border-color:#2be0c6; background:rgba(43,224,198,.06); }
+  .back { display:inline-block; margin-top:46px; padding:15px 26px;
+          border:1px solid #2be0c6; color:#2be0c6; text-decoration:none; font-weight:600; }
+  footer { margin-top:70px; color:#9fb4c8; font-size:14px;
+           border-top:1px solid rgba(159,180,200,.22); padding-top:22px; }
+  footer a { color:#2be0c6; }
+  .en { margin-top:10px; font-size:14px; color:#7e93a6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="code">404 — страница не найдена</p>
+  <h1>Такой страницы нет</h1>
+  <p class="lead">Скорее всего, вы пришли по ссылке на <b>старую версию сайта</b> —
+     мы его перебрали, и часть адресов изменилась. Всё содержание никуда не делось,
+     вот куда смотреть.</p>
+
+  <h2>Разделы</h2>
+  <ul>
+    <li><a href="/#work">Работы<span>музеи, экспозиции, выставочные проекты</span></a></li>
+    <li><a href="/services/">Услуги<span>от концепции до запуска в зале</span></a></li>
+    <li><a href="/concepts/">Концепции<span>готовые решения для пространств</span></a></li>
+    <li><a href="/library/">Библиотека<span>из чего собирается экспозиция</span></a></li>
+    <li><a href="/atlas/">Атлас<span>приёмы и их применение</span></a></li>
+    <li><a href="/#contact">Контакты<span>+7 495 231-64-23</span></a></li>
+  </ul>
+
+  <h2>Часто искали</h2>
+  <ul>
+    <li><a href="/work/vdnh-space-center/">«Космонавтика и авиация» на ВДНХ<span>115 интерактивных инсталляций</span></a></li>
+    <li><a href="/work/stalingrad/">Музей-панорама «Сталинградская битва»<span>экспозиция целиком</span></a></li>
+    <li><a href="/services/projection-mapping/">Проекционный мэппинг<span>раньше — «видео мэппинг»</span></a></li>
+    <li><a href="/services/interactive-exhibition/">Интерактивная экспозиция<span>раньше — «дополненная реальность»</span></a></li>
+  </ul>
+
+  <a class="back" href="/">На главную</a>
+  <p class="en">English: <a href="/en/" style="color:#2be0c6">playdisplay.com/en/</a></p>
+
+  <footer>
+    Не нашли нужное — напишите на
+    <a href="mailto:info@playdisplay.com">info@playdisplay.com</a>
+    или позвоните <a href="tel:+74952316423">+7 495 231-64-23</a>.
+    Ответим и пришлём прямую ссылку.
+  </footer>
+</div>
+</body>
+</html>
