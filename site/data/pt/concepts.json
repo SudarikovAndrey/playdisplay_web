@@ -1,0 +1,1141 @@
+{
+ "_comment": "Библиотека решений playdisplay — мастер-документ (русская версия). Поля: need «Когда пригодится», solves «Что решает», essence «Что это», feel «Что чувствует человек», spaces «Где применять», mechanics «Из чего складывается опыт», comment «Почему это работает», adapt «Что можно адаптировать».",
+ "cats": [
+  {
+   "id": "all",
+   "label": "Todos"
+  },
+  {
+   "id": "museum",
+   "label": "Museus"
+  },
+  {
+   "id": "brand",
+   "label": "Marcas"
+  },
+  {
+   "id": "public",
+   "label": "Cidade"
+  },
+  {
+   "id": "future",
+   "label": "Futuro"
+  }
+ ],
+ "concepts": [
+  {
+   "id": "ar-portal",
+   "title": "Portal para um espaço que ainda não existe",
+   "cat": "museum",
+   "catLabel": "Museus",
+   "cover": "assets/concepts/ar-portal/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/ar-portal/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/ar-portal/2.jpg"
+    }
+   ],
+   "line": "Quando é preciso mostrar um projeto não construído, um mundo que sumiu ou um espaço inalcançável — e deixar as pessoas explorarem por conta própria.",
+   "need": "Quando é preciso mostrar um projeto não construído, um mundo que sumiu ou um espaço inalcançável — e deixar as pessoas explorarem por conta própria.",
+   "solves": [
+    "Mostra ideias e objetos antes de eles existirem fisicamente.",
+    "Transforma uma apresentação em exploração autônoma.",
+    "Deixa a escala, a estrutura e a atmosfera do espaço fáceis de entender."
+   ],
+   "essence": "Um portal digital se abre no celular, no tablet ou em óculos de RA. O visitante chega perto, muda o ângulo e literalmente olha através dele para outro mundo.",
+   "feel": "Já estou dentro de algo que até agora só existe como ideia.",
+   "spaces": "Incorporação imobiliária • museus • exposições • educação • turismo • showrooms corporativos",
+   "mechanics": [
+    "Portal de RA em escala real",
+    "Pontos de interesse interativos",
+    "Áudio espacial",
+    "Movimento livre",
+    "Guia por IA ou modo compartilhado — opcional"
+   ],
+   "comment": "O vídeo leva o espectador por um percurso que outra pessoa escolheu. Um portal de RA entrega o controle. As pessoas decidem para onde olhar, o que examinar e em que ritmo se mover — e o modelo digital começa a parecer uma descoberta pessoal. Na educação, o mesmo formato abre a porta para épocas históricas, ambientes naturais, o funcionamento interno do corpo ou objetos no espaço profundo.",
+   "adapt": "Empreendimentos residenciais, interiores, arquitetura perdida, acontecimentos históricos, ambientes naturais, máquinas, veículos, modelos científicos e mundos ficcionais.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/ar-portal/thumb.jpg"
+  },
+  {
+   "id": "ar-xray",
+   "title": "Ver o que está escondido por dentro",
+   "cat": "museum",
+   "catLabel": "Museus",
+   "cover": "assets/concepts/ar-xray/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/ar-xray/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/ar-xray/2.jpg"
+    }
+   ],
+   "line": "Quando o que está dentro de um objeto importa mais do que a casca de fora.",
+   "need": "Quando o que está dentro de um objeto importa mais do que a casca de fora.",
+   "solves": [
+    "Explica engenharia complexa sem desmontar o objeto.",
+    "Liga um modelo físico aos processos que rodam dentro dele.",
+    "Deixa as vantagens do produto visíveis de relance."
+   ],
+   "essence": "O visitante aponta um tablet para um objeto real ou para uma maquete. Na tela, a casca fica transparente: mecanismos, fluxos, camadas internas e as ligações entre os processos aparecem.",
+   "feel": "Dá para ver como é construído e por que funciona.",
+   "spaces": "Indústria • museus de tecnologia • educação • medicina • showrooms • exposições",
+   "mechanics": [
+    "Reconhecimento de objetos",
+    "Gráficos 3D registrados com precisão",
+    "Animação dos processos internos",
+    "Camadas interativas",
+    "Telas de mão ou fixas"
+   ],
+   "comment": "Sistemas complexos são difíceis de explicar com palavras e diagramas. Quando o gráfico digital trava com precisão sobre o objeto real, a pessoa vê a forma e o princípio de funcionamento ao mesmo tempo. O caminho da curiosidade ao entendimento fica bem mais curto, e o objeto pode ser revelado camada por camada.",
+   "adapt": "Aeronaves, carros, máquinas-ferramenta, prédios, sistemas prediais, o corpo humano, camadas geológicas, artefatos históricos.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/ar-xray/thumb.jpg"
+  },
+  {
+   "id": "art-portrait",
+   "title": "O visitante vira parte da exposição",
+   "cat": "museum",
+   "catLabel": "Museus",
+   "cover": "assets/concepts/art-portrait/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/art-portrait/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/art-portrait/2.jpg"
+    }
+   ],
+   "line": "Quando uma exposição precisa de uma lembrança pessoal que as pessoas queiram guardar e mostrar para os outros.",
+   "need": "Quando uma exposição precisa de uma lembrança pessoal que as pessoas queiram guardar e mostrar para os outros.",
+   "solves": [
+    "Transforma quem assiste em quem participa.",
+    "Cria um ímã natural — e um ponto natural de compartilhamento.",
+    "Estende o contato com a exposição muito além das paredes dela."
+   ],
+   "essence": "A pessoa se olha num espelho. Alguns segundos depois o reflexo vira um retrato — no estilo de um artista, de uma época ou da própria linguagem visual da exposição.",
+   "feel": "Esta obra foi feita a partir de mim, agora mesmo.",
+   "spaces": "Museus • exposições de arte • espaços de marca • festivais • espaços de aprendizado",
+   "mechanics": [
+    "Tela-espelho",
+    "Câmera e processamento generativo",
+    "Vários estilos artísticos",
+    "QR code ou entrega direta do resultado",
+    "Cenário de fila e de revisita"
+   ],
+   "comment": "A personalização prende a atenção na hora: a pessoa se encontra dentro do exponente. A espera curta cria expectativa, e o retrato pronto vira uma continuação concreta da visita — salvo, mandado para amigos, publicado.",
+   "adapt": "Estilos de artistas específicos, épocas, culturas, temas científicos, marcas e eventos. Os retratos podem ser feitos para casais, famílias e grupos inteiros.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/art-portrait/thumb.jpg"
+  },
+  {
+   "id": "media-vitrage",
+   "title": "Fachada que reage às pessoas",
+   "cat": "public",
+   "catLabel": "Cidade",
+   "cover": "assets/concepts/media-vitrage/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/media-vitrage/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/media-vitrage/2.jpg"
+    }
+   ],
+   "line": "Quando uma superfície arquitetônica precisa virar o principal objeto de mídia do espaço.",
+   "need": "Quando uma superfície arquitetônica precisa virar o principal objeto de mídia do espaço.",
+   "solves": [
+    "Chama atenção de longe.",
+    "Transforma uma fachada ou uma vitrine em um palco vivo.",
+    "Deixa o espaço responder às pessoas que estão nele."
+   ],
+   "essence": "Uma estrutura de telas de geometria complexa vira parte da arquitetura. A imagem se desloca, se quebra em fragmentos tridimensionais, responde ao movimento e nunca se repete por inteiro.",
+   "feel": "O prédio me notou e mudou.",
+   "spaces": "Fachadas • vitrines • exposições • espaços públicos • escritórios • lojas-conceito",
+   "mechanics": [
+    "Módulos de LED com formato sob medida",
+    "Elementos cinéticos",
+    "Câmeras e sensores",
+    "Gráficos generativos",
+    "Conteúdo movido pelo fluxo de pessoas"
+   ],
+   "comment": "Uma tela comum mantém o conteúdo dentro de um retângulo fixo. A Art Screen faz da própria imagem parte da forma do prédio. Reagir a quem olha dá a ela a sensação de objeto vivo, e a cinética amplifica o efeito mesmo sem um roteiro elaborado.",
+   "adapt": "De uma vitrine compacta a uma fachada de mídia em tamanho real. O comportamento pode seguir a hora do dia, o clima, os eventos, a densidade de público ou as ações de uma pessoa específica.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/media-vitrage/thumb.jpg"
+  },
+  {
+   "id": "cabin-hologram",
+   "title": "Objeto complexo, um espetáculo sincronizado",
+   "cat": "brand",
+   "catLabel": "Marcas",
+   "cover": "assets/concepts/cabin-hologram/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/cabin-hologram/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/cabin-hologram/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/cabin-hologram/3.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/cabin-hologram/4.jpg"
+    }
+   ],
+   "line": "Quando um grupo grande precisa atravessar rapidamente uma apresentação densa de produto.",
+   "need": "Quando um grupo grande precisa atravessar rapidamente uma apresentação densa de produto.",
+   "solves": [
+    "Reúne dezenas de especificações em um roteiro vivo.",
+    "Funciona com tempo curto e grande fluxo de visitantes.",
+    "Mostra um objeto complexo dentro do ambiente real dele."
+   ],
+   "essence": "Vários displays holográficos de LED sincronizados constroem uma única tela gráfica no ar dentro de uma cabine, de um interior ou de um espaço técnico.",
+   "feel": "O gráfico apareceu dentro do objeto real.",
+   "spaces": "Transportes • indústria • exposições • museus de tecnologia • lançamentos de produto",
+   "mechanics": [
+    "Displays holográficos de LED sincronizados",
+    "Uma linha do tempo comum ao espetáculo",
+    "Infográficos e animação 3D",
+    "Luz e som",
+    "Roteiro de fluxo contínuo para grupos"
+   ],
+   "comment": "Nada de caminhar de uma tela para outra. Cada mensagem se abre dentro do próprio objeto, presa com precisão aos detalhes que descreve. A sincronização faz tudo ser lido como um espetáculo único, e o formato curto mantém em movimento um fluxo pesado de visitantes.",
+   "adapt": "Uma aeronave, um trem, um carro, um navio, uma linha de produção, um laboratório, uma usina ou um interior histórico.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/cabin-hologram/thumb.jpg"
+  },
+  {
+   "id": "cubic-expo",
+   "title": "Exposição como composição espacial",
+   "cat": "museum",
+   "catLabel": "Museus",
+   "cover": "assets/concepts/cubic-expo/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/cubic-expo/1.jpg"
+    }
+   ],
+   "line": "Quando se quer sair da fileira usual de telas e construir o espaço em torno de uma ideia visual.",
+   "need": "Quando se quer sair da fileira usual de telas e construir o espaço em torno de uma ideia visual.",
+   "solves": [
+    "Dá à exposição uma arquitetura própria.",
+    "Amarra várias telas em uma narrativa única.",
+    "Coloca todo o conteúdo sob um mesmo console de controle."
+   ],
+   "essence": "Telas, pilares e superfícies curvas formam uma composição contínua. O conteúdo flui de um plano para outro, e o espectador lê o exponente como um objeto único.",
+   "feel": "Estou dentro de uma interface, não na frente de um painel de monitores.",
+   "spaces": "Exposições • museus • showrooms • centros de apresentação • espaços corporativos",
+   "mechanics": [
+    "Telas de geometria não padronizada",
+    "Conteúdo sincronizado",
+    "Tela central côncava",
+    "Console de controle",
+    "Roteiro de iluminação"
+   ],
+   "comment": "Telas espalhadas obrigam a pessoa a alternar entre mensagens separadas. Uma composição espacial única segura a atenção e permite construir dramaturgia de verdade: do panorama ao detalhe, de assistir passivamente a escolher e explorar.",
+   "adapt": "Forma, número de módulos, esquema de controle e conteúdo se ajustam ao tema, à área disponível e ao fluxo de visitantes esperado.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/cubic-expo/thumb.jpg"
+  },
+  {
+   "id": "living-model",
+   "title": "O prédio do futuro, bem em cima da maquete",
+   "cat": "brand",
+   "catLabel": "Marcas",
+   "cover": "assets/concepts/living-model/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-model/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-model/2.jpg"
+    }
+   ],
+   "line": "Quando o comprador precisa ver um imóvel futuro com mais profundidade do que renders e folhetos permitem.",
+   "need": "Quando o comprador precisa ver um imóvel futuro com mais profundidade do que renders e folhetos permitem.",
+   "solves": [
+    "Acrescenta uma camada viva de informação a uma maquete física.",
+    "Mostra as vistas, as plantas e as especificações de uma unidade específica.",
+    "Deixa as opções comparáveis ali mesmo, durante a conversa."
+   ],
+   "essence": "Um tablet reconhece a maquete arquitetônica e sobrepõe informação digital a ela. Escolha um prédio, um andar ou um apartamento e a planta, a vista da janela e os números principais aparecem na hora.",
+   "feel": "Já consigo me imaginar morando aqui — exatamente neste lugar.",
+   "spaces": "Escritórios de vendas • showrooms de incorporadoras • feiras imobiliárias • apresentações urbanas",
+   "mechanics": [
+    "RA sobre uma maquete física",
+    "Marcadores interativos",
+    "Panoramas e vistas de janela",
+    "Plantas e disponibilidade de unidades",
+    "Integração com CRM — opcional"
+   ],
+   "comment": "Uma maquete física explica o projeto como um todo, mas responde mal a perguntas pessoais. A realidade aumentada conecta a escala de todo o empreendimento com os detalhes de um apartamento. O comprador fica no contexto do lugar e ao mesmo tempo recebe informação precisa.",
+   "adapt": "Empreendimentos residenciais, resorts, distritos de escritórios, planos diretores, espaços comerciais e públicos.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-model/thumb.jpg"
+  },
+  {
+   "id": "panorama-dive",
+   "title": "Imóvel na escala de estar lá",
+   "cat": "brand",
+   "catLabel": "Marcas",
+   "cover": "assets/concepts/panorama-dive/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/panorama-dive/1.jpg"
+    }
+   ],
+   "line": "Quando um projeto precisa ser mostrado a um grupo inteiro com sensação de imersão completa.",
+   "need": "Quando um projeto precisa ser mostrado a um grupo inteiro com sensação de imersão completa.",
+   "solves": [
+    "Coloca as pessoas dentro do prédio antes de ele existir.",
+    "Cobre arquitetura, interiores e entorno em um só roteiro.",
+    "Funciona tanto para uma apresentação guiada quanto para visita autônoma."
+   ],
+   "essence": "Uma grande tela curva preenche o campo de visão e renderiza o projeto futuro em tempo real. Dá para percorrer o terreno, entrar nos interiores e sobrepor infográficos.",
+   "feel": "Estou dentro do bairro antes de ele ser construído.",
+   "spaces": "Centros de venda de incorporadoras • apresentações corporativas • exposições • centros de planejamento urbano",
+   "mechanics": [
+    "Tela panorâmica de LED",
+    "Realtime 3D",
+    "Controle por tablet ou console",
+    "Infográficos",
+    "Telas de apoio"
+   ],
+   "comment": "Uma imagem grande muda a escala da percepção: a pessoa para de ler o projeto como figura e começa a avaliar distâncias, entorno e atmosfera. O controle em tempo real faz a pergunta do cliente ser respondida na hora.",
+   "adapt": "De uma área de vendas compacta a uma sala imersiva completa. Iluminação de dia e de noite, estações do ano, cenários de movimento e percursos pessoais são todos possíveis.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/panorama-dive/thumb.jpg"
+  },
+  {
+   "id": "sales-showroom",
+   "title": "Showroom que vende um jeito de viver",
+   "cat": "brand",
+   "catLabel": "Marcas",
+   "cover": "assets/concepts/sales-showroom/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/sales-showroom/1.jpg"
+    }
+   ],
+   "line": "Quando o escritório de vendas precisa fazer parte da marca do empreendimento e sustentar o trabalho do time comercial.",
+   "need": "Quando o escritório de vendas precisa fazer parte da marca do empreendimento e sustentar o trabalho do time comercial.",
+   "solves": [
+    "Cria um ambiente de apresentação coerente.",
+    "Permite conduzir uma tela grande no meio da conversa.",
+    "Reúne arquitetura, dados concretos e conteúdo emocional."
+   ],
+   "essence": "Telas de formato sob medida, painéis secundários e um console de controle projetado transformam a visita ao imóvel em um roteiro dirigido.",
+   "feel": "O projeto me convence antes de eu ver um único apartamento.",
+   "spaces": "Escritórios de vendas • showrooms premium • centros de apresentação • pavilhões de exposição",
+   "mechanics": [
+    "Telas planas e côncavas",
+    "Controle por tablet",
+    "Roteiros de apresentação",
+    "Plantas interativas",
+    "Luz e som sincronizados"
+   ],
+   "comment": "O sistema apoia uma conversa viva em vez de substituí-la. Em segundos o corretor vai da ideia geral ao apartamento, à vista ou ao diferencial certo. O espaço mantém sua escala emocional, e o controle continua simples e invisível para o cliente.",
+   "adapt": "A diferentes segmentos de imóvel, identidades de marca, roteiros de venda e níveis de automação.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/sales-showroom/thumb.jpg"
+  },
+  {
+   "id": "living-panorama",
+   "title": "Uma grande viagem para um grande público",
+   "cat": "museum",
+   "catLabel": "Museus",
+   "cover": "assets/concepts/living-panorama/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-panorama/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-panorama/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-panorama/3.jpg"
+    }
+   ],
+   "line": "Quando dezenas ou centenas de espectadores precisam entrar na mesma história ao mesmo tempo.",
+   "need": "Quando dezenas ou centenas de espectadores precisam entrar na mesma história ao mesmo tempo.",
+   "solves": [
+    "Entrega a sensação de presença em escala.",
+    "Mostra lugares e acontecimentos em uma escala que convence.",
+    "Funciona como clímax de um percurso ou como atração autônoma."
+   ],
+   "essence": "Uma tela côncava envolve o campo de visão e leva o público para dentro de um ambiente virtual: uma cidade, uma época histórica, uma paisagem natural ou um mundo de tecnologia.",
+   "feel": "A sala sumiu e a gente estava lá.",
+   "spaces": "Museus • centros de visitantes • centros turísticos • showrooms corporativos • espaços de aprendizado",
+   "mechanics": [
+    "Grande tela côncava de LED",
+    "Conteúdo panorâmico",
+    "Áudio espacial",
+    "Roteiro interativo ou linear",
+    "Visitação em grupo"
+   ],
+   "comment": "É a visão periférica que faz a presença parecer real. Uma tela curva preenche ela e esconde as bordas da imagem. Por isso mesmo um grupo grande lê o conteúdo como espaço, e não como um filme numa parede.",
+   "adapt": "Reconstituições históricas, viagens pela cidade, expedições pela natureza, indústria, ciência, espaço, projetos ainda por construir.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-panorama/thumb.jpg"
+  },
+  {
+   "id": "heli-model",
+   "title": "Um objeto físico ganha vida",
+   "cat": "brand",
+   "catLabel": "Marcas",
+   "cover": "assets/concepts/heli-model/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/heli-model/1.jpg"
+    },
+    {
+     "type": "video",
+     "src": "assets/concepts/heli-model/clip.mp4",
+     "poster": "assets/concepts/heli-model/clip-poster.jpg"
+    }
+   ],
+   "line": "Quando uma maquete precisa mostrar não só a forma, mas a ação, o ambiente e os processos em volta.",
+   "need": "Quando uma maquete precisa mostrar não só a forma, mas a ação, o ambiente e os processos em volta.",
+   "solves": [
+    "Combina a credibilidade física de uma maquete com o movimento do conteúdo digital.",
+    "Mostra o objeto em diferentes modos e situações.",
+    "Cria a ilusão de um mundo 3D real sem óculos."
+   ],
+   "essence": "Uma maquete física fica entre um fundo projetado e uma lâmina transparente refletiva. Objetos virtuais, infográficos e animação aparecem em volta dela, comandados de um console.",
+   "feel": "Estou olhando uma maquete real e, ao mesmo tempo, o mundo que existe em volta dela.",
+   "spaces": "Museus de tecnologia • transportes • indústria • showrooms • educação",
+   "mechanics": [
+    "Maquete física ou motorizada",
+    "Fundo projetado",
+    "Reflexo holográfico",
+    "Console interativo",
+    "Animação sincronizada"
+   ],
+   "comment": "A maquete real dá volume e materialidade; as camadas digitais mostram o que não dá para construir fisicamente — movimento, fluxos, entorno, processos escondidos. O olho funde as camadas em uma cena só, e o objeto é lido como um sistema vivo.",
+   "adapt": "Helicópteros, aeronaves, carros, naves espaciais, arquitetura, equipamentos de produção e máquinas históricas.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/heli-model/thumb.jpg"
+  },
+  {
+   "id": "team-mission",
+   "title": "Missão em equipe em volta de uma mesa",
+   "cat": "museum",
+   "catLabel": "Museus",
+   "cover": "assets/concepts/team-mission/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/team-mission/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/team-mission/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/team-mission/3.jpg"
+    }
+   ],
+   "line": "Quando os visitantes precisam de uma tarefa comum — e cada um de um papel próprio.",
+   "need": "Quando os visitantes precisam de uma tarefa comum — e cada um de um papel próprio.",
+   "solves": [
+    "Substitui a visita solitária por uma experiência compartilhada.",
+    "Exercita comunicação e tomada de decisão.",
+    "Segura um grupo em um roteiro longo."
+   ],
+   "essence": "Seis jogadores ocupam lugares em volta de uma mesa interativa. Cada um tem sua interface pessoal, e o resultado depende de como o grupo combina as decisões.",
+   "feel": "Ninguém passa disso sozinho — a gente tem que agir junto.",
+   "spaces": "Museus • centros de ciência • treinamento corporativo • espaços de entretenimento • exposições",
+   "mechanics": [
+    "Mesa de projeção ou de LED",
+    "Zonas de controle pessoais",
+    "Interação por toque",
+    "Narrativa de missão comum",
+    "Luz e som em toda a sala"
+   ],
+   "comment": "Um objetivo comum transforma desconhecidos em time em poucos segundos. Cada ação individual afeta o resultado coletivo, então a atenção é segurada tanto pela dinâmica social quanto pelo conteúdo. O roteiro mistura aprendizado, jogo e discussão sem esforço.",
+   "adapt": "Missões científicas, administrar uma cidade, ecologia, história, espaço, desafios corporativos e missões de puro entretenimento.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/team-mission/thumb.jpg"
+  },
+  {
+   "id": "floating-object",
+   "title": "Um objeto que parece impossível",
+   "cat": "brand",
+   "catLabel": "Marcas",
+   "cover": "assets/concepts/floating-object/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/floating-object/1.jpg"
+    },
+    {
+     "type": "video",
+     "src": "assets/concepts/floating-object/clip.mp4",
+     "poster": "assets/concepts/floating-object/clip-poster.jpg"
+    }
+   ],
+   "line": "Quando um produto ou um exponente precisa dominar a sala e ser explorado em três dimensões.",
+   "need": "Quando um produto ou um exponente precisa dominar a sala e ser explorado em três dimensões.",
+   "solves": [
+    "Cria a ilusão de um objeto 3D flutuando no ar.",
+    "Deixa manipular o modelo sem óculos de VR.",
+    "Combina um efeito de impacto com um catálogo de produtos funcional."
+   ],
+   "essence": "Uma imagem volumétrica aparece dentro de um prisma escurecido. O visitante gira o objeto, troca de modo e abre camadas adicionais de informação.",
+   "feel": "O objeto fica suspenso no ar e responde ao que eu faço.",
+   "spaces": "Showrooms de tecnologia • museus • exposições • varejo de luxo • centros educativos",
+   "mechanics": [
+    "Lâmina holográfica refletiva",
+    "Telas ocultas",
+    "Projeção no piso ou no fundo",
+    "Console interativo",
+    "Conteúdo 3D"
+   ],
+   "comment": "O contraste entre um gabinete escuro e uma imagem luminosa esconde toda borda técnica. Várias camadas visuais sincronizadas criam profundidade de verdade, e a interação transforma o efeito de vitrine em ferramenta de exploração.",
+   "adapt": "Mecanismos, eletrônica, joias, arquitetura, anatomia, objetos históricos e arte digital.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/floating-object/thumb.jpg"
+  },
+  {
+   "id": "living-interior",
+   "title": "Mostrar como um espaço vai viver",
+   "cat": "brand",
+   "catLabel": "Marcas",
+   "cover": "assets/concepts/living-interior/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-interior/1.jpg"
+    }
+   ],
+   "line": "Quando o que se vende não é um interior como conjunto de acabamentos, mas a vida que vai acontecer dentro dele.",
+   "need": "Quando o que se vende não é um interior como conjunto de acabamentos, mas a vida que vai acontecer dentro dele.",
+   "solves": [
+    "Acrescenta presença humana ao roteiro.",
+    "Mostra o que o espaço faz, em ação.",
+    "Amarra uma maquete física a uma história emocional."
+   ],
+   "essence": "Uma maquete física de interior ganha vistas além das janelas e figuras humanas translúcidas. Cenas curtas acontecem dentro dela: a vida cotidiana, o trabalho, um acontecimento histórico.",
+   "feel": "Não estou olhando um cômodo vazio — estou olhando um momento da minha vida futura.",
+   "spaces": "Incorporação imobiliária • museus • hotéis • showrooms • exposições",
+   "mechanics": [
+    "Maquete física de interior",
+    "Personagens holográficos",
+    "Vistas dinâmicas pelas janelas",
+    "Cenários de uso",
+    "Linha do tempo de iluminação"
+   ],
+   "comment": "Uma maquete vazia pede que a pessoa imagine sozinha a vida lá dentro. Personagens, movimento e a mudança da hora do dia fazem esse trabalho por ela. O projeto é entendido por situações familiares, não só por medidas e acabamentos.",
+   "adapt": "Casas, escritórios, hotéis, cômodos históricos, laboratórios e espaços de tecnologia.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-interior/thumb.jpg"
+  },
+  {
+   "id": "threshold",
+   "title": "A imersão começa na porta",
+   "cat": "museum",
+   "catLabel": "Museus",
+   "cover": "assets/concepts/threshold/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/threshold/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/threshold/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/threshold/3.jpg"
+    }
+   ],
+   "line": "Quando a primeira impressão precisa dar o tom de todo o espaço, na hora.",
+   "need": "Quando a primeira impressão precisa dar o tom de todo o espaço, na hora.",
+   "solves": [
+    "Transforma a entrada em uma cena por si só.",
+    "Entrega a atmosfera da marca antes mesmo de o percurso principal começar.",
+    "Cria um marco visual forte."
+   ],
+   "essence": "Superfícies de LED são embutidas no batente de portas e passagens. Água, luz, fogo ou gráficos abstratos correm em volta da abertura e mudam o que é atravessá-la.",
+   "feel": "Cruzei uma linha e saí em outro mundo.",
+   "spaces": "Museus • escritórios • showrooms • exposições • shoppings • espaços públicos",
+   "mechanics": [
+    "Telas de LED integradas à arquitetura",
+    "Conteúdo modelado para a abertura",
+    "Luz e som",
+    "Resposta à aproximação",
+    "Montagem interna ou externa"
+   ],
+   "comment": "Atravessar uma porta já é uma mudança natural de estado. Quando a arquitetura sublinha esse momento com movimento e luz, a pessoa chega emocionalmente preparada para o que vem depois. A entrada vira parte da narrativa em vez de item de infraestrutura.",
+   "adapt": "De um portal compacto de porta a uma grande instalação de fachada. O conteúdo pode seguir a estação, o evento, a marca ou a história do lugar.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/threshold/thumb.jpg"
+  },
+  {
+   "id": "living-lines",
+   "title": "O espaço começa a falar",
+   "cat": "public",
+   "catLabel": "Cidade",
+   "cover": "assets/concepts/living-lines/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-lines/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-lines/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-lines/3.jpg"
+    }
+   ],
+   "line": "Quando um interior precisa de uma camada viva de informação embutida na própria arquitetura.",
+   "need": "Quando um interior precisa de uma camada viva de informação embutida na própria arquitetura.",
+   "solves": [
+    "Entrega informação sem painéis avulsos.",
+    "Amarra zonas separadas com uma mesma linguagem visual.",
+    "Deixa o espaço personalizável."
+   ],
+   "essence": "Linhas estreitas de LED percorrem paredes, teto e piso. Texto, dados, gráficos e sinais viajam por elas, marcando o ritmo digital do espaço.",
+   "feel": "A informação anda junto comigo.",
+   "spaces": "Escritórios • museus • terminais de transporte • showrooms • espaços comerciais e públicos",
+   "mechanics": [
+    "Módulos estreitos de LED",
+    "Conteúdo em movimento",
+    "Integração com dados ao vivo",
+    "Reconhecimento ou personalização — opcional",
+    "Transições arquitetônicas entre planos"
+   ],
+   "comment": "Uma linha guia naturalmente o olhar e os pés. Em vez de ficar em uma tela separada, a informação vira parte do percurso: anda junto com as pessoas, liga zonas e pode mudar com a hora, com o evento ou com o público.",
+   "adapt": "Orientação, notícias, dados da empresa, obras de arte, números de mercado, mensagens pessoais e deixas dentro de um roteiro.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-lines/thumb.jpg"
+  },
+  {
+   "id": "weightlessness",
+   "title": "Um objeto para a multidão",
+   "cat": "brand",
+   "catLabel": "Marcas",
+   "cover": "assets/concepts/weightlessness/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/weightlessness/1.jpg"
+    }
+   ],
+   "line": "Quando é preciso um centro de atenção simples e fisicamente convincente.",
+   "need": "Quando é preciso um centro de atenção simples e fisicamente convincente.",
+   "solves": [
+    "Coloca uma pergunta visual imediata.",
+    "Tira um produto ou um exponente do ruído informativo.",
+    "Funciona sem tela nenhuma e sem interface nenhuma."
+   ],
+   "essence": "O objeto flutua no ar, girando devagar. Forma, luz e material são escolhidos para que o peso dele pareça absolutamente real.",
+   "feel": "Eu sei o que estou vendo, e mesmo assim não consigo explicar como é possível.",
+   "spaces": "Exposições • museus • vitrines • showrooms • lançamentos de produto",
+   "mechanics": [
+    "Levitação magnética",
+    "Réplica otimizada em peso",
+    "Estrutura oculta",
+    "Iluminação precisa",
+    "Rotação lenta"
+   ],
+   "comment": "O cérebro percebe na hora uma lei da física quebrada. O contraste entre o peso aparente do objeto e o fato de ele simplesmente ficar pendurado cria uma tensão que segura o olhar e puxa as pessoas para perto.",
+   "adapt": "Uma pedra, um produto, um artefato, um logotipo, o modelo de um planeta, uma peça de engenharia ou um objeto de arte.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/weightlessness/thumb.jpg"
+  },
+  {
+   "id": "mars",
+   "title": "Museu como base espacial em operação",
+   "cat": "future",
+   "catLabel": "Futuro",
+   "cover": "assets/concepts/mars/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/mars/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/mars/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/mars/3.jpg"
+    },
+    {
+     "type": "video",
+     "src": "assets/concepts/mars/clip.mp4",
+     "poster": "assets/concepts/mars/clip-poster.jpg"
+    }
+   ],
+   "line": "Quando um tema educativo precisa virar uma sequência de missões pessoais.",
+   "need": "Quando um tema educativo precisa virar uma sequência de missões pessoais.",
+   "solves": [
+    "Funde conhecimento, jogo e sensação de presença.",
+    "Deixa o visitante entrar no papel de explorador.",
+    "Transforma exponentes separados em um percurso coerente."
+   ],
+   "essence": "Os visitantes entram em uma base em Marte, olham a superfície do planeta por uma tela hemisférica e cumprem tarefas em estações interativas.",
+   "feel": "A gente não está estudando Marte. A gente mora e trabalha aqui.",
+   "spaces": "Museus espaciais • centros de ciência • educação • parques temáticos • centros de visitantes",
+   "mechanics": [
+    "Tela hemisférica",
+    "Estações com botões e mecanismos físicos",
+    "Sistema de missões",
+    "Tarefas individuais e em grupo",
+    "Cenografia física"
+   ],
+   "comment": "Um papel e um objetivo transformam um monte de fatos em história. A informação chega no momento em que é necessária para resolver algo: escolher o local de pouso, racionar suprimentos, atravessar uma tempestade, analisar uma amostra. O conhecimento vira ferramenta de ação.",
+   "adapt": "Uma base lunar, uma estação polar, um laboratório submarino, uma expedição arqueológica e outros mundos criados para aprender.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/mars/thumb.jpg"
+  },
+  {
+   "id": "living-monolith",
+   "title": "Uma parede que vive junto com o espaço",
+   "cat": "museum",
+   "catLabel": "Museus",
+   "cover": "assets/concepts/living-monolith/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-monolith/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-monolith/2.jpg"
+    }
+   ],
+   "line": "Quando um grande volume arquitetônico precisa sustentar ao mesmo tempo uma identidade permanente e um conteúdo que muda sempre.",
+   "need": "Quando um grande volume arquitetônico precisa sustentar ao mesmo tempo uma identidade permanente e um conteúdo que muda sempre.",
+   "solves": [
+    "Dá vida a uma parede cega.",
+    "Conecta um objeto comemorativo à vida atual da organização.",
+    "Dá ao interior um centro forte."
+   ],
+   "essence": "Um monumento ou painel sólido se funde com uma tela grande. A parte permanente guarda o núcleo da história; a parte digital carrega eventos, pessoas, dados e sentido novo.",
+   "feel": "A história deste lugar está continuando agora mesmo.",
+   "spaces": "Universidades • escolas de negócios • museus • centros corporativos • prédios públicos",
+   "mechanics": [
+    "Monólito sólido",
+    "Grande tela de LED",
+    "Conteúdo atualizável",
+    "Infográficos e arquivo",
+    "Roteiros de eventos"
+   ],
+   "comment": "Uma parede totalmente digital perde rápido a sensação de peso; uma totalmente material para de se desenvolver. As duas camadas juntas dão permanência e vida: o lugar mantém seu símbolo e ainda mostra algo novo.",
+   "adapt": "Uma parede de fundadores, a história da empresa, conquistas, descobertas científicas, um calendário de eventos e um arquivo vivo da comunidade.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-monolith/thumb.jpg"
+  },
+  {
+   "id": "mind-canvas",
+   "title": "Uma obra pintada por um estado de espírito",
+   "cat": "future",
+   "catLabel": "Futuro",
+   "cover": "assets/concepts/mind-canvas/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/mind-canvas/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/mind-canvas/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/mind-canvas/3.jpg"
+    }
+   ],
+   "line": "Quando se quer dar ao visitante um jeito inesperado de ver e expressar o que está acontecendo dentro dele.",
+   "need": "Quando se quer dar ao visitante um jeito inesperado de ver e expressar o que está acontecendo dentro dele.",
+   "solves": [
+    "Torna visível a atividade cerebral invisível.",
+    "Produz uma obra pessoal sem exigir nenhuma habilidade artística.",
+    "Junta arte, ciência e auto-observação."
+   ],
+   "essence": "Uma neurointerface lê a atividade cerebral, e um sistema generativo transforma isso em cor, movimento, composição e som.",
+   "feel": "Eu vi um rastro visual da minha própria consciência.",
+   "spaces": "Museus de arte e ciência • espaços de bem-estar • exposições • centros educativos • eventos",
+   "mechanics": [
+    "Capacete de EEG",
+    "Análise do sinal",
+    "Gráficos generativos",
+    "Estilização de acordo com o tema da exposição",
+    "Salvamento do resultado"
+   ],
+   "comment": "Não dá para sentir a própria atividade cerebral diretamente, e é difícil imaginá-la. Ganhando forma visual, o estado interno da pessoa vira algo que ela pode estudar. E como nenhum resultado é igual a outro, a experiência carrega valor pessoal de verdade.",
+   "adapt": "Arte abstrata, estilos de artistas específicos, visualização de música, roteiros meditativos, comparações do estado da pessoa antes e depois.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/mind-canvas/thumb.jpg"
+  },
+  {
+   "id": "street-portal",
+   "title": "A rua ganha uma janela para outro lugar",
+   "cat": "public",
+   "catLabel": "Cidade",
+   "cover": "assets/concepts/street-portal/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/street-portal/1.jpg"
+    }
+   ],
+   "line": "Quando quem passa precisa de um motivo para se interessar por um lugar ou um evento antes de decidir entrar.",
+   "need": "Quando quem passa precisa de um motivo para se interessar por um lugar ou um evento antes de decidir entrar.",
+   "solves": [
+    "Cria um teaser marcante no meio da cidade.",
+    "Mostra o que está acontecendo dentro do espaço.",
+    "Convida à foto e se espalha sozinho."
+   ],
+   "essence": "Um objeto luminoso de rua parece um portal. Dentro dele: arte em movimento, ou uma transmissão ao vivo de um museu, de uma loja, de um showroom ou de um evento.",
+   "feel": "Acabei de topar com uma passagem para outro lugar.",
+   "spaces": "Espaços urbanos • museus • festivais • lojas • centros empresariais • exposições",
+   "mechanics": [
+    "Tela para ambiente externo",
+    "Gabinete arquitetônico",
+    "Conteúdo artístico ou ao vivo",
+    "Câmera e interação — opcional",
+    "Composição fotogênica"
+   ],
+   "comment": "O portal funciona por pura curiosidade: dá vontade de olhar dentro do quadro e descobrir onde aquele espaço fica de verdade. A forma faz um gesto visual claro, e o conteúdo ao vivo transforma publicidade em uma experiência que a cidade fica tendo.",
+   "adapt": "Um teaser de exposição, uma janela entre duas cidades, uma transmissão ao vivo de um local, um objeto de arte, uma ativação de marca ou uma instalação sazonal.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/street-portal/thumb.jpg"
+  },
+  {
+   "id": "form-library",
+   "title": "Telas viram arquitetura",
+   "cat": "brand",
+   "catLabel": "Marcas",
+   "cover": "assets/concepts/form-library/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/form-library/1.jpg"
+    },
+    {
+     "type": "video",
+     "src": "assets/concepts/form-library/clip.mp4",
+     "poster": "assets/concepts/form-library/clip-poster.jpg"
+    }
+   ],
+   "line": "Quando um espaço precisa de forma própria e o conteúdo tem que escapar do retângulo padrão.",
+   "need": "Quando um espaço precisa de forma própria e o conteúdo tem que escapar do retângulo padrão.",
+   "solves": [
+    "Cria uma linguagem visual reconhecível.",
+    "Funde arquitetura e mídia.",
+    "Permite montar composições diferentes com os mesmos módulos."
+   ],
+   "essence": "Telas de tamanhos e geometrias diferentes se dobram em objetos facetados. De um ponto de vista específico o conteúdo trava em uma imagem única; conforme você anda, ele se abre em uma composição em camadas.",
+   "feel": "A imagem existe ao mesmo tempo na tela e no espaço real.",
+   "spaces": "Exposições • showrooms • varejo • museus • escritórios • palcos",
+   "mechanics": [
+    "Telas de formato sob medida",
+    "Conteúdo anamórfico",
+    "Estrutura modular",
+    "Cinética — opcional",
+    "Gráficos sincronizados"
+   ],
+   "comment": "Uma forma incomum conquista atenção antes de rodar um único quadro. O efeito anamórfico recompensa quem encontra o ponto certo e faz do caminhar pelo espaço parte da experiência.",
+   "adapt": "Escala, configuração, quanto dela se move, o tipo de conteúdo e o número de pontos de visão perfeitos.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/form-library/thumb.jpg"
+  },
+  {
+   "id": "living-ship",
+   "title": "A história de um navio se abre em volta da maquete",
+   "cat": "museum",
+   "catLabel": "Museus",
+   "cover": "assets/concepts/living-ship/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/living-ship/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-ship/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-ship/3.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/living-ship/4.jpg"
+    }
+   ],
+   "line": "Quando um exponente físico precisa ganhar movimento, escala e acontecimentos.",
+   "need": "Quando um exponente físico precisa ganhar movimento, escala e acontecimentos.",
+   "solves": [
+    "Dá vida a maquetes estáticas.",
+    "Mostra processos que nunca caberiam na construção física.",
+    "Cabe uma série de histórias autônomas em um único salão."
+   ],
+   "essence": "Uma maquete física de navio fica dentro de um display holográfico. Gráficos virtuais mostram o movimento dele, o interior, a tripulação e os acontecimentos em volta.",
+   "feel": "Deixou de ser maquete — uma cena real está acontecendo na minha frente.",
+   "spaces": "Museus marítimos • exposições de história • educação • centros de visitantes",
+   "mechanics": [
+    "Maquete física",
+    "Lâmina refletiva",
+    "Tela oculta",
+    "Animação 3D",
+    "Som e luz sincronizados"
+   ],
+   "comment": "A maquete dá forma exata e profundidade real; a camada digital acrescenta tempo. O visitante vê não só como o objeto era, mas o que aconteceu com ele: aeronaves pousando no convés, a tripulação trabalhando, um mergulho, velas enchendo de vento.",
+   "adapt": "Navios, arquitetura, batalhas, cidades, processos industriais e sistemas naturais.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/living-ship/thumb.jpg"
+  },
+  {
+   "id": "safe-training",
+   "title": "Habilidade por ação e presença completa",
+   "cat": "public",
+   "catLabel": "Cidade",
+   "cover": "assets/concepts/safe-training/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/safe-training/1.jpg"
+    }
+   ],
+   "line": "Quando alguém precisa treinar ou cumprir missões em um ambiente virtual controlado.",
+   "need": "Quando alguém precisa treinar ou cumprir missões em um ambiente virtual controlado.",
+   "solves": [
+    "Combina estímulo visual, físico e tátil.",
+    "Torna cenários difíceis repetíveis e seguros.",
+    "Serve tanto ao entretenimento quanto ao treinamento profissional."
+   ],
+   "essence": "Uma tela panorâmica, controles com retorno de força e uma plataforma de movimento criam a sensação de se deslocar por um mundo virtual.",
+   "feel": "Meu corpo reage como se isso estivesse acontecendo de verdade.",
+   "spaces": "Centros de treinamento • museus • parques temáticos • treinamento corporativo • entretenimento",
+   "mechanics": [
+    "Tela panorâmica",
+    "Controles físicos",
+    "Retorno de força e vibração",
+    "Plataforma de movimento",
+    "Console do instrutor"
+   ],
+   "comment": "A habilidade se forma mais rápido quando a decisão vem junto com uma ação física e retorno imediato. O sistema define a dificuldade, repete episódios e analisa como a pessoa respondeu, tudo em condições controladas.",
+   "adapt": "Operações de resgate, segurança industrial, transportes, esportes, cenários históricos e missões de ficção científica.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/safe-training/thumb.jpg"
+  },
+  {
+   "id": "motion-game",
+   "title": "O treino vira jogo",
+   "cat": "public",
+   "catLabel": "Cidade",
+   "cover": "assets/concepts/motion-game/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-game/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-game/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-game/3.jpg"
+    }
+   ],
+   "line": "Quando as pessoas precisam de um motivo para se mexer por mais tempo, com mais frequência e com mais vontade.",
+   "need": "Quando as pessoas precisam de um motivo para se mexer por mais tempo, com mais frequência e com mais vontade.",
+   "solves": [
+    "Reduz a barreira mental para o esforço físico.",
+    "Adapta as tarefas ao nível de cada pessoa.",
+    "Monta competição individual e em equipe."
+   ],
+   "essence": "Luz, projeção e sensores transformam uma sala em campo de jogo. O sistema mostra para onde se mover, o que tocar, onde arremessar e quando mudar o ritmo.",
+   "feel": "Estou jogando — e só depois percebo o quanto me esforcei.",
+   "spaces": "Academias • centros esportivos • escolas • reabilitação • entretenimento familiar",
+   "mechanics": [
+    "Rastreamento de movimento",
+    "Alvos de luz e projeção",
+    "Dificuldade adaptativa",
+    "Sistema de pontuação",
+    "Modos em equipe"
+   ],
+   "comment": "O jogo troca o objetivo abstrato de “treinar” por tarefas curtas e concretas com retorno imediato. A pessoa vê progresso, toma decisões e recebe recompensa emocional, então o esforço parece mais leve.",
+   "adapt": "Cardio, coordenação, tempo de reação, jogos em equipe, aulas infantis, exercícios de reabilitação.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/motion-game/thumb.jpg"
+  },
+  {
+   "id": "motion-architecture",
+   "title": "Cada passo vira parte da mensagem",
+   "cat": "public",
+   "catLabel": "Cidade",
+   "cover": "assets/concepts/motion-architecture/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-architecture/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-architecture/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/motion-architecture/3.jpg"
+    }
+   ],
+   "line": "Quando um percurso cotidiano deve virar um acontecimento visual e narrativo.",
+   "need": "Quando um percurso cotidiano deve virar um acontecimento visual e narrativo.",
+   "solves": [
+    "Transforma uma escada em um meio de comunicação de verdade.",
+    "Liga o movimento da pessoa ao desdobramento do conteúdo.",
+    "Cria uma imagem forte sem ocupar área de piso extra."
+   ],
+   "essence": "Telas de LED feitas sob medida cobrem os espelhos dos degraus ou toda a superfície da escada. Texto, gráficos e obras se montam em uma imagem única.",
+   "feel": "Estou subindo por dentro de uma história, e não só uma escada.",
+   "spaces": "Museus • escritórios • universidades • shoppings • exposições • prédios públicos",
+   "mechanics": [
+    "Módulos de LED com carga estrutural certificada",
+    "Conteúdo construído para a geometria dos degraus",
+    "Vista anamórfica",
+    "Resposta ao movimento — opcional",
+    "Integração com a orientação do espaço"
+   ],
+   "comment": "Uma escada já estabelece uma sequência e um ritmo. O conteúdo pode se revelar degrau por degrau, guiar as pessoas e se resolver em uma grande imagem a partir de um ponto de vista principal. Uma ação cotidiana vira parte da narrativa.",
+   "adapt": "Orientação, a história de uma organização, dados, arte, campanhas publicitárias, desafios de jogo e sequências de aprendizado.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/motion-architecture/thumb.jpg"
+  },
+  {
+   "id": "control-center",
+   "title": "Uma missão espacial para uma tripulação de verdade",
+   "cat": "future",
+   "catLabel": "Futuro",
+   "cover": "assets/concepts/control-center/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/2.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/3.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/4.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/5.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/6.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/control-center/7.jpg"
+    }
+   ],
+   "line": "Quando é preciso uma atração principal com roteiro longo, revisitas e forte dinâmica de grupo.",
+   "need": "Quando é preciso uma atração principal com roteiro longo, revisitas e forte dinâmica de grupo.",
+   "solves": [
+    "Constrói uma aventura em escala real dentro de um museu ou de um centro.",
+    "Amarra os participantes por responsabilidade compartilhada.",
+    "Permite lançar novas missões e trazer o público de volta."
+   ],
+   "essence": "Um grupo ocupa seus lugares a bordo de uma nave. Cada pessoa opera um sistema, e tanto o voo quanto a história dependem das decisões conjuntas da tripulação.",
+   "feel": "A gente é mesmo uma tripulação — o erro de um atinge todo mundo.",
+   "spaces": "Museus espaciais • centros de ciência • parques temáticos • centros de visitantes voltados ao futuro",
+   "mechanics": [
+    "Tela panorâmica esférica",
+    "Consoles individuais",
+    "Enigmas em equipe",
+    "Plataforma de movimento",
+    "Áudio espacial e cenografia física"
+   ],
+   "comment": "Uma experiência longa segura a atenção por meio de papéis, de um objetivo comum e da troca constante do tipo de tarefa. Cada um carrega a própria responsabilidade, e o resultado só existe pela coordenação. A estrutura em série permite lançar novas missões e construir um público que volta.",
+   "adapt": "Um voo espacial, uma expedição de águas profundas, administrar uma cidade do futuro, uma missão de pesquisa ou uma performance interativa filosófica.",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/control-center/thumb.jpg"
+  },
+  {
+   "id": "city-flight",
+   "title": "Um salto real cai em um mundo digital",
+   "cat": "public",
+   "catLabel": "Cidade",
+   "cover": "assets/concepts/city-flight/1.jpg",
+   "gallery": [
+    {
+     "type": "image",
+     "src": "assets/concepts/city-flight/1.jpg"
+    },
+    {
+     "type": "image",
+     "src": "assets/concepts/city-flight/2.jpg"
+    }
+   ],
+   "line": "Quando é preciso uma atração espetacular, que se entenda de relance e funcione por movimento físico real.",
+   "need": "Quando é preciso uma atração espetacular, que se entenda de relance e funcione por movimento físico real.",
+   "solves": [
+    "Junta atividade física a uma viagem virtual.",
+    "Cria um belo espetáculo para quem está assistindo.",
+    "Serve para sessões curtas e repetíveis."
+   ],
+   "essence": "O visitante pula em um trampolim e um sistema de rastreamento leva cada salto para um mundo 3D em uma tela grande: por cima de telhados, por florestas e montanhas, ou por um terminal de aeroporto.",
+   "feel": "Meu próprio movimento virou parte de um videogame.",
+   "spaces": "Aeroportos • centros de entretenimento • museus • eventos de marca • espaços esportivos",
+   "mechanics": [
+    "Trampolim",
+    "Rastreamento do corpo e do salto",
+    "Realtime 3D",
+    "Tela alinhada ao ponto de vista do jogador",
+    "Roteiro de jogo"
+   ],
+   "comment": "A ligação entre o esforço físico e a resposta imediata do mundo virtual dá uma sensação rara de controle. A mecânica não precisa de instruções, e assistir vale quase tanto quanto participar, então o público se junta sozinho em volta da instalação.",
+   "adapt": "Percursos urbanos, mundos naturais, viagens pelos locais da própria marca, desafios esportivos, treinamento e aventuras fantásticas.*6",
+   "relatedProjectSlugs": [],
+   "thumb": "assets/concepts/city-flight/thumb.jpg"
+  }
+ ],
+ "rev": "master-2707",
+ "revDate": "2026-07-27"
+}

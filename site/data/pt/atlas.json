@@ -1,0 +1,319 @@
+{
+ "_comment": "Atlas — единая карта знаний и подходов playdisplay. Источник: PlayDisplay_Атлас_единая_структура_v2.docx. Тип задаёт роль карточки: Принцип — как мы думаем, Технология — чем это делается, Наблюдение — что мы видим у посетителей, Приём — как это применяется, Исследование — куда смотрим дальше. Готовых идей решений здесь нет намеренно: они живут в библиотеке (data/concepts.json), Атлас — про слои знания. Сейчас все карточки — тезисы: читаются в сетке и не кликаются. Если у карточки появятся principle и examples, она сама начнёт открываться в разбор — рендер это поддерживает.",
+ "catLabels": {
+  "Princípio": "Princípios",
+  "Tecnologia": "Tecnologias",
+  "Observação": "Observações",
+  "Técnica": "Técnicas",
+  "Pesquisa": "Pesquisas"
+ },
+ "cats": [
+  "Princípio",
+  "Tecnologia",
+  "Observação",
+  "Técnica",
+  "Pesquisa"
+ ],
+ "items": [
+  {
+   "id": "form-not-decor",
+   "cat": "Princípio",
+   "title": "O designer não decora — ele encontra a forma da solução",
+   "desc": "A expressividade não se coloca por cima da função. Ela nasce da própria tarefa: de como as pessoas se comportam, de como é o espaço, dos limites do projeto e das tecnologias escolhidas."
+  },
+  {
+   "id": "future-as-options",
+   "cat": "Princípio",
+   "title": "O futuro já existe como possibilidades",
+   "desc": "Inspiração é o momento em que o designer percebe um dos futuros possíveis antes dos outros. O valor aparece quando essa possibilidade vira um objeto, um espaço ou uma experiência real."
+  },
+  {
+   "id": "deep-focus",
+   "cat": "Princípio",
+   "title": "O fluxo exige atenção inteira",
+   "desc": "Soluções fortes raramente chegam de passagem. O designer entra na tarefa até o fim, percebe conexões, descarta as respostas óbvias e segura a ideia até ela ganhar forma exata."
+  },
+  {
+   "id": "tech-guarantees-nothing",
+   "cat": "Princípio",
+   "title": "A tecnologia não garante nada",
+   "desc": "A mesma tecnologia pode criar uma experiência forte ou continuar sendo equipamento caro. O valor aparece quando ela vira parte de uma ideia precisa."
+  },
+  {
+   "id": "constraints-sharpen",
+   "cat": "Princípio",
+   "title": "Cada limite deixa a ideia mais forte",
+   "desc": "Orçamento, prazo, arquitetura, segurança e o equipamento já existente criam a pressão da qual nasce a solução exata."
+  },
+  {
+   "id": "space-as-language",
+   "cat": "Princípio",
+   "title": "O espaço é uma linguagem",
+   "desc": "Luz, escala, percurso, som e movimento contam a história antes de qualquer texto."
+  },
+  {
+   "id": "inevitable-ideas",
+   "cat": "Princípio",
+   "title": "As melhores ideias parecem inevitáveis",
+   "desc": "Depois de pronta, parece que não havia outro jeito. Esse efeito aparece quando uma tarefa difícil foi resolvida com precisão de verdade."
+  },
+  {
+   "id": "complexity-backstage",
+   "cat": "Princípio",
+   "title": "A complexidade fica nos bastidores",
+   "desc": "Quanto mais natural parece a interação, mais trabalho costuma estar escondido dentro do projeto."
+  },
+  {
+   "id": "designing-behaviour",
+   "cat": "Princípio",
+   "title": "Projetamos comportamento",
+   "desc": "Telas, projetores e software dá para comprar. O trabalho de verdade é projetar como as pessoas vão andar, parar, se surpreender e interagir."
+  },
+  {
+   "id": "before-first-step",
+   "cat": "Princípio",
+   "title": "A experiência começa antes do primeiro passo",
+   "desc": "Um projeto começa na expectativa e termina na lembrança. A entrada, a fila e o primeiro olhar já moldam como a experiência é recebida."
+  },
+  {
+   "id": "ideas-unite",
+   "cat": "Princípio",
+   "title": "Uma boa ideia junta as pessoas",
+   "desc": "Um projeto forte começa uma conversa: as pessoas apontam detalhes umas para as outras, fotografam, riem e voltam juntas."
+  },
+  {
+   "id": "magic-leaves-questions",
+   "cat": "Princípio",
+   "title": "A mágica de verdade deixa perguntas",
+   "desc": "Quando a pessoa quer olhar de novo, dar a volta e conferir os próprios sentidos, a impressão fica com ela."
+  },
+  {
+   "id": "memory-keeps-moments",
+   "cat": "Princípio",
+   "title": "A memória guarda o que foi vivido",
+   "desc": "Fatos somem rápido. Experiência pessoal, surpresa e emoção seguem vivendo na memória."
+  },
+  {
+   "id": "surprise-opens-attention",
+   "cat": "Princípio",
+   "title": "A surpresa abre a atenção",
+   "desc": "A surpresa cria uma pausa em que a pessoa fica pronta para olhar, ouvir e explorar mais."
+  },
+  {
+   "id": "tech-disappears",
+   "cat": "Princípio",
+   "title": "A melhor tecnologia desaparece",
+   "desc": "Quando o visitante fala da experiência e não do equipamento, a tecnologia fez o trabalho dela."
+  },
+  {
+   "id": "design-as-decisions",
+   "cat": "Princípio",
+   "title": "Design é um jeito de tomar decisões",
+   "desc": "O design começa pela pergunta do que a pessoa deve sentir e fazer, e só então constrói forma, narrativa e tecnologia em volta dessa resposta."
+  },
+  {
+   "id": "constraints-coauthor",
+   "cat": "Princípio",
+   "title": "Os limites são o melhor coautor",
+   "desc": "A expressividade muitas vezes acontece por causa dos limites do projeto, não apesar deles."
+  },
+  {
+   "id": "obvious-in-hindsight",
+   "cat": "Princípio",
+   "title": "Uma boa ideia parece óbvia depois que alguém a teve",
+   "desc": "A precisão esconde a busca que veio antes e faz o resultado parecer natural."
+  },
+  {
+   "id": "creativity-as-connection",
+   "cat": "Princípio",
+   "title": "Criatividade é conseguir enxergar uma conexão",
+   "desc": "Uma ideia forte junta elementos que até então eram vistos separados."
+  },
+  {
+   "id": "starts-with-feeling",
+   "cat": "Princípio",
+   "title": "Todo projeto começa por uma sensação",
+   "desc": "Primeiro decidimos o que a pessoa deve sentir. Depois construímos tudo o que ajuda ela a viver isso."
+  },
+  {
+   "id": "vr-training",
+   "cat": "Tecnologia",
+   "title": "Realidade virtual para treinamento",
+   "desc": "A RV deixa seguro ensaiar situações difíceis e raras, repetir cenários e receber retorno na hora."
+  },
+  {
+   "id": "generative-media",
+   "cat": "Tecnologia",
+   "title": "Gráficos generativos",
+   "desc": "A imagem é criada em tempo real e muda em resposta à pessoa, aos dados ou ao estado do espaço."
+  },
+  {
+   "id": "computer-vision",
+   "cat": "Tecnologia",
+   "title": "Visão computacional",
+   "desc": "Câmeras leem movimento, posição e ação, transformando comportamento natural em forma de controle."
+  },
+  {
+   "id": "spatial-sound",
+   "cat": "Tecnologia",
+   "title": "Som espacial",
+   "desc": "O som constrói direção, profundidade e sensação de presença, amarrando um evento virtual a um lugar físico."
+  },
+  {
+   "id": "sensor-systems",
+   "cat": "Tecnologia",
+   "title": "Sistemas de sensores",
+   "desc": "Movimento, toque, voz e posição do corpo viram entradas para o roteiro."
+  },
+  {
+   "id": "moments-not-facts",
+   "cat": "Observação",
+   "title": "As pessoas raramente recontam fatos",
+   "desc": "Mas quase sempre recontam os momentos que as surpreenderam."
+  },
+  {
+   "id": "architecture-speaks-first",
+   "cat": "Observação",
+   "title": "A arquitetura fala primeiro",
+   "desc": "As pessoas leem escala, luz, forma e percurso antes de aparecer qualquer texto."
+  },
+  {
+   "id": "wayfinding-without-signs",
+   "cat": "Observação",
+   "title": "O espaço guia sem placas",
+   "desc": "Luz, som, perspectiva e movimento sugerem sozinhos o próximo passo."
+  },
+  {
+   "id": "simplicity-hides-work",
+   "cat": "Observação",
+   "title": "A simplicidade costuma esconder muito trabalho",
+   "desc": "Quanto mais natural parece a interação, com mais cuidado foram trabalhados o roteiro e a tecnologia por trás."
+  },
+  {
+   "id": "talking-about-gear",
+   "cat": "Observação",
+   "title": "Se falam do equipamento, a ideia perdeu",
+   "desc": "Se falam do que sentiram e viveram, a tecnologia funcionou."
+  },
+  {
+   "id": "shared-emotion",
+   "cat": "Observação",
+   "title": "Emoção compartilhada é mais forte que emoção sozinha",
+   "desc": "As pessoas lembram melhor de uma experiência quando dividiram ela com alguém."
+  },
+  {
+   "id": "watching-is-part",
+   "cat": "Observação",
+   "title": "Assistir pode valer tanto quanto participar",
+   "desc": "A reação de quem participa pode virar parte do espetáculo e puxar quem está em volta."
+  },
+  {
+   "id": "personal-action-value",
+   "cat": "Observação",
+   "title": "Uma ação própria muda o valor da experiência",
+   "desc": "O que a pessoa mesma influenciou parece mais importante para ela."
+  },
+  {
+   "id": "photo-worthy-space",
+   "cat": "Técnica",
+   "title": "Um espaço que dá vontade de fotografar",
+   "desc": "Uma instalação forte diz à pessoa onde parar e o que fazer. A foto vira parte da narrativa, e a experiência vai mais longe."
+  },
+  {
+   "id": "adult-curiosity",
+   "cat": "Técnica",
+   "title": "Devolver a curiosidade aos adultos",
+   "desc": "O jogo tira por um momento o status, o cargo e a seriedade de sempre. A pessoa explora, experimenta e volta a gostar de descobrir."
+  },
+  {
+   "id": "magic-over-tech",
+   "cat": "Técnica",
+   "title": "A mágica é mais forte que a tecnologia",
+   "desc": "O visitante se importa mais com o momento do impossível do que com o como. Um objeto real ganha vida, uma imagem aparece no ar, a física conhecida muda."
+  },
+  {
+   "id": "many-tech-one-effect",
+   "cat": "Técnica",
+   "title": "Várias tecnologias, um efeito",
+   "desc": "Luz, som, mecânica, gráficos e sensores trabalham ao mesmo tempo, mas são lidos como um acontecimento único."
+  },
+  {
+   "id": "visitor-as-participant",
+   "cat": "Técnica",
+   "title": "O visitante vira participante",
+   "desc": "A história fica pessoal quando o visitante influencia o que acontece com movimento, voz ou escolha."
+  },
+  {
+   "id": "better-together",
+   "cat": "Técnica",
+   "title": "Melhor junto",
+   "desc": "Uma tarefa compartilhada transforma um grupo em time e cria uma lembrança em comum."
+  },
+  {
+   "id": "queue-as-prologue",
+   "cat": "Técnica",
+   "title": "A experiência começa na fila",
+   "desc": "Uma instalação vale ser vista de fora, não só atravessada. A reação dos outros constrói a expectativa."
+  },
+  {
+   "id": "surprise-then-explain",
+   "cat": "Técnica",
+   "title": "Primeiro surpreender, depois explicar",
+   "desc": "O primeiro efeito abre a atenção. Depois dá para contar uma história complexa com profundidade de verdade."
+  },
+  {
+   "id": "natural-first-gesture",
+   "cat": "Técnica",
+   "title": "A ação precisa parecer natural",
+   "desc": "Chegar perto, olhar dentro, tocar, girar, pular — quanto mais claro o primeiro gesto, mais rápido a pessoa entra na experiência."
+  },
+  {
+   "id": "story-after-exit",
+   "cat": "Técnica",
+   "title": "A história continua depois da saída",
+   "desc": "Uma foto, o resultado de um jogo, uma imagem que alguém criou ou simplesmente o recontar prolongam a vida da experiência."
+  },
+  {
+   "id": "personal-path",
+   "cat": "Técnica",
+   "title": "Cada visitante atravessa a própria história",
+   "desc": "Um mesmo espaço pode oferecer percursos, escolhas e profundidades de interação diferentes."
+  },
+  {
+   "id": "beyond-screens",
+   "cat": "Técnica",
+   "title": "O de verdade começa onde as telas acabam",
+   "desc": "Quando a mídia vira parte da arquitetura, da luz, dos objetos e do movimento, o espaço é lido como um todo."
+  },
+  {
+   "id": "memory-loves-surprise",
+   "cat": "Técnica",
+   "title": "A memória gosta do inesperado",
+   "desc": "Momentos que quebram a expectativa ficam mais tempo do que uma explicação bem encadeada."
+  },
+  {
+   "id": "worlds-not-sites",
+   "cat": "Pesquisa",
+   "title": "Mundos virtuais no lugar de sites",
+   "desc": "Um navegador pode virar espaço de viagem, apresentação, aprendizado ou ação conjunta."
+  },
+  {
+   "id": "personal-sound-public",
+   "cat": "Pesquisa",
+   "title": "Som pessoal em espaço público",
+   "desc": "Sistemas de áudio direcional permitem roteiros sonoros individuais sem fones."
+  },
+  {
+   "id": "dome-as-window",
+   "cat": "Pesquisa",
+   "title": "A cúpula como janela",
+   "desc": "Um hemisfério vertical cria outro tipo de imersão: você não olha para cima, você olha através de uma abertura para outro ambiente."
+  },
+  {
+   "id": "adaptive-space",
+   "cat": "Pesquisa",
+   "title": "Personalizar o espaço",
+   "desc": "Um mesmo lugar pode mudar conteúdo, idioma e nível de dificuldade para o visitante que está ali na frente."
+  }
+ ]
+}

@@ -1,0 +1,619 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "services-02 (2 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "services-02#001",
+   "path": "services/1/faq/3/a",
+   "ru": "Ваш человек, и это закладывается в проект. Экспозиция должна включаться одной кнопкой, сообщать о неисправности сама и позволять менять тексты без программиста. Мы передаём исходники, образы машин и инструкцию — не для галочки, а чтобы через три года вы не зависели от нас.",
+   "en": "Your own staff, and that is designed in. The exhibition must start with one button, report its own faults and allow text changes without a programmer. We hand over source files, machine images and documentation — so that in three years you are not dependent on us.",
+   "pt": "A sua própria equipe, e isso é previsto no projeto. A exposição precisa ligar com um botão, avisar sozinha quando falha e permitir mudar textos sem programador. Entregamos arquivos-fonte, imagens das máquinas e documentação — para que daqui a três anos você não dependa da gente."
+  },
+  {
+   "id": "services-02#002",
+   "path": "services/1/faq/4/q",
+   "ru": "Можно ли сделать музей, если производство закрытое?",
+   "en": null,
+   "pt": "Dá para fazer um museu se a produção é fechada?"
+  },
+  {
+   "id": "services-02#003",
+   "path": "services/1/faq/4/a",
+   "ru": "Как раз для этого он и нужен больше всего. Если цех показать нельзя, музей становится единственным способом продемонстрировать, как всё устроено: макет с проекцией, разрез изделия, виртуальный обход. Посетитель видит производство, не заходя на территорию.",
+   "en": null,
+   "pt": "É justamente para isso que ele é mais necessário. Se o chão de fábrica não pode ser mostrado, o museu vira o único jeito de demonstrar como tudo funciona: maquete com projeção, corte do produto, visita virtual. O visitante vê a produção sem entrar na área."
+  },
+  {
+   "id": "services-02#004",
+   "path": "services/2/title",
+   "ru": "Интерактивная экспозиция",
+   "en": "Interactive exhibition design",
+   "pt": "Projeto de exposição interativa"
+  },
+  {
+   "id": "services-02#005",
+   "path": "services/2/nav",
+   "ru": "Интерактивная экспозиция",
+   "en": "Interactive exhibition",
+   "pt": "Exposição interativa"
+  },
+  {
+   "id": "services-02#006",
+   "path": "services/2/subtitle",
+   "ru": "Экспозиция, которую посетитель не читает, а исследует.",
+   "en": "An exhibition the visitor does not read but explores.",
+   "pt": "Uma exposição que o visitante não lê, e sim explora."
+  },
+  {
+   "id": "services-02#007",
+   "path": "services/2/keywords/0",
+   "ru": "музей интерактивных экспонатов",
+   "en": "interactive exhibition design",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "projeto de exposição interativa"
+  },
+  {
+   "id": "services-02#008",
+   "path": "services/2/keywords/1",
+   "ru": "цифровая экспозиция",
+   "en": "interactive exhibits",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "exponentes interativos"
+  },
+  {
+   "id": "services-02#009",
+   "path": "services/2/keywords/2",
+   "ru": "интерактивная экспозиция",
+   "en": "multimedia exhibition",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "exposição multimídia"
+  },
+  {
+   "id": "services-02#010",
+   "path": "services/2/keywords/3",
+   "ru": "интерактивные экспонаты",
+   "en": "visitor centre",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "centro de visitantes"
+  },
+  {
+   "id": "services-02#011",
+   "path": "services/2/keywords/4",
+   "ru": "мультимедийная экспозиция",
+   "en": "science centre exhibits",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "exponentes de centro de ciência"
+  },
+  {
+   "id": "services-02#012",
+   "path": "services/2/keywords/6",
+   "ru": "визит-центр",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "centro de visitantes interativo"
+  },
+  {
+   "id": "services-02#013",
+   "path": "services/2/keywords/7",
+   "ru": "интерактивный музей",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "museu interativo"
+  },
+  {
+   "id": "services-02#014",
+   "path": "services/2/flow/0/text",
+   "ru": "Посетитель не читает экспозицию — он её исследует. Разница видна по поведению: у текстовой панели человек стоит четыре секунды и уходит, у объекта, который отвечает на действие, — минуты. Интерактив нужен не для того, чтобы было современно. Он нужен там, где содержание сложнее, чем можно объяснить абзацем на стене.",
+   "en": "A visitor does not read an exhibition — they explore it. The difference shows in behaviour: at a text panel a person stands for four seconds and walks on; at an object that answers an action, for minutes. Interactivity is not there to look contemporary. It is there where the content is more complex than a paragraph on a wall can carry.",
+   "pt": "O visitante não lê uma exposição — ele explora. A diferença aparece no comportamento: diante de um painel de texto a pessoa fica quatro segundos e segue; diante de um objeto que responde a uma ação, fica minutos. A interatividade não está ali para parecer contemporânea. Está ali onde o conteúdo é mais complexo do que um parágrafo na parede consegue carregar."
+  },
+  {
+   "id": "services-02#015",
+   "path": "services/2/flow/1/text",
+   "ru": "Когда интерактив оправдан",
+   "en": "When interactivity is justified",
+   "pt": "Quando a interatividade se justifica"
+  },
+  {
+   "id": "services-02#016",
+   "path": "services/2/flow/2/items/0",
+   "ru": "Содержание нельзя показать — процесс, принцип работы, масштаб, то, что происходит внутри и в реальности недоступно взгляду.",
+   "en": "The content cannot be shown — a process, a working principle, a scale, something that happens inside and is invisible in reality.",
+   "pt": "O conteúdo não pode ser mostrado — um processo, um princípio de funcionamento, uma escala, algo que acontece por dentro e é invisível na realidade."
+  },
+  {
+   "id": "services-02#017",
+   "path": "services/2/flow/2/items/1",
+   "ru": "Аудитория разная. Один объект должен работать и на школьника, и на профильного специалиста — статичная витрина этого не умеет, интерактивный объект умеет через глубину.",
+   "en": "The audience is mixed. One object has to work for a schoolchild and for a domain specialist; a static case cannot do that, an interactive object can, through depth.",
+   "pt": "O público é misto. Um mesmo objeto precisa funcionar para um estudante e para um especialista da área; uma vitrine estática não consegue, um objeto interativo consegue, pela profundidade."
+  },
+  {
+   "id": "services-02#018",
+   "path": "services/2/flow/2/items/2",
+   "ru": "Материала больше, чем помещается на стены. Интерактив уплотняет: в одном объекте живёт то, на что не хватило бы зала.",
+   "en": "There is more material than the walls will hold. Interactivity compresses: one object can carry what would otherwise need a whole hall.",
+   "pt": "Há mais material do que as paredes comportam. A interatividade comprime: um objeto pode carregar o que de outro jeito exigiria um salão inteiro."
+  },
+  {
+   "id": "services-02#019",
+   "path": "services/2/flow/2/items/3",
+   "ru": "Нужно, чтобы человек что-то сделал. Понимание через действие держится дольше, чем понимание через чтение.",
+   "en": "You need the person to do something. Understanding through action lasts longer than understanding through reading.",
+   "pt": "Você precisa que a pessoa faça alguma coisa. Entender pela ação dura mais do que entender pela leitura."
+  },
+  {
+   "id": "services-02#020",
+   "path": "services/2/flow/3/text",
+   "ru": "И обратное: если содержание — это подлинный предмет и история вокруг него, интерактив рядом с ним чаще мешает. Мы отказываемся от него в таких местах, и это тоже часть работы.",
+   "en": "And the reverse: where the content is an authentic object and the story around it, interactivity next to it usually gets in the way. We drop it in those places, and that is part of the job too.",
+   "pt": "E o contrário também: onde o conteúdo é um objeto autêntico e a história em volta dele, a interatividade ao lado costuma atrapalhar. Nesses lugares a gente tira, e isso também faz parte do trabalho."
+  },
+  {
+   "id": "services-02#021",
+   "path": "services/2/flow/4/text",
+   "ru": "Форматы, которые мы делаем",
+   "en": "Formats we build",
+   "pt": "Formatos que construímos"
+  },
+  {
+   "id": "services-02#022",
+   "path": "services/2/flow/5/items/0",
+   "ru": "Интерактивные макеты территорий и объектов — с проекцией, подсветкой зон и слоями информации поверх физической формы.",
+   "en": "Interactive scale models of territories and objects — with projection, zone highlighting and information layers on top of physical form.",
+   "pt": "Maquetes interativas de territórios e objetos — com projeção, destaque de zonas e camadas de informação sobre a forma física."
+  },
+  {
+   "id": "services-02#023",
+   "path": "services/2/flow/5/items/1",
+   "ru": "Мультимедийные инсталляции: большие экраны, мультитач-поверхности, объекты, реагирующие на приближение и жест.",
+   "en": "Multimedia installations: large screens, multitouch surfaces, objects that respond to approach and gesture.",
+   "pt": "Instalações multimídia: telas grandes, superfícies multitoque, objetos que respondem à aproximação e ao gesto."
+  },
+  {
+   "id": "services-02#024",
+   "path": "services/2/flow/5/items/2",
+   "ru": "Играбельные экспозиции — единая система, в которой посетитель проходит маршрут как сценарий, а не как набор стендов.",
+   "en": "Playable exhibitions — a single system in which the visitor walks a scenario rather than a set of stands.",
+   "pt": "Exposições jogáveis — um sistema único em que o visitante percorre um roteiro, e não um conjunto de estandes."
+  },
+  {
+   "id": "services-02#025",
+   "path": "services/2/flow/5/items/3",
+   "ru": "Голографические витрины и объёмные экспонаты для показа техники, которую нельзя привезти.",
+   "en": "Holographic showcases and volumetric exhibits for equipment that cannot be brought in.",
+   "pt": "Vitrines holográficas e exponentes volumétricos para equipamentos que não podem ser trazidos."
+  },
+  {
+   "id": "services-02#026",
+   "path": "services/2/flow/5/items/4",
+   "ru": "Дополненная и виртуальная реальность — там, где нужно оказаться внутри недоступного пространства.",
+   "en": "Augmented and virtual reality, where you need to be inside a space you cannot enter.",
+   "pt": "Realidade aumentada e virtual, quando é preciso estar dentro de um espaço em que não se pode entrar."
+  },
+  {
+   "id": "services-02#027",
+   "path": "services/2/flow/5/items/5",
+   "ru": "Экспонаты-механизмы: физическое действие руками, а не тап по экрану.",
+   "en": "Mechanism exhibits: physical action with your hands, not a tap on a screen.",
+   "pt": "Exponentes de mecanismo: ação física com as mãos, não um toque na tela."
+  },
+  {
+   "id": "services-02#028",
+   "path": "services/2/flow/6/text",
+   "ru": "Как это устроено внутри",
+   "en": "How it works inside",
+   "pt": "Como funciona por dentro"
+  },
+  {
+   "id": "services-02#029",
+   "path": "services/2/flow/7/text",
+   "ru": "Правило одно: считывается за пять секунд, раскрывается за пять минут. За пять секунд человек понимает, что делать, — без инструкции. За пять минут находит глубину, если остался. Правила без инструкций, открытия, которые посетитель совершает сам, и запас содержания для тех, кому интересно дальше.",
+   "en": "One rule: reads in five seconds, opens up over five minutes. In five seconds a person understands what to do, with no instructions. In five minutes they find depth, if they stayed. Rules without manuals, discoveries the visitor makes themselves, and enough content in reserve for whoever wants to go further.",
+   "pt": "Uma regra: se entende em cinco segundos, se abre ao longo de cinco minutos. Em cinco segundos a pessoa entende o que fazer, sem instruções. Em cinco minutos ela encontra profundidade, se ficou. Regras sem manual, descobertas que o visitante faz sozinho e conteúdo de reserva suficiente para quem quiser ir além."
+  },
+  {
+   "id": "services-02#030",
+   "path": "services/2/flow/8/text",
+   "ru": "Второе правило — про эксплуатацию. Экспозиция живёт годами, и её обслуживает не разработчик, а смотритель зала. Поэтому объекты проектируются на перезапуск одной кнопкой, на антивандальность и на то, что однажды упадёт сеть или сгорит проектор. Экспонат, который работает только при идеальных условиях, в музее не работает вовсе.",
+   "en": "The second rule is about operation. An exhibition lives for years, and it is maintained not by its developer but by the person who looks after the hall. So objects are designed to restart with one button, to survive rough handling, and to expect that one day the network drops or a projector dies. An exhibit that only works in ideal conditions does not work in a museum at all.",
+   "pt": "A segunda regra é sobre operação. Uma exposição vive por anos, e quem faz a manutenção não é quem a desenvolveu, e sim quem cuida do salão. Por isso os objetos são projetados para reiniciar com um botão, aguentar uso bruto e contar que um dia a rede vai cair ou um projetor vai morrer. Um exponente que só funciona em condições ideais não funciona em museu nenhum."
+  },
+  {
+   "id": "services-02#031",
+   "path": "services/2/flow/9/text",
+   "ru": "Как идёт работа",
+   "en": "How the work goes",
+   "pt": "Como o trabalho acontece"
+  },
+  {
+   "id": "services-02#032",
+   "path": "services/2/flow/10/items/0",
+   "ru": "Сценарий взаимодействия: что делает посетитель, что происходит в ответ, чем всё заканчивается.",
+   "en": "Interaction scenario: what the visitor does, what happens in response, how it ends.",
+   "pt": "Roteiro de interação: o que o visitante faz, o que acontece em resposta, como aquilo termina."
+  },
+  {
+   "id": "services-02#033",
+   "path": "services/2/flow/10/items/1",
+   "ru": "Прототип. Механику проверяем на людях до того, как заказано оборудование. Дешёвый прототип на этом этапе экономит дорогую переделку на следующем.",
+   "en": "Prototype. We test the mechanic on people before any equipment is ordered. A cheap prototype now saves an expensive rebuild later.",
+   "pt": "Protótipo. Testamos a mecânica com pessoas antes de qualquer equipamento ser comprado. Um protótipo barato agora evita uma reforma cara depois."
+  },
+  {
+   "id": "services-02#034",
+   "path": "services/2/flow/10/items/2",
+   "ru": "Продакшн: дизайн, 3D, разработка, сборка, контент.",
+   "en": "Production: design, 3D, development, assembly, content.",
+   "pt": "Produção: design, 3D, desenvolvimento, montagem, conteúdo."
+  },
+  {
+   "id": "services-02#035",
+   "path": "services/2/flow/10/items/3",
+   "ru": "Монтаж и настройка на объекте — свет, звук, калибровка проекции, регламент обслуживания.",
+   "en": "Installation and commissioning on site — light, sound, projection calibration, a maintenance routine.",
+   "pt": "Instalação e comissionamento no local — luz, som, calibração da projeção, uma rotina de manutenção."
+  },
+  {
+   "id": "services-02#036",
+   "path": "services/2/flow/10/items/4",
+   "ru": "Сопровождение после открытия: первые недели показывают то, чего не видно на прототипе.",
+   "en": "Support after opening: the first weeks show what no prototype does.",
+   "pt": "Suporte depois da abertura: as primeiras semanas mostram o que nenhum protótipo mostra."
+  },
+  {
+   "id": "services-02#037",
+   "path": "services/2/flow/11/text",
+   "ru": "Масштаб",
+   "en": "Scale",
+   "pt": "Escala"
+  },
+  {
+   "id": "services-02#038",
+   "path": "services/2/flow/12/items/0/label",
+   "ru": "инсталляций в одной экспозиции — центр «Космонавтика и авиация» на ВДНХ",
+   "en": "exhibits in a single exhibition — Cosmonautics and Aviation Centre, VDNH",
+   "pt": "exponentes em uma única exposição — Centro de Cosmonáutica e Aviação, VDNH"
+  },
+  {
+   "id": "services-02#039",
+   "path": "services/2/flow/12/items/1/label",
+   "ru": "год основания студии, работаем по всему миру",
+   "en": "studio founded; we work worldwide",
+   "pt": "fundação do estúdio; trabalhamos no mundo todo"
+  },
+  {
+   "id": "services-02#040",
+   "path": "services/2/flow/12/items/2/n",
+   "ru": "3 нед.",
+   "en": "3 wks",
+   "pt": "3 sem."
+  },
+  {
+   "id": "services-02#041",
+   "path": "services/2/flow/12/items/2/label",
+   "ru": "самый быстрый интерактивный проект под ключ",
+   "en": "our fastest turnkey interactive project",
+   "pt": "nosso projeto interativo chave na mão mais rápido"
+  },
+  {
+   "id": "services-02#042",
+   "path": "services/2/flow/13/text",
+   "ru": "Чем посетитель отвечает экспозиции: 20 устройств ввода — касание, жест, голос, присутствие →",
+   "en": "How a visitor answers: 20 input devices — touch, gesture, voice, presence →",
+   "pt": "Como o visitante responde: 20 dispositivos de entrada — toque, gesto, voz, presença →"
+  },
+  {
+   "id": "services-02#043",
+   "path": "services/2/faq/0/q",
+   "ru": "Сколько живёт интерактивный экспонат?",
+   "en": "How long does an interactive exhibit last?",
+   "pt": "Quanto tempo dura um exponente interativo?"
+  },
+  {
+   "id": "services-02#044",
+   "path": "services/2/faq/0/a",
+   "ru": "Механическая и корпусная часть — годы, при регламентном обслуживании. Уязвимее всего проекторы (лампы и фильтры) и сенсорные поверхности в местах интенсивного касания. Мы закладываем замену расходников в регламент и подбираем оборудование, которое можно купить и через пять лет.",
+   "en": "The mechanical and enclosure parts last years with routine servicing. The vulnerable items are projectors (lamps and filters) and touch surfaces in places of heavy contact. We build consumable replacement into the maintenance routine and choose equipment that will still be purchasable in five years.",
+   "pt": "As partes mecânicas e o gabinete duram anos com manutenção de rotina. Os itens vulneráveis são projetores (lâmpadas e filtros) e superfícies de toque em pontos de muito contato. Prevemos a troca de consumíveis na rotina de manutenção e escolhemos equipamentos que ainda serão compráveis daqui a cinco anos."
+  },
+  {
+   "id": "services-02#045",
+   "path": "services/2/faq/1/q",
+   "ru": "Что происходит, когда экспонат ломается в выходной?",
+   "en": "What happens when an exhibit fails on a weekend?",
+   "pt": "O que acontece se um exponente falhar num fim de semana?"
+  },
+  {
+   "id": "services-02#046",
+   "path": "services/2/faq/1/a",
+   "ru": "Ничего, если это предусмотрено. Объекты проектируются на автоматический перезапуск и на безопасный вид в нерабочем состоянии — гость не должен видеть рабочий стол операционной системы. Смотритель зала получает короткую инструкцию на одну страницу.",
+   "en": "Nothing, if it was planned for. Objects are designed to restart automatically and to look safe when idle — a guest should never see a desktop. The hall attendant gets a one-page instruction.",
+   "pt": "Nada, se isso foi previsto. Os objetos são projetados para reiniciar sozinhos e para parecerem seguros quando ociosos — um visitante nunca deve ver uma área de trabalho. Quem atende o salão recebe uma instrução de uma página."
+  },
+  {
+   "id": "services-02#047",
+   "path": "services/2/faq/2/q",
+   "ru": "Нужен ли отдельный человек для обслуживания?",
+   "en": "Do we need dedicated staff to run it?",
+   "pt": "Precisamos de equipe dedicada para operar?"
+  },
+  {
+   "id": "services-02#048",
+   "path": "services/2/faq/2/a",
+   "ru": "Для типовой экспозиции — нет: ежедневные операции сводятся к включению и выключению. Для больших систем со множеством объектов имеет смысл обучить одного сотрудника музея, и мы это обучение проводим.",
+   "en": "For a typical exhibition, no: daily operation comes down to switching on and off. For large systems with many objects it is worth training one member of museum staff, and we run that training.",
+   "pt": "Para uma exposição comum, não: a operação diária se resume a ligar e desligar. Para sistemas grandes com muitos objetos vale treinar um funcionário do museu, e esse treinamento a gente dá."
+  },
+  {
+   "id": "services-02#049",
+   "path": "services/2/faq/3/q",
+   "ru": "Можно вписать интерактив в существующую экспозицию?",
+   "en": "Can interactivity be added to an existing exhibition?",
+   "pt": "Dá para acrescentar interatividade a uma exposição que já existe?"
+  },
+  {
+   "id": "services-02#050",
+   "path": "services/2/faq/3/a",
+   "ru": "Да. Часто это выгоднее, чем перестраивать зал: один сильный объект в правильном месте меняет маршрут целиком. Начинаем с наблюдения за тем, как люди ходят сейчас.",
+   "en": "Yes. It is often better value than rebuilding the hall: one strong object in the right place changes the whole route. We start by watching how people actually move now.",
+   "pt": "Dá. Muitas vezes rende mais que refazer o salão: um objeto forte no lugar certo muda o percurso inteiro. Começamos observando como as pessoas realmente circulam hoje."
+  },
+  {
+   "id": "services-02#051",
+   "path": "services/3/title",
+   "ru": "Интерактивное оборудование",
+   "en": "Interactive equipment",
+   "pt": "Equipamento interativo"
+  },
+  {
+   "id": "services-02#052",
+   "path": "services/3/nav",
+   "ru": "Оборудование для музея",
+   "en": "Museum equipment",
+   "pt": "Equipamentos para museu"
+  },
+  {
+   "id": "services-02#053",
+   "path": "services/3/subtitle",
+   "ru": "Экран, макет и витрина сами по себе не рассказывают ничего. Собираем оборудование вокруг сценария, а не сценарий вокруг оборудования.",
+   "en": "A screen, a model or a vitrine tells nobody anything on its own. We build the equipment around the story, not the story around the equipment.",
+   "pt": "Uma tela, uma maquete ou uma vitrine não contam nada sozinhas. Montamos o equipamento em volta da história, e não a história em volta do equipamento."
+  },
+  {
+   "id": "services-02#054",
+   "path": "services/3/keywords/0",
+   "ru": "музейное оборудование",
+   "en": "museum equipment",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento para museu"
+  },
+  {
+   "id": "services-02#055",
+   "path": "services/3/keywords/1",
+   "ru": "интерактивное оборудование",
+   "en": "interactive museum equipment",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento interativo para museu"
+  },
+  {
+   "id": "services-02#056",
+   "path": "services/3/keywords/2",
+   "ru": "оборудование для музеев",
+   "en": "multimedia museum equipment",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento multimídia para museu"
+  },
+  {
+   "id": "services-02#057",
+   "path": "services/3/keywords/3",
+   "ru": "интерактивное оборудование для музеев",
+   "en": "museum technology",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "tecnologia para museus"
+  },
+  {
+   "id": "services-02#058",
+   "path": "services/3/keywords/4",
+   "ru": "мультимедийное оборудование музея",
+   "en": "interactive exhibits",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "exponentes interativos"
+  },
+  {
+   "id": "services-02#059",
+   "path": "services/3/keywords/5",
+   "ru": "оборудование для современного музея",
+   "en": "museum av equipment",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento audiovisual para museu"
+  },
+  {
+   "id": "services-02#060",
+   "path": "services/3/keywords/6",
+   "ru": "оборудование для мультимедийного музея",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento para museu multimídia"
+  },
+  {
+   "id": "services-02#061",
+   "path": "services/3/keywords/7",
+   "ru": "интерактивное оборудование для школьного музея",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento interativo para museu escolar"
+  },
+  {
+   "id": "services-02#062",
+   "path": "services/3/keywords/8",
+   "ru": "интерактивные экспонаты",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "exponentes interativos"
+  },
+  {
+   "id": "services-02#063",
+   "path": "services/3/keywords/9",
+   "ru": "интерактивное оборудование для музея",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento interativo para museus"
+  },
+  {
+   "id": "services-02#064",
+   "path": "services/3/flow/0/text",
+   "ru": "«Оборудование для музеев» — запрос, за которым почти всегда стоит выделенный бюджет и требование дать список позиций к определённому сроку. Отвечаем честно: оборудование выбирается последним. Не потому что оно неважное, а потому что до того, как написан сценарий, невозможно сказать, какое именно нужно.",
+   "en": "“Museum equipment” is usually searched by someone who already has a budget line and a deadline to produce a list of items. The honest answer: equipment is chosen last. Not because it does not matter, but because until the story is written there is no way to say which equipment is the right one.",
+   "pt": "“Equipamento para museu” costuma ser buscado por quem já tem uma rubrica no orçamento e um prazo para entregar uma lista de itens. A resposta honesta: o equipamento se escolhe por último. Não porque não importe, mas porque enquanto a história não estiver escrita não há como dizer qual equipamento é o certo."
+  },
+  {
+   "id": "services-02#065",
+   "path": "services/3/flow/1/text",
+   "ru": "Мультимедийная техника ничего не рассказывает сама. Сенсорный стол без продуманного содержания — это дорогой планшет на ножках, к которому через месяц перестают подходить. Проектор без сценария — светлое пятно на стене. Разница между музеем, где к экспонату очередь, и музеем, где экраны выключены с позапрошлого года, лежит не в марке техники и не в разрешении матрицы.",
+   "en": "Multimedia hardware tells nothing by itself. A touch table without content worth digging into is an expensive tablet on legs that people stop approaching within a month. A projector without a scenario is a bright patch on a wall. The difference between a museum with a queue at an exhibit and a museum whose screens have been off since last year is not the brand of the hardware.",
+   "pt": "Hardware multimídia não conta nada por si só. Uma mesa de toque sem conteúdo que valha a pena vasculhar é um tablet caro com pernas, de que as pessoas param de se aproximar em um mês. Um projetor sem roteiro é uma mancha clara na parede. A diferença entre um museu com fila num exponente e um museu cujas telas estão desligadas desde o ano passado não é a marca do hardware."
+  },
+  {
+   "id": "services-02#066",
+   "path": "services/3/flow/2/text",
+   "ru": "Что решается до выбора железа",
+   "en": "What gets decided before the hardware",
+   "pt": "O que se decide antes do hardware"
+  },
+  {
+   "id": "services-02#067",
+   "path": "services/3/flow/3/items/0",
+   "ru": "Что человек должен унести с собой. Пока нет ответа, любая позиция в спецификации — угадывание.",
+   "en": "What the visitor should walk out with. Without that answer every line in the specification is a guess.",
+   "pt": "O que o visitante deve levar embora. Sem essa resposta, cada linha da especificação é um palpite."
+  },
+  {
+   "id": "services-02#068",
+   "path": "services/3/flow/3/items/1",
+   "ru": "Кто приходит: школьник на экскурсии, семья в выходной, специалист, делегация. У них разная скорость, разный рост и разное терпение — и это уже технические требования.",
+   "en": "Who comes: a school group, a family on a Sunday, a specialist, an official delegation. Different pace, different height, different patience — and those are already technical requirements.",
+   "pt": "Quem vem: um grupo escolar, uma família no domingo, um especialista, uma delegação oficial. Ritmo diferente, altura diferente, paciência diferente — e isso já são requisitos técnicos."
+  },
+  {
+   "id": "services-02#069",
+   "path": "services/3/flow/3/items/2",
+   "ru": "Где посетитель стоит и сколько времени. Экспонат, мимо которого идут в гардероб, и экспонат, у которого садятся на пять минут, — это разное оборудование.",
+   "en": "Where the visitor stands and for how long. An exhibit people pass on the way to the cloakroom and an exhibit people sit down at for five minutes are different machines.",
+   "pt": "Onde o visitante fica e por quanto tempo. Um exponente pelo qual se passa a caminho do guarda-volumes e um exponente em que se senta por cinco minutos são máquinas diferentes."
+  },
+  {
+   "id": "services-02#070",
+   "path": "services/3/flow/3/items/3",
+   "ru": "Сколько человек одновременно. Один сенсорный экран на группу из тридцати школьников означает, что двадцать девять смотрят в чужую спину.",
+   "en": "How many people at once. One touch screen for a group of thirty means twenty-nine of them are looking at someone's back.",
+   "pt": "Quantas pessoas por vez. Uma tela de toque para um grupo de trinta significa vinte e nove olhando as costas de alguém."
+  },
+  {
+   "id": "services-02#071",
+   "path": "services/3/flow/3/items/4",
+   "ru": "Что показывать. Содержание — самая большая и самая недооценённая часть бюджета: модели, съёмка, тексты, озвучка, анимация.",
+   "en": "What is actually shown. Content is the largest and most underestimated part of the budget: models, filming, texts, voice-over, animation.",
+   "pt": "O que é de fato mostrado. Conteúdo é a maior e mais subestimada parte do orçamento: modelos, filmagem, textos, locução, animação."
+  },
+  {
+   "id": "services-02#072",
+   "path": "services/3/flow/3/items/5",
+   "ru": "Кто обслуживает. Своего инженера у музея обычно нет. Решение, которое нельзя перезапустить одной кнопкой, не доживает до второго года.",
+   "en": "Who maintains it. Museums rarely have an engineer on staff. Anything that cannot be restarted with one button does not survive into its second year.",
+   "pt": "Quem faz a manutenção. Museus raramente têm engenheiro no quadro. O que não reinicia com um botão não sobrevive ao segundo ano."
+  },
+  {
+   "id": "services-02#073",
+   "path": "services/3/flow/4/text",
+   "ru": "Что бывает и что каждое умеет на самом деле",
+   "en": "What exists, and what each type is actually good at",
+   "pt": "O que existe, e no que cada tipo é realmente bom"
+  },
+  {
+   "id": "services-02#074",
+   "path": "services/3/flow/5/items/0",
+   "ru": "Сенсорные столы и панели — для содержания, в котором хочется копаться: карты, архивы, чертежи, биографии, судьбы. Плохо работают на потоке и почти не работают на группе.",
+   "en": "Touch tables and panels — for content worth digging through: maps, archives, drawings, biographies. Poor under crowd flow, almost useless for a group.",
+   "pt": "Mesas e painéis de toque — para conteúdo que vale vasculhar: mapas, arquivos, desenhos, biografias. Ruins sob fluxo de público, quase inúteis para grupo."
+  },
+  {
+   "id": "services-02#075",
+   "path": "services/3/flow/5/items/1",
+   "ru": "Проекция на физический макет — когда есть форма: территория, здание, производство, месторождение. Сильнее любого экрана, потому что объём настоящий, а не нарисованный.",
+   "en": "Projection onto a physical model — when there is a form to work with: a territory, a building, a plant, a field. Stronger than any screen, because the volume is real rather than drawn.",
+   "pt": "Projeção sobre maquete física — quando existe uma forma com que trabalhar: um território, um prédio, uma fábrica, um campo. Mais forte que qualquer tela, porque o volume é real e não desenhado."
+  },
+  {
+   "id": "services-02#076",
+   "path": "services/3/flow/5/items/2",
+   "ru": "Большие экраны и видеостены — для общего впечатления и как точка сбора группы. Не для чтения: длинный текст с них не читает никто.",
+   "en": "Large screens and video walls — for overall impression and as a gathering point for a group. Not for reading: nobody reads long text off them.",
+   "pt": "Telas grandes e videowalls — para impressão geral e como ponto de reunião de um grupo. Não para leitura: ninguém lê texto longo nelas."
+  },
+  {
+   "id": "services-02#077",
+   "path": "services/3/flow/5/items/3",
+   "ru": "Голографические витрины и объёмные показы — когда предмет нельзя привезти, нельзя вскрыть или он вообще не существует физически.",
+   "en": "Holographic showcases and volumetric displays — when the object cannot be shipped, cannot be cut open, or does not physically exist.",
+   "pt": "Vitrines holográficas e displays volumétricos — quando o objeto não pode ser transportado, não pode ser cortado ou não existe fisicamente."
+  },
+  {
+   "id": "services-02#078",
+   "path": "services/3/flow/5/items/4",
+   "ru": "Бесконтактные интерфейсы — жест, приближение, датчики. Экспонат оживает сам, без таблички «нажмите здесь», и это единственный способ вовлечь тех, кто стесняется трогать.",
+   "en": "Touchless interfaces — gesture, proximity, sensors. The exhibit comes alive by itself, with no “press here” label, and it is the only way to reach visitors who are shy about touching things.",
+   "pt": "Interfaces sem toque — gesto, aproximação, sensores. O exponente ganha vida sozinho, sem etiqueta de “aperte aqui”, e é o único jeito de alcançar visitantes que têm vergonha de tocar nas coisas."
+  },
+  {
+   "id": "services-02#079",
+   "path": "services/3/flow/5/items/5",
+   "ru": "Дополненная реальность на планшете музея или телефоне посетителя — дешевле в железе, дороже в содержании и требует, чтобы кто-то объяснил, как начать.",
+   "en": "Augmented reality on a museum tablet or the visitor's own phone — cheaper in hardware, more expensive in content, and it needs someone to explain how to start.",
+   "pt": "Realidade aumentada em tablet do museu ou no celular do próprio visitante — mais barata em hardware, mais cara em conteúdo, e precisa de alguém para explicar como começar."
+  },
+  {
+   "id": "services-02#080",
+   "path": "services/3/flow/5/items/6",
+   "ru": "VR — сильное впечатление ровно на одного человека и очередь для всех остальных. Пропускную способность считать до закупки, а не после.",
+   "en": "VR — a strong impression for exactly one person and a queue for everyone else. Calculate throughput before the purchase, not after.",
+   "pt": "VR — impressão forte para exatamente uma pessoa e fila para todo o resto. Calcule a vazão antes da compra, não depois."
+  },
+  {
+   "id": "services-02#081",
+   "path": "services/3/flow/6/text",
+   "ru": "Разбор каждого типа по отдельности — с производителями, ограничениями и тем, когда он не работает — мы вынесли в отдельный раздел. Там больше шестидесяти позиций, разложенных по роли: чем экспозиция показывает, чем слышит посетителя и что считает между этим.",
+   "en": "What “modern” actually means",
+   "pt": "O que “moderno” significa de verdade"
+  },
+  {
+   "id": "services-02#082",
+   "path": "services/3/flow/7/text",
+   "ru": "Библиотека оборудования: 65 типов, что каждый умеет и кто выпускает →",
+   "en": "A museum is not modern because of the manufacturing year of its hardware or the size of its diagonal. An exhibit is modern when it is understood without instructions. Five seconds for a child to work out what to do. Five minutes for a specialist to find the depth they came for. The same object serves both. If it takes reading a rules plate to start, the object gets redesigned — however new the hardware underneath it is.",
+   "pt": "Um museu não é moderno pelo ano de fabricação do hardware nem pelo tamanho da diagonal. Um exponente é moderno quando se entende sem instruções. Cinco segundos para uma criança descobrir o que fazer. Cinco minutos para um especialista encontrar a profundidade que veio buscar. O mesmo objeto serve aos dois. Se for preciso ler uma placa de regras para começar, o objeto é refeito — por mais novo que seja o hardware embaixo dele."
+  },
+  {
+   "id": "services-02#083",
+   "path": "services/3/flow/8/text",
+   "ru": "Что значит «современно»",
+   "en": "How we choose the equipment",
+   "pt": "Como escolhemos o equipamento"
+  },
+  {
+   "id": "services-02#084",
+   "path": "services/3/flow/9/text",
+   "ru": "Современность музея — не год выпуска техники и не диагональ. Экспонат современен, если его понимают без инструкции. Пять секунд ребёнку, чтобы догадаться, что делать. Пять минут специалисту, чтобы найти глубину, за которой он пришёл. Один и тот же объект работает на обоих. Если для запуска надо прочитать табличку с правилами — объект переделывается, каким бы новым ни было железо под ним.",
+   "en": "We start from the effect we want, not from a particular technology. First we settle what the visitor should walk out with, and only then what to build it from. We are tied to no manufacturer and sell nothing off our own shelf, so the solution is picked for the job rather than for what is familiar or already in stock. Supply is handled by our partners: any equipment, on the best terms for the client. Our part is the story, the content, the interaction, the software and the integration — we build complex hardware-and-software systems and answer for the whole of it working as one thing, not as a pile of boxes from different vendors.",
+   "pt": "Partimos do efeito desejado, não de uma tecnologia específica. Primeiro definimos o que o visitante deve levar embora, e só então com o que construir isso. Não temos vínculo com fabricante nenhum e não vendemos nada do nosso próprio estoque, então a solução é escolhida para a tarefa, e não para o que é familiar ou já está no depósito. O fornecimento fica com nossos parceiros: qualquer equipamento, nas melhores condições para o cliente. A nossa parte é a história, o conteúdo, a interação, o software e a integração — construímos sistemas complexos de hardware e software e respondemos pelo conjunto funcionando como uma coisa só, e não como uma pilha de caixas de fornecedores diferentes."
+  },
+  {
+   "id": "services-02#085",
+   "path": "services/3/flow/10/text",
+   "ru": "Как мы подбираем оборудование",
+   "en": "What drives the cost",
+   "pt": "O que define o custo"
+  }
+ ]
+}

@@ -1,0 +1,568 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "services-01 (1 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "services-01#001",
+   "path": "services/0/title",
+   "ru": "Концепция музея",
+   "en": "Museum concept",
+   "pt": "Concepção de museu"
+  },
+  {
+   "id": "services-01#002",
+   "path": "services/0/nav",
+   "ru": "Концепция музея",
+   "en": "Museum concept",
+   "pt": "Concepção de museu"
+  },
+  {
+   "id": "services-01#003",
+   "path": "services/0/subtitle",
+   "ru": "От «зачем этот музей существует» до готового к реализации проекта экспозиции.",
+   "en": "From “why does this museum exist” to an exhibition design ready to be built.",
+   "pt": "De “por que este museu existe” a um projeto expositivo pronto para ser construído."
+  },
+  {
+   "id": "services-01#004",
+   "path": "services/0/keywords/0",
+   "ru": "создание музейной экспозиции",
+   "en": "museum concept design",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "projeto de museu"
+  },
+  {
+   "id": "services-01#005",
+   "path": "services/0/keywords/1",
+   "ru": "концепция музея",
+   "en": "exhibition concept",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "conceito de exposição"
+  },
+  {
+   "id": "services-01#006",
+   "path": "services/0/keywords/2",
+   "ru": "разработка концепции музея",
+   "en": "museum design",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "design de museu"
+  },
+  {
+   "id": "services-01#007",
+   "path": "services/0/keywords/3",
+   "ru": "концепция экспозиции",
+   "en": "turnkey museum",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "museu chave na mão"
+  },
+  {
+   "id": "services-01#008",
+   "path": "services/0/keywords/4",
+   "ru": "проектирование музея",
+   "en": "exhibition master plan",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "plano diretor de exposição"
+  },
+  {
+   "id": "services-01#009",
+   "path": "services/0/keywords/5",
+   "ru": "музей под ключ",
+   "en": "museum narrative design",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "roteiro museográfico"
+  },
+  {
+   "id": "services-01#010",
+   "path": "services/0/keywords/6",
+   "ru": "тематико-экспозиционный план",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "plano temático-expositivo"
+  },
+  {
+   "id": "services-01#011",
+   "path": "services/0/keywords/7",
+   "ru": "музейный сценарий",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "narrativa museológica"
+  },
+  {
+   "id": "services-01#012",
+   "path": "services/0/flow/0/text",
+   "ru": "Музей начинается не с витрин и не с оборудования. Он начинается с ответа на вопрос, зачем он существует и что человек унесёт с собой, когда выйдет. Пока этого ответа нет, любое решение — про свет, маршрут, экран, витрину — принимается наугад, и спорить о нём можно бесконечно.",
+   "en": "A museum does not begin with display cases or equipment. It begins with an answer to why it exists and what a person carries out of the door with them. Until that answer exists, every decision — about light, route, screen, vitrine — is made blind, and the argument about it can run forever.",
+   "pt": "Um museu não começa por vitrines nem por equipamentos. Começa por uma resposta: por que ele existe e o que a pessoa leva embora ao sair. Enquanto essa resposta não existe, toda decisão — sobre luz, percurso, tela, vitrine — é tomada no escuro, e a discussão sobre ela pode durar para sempre."
+  },
+  {
+   "id": "services-01#013",
+   "path": "services/0/flow/1/text",
+   "ru": "Концепция — это документ, который делает спор невозможным. В нём написано, что должен почувствовать посетитель, как он идёт, что делает руками, где останавливается и почему. Всё остальное — планировка, технологии, смета — из этого выводится.",
+   "en": "A concept is the document that ends the argument. It states what the visitor should feel, how they move, what they do with their hands, where they stop and why. Everything else — layout, technology, budget — follows from it.",
+   "pt": "O conceito é o documento que encerra a discussão. Ele diz o que o visitante deve sentir, como se move, o que faz com as mãos, onde para e por quê. Todo o resto — layout, tecnologia, orçamento — decorre dele."
+  },
+  {
+   "id": "services-01#014",
+   "path": "services/0/flow/2/text",
+   "ru": "Что входит в концепцию",
+   "en": "What the concept contains",
+   "pt": "O que o conceito contém"
+  },
+  {
+   "id": "services-01#015",
+   "path": "services/0/flow/3/items/0",
+   "ru": "Смысловое ядро: зачем музей нужен, кому и что он меняет в человеке.",
+   "en": "The core idea: why the museum is needed, for whom, and what it changes in a person.",
+   "pt": "A ideia central: por que o museu é necessário, para quem, e o que ele muda na pessoa."
+  },
+  {
+   "id": "services-01#016",
+   "path": "services/0/flow/3/items/1",
+   "ru": "Портреты посетителей: школьник, семья, специалист, иностранный гость — у каждого свой сценарий и своя глубина.",
+   "en": "Visitor portraits: a schoolchild, a family, a specialist, a foreign guest — each with their own route and their own depth.",
+   "pt": "Perfis de visitante: um estudante, uma família, um especialista, um visitante estrangeiro — cada um com seu percurso e sua profundidade."
+  },
+  {
+   "id": "services-01#017",
+   "path": "services/0/flow/3/items/2",
+   "ru": "Сценарий маршрута: последовательность залов и смысловых точек, ритм — где напряжение, где пауза, где открытие.",
+   "en": "Route scenario: the sequence of halls and meaning points, and the rhythm — where the tension is, where the pause, where the discovery.",
+   "pt": "Roteiro do percurso: a sequência de salas e pontos de sentido, e o ritmo — onde está a tensão, onde a pausa, onde a descoberta."
+  },
+  {
+   "id": "services-01#018",
+   "path": "services/0/flow/3/items/3",
+   "ru": "Состав экспозиции: перечень экспонатов и интерактивных объектов с описанием, что каждый делает и зачем стоит именно здесь.",
+   "en": "Exhibition inventory: every exhibit and interactive object described by what it does and why it stands exactly there.",
+   "pt": "Inventário expositivo: cada exponente e objeto interativo descrito pelo que faz e por que está exatamente ali."
+  },
+  {
+   "id": "services-01#019",
+   "path": "services/0/flow/3/items/4",
+   "ru": "Пространственные решения: планировки, схемы зон, эскизы ключевых объектов, референсы материалов и света.",
+   "en": "Spatial decisions: layouts, zoning, sketches of key objects, material and lighting references.",
+   "pt": "Decisões espaciais: layouts, zoneamento, esboços dos objetos principais, referências de material e iluminação."
+  },
+  {
+   "id": "services-01#020",
+   "path": "services/0/flow/3/items/5",
+   "ru": "Техническая часть: какие технологии нужны, какие нет, как это обслуживается и что делать, когда сломается.",
+   "en": "The technical part: which technologies are needed, which are not, how it is serviced and what to do when it breaks.",
+   "pt": "A parte técnica: quais tecnologias são necessárias, quais não são, como se faz a manutenção e o que fazer quando quebra."
+  },
+  {
+   "id": "services-01#021",
+   "path": "services/0/flow/3/items/6",
+   "ru": "Этапы и бюджетные ориентиры — чтобы концепцию можно было защитить, а не только показать.",
+   "en": "Phasing and budget ranges — so the concept can be defended, not only presented.",
+   "pt": "Faseamento e faixas de orçamento — para que o conceito possa ser defendido, e não apenas apresentado."
+  },
+  {
+   "id": "services-01#022",
+   "path": "services/0/flow/4/text",
+   "ru": "Правило пяти секунд и пяти минут",
+   "en": "The five seconds and five minutes rule",
+   "pt": "A regra dos cinco segundos e dos cinco minutos"
+  },
+  {
+   "id": "services-01#023",
+   "path": "services/0/flow/5/text",
+   "ru": "Любой объект в экспозиции считывается за пять секунд и раскрывается за пять минут. За пять секунд ребёнок понимает, что делать, — без инструкции на табличке. За пять минут специалист находит глубину, за которой пришёл. Один объект работает на всех зрителей сразу, и это ограничение мы держим на каждом экспонате: если понять его можно только прочитав правила, объект переделывается.",
+   "en": "Every object in the exhibition reads in five seconds and opens up over five minutes. In five seconds a child understands what to do — with no instructions on a label. In five minutes a specialist finds the depth they came for. One object works for every visitor at once, and we hold that constraint on each exhibit: if it can only be understood after reading the rules, the exhibit gets redesigned.",
+   "pt": "Cada objeto da exposição se entende em cinco segundos e se abre ao longo de cinco minutos. Em cinco segundos uma criança entende o que fazer — sem instrução na etiqueta. Em cinco minutos um especialista encontra a profundidade que veio buscar. Um mesmo objeto funciona para todos os visitantes ao mesmo tempo, e mantemos essa exigência em cada exponente: se ele só se entende depois de ler as regras, o exponente é refeito."
+  },
+  {
+   "id": "services-01#024",
+   "path": "services/0/flow/6/text",
+   "ru": "Как идёт работа",
+   "en": "How the work goes",
+   "pt": "Como o trabalho acontece"
+  },
+  {
+   "id": "services-01#025",
+   "path": "services/0/flow/7/items/0",
+   "ru": "Погружение. Читаем то, что уже есть: научную концепцию, фонды, исследования, предыдущие проекты. Говорим с хранителями и научными сотрудниками — они знают материал, которого нет ни в одном документе.",
+   "en": "Immersion. We read what already exists: the scholarly concept, the collection, research, earlier projects. We talk to curators and researchers — they hold material that is in no document.",
+   "pt": "Imersão. Lemos o que já existe: o conceito científico, o acervo, pesquisas, projetos anteriores. Conversamos com curadores e pesquisadores — eles guardam material que não está em documento nenhum."
+  },
+  {
+   "id": "services-01#026",
+   "path": "services/0/flow/7/items/1",
+   "ru": "Смысловая рамка. Формулируем, что человек должен почувствовать. Это самая короткая часть документа и самая дорогая по последствиям: всё дальнейшее из неё выводится.",
+   "en": "The meaning frame. We put into words what a person should feel. It is the shortest part of the document and the most expensive in consequences: everything else is derived from it.",
+   "pt": "O quadro de sentido. Colocamos em palavras o que a pessoa deve sentir. É a parte mais curta do documento e a mais cara em consequências: todo o resto deriva dela."
+  },
+  {
+   "id": "services-01#027",
+   "path": "services/0/flow/7/items/2",
+   "ru": "Сценарий и маршрут. Раскладываем смыслы по залам, проверяем ритм и то, что происходит с человеком на сороковой минуте — когда внимание уже израсходовано.",
+   "en": "Scenario and route. We lay the meanings out across the halls and check the rhythm — and what happens to a person in the fortieth minute, when attention is already spent.",
+   "pt": "Roteiro e percurso. Distribuímos os sentidos pelas salas e conferimos o ritmo — e o que acontece com a pessoa no quadragésimo minuto, quando a atenção já está gasta."
+  },
+  {
+   "id": "services-01#028",
+   "path": "services/0/flow/7/items/3",
+   "ru": "Экспозиционные решения. Каждый объект получает описание: что делает посетитель, что видит, что уносит.",
+   "en": "Exhibition decisions. Every object gets a description: what the visitor does, what they see, what they take away.",
+   "pt": "Decisões expositivas. Cada objeto ganha uma descrição: o que o visitante faz, o que vê, o que leva embora."
+  },
+  {
+   "id": "services-01#029",
+   "path": "services/0/flow/7/items/4",
+   "ru": "Защита. Собираем документ так, чтобы его можно было показать совету, министерству или инвестору и получить решение, а не новый круг обсуждений.",
+   "en": "Defence. We assemble the document so it can be shown to a board, a ministry or an investor and produce a decision rather than another round of discussion.",
+   "pt": "Defesa. Montamos o documento de modo que ele possa ser levado a um conselho, a um ministério ou a um investidor e produza uma decisão, em vez de mais uma rodada de discussão."
+  },
+  {
+   "id": "services-01#030",
+   "path": "services/0/flow/8/text",
+   "ru": "С чем мы работаем",
+   "en": "What we work with",
+   "pt": "Com o que trabalhamos"
+  },
+  {
+   "id": "services-01#031",
+   "path": "services/0/flow/9/text",
+   "ru": "Национальные музеи, ведомственные и корпоративные музеи, музеи-заповедники, визит-центры при промышленных объектах, центры науки. Отдельная история — экспозиции о сложном: технология, производство, наука, история, которую нельзя упростить до слогана. Лучший способ рассказать сложное — дать в него поиграть, и мы делаем это без потери достоверности: материал согласуется с научными консультантами, а не пересказывается вольно.",
+   "en": "National museums, corporate and institutional museums, heritage sites, visitor centres at industrial facilities, science centres. A separate story is exhibitions about difficult subjects: technology, production, science, history that cannot be reduced to a slogan. The best way to explain something complex is to let people play with it, and we do that without losing accuracy: content is agreed with academic advisers rather than retold freely.",
+   "pt": "Museus nacionais, museus corporativos e institucionais, sítios históricos, centros de visitantes em unidades industriais, centros de ciência. Um caso à parte são as exposições sobre temas difíceis: tecnologia, produção, ciência, história que não cabe em um slogan. O melhor jeito de explicar algo complexo é deixar as pessoas brincarem com ele, e fazemos isso sem perder precisão: o conteúdo é acordado com consultores acadêmicos, e não recontado à vontade."
+  },
+  {
+   "id": "services-01#032",
+   "path": "services/0/flow/10/text",
+   "ru": "Что определяет стоимость и срок",
+   "en": "What drives cost and schedule",
+   "pt": "O que define custo e prazo"
+  },
+  {
+   "id": "services-01#033",
+   "path": "services/0/flow/11/items/0",
+   "ru": "Площадь и количество смысловых зон — концепция на один зал и на музей в двадцать залов различаются не пропорционально, а качественно.",
+   "en": "Floor area and the number of meaning zones — a concept for one hall and for a twenty-hall museum differ in kind, not in proportion.",
+   "pt": "Área e número de zonas de sentido — um conceito para uma sala e para um museu de vinte salas diferem em natureza, não em proporção."
+  },
+  {
+   "id": "services-01#034",
+   "path": "services/0/flow/11/items/1",
+   "ru": "Состояние исходного материала: есть научная концепция и описанные фонды — работа идёт быстрее; нет — сначала собираем материал.",
+   "en": "The state of the source material: with a scholarly concept and a catalogued collection the work moves faster; without them, collecting comes first.",
+   "pt": "O estado do material de origem: com um conceito científico e um acervo catalogado o trabalho anda mais rápido; sem eles, primeiro é preciso reunir tudo."
+  },
+  {
+   "id": "services-01#035",
+   "path": "services/0/flow/11/items/2",
+   "ru": "Число согласующих сторон. Один заказчик и межведомственный совет — разные сроки при одинаковом объёме работы.",
+   "en": "How many parties have to approve. One client and an interdepartmental board mean different schedules for the same amount of work.",
+   "pt": "Quantas partes precisam aprovar. Um único cliente e um conselho interdepartamental significam prazos diferentes para a mesma quantidade de trabalho."
+  },
+  {
+   "id": "services-01#036",
+   "path": "services/0/flow/11/items/3",
+   "ru": "Нужна ли концепция «под защиту» или сразу проектная документация для реализации.",
+   "en": "Whether you need a concept for defence, or design documentation ready for construction.",
+   "pt": "Se você precisa de um conceito para defesa ou de documentação de projeto pronta para obra."
+  },
+  {
+   "id": "services-01#037",
+   "path": "services/0/flow/12/text",
+   "ru": "Честно о сроках: у наших музейных проектов полный цикл занимал от шести месяцев. Концепция — первая его часть. Разговор о ней имеет смысл начинать за год до открытия, а не за три месяца.",
+   "en": "Honestly about time: our museum projects have taken six months and more end to end. The concept is the first part of that. The conversation makes sense a year before opening, not three months before.",
+   "pt": "Com sinceridade sobre tempo: nossos projetos de museu levaram seis meses ou mais do começo ao fim. O conceito é a primeira parte disso. A conversa faz sentido um ano antes da abertura, não três meses antes."
+  },
+  {
+   "id": "services-01#038",
+   "path": "services/0/faq/0/q",
+   "ru": "Чем концепция отличается от дизайн-проекта?",
+   "en": "How is a concept different from a design project?",
+   "pt": "Qual a diferença entre conceito e projeto executivo?"
+  },
+  {
+   "id": "services-01#039",
+   "path": "services/0/faq/0/a",
+   "ru": "Концепция отвечает на вопрос «что и зачем», дизайн-проект — «как это построить». Концепция определяет, что посетитель делает и чувствует; дизайн-проект переводит это в чертежи, спецификации и смету. Дизайн-проект без концепции — это красивое помещение, в котором нечего делать.",
+   "en": "A concept answers what and why; a design project answers how to build it. The concept defines what the visitor does and feels; the design project turns that into drawings, specifications and costings. A design project without a concept is a handsome room with nothing to do in it.",
+   "pt": "O conceito responde o quê e por quê; o projeto executivo responde como construir. O conceito define o que o visitante faz e sente; o projeto executivo transforma isso em desenhos, especificações e orçamentos. Um projeto executivo sem conceito é uma sala bonita sem nada para fazer dentro."
+  },
+  {
+   "id": "services-01#040",
+   "path": "services/0/faq/1/q",
+   "ru": "Можно заказать только концепцию, без реализации?",
+   "en": "Can we order only the concept, without delivery?",
+   "pt": "Dá para contratar só o conceito, sem a execução?"
+  },
+  {
+   "id": "services-01#041",
+   "path": "services/0/faq/1/a",
+   "ru": "Да, это частый вариант. Концепция — самостоятельный документ: с ним можно выходить на защиту, искать финансирование и проводить конкурс на реализацию. Мы работаем и так, и полным циклом до запуска.",
+   "en": "Yes, and it is a common arrangement. The concept is a standalone document: you can defend it, seek funding with it and run a tender for delivery. We work both this way and full cycle through to opening.",
+   "pt": "Dá, e é um arranjo comum. O conceito é um documento autônomo: dá para defendê-lo, buscar financiamento com ele e abrir uma licitação de execução. Trabalhamos tanto assim quanto no ciclo completo até a abertura."
+  },
+  {
+   "id": "services-01#042",
+   "path": "services/0/faq/2/q",
+   "ru": "Вы работаете с уже существующим музеем?",
+   "en": "Do you work with an existing museum?",
+   "pt": "Vocês trabalham com um museu que já existe?"
+  },
+  {
+   "id": "services-01#043",
+   "path": "services/0/faq/2/a",
+   "ru": "Да. Обновление экспозиции — отдельный тип задачи: есть здание, фонды, сложившийся маршрут и посетитель, который привык. Здесь важнее не построить новое, а найти, что мешает существующему работать.",
+   "en": "Yes. Renewing an exhibition is a distinct kind of task: the building, the collection, the established route and a visitor who is used to it are all already there. The work is less about building something new and more about finding what stops the existing thing from working.",
+   "pt": "Sim. Renovar uma exposição é um tipo de tarefa próprio: o prédio, o acervo, o percurso consolidado e um visitante acostumado a ele já estão ali. O trabalho é menos construir algo novo e mais achar o que impede o que existe de funcionar."
+  },
+  {
+   "id": "services-01#044",
+   "path": "services/0/faq/3/q",
+   "ru": "Кто пишет научное содержание?",
+   "en": "Who writes the scholarly content?",
+   "pt": "Quem escreve o conteúdo científico?"
+  },
+  {
+   "id": "services-01#045",
+   "path": "services/0/faq/3/a",
+   "ru": "Научное содержание остаётся за музеем и его специалистами — они знают материал. Наша часть — превратить это содержание в опыт: сценарий, маршрут, объекты, взаимодействие. Достоверность проверяется научными консультантами заказчика.",
+   "en": "The scholarly content stays with the museum and its specialists — they know the material. Our part is turning that content into an experience: scenario, route, objects, interaction. Accuracy is verified by the client’s academic advisers.",
+   "pt": "O conteúdo científico fica com o museu e seus especialistas — eles conhecem o material. A nossa parte é transformar esse conteúdo em experiência: roteiro, percurso, objetos, interação. A precisão é verificada pelos consultores acadêmicos do cliente."
+  },
+  {
+   "id": "services-01#046",
+   "path": "services/1/title",
+   "ru": "Корпоративный музей",
+   "en": "Corporate museum",
+   "pt": "Museu corporativo"
+  },
+  {
+   "id": "services-01#047",
+   "path": "services/1/nav",
+   "ru": "Корпоративный музей",
+   "en": "Corporate museum",
+   "pt": "Museu corporativo"
+  },
+  {
+   "id": "services-01#048",
+   "path": "services/1/subtitle",
+   "ru": "Музей предприятия, который смотрят не из вежливости: делаем пространство, куда компания приводит партнёров, новичков и школьников — и каждому оно рассказывает своё.",
+   "en": "A company museum people actually look at: one space that works for partners, new hires and school groups — and tells each of them something different.",
+   "pt": "Um museu de empresa que as pessoas realmente olham: um espaço que funciona para parceiros, novos funcionários e grupos escolares — e conta algo diferente para cada um deles."
+  },
+  {
+   "id": "services-01#049",
+   "path": "services/1/keywords/0",
+   "ru": "корпоративный музей",
+   "en": "corporate museum",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "museu corporativo"
+  },
+  {
+   "id": "services-01#050",
+   "path": "services/1/keywords/1",
+   "ru": "музей предприятия",
+   "en": "company museum",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "museu da empresa"
+  },
+  {
+   "id": "services-01#051",
+   "path": "services/1/keywords/2",
+   "ru": "музей компании",
+   "en": "brand heritage centre",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "centro de memória da marca"
+  },
+  {
+   "id": "services-01#052",
+   "path": "services/1/keywords/3",
+   "ru": "музей истории завода",
+   "en": "corporate heritage exhibition",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "exposição de memória corporativa"
+  },
+  {
+   "id": "services-01#053",
+   "path": "services/1/keywords/4",
+   "ru": "создание корпоративного музея",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "criação de museu corporativo"
+  },
+  {
+   "id": "services-01#054",
+   "path": "services/1/keywords/5",
+   "ru": "корпоративный музей под ключ",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "museu corporativo chave na mão"
+  },
+  {
+   "id": "services-01#055",
+   "path": "services/1/keywords/6",
+   "ru": "музей организации",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "museu institucional"
+  },
+  {
+   "id": "services-01#056",
+   "path": "services/1/flow/0/text",
+   "ru": "Корпоративный музей почти всегда начинается одинаково: есть история, есть шкаф с наградами, есть юбилей на горизонте. И есть тихий страх, что получится комната, куда водят гостей, пока те вежливо ждут обеда.",
+   "en": "A corporate museum almost always starts the same way: there is a history, there is a cabinet of awards, and there is an anniversary on the horizon. And there is a quiet fear that it will end up as a room where guests are walked through while politely waiting for lunch.",
+   "pt": "Um museu corporativo quase sempre começa do mesmo jeito: existe uma história, existe um armário de troféus e existe um aniversário no horizonte. E existe um medo silencioso de que aquilo acabe virando a sala por onde se passeiam convidados enquanto eles esperam educadamente o almoço."
+  },
+  {
+   "id": "services-01#057",
+   "path": "services/1/flow/1/text",
+   "ru": "Страх обоснованный. Такие музеи делают по инерции: витрина с образцами, стенды по годам, портреты руководителей. Формально всё есть. Только рассказ про компанию сводится к «мы существуем давно», а это не то, ради чего стоит тратить зал и бюджет.",
+   "en": "The fear is justified. These rooms get built by inertia: a case of samples, panels by decade, portraits of directors. Formally complete — and the story it tells is “we have existed for a long time”, which is not worth a hall and a budget.",
+   "pt": "O medo tem fundamento. Essas salas são construídas por inércia: uma vitrine de amostras, painéis por década, retratos de diretores. Formalmente completo — e a história que conta é “existimos há muito tempo”, o que não vale um salão e um orçamento."
+  },
+  {
+   "id": "services-01#058",
+   "path": "services/1/flow/2/text",
+   "ru": "У корпоративного музея три аудитории, и они разные",
+   "en": "Three audiences, and they are not alike",
+   "pt": "Três públicos, e eles não são parecidos"
+  },
+  {
+   "id": "services-01#059",
+   "path": "services/1/flow/3/items/0",
+   "ru": "Партнёры и делегации. Приходят на сорок минут, половина времени уходит на разговор. Им нужен не пересказ истории, а доказательство масштаба и компетенции — быстро, наглядно и без чтения стендов.",
+   "en": "Partners and delegations. Forty minutes, half of it spent talking. They need proof of scale and competence, fast and visual — not a history lecture.",
+   "pt": "Parceiros e delegações. Quarenta minutos, metade deles em conversa. Precisam de prova de escala e competência, rápido e visual — não de uma aula de história."
+  },
+  {
+   "id": "services-01#060",
+   "path": "services/1/flow/3/items/1",
+   "ru": "Новые сотрудники. Их приводят в первую неделю. Здесь музей работает как введение в профессию: что мы делаем, почему это сложно и где в этом твоё место. Такой визит экономит компании месяц адаптации.",
+   "en": "New hires. Brought in during week one. Here the museum works as an induction: what we do, why it is hard, and where you fit. That visit saves the company a month of onboarding.",
+   "pt": "Novos funcionários. Trazidos na primeira semana. Aqui o museu funciona como integração: o que fazemos, por que é difícil e onde você entra. Essa visita economiza um mês de onboarding para a empresa."
+  },
+  {
+   "id": "services-01#061",
+   "path": "services/1/flow/3/items/2",
+   "ru": "Школьники и студенты. Профориентация, которую предприятия обязаны вести и обычно ведут скучно. А это ваши будущие инженеры — и единственный шанс показать производство изнутри, не пуская детей в цех.",
+   "en": "Students and school groups. Career guidance that most plants deliver badly. These are your future engineers, and this is the only way to show the shop floor without taking children into it.",
+   "pt": "Estudantes e grupos escolares. Orientação profissional que a maioria das fábricas faz mal. São os seus futuros engenheiros, e esse é o único jeito de mostrar o chão de fábrica sem levar crianças até lá."
+  },
+  {
+   "id": "services-01#062",
+   "path": "services/1/flow/4/text",
+   "ru": "Одна экспозиция должна обслужить всех троих. Не тремя разными маршрутами — одним, но с разной глубиной: сценарий строится так, чтобы делегация прошла верхним слоем за сорок минут, а школьник провёл два часа и всё потрогал.",
+   "en": "One exhibition has to serve all three — not with three separate routes, but with one route at different depths: a delegation takes the top layer in forty minutes, a fifteen-year-old spends two hours and touches everything.",
+   "pt": "Uma mesma exposição precisa servir aos três — não com três percursos separados, e sim com um percurso em profundidades diferentes: uma delegação leva a camada de cima em quarenta minutos, um adolescente de quinze anos passa duas horas e toca em tudo."
+  },
+  {
+   "id": "services-01#063",
+   "path": "services/1/flow/5/text",
+   "ru": "Что делает такой музей живым",
+   "en": "What keeps it alive",
+   "pt": "O que mantém isso vivo"
+  },
+  {
+   "id": "services-01#064",
+   "path": "services/1/flow/6/items/0",
+   "ru": "Действие вместо чтения. Собрать изделие, запустить процесс, попробовать себя на месте оператора. Человек запоминает то, что делал руками, а не то, что прочитал на стенде.",
+   "en": "Doing, not reading. Assemble a part, run a process, take the operator's seat. People remember what they did with their hands.",
+   "pt": "Fazer, não ler. Montar uma peça, rodar um processo, sentar no lugar do operador. As pessoas lembram do que fizeram com as mãos."
+  },
+  {
+   "id": "services-01#065",
+   "path": "services/1/flow/6/items/1",
+   "ru": "Настоящий предмет в центре. Деталь, инструмент, образец продукции — а мультимедиа вокруг него объясняет, чем он замечателен. Голая цифра без предмета мертва, предмет без объяснения нем.",
+   "en": "A real object at the centre. A part, a tool, a product — with media around it explaining why it matters. A number without an object is dead; an object without explanation is mute.",
+   "pt": "Um objeto real no centro. Uma peça, uma ferramenta, um produto — com mídia em volta explicando por que aquilo importa. Um número sem objeto é morto; um objeto sem explicação é mudo."
+  },
+  {
+   "id": "services-01#066",
+   "path": "services/1/flow/6/items/2",
+   "ru": "Люди, а не только даты. Истории конкретных сотрудников работают сильнее хронологии: в них есть лицо и выбор, а в хронологии только годы.",
+   "en": "People, not just dates. Stories of named employees carry more than a timeline: they have a face and a choice in them.",
+   "pt": "Pessoas, não só datas. Histórias de funcionários com nome e sobrenome carregam mais que uma linha do tempo: têm um rosto e uma escolha dentro."
+  },
+  {
+   "id": "services-01#067",
+   "path": "services/1/flow/6/items/3",
+   "ru": "Возможность обновлять. Компания меняется, а музей с намертво напечатанными стендами устаревает за два года. Содержание должно меняться силами вашего же человека, без вызова подрядчика.",
+   "en": "Room to change. A company moves on, and a museum of printed panels is dated in two years. Your own staff must be able to update the content.",
+   "pt": "Espaço para mudar. Uma empresa segue em frente, e um museu de painéis impressos fica datado em dois anos. A própria equipe precisa conseguir atualizar o conteúdo."
+  },
+  {
+   "id": "services-01#068",
+   "path": "services/1/flow/7/text",
+   "ru": "Чем это отличается от государственного музея",
+   "en": "How this differs from a public museum",
+   "pt": "Como isso difere de um museu público"
+  },
+  {
+   "id": "services-01#069",
+   "path": "services/1/flow/8/text",
+   "ru": "Тем, что решение принимаете вы. Нет 44-ФЗ, нет тендерной процедуры на полгода, нет согласования с методсоветом. Есть заказчик, у которого свой бюджет и свой срок — обычно юбилей, и он не двигается.",
+   "en": "You decide. No procurement law, no six-month tender, no methodological council. There is a client with a budget and a date — usually an anniversary, and it does not move.",
+   "pt": "Quem decide é você. Sem lei de licitações, sem seis meses de processo, sem conselho metodológico. Existe um cliente com orçamento e uma data — normalmente um aniversário, e ele não se mexe."
+  },
+  {
+   "id": "services-01#070",
+   "path": "services/1/flow/9/text",
+   "ru": "Поэтому и работаем иначе: сначала короткая сессия, где вместе находим главную мысль экспозиции, потом сценарий и смета, потом производство. Первый разговор ни к чему не обязывает и ничего не стоит.",
+   "en": "Equipment library: what these exhibitions are built from →",
+   "pt": "Biblioteca de equipamentos: com o que essas exposições são montadas →"
+  },
+  {
+   "id": "services-01#071",
+   "path": "services/1/flow/10/text",
+   "ru": "Библиотека оборудования: чем такие экспозиции собираются →",
+   "en": null,
+   "pt": "Biblioteca de equipamentos: com o que essas exposições são montadas →"
+  },
+  {
+   "id": "services-01#072",
+   "path": "services/1/faq/0/q",
+   "ru": "Сколько стоит корпоративный музей?",
+   "en": "What does a corporate museum cost?",
+   "pt": "Quanto custa um museu corporativo?"
+  },
+  {
+   "id": "services-01#073",
+   "path": "services/1/faq/0/a",
+   "ru": "Разброс огромный, и честный ответ — зависит от площади и от того, сколько в зале действия. Ориентир: небольшой зал на 60–80 метров с пятью-шестью интерактивными точками — это один порядок, а этаж с театром и большими инсталляциями — совсем другой. Мы считаем смету от сценария, а не от прайса на оборудование, и показываем, из чего она складывается, чтобы вы могли резать осознанно.",
+   "en": "It depends on floor area and on how much of the room involves doing rather than looking. A small 60–80 m² hall with five or six interactive points is one order of magnitude; a floor with a theatre and large installations is another. We cost from the script, not from an equipment price list, and show the breakdown so you can cut with your eyes open.",
+   "pt": "Depende da área e de quanto da sala envolve fazer em vez de olhar. Um salão pequeno de 60–80 m² com cinco ou seis pontos interativos é uma ordem de grandeza; um andar com teatro e grandes instalações é outra. Orçamos a partir do roteiro, não de uma tabela de preços de equipamento, e mostramos a composição para você poder cortar de olhos abertos."
+  },
+  {
+   "id": "services-01#074",
+   "path": "services/1/faq/1/q",
+   "ru": "У нас юбилей через восемь месяцев. Успеем?",
+   "en": "Our anniversary is eight months away. Is that enough?",
+   "pt": "Nosso aniversário é daqui a oito meses. Dá tempo?"
+  },
+  {
+   "id": "services-01#075",
+   "path": "services/1/faq/1/a",
+   "ru": "Да, это нормальный срок, если начать со сценария, а не со строительства. Опасны не месяцы, а поздние правки содержания: когда текст и графика согласовываются в последние недели, горит всё сразу. Мы фиксируем содержание раньше отделки, поэтому даты обычно держим.",
+   "en": "Yes, provided you start with the script rather than the construction. The danger is not the number of months but late content changes: when text and graphics are still being approved in the final weeks, everything burns at once. We freeze content before fit-out, which is why dates usually hold.",
+   "pt": "Dá, desde que se comece pelo roteiro e não pela obra. O perigo não é o número de meses, e sim mudanças tardias de conteúdo: quando texto e gráficos ainda estão sendo aprovados nas últimas semanas, tudo pega fogo de uma vez. A gente congela o conteúdo antes do acabamento, e é por isso que as datas costumam se sustentar."
+  },
+  {
+   "id": "services-01#076",
+   "path": "services/1/faq/2/q",
+   "ru": "У нас мало артефактов, почти всё утеряно. Что делать?",
+   "en": "We have almost no artefacts left. What then?",
+   "pt": "Quase não sobrou acervo. E agora?"
+  },
+  {
+   "id": "services-01#077",
+   "path": "services/1/faq/2/a",
+   "ru": "Это частая ситуация, и она решаемая. Недостаток предметов компенсируется реконструкцией: трёхмерная модель утраченного изделия, оживший архивный снимок, воссозданный процесс. Иногда получается сильнее подлинника — потому что модель можно разобрать на глазах у посетителя, а музейный экспонат нельзя.",
+   "en": "Common, and solvable. Missing objects are replaced by reconstruction: a 3D model of a lost product, a revived archive photograph, a recreated process. Sometimes it lands harder than the original — a model can be taken apart in front of the visitor, a museum piece cannot.",
+   "pt": "É comum, e tem solução. Objetos que faltam são substituídos por reconstituição: um modelo 3D de um produto perdido, uma foto de arquivo reanimada, um processo recriado. Às vezes funciona melhor que o original — um modelo dá para desmontar na frente do visitante, uma peça de museu não."
+  },
+  {
+   "id": "services-01#078",
+   "path": "services/1/faq/3/q",
+   "ru": "Кто будет всё это обслуживать?",
+   "en": "Who maintains it afterwards?",
+   "pt": "Quem faz a manutenção depois?"
+  }
+ ]
+}

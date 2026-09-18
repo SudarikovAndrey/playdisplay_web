@@ -1,0 +1,1022 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "library-03 (3 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "library-03#001",
+   "path": "categories/0/sections/6/items/0/brands/0/note",
+   "ru": "пневматика и линейные приводы",
+   "en": "пневматика и линейные приводы",
+   "pt": "pneumática e atuadores lineares"
+  },
+  {
+   "id": "library-03#002",
+   "path": "categories/0/sections/6/items/0/brands/1/note",
+   "ru": "линейные системы и кабельные цепи",
+   "en": "линейные системы и кабельные цепи",
+   "pt": "sistemas lineares e esteiras porta-cabos"
+  },
+  {
+   "id": "library-03#003",
+   "path": "categories/0/sections/6/items/0/brands/2/note",
+   "ru": "управление движением по сценарию",
+   "en": "управление движением по сценарию",
+   "pt": "controle de movimento por roteiro"
+  },
+  {
+   "id": "library-03#004",
+   "path": "categories/0/sections/6/items/1/name",
+   "ru": "Электронные чернила",
+   "en": "Electronic ink",
+   "pt": "Tinta eletrônica"
+  },
+  {
+   "id": "library-03#005",
+   "path": "categories/0/sections/6/items/1/line",
+   "ru": "Этикетка, которую можно переписать",
+   "en": "A label you can rewrite",
+   "pt": "Uma etiqueta que dá para reescrever"
+  },
+  {
+   "id": "library-03#006",
+   "path": "categories/0/sections/6/items/1/what",
+   "ru": "Экран тратит энергию только в момент смены картинки и читается как бумага — под любым углом и без свечения в лицо. Лечит старую музейную боль: новую атрибуцию и новый язык на табличке.",
+   "en": "The display draws power only while the image changes and reads like paper — at any angle, with nothing glowing into anyone's face. It cures an old museum ache: new attribution and a new language on the caption.",
+   "pt": "O display só consome energia enquanto a imagem muda e se lê como papel — de qualquer ângulo, sem brilhar na cara de ninguém. Cura uma dor antiga de museu: nova atribuição e novo idioma na legenda."
+  },
+  {
+   "id": "library-03#007",
+   "path": "categories/0/sections/6/items/1/good/0",
+   "ru": "Этикетки и подписи, которые меняются: новая атрибуция, новый язык, ротация",
+   "en": "Labels and captions that change: new attribution, new language, rotation",
+   "pt": "Etiquetas e legendas que mudam: nova atribuição, novo idioma, rodízio"
+  },
+  {
+   "id": "library-03#008",
+   "path": "categories/0/sections/6/items/1/good/1",
+   "ru": "Витрина, где светящийся экран разрушил бы вид",
+   "en": "A vitrine where a glowing screen would wreck the look",
+   "pt": "Uma vitrine em que uma tela luminosa estragaria o visual"
+  },
+  {
+   "id": "library-03#009",
+   "path": "categories/0/sections/6/items/1/good/2",
+   "ru": "Нет питания в точке: батареи хватает на месяцы",
+   "en": "No power at the point: batteries last months",
+   "pt": "Sem energia no ponto: as pilhas duram meses"
+  },
+  {
+   "id": "library-03#010",
+   "path": "categories/0/sections/6/items/1/bad/0",
+   "ru": "Движение и видео — обновление медленное по природе",
+   "en": "Motion and video — refresh is slow by nature",
+   "pt": "Movimento e vídeo — a atualização é lenta por natureza"
+  },
+  {
+   "id": "library-03#011",
+   "path": "categories/0/sections/6/items/1/bad/1",
+   "ru": "Цвет: цветные модели заметно бледнее и дороже",
+   "en": "Colour: colour models are noticeably paler and dearer",
+   "pt": "Cor: os modelos coloridos são bem mais pálidos e mais caros"
+  },
+  {
+   "id": "library-03#012",
+   "path": "categories/0/sections/6/items/1/bad/2",
+   "ru": "Крупный формат стоит непропорционально дорого",
+   "en": "Large formats cost disproportionately much",
+   "pt": "Formatos grandes custam desproporcionalmente"
+  },
+  {
+   "id": "library-03#013",
+   "path": "categories/0/sections/6/items/1/brands/0/note",
+   "ru": "производитель самой технологии",
+   "en": "производитель самой технологии",
+   "pt": "fabricante da própria tecnologia"
+  },
+  {
+   "id": "library-03#014",
+   "path": "categories/0/sections/6/items/1/brands/1/note",
+   "ru": "готовые панели с управлением по сети",
+   "en": "готовые панели с управлением по сети",
+   "pt": "painéis prontos com gestão em rede"
+  },
+  {
+   "id": "library-03#015",
+   "path": "categories/0/sections/6/items/2/name",
+   "ru": "Шоу дронов",
+   "en": "Drone show",
+   "pt": "Show de drones"
+  },
+  {
+   "id": "library-03#016",
+   "path": "categories/0/sections/6/items/2/line",
+   "ru": "Экран размером с небо",
+   "en": "A screen the size of the sky",
+   "pt": "Uma tela do tamanho do céu"
+  },
+  {
+   "id": "library-03#017",
+   "path": "categories/0/sections/6/items/2/what",
+   "ru": "Рой дронов держит строй по расчёту и рисует в воздухе объёмные фигуры. Единственный способ получить картинку в сотни метров без единой конструкции — во многих местах уже заменил фейерверк: тише, чище и повторяемо.",
+   "en": "A swarm holds formation to a computed programme and draws three-dimensional figures in the air. The only way to get a picture hundreds of metres across with no structure at all — in many places it has already replaced fireworks: quieter, cleaner, repeatable.",
+   "pt": "Um enxame mantém formação por um programa calculado e desenha figuras tridimensionais no ar. O único jeito de ter uma imagem de centenas de metros sem estrutura nenhuma — em muitos lugares já substituiu os fogos: mais silencioso, mais limpo, repetível."
+  },
+  {
+   "id": "library-03#018",
+   "path": "categories/0/sections/6/items/2/note_hw",
+   "ru": "Если в чужой презентации написано «Intel Shooting Star» — документ устарел. Intel вышла из этого бизнеса в 2022 году, продав подразделение вместе с парком дронов; шоу сегодня делают другие компании на своих платформах.",
+   "en": "If someone's presentation still says «Intel Shooting Star», the document is out of date. Intel left this business in 2022, selling the division along with its fleet; shows today are flown by other companies on their own platforms.",
+   "pt": "Se a apresentação de alguém ainda diz “Intel Shooting Star”, o documento está desatualizado. A Intel saiu desse negócio em 2022, vendendo a divisão junto com a frota; os shows de hoje são voados por outras empresas em plataformas próprias."
+  },
+  {
+   "id": "library-03#019",
+   "path": "categories/0/sections/6/items/2/good/0",
+   "ru": "Открытие, юбилей, городской праздник — событие под открытым небом",
+   "en": "An opening, an anniversary, a city celebration — an event under open sky",
+   "pt": "Uma inauguração, um aniversário, uma festa da cidade — um evento a céu aberto"
+  },
+  {
+   "id": "library-03#020",
+   "path": "categories/0/sections/6/items/2/good/1",
+   "ru": "Нужен масштаб, который не построить: сотни метров по высоте и ширине",
+   "en": "A scale that cannot be built: hundreds of metres in height and width",
+   "pt": "Uma escala que não dá para construir: centenas de metros de altura e largura"
+  },
+  {
+   "id": "library-03#021",
+   "path": "categories/0/sections/6/items/2/good/2",
+   "ru": "Место, где фейерверк запрещён по шуму, пожарной опасности или из-за животных",
+   "en": "A place where fireworks are barred by noise, fire risk or animal welfare",
+   "pt": "Um lugar em que fogos são proibidos por ruído, risco de incêndio ou bem-estar animal"
+  },
+  {
+   "id": "library-03#022",
+   "path": "categories/0/sections/6/items/2/bad/0",
+   "ru": "Ветер и осадки: погодное окно узкое, и запасной день нужен в договоре, а не на словах",
+   "en": "Wind and precipitation: the weather window is narrow, and a reserve date belongs in the contract rather than in conversation",
+   "pt": "Vento e chuva: a janela de tempo é estreita, e uma data reserva pertence ao contrato, não à conversa"
+  },
+  {
+   "id": "library-03#023",
+   "path": "categories/0/sections/6/items/2/bad/1",
+   "ru": "Согласования: воздушное пространство, зона, время — это недели, а не дни",
+   "en": "Approvals: airspace, zone, time — that is weeks, not days",
+   "pt": "Autorizações: espaço aéreo, zona, horário — isso são semanas, não dias"
+  },
+  {
+   "id": "library-03#024",
+   "path": "categories/0/sections/6/items/2/bad/2",
+   "ru": "Помещение: в зале летают единицы дронов, а не сотни, и эффект совсем другой",
+   "en": "Indoors: a hall flies a handful of drones, not hundreds, and the effect is quite different",
+   "pt": "Ambiente interno: um salão voa alguns drones, não centenas, e o efeito é bem outro"
+  },
+  {
+   "id": "library-03#025",
+   "path": "categories/0/sections/6/items/2/bad/3",
+   "ru": "Мелкая графика и текст: разрешение — это число дронов, а их сотни, не миллионы",
+   "en": "Fine graphics and text: resolution is the number of drones, and there are hundreds, not millions",
+   "pt": "Gráficos finos e texto: a resolução é o número de drones, e são centenas, não milhões"
+  },
+  {
+   "id": "library-03#026",
+   "path": "categories/0/sections/6/items/2/spec",
+   "ru": "Разрешение картинки равно числу дронов. Сто дронов — это контур узнаваемого символа, тысяча — сюжет с движением. Бюджет считается от числа бортов и числа лётных дней, а не от длительности шоу.",
+   "en": "The resolution of the picture equals the number of drones. A hundred drones gives the outline of a recognisable symbol; a thousand gives a moving narrative. Budget follows the number of airframes and flying days, not the length of the show.",
+   "pt": "A resolução da imagem é igual ao número de drones. Cem drones dão o contorno de um símbolo reconhecível; mil dão uma narrativa em movimento. O orçamento acompanha o número de aeronaves e de dias de voo, não a duração do show."
+  },
+  {
+   "id": "library-03#027",
+   "path": "categories/0/sections/6/items/2/brands/0/note",
+   "ru": "дроны и ПО, продают платформу операторам",
+   "en": "дроны и ПО, продают платформу операторам",
+   "pt": "drones e software, vendem a plataforma para operadores"
+  },
+  {
+   "id": "library-03#028",
+   "path": "categories/0/sections/6/items/2/brands/1/note",
+   "ru": "Drone Show Software, Латвия",
+   "en": "Drone Show Software, Латвия",
+   "pt": "Drone Show Software, Letônia"
+  },
+  {
+   "id": "library-03#029",
+   "path": "categories/0/sections/6/items/2/brands/2/note",
+   "ru": "открытая платформа управления роем",
+   "en": "открытая платформа управления роем",
+   "pt": "plataforma aberta de controle de enxame"
+  },
+  {
+   "id": "library-03#030",
+   "path": "categories/0/sections/6/items/2/brands/3/note",
+   "ru": "российский производитель, свои шоу",
+   "en": "российский производитель, свои шоу",
+   "pt": "fabricante russo, shows próprios"
+  },
+  {
+   "id": "library-03#031",
+   "path": "categories/0/sections/6/items/2/brands/4/note",
+   "ru": "выкупила дроновое подразделение Intel в 2022",
+   "en": "выкупила дроновое подразделение Intel в 2022",
+   "pt": "comprou a divisão de drones da Intel em 2022"
+  },
+  {
+   "id": "library-03#032",
+   "path": "categories/1/name",
+   "ru": "Ввод",
+   "en": "Input",
+   "pt": "Entrada"
+  },
+  {
+   "id": "library-03#033",
+   "path": "categories/1/full",
+   "ru": "Оборудование ввода",
+   "en": "Input equipment",
+   "pt": "Equipamentos de entrada"
+  },
+  {
+   "id": "library-03#034",
+   "path": "categories/1/line",
+   "ru": "Чем человек отвечает экспозиции",
+   "en": "How a person answers back",
+   "pt": "Como a pessoa responde"
+  },
+  {
+   "id": "library-03#035",
+   "path": "categories/1/lead",
+   "ru": "Пальцы, руки, тело, голос, само присутствие. Самая дешёвая строка в смете и та, что решает всё: здесь проходит граница между «интерактивным» и «просто включённым».",
+   "en": "Fingers, hands, body, voice, mere presence. The cheapest line in the budget and the one that decides everything: this is where «interactive» parts company with «switched on».",
+   "pt": "Dedos, mãos, corpo, voz, a simples presença. A linha mais barata do orçamento e a que decide tudo: é aqui que “interativo” se separa de “ligado”."
+  },
+  {
+   "id": "library-03#036",
+   "path": "categories/1/principle",
+   "ru": "Главный вопрос не «как человек управляет», а «откуда он вообще понял, что можно». Экспонату, которому нужна табличка с правилами, нужен не датчик, а переделка.",
+   "en": "The question is not how a person operates it, but how they worked out that they could. An exhibit that needs a plate of rules does not need a better sensor — it needs redesigning.",
+   "pt": "A pergunta não é como a pessoa opera aquilo, e sim como ela descobriu que podia. Um exponente que precisa de uma placa de regras não precisa de um sensor melhor — precisa ser refeito."
+  },
+  {
+   "id": "library-03#037",
+   "path": "categories/1/sections/0/name",
+   "ru": "Касание",
+   "en": "Touch",
+   "pt": "Toque"
+  },
+  {
+   "id": "library-03#038",
+   "path": "categories/1/sections/0/note",
+   "ru": "Понятно всем: люди научились на телефоне. И переоценено — тач работает на одного и почти не работает на группу.",
+   "en": "Everyone gets it: people learned on their phones. And it is over-specified — touch works for one person and barely works for a group.",
+   "pt": "Todo mundo entende: as pessoas aprenderam no celular. E é especificado demais — o toque funciona para uma pessoa e mal funciona para um grupo."
+  },
+  {
+   "id": "library-03#039",
+   "path": "categories/1/sections/0/items/0/name",
+   "ru": "Ёмкостный тач",
+   "en": "Capacitive touch",
+   "pt": "Toque capacitivo"
+  },
+  {
+   "id": "library-03#040",
+   "path": "categories/1/sections/0/items/0/line",
+   "ru": "Как в телефоне, только большой",
+   "en": "Like a phone, only large",
+   "pt": "Como um celular, só que grande"
+  },
+  {
+   "id": "library-03#041",
+   "path": "categories/1/sections/0/items/0/what",
+   "ru": "Плёнка или стекло, чувствующие палец по электрическому полю. Точность высокая, мультитач честный, стекло можно ставить толстое — тач срабатывает насквозь, и экспонат переживает удар.",
+   "en": "Film or glass sensing a finger through an electric field. High precision, honest multi-touch, and the glass can be thick — touch reads straight through, so the exhibit survives a blow.",
+   "pt": "Película ou vidro que sente o dedo por um campo elétrico. Alta precisão, multitoque honesto, e o vidro pode ser grosso — o toque lê direto através dele, então o exponente sobrevive a uma pancada."
+  },
+  {
+   "id": "library-03#042",
+   "path": "categories/1/sections/0/items/0/good/0",
+   "ru": "Витрина, где надо трогать через защитное стекло",
+   "en": "A vitrine where things are touched through protective glass",
+   "pt": "Uma vitrine em que se toca através de vidro de proteção"
+  },
+  {
+   "id": "library-03#043",
+   "path": "categories/1/sections/0/items/0/good/1",
+   "ru": "Уверенный мультитач: карта, которую крутят и растягивают вдвоём",
+   "en": "Confident multi-touch: a map two people rotate and stretch together",
+   "pt": "Multitoque confiante: um mapa que duas pessoas giram e esticam juntas"
+  },
+  {
+   "id": "library-03#044",
+   "path": "categories/1/sections/0/items/0/good/2",
+   "ru": "Поверхность должна остаться идеально ровной и чистой",
+   "en": "The surface has to stay perfectly flat and clean",
+   "pt": "A superfície precisa continuar perfeitamente plana e limpa"
+  },
+  {
+   "id": "library-03#045",
+   "path": "categories/1/sections/0/items/0/bad/0",
+   "ru": "Посетители в перчатках — зимой в северном музее это половина зала",
+   "en": "Visitors in gloves — in a northern museum in winter that is half the room",
+   "pt": "Visitantes de luva — em um museu do norte no inverno isso é metade da sala"
+  },
+  {
+   "id": "library-03#046",
+   "path": "categories/1/sections/0/items/0/bad/1",
+   "ru": "Очень большие размеры: чем крупнее плёнка, тем капризнее и дороже",
+   "en": "Very large sizes: the bigger the film, the more temperamental and expensive",
+   "pt": "Tamanhos muito grandes: quanto maior a película, mais temperamental e mais cara"
+  },
+  {
+   "id": "library-03#047",
+   "path": "categories/1/sections/0/items/0/bad/2",
+   "ru": "Мокрые руки и капли воды дают ложные касания",
+   "en": "Wet hands and water droplets produce phantom touches",
+   "pt": "Mãos molhadas e gotas d’água produzem toques fantasmas"
+  },
+  {
+   "id": "library-03#048",
+   "path": "categories/1/sections/0/items/0/brands/0/note",
+   "ru": "плёнки на стекло любой толщины",
+   "en": "плёнки на стекло любой толщины",
+   "pt": "películas sobre vidro de qualquer espessura"
+  },
+  {
+   "id": "library-03#049",
+   "path": "categories/1/sections/0/items/0/brands/1/note",
+   "ru": "проекционно-ёмкостные системы",
+   "en": "проекционно-ёмкостные системы",
+   "pt": "sistemas projetado-capacitivos"
+  },
+  {
+   "id": "library-03#050",
+   "path": "categories/1/sections/0/items/0/brands/2/note",
+   "ru": "готовые моноблоки и панели",
+   "en": "готовые моноблоки и панели",
+   "pt": "all-in-one e painéis prontos"
+  },
+  {
+   "id": "library-03#051",
+   "path": "categories/1/sections/0/items/1/name",
+   "ru": "Инфракрасная рамка",
+   "en": "Infrared frame",
+   "pt": "Moldura infravermelha"
+  },
+  {
+   "id": "library-03#052",
+   "path": "categories/1/sections/0/items/1/line",
+   "ru": "Дёшево, крупно, работает в варежках",
+   "en": "Cheap, large, works in mittens",
+   "pt": "Barata, grande, funciona de luva"
+  },
+  {
+   "id": "library-03#053",
+   "path": "categories/1/sections/0/items/1/what",
+   "ru": "Рамка по периметру: касание ловится по перекрытому лучу. Реагирует на что угодно — палец, перчатку, указку, локоть. Для северного музея зимой это половина зала.",
+   "en": "A frame around the edge catches the broken beam. It responds to anything — finger, glove, pointer, elbow. In a northern museum in winter that is half the room.",
+   "pt": "Uma moldura na borda capta o feixe interrompido. Responde a qualquer coisa — dedo, luva, ponteira, cotovelo. Em um museu do norte no inverno isso é metade da sala."
+  },
+  {
+   "id": "library-03#054",
+   "path": "categories/1/sections/0/items/1/good/0",
+   "ru": "Большие диагонали, где ёмкостный тач стоит как сам экран",
+   "en": "Large diagonals, where capacitive touch costs as much as the screen",
+   "pt": "Diagonais grandes, em que o toque capacitivo custa o mesmo que a tela"
+  },
+  {
+   "id": "library-03#055",
+   "path": "categories/1/sections/0/items/1/good/1",
+   "ru": "Перчатки, варежки, дети в куртках",
+   "en": "Gloves, mittens, children in winter coats",
+   "pt": "Luvas, mitenes, crianças de casaco de inverno"
+  },
+  {
+   "id": "library-03#056",
+   "path": "categories/1/sections/0/items/1/good/2",
+   "ru": "Ограниченный бюджет и большая поверхность",
+   "en": "A limited budget and a large surface",
+   "pt": "Orçamento limitado e superfície grande"
+  },
+  {
+   "id": "library-03#057",
+   "path": "categories/1/sections/0/items/1/bad/0",
+   "ru": "Рамка выступает над стеклом — грязь копится, вид не заигрывает",
+   "en": "The frame stands proud of the glass — dirt collects and it does not look sleek",
+   "pt": "A moldura sobressai do vidro — junta sujeira e não fica elegante"
+  },
+  {
+   "id": "library-03#058",
+   "path": "categories/1/sections/0/items/1/bad/1",
+   "ru": "Прямое солнце и мощные ИК-источники сбивают",
+   "en": "Direct sunlight and strong infrared sources confuse it",
+   "pt": "Luz solar direta e fontes infravermelhas fortes confundem o sensor"
+  },
+  {
+   "id": "library-03#059",
+   "path": "categories/1/sections/0/items/1/bad/2",
+   "ru": "Точность ниже: мелкие элементы интерфейса не нажимаются",
+   "en": "Lower precision: small interface elements cannot be hit",
+   "pt": "Precisão menor: elementos pequenos de interface não são acertados"
+  },
+  {
+   "id": "library-03#060",
+   "path": "categories/1/sections/0/items/1/brands/0/note",
+   "ru": "мультитач-рамки больших размеров",
+   "en": "мультитач-рамки больших размеров",
+   "pt": "molduras multitoque de grandes tamanhos"
+  },
+  {
+   "id": "library-03#061",
+   "path": "categories/1/sections/0/items/1/brands/1/note",
+   "ru": "массовый сегмент",
+   "en": "массовый сегмент",
+   "pt": "segmento de massa"
+  },
+  {
+   "id": "library-03#062",
+   "path": "categories/1/sections/0/items/2/name",
+   "ru": "Лидарный тач по любой поверхности",
+   "en": "Lidar touch on any surface",
+   "pt": "Toque por lidar em qualquer superfície"
+  },
+  {
+   "id": "library-03#063",
+   "path": "categories/1/sections/0/items/2/line",
+   "ru": "Тач там, где тача быть не может",
+   "en": "Touch where touch cannot exist",
+   "pt": "Toque onde toque não pode existir"
+  },
+  {
+   "id": "library-03#064",
+   "path": "categories/1/sections/0/items/2/what",
+   "ru": "Сканер светит плоскостью над поверхностью и ловит, где её пересекли. Превращает в сенсорную стену, витрину, макет или пол — без плёнки, без рамки и без вмешательства в саму поверхность.",
+   "en": "A scanner casts a plane of light above a surface and detects where it is crossed. It turns a wall, a vitrine, a model or a floor into a touch surface — no film, no frame, no intervention in the surface itself.",
+   "pt": "Um scanner lança um plano de luz acima de uma superfície e detecta onde ele é cruzado. Transforma uma parede, uma vitrine, uma maquete ou um piso em superfície de toque — sem película, sem moldura, sem intervir na própria superfície."
+  },
+  {
+   "id": "library-03#065",
+   "path": "categories/1/sections/0/items/2/good/0",
+   "ru": "Историческая поверхность, которую нельзя трогать оборудованием",
+   "en": "A historic surface that no equipment may be attached to",
+   "pt": "Uma superfície histórica em que nenhum equipamento pode ser fixado"
+  },
+  {
+   "id": "library-03#066",
+   "path": "categories/1/sections/0/items/2/good/1",
+   "ru": "Проекция на стену или пол, ставшая интерактивной",
+   "en": "Projection on a wall or floor that becomes interactive",
+   "pt": "Projeção em parede ou piso que vira interativa"
+  },
+  {
+   "id": "library-03#067",
+   "path": "categories/1/sections/0/items/2/good/2",
+   "ru": "Очень большая площадь: цена почти не растёт с размером",
+   "en": "A very large area: the price barely rises with size",
+   "pt": "Uma área muito grande: o preço quase não sobe com o tamanho"
+  },
+  {
+   "id": "library-03#068",
+   "path": "categories/1/sections/0/items/2/bad/0",
+   "ru": "Калибровка живёт до первого сдвига прибора — крепить намертво",
+   "en": "Calibration lasts until the device is first nudged — mount it immovably",
+   "pt": "A calibração dura até o primeiro esbarrão no aparelho — fixe de modo imóvel"
+  },
+  {
+   "id": "library-03#069",
+   "path": "categories/1/sections/0/items/2/bad/1",
+   "ru": "Плоскость одна: касание ловится в двух измерениях, нажим не различается",
+   "en": "There is one plane: touch is read in two dimensions, pressure is not distinguished",
+   "pt": "Existe um único plano: o toque é lido em duas dimensões, pressão não se distingue"
+  },
+  {
+   "id": "library-03#070",
+   "path": "categories/1/sections/0/items/2/bad/2",
+   "ru": "Люди, стоящие в плоскости луча, заслоняют друг друга",
+   "en": "People standing in the plane of the beam occlude one another",
+   "pt": "Pessoas paradas no plano do feixe se encobrem entre si"
+  },
+  {
+   "id": "library-03#071",
+   "path": "categories/1/sections/0/items/2/brands/0/note",
+   "ru": "стандарт для интерактивных поверхностей",
+   "en": "стандарт для интерактивных поверхностей",
+   "pt": "padrão para superfícies interativas"
+  },
+  {
+   "id": "library-03#072",
+   "path": "categories/1/sections/0/items/2/brands/1/note",
+   "ru": "промышленные сканеры, высокая надёжность",
+   "en": "промышленные сканеры, высокая надёжность",
+   "pt": "scanners industriais, alta confiabilidade"
+  },
+  {
+   "id": "library-03#073",
+   "path": "categories/1/sections/0/items/2/brands/2/note",
+   "ru": "доступные лидары для объёмных зон",
+   "en": "доступные лидары для объёмных зон",
+   "pt": "lidares acessíveis para zonas volumétricas"
+  },
+  {
+   "id": "library-03#074",
+   "path": "categories/1/sections/0/items/3/name",
+   "ru": "Готовый сенсорный монитор",
+   "en": "Off-the-shelf touch monitor",
+   "pt": "Monitor de toque pronto"
+  },
+  {
+   "id": "library-03#075",
+   "path": "categories/1/sections/0/items/3/line",
+   "ru": "Не собирайте из частей — купите целиком",
+   "en": "Do not assemble it from parts — buy it whole",
+   "pt": "Não monte por partes — compre inteiro"
+  },
+  {
+   "id": "library-03#076",
+   "path": "categories/1/sections/0/items/3/what",
+   "ru": "Стекло, тач и электроника уже собраны и проверены вместе. Конструктор из рамки, панели и компьютера дешевле на бумаге, дольше настраивается, а при поломке выясняется, что виноватых нет.",
+   "en": "Glass, touch layer and electronics already built and tested together. A kit of frame, panel and computer is cheaper on paper, takes longer to commission, and when it fails there turns out to be nobody to blame.",
+   "pt": "Vidro, camada de toque e eletrônica já montados e testados juntos. Um kit de moldura, painel e computador é mais barato no papel, leva mais tempo para comissionar, e quando falha acaba não havendo quem responda."
+  },
+  {
+   "id": "library-03#077",
+   "path": "categories/1/sections/0/items/3/good/0",
+   "ru": "Обычный интерактивный стенд без нестандартной геометрии",
+   "en": "An ordinary interactive stand with no unusual geometry",
+   "pt": "Um estande interativo comum, sem geometria incomum"
+  },
+  {
+   "id": "library-03#078",
+   "path": "categories/1/sections/0/items/3/good/1",
+   "ru": "Сроки поджимают: готовый монитор ставится за час, сборка — за неделю",
+   "en": "Time is short: a finished monitor goes in within an hour, an assembly takes a week",
+   "pt": "O tempo é curto: um monitor pronto entra em uma hora, uma montagem leva uma semana"
+  },
+  {
+   "id": "library-03#079",
+   "path": "categories/1/sections/0/items/3/good/2",
+   "ru": "Много одинаковых точек: десять одинаковых моноблоков обслуживать проще",
+   "en": "Many identical points: ten identical all-in-ones are simpler to service",
+   "pt": "Muitos pontos iguais: dez all-in-one idênticos são mais simples de manter"
+  },
+  {
+   "id": "library-03#080",
+   "path": "categories/1/sections/0/items/3/good/3",
+   "ru": "Нет своего инженера: гарантия на изделие целиком, а не на четыре разных счёта",
+   "en": "No in-house engineer: one warranty on one product rather than four separate invoices",
+   "pt": "Sem engenheiro na casa: uma garantia em um produto, em vez de quatro notas separadas"
+  },
+  {
+   "id": "library-03#081",
+   "path": "categories/1/sections/0/items/3/bad/0",
+   "ru": "Нестандартный размер, форма или врезка заподлицо в мебель",
+   "en": "A non-standard size or shape, or flush mounting into joinery",
+   "pt": "Tamanho ou formato fora do padrão, ou embutimento em marcenaria"
+  },
+  {
+   "id": "library-03#082",
+   "path": "categories/1/sections/0/items/3/bad/1",
+   "ru": "Очень большие диагонали: готовые решения заканчиваются, а цена растёт круто",
+   "en": "Very large diagonals: off-the-shelf options run out and the price climbs steeply",
+   "pt": "Diagonais muito grandes: as opções prontas acabam e o preço sobe forte"
+  },
+  {
+   "id": "library-03#083",
+   "path": "categories/1/sections/0/items/3/bad/2",
+   "ru": "Стекло должно быть толстым или бронированным — тогда нужен раздельный набор",
+   "en": "The glass must be thick or armoured — then you need separate components",
+   "pt": "O vidro precisa ser grosso ou blindado — aí você precisa de componentes separados"
+  },
+  {
+   "id": "library-03#084",
+   "path": "categories/1/sections/0/items/3/brands/0/note",
+   "ru": "рабочая лошадь: сенсорные мониторы и большие панели, доступны в РФ",
+   "en": "рабочая лошадь: сенсорные мониторы и большие панели, доступны в РФ",
+   "pt": "cavalo de batalha: monitores de toque e painéis grandes, disponíveis na Rússia"
+  },
+  {
+   "id": "library-03#085",
+   "path": "categories/1/sections/0/items/3/brands/1/note",
+   "ru": "моноблоки и киоски, отраслевой стандарт",
+   "en": "моноблоки и киоски, отраслевой стандарт",
+   "pt": "all-in-one e quiosques, padrão do setor"
+  },
+  {
+   "id": "library-03#086",
+   "path": "categories/1/sections/0/items/3/brands/2/note",
+   "ru": "сенсорные мониторы среднего размера",
+   "en": "сенсорные мониторы среднего размера",
+   "pt": "monitores de toque de tamanho médio"
+  },
+  {
+   "id": "library-03#087",
+   "path": "categories/1/sections/0/items/3/brands/3/note",
+   "ru": "промышленные панельные ПК с тачем",
+   "en": "промышленные панельные ПК с тачем",
+   "pt": "PCs industriais em painel com toque"
+  },
+  {
+   "id": "library-03#088",
+   "path": "categories/1/sections/1/name",
+   "ru": "Физическое действие",
+   "en": "Physical action",
+   "pt": "Ação física"
+  },
+  {
+   "id": "library-03#089",
+   "path": "categories/1/sections/1/note",
+   "ru": "Настоящие предметы, которые крутят и жмут. Проигрывают тачу в гибкости, выигрывают во всём остальном: понятны без слов, работают на группу, запоминаются руками.",
+   "en": "Real objects that get turned and pressed. They lose to touch on flexibility and win on everything else: understood without words, work for a group, remembered by the hands.",
+   "pt": "Objetos reais que se giram e se apertam. Perdem para o toque em flexibilidade e ganham em todo o resto: entendidos sem palavras, funcionam para grupo, lembrados pelas mãos."
+  },
+  {
+   "id": "library-03#090",
+   "path": "categories/1/sections/1/items/0/name",
+   "ru": "Реальные органы управления",
+   "en": "Real operating controls",
+   "pt": "Comandos reais de operação"
+  },
+  {
+   "id": "library-03#091",
+   "path": "categories/1/sections/1/items/0/line",
+   "ru": "Рычаг, маховик, тумблер, штурвал",
+   "en": "A lever, a handwheel, a toggle, a helm",
+   "pt": "Uma alavanca, um volante, uma chave, um leme"
+  },
+  {
+   "id": "library-03#092",
+   "path": "categories/1/sections/1/items/0/what",
+   "ru": "Промышленные кнопки и рукоятки, снятые с настоящей техники или сделанные под неё. Понятны без единого слова — и ребёнку, и человеку, который экранов сторонится.",
+   "en": "Industrial buttons and grips, taken off real machinery or made to match. Understood without a word — by a child, and by the visitor who keeps away from screens.",
+   "pt": "Botões e manoplas industriais, tirados de máquinas reais ou feitos para combinar. Entendidos sem uma palavra — por uma criança, e pelo visitante que evita telas."
+  },
+  {
+   "id": "library-03#093",
+   "path": "categories/1/sections/1/items/0/good/0",
+   "ru": "Экспозиция про технику: управлять надо тем, чем управляли на самом деле",
+   "en": "An exhibition about machinery: you should operate it with what actually operated it",
+   "pt": "Uma exposição sobre máquinas: você deve operá-la com o que de fato a operava"
+  },
+  {
+   "id": "library-03#094",
+   "path": "categories/1/sections/1/items/0/good/1",
+   "ru": "Дети и пожилые посетители — понятно без единого слова",
+   "en": "Children and older visitors — understood without a single word",
+   "pt": "Crianças e visitantes mais velhos — entendido sem uma única palavra"
+  },
+  {
+   "id": "library-03#095",
+   "path": "categories/1/sections/1/items/0/good/2",
+   "ru": "Экспонат должен пережить миллион нажатий и школьную экскурсию",
+   "en": "The exhibit must survive a million presses and a school outing",
+   "pt": "O exponente precisa sobreviver a um milhão de apertos e a uma excursão escolar"
+  },
+  {
+   "id": "library-03#096",
+   "path": "categories/1/sections/1/items/0/bad/0",
+   "ru": "Содержание меняется часто: под каждый сценарий нужен свой предмет",
+   "en": "The content changes often: each scenario needs its own object",
+   "pt": "O conteúdo muda com frequência: cada roteiro precisa do próprio objeto"
+  },
+  {
+   "id": "library-03#097",
+   "path": "categories/1/sections/1/items/0/bad/1",
+   "ru": "Сложный выбор из многих вариантов — тут нужен экран",
+   "en": "A complex choice among many options — that calls for a screen",
+   "pt": "Uma escolha complexa entre muitas opções — isso pede uma tela"
+  },
+  {
+   "id": "library-03#098",
+   "path": "categories/1/sections/1/items/0/bad/2",
+   "ru": "Тесный зал: физический пульт занимает место, экран — нет",
+   "en": "A cramped room: a physical console takes space, a screen does not",
+   "pt": "Uma sala apertada: um console físico ocupa espaço, uma tela não"
+  },
+  {
+   "id": "library-03#099",
+   "path": "categories/1/sections/1/items/0/spec",
+   "ru": "Ресурс считается заранее: промышленная кнопка живёт миллионы циклов, бытовая — десятки тысяч. При двух тысячах посетителей в день разница между ними — это между «пять лет» и «два месяца».",
+   "en": "Work out the duty cycle in advance: an industrial button lasts millions of cycles, a consumer one tens of thousands. At two thousand visitors a day, that is the difference between five years and two months.",
+   "pt": "Calcule o ciclo de trabalho antes: um botão industrial dura milhões de ciclos, um doméstico dezenas de milhares. Com dois mil visitantes por dia, isso é a diferença entre cinco anos e dois meses."
+  },
+  {
+   "id": "library-03#100",
+   "path": "categories/1/sections/1/items/0/brands/0/note",
+   "ru": "промышленные кнопки высокого ресурса",
+   "en": "промышленные кнопки высокого ресурса",
+   "pt": "botões industriais de alta durabilidade"
+  },
+  {
+   "id": "library-03#101",
+   "path": "categories/1/sections/1/items/0/brands/1/note",
+   "ru": "доступные посты управления",
+   "en": "доступные посты управления",
+   "pt": "postos de comando acessíveis"
+  },
+  {
+   "id": "library-03#102",
+   "path": "categories/1/sections/1/items/0/brands/2/note",
+   "ru": "связка физики с компьютером",
+   "en": "связка физики с компьютером",
+   "pt": "ligação entre a física e o computador"
+  },
+  {
+   "id": "library-03#103",
+   "path": "categories/1/sections/1/items/0/brands/3/note",
+   "ru": "готовые модули датчиков и приводов",
+   "en": "готовые модули датчиков и приводов",
+   "pt": "módulos prontos de sensores e atuadores"
+  },
+  {
+   "id": "library-03#104",
+   "path": "categories/1/sections/1/items/1/name",
+   "ru": "Поворотная ручка и энкодер",
+   "en": "Rotary knob and encoder",
+   "pt": "Botão rotativo e encoder"
+  },
+  {
+   "id": "library-03#105",
+   "path": "categories/1/sections/1/items/1/line",
+   "ru": "Одно движение, которое понимает каждый",
+   "en": "One movement everybody understands",
+   "pt": "Um movimento que todo mundo entende"
+  },
+  {
+   "id": "library-03#106",
+   "path": "categories/1/sections/1/items/1/what",
+   "ru": "Крутить — самый естественный жест после нажатия: так листают годы, проходят разрез, меняют масштаб. Ручка даёт то, чего не даст экран: сопротивление под пальцами.",
+   "en": "Turning is the most natural gesture after pressing: it is how you leaf through years, move through a cutaway, change scale. A knob gives what a screen cannot — resistance under the fingers.",
+   "pt": "Girar é o gesto mais natural depois de apertar: é assim que se folheiam anos, se atravessa um corte, se muda a escala. Um botão dá o que uma tela não dá — resistência sob os dedos."
+  },
+  {
+   "id": "library-03#107",
+   "path": "categories/1/sections/1/items/1/note_hw",
+   "ru": "Классика жанра, Griffin PowerMate, снята с производства в 2018 году — если в спецификации она есть, документ писали по старым образцам. Живые замены: Binepad BNR1, Contour ShuttleXpress, а для стационарной установки лучше промышленный энкодер, который переживёт миллион оборотов.",
+   "en": "The classic of the genre, the Griffin PowerMate, went out of production in 2018 — if it appears in a specification, that document was written from old templates. Living replacements: Binepad BNR1, Contour ShuttleXpress, and for a permanent installation better an industrial encoder rated for a million turns.",
+   "pt": "O clássico do gênero, o Griffin PowerMate, saiu de linha em 2018 — se ele aparece em uma especificação, aquele documento foi escrito com modelos antigos. Substitutos vivos: Binepad BNR1, Contour ShuttleXpress, e para instalação permanente melhor um encoder industrial classificado para um milhão de giros."
+  },
+  {
+   "id": "library-03#108",
+   "path": "categories/1/sections/1/items/1/good/0",
+   "ru": "Временна́я шкала: прокрутить год, эпоху, стадию процесса",
+   "en": "A timeline: scroll through a year, an era, a stage of a process",
+   "pt": "Uma linha do tempo: percorrer um ano, uma era, uma etapa de um processo"
+  },
+  {
+   "id": "library-03#109",
+   "path": "categories/1/sections/1/items/1/good/1",
+   "ru": "Разрез или слои: пройти объект насквозь одним движением",
+   "en": "A cutaway or layers: move through an object in a single gesture",
+   "pt": "Um corte ou camadas: atravessar um objeto em um único gesto"
+  },
+  {
+   "id": "library-03#110",
+   "path": "categories/1/sections/1/items/1/good/2",
+   "ru": "Посетитель, которому трудно попасть пальцем в мелкий элемент на экране",
+   "en": "A visitor who struggles to hit a small element on a screen",
+   "pt": "Um visitante que tem dificuldade de acertar um elemento pequeno na tela"
+  },
+  {
+   "id": "library-03#111",
+   "path": "categories/1/sections/1/items/1/good/3",
+   "ru": "Нужна физическая точность — экран её не даёт",
+   "en": "Physical precision is wanted — a screen does not give it",
+   "pt": "Deseja-se precisão física — uma tela não dá isso"
+  },
+  {
+   "id": "library-03#112",
+   "path": "categories/1/sections/1/items/1/bad/0",
+   "ru": "Выбор из многих вариантов: тут нужен список, а не ручка",
+   "en": "Choosing among many options: that needs a list, not a knob",
+   "pt": "Escolher entre muitas opções: isso pede uma lista, não um botão"
+  },
+  {
+   "id": "library-03#113",
+   "path": "categories/1/sections/1/items/1/bad/1",
+   "ru": "Бытовые модели быстро изнашиваются при потоке — считать ресурс",
+   "en": "Consumer models wear out quickly under footfall — count the duty cycle",
+   "pt": "Modelos domésticos se desgastam rápido sob fluxo de público — calcule o ciclo de trabalho"
+  },
+  {
+   "id": "library-03#114",
+   "path": "categories/1/sections/1/items/1/bad/2",
+   "ru": "Смысл вращения надо показать: без подсказки половина посетителей не поймёт",
+   "en": "The meaning of the turn has to be shown: without a hint half the visitors miss it",
+   "pt": "É preciso mostrar o sentido do giro: sem uma dica metade dos visitantes não percebe"
+  },
+  {
+   "id": "library-03#115",
+   "path": "categories/1/sections/1/items/1/brands/0/note",
+   "ru": "BNR1 — живой наследник PowerMate",
+   "en": "BNR1 — живой наследник PowerMate",
+   "pt": "BNR1 — herdeiro vivo do PowerMate"
+  },
+  {
+   "id": "library-03#116",
+   "path": "categories/1/sections/1/items/1/brands/1/note",
+   "ru": "ShuttleXpress, надёжный колесный контроллер",
+   "en": "ShuttleXpress, надёжный колесный контроллер",
+   "pt": "ShuttleXpress, controlador de roda confiável"
+  },
+  {
+   "id": "library-03#117",
+   "path": "categories/1/sections/1/items/1/brands/2/note",
+   "ru": "промышленные энкодеры высокого ресурса",
+   "en": "промышленные энкодеры высокого ресурса",
+   "pt": "encoders industriais de alta durabilidade"
+  },
+  {
+   "id": "library-03#118",
+   "path": "categories/1/sections/1/items/1/brands/3/note",
+   "ru": "энкодеры с готовым подключением",
+   "en": "энкодеры с готовым подключением",
+   "pt": "encoders com conexão pronta"
+  },
+  {
+   "id": "library-03#119",
+   "path": "categories/1/sections/1/items/2/name",
+   "ru": "Предмет как ключ",
+   "en": "An object as a key",
+   "pt": "Um objeto como chave"
+  },
+  {
+   "id": "library-03#120",
+   "path": "categories/1/sections/1/items/2/line",
+   "ru": "Положил вещь — экспозиция ответила",
+   "en": "Put a thing down and the exhibition answers",
+   "pt": "Apoie uma coisa e a exposição responde"
+  },
+  {
+   "id": "library-03#121",
+   "path": "categories/1/sections/1/items/2/what",
+   "ru": "Настоящий предмет с меткой снизу: система узнаёт, что положили и как повернули. Взаимодействие становится телесным и групповым — каждый держит своё.",
+   "en": "A real object with a marker underneath: the system knows what was placed and how it is turned. The interaction becomes physical and collective — everyone holds their own.",
+   "pt": "Um objeto real com um marcador embaixo: o sistema sabe o que foi colocado e como está girado. A interação vira física e coletiva — cada um segura o seu."
+  },
+  {
+   "id": "library-03#122",
+   "path": "categories/1/sections/1/items/2/good/0",
+   "ru": "Сравнение нескольких вещей: положили рядом — увидели связь",
+   "en": "Comparing several things: put them side by side and see the connection",
+   "pt": "Comparar várias coisas: coloque lado a lado e veja a conexão"
+  },
+  {
+   "id": "library-03#123",
+   "path": "categories/1/sections/1/items/2/good/1",
+   "ru": "Групповая работа: каждый держит свой предмет",
+   "en": "Group work: each person holds their own object",
+   "pt": "Trabalho em grupo: cada pessoa segura o próprio objeto"
+  },
+  {
+   "id": "library-03#124",
+   "path": "categories/1/sections/1/items/2/good/2",
+   "ru": "Нужна связь между подлинником в руке и данными на экране",
+   "en": "A link is needed between the original in the hand and the data on the screen",
+   "pt": "É preciso uma ligação entre o original na mão e os dados na tela"
+  },
+  {
+   "id": "library-03#125",
+   "path": "categories/1/sections/1/items/2/bad/0",
+   "ru": "Предметы теряются и ломаются — считать расход и запас",
+   "en": "Objects get lost and broken — budget for consumption and spares",
+   "pt": "Objetos se perdem e quebram — preveja consumo e reposição no orçamento"
+  },
+  {
+   "id": "library-03#126",
+   "path": "categories/1/sections/1/items/2/bad/1",
+   "ru": "Не работает без сотрудника, если предметы ценные",
+   "en": "It does not work without staff if the objects are valuable",
+   "pt": "Não funciona sem equipe se os objetos forem valiosos"
+  },
+  {
+   "id": "library-03#127",
+   "path": "categories/1/sections/1/items/2/bad/2",
+   "ru": "Плохо переживает поток: разложить обратно должен кто-то",
+   "en": "It copes poorly with crowds: someone has to put them back",
+   "pt": "Lida mal com multidão: alguém tem que recolocá-los no lugar"
+  },
+  {
+   "id": "library-03#128",
+   "path": "categories/1/sections/1/items/2/brands/0/note",
+   "ru": "открытые оптические метки",
+   "en": "открытые оптические метки",
+   "pt": "marcadores ópticos abertos"
+  },
+  {
+   "id": "library-03#129",
+   "path": "categories/1/sections/1/items/2/brands/1/note",
+   "ru": "RFID-считыватели и метки",
+   "en": "RFID-считыватели и метки",
+   "pt": "leitores e etiquetas RFID"
+  },
+  {
+   "id": "library-03#130",
+   "path": "categories/1/sections/1/items/3/name",
+   "ru": "Карта посетителя, RFID и NFC",
+   "en": "Visitor card, RFID and NFC",
+   "pt": "Cartão do visitante, RFID e NFC"
+  },
+  {
+   "id": "library-03#131",
+   "path": "categories/1/sections/1/items/3/line",
+   "ru": "Экспозиция узнаёт, кто перед ней",
+   "en": "The exhibition knows who is standing there",
+   "pt": "A exposição sabe quem está ali"
+  },
+  {
+   "id": "library-03#132",
+   "path": "categories/1/sections/1/items/3/what",
+   "ru": "Билет или браслет с меткой. Приложил — экспонат заговорил на твоём языке и продолжил с того места, где ты остановился. В конце маршрута выдаёт личный итог: что посмотрел, что собрал.",
+   "en": "A ticket or wristband with a tag. Touch it and the exhibit speaks your language and resumes where you left off. At the end of the route it hands you a personal summary of what you saw and gathered.",
+   "pt": "Um ingresso ou pulseira com etiqueta. Encoste e o exponente fala o seu idioma e retoma de onde você parou. No fim do percurso ele entrega um resumo pessoal do que você viu e juntou."
+  },
+  {
+   "id": "library-03#133",
+   "path": "categories/1/sections/1/items/3/good/0",
+   "ru": "Длинный маршрут со сквозным сюжетом и накоплением",
+   "en": "A long route with a running narrative and accumulation",
+   "pt": "Um percurso longo com narrativa contínua e acúmulo"
+  },
+  {
+   "id": "library-03#134",
+   "path": "categories/1/sections/1/items/3/good/1",
+   "ru": "Много языков без единой кнопки выбора",
+   "en": "Many languages without a single language button",
+   "pt": "Muitos idiomas sem um único botão de idioma"
+  },
+  {
+   "id": "library-03#135",
+   "path": "categories/1/sections/1/items/3/good/2",
+   "ru": "Нужен след после визита: письмо, страница, ссылка на собранное",
+   "en": "A trace after the visit: an email, a page, a link to what was gathered",
+   "pt": "Um rastro depois da visita: um e-mail, uma página, um link para o que foi juntado"
+  },
+  {
+   "id": "library-03#136",
+   "path": "categories/1/sections/1/items/3/bad/0",
+   "ru": "Свободный вход без билета — карты некому раздавать",
+   "en": "Free entry with no ticket — there is nobody to hand out cards",
+   "pt": "Entrada franca sem ingresso — não há quem entregue os cartões"
+  },
+  {
+   "id": "library-03#137",
+   "path": "categories/1/sections/1/items/3/bad/1",
+   "ru": "Персональные данные: связка с личностью посетителя требует правового основания",
+   "en": "Personal data: tying this to a visitor's identity needs a legal basis",
+   "pt": "Dados pessoais: vincular isso à identidade do visitante exige base legal"
+  },
+  {
+   "id": "library-03#138",
+   "path": "categories/1/sections/1/items/3/bad/2",
+   "ru": "Карты уносят и теряют, расход постоянный",
+   "en": "Cards get taken away and lost, a constant running cost",
+   "pt": "Cartões são levados embora e perdidos, um custo corrente permanente"
+  },
+  {
+   "id": "library-03#139",
+   "path": "categories/1/sections/1/items/3/brands/0/note",
+   "ru": "чипы MIFARE, отраслевой стандарт",
+   "en": "чипы MIFARE, отраслевой стандарт",
+   "pt": "chips MIFARE, padrão do setor"
+  },
+  {
+   "id": "library-03#140",
+   "path": "categories/1/sections/1/items/3/brands/1/note",
+   "ru": "дальнобойный RFID",
+   "en": "дальнобойный RFID",
+   "pt": "RFID de longo alcance"
+  },
+  {
+   "id": "library-03#141",
+   "path": "categories/1/sections/1/items/4/name",
+   "ru": "Вес, нажим и датчики среды",
+   "en": "Weight, pressure and environmental sensors",
+   "pt": "Sensores de peso, pressão e ambiente"
+  },
+  {
+   "id": "library-03#142",
+   "path": "categories/1/sections/1/items/4/line",
+   "ru": "Экспозиция чувствует усилие",
+   "en": "The exhibition feels physical effort",
+   "pt": "A exposição sente esforço físico"
+  },
+  {
+   "id": "library-03#143",
+   "path": "categories/1/sections/1/items/4/what",
+   "ru": "Тензодатчики, коврики нажима, датчики поворота. Дёшево и предельно честно: приложил силу — что-то произошло. Объяснять нечего.",
+   "en": "Load cells, pressure mats, rotation sensors. Cheap and utterly honest: apply force and something happens. Nothing to explain.",
+   "pt": "Células de carga, tapetes de pressão, sensores de rotação. Baratos e absolutamente honestos: aplique força e algo acontece. Nada a explicar."
+  },
+  {
+   "id": "library-03#144",
+   "path": "categories/1/sections/1/items/4/good/0",
+   "ru": "Сравнение усилия или массы: поднять, надавить, потянуть",
+   "en": "Comparing effort or mass: lift, press, pull",
+   "pt": "Comparar esforço ou massa: levantar, apertar, puxar"
+  },
+  {
+   "id": "library-03#145",
+   "path": "categories/1/sections/1/items/4/good/1",
+   "ru": "Коврик у экспоната, который включает сцену, когда на него встали",
+   "en": "A mat by an exhibit that starts the scene when someone steps on it",
+   "pt": "Um tapete junto a um exponente que inicia a cena quando alguém pisa"
+  }
+ ]
+}

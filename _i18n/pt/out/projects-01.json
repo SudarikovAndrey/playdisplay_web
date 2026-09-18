@@ -1,0 +1,574 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "projects-01 (1 de 3)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "projects-01#001",
+   "path": "projects/0/title",
+   "ru": "Промышленность РФ",
+   "en": "Russian Industry",
+   "pt": "Indústria Russa"
+  },
+  {
+   "id": "projects-01#002",
+   "path": "projects/0/subtitle",
+   "ru": "Интерактивные инсталляции · Форум «Россия»",
+   "en": "Interactive installations · Russia Expo",
+   "pt": "Instalações interativas · Expo Rússia"
+  },
+  {
+   "id": "projects-01#003",
+   "path": "projects/0/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-01#004",
+   "path": "projects/0/client",
+   "ru": "Вижу · Департамент Промышленности",
+   "en": "Vizhu · Department of Industry",
+   "pt": "Vizhu · Departamento de Indústria"
+  },
+  {
+   "id": "projects-01#005",
+   "path": "projects/0/term",
+   "ru": "2 месяца",
+   "en": "2 months",
+   "pt": "2 meses"
+  },
+  {
+   "id": "projects-01#006",
+   "path": "projects/0/goal",
+   "ru": "У государства — масштабные планы по развитию судостроения: новейшие гражданские суда, прорывные инженерные решения, задачи модернизации отрасли и подготовки кадров. Всё это нужно было показать широкой аудитории Форума «Россия» — зрелищно и понятно.",
+   "en": "The country has ambitious plans for shipbuilding: a new generation of civilian vessels, breakthrough engineering, the modernization of the industry and the training of its specialists. All of it had to reach the wide audience of Russia Expo — spectacular and easy to follow.",
+   "pt": "O país tem planos ambiciosos para a indústria naval: uma nova geração de embarcações civis, engenharia de ponta, modernização do setor e formação de especialistas. Tudo isso precisava chegar ao grande público da Expo Rússia — de forma espetacular e fácil de acompanhar."
+  },
+  {
+   "id": "projects-01#007",
+   "path": "projects/0/solution",
+   "ru": "Мы построили экспозицию с полным эффектом погружения. Ключевые проекты и новые корабли можно рассмотреть в объёме, разобрать по узлам и увидеть, как устроено новаторство отрасли. Сложные технологии превращаются в наглядную, захватывающую историю, которую посетитель проживает сам.",
+   "en": "We built a fully immersive exhibition. Visitors examine the flagship projects and the new ships in three dimensions, take them apart unit by unit and see where the industry’s innovation actually sits. Complex technology turns into a clear, gripping story — one the visitor lives through firsthand.",
+   "pt": "Montamos uma exposição totalmente imersiva. O visitante examina os projetos principais e os novos navios em três dimensões, desmonta os conjuntos um a um e vê onde a inovação do setor realmente está. Tecnologia complexa vira uma história clara e envolvente — vivida na primeira pessoa."
+  },
+  {
+   "id": "projects-01#008",
+   "path": "projects/0/result/figures/0/n",
+   "ru": "2 млн",
+   "en": "2M",
+   "pt": "2 mi"
+  },
+  {
+   "id": "projects-01#009",
+   "path": "projects/0/result/figures/0/label",
+   "ru": "посетителей за восемь месяцев",
+   "en": "visitors in eight months",
+   "pt": "visitantes em oito meses"
+  },
+  {
+   "id": "projects-01#010",
+   "path": "projects/0/result/figures/1/label",
+   "ru": "проведённых экскурсий",
+   "en": "guided tours run",
+   "pt": "visitas guiadas realizadas"
+  },
+  {
+   "id": "projects-01#011",
+   "path": "projects/0/result/text/0",
+   "ru": "За восемь месяцев павильон «Сделано нами» посетили более 2 млн человек, для которых провели свыше 81 000 экскурсий. Через интерактивные экспозиции огромная аудитория познакомилась с современной российской промышленностью — от достижений судостроения до принципов работы государственной системы маркировки «Честный ЗНАК».",
+   "en": "Over eight months the “Made by Us” pavilion drew more than 2 million visitors, for whom over 81,000 guided tours were run. Through the interactive exhibits a vast audience got to know contemporary Russian industry — from shipbuilding achievements to the workings of the national “Chestny ZNAK” product-marking system.",
+   "pt": "Em oito meses o pavilhão “Feito por Nós” recebeu mais de 2 milhões de visitantes, para os quais foram realizadas mais de 81 mil visitas guiadas. Pelas exposições interativas um público enorme conheceu a indústria russa contemporânea — das conquistas da construção naval ao funcionamento do sistema nacional de marcação de produtos “Chestny ZNAK”."
+  },
+  {
+   "id": "projects-01#012",
+   "path": "projects/0/result/text/1",
+   "ru": "Особое внимание было уделено детям и молодёжи. В «Зале будущего» посетители знакомились с современными промышленными профессиями и буквально примеряли их на себя, создавая собственные образы специалистов будущего. Так сложные промышленные темы превратились в понятный личный опыт — эмоциональный, интерактивный и запоминающийся.",
+   "en": "Children and young people got particular attention. In the Hall of the Future visitors explored modern industrial professions and literally tried them on, building their own images of the specialists of tomorrow. Complex industrial subjects turned into a personal experience — emotional, interactive and memorable.",
+   "pt": "Crianças e jovens receberam atenção especial. No Salão do Futuro os visitantes exploraram as profissões industriais modernas e literalmente as experimentaram, construindo as próprias imagens dos especialistas de amanhã. Temas industriais complexos viraram experiência pessoal — emocional, interativa e memorável."
+  },
+  {
+   "id": "projects-01#013",
+   "path": "projects/1/title",
+   "ru": "Аэропорты России",
+   "en": "Russian Airports",
+   "pt": "Aeroportos da Rússia"
+  },
+  {
+   "id": "projects-01#014",
+   "path": "projects/1/subtitle",
+   "ru": "Международные аэропорты · Форум «Россия»",
+   "en": "International airports · Russia Expo",
+   "pt": "Aeroportos internacionais · Expo Rússia"
+  },
+  {
+   "id": "projects-01#015",
+   "path": "projects/1/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-01#016",
+   "path": "projects/1/client",
+   "ru": "Международные аэропорты Елизово · Геленджик · Симферополь",
+   "en": "Yelizovo · Gelendzhik · Simferopol international airports",
+   "pt": "Aeroportos internacionais de Yelizovo · Gelendzhik · Simferopol"
+  },
+  {
+   "id": "projects-01#017",
+   "path": "projects/1/term",
+   "ru": "3 месяца",
+   "en": "3 months",
+   "pt": "3 meses"
+  },
+  {
+   "id": "projects-01#018",
+   "path": "projects/1/goal",
+   "ru": "Показать три международных аэропорта России на Форуме «Россия» так, чтобы каждый раскрыл свою уникальную архитектуру и характер — и превратить знакомство с ними в живой, увлекательный опыт для гостей любого возраста.",
+   "en": "Present three of Russia’s international airports at Russia Expo so that each one reveals its own architecture and character — and turn the encounter into a lively experience that works for visitors of any age.",
+   "pt": "Apresentar três aeroportos internacionais da Rússia na Expo Rússia de modo que cada um revele sua arquitetura e seu caráter — e transformar o encontro em uma experiência viva, que funcione para visitantes de qualquer idade."
+  },
+  {
+   "id": "projects-01#019",
+   "path": "projects/1/solution",
+   "ru": "В едином пространстве Форума «Россия» мы представили три международных аэропорта — у каждого своя архитектурная особенность и своя инсталляция. В аэропорту Елизово гость раскрашивал бумажный самолёт и запускал его в полёт над терминалом Камчатки. В Симферополе — управлял бумажным самолётиком взмахами руки, пролетая сквозь терминал. В Геленджике — жестом перекрашивал «живой» светодиодный потолок терминала. Три объекта — три способа почувствовать их характер.",
+   "en": "In a single space at Russia Expo we presented three international airports — each with its own architectural signature and its own installation. At Yelizovo, visitors colored a paper plane and launched it over the Kamchatka terminal. At Simferopol, they flew a paper plane through the terminal with a wave of the hand. At Gelendzhik, a gesture repainted the terminal’s living LED ceiling. Three buildings, three ways to feel what makes them different.",
+   "pt": "Em um único espaço da Expo Rússia apresentamos três aeroportos internacionais — cada um com sua assinatura arquitetônica e sua própria instalação. Em Yelizovo, o visitante colore um avião de papel e o lança sobre o terminal de Kamchatka. Em Simferopol, faz um avião de papel atravessar o terminal com um gesto da mão. Em Gelendzhik, um gesto repinta o teto de LED vivo do terminal. Três prédios, três jeitos de sentir o que os diferencia."
+  },
+  {
+   "id": "projects-01#020",
+   "path": "projects/1/result/figures/0/label",
+   "ru": "посетителей экспозиции",
+   "en": "visitors to the exhibition",
+   "pt": "visitantes da exposição"
+  },
+  {
+   "id": "projects-01#021",
+   "path": "projects/1/result/figures/1/label",
+   "ru": "запусков в аэропорту Елизово",
+   "en": "take-offs at virtual Yelizovo",
+   "pt": "decolagens no Yelizovo virtual"
+  },
+  {
+   "id": "projects-01#022",
+   "path": "projects/1/result/text/0",
+   "ru": "За время работы экспозицию «Россия в движении» посетили более 600 000 человек. Через три интерактивные инсталляции мы познакомили огромную аудиторию с аэропортами Елизово, Геленджика и Симферополя — их архитектурой, развитием и ролью в транспортной системе страны.",
+   "en": "“Russia in Motion” was seen by more than 600,000 visitors. Three interactive installations introduced a vast audience to the airports of Yelizovo, Gelendzhik and Simferopol — their architecture, their development and their place in the country’s transport system.",
+   "pt": "“Rússia em Movimento” foi visto por mais de 600 mil visitantes. Três instalações interativas apresentaram a um público enorme os aeroportos de Yelizovo, Gelendzhik e Simferopol — sua arquitetura, seu desenvolvimento e seu lugar no sistema de transporte do país."
+  },
+  {
+   "id": "projects-01#023",
+   "path": "projects/1/result/text/1",
+   "ru": "Вместо обычного рассказа посетители взаимодействовали с аэропортами сами: создавали и запускали самолёты, управляли архитектурной подсветкой, исследовали пространство через игровые механики. Только из виртуального аэропорта Елизово гости совершили 40 000 запусков. Так инфраструктурные проекты превратились в личный опыт, а аэропорты получили живой контакт с аудиторией — в том числе в период, когда часть из них временно не принимала пассажиров.",
+   "en": "Instead of being told about the airports, visitors engaged with them directly: building and launching aircraft, controlling the architectural lighting, exploring the space through game mechanics. From the virtual Yelizovo airport alone guests performed 40,000 take-offs. Infrastructure projects became a personal experience, and the airports gained live contact with an audience — including through a period when some of them were temporarily closed to passengers.",
+   "pt": "Em vez de ouvir sobre os aeroportos, os visitantes lidaram diretamente com eles: montando e lançando aeronaves, controlando a iluminação arquitetônica, explorando o espaço por mecânicas de jogo. Só do aeroporto virtual de Yelizovo os visitantes fizeram 40 mil decolagens. Projetos de infraestrutura viraram experiência pessoal, e os aeroportos ganharam contato vivo com o público — inclusive durante um período em que alguns deles estavam temporariamente fechados para passageiros."
+  },
+  {
+   "id": "projects-01#024",
+   "path": "projects/1/flow/0/text",
+   "ru": "[1] Аэропорт Елизово (Камчатка)",
+   "en": "[1] Yelizovo Airport (Kamchatka)",
+   "pt": "[1] Aeroporto de Yelizovo (Kamchatka)"
+  },
+  {
+   "id": "projects-01#025",
+   "path": "projects/1/flow/1/text",
+   "ru": "Интерактивная инсталляция, в которой посетитель становится соавтором происходящего. Гость берёт лист бумаги с контуром самолёта, раскрашивает его и размещает на специальном столе. После этого на экране в дополненной реальности собирается цифровая модель самолёта — точно в том дизайне, который задал посетитель. Самолёт взлетает и совершает полёт над терминалом аэропорта Елизово. Окружение воссоздано по реальным картографическим данным. Визуализация — Unreal Engine 5, считывание изображения — три камеры.",
+   "en": "An interactive installation that makes the visitor a co-author. You take a sheet of paper printed with the outline of a plane, color it in and place it on a dedicated table. On the screen a digital model of the plane assembles itself in augmented reality — in exactly the design the visitor has just drawn. The plane takes off and flies over the terminal of Yelizovo Airport. The surroundings are rebuilt from real cartographic data. Rendering runs on Unreal Engine 5; three cameras read the drawing.",
+   "pt": "Uma instalação interativa que faz do visitante um coautor. Você pega uma folha impressa com o contorno de um avião, pinta e coloca em uma mesa própria. Na tela, um modelo digital do avião se monta em realidade aumentada — exatamente com a pintura que o visitante acabou de fazer. O avião decola e sobrevoa o terminal do aeroporto de Yelizovo. O entorno é reconstruído a partir de dados cartográficos reais. A renderização roda em Unreal Engine 5; três câmeras leem o desenho."
+  },
+  {
+   "id": "projects-01#026",
+   "path": "projects/1/flow/2/text",
+   "ru": "[2] Аэропорт Симферополь",
+   "en": "[2] Simferopol Airport",
+   "pt": "[2] Aeroporto de Simferopol"
+  },
+  {
+   "id": "projects-01#027",
+   "path": "projects/1/flow/3/text",
+   "ru": "Интерактивная игра «Полёт на бумажном самолёте». Посетитель подходит к стенду, протягивает руку — и на экране появляется бумажный самолётик. Управляя полётом с помощью жестов, игрок пролетает через пространство терминала, собирает бонусы и выполняет игровые задания. Терминал визуализирован в реалистичной графике на движке Unreal Engine 5.",
+   "en": "An interactive game, Paper Plane Flight. The visitor steps up to the booth, reaches out a hand — and a paper plane appears on the screen. Steering the flight with gestures, the player crosses the space of the terminal, collects bonuses and completes in-game tasks. The terminal is rendered in realistic graphics on Unreal Engine 5.",
+   "pt": "Um jogo interativo, Voo do Avião de Papel. O visitante chega à cabine, estende a mão — e um avião de papel aparece na tela. Conduzindo o voo por gestos, o jogador atravessa o espaço do terminal, junta bônus e cumpre tarefas do jogo. O terminal é renderizado com gráficos realistas em Unreal Engine 5."
+  },
+  {
+   "id": "projects-01#028",
+   "path": "projects/1/flow/4/text",
+   "ru": "[3] Аэропорт Геленджик",
+   "en": "[3] Gelendzhik Airport",
+   "pt": "[3] Aeroporto de Gelendzhik"
+  },
+  {
+   "id": "projects-01#029",
+   "path": "projects/1/flow/5/text",
+   "ru": "Интерактивная зона аэропорта Геленджик. Посетитель заходит в световое кольцо и на экране перед собой видит интерьеры аэропорта с разных ракурсов. Взмахами рук он управляет визуальной средой, наблюдая, как в реальном времени меняется «живой» светодиодный потолок терминала со сложной системой световой колористики.",
+   "en": "The interactive zone of Gelendzhik Airport. The visitor steps into a ring of light and sees the airport interiors from a range of angles on the screen ahead. Waving their arms, they drive the visual environment and watch the terminal’s living LED ceiling — an intricate color-lighting system — change in real time.",
+   "pt": "A área interativa do aeroporto de Gelendzhik. O visitante entra em um anel de luz e vê os interiores do aeroporto de vários ângulos na tela à frente. Movendo os braços, comanda o ambiente visual e acompanha em tempo real as mudanças do teto de LED vivo do terminal — um sistema intrincado de luz e cor."
+  },
+  {
+   "id": "projects-01#030",
+   "path": "projects/2/title",
+   "ru": "ОДК ОАК",
+   "en": "UEC UAC",
+   "pt": "UEC UAC"
+  },
+  {
+   "id": "projects-01#031",
+   "path": "projects/2/subtitle",
+   "ru": "Динамическое выставочное пространство · МАКС 2021",
+   "en": "Dynamic exhibition space · MAKS 2021",
+   "pt": "Espaço expositivo dinâmico · MAKS 2021"
+  },
+  {
+   "id": "projects-01#032",
+   "path": "projects/2/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-01#033",
+   "path": "projects/2/client",
+   "ru": "Объединенная Двигателестроительная Корпорация · Exposervice GmbH",
+   "en": "United Engine Corporation (UEC) · Exposervice GmbH",
+   "pt": "United Engine Corporation (UEC) · Exposervice GmbH"
+  },
+  {
+   "id": "projects-01#034",
+   "path": "projects/2/term",
+   "ru": "3 месяца",
+   "en": "3 months",
+   "pt": "3 meses"
+  },
+  {
+   "id": "projects-01#035",
+   "path": "projects/2/goal",
+   "ru": "МАКС — Международный авиационно-космический салон, одно из главных авиационных событий мира. На нём Объединённая двигателестроительная корпорация (ОДК), ведущий российский разработчик авиадвигателей, представляла свой павильон.",
+   "en": "MAKS, the International Aviation and Space Salon, is one of the world’s major aerospace events. United Engine Corporation (UEC), Russia’s leading developer of aircraft engines, was presenting its pavilion there.",
+   "pt": "A MAKS, Salão Internacional de Aviação e Espaço, é um dos grandes eventos aeroespaciais do mundo. A United Engine Corporation (UEC), principal desenvolvedora russa de motores aeronáuticos, apresentava ali seu pavilhão."
+  },
+  {
+   "id": "projects-01#036",
+   "path": "projects/2/solution",
+   "ru": "Мы создали для стенда ОДК мультимедийное погружение в среду двигателестроения: сложный экранный сетап, единая динамика изображения и интерактивные инсталляции превращают павильон в цельное живое пространство, где технологии читаются с первого взгляда.",
+   "en": "For the UEC booth we built a multimedia immersion into the world of aircraft engine manufacturing. A complex screen setup, one shared rhythm across every image and a set of interactive experiences turn the pavilion into a single living space where the technology reads at a glance.",
+   "pt": "Para o estande da UEC construímos uma imersão multimídia no mundo da fabricação de motores aeronáuticos. Um conjunto complexo de telas, um ritmo comum a todas as imagens e uma série de experiências interativas transformam o pavilhão em um único espaço vivo, onde a tecnologia se entende de relance."
+  },
+  {
+   "id": "projects-01#037",
+   "path": "projects/2/result/figures/0/label",
+   "ru": "посетителей МАКС-2021 за шесть дней",
+   "en": "visitors to MAKS-2021 over six days",
+   "pt": "visitantes da MAKS-2021 em seis dias"
+  },
+  {
+   "id": "projects-01#038",
+   "path": "projects/2/result/figures/1/n",
+   "ru": "Приз",
+   "en": "Award",
+   "pt": "Prêmio"
+  },
+  {
+   "id": "projects-01#039",
+   "path": "projects/2/result/figures/1/label",
+   "ru": "авиасалона в номинации «Лучший павильон»",
+   "en": "Best Pavilion at the air show",
+   "pt": "Melhor pavilhão do salão"
+  },
+  {
+   "id": "projects-01#040",
+   "path": "projects/2/result/text/0",
+   "ru": "Мультимедийная экспозиция помогла представить сложнейшие инженерные разработки ОДК понятным и зрелищным языком — от ПД-14 и перспективного ПД-35 до нового поколения авиационных двигателей. За шесть дней МАКС-2021 посетили более 135 000 человек, а сама экспозиция ОДК получила специальный приз авиасалона в номинации «Лучший павильон».",
+   "en": "The multimedia exhibition put UEC’s most demanding engineering into a language that is clear and worth watching — from the PD-14 and the forthcoming PD-35 to a new generation of aero engines. Over six days MAKS-2021 drew more than 135,000 visitors, and the UEC exhibition itself won the air show’s special award for Best Pavilion.",
+   "pt": "A exposição multimídia colocou a engenharia mais exigente da UEC em uma linguagem clara e que vale a pena assistir — do PD-14 ao futuro PD-35 e a uma nova geração de motores aeronáuticos. Em seis dias a MAKS-2021 recebeu mais de 135 mil visitantes, e a própria exposição da UEC levou o prêmio especial do salão de Melhor Pavilhão."
+  },
+  {
+   "id": "projects-01#041",
+   "path": "projects/2/result/text/1",
+   "ru": "Технологии, которые обычно доступны прежде всего инженерам и отраслевым специалистам, стали понятны широкой аудитории через визуальный рассказ и мультимедийный опыт. Экспозиция работала одновременно на демонстрацию технологического лидерства, популяризацию российского двигателестроения и интерес нового поколения к авиации и инженерным профессиям.",
+   "en": "Technology normally reserved for engineers and industry specialists became legible to a broad audience through visual storytelling and multimedia experience. The exhibition worked on three fronts at once: demonstrating technological leadership, making Russian engine-building known beyond the industry, and drawing a new generation towards aviation and engineering professions.",
+   "pt": "Uma tecnologia normalmente reservada a engenheiros e especialistas do setor ficou legível para um grande público por meio de narrativa visual e experiência multimídia. A exposição funcionou em três frentes ao mesmo tempo: demonstrar liderança tecnológica, tornar a engenharia russa de motores conhecida fora do setor e atrair uma nova geração para a aviação e para as profissões de engenharia."
+  },
+  {
+   "id": "projects-01#042",
+   "path": "projects/2/flow/0/items/0",
+   "ru": "Разработка концепции проекта, дизайн",
+   "en": "Project concept and design",
+   "pt": "Conceito e design do projeto"
+  },
+  {
+   "id": "projects-01#043",
+   "path": "projects/2/flow/0/items/1",
+   "ru": "Проектирование мультимедиа-решения, создание графики",
+   "en": "Engineering the multimedia solution, producing the graphics",
+   "pt": "Engenharia da solução multimídia, produção dos gráficos"
+  },
+  {
+   "id": "projects-01#044",
+   "path": "projects/2/flow/0/items/2",
+   "ru": "Интеграция графики в пространство, доводка, настройка, полировка",
+   "en": "Integrating the graphics into the space: fitting, calibration, polish",
+   "pt": "Integração dos gráficos ao espaço: ajuste, calibração, acabamento"
+  },
+  {
+   "id": "projects-01#045",
+   "path": "projects/2/flow/0/items/3",
+   "ru": "Монтаж и настройка инсталляций, сопровождение",
+   "en": "Installing and tuning the exhibits, on-site support",
+   "pt": "Instalação e regulagem dos exponentes, suporte no local"
+  },
+  {
+   "id": "projects-01#046",
+   "path": "projects/3/title",
+   "ru": "Прорыв",
+   "en": "Proryv",
+   "pt": "Proryv"
+  },
+  {
+   "id": "projects-01#047",
+   "path": "projects/3/subtitle",
+   "ru": "Росатом · презентационная «труба»",
+   "en": "Rosatom · the presentation tunnel",
+   "pt": "Rosatom · o túnel de apresentação"
+  },
+  {
+   "id": "projects-01#048",
+   "path": "projects/3/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-01#049",
+   "path": "projects/3/client",
+   "ru": "Росатом. Проект «Прорыв»",
+   "en": "Rosatom. Proryv (Breakthrough) project",
+   "pt": "Rosatom. Projeto Proryv (Avanço)"
+  },
+  {
+   "id": "projects-01#050",
+   "path": "projects/3/term",
+   "ru": "2 месяца",
+   "en": "2 months",
+   "pt": "2 meses"
+  },
+  {
+   "id": "projects-01#051",
+   "path": "projects/3/goal",
+   "ru": "Создание инсталляции, в наглядном виде демонстрирующей принцип работы технологической платформы атомной энергетики с замкнутым ядерным топливным циклом на базе быстрых нейтронов.",
+   "en": "Build an installation that shows in plain visual terms how a nuclear power platform with a closed nuclear fuel cycle based on fast neutrons actually works.",
+   "pt": "Construir uma instalação que mostre em termos visuais simples como funciona de fato uma plataforma de energia nuclear com ciclo fechado de combustível baseado em nêutrons rápidos."
+  },
+  {
+   "id": "projects-01#052",
+   "path": "projects/3/solution",
+   "ru": "Информационная мультимедиа-инсталляция о технологиях «Прорыв». Сложный экранный сетап и эффект «трубы» создают ощущение движения внутри пространства и буквально затягивают зрителя в историю. Инсталляция работает как визуальный аттракцион и становится точкой притяжения для фото и видео.",
+   "en": "An informational multimedia installation about the Proryv technologies. A complex screen setup and the tunnel effect create the sensation of moving through space and pull the viewer bodily into the story. The piece works as a visual ride and becomes the spot everyone photographs and films.",
+   "pt": "Uma instalação multimídia informativa sobre as tecnologias do Proryv. Um conjunto complexo de telas e o efeito de túnel criam a sensação de movimento pelo espaço e puxam o espectador fisicamente para dentro da história. A peça funciona como um passeio visual e vira o ponto que todo mundo fotografa e filma."
+  },
+  {
+   "id": "projects-01#053",
+   "path": "projects/3/result/figures/0/label",
+   "ru": "участников Конгресса за три дня",
+   "en": "delegates over three days",
+   "pt": "participantes em três dias"
+  },
+  {
+   "id": "projects-01#054",
+   "path": "projects/3/result/figures/1/label",
+   "ru": "страны-участницы",
+   "en": "countries represented",
+   "pt": "países representados"
+  },
+  {
+   "id": "projects-01#055",
+   "path": "projects/3/result/figures/2/label",
+   "ru": "телекомпаний снимали инсталляцию",
+   "en": "TV companies filmed the installation",
+   "pt": "emissoras de TV filmaram a instalação"
+  },
+  {
+   "id": "projects-01#056",
+   "path": "projects/3/result/text/0",
+   "ru": "На IV Конгрессе молодых учёных инсталляция «Вечный двигатель» стала одной из точек притяжения участников и СМИ. За три дня Конгресс собрал более 7 000 человек из 62 стран мира, а сложнейшие принципы атомной энергетики нового поколения получили понятную и зрелищную форму.",
+   "en": "At the IV Congress of Young Scientists the “Perpetual Motion” installation became one of the focal points for delegates and press alike. Over three days the Congress gathered more than 7,000 people from 62 countries, and the intricate principles of next-generation nuclear power found a form that was both clear and striking.",
+   "pt": "No IV Congresso de Jovens Cientistas a instalação “Movimento Perpétuo” virou um dos pontos centrais tanto para os participantes quanto para a imprensa. Em três dias o Congresso reuniu mais de 7 mil pessoas de 62 países, e os princípios intrincados da energia nuclear de nova geração encontraram uma forma ao mesmo tempo clara e marcante."
+  },
+  {
+   "id": "projects-01#057",
+   "path": "projects/3/result/text/1",
+   "ru": "Пространство, вдохновлённое геометрией ядерной топливной сборки, одновременно работало как образовательный инструмент и яркий визуальный образ. Здесь знакомились с принципами замкнутого ядерного топливного цикла, изучали технологии на инженерном уровне, фотографировали и снимали инсталляцию. Шесть телевизионных компаний использовали её для своих материалов, а фотографии и видео продолжили распространять историю проекта «Прорыв» уже за пределами Конгресса.",
+   "en": "The space, drawn from the geometry of a nuclear fuel assembly, worked as an educational instrument and a strong visual image at the same time. Visitors got to know the closed nuclear fuel cycle, examined the technology at engineering level, and photographed and filmed the installation. Six television companies used it in their reports, and the photographs and video carried the story of the Proryv project on well beyond the Congress.",
+   "pt": "O espaço, tirado da geometria de um elemento combustível nuclear, funcionou ao mesmo tempo como instrumento educativo e como imagem visual forte. Os visitantes conheceram o ciclo fechado do combustível nuclear, examinaram a tecnologia em nível de engenharia e fotografaram e filmaram a instalação. Seis emissoras de televisão a usaram em suas reportagens, e as fotos e vídeos levaram a história do projeto Proryv bem além do Congresso."
+  },
+  {
+   "id": "projects-01#058",
+   "path": "projects/3/flow/0/items/0",
+   "ru": "Разработка концепции проекта, дизайн",
+   "en": "Project concept and design",
+   "pt": "Conceito e design do projeto"
+  },
+  {
+   "id": "projects-01#059",
+   "path": "projects/3/flow/0/items/1",
+   "ru": "Инженерные работы, подбор и поставка оборудования",
+   "en": "Engineering, equipment selection and supply",
+   "pt": "Engenharia, seleção e fornecimento de equipamentos"
+  },
+  {
+   "id": "projects-01#060",
+   "path": "projects/3/flow/0/items/2",
+   "ru": "Создание конструкции трубы и декоративных элементов",
+   "en": "Building the tunnel structure and the decorative elements",
+   "pt": "Construção da estrutura do túnel e dos elementos decorativos"
+  },
+  {
+   "id": "projects-01#061",
+   "path": "projects/3/flow/0/items/3",
+   "ru": "Монтаж на мероприятии, демонтаж, повторное использование",
+   "en": "Assembly at the venue, dismantling, reuse",
+   "pt": "Montagem no local, desmontagem, reaproveitamento"
+  },
+  {
+   "id": "projects-01#062",
+   "path": "projects/3/flow/1/caption",
+   "ru": "Проектирование стенда",
+   "en": "Designing the booth",
+   "pt": "Design do estande"
+  },
+  {
+   "id": "projects-01#063",
+   "path": "projects/3/flow/1/hint",
+   "ru": "потяните вправо — стенд соберётся",
+   "en": "drag right — the booth assembles",
+   "pt": "arraste para a direita — o estande se monta"
+  },
+  {
+   "id": "projects-01#064",
+   "path": "projects/3/flow/1/knob",
+   "ru": "СБОРКА",
+   "en": "ASSEMBLE",
+   "pt": "MONTAR"
+  },
+  {
+   "id": "projects-01#065",
+   "path": "projects/4/title",
+   "ru": "Ростех-Экспо",
+   "en": "Rostec Expo",
+   "pt": "Rostec Expo"
+  },
+  {
+   "id": "projects-01#066",
+   "path": "projects/4/subtitle",
+   "ru": "Голографический каталог",
+   "en": "Holographic catalog",
+   "pt": "Catálogo holográfico"
+  },
+  {
+   "id": "projects-01#067",
+   "path": "projects/4/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-01#068",
+   "path": "projects/4/tags/1",
+   "ru": "голограмма",
+   "en": "hologram",
+   "pt": "holograma"
+  },
+  {
+   "id": "projects-01#069",
+   "path": "projects/4/client",
+   "ru": "Ростех Экспо",
+   "en": "Rostec Expo",
+   "pt": "Rostec Expo"
+  },
+  {
+   "id": "projects-01#070",
+   "path": "projects/4/term",
+   "ru": "6 месяцев",
+   "en": "6 months",
+   "pt": "6 meses"
+  },
+  {
+   "id": "projects-01#071",
+   "path": "projects/4/goal",
+   "ru": "Создать центральный экспонат у входа в павильон «Ростех Экспо» и объединить продукцию всех предприятий холдинга Ростех в едином голографическом пространстве.",
+   "en": "Create the centerpiece exhibit at the entrance to the Rostec Expo pavilion and bring the products of every company in the Rostec group together in one holographic space.",
+   "pt": "Criar o exponente central na entrada do pavilhão Rostec Expo e reunir os produtos de todas as empresas do grupo Rostec em um único espaço holográfico."
+  },
+  {
+   "id": "projects-01#072",
+   "path": "projects/4/solution",
+   "ru": "Голографическая инсталляция в форме логотипа Ростех: благодаря прозрачному экрану сохраняется вид зала, а пульт управления открывает доступ к полному каталогу продукции холдинга — в едином голографическом пространстве.",
+   "en": "A holographic installation shaped like the Rostec logo. The transparent screen keeps the hall visible through it, while a control console opens the group’s full product catalog — all inside a single holographic space.",
+   "pt": "Uma instalação holográfica com a forma do logotipo da Rostec. A tela transparente mantém o salão visível através dela, e um console de controle abre o catálogo completo de produtos do grupo — tudo dentro de um único espaço holográfico."
+  },
+  {
+   "id": "projects-01#073",
+   "path": "projects/4/result/text/0",
+   "ru": "Голографический куб стал центральным презентационным объектом Ростех Экспо и продолжает работать спустя годы после запуска. На нём представляют разработки предприятий корпорации, проводят презентации для партнёров и знакомят делегации с технологическими компетенциями Ростеха.",
+   "en": "The holographic cube became the centrepiece of Rostec Expo and is still in service years after launch. It presents the work of the corporation’s enterprises, hosts presentations for partners and introduces visiting delegations to Rostec’s technological capabilities.",
+   "pt": "O cubo holográfico virou a peça central da Rostec Expo e segue em operação anos depois da inauguração. Ele apresenta o trabalho das empresas da corporação, recebe apresentações para parceiros e mostra às delegações visitantes a capacidade tecnológica da Rostec."
+  },
+  {
+   "id": "projects-01#074",
+   "path": "projects/4/result/text/1",
+   "ru": "Инсталляция превратилась из выставочного экспоната в постоянный коммуникационный инструмент: с неё начинаются презентации и важные встречи, а сложные технологии получают зрелищную и понятную форму. Один объект продолжает работать для разных компаний, продуктов и сценариев — контент меняется, а сама система остаётся частью инфраструктуры павильона.",
+   "en": "The installation turned from an exhibition piece into a permanent communication tool: presentations and important meetings begin here, and complex technology takes on a form that is both striking and clear. One object keeps working across different companies, products and scenarios — the content changes while the system itself remains part of the pavilion’s infrastructure.",
+   "pt": "A instalação deixou de ser peça de exposição e virou ferramenta permanente de comunicação: apresentações e reuniões importantes começam ali, e a tecnologia complexa ganha uma forma ao mesmo tempo marcante e clara. Um mesmo objeto segue funcionando para empresas, produtos e roteiros diferentes — o conteúdo muda enquanto o sistema em si continua parte da infraestrutura do pavilhão."
+  },
+  {
+   "id": "projects-01#075",
+   "path": "projects/4/flow/0/items/0",
+   "ru": "Разработка концепции проекта, дизайн",
+   "en": "Project concept and design",
+   "pt": "Conceito e design do projeto"
+  },
+  {
+   "id": "projects-01#076",
+   "path": "projects/4/flow/0/items/1",
+   "ru": "Инженерные работы, подбор и поставка оборудования",
+   "en": "Engineering, equipment selection and supply",
+   "pt": "Engenharia, seleção e fornecimento de equipamentos"
+  },
+  {
+   "id": "projects-01#077",
+   "path": "projects/4/flow/0/items/2",
+   "ru": "Создание конструкции куба и производство пульта управления",
+   "en": "Building the cube structure and manufacturing the control console",
+   "pt": "Construção da estrutura do cubo e fabricação do console de controle"
+  },
+  {
+   "id": "projects-01#078",
+   "path": "projects/4/flow/0/items/3",
+   "ru": "Проектирование программного обеспечения, введение в эксплуатацию",
+   "en": "Software design and commissioning",
+   "pt": "Projeto de software e comissionamento"
+  },
+  {
+   "id": "projects-01#079",
+   "path": "projects/4/flow/2/text",
+   "ru": "Пульт управления",
+   "en": "The control console",
+   "pt": "O console de controle"
+  },
+  {
+   "id": "projects-01#080",
+   "path": "projects/4/flow/3/text",
+   "ru": "Многофункциональное устройство, дизайн выполнен в эстетике ретрофутуризма. Рабочая поверхность пульта содержит множество тач-поверхностей, позволяющих осуществлять навигацию по каталогу и управлять интерактивным контентом. Основание выполнено из полированного гальванизированного алюминия.",
+   "en": "A multifunction device designed in a retrofuturist key. Its working surface carries a set of touch panels for navigating the catalog and driving the interactive content. The base is made of polished galvanized aluminum.",
+   "pt": "Um dispositivo multifuncional desenhado em chave retrofuturista. A superfície de trabalho traz um conjunto de painéis de toque para navegar pelo catálogo e comandar o conteúdo interativo. A base é de alumínio galvanizado polido."
+  },
+  {
+   "id": "projects-01#081",
+   "path": "projects/4/flow/5/text",
+   "ru": "Функциональная схема пульта управления",
+   "en": "Control console: functional layout",
+   "pt": "Console de controle: esquema funcional"
+  }
+ ]
+}

@@ -1,0 +1,2262 @@
+{
+ "_комментарий": "Библиотека оборудования интерактивных экспозиций. Собирается build_seo.py в /library/ (хаб) и /library/<id>/ (категории). Три категории: вывод, ввод, обработка. У позиции: name, line (суть одной строкой), what, good/bad (когда работает / когда не работает), необязательные spec, note_hw, compare, warn, brands (n/u/note) и case (slug из projects.json). Ссылки на бренды внешние — проверять раз в полгода, железо снимают с производства.",
+ "updated": "2026-08-24",
+ "categories": [
+  {
+   "id": "output",
+   "num": "01",
+   "name": "Saída",
+   "full": "Equipamentos de saída",
+   "line": "Como a exposição fala com a pessoa",
+   "lead": "Luz, imagem, som, vibração — tudo que chega à pessoa. A parte mais visível do orçamento e a mais traiçoeira: uma tela de quatro metros por onde se passa sem olhar perde para uma luneta com fila na frente.",
+   "principle": "Três números decidem: quanta luz há na sala, de que distância as pessoas olham e quantas ficam ali ao mesmo tempo. Não a diagonal, não a marca.",
+   "sections": [
+    {
+     "name": "Projeção",
+     "note": "Luz lançada sobre uma superfície. O único jeito de ter uma imagem do tamanho de uma sala, e o único que se deita sobre algo curvo.",
+     "items": [
+      {
+       "id": "laser-projector",
+       "name": "Projetor laser de instalação",
+       "line": "O cavalo de batalha. Roda por anos e nunca pede lâmpada",
+       "what": "Laser no lugar de lâmpada: 20 mil horas sem troca, partida instantânea, monta de cabeça para baixo se precisar. Modelos de lâmpada não são mais especificados para exposições novas — não porque iluminem menos, mas porque alguém tem que trocar a lâmpada, e não há quem faça isso.",
+       "good": [
+        "Uma imagem maior que uma tela física — de três metros a uma parede inteira",
+        "Uma superfície que não é plana: uma maquete, uma abóbada, uma coluna, uma fachada",
+        "A tela precisa sumir quando desligada: uma parede preta em vez de um retângulo preto"
+       ],
+       "bad": [
+        "Uma sala com janelas e sem persianas. A projeção é a única tecnologia que a luz do sol mata de vez, e lúmen nenhum resolve isso",
+        "É preciso letra pequena: a resolução se divide pela área, e as legendas borram primeiro",
+        "Pessoas passam entre quem olha e a parede — vai haver sombras"
+       ],
+       "spec": "O número que importa não é lúmen, e sim lúmen por metro quadrado na sua luz ambiente real. O segundo é contraste: numa sala clara ganha não o projetor mais brilhante, e sim aquele cujo preto continua preto.",
+       "brands": [
+        {
+         "n": "Barco",
+         "u": "https://www.barco.com/",
+         "note": "segmento premium, cúpulas e grandes áreas"
+        },
+        {
+         "n": "Christie",
+         "u": "https://www.christiedigital.com/",
+         "note": "instalações, sistemas próprios de mesclagem"
+        },
+        {
+         "n": "Panasonic",
+         "u": "https://eu.connect.panasonic.com/",
+         "note": "padrão de museu em confiabilidade"
+        },
+        {
+         "n": "Epson",
+         "u": "https://www.epson.ru/",
+         "note": "segmento médio, manutenção acessível"
+        },
+        {
+         "n": "Digital Projection",
+         "u": "https://www.digitalprojection.com/",
+         "note": "alto brilho, óptica não padronizada"
+        }
+       ],
+       "case": "stalingrad"
+      },
+      {
+       "id": "ust-projector",
+       "name": "Projetor de distância ultracurta",
+       "line": "Você ganha a imagem sem o feixe",
+       "what": "Fica encostado na superfície e lança a imagem em ângulo quase reto. A pessoa pode chegar até a parede sem bloquear o quadro com o próprio corpo — e é disso que se trata.",
+       "good": [
+        "Pisos e mesas interativas: o visitante fica dentro da imagem",
+        "Pé-direito baixo, onde um projetor normal não tem onde ser pendurado",
+        "As pessoas precisam chegar perto da superfície e tocar nela"
+       ],
+       "bad": [
+        "Uma superfície irregular: quanto mais agudo o ângulo, mais cada saliência aparece",
+        "Tamanhos grandes — acima de três ou quatro metros a geometria começa a se comportar mal"
+       ],
+       "brands": [
+        {
+         "n": "Panasonic",
+         "u": "https://eu.connect.panasonic.com/",
+         "note": "linha com óptica UST intercambiável"
+        },
+        {
+         "n": "Epson",
+         "u": "https://www.epson.ru/",
+         "note": "modelos UST prontos"
+        },
+        {
+         "n": "Optoma",
+         "u": "https://www.optoma.com/",
+         "note": "segmento econômico"
+        }
+       ]
+      },
+      {
+       "id": "rear-projection",
+       "name": "Retroprojeção",
+       "line": "O projetor se esconde atrás da superfície",
+       "what": "Projeta por trás sobre uma tela translúcida. Quem olha vê uma superfície luminosa, nunca a máquina nem o feixe, e não faz sombra — por mais gente que se aglomere.",
+       "good": [
+        "Uma vitrine ou janela que deve brilhar por dentro",
+        "Fluxo intenso de pessoas bem junto da imagem",
+        "A imagem precisa ficar junto de um objeto real atrás do vidro"
+       ],
+       "bad": [
+        "Não há espaço atrás: é preciso um nicho de serviço de meio metro ou mais",
+        "As pessoas olham de longe e de lado — materiais translúcidos têm ângulo de visão mais estreito que uma tela comum"
+       ],
+       "brands": [
+        {
+         "n": "Dnp Denmark",
+         "u": "https://www.dnp-screens.com/",
+         "note": "telas e películas de retroprojeção"
+        },
+        {
+         "n": "Gerriets",
+         "u": "https://www.gerriets.com/",
+         "note": "tecidos cênicos e telas de retroprojeção"
+        },
+        {
+         "n": "Screen Research",
+         "u": "https://www.screenresearch.com/",
+         "note": "telas acusticamente transparentes"
+        }
+       ]
+      },
+      {
+       "id": "mapping",
+       "name": "Mapeamento sobre volume",
+       "line": "A luz cai ao longo das faces de um objeto real",
+       "what": "Não é um aparelho, e sim uma técnica: a imagem é calculada para a geometria de uma maquete, de uma fachada ou de um produto. Exige um modelo preciso e projetores mesclados — em troca, o volume é real e não desenhado.",
+       "good": [
+        "Existe uma forma física — maquete de terreno, prédio, produto, paisagem",
+        "A decisão depende da escala: o que fica onde e como se conecta",
+        "Várias camadas precisam ficar sobre um mesmo objeto — era, é, será"
+       ],
+       "bad": [
+        "O objeto é pequeno: para qualquer coisa abaixo de um metro, uma tela comum ao lado sai mais barata e mais nítida",
+        "A maquete ainda não foi construída — a calibração se faz contra a coisa real, não contra o desenho"
+       ],
+       "brands": [
+        {
+         "n": "Scalable Display",
+         "u": "https://www.scalabledisplay.com/",
+         "note": "autocalibração por câmera"
+        },
+        {
+         "n": "VIOSO",
+         "u": "https://vioso.com/",
+         "note": "mesclagem e correção de geometria"
+        },
+        {
+         "n": "Domeprojection",
+         "u": "https://www.domeprojection.com/",
+         "note": "cúpulas e superfícies complexas"
+        }
+       ],
+       "case": "proryv"
+      }
+     ],
+     "svc": "projection-mapping"
+    },
+    {
+     "name": "Telas de LED",
+     "note": "Não é “mais uma tela”, e sim um jogo de montar. A superfície é montada com módulos — placas de cerca de 50×50 cm. O módulo escolhido decide a forma, o preço e se dá para consertar no lugar.",
+     "items": [
+      {
+       "id": "led-module",
+       "name": "Tela modular plana",
+       "line": "Uma parede de qualquer tamanho que a luz do sol não incomoda",
+       "what": "Um módulo é uma placa com LEDs, alimentação e placa eletrônica próprios. Eles se montam em uma superfície de qualquer formato, e uma placa quebrada é trocada uma a uma. Uma questão se resolve antes da compra: existe meio metro atrás para manutenção, ou os módulos têm que sair pela frente?",
+       "spec": "Pixel pitch é a distância entre LEDs em milímetros. Regra grosseira: a distância confortável de visão em metros equivale mais ou menos ao pitch em milímetros. Um pitch de 2,5 mm significa dois metros e meio ou mais. Confira em uma amostra na sua própria sala, e não pela tabela do fornecedor: brilho e moiré só aparecem ao vivo.",
+       "good": [
+        "Uma sala clara, um átrio, uma janela para a rua — a luz do sol não é obstáculo",
+        "Proporções fora do padrão: uma faixa longa, uma vertical, um quadrado na parede",
+        "Operação ininterrupta: um LED não desbota como a lâmpada de um projetor",
+        "A tela é um elemento arquitetônico por si só"
+       ],
+       "bad": [
+        "As pessoas chegam bem perto: com pitch de 2 mm a imagem se quebra em pontos a uns dois metros, e “é só pegar um pitch mais fino” é outro orçamento inteiramente",
+        "É preciso preto profundo em sala escura: um LED brilha um pouco mesmo apagado",
+        "Peso e energia: uma superfície de 3×2 m já é uma questão para a carga da parede",
+        "Filmagem: sem sincronismo de frequência o vídeo vai mostrar faixas"
+       ],
+       "brands": [
+        {
+         "n": "Absen",
+         "u": "https://www.absen.com/",
+         "note": "linha ampla, disponível na Rússia, muito seminovo no mercado de locação"
+        },
+        {
+         "n": "Unilumin",
+         "u": "https://www.unilumin.com/",
+         "note": "pitch fino, fixo e locação"
+        },
+        {
+         "n": "Leyard / Planar",
+         "u": "https://www.leyard.com/",
+         "note": "segmento premium, pitch muito fino"
+        },
+        {
+         "n": "Samsung The Wall",
+         "u": "https://www.samsung.com/business/displays/direct-view-led/",
+         "note": "microLED, configurações prontas chave na mão"
+        },
+        {
+         "n": "ROE Visual",
+         "u": "https://www.roevisual.com/",
+         "note": "padrão da locação cênica e dos estúdios virtuais"
+        }
+       ]
+      },
+      {
+       "id": "led-flexible",
+       "name": "Módulos flexíveis",
+       "line": "Uma tela que se dobra ao formato",
+       "what": "Os mesmos LEDs sobre uma base de borracha: a superfície envolve uma coluna, se deita sobre uma abóbada, acompanha a onda de uma parede. Onde um painel plano deixaria uma emenda, isso dá uma superfície contínua.",
+       "good": [
+        "Uma coluna, um arco, uma abóbada, uma parede curva — onde uma superfície plana deixaria emenda",
+        "A forma importa mais que a resolução: de longe se lê a silhueta, não o pixel",
+        "Montagens temporárias: uma superfície flexível é mais leve e perdoa uma estrutura imprecisa"
+       ],
+       "bad": [
+        "Pitch fino: quanto mais flexível a base, mais grosso o pitch disponível",
+        "O raio é limitado — pegue o número mínimo antes de projetar a estrutura",
+        "Vida útil menor que a da plana: dobrar trabalha contra a solda, e ela não gosta de ser remontada várias vezes"
+       ],
+       "brands": [
+        {
+         "n": "Absen",
+         "u": "https://www.absen.com/",
+         "note": "séries flexíveis para colunas e abóbadas"
+        },
+        {
+         "n": "Unilumin",
+         "u": "https://www.unilumin.com/",
+         "note": "módulos de silicone"
+        },
+        {
+         "n": "ROE Visual",
+         "u": "https://www.roevisual.com/",
+         "note": "telas cênicas flexíveis"
+        }
+       ]
+      },
+      {
+       "id": "led-shaped",
+       "name": "Formas volumétricas: esfera, cilindro, cubo",
+       "line": "Essa tela não tem lugar de espectador",
+       "what": "Esferas, cilindros, cubos e anéis de LED prontos. A imagem envolve toda a forma, então o objeto funciona para quem circula em volta e é lido igual de um mezanino e de baixo.",
+       "note_hw": "Conteúdo para uma forma dessas é calculado de outro jeito: vídeo plano não estica sobre uma esfera sem distorção. É preciso uma planificação feita para aquela geometria exata, e esse é o trabalho que os orçamentos sistematicamente esquecem de incluir.",
+       "good": [
+        "Um átrio, um saguão, o centro de uma sala — um ponto em volta do qual se caminha",
+        "Um globo, um planeta, um núcleo, uma molécula — quando o próprio assunto é redondo",
+        "Um objeto que precisa ser lido igualmente de um mezanino e de baixo"
+       ],
+       "bad": [
+        "Texto e diagramas: nada fica legível sobre curvatura",
+        "Orçamento apertado: uma forma fora do padrão sempre custa mais que a mesma área plana",
+        "Pé-direito baixo — o objeto precisa ficar suspenso com folga sobre as cabeças"
+       ],
+       "brands": [
+        {
+         "n": "Absen",
+         "u": "https://www.absen.com/",
+         "note": "esferas e cilindros sob encomenda"
+        },
+        {
+         "n": "Unilumin",
+         "u": "https://www.unilumin.com/",
+         "note": "geometria não padronizada"
+        },
+        {
+         "n": "Gloshine",
+         "u": "https://www.gloshine.net/",
+         "note": "formas criativas e esferas"
+        }
+       ]
+      },
+      {
+       "id": "led-kinetic",
+       "name": "Tela de LED cinética",
+       "line": "Uma superfície que se move pelo ar",
+       "what": "Os módulos ficam pendurados em guinchos e mudam de posição ao longo do espetáculo: a tela se separa, se junta, vira onda. Imagem e movimento são uma partitura só — não dá para reproduzir isso com um vídeo.",
+       "good": [
+        "Uma inauguração, um lançamento, um espetáculo — um evento com começo e final",
+        "Um átrio de pé-direito alto onde o movimento se lê de baixo",
+        "Um efeito que não dá para reproduzir tocando um vídeo"
+       ],
+       "bad": [
+        "Uma exposição permanente: guinchos exigem regime de inspeção e licenças, como todo equipamento de elevação",
+        "Pessoas embaixo da estrutura — isso é cálculo de segurança, não preferência",
+        "Uma sala silenciosa: os acionamentos são audíveis"
+       ],
+       "spec": "Tratado como equipamento de elevação: carga, travas secundárias, zona de exclusão embaixo. Isso é assunto de licença e regime de inspeção, não de design.",
+       "brands": [
+        {
+         "n": "Kinetic Lights",
+         "u": "https://kinetic-lights.com/",
+         "note": "guinchos e elementos luminosos, controle por roteiro"
+        },
+        {
+         "n": "TAIT",
+         "u": "https://www.taittowers.com/",
+         "note": "automação cênica de alto nível"
+        },
+        {
+         "n": "MDG / Movecat",
+         "u": "https://www.movecat.de/",
+         "note": "acionamentos e sistemas de elevação"
+        }
+       ]
+      }
+     ],
+     "svc": "multimedia-equipment"
+    },
+    {
+     "name": "Painéis",
+     "note": "Um plano luminoso pronto, nada a montar. Tudo que a projeção não consegue: luz do sol, letra pequena, trabalhar sem folga.",
+     "items": [
+      {
+       "id": "pro-panel",
+       "name": "Painel profissional e videowall",
+       "line": "Sem graça, confiável, legível",
+       "what": "O parente industrial da televisão: operação ininterrupta, montagem em retrato, gestão remota, anos sem ser desligado. Uma TV doméstica em exposição dura até o primeiro verão.",
+       "good": [
+        "Texto, desenhos e documentos de arquivo precisam ser lidos",
+        "A tela fica pendurada por muito tempo e simplesmente tem que funcionar",
+        "Orçamento modesto: a melhor relação entre custo e legibilidade"
+       ],
+       "bad": [
+        "A tarefa é impressão, não leitura: um painel não cria um acontecimento",
+        "Um videowall de vários painéis: as molduras aparecem sempre, e sobre uma imagem única elas são lidas como uma grade"
+       ],
+       "brands": [
+        {
+         "n": "Samsung",
+         "u": "https://www.samsung.com/business/displays/",
+         "note": "série para vitrines com alto brilho"
+        },
+        {
+         "n": "LG",
+         "u": "https://www.lg.com/ru/business/",
+         "note": "linha ampla, inclusive formatos alongados"
+        },
+        {
+         "n": "Sharp / NEC",
+         "u": "https://www.sharpnecdisplays.eu/",
+         "note": "padrão de instalação"
+        }
+       ],
+       "case": "vdnh-space-center"
+      },
+      {
+       "id": "transparent",
+       "name": "Tela transparente",
+       "line": "Dados sobre o objeto real",
+       "what": "A imagem fica sobre o vidro e o exponente aparece atrás. O original continua original enquanto cortes, legendas e animação ficam por cima como uma camada. Desligue e sobra só o vidro.",
+       "good": [
+        "Uma vitrine com um original que precisa ser explicado sem ser coberto",
+        "Um corte, um diagrama ou uma trajetória sobre um produto real",
+        "Quando desligada, deve sobrar apenas o vidro"
+       ],
+       "bad": [
+        "Uma sala clara: a tela transparente é a primeira a perder para a luz ambiente",
+        "Um fundo carregado atrás do vidro — a imagem perde legibilidade",
+        "É preciso uma imagem densa e saturada: a transparência trabalha contra o contraste"
+       ],
+       "brands": [
+        {
+         "n": "LG Transparent OLED",
+         "u": "https://www.lg.com/global/business/transparent-oled-signage",
+         "note": "principal fornecedor de painéis transparentes"
+        },
+        {
+         "n": "Panasonic",
+         "u": "https://eu.connect.panasonic.com/",
+         "note": "soluções transparentes para vitrines"
+        },
+        {
+         "n": "Crystal Display",
+         "u": "https://www.crystal-display.com/",
+         "note": "tamanhos e formatos não padronizados"
+        }
+       ]
+      }
+     ],
+     "svc": "multimedia-equipment"
+    },
+    {
+     "name": "Volume e ilusão",
+     "note": "Tentativas de fazer um objeto parecer tridimensional. O maior teor de marketing por metro quadrado e o menor número de ressalvas honestas na apresentação.",
+     "items": [
+      {
+       "id": "peppers-ghost",
+       "name": "Pseudo-holograma: fantasma de Pepper",
+       "line": "Um reflexo em vidro inclinado. Duzentos anos e contando",
+       "what": "A imagem de uma tela se reflete em uma película semitransparente e parece ficar suspensa no ar. O teatro do século XIX já conhecia o truque, e ele ainda é o mais confiável dos “hologramas” — não há nada nele para quebrar.",
+       "good": [
+        "Um objeto pequeno com uma ou duas pessoas em volta",
+        "Uma zona escura: a ilusão se constrói sobre brilhar no escuro",
+        "Um efeito flutuante sem óculos e sem ensinar nada ao visitante"
+       ],
+       "bad": [
+        "Uma delegação de vinte: a ilusão só se sustenta dentro de um ângulo estreito",
+        "Uma sala clara — o efeito desaparece por completo",
+        "Legendas pequenas: coloque-as em uma tela separada ao lado"
+       ],
+       "brands": [
+        {
+         "n": "Realfiction",
+         "u": "https://www.realfiction.com/",
+         "note": "vitrines-cubo prontas"
+        },
+        {
+         "n": "Musion",
+         "u": "https://musion.com/",
+         "note": "montagens cênicas de grande porte"
+        }
+       ]
+      },
+      {
+       "id": "fan-display",
+       "name": "Display holográfico de ventilador",
+       "line": "LEDs em pás girando. Barato e impossível de ignorar",
+       "what": "Uma faixa de LEDs gira rápido o bastante para o olho montar o rastro em uma imagem inteira suspensa no ar. Instala-se em uma hora, agrupa-se em parede — é assim que se fazem os grandes objetos “flutuantes”.",
+       "good": [
+        "Uma vitrine, uma entrada, um ponto que precisa prender a atenção",
+        "Uma imagem curta e brilhante — um logotipo, um objeto, um sinal",
+        "Um efeito de impacto com orçamento pequeno"
+       ],
+       "bad": [
+        "Uma exposição museológica de verdade: uma peça girando na altura da mão é questão de segurança e de ruído",
+        "Uma história longa: nem a resolução nem o brilho sustentam conteúdo",
+        "Filmar com celular — a câmera capta a cintilação"
+       ],
+       "brands": [
+        {
+         "n": "HYPERVSN",
+         "u": "https://hypervsn.com/",
+         "note": "player principal, montagens em parede"
+        }
+       ]
+      },
+      {
+       "id": "light-field",
+       "name": "Display de campo de luz",
+       "line": "Volume sem óculos. Do tipo honesto",
+       "what": "A tela emite dezenas de pontos de vista ao mesmo tempo: os olhos veem coisas diferentes e o objeto gira conforme você mexe a cabeça. Os tamanhos ainda são modestos e o preço acompanha — mas isso é volume de verdade, não ilusão.",
+       "good": [
+        "Um único objeto a ser examinado de todos os lados — um produto, uma molécula, uma peça",
+        "Volume sem óculos e sem instruções",
+        "Um exponente para uma ou duas pessoas por vez"
+       ],
+       "bad": [
+        "Público grande e tamanhos grandes",
+        "Orçamento limitado: pelo mesmo dinheiro se tem um modelo 3D interativo em uma tela comum, e as pessoas entendem igualmente bem"
+       ],
+       "brands": [
+        {
+         "n": "Looking Glass",
+         "u": "https://lookingglassfactory.com/",
+         "note": "modelos de mesa e de parede"
+        },
+        {
+         "n": "Voxon",
+         "u": "https://voxon.co/",
+         "note": "volume voxel, visão de qualquer lado"
+        }
+       ]
+      },
+      {
+       "id": "autostereo",
+       "name": "Tela autoestereoscópica",
+       "line": "Volume sem óculos pelo preço de um painel",
+       "what": "Uma grade óptica sobre um painel comum dá a cada olho os próprios pixels. Mais barato e maior que o campo de luz; paga-se com a zona estreita em que o efeito se sustenta.",
+       "good": [
+        "Uma vitrine ou um pilar de que as pessoas se aproximam uma por vez",
+        "Um produto a ser mostrado em volume sem distribuir óculos",
+        "Quer-se volume pelo preço de um painel, não de uma instalação"
+       ],
+       "bad": [
+        "Um grupo: a zona de visão é estreita, um passo para o lado e o volume se desfaz",
+        "A resolução horizontal é dividida entre os pontos de vista: letra pequena não sobrevive",
+        "Visualização longa cansa mais os olhos que uma tela comum"
+       ],
+       "brands": [
+        {
+         "n": "Looking Glass",
+         "u": "https://lookingglassfactory.com/",
+         "note": "campo de luz, muitos ângulos"
+        },
+        {
+         "n": "Dimenco",
+         "u": "https://www.dimenco.eu/",
+         "note": "autoestereoscopia com rastreamento ocular"
+        },
+        {
+         "n": "Alioscopy",
+         "u": "https://www.alioscopy.com/",
+         "note": "painéis com grade para vitrines"
+        }
+       ]
+      }
+     ],
+     "svc": "holographic-showcase"
+    },
+    {
+     "name": "Óculos e janelas",
+     "note": "Uma imagem presa a uma cabeça ou a um aparelho na mão, e não a uma parede.",
+     "items": [
+      {
+       "id": "vr",
+       "name": "Realidade virtual",
+       "line": "A impressão mais forte e a fila mais longa",
+       "what": "O óculos fecha o mundo: a pessoa acaba onde fisicamente não pode estar. Uma pessoa por vez vive aquilo — e toda a programação é contada a partir desse número.",
+       "good": [
+        "Um lugar aonde não dá para ir: no subsolo, em órbita, dentro de um prédio em ruínas, dentro de um corpo",
+        "Uma zona separada com fila e um atendente",
+        "Uma sessão que pode ser vendida por si só"
+       ],
+       "bad": [
+        "O percurso principal da exposição: a fila se forma e tudo para",
+        "Sem equipe por perto: colocar, ajustar, desinfetar, retirar",
+        "Um grupo escolar com horário marcado — a aritmética não fecha"
+       ],
+       "spec": "Calcule antes da compra: sessão de 4 minutos mais um minuto de troca = 12 pessoas por hora por óculos. Um grupo de 30 são duas horas e meia em um único aparelho.",
+       "brands": [
+        {
+         "n": "Meta Quest",
+         "u": "https://www.meta.com/quest/",
+         "note": "autônomos, de massa"
+        },
+        {
+         "n": "HTC Vive",
+         "u": "https://www.vive.com/",
+         "note": "corporativos e para salas"
+        },
+        {
+         "n": "Pico",
+         "u": "https://www.picoxr.com/",
+         "note": "autônomos, disponíveis na Rússia"
+        },
+        {
+         "n": "Varjo",
+         "u": "https://varjo.com/",
+         "note": "segmento premium, resolução no nível do olho"
+        }
+       ]
+      },
+      {
+       "id": "ar-device",
+       "name": "Realidade aumentada em aparelho",
+       "line": "Uma camada sobre a sala real",
+       "what": "Um tablet ou celular mostra a imagem da câmera com o que a sala não contém sobreposto: um prédio concluído, um mecanismo funcionando, um personagem. Barato em hardware, caro em conteúdo.",
+       "good": [
+        "Completar o que não sobreviveu: uma ruína, um interior perdido, uma máquina desativada",
+        "Mostrar o invisível sobre o visível: fluxos, cortes, processos",
+        "Um exponente fora do prédio — um pátio, um parque, uma rua"
+       ],
+       "bad": [
+        "Contar com o celular do visitante sem orientação: só uma parte consegue fazer funcionar",
+        "Conectividade ruim e falta de vontade de instalar um app",
+        "O exponente precisa funcionar sempre: celulares descarregam, tablets somem"
+       ],
+       "brands": [
+        {
+         "n": "Apple ARKit",
+         "u": "https://developer.apple.com/augmented-reality/",
+         "note": "iOS, melhor qualidade de rastreamento"
+        },
+        {
+         "n": "Google ARCore",
+         "u": "https://developers.google.com/ar",
+         "note": "Android"
+        },
+        {
+         "n": "Vuforia",
+         "u": "https://www.ptc.com/en/products/vuforia",
+         "note": "vínculo com marcadores e objetos"
+        }
+       ],
+       "case": "pano360"
+      }
+     ],
+     "svc": "interactive-exhibition"
+    },
+    {
+     "name": "Som e corpo",
+     "note": "A metade subestimada da impressão. Em especificações o som aparece como “caixas de som — 4 un.” e para por aí.",
+     "items": [
+      {
+       "id": "sound-shower",
+       "name": "Chuveiro sonoro, áudio direcional",
+       "line": "Audível aqui, silencioso um passo adiante",
+       "what": "Som confinado a uma zona estreita: o visitante no exponente ouve a história, alguém a um metro não ouve nada, e ninguém precisa de fones. Isso cura a principal doença das exposições multimídia — dez exponentes falando ao mesmo tempo e nenhum deles audível.",
+       "compare": "São dois princípios diferentes, e confundi-los sai caro. Uma **cúpula parabólica** é um alto-falante comum dentro de um refletor: o som é honesto e cheio, a zona embaixo da cúpula tem cerca de um metro e não há distorção. Um **emissor paramétrico ultrassônico** é um feixe estreito de ultrassom que vira som no próprio ar: a zona é bem mais estreita e alcança mais longe, mas o grave se perde e a fala soa mais seca. Para voz e atmosfera, a cúpula; para um feixe pontual atravessando a sala, o paramétrico.",
+       "good": [
+        "Vários exponentes com som em uma mesma sala",
+        "Uma história que só interessa a quem está parado ali",
+        "Fones não são bem-vindos — fluxo de público ou higiene"
+       ],
+       "bad": [
+        "São necessários graves plenos e som envolvente",
+        "Pé-direito alto e muito ruído de fundo: a zona se espalha",
+        "Os visitantes se aproximam de várias direções"
+       ],
+       "brands": [
+        {
+         "n": "Brown Innovations",
+         "u": "https://www.browninnovations.com/",
+         "note": "cúpulas parabólicas, padrão de museu"
+        },
+        {
+         "n": "Panphonics",
+         "u": "https://panphonics.com/",
+         "note": "emissores direcionais em painel"
+        },
+        {
+         "n": "Focusonics",
+         "u": "https://www.focusonics.com/",
+         "note": "feixe estreito ultrassônico"
+        },
+        {
+         "n": "Holoplot",
+         "u": "https://holoplot.com/",
+         "note": "formação de campo sonoro em salão grande"
+        }
+       ]
+      },
+      {
+       "id": "spatial-audio",
+       "name": "Áudio de instalação e som espacial",
+       "line": "Som que tem um lugar na sala",
+       "what": "Fontes distribuídas pela sala dão ao som direção e distância: um passo à esquerda, um estrondo por cima, uma voz vinda de um ponto. Metade da sensação de presença se faz aqui, não na tela.",
+       "good": [
+        "Um salão grande com uma partitura única — um panorama, uma reconstituição, uma imersão",
+        "É preciso conduzir as pessoas pelo som em vez de setas no chão",
+        "Existe uma partitura com ritmo: silêncio, crescimento, pausa"
+       ],
+       "bad": [
+        "Estandes espalhados, cada um com seu conteúdo — vai virar bagunça",
+        "Uma sala reverberante sem tratamento acústico: resolva o teto antes de comprar caixas"
+       ],
+       "brands": [
+        {
+         "n": "Genelec",
+         "u": "https://www.genelec.com/",
+         "note": "precisão, formatos pequenos"
+        },
+        {
+         "n": "Meyer Sound",
+         "u": "https://meyersound.com/",
+         "note": "instalações e sistemas espaciais"
+        },
+        {
+         "n": "d&b audiotechnik",
+         "u": "https://www.dbaudio.com/",
+         "note": "sistemas com movimento volumétrico do som"
+        },
+        {
+         "n": "L-Acoustics",
+         "u": "https://www.l-acoustics.com/",
+         "note": "som volumétrico para salões"
+        }
+       ]
+      },
+      {
+       "id": "headphones",
+       "name": "Fones e áudio pessoal",
+       "line": "Quando a história é longa e pessoal",
+       "what": "Do audioguia clássico ao áudio transmitido para o celular do visitante. O único jeito de entregar um texto longo, vários idiomas e profundidades diferentes a partir de um mesmo exponente.",
+       "good": [
+        "Muitos idiomas e profundidades diferentes — infantil, geral, especializada",
+        "Uma história mais longa que dois minutos",
+        "Uma sala silenciosa onde som em voz alta ficaria deslocado"
+       ],
+       "bad": [
+        "Uma família ou um casal: fones separam quem veio junto",
+        "Uma legenda curta — colocar fones custa mais do que lê-la",
+        "Manutenção: carga, desinfecção, perdas"
+       ],
+       "brands": [
+        {
+         "n": "Sennheiser MobileConnect",
+         "u": "https://www.sennheiser.com/",
+         "note": "som no celular do visitante por Wi-Fi"
+        },
+        {
+         "n": "izi.TRAVEL",
+         "u": "https://izi.travel/",
+         "note": "plataforma gratuita de audioguias"
+        },
+        {
+         "n": "Sonic Wave",
+         "u": "https://sonicwave.ru/",
+         "note": "radioguias, fornecimento na Rússia"
+        }
+       ]
+      },
+      {
+       "id": "haptics",
+       "name": "Vibração, vento, calor, cheiro",
+       "line": "O que se lembra por mais tempo que a imagem",
+       "what": "Shakers em pisos e bancos, ventiladores, calor, cheiro. Centavos ao lado das telas, e funciona de forma desproporcional: o corpo lembra antes da cabeça.",
+       "good": [
+        "Um momento que deve ser lembrado pelo corpo: uma explosão, um lançamento, uma tempestade, uma descida",
+        "Recriar um ambiente — o calor de uma oficina, a umidade de uma trincheira, o vento num convés",
+        "Público jovem: uma impressão física chega antes do texto"
+       ],
+       "bad": [
+        "Um efeito de fundo constante — as pessoas se acostumam em um minuto e param de notar",
+        "Cheiro: ele fica na sala mais tempo do que se pretendia, e nem todo mundo gosta",
+        "Alergias e sensibilidades — precisa haver um jeito de desviar da zona"
+       ],
+       "brands": [
+        {
+         "n": "ButtKicker",
+         "u": "https://thebuttkicker.com/",
+         "note": "shakers de baixa frequência sob assentos e piso"
+        },
+        {
+         "n": "Dagacom / 4D",
+         "u": "https://www.dagacom.com/",
+         "note": "efeitos de vento, água, cheiro"
+        },
+        {
+         "n": "Scentair",
+         "u": "https://www.scentair.com/",
+         "note": "dosagem de aroma em ambiente"
+        }
+       ]
+      },
+      {
+       "id": "light-dmx",
+       "name": "Luz controlada",
+       "line": "O jeito mais barato de mudar uma cena",
+       "what": "A luz em uma exposição não ilumina, ela narra: destaca, apaga, conduz, marca o ritmo. Roda nas mesmas deixas de todo o resto por uma fração do preço de qualquer tela.",
+       "good": [
+        "O percurso precisa de ritmo: escuridão, clarão, quietude",
+        "Um original precisa ser destacado sem mexer no resto da sala",
+        "O orçamento acabou e a sala está sem graça"
+       ],
+       "bad": [
+        "A luz roteirizada briga com a iluminação geral da sala: separe as duas desde o começo",
+        "Exigências de conservação — níveis de lux e UV são acordados com o curador",
+        "Piscadas e estroboscópio: é uma restrição médica, não estética"
+       ],
+       "brands": [
+        {
+         "n": "ETC",
+         "u": "https://www.etcconnect.com/",
+         "note": "padrão de museu e de teatro"
+        },
+        {
+         "n": "Robe",
+         "u": "https://www.robe.cz/",
+         "note": "refletores móveis"
+        },
+        {
+         "n": "Chauvet Professional",
+         "u": "https://www.chauvetprofessional.com/",
+         "note": "segmento acessível"
+        },
+        {
+         "n": "Martin / Harman",
+         "u": "https://www.martin.com/",
+         "note": "linhas de instalação"
+        }
+       ]
+      }
+     ],
+     "svc": "interactive-exhibition"
+    },
+    {
+     "name": "Movimento e matéria",
+     "note": "Saída que não brilha. Uma exposição pode responder fisicamente: girar, abrir, mudar de estado.",
+     "items": [
+      {
+       "id": "kinetic",
+       "name": "Cinética e mecânica",
+       "line": "O exponente se move de verdade",
+       "what": "Atuadores e mecanismos: uma maquete se abre, uma máquina gira, um corte se separa. Outra ordem de impressão — o objeto é real, e se lê do outro lado do salão.",
+       "good": [
+        "Como um produto é feito: mostrado em corte, com a forma real se abrindo",
+        "Uma sala onde já há telas demais e elas pararam de funcionar",
+        "Um acontecimento visível do outro lado do salão"
+       ],
+       "bad": [
+        "Mecânica ao alcance dos visitantes: calcule o ciclo de trabalho e a proteção contra esmagamento",
+        "Uma sala silenciosa — os acionamentos são audíveis",
+        "Alguém tem que fazer manutenção: coisas que se movem se desgastam, telas não"
+       ],
+       "spec": "O único grupo de toda esta biblioteca que exige análise de risco de segurança: uma peça em movimento na altura da mão de uma criança não é questão de projeto, é questão de lesão.",
+       "brands": [
+        {
+         "n": "Festo",
+         "u": "https://www.festo.com/",
+         "note": "pneumática e atuadores lineares"
+        },
+        {
+         "n": "igus",
+         "u": "https://www.igus.ru/",
+         "note": "sistemas lineares e esteiras porta-cabos"
+        },
+        {
+         "n": "Beckhoff",
+         "u": "https://www.beckhoff.com/",
+         "note": "controle de movimento por roteiro"
+        }
+       ]
+      },
+      {
+       "id": "eink",
+       "name": "Tinta eletrônica",
+       "line": "Uma etiqueta que dá para reescrever",
+       "what": "O display só consome energia enquanto a imagem muda e se lê como papel — de qualquer ângulo, sem brilhar na cara de ninguém. Cura uma dor antiga de museu: nova atribuição e novo idioma na legenda.",
+       "good": [
+        "Etiquetas e legendas que mudam: nova atribuição, novo idioma, rodízio",
+        "Uma vitrine em que uma tela luminosa estragaria o visual",
+        "Sem energia no ponto: as pilhas duram meses"
+       ],
+       "bad": [
+        "Movimento e vídeo — a atualização é lenta por natureza",
+        "Cor: os modelos coloridos são bem mais pálidos e mais caros",
+        "Formatos grandes custam desproporcionalmente"
+       ],
+       "brands": [
+        {
+         "n": "E Ink",
+         "u": "https://www.eink.com/",
+         "note": "fabricante da própria tecnologia"
+        },
+        {
+         "n": "Visionect",
+         "u": "https://www.visionect.com/",
+         "note": "painéis prontos com gestão em rede"
+        }
+       ]
+      },
+      {
+       "id": "drone-show",
+       "name": "Show de drones",
+       "line": "Uma tela do tamanho do céu",
+       "what": "Um enxame mantém formação por um programa calculado e desenha figuras tridimensionais no ar. O único jeito de ter uma imagem de centenas de metros sem estrutura nenhuma — em muitos lugares já substituiu os fogos: mais silencioso, mais limpo, repetível.",
+       "note_hw": "Se a apresentação de alguém ainda diz “Intel Shooting Star”, o documento está desatualizado. A Intel saiu desse negócio em 2022, vendendo a divisão junto com a frota; os shows de hoje são voados por outras empresas em plataformas próprias.",
+       "good": [
+        "Uma inauguração, um aniversário, uma festa da cidade — um evento a céu aberto",
+        "Uma escala que não dá para construir: centenas de metros de altura e largura",
+        "Um lugar em que fogos são proibidos por ruído, risco de incêndio ou bem-estar animal"
+       ],
+       "bad": [
+        "Vento e chuva: a janela de tempo é estreita, e uma data reserva pertence ao contrato, não à conversa",
+        "Autorizações: espaço aéreo, zona, horário — isso são semanas, não dias",
+        "Ambiente interno: um salão voa alguns drones, não centenas, e o efeito é bem outro",
+        "Gráficos finos e texto: a resolução é o número de drones, e são centenas, não milhões"
+       ],
+       "spec": "A resolução da imagem é igual ao número de drones. Cem drones dão o contorno de um símbolo reconhecível; mil dão uma narrativa em movimento. O orçamento acompanha o número de aeronaves e de dias de voo, não a duração do show.",
+       "brands": [
+        {
+         "n": "Verge Aero",
+         "u": "https://www.verge.aero/",
+         "note": "drones e software, vendem a plataforma para operadores"
+        },
+        {
+         "n": "SPH Engineering",
+         "u": "https://www.sphengineering.com/",
+         "note": "Drone Show Software, Letônia"
+        },
+        {
+         "n": "Skybrush",
+         "u": "https://skybrush.io/",
+         "note": "plataforma aberta de controle de enxame"
+        },
+        {
+         "n": "Geoscan",
+         "u": "https://www.geoscan.ru/",
+         "note": "fabricante russo, shows próprios"
+        },
+        {
+         "n": "Nova Sky Stories",
+         "u": "https://novaskystories.com/",
+         "note": "comprou a divisão de drones da Intel em 2022"
+        }
+       ]
+      }
+     ],
+     "svc": "exhibition-stand"
+    }
+   ]
+  },
+  {
+   "id": "input",
+   "num": "02",
+   "name": "Entrada",
+   "full": "Equipamentos de entrada",
+   "line": "Como a pessoa responde",
+   "lead": "Dedos, mãos, corpo, voz, a simples presença. A linha mais barata do orçamento e a que decide tudo: é aqui que “interativo” se separa de “ligado”.",
+   "principle": "A pergunta não é como a pessoa opera aquilo, e sim como ela descobriu que podia. Um exponente que precisa de uma placa de regras não precisa de um sensor melhor — precisa ser refeito.",
+   "sections": [
+    {
+     "name": "Toque",
+     "note": "Todo mundo entende: as pessoas aprenderam no celular. E é especificado demais — o toque funciona para uma pessoa e mal funciona para um grupo.",
+     "items": [
+      {
+       "id": "capacitive-touch",
+       "name": "Toque capacitivo",
+       "line": "Como um celular, só que grande",
+       "what": "Película ou vidro que sente o dedo por um campo elétrico. Alta precisão, multitoque honesto, e o vidro pode ser grosso — o toque lê direto através dele, então o exponente sobrevive a uma pancada.",
+       "good": [
+        "Uma vitrine em que se toca através de vidro de proteção",
+        "Multitoque confiante: um mapa que duas pessoas giram e esticam juntas",
+        "A superfície precisa continuar perfeitamente plana e limpa"
+       ],
+       "bad": [
+        "Visitantes de luva — em um museu do norte no inverno isso é metade da sala",
+        "Tamanhos muito grandes: quanto maior a película, mais temperamental e mais cara",
+        "Mãos molhadas e gotas d’água produzem toques fantasmas"
+       ],
+       "brands": [
+        {
+         "n": "Displax",
+         "u": "https://www.displax.com/",
+         "note": "películas sobre vidro de qualquer espessura"
+        },
+        {
+         "n": "3M Touch",
+         "u": "https://www.3m.com/",
+         "note": "sistemas projetado-capacitivos"
+        },
+        {
+         "n": "Elo Touch",
+         "u": "https://www.elotouch.com/",
+         "note": "all-in-one e painéis prontos"
+        }
+       ]
+      },
+      {
+       "id": "ir-frame",
+       "name": "Moldura infravermelha",
+       "line": "Barata, grande, funciona de luva",
+       "what": "Uma moldura na borda capta o feixe interrompido. Responde a qualquer coisa — dedo, luva, ponteira, cotovelo. Em um museu do norte no inverno isso é metade da sala.",
+       "good": [
+        "Diagonais grandes, em que o toque capacitivo custa o mesmo que a tela",
+        "Luvas, mitenes, crianças de casaco de inverno",
+        "Orçamento limitado e superfície grande"
+       ],
+       "bad": [
+        "A moldura sobressai do vidro — junta sujeira e não fica elegante",
+        "Luz solar direta e fontes infravermelhas fortes confundem o sensor",
+        "Precisão menor: elementos pequenos de interface não são acertados"
+       ],
+       "brands": [
+        {
+         "n": "PQ Labs",
+         "u": "https://www.pqlabs.com/",
+         "note": "molduras multitoque de grandes tamanhos"
+        },
+        {
+         "n": "IRTouch",
+         "u": "https://www.irtouch.com/",
+         "note": "segmento de massa"
+        }
+       ]
+      },
+      {
+       "id": "lidar-touch",
+       "name": "Toque por lidar em qualquer superfície",
+       "line": "Toque onde toque não pode existir",
+       "what": "Um scanner lança um plano de luz acima de uma superfície e detecta onde ele é cruzado. Transforma uma parede, uma vitrine, uma maquete ou um piso em superfície de toque — sem película, sem moldura, sem intervir na própria superfície.",
+       "good": [
+        "Uma superfície histórica em que nenhum equipamento pode ser fixado",
+        "Projeção em parede ou piso que vira interativa",
+        "Uma área muito grande: o preço quase não sobe com o tamanho"
+       ],
+       "bad": [
+        "A calibração dura até o primeiro esbarrão no aparelho — fixe de modo imóvel",
+        "Existe um único plano: o toque é lido em duas dimensões, pressão não se distingue",
+        "Pessoas paradas no plano do feixe se encobrem entre si"
+       ],
+       "brands": [
+        {
+         "n": "Hokuyo",
+         "u": "https://www.hokuyo-aut.jp/",
+         "note": "padrão para superfícies interativas"
+        },
+        {
+         "n": "SICK",
+         "u": "https://www.sick.com/",
+         "note": "scanners industriais, alta confiabilidade"
+        },
+        {
+         "n": "Livox",
+         "u": "https://www.livoxtech.com/",
+         "note": "lidares acessíveis para zonas volumétricas"
+        }
+       ]
+      },
+      {
+       "id": "touch-monitor",
+       "name": "Monitor de toque pronto",
+       "line": "Não monte por partes — compre inteiro",
+       "what": "Vidro, camada de toque e eletrônica já montados e testados juntos. Um kit de moldura, painel e computador é mais barato no papel, leva mais tempo para comissionar, e quando falha acaba não havendo quem responda.",
+       "good": [
+        "Um estande interativo comum, sem geometria incomum",
+        "O tempo é curto: um monitor pronto entra em uma hora, uma montagem leva uma semana",
+        "Muitos pontos iguais: dez all-in-one idênticos são mais simples de manter",
+        "Sem engenheiro na casa: uma garantia em um produto, em vez de quatro notas separadas"
+       ],
+       "bad": [
+        "Tamanho ou formato fora do padrão, ou embutimento em marcenaria",
+        "Diagonais muito grandes: as opções prontas acabam e o preço sobe forte",
+        "O vidro precisa ser grosso ou blindado — aí você precisa de componentes separados"
+       ],
+       "brands": [
+        {
+         "n": "iiyama ProLite",
+         "u": "https://iiyama.com/",
+         "note": "cavalo de batalha: monitores de toque e painéis grandes, disponíveis na Rússia"
+        },
+        {
+         "n": "Elo Touch",
+         "u": "https://www.elotouch.com/",
+         "note": "all-in-one e quiosques, padrão do setor"
+        },
+        {
+         "n": "Dell",
+         "u": "https://www.dell.com/",
+         "note": "monitores de toque de tamanho médio"
+        },
+        {
+         "n": "Advantech",
+         "u": "https://www.advantech.com/",
+         "note": "PCs industriais em painel com toque"
+        }
+       ]
+      }
+     ],
+     "svc": "museum-equipment"
+    },
+    {
+     "name": "Ação física",
+     "note": "Objetos reais que se giram e se apertam. Perdem para o toque em flexibilidade e ganham em todo o resto: entendidos sem palavras, funcionam para grupo, lembrados pelas mãos.",
+     "items": [
+      {
+       "id": "controls",
+       "name": "Comandos reais de operação",
+       "line": "Uma alavanca, um volante, uma chave, um leme",
+       "what": "Botões e manoplas industriais, tirados de máquinas reais ou feitos para combinar. Entendidos sem uma palavra — por uma criança, e pelo visitante que evita telas.",
+       "good": [
+        "Uma exposição sobre máquinas: você deve operá-la com o que de fato a operava",
+        "Crianças e visitantes mais velhos — entendido sem uma única palavra",
+        "O exponente precisa sobreviver a um milhão de apertos e a uma excursão escolar"
+       ],
+       "bad": [
+        "O conteúdo muda com frequência: cada roteiro precisa do próprio objeto",
+        "Uma escolha complexa entre muitas opções — isso pede uma tela",
+        "Uma sala apertada: um console físico ocupa espaço, uma tela não"
+       ],
+       "spec": "Calcule o ciclo de trabalho antes: um botão industrial dura milhões de ciclos, um doméstico dezenas de milhares. Com dois mil visitantes por dia, isso é a diferença entre cinco anos e dois meses.",
+       "brands": [
+        {
+         "n": "EAO",
+         "u": "https://www.eao.com/",
+         "note": "botões industriais de alta durabilidade"
+        },
+        {
+         "n": "Schneider Electric Harmony",
+         "u": "https://www.se.com/",
+         "note": "postos de comando acessíveis"
+        },
+        {
+         "n": "Arduino",
+         "u": "https://www.arduino.cc/",
+         "note": "ligação entre a física e o computador"
+        },
+        {
+         "n": "Phidgets",
+         "u": "https://www.phidgets.com/",
+         "note": "módulos prontos de sensores e atuadores"
+        }
+       ]
+      },
+      {
+       "id": "rotary-controller",
+       "name": "Botão rotativo e encoder",
+       "line": "Um movimento que todo mundo entende",
+       "what": "Girar é o gesto mais natural depois de apertar: é assim que se folheiam anos, se atravessa um corte, se muda a escala. Um botão dá o que uma tela não dá — resistência sob os dedos.",
+       "note_hw": "O clássico do gênero, o Griffin PowerMate, saiu de linha em 2018 — se ele aparece em uma especificação, aquele documento foi escrito com modelos antigos. Substitutos vivos: Binepad BNR1, Contour ShuttleXpress, e para instalação permanente melhor um encoder industrial classificado para um milhão de giros.",
+       "good": [
+        "Uma linha do tempo: percorrer um ano, uma era, uma etapa de um processo",
+        "Um corte ou camadas: atravessar um objeto em um único gesto",
+        "Um visitante que tem dificuldade de acertar um elemento pequeno na tela",
+        "Deseja-se precisão física — uma tela não dá isso"
+       ],
+       "bad": [
+        "Escolher entre muitas opções: isso pede uma lista, não um botão",
+        "Modelos domésticos se desgastam rápido sob fluxo de público — calcule o ciclo de trabalho",
+        "É preciso mostrar o sentido do giro: sem uma dica metade dos visitantes não percebe"
+       ],
+       "brands": [
+        {
+         "n": "Binepad",
+         "u": "https://binepad.com/",
+         "note": "BNR1 — herdeiro vivo do PowerMate"
+        },
+        {
+         "n": "Contour Design",
+         "u": "https://contourdesign.com/",
+         "note": "ShuttleXpress, controlador de roda confiável"
+        },
+        {
+         "n": "Bourns",
+         "u": "https://www.bourns.com/",
+         "note": "encoders industriais de alta durabilidade"
+        },
+        {
+         "n": "Phidgets",
+         "u": "https://www.phidgets.com/",
+         "note": "encoders com conexão pronta"
+        }
+       ]
+      },
+      {
+       "id": "tangible",
+       "name": "Um objeto como chave",
+       "line": "Apoie uma coisa e a exposição responde",
+       "what": "Um objeto real com um marcador embaixo: o sistema sabe o que foi colocado e como está girado. A interação vira física e coletiva — cada um segura o seu.",
+       "good": [
+        "Comparar várias coisas: coloque lado a lado e veja a conexão",
+        "Trabalho em grupo: cada pessoa segura o próprio objeto",
+        "É preciso uma ligação entre o original na mão e os dados na tela"
+       ],
+       "bad": [
+        "Objetos se perdem e quebram — preveja consumo e reposição no orçamento",
+        "Não funciona sem equipe se os objetos forem valiosos",
+        "Lida mal com multidão: alguém tem que recolocá-los no lugar"
+       ],
+       "brands": [
+        {
+         "n": "Reactivision",
+         "u": "https://reactivision.sourceforge.net/",
+         "note": "marcadores ópticos abertos"
+        },
+        {
+         "n": "Impinj",
+         "u": "https://www.impinj.com/",
+         "note": "leitores e etiquetas RFID"
+        }
+       ]
+      },
+      {
+       "id": "rfid-card",
+       "name": "Cartão do visitante, RFID e NFC",
+       "line": "A exposição sabe quem está ali",
+       "what": "Um ingresso ou pulseira com etiqueta. Encoste e o exponente fala o seu idioma e retoma de onde você parou. No fim do percurso ele entrega um resumo pessoal do que você viu e juntou.",
+       "good": [
+        "Um percurso longo com narrativa contínua e acúmulo",
+        "Muitos idiomas sem um único botão de idioma",
+        "Um rastro depois da visita: um e-mail, uma página, um link para o que foi juntado"
+       ],
+       "bad": [
+        "Entrada franca sem ingresso — não há quem entregue os cartões",
+        "Dados pessoais: vincular isso à identidade do visitante exige base legal",
+        "Cartões são levados embora e perdidos, um custo corrente permanente"
+       ],
+       "brands": [
+        {
+         "n": "NXP",
+         "u": "https://www.nxp.com/",
+         "note": "chips MIFARE, padrão do setor"
+        },
+        {
+         "n": "Impinj",
+         "u": "https://www.impinj.com/",
+         "note": "RFID de longo alcance"
+        }
+       ]
+      },
+      {
+       "id": "load-cell",
+       "name": "Sensores de peso, pressão e ambiente",
+       "line": "A exposição sente esforço físico",
+       "what": "Células de carga, tapetes de pressão, sensores de rotação. Baratos e absolutamente honestos: aplique força e algo acontece. Nada a explicar.",
+       "good": [
+        "Comparar esforço ou massa: levantar, apertar, puxar",
+        "Um tapete junto a um exponente que inicia a cena quando alguém pisa",
+        "O exponente precisa funcionar para uma pessoa de qualquer altura e de qualquer mão"
+       ],
+       "bad": [
+        "Medida precisa como conteúdo: sensores domésticos desviam com o tempo",
+        "Carga constante desgasta a mecânica mais rápido que a eletrônica"
+       ],
+       "brands": [
+        {
+         "n": "HBM",
+         "u": "https://www.hbm.com/",
+         "note": "células de carga de precisão industrial"
+        },
+        {
+         "n": "Phidgets",
+         "u": "https://www.phidgets.com/",
+         "note": "módulos prontos com conexão"
+        }
+       ]
+      }
+     ],
+     "svc": "museum-equipment"
+    },
+    {
+     "name": "Corpo e gesto",
+     "note": "Nada a tocar e nada a explicar. O grupo mais marcante e o mais temperamental: quanto menos contato existe, mais difícil é perceber que você está no controle.",
+     "items": [
+      {
+       "id": "depth-camera",
+       "name": "Câmera de profundidade e rastreamento de esqueleto",
+       "line": "O sistema enxerga postura e movimento",
+       "what": "A câmera mede a distância até cada ponto do quadro e monta um esqueleto: onde estão os braços, para que lado é a inclinação, quantas pessoas há. A base de tudo que envolve acenar, copiar e desviar.",
+       "note_hw": "Importante para a especificação: a Microsoft encerrou a produção do Azure Kinect DK em 2023 e passou a tecnologia a parceiros. O sucessor direto é o Orbbec Femto Bolt, com a mesma tecnologia de profundidade e interface de programação compatível: o código de Kinect migra quase sem alterações. Se a sua especificação ainda diz “Kinect”, isso é um sinal de alerta — o documento foi escrito com modelos antigos.",
+       "good": [
+        "Movimento de corpo inteiro: copiar, desviar, dançar, ficar parado",
+        "Várias pessoas ao mesmo tempo diante de um mesmo exponente",
+        "Contar a fila e saber se há alguém ali"
+       ],
+       "bad": [
+        "Sol forte: câmeras de profundidade infravermelhas ficam cegas ao ar livre",
+        "Multidão densa — os esqueletos se fundem",
+        "Roupas escuras e superfícies refletivas deixam buracos na medição"
+       ],
+       "brands": [
+        {
+         "n": "Orbbec Femto Bolt",
+         "u": "https://www.orbbec.com/products/tof-camera/femto-bolt/",
+         "note": "sucessor oficial do Azure Kinect"
+        },
+        {
+         "n": "RealSense",
+         "u": "https://www.intelrealsense.com/",
+         "note": "câmeras estéreo; desde 2025 empresa independente fora da Intel"
+        },
+        {
+         "n": "Luxonis OAK",
+         "u": "https://www.luxonis.com/",
+         "note": "profundidade mais rede neural dentro da própria câmera"
+        },
+        {
+         "n": "Stereolabs ZED",
+         "u": "https://www.stereolabs.com/",
+         "note": "estéreo em grandes distâncias"
+        }
+       ]
+      },
+      {
+       "id": "hand-tracking",
+       "name": "Rastreamento de mãos",
+       "line": "Dedos no ar, sem luvas",
+       "what": "O aparelho olha para cima e enxerga as mãos até os dedos individuais: um objeto virtual pode ser pego, girado e desmontado com a mão. Nenhum toque — e parece mágica.",
+       "good": [
+        "Higiene acima de tudo: medicina, museu infantil, restrições sanitárias",
+        "Uma ação sobre um objeto: girar, abrir, desmontar",
+        "O exponente deve parecer mágica"
+       ],
+       "bad": [
+        "O volume útil é pequeno — cerca de um metro cúbico acima do aparelho, não mais",
+        "As pessoas não pensam em levantar as mãos: a tela precisa dar a dica com movimento",
+        "Os braços cansam em um minuto — o roteiro tem que ser curto"
+       ],
+       "brands": [
+        {
+         "n": "Ultraleap",
+         "u": "https://www.ultraleap.com/",
+         "note": "padrão do setor em mãos"
+        }
+       ]
+      },
+      {
+       "id": "presence-sensor",
+       "name": "Sensor de presença",
+       "line": "O exponente acorda sozinho",
+       "what": "Um sensor infravermelho ou de radar percebe alguém por perto. A peça mais barata de toda a especificação e uma das mais úteis: o exponente chama, e em uma sala vazia ele economiza a própria vida.",
+       "good": [
+        "O exponente deve chamar em vez de esperar ser apertado",
+        "Economizar horas de painel e de projetor nos períodos vazios",
+        "Estatística honesta de fluxo por zona"
+       ],
+       "bad": [
+        "Um corredor de passagem: dispara com todo mundo que passa",
+        "O radar enxerga através de uma divisória fina — a sala ao lado vai ficar acordando a sua",
+        "Uma partida abrupta assusta as pessoas: suba o efeito com suavidade"
+       ],
+       "brands": [
+        {
+         "n": "Aqara",
+         "u": "https://www.aqara.com/",
+         "note": "radares milimétricos de presença, acessíveis"
+        },
+        {
+         "n": "Panasonic Grid-EYE",
+         "u": "https://industrial.panasonic.com/",
+         "note": "matriz térmica, conta pessoas"
+        },
+        {
+         "n": "Terabee",
+         "u": "https://www.terabee.com/",
+         "note": "contagem de visitantes em vãos"
+        }
+       ]
+      },
+      {
+       "id": "eeg",
+       "name": "Leitura de atividade cerebral",
+       "line": "Um exponente que se opera não fazendo nada",
+       "what": "Uma faixa leve lê a atividade cerebral e distingue estados — concentração, relaxamento, um pico de atenção. Ela não lê pensamentos, e dizer isso com todas as letras no exponente já é metade do roteiro.",
+       "note_hw": "As expectativas precisam ser baixadas antes. Modelos de consumo dão alguns canais e distinguem dois ou três estados com atraso de segundos. Qualquer coisa que prometa mais de uma faixa de consumo é marketing.",
+       "good": [
+        "O tema da exposição é o próprio cérebro, a atenção, a meditação, a consciência",
+        "Um exponente de disputa: quem relaxa ou se concentra mais rápido",
+        "Uma zona com atendimento, onde a equipe coloca o aparelho e explica",
+        "Deseja-se uma conversa sobre a tecnologia, não apenas um efeito"
+       ],
+       "bad": [
+        "Fluxo livre: a faixa é colocada, ajustada e higienizada — isso leva minutos",
+        "Higiene e cabelo: o contato dos eletrodos depende do penteado e do gel",
+        "Resultado garantido: em algumas pessoas o sinal simplesmente não é lido",
+        "Dados sobre o estado de uma pessoa são de novo questão jurídica, se forem armazenados"
+       ],
+       "brands": [
+        {
+         "n": "Muse",
+         "u": "https://choosemuse.com/",
+         "note": "faixa com eletrodos secos, com fluxo de dados para o desenvolvedor"
+        },
+        {
+         "n": "Emotiv",
+         "u": "https://www.emotiv.com/",
+         "note": "mais canais, nível de pesquisa"
+        },
+        {
+         "n": "OpenBCI",
+         "u": "https://openbci.com/",
+         "note": "plataforma aberta, acesso completo aos dados brutos"
+        },
+        {
+         "n": "Lab Streaming Layer",
+         "u": "https://labstreaminglayer.org/",
+         "note": "protocolo aberto: liga o aparelho à cena"
+        }
+       ]
+      }
+     ],
+     "svc": "interactive-exhibition"
+    },
+    {
+     "name": "Câmera e algoritmo",
+     "note": "Uma câmera comum mais um software que entende o quadro. O único grupo em que você precisa de um advogado antes de precisar de um engenheiro.",
+     "items": [
+      {
+       "id": "computer-vision",
+       "name": "Visão computacional",
+       "line": "Uma câmera que entende o quadro",
+       "what": "Uma câmera industrial e uma rede neural: distingue objetos, conta pessoas, reconhece um gesto ou um desenho. Uma câmera substitui uma dúzia de sensores e faz o que sensores não fazem de jeito nenhum.",
+       "good": [
+        "O visitante desenha, monta ou constrói — e o sistema entende",
+        "Contar fluxo e mapear o calor da sala: onde as pessoas ficam, por onde passam direto",
+        "Reagir a um objeto que alguém trouxe consigo"
+       ],
+       "bad": [
+        "A luz muda ao longo do dia — um modelo treinado de manhã erra à noite",
+        "Exige-se precisão garantida: a visão é probabilística por natureza",
+        "Filmar pessoas: base legal e aviso claro são obrigatórios"
+       ],
+       "brands": [
+        {
+         "n": "Basler",
+         "u": "https://www.baslerweb.com/",
+         "note": "câmeras industriais, prazo longo de fornecimento dos modelos"
+        },
+        {
+         "n": "Luxonis OAK",
+         "u": "https://www.luxonis.com/",
+         "note": "rede neural dentro da câmera"
+        },
+        {
+         "n": "NVIDIA Jetson",
+         "u": "https://developer.nvidia.com/embedded-computing",
+         "note": "processamento local, sem nuvem"
+        },
+        {
+         "n": "Ultralytics YOLO",
+         "u": "https://www.ultralytics.com/",
+         "note": "reconhecimento de objetos, modelo aberto"
+        }
+       ]
+      },
+      {
+       "id": "face-recognition",
+       "name": "Reconhecimento facial e de emoções",
+       "line": "Tecnicamente fácil, juridicamente caro",
+       "what": "Idade, gênero, emoção, identidade — a partir de um rosto. Funciona de forma confiável e custa pouco. A gente instala isso raramente e discute à parte: biometria é uma categoria especial de dado pessoal, e as regras são mais duras do que parecem na demonstração do fornecedor.",
+       "good": [
+        "Estatística anônima sem guardar quadros: quantas pessoas, de que faixa etária aproximada",
+        "Uma narrativa em que o reconhecimento é o tema da exposição e o visitante concordou com isso"
+       ],
+       "bad": [
+        "Guardar biometria sem consentimento por escrito é uma infração direta",
+        "Público jovem: mais um nível de exigências",
+        "Um erro de reconhecimento em público humilha a pessoa, e isso não é problema técnico"
+       ],
+       "warn": "É aqui que normalmente dissuadimos o cliente. Nove em cada dez vezes a tarefa real é resolvida por contagem anônima de silhuetas, sem rosto nenhum — mais barato, mais confiável e sem consequência jurídica.",
+       "brands": []
+      },
+      {
+       "id": "voice",
+       "name": "Voz",
+       "line": "Pergunte em voz alta, receba uma resposta",
+       "what": "Isso só ficou utilizável recentemente: os modelos atuais entendem fala viva em vez de comandos decorados, e respondem a partir do conteúdo da exposição, e não de uma lista de dez perguntas.",
+       "good": [
+        "Perguntas abertas que não dá para antecipar",
+        "Acessibilidade: um visitante para quem ler ou alcançar uma tela é difícil",
+        "O diálogo como o próprio tema — uma conversa com um personagem, uma testemunha, um especialista"
+       ],
+       "bad": [
+        "Uma sala barulhenta: o reconhecimento falha primeiro, e quem se sente culpado é o visitante",
+        "Muita gente tem vergonha de falar alto entre estranhos — uma zona semifechada ajuda",
+        "As respostas do modelo precisam estar limitadas ao conteúdo do museu, ou ele vai inventar"
+       ],
+       "brands": [
+        {
+         "n": "Yandex SpeechKit",
+         "u": "https://yandex.cloud/ru/services/speechkit",
+         "note": "reconhecimento e síntese, funciona na Rússia"
+        },
+        {
+         "n": "Vosk",
+         "u": "https://alphacephei.com/vosk/",
+         "note": "reconhecimento sem internet, aberto"
+        },
+        {
+         "n": "Whisper",
+         "u": "https://openai.com/research/whisper",
+         "note": "reconhecimento de fala, modelo aberto"
+        }
+       ]
+      },
+      {
+       "id": "indoor-tracking",
+       "name": "Posicionamento dentro do prédio",
+       "line": "A exposição sabe onde você está",
+       "what": "Uma etiqueta no ingresso e receptores pelo prédio: o sistema sabe quem está onde, com precisão de dezenas de centímetros. O conteúdo chega pela localização, e você ganha um mapa dos percursos que as pessoas realmente fazem.",
+       "good": [
+        "Uma área grande com narrativa contínua e percurso pessoal",
+        "Um audioguia que sabe sozinho diante de que exponente você está",
+        "Análise de percurso: por onde as pessoas realmente andam e onde fica a zona morta"
+       ],
+       "bad": [
+        "Uma exposição pequena: um sensor de presença é dezenas de vezes mais barato e faz o mesmo",
+        "Metal e paredes grossas atrapalham o rádio",
+        "Vincular isso à identidade do visitante — de novo uma questão jurídica"
+       ],
+       "brands": [
+        {
+         "n": "Pozyx",
+         "u": "https://www.pozyx.io/",
+         "note": "posicionamento de banda ultralarga, dezenas de centímetros"
+        },
+        {
+         "n": "Estimote",
+         "u": "https://estimote.com/",
+         "note": "beacons Bluetooth, metros"
+        }
+       ]
+      },
+      {
+       "id": "scan-animate",
+       "name": "Desenhe e dê vida",
+       "line": "O desenho de um visitante nada até a tela coletiva",
+       "what": "Uma mesa com papel e um scanner: pinte uma folha, coloque sob a câmera e dez segundos depois o seu personagem está nadando junto com os dos outros. Segura uma criança sem falhar, e a folha vai para casa.",
+       "good": [
+        "Público infantil e familiar: funciona sem falhar",
+        "Um rastro depois da visita — a folha fica com o visitante",
+        "Uma tela coletiva acumulando a contribuição de todo mundo que passou naquele dia"
+       ],
+       "bad": [
+        "Consumíveis: papel, lápis, e alguém tem que repor",
+        "Moderação — qualquer coisa pode acabar em uma folha, então são necessários filtro ou equipe",
+        "Público adulto sem crianças passa direto"
+       ],
+       "brands": [
+        {
+         "n": "Basler",
+         "u": "https://www.baslerweb.com/",
+         "note": "câmeras para mesa de digitalização"
+        }
+       ]
+      },
+      {
+       "id": "lidar-scan",
+       "name": "Digitalização tridimensional",
+       "line": "Como um objeto real entra na cena",
+       "what": "Um scanner a laser ou fotogrametria transforma um objeto, uma sala ou um terreno em um modelo preciso. Modelar um prédio do zero custa mais e convence menos do que escaneá-lo em um dia.",
+       "good": [
+        "Existe um original, um prédio ou um terreno que precisa ser mostrado com fidelidade",
+        "Projeção sobre maquete: a planificação é calculada a partir do escaneamento, não do desenho",
+        "O objeto está prestes a mudar ou desaparecer — o escaneamento fica para sempre",
+        "É preciso geometria verificada da sala antes de instalar equipamento"
+       ],
+       "bad": [
+        "Superfícies brilhantes, transparentes e pretas escaneiam mal — vidro e polimento exigem spray fosco ou reparo manual",
+        "Um escaneamento bruto não serve para mostrar: milhões de pontos precisam ser limpos e simplificados, e esse trabalho supera o próprio escaneamento",
+        "Detalhe fino em escala de joalheria: isso exige outra classe de instrumento"
+       ],
+       "spec": "Escanear leva um ou dois dias; processar leva semanas. Os orçamentos costumam incluir o primeiro e esquecer o segundo.",
+       "brands": [
+        {
+         "n": "Faro",
+         "u": "https://www.faro.com/",
+         "note": "scanners fixos de ambientes e terrenos"
+        },
+        {
+         "n": "Leica Geosystems",
+         "u": "https://leica-geosystems.com/",
+         "note": "segmento premium, grandes territórios"
+        },
+        {
+         "n": "Artec 3D",
+         "u": "https://www.artec3d.com/",
+         "note": "scanners manuais de objetos, raízes russas"
+        },
+        {
+         "n": "RealityCapture",
+         "u": "https://www.capturingreality.com/",
+         "note": "fotogrametria a partir de fotos comuns"
+        },
+        {
+         "n": "Polycam",
+         "u": "https://poly.cam/",
+         "note": "escaneamento com o lidar do iPhone, captura preliminar no local"
+        }
+       ]
+      }
+     ],
+     "svc": "interactive-exhibition"
+    },
+    {
+     "name": "O aparelho do próprio visitante",
+     "note": "Um celular não cabe nas três categorias: ele é entrada, saída e processamento ao mesmo tempo. E já está no bolso de todo mundo — o equipamento mais barato daqui e o mais difícil de usar bem.",
+     "items": [
+      {
+       "id": "phone-all-in-one",
+       "name": "O celular como sistema completo",
+       "line": "Entrada, saída e processamento ao mesmo tempo — às custas de outra pessoa",
+       "what": "Um celular já tem toque, câmera, microfone, sensores, lidar nos modelos superiores, tela, som e potência suficiente para realidade aumentada. Nada gasto em hardware. Você paga em outro lugar: cada passo antes de iniciar perde gente.",
+       "spec": "Conte o funil com honestidade. Cem pessoas chegam ao exponente; metade nota o convite; um terço dessas tira o celular; um punhado instala um aplicativo. Uma página web sem instalação muda essa aritmética várias vezes, e quase sempre é a escolha certa.",
+       "good": [
+        "Um exponente fora do prédio: um pátio, um parque, uma rua, um percurso pela cidade",
+        "Um percurso pessoal e algo para levar: uma foto, um resultado, um link",
+        "Muitos idiomas sem botão — o celular sabe o idioma do dono",
+        "Uma exposição temporária em que não há o que construir, mas há o que contar",
+        "Acessibilidade: a tela da pessoa, o tamanho de letra dela, os ajustes de visão dela"
+       ],
+       "bad": [
+        "Como exponente principal do percurso: parte dos visitantes simplesmente não vai tirar o celular",
+        "Contar que um aplicativo seja instalado para uma visita única — quase ninguém vai",
+        "Público mais velho e grupos escolares sem celular",
+        "Conectividade fraca: a rede de visitantes tem que ser testada antes, não no dia da abertura",
+        "Bateria: um roteiro longo esgota ela, e a culpa vai para o museu"
+       ],
+       "brands": [
+        {
+         "n": "Apple ARKit",
+         "u": "https://developer.apple.com/augmented-reality/",
+         "note": "melhor rastreamento, lidar nos modelos superiores"
+        },
+        {
+         "n": "Google ARCore",
+         "u": "https://developers.google.com/ar",
+         "note": "Android, funciona sem instalação pelo Scene Viewer"
+        },
+        {
+         "n": "8th Wall",
+         "u": "https://www.8thwall.com/",
+         "note": "realidade aumentada direto no navegador, sem aplicativo"
+        },
+        {
+         "n": "izi.TRAVEL",
+         "u": "https://izi.travel/",
+         "note": "plataforma pronta de audioguias, gratuita para museus"
+        }
+       ]
+      }
+     ],
+     "svc": "exhibition-stand"
+    }
+   ]
+  },
+  {
+   "id": "processing",
+   "num": "03",
+   "name": "Processamento",
+   "full": "Processamento e controle",
+   "line": "O que ninguém vê e sustenta tudo",
+   "lead": "Máquinas, engines, rede, controle da sala. Nada disso aparece em uma única foto de exposição, e é por isso que é a primeira coisa cortada do orçamento. Um ano depois é exatamente essa parte que decide se o lugar funciona ou fica parado.",
+   "principle": "Recebimento em duas perguntas: o exponente sobe com um botão apertado por um atendente, e o museu consegue mudar o texto sozinho? Dois nãos e você comprou um fornecedor perpétuo, não um sistema.",
+   "sections": [
+    {
+     "name": "Máquinas",
+     "note": "O hardware em que tudo roda. Escolhido não pela potência, e sim por quem vai reiniciar aquilo, e como.",
+     "items": [
+      {
+       "id": "player",
+       "name": "Player de mídia dedicado",
+       "line": "Uma caixa que simplesmente toca",
+       "what": "Sem partes móveis e sem sistema operacional no sentido usual: ligue e a programação roda. Não trava, não atualiza na hora errada e não mostra uma área de trabalho no meio de uma galeria.",
+       "good": [
+        "Um filme ou uma programação sem interatividade",
+        "Muitos pontos iguais: dez telas com o mesmo conteúdo",
+        "Ninguém para fazer manutenção — você precisa de uma coisa que simplesmente não quebre"
+       ],
+       "bad": [
+        "Interatividade de verdade e 3D em tempo real — está além dele",
+        "Conteúdo que depende de dados e lógica externos"
+       ],
+       "brands": [
+        {
+         "n": "BrightSign",
+         "u": "https://www.brightsign.biz/",
+         "note": "padrão do setor de sinalização digital"
+        },
+        {
+         "n": "Advantech",
+         "u": "https://www.advantech.com/",
+         "note": "players e painéis industriais"
+        }
+       ]
+      },
+      {
+       "id": "industrial-pc",
+       "name": "Computador industrial",
+       "line": "Sem ventoinha, sem poeira, sem surpresas",
+       "what": "Gabinete selado, refrigeração passiva e anos com o mesmo modelo disponível. Esse último ponto importa mais que velocidade: daqui a três anos você vai precisar exatamente do mesmo.",
+       "note_hw": "Uma montagem de escritório comum dentro de um pedestal sobrevive até o primeiro verão: a poeira assenta na ventoinha, a temperatura sobe e a máquina reduz o desempenho no dia mais movimentado. Esse é o erro mais comum nas especificações prontas.",
+       "good": [
+        "Um exponente dentro de uma caixa fechada ou em uma sala empoeirada",
+        "Funcionar por meses sem ser desligado",
+        "Uma garantia de que a mesma unidade poderá ser comprada daqui a três anos"
+       ],
+       "bad": [
+        "Gráficos pesados em tempo real: isso exige placa dedicada e refrigeração ativa",
+        "Uma feira de uma semana — pagar a mais"
+       ],
+       "brands": [
+        {
+         "n": "Advantech",
+         "u": "https://www.advantech.com/",
+         "note": "ciclo de vida longo dos modelos"
+        },
+        {
+         "n": "ASUS NUC",
+         "u": "https://www.asus.com/displays-desktops/nucs/",
+         "note": "linha NUC, que passou da Intel para a ASUS"
+        },
+        {
+         "n": "Simply NUC",
+         "u": "https://simplynuc.com/",
+         "note": "montagens sob medida"
+        }
+       ]
+      },
+      {
+       "id": "single-board",
+       "name": "Computador de placa única",
+       "line": "Trinta dólares em vez de trezentos",
+       "what": "Um computador do tamanho da palma cobre metade dos pontos de uma exposição: um sensor, um botão, som em um gatilho, iluminação, vídeo simples. Em todo lugar onde de outro jeito ficaria um PC completo “por precaução”.",
+       "good": [
+        "Muitos pontos pequenos: um sensor, um botão, uma lâmpada, uma resposta em áudio",
+        "O exponente se esconde em um pedestal sem espaço e sem ventilação",
+        "Reposição importa: manter três na prateleira é barato",
+        "Uma ligação com o mundo físico — sensores e atuadores conectam direto"
+       ],
+       "bad": [
+        "3D em tempo real e vídeo pesado: não é para isso",
+        "O cartão de memória é o ponto fraco; com desligamentos bruscos frequentes ele morre primeiro — cura-se dando boot de um SSD e com sistema de arquivos somente leitura",
+        "Fornecimento em lotes: em falta de mercado, preço e prazo triplicam"
+       ],
+       "spec": "A pergunta principal não é desempenho, e sim como ele sobrevive a ser desligado na tomada no fim do expediente. Uma placa configurada para ler de uma partição protegida dura anos; uma instalação padrão em cartão de memória dura meses.",
+       "brands": [
+        {
+         "n": "Raspberry Pi",
+         "u": "https://www.raspberrypi.com/",
+         "note": "padrão: documentação, comunidade, prazos industriais de fornecimento"
+        },
+        {
+         "n": "NVIDIA Jetson",
+         "u": "https://developer.nvidia.com/embedded-computing",
+         "note": "o mesmo, mas com redes neurais embarcadas"
+        },
+        {
+         "n": "Arduino",
+         "u": "https://www.arduino.cc/",
+         "note": "se você só precisa da física, sem sistema operacional"
+        },
+        {
+         "n": "Radxa",
+         "u": "https://radxa.com/",
+         "note": "alternativa ao Raspberry Pi, muitas vezes mais acessível"
+        }
+       ]
+      },
+      {
+       "id": "workstation",
+       "name": "Estação gráfica",
+       "line": "Quando a imagem é calculada agora",
+       "what": "Uma placa gráfica profissional e várias saídas. Necessária onde a imagem não é reproduzida, e sim gerada: 3D em tempo real, reação a uma pessoa, telas sincronizadas a partir de uma mesma cena.",
+       "good": [
+        "Uma cena 3D interativa reagindo aos visitantes",
+        "Vários projetores a partir de uma fonte, mesclados em um campo único",
+        "Conteúdo que depende de dados e muda ao vivo"
+       ],
+       "bad": [
+        "Ela toca um filme — várias vezes o dinheiro por nada",
+        "Sem ventilação no pedestal: essa máquina esquenta de verdade"
+       ],
+       "brands": [
+        {
+         "n": "NVIDIA RTX",
+         "u": "https://www.nvidia.com/ru-ru/design-visualization/rtx/",
+         "note": "placas profissionais, sincronização de saídas"
+        },
+        {
+         "n": "Dell Precision",
+         "u": "https://www.dell.com/",
+         "note": "estações com suporte prolongado"
+        },
+        {
+         "n": "HP Z",
+         "u": "https://www.hp.com/",
+         "note": "o mesmo, fornecedor alternativo"
+        }
+       ]
+      },
+      {
+       "id": "edge-ai",
+       "name": "Redes neurais no local",
+       "line": "Calcula aqui, não manda nada para lugar nenhum",
+       "what": "O módulo roda o reconhecimento na própria sala, sem internet e sem nuvem. As imagens nunca saem do museu — e metade das questões jurídicas desaparece antes de surgir.",
+       "good": [
+        "Reconhecimento onde os dados não podem ser enviados para fora",
+        "Internet instável, ou nenhuma",
+        "A latência é crítica: a resposta tem que ser imediata"
+       ],
+       "bad": [
+        "Os modelos mais pesados: a capacidade local é sempre menor que a da nuvem",
+        "Um modelo que precisa de atualizações frequentes — no local isso é trabalho manual"
+       ],
+       "brands": [
+        {
+         "n": "NVIDIA Jetson",
+         "u": "https://developer.nvidia.com/embedded-computing",
+         "note": "padrão para visão no local"
+        },
+        {
+         "n": "Luxonis OAK",
+         "u": "https://www.luxonis.com/",
+         "note": "câmera e processador no mesmo gabinete"
+        }
+       ]
+      },
+      {
+       "id": "os-choice",
+       "name": "O sistema operacional da sala",
+       "line": "Uma escolha sem graça que ecoa por dois anos",
+       "what": "Windows, macOS ou Linux se decide uma vez e determina quem consegue fazer a manutenção da exposição. Escolhido não por gosto, e sim pelo que o software necessário roda, e por quem vai consertar num sábado à tarde.",
+       "compare": "**Windows** roda quase tudo: servidores de mídia, TouchDesigner, builds de Unity e Unreal, drivers para qualquer hardware. O preço são atualizações que chegam na hora errada e reiniciam a galeria; cura-se com uma edição de suporte de longo prazo, não com uma caixinha de “adiar”. **macOS** é confiável e silencioso, bom para áudio e vídeo, mas a escolha de software é mais estreita e é mais difícil colocar a máquina em um pedestal e deixar por cinco anos. **Linux** é gratuito, não se reinicia sozinho e é ideal para players e placas únicas; servidores de mídia profissionais para ele são raros.",
+       "good": [
+        "Windows: interatividade, 3D, hardware incomum, servidores de mídia",
+        "macOS: áudio, vídeo, precisão de cor, um ponto pequeno e silencioso",
+        "Linux: programações, players, placas únicas, tudo que simplesmente não pode cair"
+       ],
+       "bad": [
+        "Um parque misto de três sistemas em uma mesma galeria: não vai haver quem faça a manutenção",
+        "Escolher pelo hábito do fornecedor e não pelo software — o motivo mais comum de um museu acabar amarrado a um único prestador"
+       ],
+       "warn": "Seja qual for a escolha, desative atualizações automáticas e suspensão automática, configure o roteiro para iniciar no boot e habilite o login automático. Teste isso no recebimento do jeito simples: tire da tomada e veja se o exponente volta sozinho, sem teclado.",
+       "brands": [
+        {
+         "n": "Windows IoT Enterprise LTSC",
+         "u": "https://www.microsoft.com/en-us/windows/business/windows-iot",
+         "note": "edição sem atualizações repentinas, para quiosques"
+        },
+        {
+         "n": "Ubuntu LTS",
+         "u": "https://ubuntu.com/",
+         "note": "suporte longo, gratuito"
+        },
+        {
+         "n": "Debian",
+         "u": "https://www.debian.org/",
+         "note": "base da maioria dos players e placas únicas"
+        }
+       ]
+      }
+     ],
+     "svc": "museum-equipping"
+    },
+    {
+     "name": "Servidores de mídia",
+     "note": "Uma classe à parte: máquina e software juntos. A tarefa é reunir uma dúzia de imagens e saídas em uma única imagem governável.",
+     "items": [
+      {
+       "id": "media-server",
+       "name": "Servidor de mídia",
+       "line": "Um cérebro para uma parede de projeção inteira",
+       "what": "Alimenta uma dúzia de saídas, mescla projetores em um campo único, corrige a geometria para uma superfície curva e mantém tudo em uma linha do tempo. Mais de dois projetores sem um deles é um zoológico.",
+       "good": [
+        "Vários projetores em um campo único: um panorama, uma cúpula, uma abóbada",
+        "Mapeamento sobre volume com geometria exata",
+        "O espetáculo roda por programação e precisa iniciar sozinho"
+       ],
+       "bad": [
+        "Uma tela com um filme — uma ordem de grandeza mais do que o necessário",
+        "Interatividade profunda: um servidor de mídia é forte em reprodução, não em lógica"
+       ],
+       "brands": [
+        {
+         "n": "Dataton WATCHOUT",
+         "u": "https://www.dataton.com/",
+         "note": "padrão de museu, muitas saídas"
+        },
+        {
+         "n": "disguise",
+         "u": "https://www.disguise.one/",
+         "note": "segmento premium, palco e grandes espaços"
+        },
+        {
+         "n": "Green Hippo",
+         "u": "https://www.green-hippo.com/",
+         "note": "mapeamento e controle ao vivo"
+        },
+        {
+         "n": "Modulo Pi",
+         "u": "https://www.modulo-pi.com/",
+         "note": "instalações, geometria forte"
+        },
+        {
+         "n": "7thSense",
+         "u": "https://7thsense.one/",
+         "note": "cúpulas e planetários"
+        },
+        {
+         "n": "Christie Pandoras Box",
+         "u": "https://www.christiedigital.com/",
+         "note": "exibição e mapeamento em um só sistema"
+        }
+       ]
+      },
+      {
+       "id": "warp-blend",
+       "name": "Warping e correção de geometria",
+       "line": "Para que a emenda não seja vista",
+       "what": "O software descobre, a partir de fotos de câmera, como distorcer cada imagem para que os projetores se fundam em um campo único. Recalculado em minutos e não da noite para o dia — o que importa, porque prédios se mexem e equipamentos se deslocam.",
+       "good": [
+        "Mais de um projetor sobre uma mesma superfície",
+        "Uma superfície que não é plana: uma abóbada, uma cúpula, um canto, uma maquete",
+        "A calibração vai precisar ser refeita — prédios se mexem e equipamentos se deslocam"
+       ],
+       "bad": [
+        "Um projetor em parede plana — não é preciso nada",
+        "Sem como posicionar uma câmera onde o espectador fica"
+       ],
+       "brands": [
+        {
+         "n": "Scalable Display",
+         "u": "https://www.scalabledisplay.com/",
+         "note": "autocalibração por câmera"
+        },
+        {
+         "n": "VIOSO",
+         "u": "https://vioso.com/",
+         "note": "mesclagem, inclusive dentro de servidores de mídia"
+        },
+        {
+         "n": "Domeprojection",
+         "u": "https://www.domeprojection.com/",
+         "note": "cúpulas e esferas"
+        }
+       ]
+      }
+     ],
+     "svc": "projection-mapping"
+    },
+    {
+     "name": "Motores e ambientes",
+     "note": "Onde o conteúdo é feito. A escolha decide não como aquilo fica, e sim quem vai conseguir mudar depois.",
+     "items": [
+      {
+       "id": "unity",
+       "name": "Unity",
+       "line": "O cavalo de batalha dos exponentes interativos",
+       "what": "O padrão da interatividade museológica: 3D em tempo real, qualquer sensor, builds para tudo, de uma tela de galeria a um óculos e a um celular. Mais especialistas no mercado do que para qualquer outra ferramenta desta lista, e um fornecedor fácil de substituir.",
+       "good": [
+        "Um exponente interativo com lógica e estado de verdade",
+        "Um mesmo corpo de conteúdo em vários aparelhos: galeria, óculos, celular",
+        "Você quer um fornecedor que possa ser substituído com facilidade depois"
+       ],
+       "bad": [
+        "Um filme simples — exagero",
+        "Arquitetura fotorrealista de primeira linha: a Unreal é mais forte nisso"
+       ],
+       "brands": [
+        {
+         "n": "Unity",
+         "u": "https://unity.com/",
+         "note": "motor e ambiente de desenvolvimento"
+        }
+       ],
+       "case": "vdnh-space-center"
+      },
+      {
+       "id": "unreal",
+       "name": "Unreal Engine",
+       "line": "Quando a credibilidade da imagem decide",
+       "what": "A iluminação e os materiais mais fortes prontos de fábrica. Escolhida onde a imagem precisa ser indistinguível de uma fotografia: arquitetura, interiores, paisagem, um produto em qualidade de publicidade.",
+       "good": [
+        "Arquitetura e território que precisam parecer reais",
+        "Um mundo grande com vistas distantes",
+        "O material importa por si só: metal, tecido, vidro"
+       ],
+       "bad": [
+        "Hardware modesto: as exigências de máquina são bem mais altas",
+        "Lógica simples em uma tela pequena — pesado para a tarefa"
+       ],
+       "brands": [
+        {
+         "n": "Unreal Engine",
+         "u": "https://www.unrealengine.com/",
+         "note": "motor, gratuito para projetos não comerciais"
+        }
+       ]
+      },
+      {
+       "id": "touchdesigner",
+       "name": "TouchDesigner",
+       "line": "Um ambiente para coisas que nunca se repetem",
+       "what": "Um ambiente de nós para gráficos generativos e reação ao vivo a dados. A Unity monta uma cena; o TouchDesigner monta um fluxo — uma imagem nascida de movimento e som que nunca fica igual duas vezes.",
+       "good": [
+        "Conteúdo generativo: uma imagem nascida de dados ou de movimento",
+        "Muitas entradas e saídas ao mesmo tempo: câmeras, sensores, projetores, som",
+        "Retrabalho rápido no local, durante a instalação"
+       ],
+       "bad": [
+        "Lógica clássica de jogo com fases e estados",
+        "Ampla escolha de fornecedores substitutos: há bem menos especialistas"
+       ],
+       "brands": [
+        {
+         "n": "Derivative TouchDesigner",
+         "u": "https://derivative.ca/",
+         "note": "ambiente, licença gratuita para ensino"
+        }
+       ]
+      },
+      {
+       "id": "ventuz",
+       "name": "Ventuz",
+       "line": "Tempo real sem uma linha de código",
+       "what": "Um ambiente de nós para gráficos interativos: configuradores, vitrines, videowalls, estúdios virtuais. Dividido em três partes — o Designer desenha, o Runtime reproduz, o Director conduz o espetáculo de uma mesa. Mais forte onde a imagem muda ao vivo, na frente das pessoas.",
+       "good": [
+        "Um configurador de produto: cor, acabamento, material — na hora e em volume",
+        "Um showroom ou concessionária em que uma pessoa conduz o espetáculo, e não uma programação",
+        "Dados ao vivo em uma tela grande: mercados, produção, logística",
+        "Um estúdio de TV, cenários virtuais e realidade aumentada no ar"
+       ],
+       "bad": [
+        "Só Windows",
+        "Bem menos especialistas no mercado do que para Unity",
+        "Licenciamento pago contado por máquina — um parque de dez pontos sente",
+        "Um exponente com lógica simples: exagero"
+       ],
+       "brands": [
+        {
+         "n": "Ventuz",
+         "u": "https://www.ventuz.com/",
+         "note": "Designer, Runtime, Director"
+        }
+       ]
+      },
+      {
+       "id": "vvvv",
+       "name": "vvvv",
+       "line": "Nós, hardware e rede em uma janela",
+       "what": "Um ambiente de nós nascido da media art. A força dele não é a imagem, e sim o encanamento: sensores, DMX, lasers, protocolos industriais, várias máquinas em rede — tudo em uma janela. Onde o TouchDesigner trata da imagem, o vvvv trata mais de fazer equipamentos incompatíveis se entenderem.",
+       "good": [
+        "Muitos equipamentos diferentes que precisam se comportar como uma coisa só",
+        "Protocolos incomuns e eletrônica feita em casa",
+        "Várias máquinas rodando em sincronia",
+        "Um protótipo a ser testado contra hardware real, e não na tela"
+       ],
+       "bad": [
+        "Ainda menos especialistas que para TouchDesigner: não vai haver a quem passar",
+        "Windows",
+        "Barreira de entrada alta e documentação rala em alguns pontos",
+        "Um display simples com um filme em laço — marreta para matar mosquito"
+       ],
+       "brands": [
+        {
+         "n": "vvvv gamma",
+         "u": "https://vvvv.org/",
+         "note": "a geração atual"
+        },
+        {
+         "n": "VL",
+         "u": "https://thegraybook.vvvv.org/",
+         "note": "linguagem e referência"
+        }
+       ]
+      },
+      {
+       "id": "notch-resolume",
+       "name": "Notch e Resolume",
+       "line": "Ferramentas para performance ao vivo",
+       "what": "O Notch calcula efeitos em tempo real dentro de servidores de mídia; o Resolume conduz reprodução e mapeamento de uma mesa. Os dois tratam de um evento e de uma pessoa nos controles, não de uma exposição rodando sem ninguém.",
+       "good": [
+        "Um evento, uma inauguração, um espetáculo em fachada",
+        "O efeito tem que reagir a um sinal ao vivo — som, câmera, operador",
+        "É preciso uma mesa em que alguém se senta e conduz o espetáculo na mão"
+       ],
+       "bad": [
+        "Uma exposição permanente sem operador",
+        "Lógica de interação complexa e ramificada"
+       ],
+       "brands": [
+        {
+         "n": "Notch",
+         "u": "https://www.notch.one/",
+         "note": "efeitos em tempo real, funciona dentro de servidores de mídia"
+        },
+        {
+         "n": "Resolume",
+         "u": "https://resolume.com/",
+         "note": "exibição ao vivo e mapeamento"
+        }
+       ]
+      },
+      {
+       "id": "creative-coding",
+       "name": "Programação criativa",
+       "line": "Aqui os gráficos são escritos, não montados",
+       "what": "Ambientes abertos em que a imagem nasce de código e de dados: visualização de som, padrões generativos, reação ao fluxo de visitantes. Não exigem licenças e se contentam com hardware modesto.",
+       "good": [
+        "Conteúdo generativo: um padrão a partir de dados, som, movimento",
+        "Orçamento pequeno, sem licenças de software",
+        "Um protótipo que precisa ser testado em um dia antes de uma decisão",
+        "Vida longa: código aberto não é retirado nem migrado para assinatura"
+       ],
+       "bad": [
+        "Uma cena complexa com 3D e física — mais rápido em um motor de jogo",
+        "Passar o projeto para outro fornecedor: bem menos especialistas",
+        "Deseja-se suporte de fabricante — por definição ele não existe"
+       ],
+       "brands": [
+        {
+         "n": "openFrameworks",
+         "u": "https://openframeworks.cc/",
+         "note": "C++, instalações, desempenho máximo"
+        },
+        {
+         "n": "Processing",
+         "u": "https://processing.org/",
+         "note": "a menor barreira de entrada, comunidade enorme"
+        },
+        {
+         "n": "p5.js",
+         "u": "https://p5js.org/",
+         "note": "o mesmo no navegador: funciona em qualquer tela sem instalação"
+        },
+        {
+         "n": "vvvv",
+         "u": "https://vvvv.org/",
+         "note": "ambiente de nós, forte no trabalho com hardware"
+        },
+        {
+         "n": "Max/MSP",
+         "u": "https://cycling74.com/",
+         "note": "som e interação, padrão da media art"
+        }
+       ]
+      }
+     ],
+     "svc": "multimedia-equipment"
+    },
+    {
+     "name": "Sinal e operação",
+     "note": "A primeira coisa cortada do orçamento, a primeira lembrada no segundo ano. Se paga com um único chamado que não precisava ter acontecido.",
+     "items": [
+      {
+       "id": "signal",
+       "name": "Distribuição de sinal",
+       "line": "A distância decide mais do que se imagina",
+       "what": "Um cabo comum funciona até uns quinze metros; além disso é preciso par trançado com transmissores, fibra ou a rede. Resolvido enquanto as paredes estão abertas. Depois — caro.",
+       "good": [
+        "Máquina na sala técnica, tela na galeria: separar as duas é o certo",
+        "Muitas fontes e muitas telas com comutação",
+        "Um prédio histórico em que não se pode abrir rasgo nas paredes — a rede salva"
+       ],
+       "bad": [
+        "O transporte por rede acrescenta latência, e a interatividade não perdoa isso",
+        "Extensores baratos produzem quedas que levam meses para rastrear"
+       ],
+       "brands": [
+        {
+         "n": "Extron",
+         "u": "https://www.extron.com/",
+         "note": "padrão de comutação para instalação"
+        },
+        {
+         "n": "Kramer",
+         "u": "https://www.kramerav.com/",
+         "note": "linha ampla, disponível na Rússia"
+        },
+        {
+         "n": "NDI",
+         "u": "https://ndi.video/",
+         "note": "imagem por rede comum"
+        }
+       ]
+      },
+      {
+       "id": "control",
+       "name": "Controle da sala",
+       "line": "Um botão para toda a exposição",
+       "what": "Liga por programação de manhã, desliga à noite e dá ao atendente um painel sensato em vez de dez controles remotos. É isso que decide se o museu abre sem engenheiro.",
+       "good": [
+        "Mais de cinco aparelhos em uma sala",
+        "Abrir e fechar por programação, sem ninguém presente",
+        "Um atendente precisa conseguir reiniciar um exponente sozinho"
+       ],
+       "bad": [
+        "Um ou dois exponentes: uma tomada com temporizador faz o mesmo",
+        "Nenhuma pessoa treinada: isso também exige um mínimo de competência"
+       ],
+       "brands": [
+        {
+         "n": "Crestron",
+         "u": "https://www.crestron.com/",
+         "note": "segmento premium, controle completo"
+        },
+        {
+         "n": "Q-SYS",
+         "u": "https://www.qsys.com/",
+         "note": "som, imagem e controle em um sistema"
+        },
+        {
+         "n": "AMX / Harman",
+         "u": "https://www.amx.com/",
+         "note": "padrão de instalação"
+        }
+       ]
+      },
+      {
+       "id": "monitoring",
+       "name": "Monitoramento e acesso remoto",
+       "line": "Saber da falha antes do visitante",
+       "what": "O sistema avisa que um exponente apagou, que uma lâmpada chegou ao fim da vida ou que uma máquina reiniciou de madrugada. Sem isso você fica sabendo da falha por uma avaliação na internet.",
+       "good": [
+        "Uma exposição com mais de uma sala",
+        "O fornecedor não fica na sua cidade",
+        "Equipamento em garantia, em que as horas de uso precisam ser comprovadas"
+       ],
+       "bad": [
+        "A segurança não vai permitir acesso externo — resolva isso antes, não depois da instalação"
+       ],
+       "brands": [
+        {
+         "n": "Zabbix",
+         "u": "https://www.zabbix.com/ru",
+         "note": "monitoramento aberto, desenvolvimento russo"
+        },
+        {
+         "n": "BrightSign Network",
+         "u": "https://www.brightsign.biz/",
+         "note": "gestão de um parque de players"
+        }
+       ]
+      },
+      {
+       "id": "cms",
+       "name": "Sistema de gestão de conteúdo",
+       "line": "Para que o texto mude sem o fornecedor",
+       "what": "O painel pelo qual o museu edita legendas sozinho, troca fotos e acrescenta um idioma. A linha mais importante da lista de recebimento e a mais frequentemente ausente.",
+       "good": [
+        "O conteúdo vai mudar — e vai mesmo",
+        "Vários idiomas, acrescentados ao longo do tempo",
+        "Exposições temporárias dentro de uma mostra permanente"
+       ],
+       "bad": [
+        "Um exponente único que nunca vai mudar — raro, mas acontece",
+        "Ninguém para usar: um painel sem um funcionário treinado é morto"
+       ],
+       "warn": "Exija isso explicitamente no recebimento: peça que um funcionário do museu mude uma legenda de um exponente, na sua frente, sem telefonar para o fornecedor. Se isso for impossível, você comprou uma dependência.",
+       "brands": []
+      },
+      {
+       "id": "sync",
+       "name": "Sincronização de máquinas",
+       "line": "Para que telas vizinhas fiquem em sincronia",
+       "what": "Cada máquina roda no próprio relógio, e em um minuto de reprodução o desvio já se vê a olho nu. A sincronização amarra todas a um tempo comum: quadro a quadro, som com imagem.",
+       "good": [
+        "Um panorama ou parede montada com várias máquinas",
+        "Som e imagem de fontes diferentes que precisam coincidir",
+        "O espetáculo roda em laço o dia todo e não pode se desencontrar"
+       ],
+       "bad": [
+        "Uma máquina para tudo — não é preciso nada",
+        "Telas distantes que nunca são vistas ao mesmo tempo"
+       ],
+       "brands": [
+        {
+         "n": "NVIDIA Quadro Sync",
+         "u": "https://www.nvidia.com/",
+         "note": "sincronização de saídas por hardware"
+        },
+        {
+         "n": "PTP / IEEE 1588",
+         "u": "https://www.ieee802.org/1/pages/avbridges.html",
+         "note": "tempo único pela rede"
+        }
+       ]
+      },
+      {
+       "id": "backup",
+       "name": "Backup e recuperação",
+       "line": "Um plano para o dia em que quebrar mesmo",
+       "what": "Uma imagem de cada máquina, uma cópia do conteúdo e um procedimento escrito de recuperação. Não é equipamento, é uma cláusula do contrato — e sem isso trocar um computador queimado passa de uma hora para uma semana.",
+       "good": [
+        "Uma exposição que tem que abrir amanhã aconteça o que acontecer",
+        "O fornecedor pode sair do mercado — o museu não",
+        "Equipamento padronizado: uma imagem cobre dez máquinas"
+       ],
+       "bad": [
+        "Nenhuma pessoa que vá seguir o procedimento — aí é preciso um contrato de manutenção"
+       ],
+       "warn": "Peça isso separadamente no recebimento: imagens das máquinas, arquivos-fonte do conteúdo e um procedimento de recuperação impresso. É isso que o museu tem para si, em vez de tomar emprestado por um tempo.",
+       "brands": [
+        {
+         "n": "Clonezilla",
+         "u": "https://clonezilla.org/",
+         "note": "criação de imagens, aberto e gratuito"
+        },
+        {
+         "n": "Veeam",
+         "u": "https://www.veeam.com/",
+         "note": "backup de um parque de máquinas"
+        }
+       ]
+      }
+     ],
+     "svc": "museum-equipping"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,530 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "services-04 (4 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "services-04#001",
+   "path": "services/5/flow/1/text",
+   "ru": "Мы это железо не продаём. Мы им работаем пятнадцать лет, и поэтому знаем про него неприятное: где паспортные цифры расходятся с залом, что ломается на второй год и какая мелочь за триста рублей однажды остановит экспозицию на неделю.",
+   "en": "We do not sell this hardware. We have worked with it for fifteen years, which is why we know the awkward parts: where the datasheet disagrees with the actual room, what fails in year two, and which three-dollar part will one day stop the whole exhibition for a week.",
+   "pt": "A gente não vende esse hardware. Trabalha com ele há quinze anos, e é por isso que conhece as partes chatas: onde a ficha técnica discorda da sala real, o que falha no segundo ano e qual peça de três dólares um dia vai parar a exposição inteira por uma semana."
+  },
+  {
+   "id": "services-04#002",
+   "path": "services/5/flow/2/text",
+   "ru": "Из чего собирается комплекс",
+   "en": "What the system is made of",
+   "pt": "Do que o sistema é feito"
+  },
+  {
+   "id": "services-04#003",
+   "path": "services/5/flow/3/items/0",
+   "ru": "Что показывает. Панели и видеостены, проекторы, светодиодные экраны любой формы — плоские, изогнутые, сферические, кинетические. Сюда же голографические витрины и вентиляторы: всё, чем картинка попадает человеку в глаза.",
+   "en": "What it shows. Panels and video walls, projectors, LED screens in any shape — flat, curved, spherical, kinetic. Holographic showcases and fans belong here too: everything that puts the image in front of a person.",
+   "pt": "O que mostra. Painéis e videowalls, projetores, telas de LED em qualquer formato — planas, curvas, esféricas, cinéticas. Vitrines holográficas e ventiladores holográficos entram aqui também: tudo que coloca a imagem na frente da pessoa."
+  },
+  {
+   "id": "services-04#004",
+   "path": "services/5/flow/3/items/1",
+   "ru": "Что реагирует. Сенсорные экраны, камеры и датчики глубины, кнопки, штурвалы, энкодеры, RFID-метки, микрофоны. Всё, чем посетитель отвечает экспозиции, а не просто смотрит на неё.",
+   "en": "What responds. Touch screens, cameras and depth sensors, buttons, wheels, encoders, RFID tags, microphones. Everything a visitor answers with, rather than just looking at.",
+   "pt": "O que responde. Telas de toque, câmeras e sensores de profundidade, botões, volantes, encoders, etiquetas RFID, microfones. Tudo com que o visitante responde, em vez de só olhar."
+  },
+  {
+   "id": "services-04#005",
+   "path": "services/5/flow/3/items/2",
+   "ru": "Что сводит. Плееры, компьютеры и серверы, коммутация, сеть, система управления и мониторинга. Не видно ни одного, а без них экспозиция — набор независимых картинок, которые каждое утро включают вручную.",
+   "en": "What ties it together. Players, computers and servers, switching, network, control and monitoring. None of it is visible, and without it an exhibition is a set of unrelated pictures somebody switches on by hand every morning.",
+   "pt": "O que amarra tudo. Players, computadores e servidores, comutação, rede, controle e monitoramento. Nada disso é visível, e sem isso uma exposição é um conjunto de imagens sem relação que alguém liga na mão toda manhã."
+  },
+  {
+   "id": "services-04#006",
+   "path": "services/5/flow/4/text",
+   "ru": "Библиотека оборудования: 65 типов, что каждый умеет и обо что спотыкаются на второй год →",
+   "en": "Equipment library: 65 types, what each one does and where it fails in year two →",
+   "pt": "Biblioteca de equipamentos: 65 tipos, o que cada um faz e onde falha no segundo ano →"
+  },
+  {
+   "id": "services-04#007",
+   "path": "services/5/flow/5/text",
+   "ru": "Чем профессиональная техника отличается от бытовой",
+   "en": "Professional versus consumer",
+   "pt": "Profissional contra doméstico"
+  },
+  {
+   "id": "services-04#008",
+   "path": "services/5/flow/6/items/0",
+   "ru": "Режимом работы. Бытовой телевизор рассчитан на несколько часов в день. Экспозиция работает по десять часов без выходных, и на такой нагрузке потребительская матрица выгорает за сезон — сначала пятном под неподвижным логотипом, потом целиком.",
+   "en": "Duty cycle. A consumer TV is built for a few hours a day. An exhibition runs ten hours a day, seven days a week, and at that load a consumer panel burns in within a season — first as a ghost under a static logo, then across the whole screen.",
+   "pt": "Ciclo de trabalho. Uma TV doméstica é feita para algumas horas por dia. Uma exposição roda dez horas por dia, sete dias por semana, e nessa carga um painel doméstico queima a imagem em uma temporada — primeiro como fantasma sob um logo estático, depois na tela inteira."
+  },
+  {
+   "id": "services-04#009",
+   "path": "services/5/flow/6/items/1",
+   "ru": "Яркостью в реальном зале. Проектор с честными люменами в тёмной комнате прекрасен, а у панорамного окна выглядит серой тряпкой. Считать надо не люмены, а освещённость конкретного зала в конкретный час — цифра из паспорта тут ничего не решает.",
+   "en": "Brightness in a real room. A projector with honest lumens is glorious in the dark and looks like a grey rag next to a panoramic window. What matters is the light level in that room at that hour, not the number on the datasheet.",
+   "pt": "Brilho na sala real. Um projetor com lúmens honestos é glorioso no escuro e parece um trapo cinza ao lado de uma janela panorâmica. O que importa é o nível de luz daquela sala naquele horário, não o número da ficha técnica."
+  },
+  {
+   "id": "services-04#010",
+   "path": "services/5/flow/6/items/2",
+   "ru": "Тем, что бывает дальше. Профессиональная линейка живёт годами и остаётся в продаже: через два года панель в видеостене можно заменить такой же. Бытовая модель к этому моменту снята с производства, и заменять придётся всю стену.",
+   "en": "What happens later. Professional lines stay in production for years, so a failed panel in a video wall can be replaced with the same model. The consumer model is discontinued by then, and you replace the entire wall.",
+   "pt": "O que acontece depois. As linhas profissionais ficam em produção por anos, então um painel queimado num videowall pode ser trocado pelo mesmo modelo. O modelo doméstico já saiu de linha, e aí você troca a parede inteira."
+  },
+  {
+   "id": "services-04#011",
+   "path": "services/5/flow/6/items/3",
+   "ru": "Управлением. Профессиональная техника включается по расписанию, отвечает по сети и сообщает, что с ней. Бытовая ждёт человека с пультом — и этот человек однажды заболеет.",
+   "en": "Control. Professional gear starts on a schedule, answers over the network and reports its own state. Consumer gear waits for a person with a remote — and one day that person calls in sick.",
+   "pt": "Controle. Equipamento profissional liga por agenda, responde pela rede e informa o próprio estado. Equipamento doméstico espera uma pessoa com controle remoto — e um dia essa pessoa falta."
+  },
+  {
+   "id": "services-04#012",
+   "path": "services/5/flow/11/text",
+   "ru": "Наша роль",
+   "en": null,
+   "pt": "Nossa função"
+  },
+  {
+   "id": "services-04#013",
+   "path": "services/5/flow/12/text",
+   "ru": "Мы отталкиваемся от желаемого эффекта, а не от конкретной модели. Сначала решаем, что должно произойти с человеком в зале, и только потом выводим из этого состав оборудования — так техника перестаёт быть предметом спора и становится следствием замысла.",
+   "en": null,
+   "pt": "Partimos do efeito desejado, não de um modelo específico. Primeiro decidimos o que deve acontecer com a pessoa no salão, e só então derivamos disso a composição dos equipamentos — assim a técnica deixa de ser motivo de discussão e vira consequência do plano."
+  },
+  {
+   "id": "services-04#014",
+   "path": "services/5/flow/13/text",
+   "ru": "Дальше наша команда подбирает лучшие решения под задачу и бюджет, а партнёры организуют поставку на лучших для заказчика условиях. Мы строим сложные программно-аппаратные комплексы и отвечаем за то, чтобы всё это работало как одна система, а не как склад совместимых коробок. В наших руках обычный монитор становится витриной топового уровня — и наоборот, самая дорогая панель без сценария остаётся дорогой панелью.",
+   "en": null,
+   "pt": "Depois nossa equipe escolhe as melhores soluções para a tarefa e para o orçamento, e os parceiros organizam o fornecimento nas melhores condições para o cliente. Construímos sistemas complexos de hardware e software e respondemos por tudo isso funcionar como um sistema só, e não como um depósito de caixas compatíveis. Nas nossas mãos um monitor comum vira uma vitrine de primeira linha — e, ao contrário, o painel mais caro sem roteiro continua sendo um painel caro."
+  },
+  {
+   "id": "services-04#015",
+   "path": "services/5/flow/14/text",
+   "ru": "Напишем или проверим техническое задание — бесплатно →",
+   "en": null,
+   "pt": "Escrevemos ou revisamos o termo de referência — de graça →"
+  },
+  {
+   "id": "services-04#016",
+   "path": "services/5/faq/0/q",
+   "ru": "Вы поставляете оборудование?",
+   "en": "Do you supply the equipment?",
+   "pt": "Vocês fornecem o equipamento?"
+  },
+  {
+   "id": "services-04#017",
+   "path": "services/5/faq/0/a",
+   "ru": "Напрямую — нет, и это осознанно: студия, которая зарабатывает на марже с железа, всегда немного заинтересована продать побольше железа. Мы проектируем комплекс и подбираем состав, а поставку организуют наши партнёры — на лучших условиях для заказчика, включая прямые поставки и обслуживание. Вам не нужно искать поставщиков самостоятельно.",
+   "en": "Not directly, and that is deliberate: a studio earning a margin on hardware is always slightly interested in selling more hardware. We design the system and select the components; our partners handle supply on the best terms for the client, including direct delivery and service. You do not need to find vendors yourself.",
+   "pt": "Não diretamente, e isso é proposital: um estúdio que ganha margem em hardware sempre tem um interesse a mais em vender mais hardware. Projetamos o sistema e selecionamos os componentes; nossos parceiros cuidam do fornecimento nas melhores condições para o cliente, incluindo entrega direta e assistência. Você não precisa procurar fornecedores."
+  },
+  {
+   "id": "services-04#018",
+   "path": "services/5/faq/1/q",
+   "ru": "Какой код ОКПД2 указать в закупке?",
+   "en": "We already own equipment. Can you work with it?",
+   "pt": "Já temos equipamento. Dá para trabalhar com ele?"
+  },
+  {
+   "id": "services-04#019",
+   "path": "services/5/faq/1/a",
+   "ru": "Зависит от того, что именно закупается. Интерактивные экраны и киоски обычно идут по 26.20.17, профессиональные панели и проекторы для залов — по 26.40.34, машины — по 26.20.15, звук — по 26.40.4, программная часть — по 62.01. Одним кодом мультимедийная экспозиция не закрывается: почти всегда это несколько позиций, и разложить их — часть работы над техзаданием. Мы это делаем бесплатно.",
+   "en": "Usually yes, and we are glad to. First we look at what is there: models, age, duty cycle, how it is controlled. Then we say plainly what can carry the load, what is in its last season and what has to be replaced — with numbers, not by eye. Building around what you already own is almost always cheaper than starting over.",
+   "pt": "Em geral dá, e com prazer. Primeiro olhamos o que existe: modelos, idade, ciclo de trabalho, como é controlado. Depois dizemos com clareza o que aguenta a carga, o que está na última temporada e o que precisa ser trocado — com números, não a olho. Construir em cima do que você já tem quase sempre sai mais barato que começar do zero."
+  },
+  {
+   "id": "services-04#020",
+   "path": "services/5/faq/2/q",
+   "ru": "У нас уже закуплено оборудование. Можно с ним работать?",
+   "en": "How long does multimedia equipment last in an exhibition?",
+   "pt": "Quanto tempo dura equipamento multimídia em uma exposição?"
+  },
+  {
+   "id": "services-04#021",
+   "path": "services/5/faq/2/a",
+   "ru": "Как правило да, и мы за это беремся охотно. Сначала смотрим, что есть: модели, возраст, режим работы, чем управляется. Дальше честно говорим, что из этого несёт нагрузку, что доживает последний сезон, а что придётся заменить — с расчётом, а не на глаз. Достроить систему вокруг уже купленного почти всегда дешевле, чем начинать заново.",
+   "en": "Professional panels and LED: five to seven years at a ten-hour day. Projectors are limited by their light source — around twenty thousand hours for laser. Machines go obsolete faster than they break. Plan replacement in advance and as a budget line: an exhibition with no refresh plan starts to look dated around year three.",
+   "pt": "Painéis profissionais e LED: de cinco a sete anos com jornada de dez horas. Projetores são limitados pela fonte de luz — cerca de vinte mil horas para laser. As máquinas ficam obsoletas mais rápido do que quebram. Planeje a substituição com antecedência e como linha de orçamento: uma exposição sem plano de renovação começa a parecer datada por volta do terceiro ano."
+  },
+  {
+   "id": "services-04#022",
+   "path": "services/5/faq/3/q",
+   "ru": "Сколько живёт мультимедийное оборудование в экспозиции?",
+   "en": "How is this different from an AV integrator?",
+   "pt": "Qual a diferença disso para um integrador de AV?"
+  },
+  {
+   "id": "services-04#023",
+   "path": "services/5/faq/3/a",
+   "ru": "Профессиональные панели и светодиод — пять-семь лет при десятичасовом дне. Проекторы упираются в ресурс источника света, у лазерных это порядка двадцати тысяч часов. Машины морально устаревают быстрее, чем ломаются. Планировать замену стоит заранее и строкой в бюджете: экспозиция, у которой нет плана обновления, начинает выглядеть старой примерно на третий год.",
+   "en": "An integrator is responsible for the equipment working. We are responsible for the exhibition working. The difference shows at handover: a system can be installed flawlessly and still leave the visitor unmoved. That is why we start with the script and the content, and derive the equipment list from those.",
+   "pt": "O integrador responde pelo equipamento funcionar. Nós respondemos pela exposição funcionar. A diferença aparece no recebimento: um sistema pode estar instalado de forma impecável e ainda assim deixar o visitante indiferente. Por isso começamos pelo roteiro e pelo conteúdo, e derivamos deles a lista de equipamentos."
+  },
+  {
+   "id": "services-04#024",
+   "path": "services/5/faq/4/q",
+   "ru": "Чем ваш подход отличается от интегратора?",
+   "en": null,
+   "pt": "Qual a diferença da sua abordagem para a de um integrador?"
+  },
+  {
+   "id": "services-04#025",
+   "path": "services/5/faq/4/a",
+   "ru": "Интегратор отвечает за то, чтобы техника работала. Мы отвечаем за то, чтобы работала экспозиция. Разница видна на приёмке: комплекс может быть смонтирован безупречно и при этом оставлять посетителя равнодушным. Поэтому мы начинаем со сценария и содержания, а состав оборудования выводим уже из них.",
+   "en": null,
+   "pt": "O integrador responde pela técnica funcionar. Nós respondemos pela exposição funcionar. A diferença aparece no recebimento: o sistema pode estar montado de forma impecável e ainda assim deixar o visitante indiferente. Por isso começamos pelo roteiro e pelo conteúdo, e a composição dos equipamentos já sai deles."
+  },
+  {
+   "id": "services-04#026",
+   "path": "services/6/title",
+   "ru": "Интерактивный выставочный стенд",
+   "en": "Interactive exhibition stand",
+   "pt": "Estande de exposição interativo"
+  },
+  {
+   "id": "services-04#027",
+   "path": "services/6/nav",
+   "ru": "Выставочный стенд",
+   "en": "Exhibition stand",
+   "pt": "Estande de exposição"
+  },
+  {
+   "id": "services-04#028",
+   "path": "services/6/subtitle",
+   "ru": "Стенд, у которого останавливаются, — и остаются достаточно долго, чтобы поговорить.",
+   "en": "A stand people stop at — and stay at long enough for someone to talk to them.",
+   "pt": "Um estande em que as pessoas param — e ficam tempo suficiente para alguém conversar com elas."
+  },
+  {
+   "id": "services-04#029",
+   "path": "services/6/keywords/0",
+   "ru": "застройка выставочного стенда",
+   "en": "interactive exhibition stand",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "estande de exposição interativo"
+  },
+  {
+   "id": "services-04#030",
+   "path": "services/6/keywords/1",
+   "ru": "выставочный стенд",
+   "en": "turnkey trade show stand",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "estande de feira chave na mão"
+  },
+  {
+   "id": "services-04#031",
+   "path": "services/6/keywords/2",
+   "ru": "выставочное оборудование",
+   "en": "trade fair stand design",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "projeto de estande para feira"
+  },
+  {
+   "id": "services-04#032",
+   "path": "services/6/keywords/3",
+   "ru": "интерактивный стенд",
+   "en": "multimedia booth",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "estande multimídia"
+  },
+  {
+   "id": "services-04#033",
+   "path": "services/6/keywords/4",
+   "ru": "выставочный стенд под ключ",
+   "en": "interactive booth",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "estande interativo"
+  },
+  {
+   "id": "services-04#034",
+   "path": "services/6/keywords/5",
+   "ru": "стенд для выставки",
+   "en": "trade show exhibit",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "exponente para feira"
+  },
+  {
+   "id": "services-04#035",
+   "path": "services/6/keywords/6",
+   "ru": "мультимедийный стенд",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "estande multimídia"
+  },
+  {
+   "id": "services-04#036",
+   "path": "services/6/keywords/7",
+   "ru": "стенд с интерактивом",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "estande com interatividade"
+  },
+  {
+   "id": "services-04#037",
+   "path": "services/6/keywords/8",
+   "ru": "экспонат для выставки",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "exponente para exposição"
+  },
+  {
+   "id": "services-04#038",
+   "path": "services/6/flow/0/text",
+   "ru": "На выставке у вас есть три секунды, пока человек идёт мимо. Дальше — либо он остановился, либо нет, и второго шанса в этот день не будет. Задача стенда не в том, чтобы выглядеть дорого. Задача в том, чтобы дать проходящему причину подойти и повод задержаться настолько, чтобы с ним успели поговорить.",
+   "en": "At a trade fair you have three seconds while someone walks past. After that they have either stopped or not, and there will be no second chance that day. The job of a stand is not to look expensive. The job is to give a passer-by a reason to come over and a reason to stay long enough for your team to reach them.",
+   "pt": "Numa feira você tem três segundos enquanto alguém passa. Depois disso a pessoa parou ou não parou, e não haverá segunda chance naquele dia. A função de um estande não é parecer caro. A função é dar a quem passa um motivo para chegar perto e um motivo para ficar tempo suficiente para a sua equipe alcançá-la."
+  },
+  {
+   "id": "services-04#039",
+   "path": "services/6/flow/1/text",
+   "ru": "Очередь к инсталляции — лучшая метрика стенда. Она видна из другого конца павильона и работает лучше любой вывески.",
+   "en": "A queue at the installation is the best metric a stand has. It is visible from the far end of the hall and works better than any signage.",
+   "pt": "Fila na instalação é a melhor métrica que um estande tem. Ela se vê do outro lado do pavilhão e funciona melhor que qualquer sinalização."
+  },
+  {
+   "id": "services-04#040",
+   "path": "services/6/flow/2/text",
+   "ru": "Что мы делаем на стендах",
+   "en": "What we build on stands",
+   "pt": "O que construímos em estandes"
+  },
+  {
+   "id": "services-04#041",
+   "path": "services/6/flow/3/items/0",
+   "ru": "Центральный экспонат — объект, вокруг которого собирается всё остальное. Обычно он и делает стенд узнаваемым.",
+   "en": "A centrepiece exhibit — the object everything else gathers around. Usually it is what makes the stand memorable.",
+   "pt": "Um exponente central — o objeto em volta do qual todo o resto se organiza. Normalmente é ele que faz o estande ser lembrado."
+  },
+  {
+   "id": "services-04#042",
+   "path": "services/6/flow/3/items/1",
+   "ru": "Интерактивная презентация продукта: сложное изделие можно разобрать, повернуть, посмотреть внутри — то, чего не даст ни макет, ни ролик.",
+   "en": "Interactive product demonstration: a complex machine can be taken apart, turned, looked into — something no model or video will give you.",
+   "pt": "Demonstração interativa de produto: uma máquina complexa pode ser desmontada, girada, olhada por dentro — algo que nenhuma maquete ou vídeo entrega."
+  },
+  {
+   "id": "services-04#043",
+   "path": "services/6/flow/3/items/2",
+   "ru": "Демонстрационные инструменты для менеджеров: не листалка слайдов, а сценарий разговора с клиентом.",
+   "en": "Demonstration tools for the sales team: not a slide deck, but a script for a conversation with a client.",
+   "pt": "Ferramentas de demonstração para o time comercial: não um conjunto de slides, e sim um roteiro de conversa com o cliente."
+  },
+  {
+   "id": "services-04#044",
+   "path": "services/6/flow/3/items/3",
+   "ru": "Голографические витрины и объёмные показы для техники, которую физически не привезти в павильон.",
+   "en": "Holographic showcases and volumetric displays for equipment that physically cannot be shipped to the hall.",
+   "pt": "Vitrines holográficas e displays volumétricos para equipamentos que fisicamente não podem ser levados ao pavilhão."
+  },
+  {
+   "id": "services-04#045",
+   "path": "services/6/flow/3/items/4",
+   "ru": "Интерактивные макеты территорий, производств и логистики.",
+   "en": "Interactive scale models of territories, plants and logistics.",
+   "pt": "Maquetes interativas de territórios, fábricas e logística."
+  },
+  {
+   "id": "services-04#046",
+   "path": "services/6/flow/3/items/5",
+   "ru": "Игровые механики — короткие, на полторы минуты, с понятным результатом и поводом для разговора.",
+   "en": "Game mechanics — short, ninety seconds, with a clear result and a reason to start talking.",
+   "pt": "Mecânicas de jogo — curtas, noventa segundos, com resultado claro e um motivo para começar a conversar."
+  },
+  {
+   "id": "services-04#047",
+   "path": "services/6/flow/4/text",
+   "ru": "Сложный продукт продаёт тот, кто дал его потрогать",
+   "en": "A complex product is sold by whoever lets you touch it",
+   "pt": "Um produto complexo é vendido por quem deixa tocar nele"
+  },
+  {
+   "id": "services-04#048",
+   "path": "services/6/flow/5/text",
+   "ru": "Это про промышленность, авиацию, энергетику, транспортное машиностроение — всё, где изделие нельзя поставить на стол. Экспонат, который позволяет заглянуть внутрь двигателя или собрать состав, делает за менеджера половину разговора: посетитель сам задаёт следующий вопрос, и это уже другой разговор, чем «возьмите буклет».",
+   "en": "This is about industry, aviation, energy, rolling stock — anything where the product will not fit on a table. An exhibit that lets someone look inside an engine or assemble a train does half the sales conversation: the visitor asks the next question themselves, and that is a different conversation from “take a brochure”.",
+   "pt": "Isso vale para indústria, aviação, energia, material rodante — qualquer coisa cujo produto não cabe em uma mesa. Um exponente que deixa alguém olhar dentro de um motor ou montar um trem já faz metade da conversa de venda: o visitante faz sozinho a próxima pergunta, e essa é uma conversa diferente de “leve um folheto”."
+  },
+  {
+   "id": "services-04#049",
+   "path": "services/6/flow/6/text",
+   "ru": "Сроки — то, что на выставках решает всё",
+   "en": "Schedule — the thing that decides everything at a fair",
+   "pt": "Prazo — o que decide tudo numa feira"
+  },
+  {
+   "id": "services-04#050",
+   "path": "services/6/flow/7/text",
+   "ru": "Дата открытия выставки не переносится. Самый быстрый интерактивный стенд мы сделали под ключ за три недели, и это был не единичный случай — три недели от задачи до работающего экспоната в павильоне повторялись. Но такой срок означает жёсткие ограничения по составу: не всё, что придумано, можно реализовать за три недели, и мы говорим об этом до подписания, а не после.",
+   "en": "An opening date does not move. Our fastest turnkey interactive stand took three weeks, and it was not a one-off — three weeks from brief to a working exhibit in the hall has happened more than once. But that schedule means hard limits on scope: not everything imagined can be built in three weeks, and we say so before signing rather than after.",
+   "pt": "Uma data de abertura não se mexe. Nosso estande interativo chave na mão mais rápido levou três semanas, e não foi caso isolado — três semanas do briefing a um exponente funcionando no pavilhão já aconteceu mais de uma vez. Mas esse prazo impõe limites duros de escopo: nem tudo que se imagina dá para construir em três semanas, e a gente diz isso antes de assinar, não depois."
+  },
+  {
+   "id": "services-04#051",
+   "path": "services/6/flow/8/items/0",
+   "ru": "Первая неделя — сценарий, механика, спецификация оборудования и заказ того, что едет долго.",
+   "en": "Week one — scenario, mechanic, equipment specification, and ordering whatever has a long lead time.",
+   "pt": "Semana um — roteiro, mecânica, especificação de equipamento e compra do que tem prazo longo de entrega."
+  },
+  {
+   "id": "services-04#052",
+   "path": "services/6/flow/8/items/1",
+   "ru": "Вторая — производство, разработка, контент. Параллельно, не последовательно.",
+   "en": "Week two — fabrication, development, content. In parallel, not in sequence.",
+   "pt": "Semana dois — fabricação, desenvolvimento, conteúdo. Em paralelo, não em sequência."
+  },
+  {
+   "id": "services-04#053",
+   "path": "services/6/flow/8/items/2",
+   "ru": "Третья — сборка, прогон целиком, монтаж на площадке, настройка по месту.",
+   "en": "Week three — assembly, a full run-through, installation on site, tuning in place.",
+   "pt": "Semana três — montagem, ensaio completo, instalação no local, ajuste no lugar."
+  },
+  {
+   "id": "services-04#054",
+   "path": "services/6/flow/8/items/3",
+   "ru": "Дни выставки — присутствие на площадке в первый день обязательно: павильон всегда ведёт себя иначе, чем цех.",
+   "en": "Show days — being present on day one is not optional: a fair hall always behaves differently from a workshop.",
+   "pt": "Dias de feira — estar presente no primeiro dia não é opcional: um pavilhão sempre se comporta diferente de uma oficina."
+  },
+  {
+   "id": "services-04#055",
+   "path": "services/6/flow/9/text",
+   "ru": "Что происходит со стендом после выставки",
+   "en": "What happens to the stand after the show",
+   "pt": "O que acontece com o estande depois da feira"
+  },
+  {
+   "id": "services-04#056",
+   "path": "services/6/flow/10/text",
+   "ru": "Обычно ничего — и это потерянные деньги. Экспонат, спроектированный с расчётом на вторую жизнь, уезжает на следующую выставку, встаёт в офис продаж или в корпоративный музей. Это решается на этапе конструкции: разборность, транспортная тара, автономность от конкретного помещения. Стоит немного дороже на входе и заметно дешевле в пересчёте на количество показов.",
+   "en": "Usually nothing, and that is money thrown away. An exhibit designed for a second life travels to the next fair, moves into a sales office or into a corporate museum. It is decided at the engineering stage: demountability, transport cases, independence from one particular room. Slightly more expensive up front and noticeably cheaper per showing.",
+   "pt": "Normalmente nada, e isso é dinheiro jogado fora. Um exponente projetado para uma segunda vida vai para a próxima feira, muda para um escritório de vendas ou para um museu corporativo. Isso se decide na etapa de engenharia: desmontabilidade, caixas de transporte, independência de uma sala específica. Um pouco mais caro no começo e bem mais barato por exibição."
+  },
+  {
+   "id": "services-04#057",
+   "path": "services/6/flow/11/text",
+   "ru": "С кем работали",
+   "en": "Who we have worked with",
+   "pt": "Com quem já trabalhamos"
+  },
+  {
+   "id": "services-04#058",
+   "path": "services/6/flow/12/text",
+   "ru": "Ростех, Объединённая двигателестроительная корпорация, РСК «МИГ», холдинг «Синара — Транспортные Машины», Группа ПТК, Правительство Москвы, BMW. Выставки — МАКС, Ростех Экспо, Московский урбанистический форум, Форум «Россия».",
+   "en": "Rostec, United Engine Corporation, RSK MiG, Sinara Transport Machines, PTK Group, the Moscow City Government, BMW. Fairs: MAKS International Aviation and Space Salon, Rostec Expo, Moscow Urban Forum, Russia Expo.",
+   "pt": "Rostec, United Engine Corporation, RSK MiG, Sinara Transport Machines, PTK Group, Governo de Moscou, BMW. Feiras: Salão Internacional de Aviação e Espaço MAKS, Rostec Expo, Moscow Urban Forum, Expo Rússia."
+  },
+  {
+   "id": "services-04#059",
+   "path": "services/6/flow/13/text",
+   "ru": "Оборудование вывода: 24 позиции — от лазерного проектора до дрон-шоу →",
+   "en": "Output equipment: 24 entries, from laser projectors to drone shows →",
+   "pt": "Equipamentos de saída: 24 itens, de projetores a laser a shows de drones →"
+  },
+  {
+   "id": "services-04#060",
+   "path": "services/6/faq/0/q",
+   "ru": "За какой минимальный срок можно сделать интерактивный стенд?",
+   "en": "What is the minimum lead time for an interactive stand?",
+   "pt": "Qual o prazo mínimo para um estande interativo?"
+  },
+  {
+   "id": "services-04#061",
+   "path": "services/6/faq/0/a",
+   "ru": "Три недели — наш реальный минимум под ключ, и он проверен несколькими проектами. Это возможно при готовности принимать решения быстро и при ограниченном составе: один сильный экспонат вместо пяти средних.",
+   "en": "Three weeks is our real turnkey minimum, proven on several projects. It is possible when decisions are made quickly and the scope stays tight: one strong exhibit instead of five average ones.",
+   "pt": "Três semanas é o nosso mínimo real chave na mão, comprovado em vários projetos. É possível quando as decisões são tomadas rápido e o escopo fica enxuto: um exponente forte em vez de cinco medianos."
+  },
+  {
+   "id": "services-04#062",
+   "path": "services/6/faq/1/q",
+   "ru": "Вы строите сам стенд или только интерактив?",
+   "en": "Do you build the stand itself or only the interactive part?",
+   "pt": "Vocês constroem o estande em si ou só a parte interativa?"
+  },
+  {
+   "id": "services-04#063",
+   "path": "services/6/faq/1/a",
+   "ru": "Работаем и так, и так. Часто конструкцию строит выставочный подрядчик, а мы делаем экспонаты и содержание — тогда важно состыковаться на этапе планировки, потому что интерактивному объекту нужны место, свет, питание и расстояние до зрителя.",
+   "en": "Both ways. Often the structure is built by an exhibition contractor while we make the exhibits and the content — then it matters that we align at the layout stage, because an interactive object needs space, light, power and a viewing distance.",
+   "pt": "Dos dois jeitos. Muitas vezes a estrutura é feita por um montador de estandes enquanto nós fazemos os exponentes e o conteúdo — e aí importa combinar tudo ainda na etapa de layout, porque um objeto interativo precisa de espaço, luz, energia e distância de visão."
+  },
+  {
+   "id": "services-04#064",
+   "path": "services/6/faq/2/q",
+   "ru": "Что если оборудование не успеет прийти?",
+   "en": "What if equipment does not arrive in time?",
+   "pt": "E se o equipamento não chegar a tempo?"
+  },
+  {
+   "id": "services-04#065",
+   "path": "services/6/faq/2/a",
+   "ru": "Поэтому оборудование заказывается в первую неделю, а сценарий пишется с учётом того, что доступно. Мы не проектируем механику вокруг единственного прибора с трёхмесячной поставкой — это не осторожность, а опыт.",
+   "en": "That is why equipment is ordered in week one and the scenario is written around what is actually available. We do not design a mechanic around a single instrument with a three-month lead time — that is experience, not caution.",
+   "pt": "É justamente por isso que o equipamento é comprado na semana um e o roteiro é escrito em torno do que está de fato disponível. A gente não projeta uma mecânica em cima de um único aparelho com três meses de prazo — isso é experiência, não cautela."
+  },
+  {
+   "id": "services-04#066",
+   "path": "services/6/faq/3/q",
+   "ru": "Можно ли повторно использовать экспонат на другой выставке?",
+   "en": "Can an exhibit be reused at another fair?",
+   "pt": "Um exponente pode ser reaproveitado em outra feira?"
+  },
+  {
+   "id": "services-04#067",
+   "path": "services/6/faq/3/a",
+   "ru": "Да, если это заложено в конструкции: разборность, тара, независимость от конкретной планировки. Скажите об этом в начале — переделывать готовый экспонат под перевозку дороже, чем сразу так его собрать.",
+   "en": "Yes, if the engineering allows for it: demountability, cases, independence from a particular layout. Say so at the start — converting a finished exhibit for travel costs more than building it that way.",
+   "pt": "Pode, se a engenharia previu isso: desmontabilidade, caixas, independência de um layout específico. Diga desde o começo — converter um exponente pronto para viagem custa mais do que já construí-lo assim."
+  },
+  {
+   "id": "services-04#068",
+   "path": "services/7/title",
+   "ru": "Голографические витрины и объёмные показы",
+   "en": "Holographic showcases and volumetric displays",
+   "pt": "Vitrines holográficas e displays volumétricos"
+  },
+  {
+   "id": "services-04#069",
+   "path": "services/7/nav",
+   "ru": "Голографические витрины",
+   "en": "Holographic showcases",
+   "pt": "Vitrines holográficas"
+  },
+  {
+   "id": "services-04#070",
+   "path": "services/7/subtitle",
+   "ru": "Объект, который выглядит невозможным, — и потому останавливает поток.",
+   "en": "An object that looks impossible — and therefore stops the crowd.",
+   "pt": "Um objeto que parece impossível — e por isso para a multidão."
+  },
+  {
+   "id": "services-04#071",
+   "path": "services/7/keywords/0",
+   "ru": "голографическая витрина",
+   "en": "holographic showcase",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "vitrine holográfica"
+  },
+  {
+   "id": "services-04#072",
+   "path": "services/7/keywords/1",
+   "ru": "голографический куб",
+   "en": "holographic cube",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "cubo holográfico"
+  },
+  {
+   "id": "services-04#073",
+   "path": "services/7/keywords/3",
+   "ru": "объёмный показ",
+   "en": "volumetric display",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "display volumétrico"
+  }
+ ]
+}

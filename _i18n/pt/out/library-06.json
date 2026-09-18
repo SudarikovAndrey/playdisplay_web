@@ -1,0 +1,847 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "library-06 (6 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "library-06#001",
+   "path": "categories/2/sections/2/items/1/good/2",
+   "ru": "Материалы предметов важны сами по себе: металл, ткань, стекло",
+   "en": "Material matters in itself: metal, fabric, glass",
+   "pt": "O material importa por si só: metal, tecido, vidro"
+  },
+  {
+   "id": "library-06#002",
+   "path": "categories/2/sections/2/items/1/bad/0",
+   "ru": "Скромное железо: требования к машине заметно выше",
+   "en": "Modest hardware: the machine requirements are noticeably higher",
+   "pt": "Hardware modesto: as exigências de máquina são bem mais altas"
+  },
+  {
+   "id": "library-06#003",
+   "path": "categories/2/sections/2/items/1/bad/1",
+   "ru": "Простая логика на маленьком экране — тяжело для задачи",
+   "en": "Simple logic on a small screen — heavy for the job",
+   "pt": "Lógica simples em uma tela pequena — pesado para a tarefa"
+  },
+  {
+   "id": "library-06#004",
+   "path": "categories/2/sections/2/items/1/brands/0/note",
+   "ru": "движок, бесплатен для невыпускаемых проектов",
+   "en": "движок, бесплатен для невыпускаемых проектов",
+   "pt": "motor, gratuito para projetos não comerciais"
+  },
+  {
+   "id": "library-06#005",
+   "path": "categories/2/sections/2/items/2/line",
+   "ru": "Среда для того, что не повторяется дважды",
+   "en": "An environment for things that never repeat",
+   "pt": "Um ambiente para coisas que nunca se repetem"
+  },
+  {
+   "id": "library-06#006",
+   "path": "categories/2/sections/2/items/2/what",
+   "ru": "Узловая среда для генеративной графики и живой реакции на данные. Unity строит сцену, TouchDesigner строит поток: картинку, которая рождается из движения и звука и никогда не выглядит одинаково.",
+   "en": "A node-based environment for generative graphics and live reaction to data. Unity builds a scene; TouchDesigner builds a flow — a picture born of movement and sound that never looks the same twice.",
+   "pt": "Um ambiente de nós para gráficos generativos e reação ao vivo a dados. A Unity monta uma cena; o TouchDesigner monta um fluxo — uma imagem nascida de movimento e som que nunca fica igual duas vezes."
+  },
+  {
+   "id": "library-06#007",
+   "path": "categories/2/sections/2/items/2/good/0",
+   "ru": "Генеративная графика: изображение рождается из данных или движения",
+   "en": "Generative content: an image born from data or movement",
+   "pt": "Conteúdo generativo: uma imagem nascida de dados ou de movimento"
+  },
+  {
+   "id": "library-06#008",
+   "path": "categories/2/sections/2/items/2/good/1",
+   "ru": "Много входов и выходов сразу: камеры, датчики, проекторы, звук",
+   "en": "Many inputs and outputs at once: cameras, sensors, projectors, sound",
+   "pt": "Muitas entradas e saídas ao mesmo tempo: câmeras, sensores, projetores, som"
+  },
+  {
+   "id": "library-06#009",
+   "path": "categories/2/sections/2/items/2/good/2",
+   "ru": "Быстрая переделка на месте, во время монтажа",
+   "en": "Fast rework on site, during the install",
+   "pt": "Retrabalho rápido no local, durante a instalação"
+  },
+  {
+   "id": "library-06#010",
+   "path": "categories/2/sections/2/items/2/bad/0",
+   "ru": "Классическая игровая логика с уровнями и состояниями",
+   "en": "Classic game logic with levels and states",
+   "pt": "Lógica clássica de jogo com fases e estados"
+  },
+  {
+   "id": "library-06#011",
+   "path": "categories/2/sections/2/items/2/bad/1",
+   "ru": "Нужна широкая замена подрядчика: специалистов заметно меньше",
+   "en": "A wide choice of replacement contractors: there are markedly fewer specialists",
+   "pt": "Ampla escolha de fornecedores substitutos: há bem menos especialistas"
+  },
+  {
+   "id": "library-06#012",
+   "path": "categories/2/sections/2/items/2/brands/0/note",
+   "ru": "среда, бесплатная лицензия для обучения",
+   "en": "среда, бесплатная лицензия для обучения",
+   "pt": "ambiente, licença gratuita para ensino"
+  },
+  {
+   "id": "library-06#013",
+   "path": "categories/2/sections/2/items/3/line",
+   "ru": "Реальное время без единой строки кода",
+   "en": "Real time without a line of code",
+   "pt": "Tempo real sem uma linha de código"
+  },
+  {
+   "id": "library-06#014",
+   "path": "categories/2/sections/2/items/3/what",
+   "ru": "Узловая среда для интерактивной графики: конфигураторы, витрины, видеостены, виртуальные студии. Разложена на три части — Designer рисует, Runtime показывает, Director ведёт показ с пульта. Сильна там, где картинку меняют вживую, при людях.",
+   "en": "A node-based environment for interactive graphics: configurators, storefronts, video walls, virtual studios. Split into three parts — Designer draws, Runtime plays, Director drives the show from a desk. Strongest where the picture changes live, in front of people.",
+   "pt": "Um ambiente de nós para gráficos interativos: configuradores, vitrines, videowalls, estúdios virtuais. Dividido em três partes — o Designer desenha, o Runtime reproduz, o Director conduz o espetáculo de uma mesa. Mais forte onde a imagem muda ao vivo, na frente das pessoas."
+  },
+  {
+   "id": "library-06#015",
+   "path": "categories/2/sections/2/items/3/good/0",
+   "ru": "Конфигуратор продукта: цвет, комплектация, материал — мгновенно и в объёме",
+   "en": "A product configurator: colour, trim, material — instantly and in volume",
+   "pt": "Um configurador de produto: cor, acabamento, material — na hora e em volume"
+  },
+  {
+   "id": "library-06#016",
+   "path": "categories/2/sections/2/items/3/good/1",
+   "ru": "Шоурум и автосалон, где показ ведёт менеджер, а не расписание",
+   "en": "A showroom or dealership where a person runs the show, not a schedule",
+   "pt": "Um showroom ou concessionária em que uma pessoa conduz o espetáculo, e não uma programação"
+  },
+  {
+   "id": "library-06#017",
+   "path": "categories/2/sections/2/items/3/good/2",
+   "ru": "Живые данные на большом экране: биржа, производство, логистика",
+   "en": "Live data on a large screen: markets, production, logistics",
+   "pt": "Dados ao vivo em uma tela grande: mercados, produção, logística"
+  },
+  {
+   "id": "library-06#018",
+   "path": "categories/2/sections/2/items/3/good/3",
+   "ru": "Телестудия, виртуальные декорации и дополненная реальность в эфире",
+   "en": "A TV studio, virtual sets and on-air augmented reality",
+   "pt": "Um estúdio de TV, cenários virtuais e realidade aumentada no ar"
+  },
+  {
+   "id": "library-06#019",
+   "path": "categories/2/sections/2/items/3/bad/0",
+   "ru": "Только Windows",
+   "en": "Windows only",
+   "pt": "Só Windows"
+  },
+  {
+   "id": "library-06#020",
+   "path": "categories/2/sections/2/items/3/bad/1",
+   "ru": "Специалистов на российском рынке заметно меньше, чем по Unity",
+   "en": "Far fewer specialists on the market than for Unity",
+   "pt": "Bem menos especialistas no mercado do que para Unity"
+  },
+  {
+   "id": "library-06#021",
+   "path": "categories/2/sections/2/items/3/bad/2",
+   "ru": "Лицензия платная и считается по машинам — парк из десяти точек это ощутит",
+   "en": "Paid licensing counted per machine — an estate of ten points will feel it",
+   "pt": "Licenciamento pago contado por máquina — um parque de dez pontos sente"
+  },
+  {
+   "id": "library-06#022",
+   "path": "categories/2/sections/2/items/3/bad/3",
+   "ru": "Один экспонат с простой логикой: избыточно",
+   "en": "One exhibit with simple logic: overkill",
+   "pt": "Um exponente com lógica simples: exagero"
+  },
+  {
+   "id": "library-06#023",
+   "path": "categories/2/sections/2/items/4/line",
+   "ru": "Узлы, железо и сеть в одном окне",
+   "en": "Nodes, hardware and network in one window",
+   "pt": "Nós, hardware e rede em uma janela"
+  },
+  {
+   "id": "library-06#024",
+   "path": "categories/2/sections/2/items/4/what",
+   "ru": "Узловая среда, выросшая из медиаискусства. Её сила не в картинке, а в связках: датчики, DMX, лазеры, промышленные протоколы, несколько машин по сети — всё сводится в одном окне. Где TouchDesigner про изображение, vvvv чаще про то, как подружить разнородное железо.",
+   "en": "A node-based environment grown out of media art. Its strength is not the picture but the plumbing: sensors, DMX, lasers, industrial protocols, several machines across a network — all in one window. Where TouchDesigner is about the image, vvvv is more often about making mismatched hardware get along.",
+   "pt": "Um ambiente de nós nascido da media art. A força dele não é a imagem, e sim o encanamento: sensores, DMX, lasers, protocolos industriais, várias máquinas em rede — tudo em uma janela. Onde o TouchDesigner trata da imagem, o vvvv trata mais de fazer equipamentos incompatíveis se entenderem."
+  },
+  {
+   "id": "library-06#025",
+   "path": "categories/2/sections/2/items/4/good/0",
+   "ru": "Много разного оборудования, которое должно работать как одно целое",
+   "en": "Lots of different equipment that has to behave as one thing",
+   "pt": "Muitos equipamentos diferentes que precisam se comportar como uma coisa só"
+  },
+  {
+   "id": "library-06#026",
+   "path": "categories/2/sections/2/items/4/good/1",
+   "ru": "Нестандартные протоколы и самодельная электроника",
+   "en": "Unusual protocols and home-built electronics",
+   "pt": "Protocolos incomuns e eletrônica feita em casa"
+  },
+  {
+   "id": "library-06#027",
+   "path": "categories/2/sections/2/items/4/good/2",
+   "ru": "Несколько машин, работающих синхронно",
+   "en": "Several machines running in step",
+   "pt": "Várias máquinas rodando em sincronia"
+  },
+  {
+   "id": "library-06#028",
+   "path": "categories/2/sections/2/items/4/good/3",
+   "ru": "Прототип, который надо проверить не на экране, а с настоящим железом",
+   "en": "A prototype to be tested against real hardware rather than on screen",
+   "pt": "Um protótipo a ser testado contra hardware real, e não na tela"
+  },
+  {
+   "id": "library-06#029",
+   "path": "categories/2/sections/2/items/4/bad/0",
+   "ru": "Специалистов ещё меньше, чем по TouchDesigner: передать проект будет некому",
+   "en": "Even fewer specialists than for TouchDesigner: there will be nobody to hand it to",
+   "pt": "Ainda menos especialistas que para TouchDesigner: não vai haver a quem passar"
+  },
+  {
+   "id": "library-06#030",
+   "path": "categories/2/sections/2/items/4/bad/2",
+   "ru": "Порог входа высокий, и документация местами скупая",
+   "en": "A high barrier to entry, and documentation that is thin in places",
+   "pt": "Barreira de entrada alta e documentação rala em alguns pontos"
+  },
+  {
+   "id": "library-06#031",
+   "path": "categories/2/sections/2/items/4/bad/3",
+   "ru": "Простая витрина с роликом — из пушки по воробьям",
+   "en": "A simple display with a looping film — a sledgehammer for a nut",
+   "pt": "Um display simples com um filme em laço — marreta para matar mosquito"
+  },
+  {
+   "id": "library-06#032",
+   "path": "categories/2/sections/2/items/4/brands/0/note",
+   "ru": "текущее поколение среды",
+   "en": "the current generation",
+   "pt": "a geração atual"
+  },
+  {
+   "id": "library-06#033",
+   "path": "categories/2/sections/2/items/4/brands/1/note",
+   "ru": "язык и справочник",
+   "en": "language and reference",
+   "pt": "linguagem e referência"
+  },
+  {
+   "id": "library-06#034",
+   "path": "categories/2/sections/2/items/5/name",
+   "ru": "Notch и Resolume",
+   "en": "Notch and Resolume",
+   "pt": "Notch e Resolume"
+  },
+  {
+   "id": "library-06#035",
+   "path": "categories/2/sections/2/items/5/line",
+   "ru": "Инструменты живого показа",
+   "en": "Tools for live performance",
+   "pt": "Ferramentas para performance ao vivo"
+  },
+  {
+   "id": "library-06#036",
+   "path": "categories/2/sections/2/items/5/what",
+   "ru": "Notch считает эффекты в реальном времени внутри медиасерверов, Resolume ведёт показ и маппинг с пульта. Оба про событие и человека за пультом, а не про экспозицию без оператора.",
+   "en": "Notch computes real-time effects inside media servers; Resolume drives playback and mapping from a desk. Both are about an event and a person at the controls, not an exhibition running unattended.",
+   "pt": "O Notch calcula efeitos em tempo real dentro de servidores de mídia; o Resolume conduz reprodução e mapeamento de uma mesa. Os dois tratam de um evento e de uma pessoa nos controles, não de uma exposição rodando sem ninguém."
+  },
+  {
+   "id": "library-06#037",
+   "path": "categories/2/sections/2/items/5/good/0",
+   "ru": "Событие, открытие, шоу на фасаде",
+   "en": "An event, an opening, a show on a façade",
+   "pt": "Um evento, uma inauguração, um espetáculo em fachada"
+  },
+  {
+   "id": "library-06#038",
+   "path": "categories/2/sections/2/items/5/good/1",
+   "ru": "Эффект должен реагировать на живой сигнал — звук, камеру, оператора",
+   "en": "The effect has to react to a live signal — sound, camera, operator",
+   "pt": "O efeito tem que reagir a um sinal ao vivo — som, câmera, operador"
+  },
+  {
+   "id": "library-06#039",
+   "path": "categories/2/sections/2/items/5/good/2",
+   "ru": "Нужен пульт, за который сядет человек и поведёт показ руками",
+   "en": "You need a desk that a person sits at and drives the show by hand",
+   "pt": "É preciso uma mesa em que alguém se senta e conduz o espetáculo na mão"
+  },
+  {
+   "id": "library-06#040",
+   "path": "categories/2/sections/2/items/5/bad/0",
+   "ru": "Постоянная экспозиция без оператора",
+   "en": "A permanent exhibition with no operator",
+   "pt": "Uma exposição permanente sem operador"
+  },
+  {
+   "id": "library-06#041",
+   "path": "categories/2/sections/2/items/5/bad/1",
+   "ru": "Сложная ветвящаяся логика взаимодействия",
+   "en": "Complex branching interaction logic",
+   "pt": "Lógica de interação complexa e ramificada"
+  },
+  {
+   "id": "library-06#042",
+   "path": "categories/2/sections/2/items/5/brands/0/note",
+   "ru": "эффекты в реальном времени, работает внутри медиасерверов",
+   "en": "эффекты в реальном времени, работает внутри медиасерверов",
+   "pt": "efeitos em tempo real, funciona dentro de servidores de mídia"
+  },
+  {
+   "id": "library-06#043",
+   "path": "categories/2/sections/2/items/5/brands/1/note",
+   "ru": "живой показ и маппинг",
+   "en": "живой показ и маппинг",
+   "pt": "exibição ao vivo e mapeamento"
+  },
+  {
+   "id": "library-06#044",
+   "path": "categories/2/sections/2/items/6/name",
+   "ru": "Творческое программирование",
+   "en": "Creative coding",
+   "pt": "Programação criativa"
+  },
+  {
+   "id": "library-06#045",
+   "path": "categories/2/sections/2/items/6/line",
+   "ru": "Графику здесь пишут, а не собирают",
+   "en": "Here the graphics are written, not assembled",
+   "pt": "Aqui os gráficos são escritos, não montados"
+  },
+  {
+   "id": "library-06#046",
+   "path": "categories/2/sections/2/items/6/what",
+   "ru": "Открытые среды, где картинка рождается из кода и данных: визуализация звука, генеративные узоры, реакция на поток посетителей. Лицензий не требуют и живут на скромном железе.",
+   "en": "Open environments where the picture is born of code and data: sound visualisation, generative patterns, reaction to the flow of visitors. No licences required, and happy on modest hardware.",
+   "pt": "Ambientes abertos em que a imagem nasce de código e de dados: visualização de som, padrões generativos, reação ao fluxo de visitantes. Não exigem licenças e se contentam com hardware modesto."
+  },
+  {
+   "id": "library-06#047",
+   "path": "categories/2/sections/2/items/6/good/0",
+   "ru": "Генеративное содержание: рисунок из данных, звука, движения",
+   "en": "Generative content: a pattern out of data, sound, movement",
+   "pt": "Conteúdo generativo: um padrão a partir de dados, som, movimento"
+  },
+  {
+   "id": "library-06#048",
+   "path": "categories/2/sections/2/items/6/good/1",
+   "ru": "Малый бюджет без лицензий на софт",
+   "en": "A small budget with no software licences",
+   "pt": "Orçamento pequeno, sem licenças de software"
+  },
+  {
+   "id": "library-06#049",
+   "path": "categories/2/sections/2/items/6/good/2",
+   "ru": "Прототип, который надо проверить за день до принятия решения",
+   "en": "A prototype that has to be tested in a day before a decision is made",
+   "pt": "Um protótipo que precisa ser testado em um dia antes de uma decisão"
+  },
+  {
+   "id": "library-06#050",
+   "path": "categories/2/sections/2/items/6/good/3",
+   "ru": "Долгая жизнь: открытый код не отзовут и не переведут на подписку",
+   "en": "A long life: open source is not withdrawn or moved to a subscription",
+   "pt": "Vida longa: código aberto não é retirado nem migrado para assinatura"
+  },
+  {
+   "id": "library-06#051",
+   "path": "categories/2/sections/2/items/6/bad/0",
+   "ru": "Сложная сцена с 3D и физикой — быстрее в игровом движке",
+   "en": "A complex scene with 3D and physics — faster in a game engine",
+   "pt": "Uma cena complexa com 3D e física — mais rápido em um motor de jogo"
+  },
+  {
+   "id": "library-06#052",
+   "path": "categories/2/sections/2/items/6/bad/1",
+   "ru": "Передача проекта другому подрядчику: специалистов заметно меньше",
+   "en": "Handing the project to another contractor: markedly fewer specialists",
+   "pt": "Passar o projeto para outro fornecedor: bem menos especialistas"
+  },
+  {
+   "id": "library-06#053",
+   "path": "categories/2/sections/2/items/6/bad/2",
+   "ru": "Нужна поддержка производителя — её не существует по определению",
+   "en": "Vendor support is wanted — by definition it does not exist",
+   "pt": "Deseja-se suporte de fabricante — por definição ele não existe"
+  },
+  {
+   "id": "library-06#054",
+   "path": "categories/2/sections/2/items/6/brands/0/note",
+   "ru": "C++, инсталляции, максимальная производительность",
+   "en": "C++, инсталляции, максимальная производительность",
+   "pt": "C++, instalações, desempenho máximo"
+  },
+  {
+   "id": "library-06#055",
+   "path": "categories/2/sections/2/items/6/brands/1/note",
+   "ru": "самый низкий порог входа, огромное сообщество",
+   "en": "самый низкий порог входа, огромное сообщество",
+   "pt": "a menor barreira de entrada, comunidade enorme"
+  },
+  {
+   "id": "library-06#056",
+   "path": "categories/2/sections/2/items/6/brands/2/note",
+   "ru": "то же в браузере: работает на любом экране без установки",
+   "en": "то же в браузере: работает на любом экране без установки",
+   "pt": "o mesmo no navegador: funciona em qualquer tela sem instalação"
+  },
+  {
+   "id": "library-06#057",
+   "path": "categories/2/sections/2/items/6/brands/3/note",
+   "ru": "узловая среда, сильна в работе с железом",
+   "en": "узловая среда, сильна в работе с железом",
+   "pt": "ambiente de nós, forte no trabalho com hardware"
+  },
+  {
+   "id": "library-06#058",
+   "path": "categories/2/sections/2/items/6/brands/4/note",
+   "ru": "звук и взаимодействие, стандарт медиаискусства",
+   "en": "звук и взаимодействие, стандарт медиаискусства",
+   "pt": "som e interação, padrão da media art"
+  },
+  {
+   "id": "library-06#059",
+   "path": "categories/2/sections/3/name",
+   "ru": "Связь и эксплуатация",
+   "en": "Signal and operations",
+   "pt": "Sinal e operação"
+  },
+  {
+   "id": "library-06#060",
+   "path": "categories/2/sections/3/note",
+   "ru": "Первое, что вычёркивают из сметы, и первое, о чём вспоминают на второй год. Окупается одним несостоявшимся вызовом подрядчика.",
+   "en": "First thing struck from the budget, first thing remembered in year two. Pays for itself with one call-out that never had to happen.",
+   "pt": "A primeira coisa cortada do orçamento, a primeira lembrada no segundo ano. Se paga com um único chamado que não precisava ter acontecido."
+  },
+  {
+   "id": "library-06#061",
+   "path": "categories/2/sections/3/items/0/name",
+   "ru": "Передача сигнала",
+   "en": "Signal distribution",
+   "pt": "Distribuição de sinal"
+  },
+  {
+   "id": "library-06#062",
+   "path": "categories/2/sections/3/items/0/line",
+   "ru": "Расстояние решает больше, чем кажется",
+   "en": "Distance decides more than you would think",
+   "pt": "A distância decide mais do que se imagina"
+  },
+  {
+   "id": "library-06#063",
+   "path": "categories/2/sections/3/items/0/what",
+   "ru": "Обычный кабель работает метров пятнадцать, дальше нужны витая пара с передатчиками, оптика или сеть. Решается, пока стены открыты. Потом — дорого.",
+   "en": "An ordinary cable works to about fifteen metres; beyond that you need twisted pair with transmitters, fibre, or the network. Settled while the walls are open. Afterwards — expensive.",
+   "pt": "Um cabo comum funciona até uns quinze metros; além disso é preciso par trançado com transmissores, fibra ou a rede. Resolvido enquanto as paredes estão abertas. Depois — caro."
+  },
+  {
+   "id": "library-06#064",
+   "path": "categories/2/sections/3/items/0/good/0",
+   "ru": "Машина в аппаратной, экран в зале: разнести — правильно",
+   "en": "Machine in the rack room, screen in the gallery: separating them is right",
+   "pt": "Máquina na sala técnica, tela na galeria: separar as duas é o certo"
+  },
+  {
+   "id": "library-06#065",
+   "path": "categories/2/sections/3/items/0/good/1",
+   "ru": "Много источников и много экранов с переключением",
+   "en": "Many sources and many screens with switching",
+   "pt": "Muitas fontes e muitas telas com comutação"
+  },
+  {
+   "id": "library-06#066",
+   "path": "categories/2/sections/3/items/0/good/2",
+   "ru": "Здание историческое и штробить нельзя — сеть выручает",
+   "en": "A historic building where chasing walls is not allowed — the network saves you",
+   "pt": "Um prédio histórico em que não se pode abrir rasgo nas paredes — a rede salva"
+  },
+  {
+   "id": "library-06#067",
+   "path": "categories/2/sections/3/items/0/bad/0",
+   "ru": "Передача по сети добавляет задержку, а интерактив её не прощает",
+   "en": "Network transport adds latency, and interactivity does not forgive it",
+   "pt": "O transporte por rede acrescenta latência, e a interatividade não perdoa isso"
+  },
+  {
+   "id": "library-06#068",
+   "path": "categories/2/sections/3/items/0/bad/1",
+   "ru": "Дешёвые удлинители дают срыв изображения, который ловится месяцами",
+   "en": "Cheap extenders produce dropouts that take months to track down",
+   "pt": "Extensores baratos produzem quedas que levam meses para rastrear"
+  },
+  {
+   "id": "library-06#069",
+   "path": "categories/2/sections/3/items/0/brands/0/note",
+   "ru": "инсталляционный стандарт коммутации",
+   "en": "инсталляционный стандарт коммутации",
+   "pt": "padrão de comutação para instalação"
+  },
+  {
+   "id": "library-06#070",
+   "path": "categories/2/sections/3/items/0/brands/1/note",
+   "ru": "широкая линейка, доступен в РФ",
+   "en": "широкая линейка, доступен в РФ",
+   "pt": "linha ampla, disponível na Rússia"
+  },
+  {
+   "id": "library-06#071",
+   "path": "categories/2/sections/3/items/0/brands/2/note",
+   "ru": "изображение по обычной сети",
+   "en": "изображение по обычной сети",
+   "pt": "imagem por rede comum"
+  },
+  {
+   "id": "library-06#072",
+   "path": "categories/2/sections/3/items/1/name",
+   "ru": "Управление залом",
+   "en": "Room control",
+   "pt": "Controle da sala"
+  },
+  {
+   "id": "library-06#073",
+   "path": "categories/2/sections/3/items/1/line",
+   "ru": "Одна кнопка на всю экспозицию",
+   "en": "One button for the whole exhibition",
+   "pt": "Um botão para toda a exposição"
+  },
+  {
+   "id": "library-06#074",
+   "path": "categories/2/sections/3/items/1/what",
+   "ru": "Утром включает по расписанию, вечером гасит, а смотрителю даёт одну понятную панель вместо десяти пультов. Именно она решает, откроется ли музей без инженера.",
+   "en": "Switches on to a schedule in the morning, shuts down at night, and gives the attendant one sensible panel instead of ten remotes. This is what decides whether the museum opens without an engineer.",
+   "pt": "Liga por programação de manhã, desliga à noite e dá ao atendente um painel sensato em vez de dez controles remotos. É isso que decide se o museu abre sem engenheiro."
+  },
+  {
+   "id": "library-06#075",
+   "path": "categories/2/sections/3/items/1/good/0",
+   "ru": "Больше пяти устройств в зале",
+   "en": "More than five devices in a room",
+   "pt": "Mais de cinco aparelhos em uma sala"
+  },
+  {
+   "id": "library-06#076",
+   "path": "categories/2/sections/3/items/1/good/1",
+   "ru": "Открытие и закрытие по расписанию, без человека",
+   "en": "Opening and closing to a schedule, with nobody present",
+   "pt": "Abrir e fechar por programação, sem ninguém presente"
+  },
+  {
+   "id": "library-06#077",
+   "path": "categories/2/sections/3/items/1/good/2",
+   "ru": "Смотритель должен уметь перезапустить экспонат сам",
+   "en": "An attendant has to be able to restart an exhibit unaided",
+   "pt": "Um atendente precisa conseguir reiniciar um exponente sozinho"
+  },
+  {
+   "id": "library-06#078",
+   "path": "categories/2/sections/3/items/1/bad/0",
+   "ru": "Один-два экспоната: обычная розетка с таймером решает то же",
+   "en": "One or two exhibits: a socket with a timer does the same",
+   "pt": "Um ou dois exponentes: uma tomada com temporizador faz o mesmo"
+  },
+  {
+   "id": "library-06#079",
+   "path": "categories/2/sections/3/items/1/bad/1",
+   "ru": "Нет обученного человека вообще: система тоже требует минимального владения",
+   "en": "No trained person at all: this too needs a minimum of competence",
+   "pt": "Nenhuma pessoa treinada: isso também exige um mínimo de competência"
+  },
+  {
+   "id": "library-06#080",
+   "path": "categories/2/sections/3/items/1/brands/0/note",
+   "ru": "верхний сегмент, полный контроль",
+   "en": "верхний сегмент, полный контроль",
+   "pt": "segmento premium, controle completo"
+  },
+  {
+   "id": "library-06#081",
+   "path": "categories/2/sections/3/items/1/brands/1/note",
+   "ru": "звук, изображение и управление в одной системе",
+   "en": "звук, изображение и управление в одной системе",
+   "pt": "som, imagem e controle em um sistema"
+  },
+  {
+   "id": "library-06#082",
+   "path": "categories/2/sections/3/items/1/brands/2/note",
+   "ru": "инсталляционный стандарт",
+   "en": "инсталляционный стандарт",
+   "pt": "padrão de instalação"
+  },
+  {
+   "id": "library-06#083",
+   "path": "categories/2/sections/3/items/2/name",
+   "ru": "Мониторинг и удалённый доступ",
+   "en": "Monitoring and remote access",
+   "pt": "Monitoramento e acesso remoto"
+  },
+  {
+   "id": "library-06#084",
+   "path": "categories/2/sections/3/items/2/line",
+   "ru": "Узнать о поломке раньше посетителя",
+   "en": "Learn about the fault before the visitor does",
+   "pt": "Saber da falha antes do visitante"
+  },
+  {
+   "id": "library-06#085",
+   "path": "categories/2/sections/3/items/2/what",
+   "ru": "Система сообщает, что экспонат погас, лампа выработала ресурс или машина перезагрузилась ночью. Без неё о неполадке узнают из отзыва в интернете.",
+   "en": "The system reports that an exhibit has gone dark, a lamp has reached end of life, or a machine rebooted overnight. Without it you hear about the fault from an online review.",
+   "pt": "O sistema avisa que um exponente apagou, que uma lâmpada chegou ao fim da vida ou que uma máquina reiniciou de madrugada. Sem isso você fica sabendo da falha por uma avaliação na internet."
+  },
+  {
+   "id": "library-06#086",
+   "path": "categories/2/sections/3/items/2/good/0",
+   "ru": "Экспозиция больше одного зала",
+   "en": "An exhibition of more than one room",
+   "pt": "Uma exposição com mais de uma sala"
+  },
+  {
+   "id": "library-06#087",
+   "path": "categories/2/sections/3/items/2/good/1",
+   "ru": "Подрядчик не в вашем городе",
+   "en": "The contractor is not in your city",
+   "pt": "O fornecedor não fica na sua cidade"
+  },
+  {
+   "id": "library-06#088",
+   "path": "categories/2/sections/3/items/2/good/2",
+   "ru": "Оборудование на гарантии, и надо доказывать наработку",
+   "en": "Equipment under warranty, where running hours have to be evidenced",
+   "pt": "Equipamento em garantia, em que as horas de uso precisam ser comprovadas"
+  },
+  {
+   "id": "library-06#089",
+   "path": "categories/2/sections/3/items/2/bad/0",
+   "ru": "Служба безопасности не даёт внешний доступ — решается заранее, не после монтажа",
+   "en": "Security will not permit external access — settle that beforehand, not after install",
+   "pt": "A segurança não vai permitir acesso externo — resolva isso antes, não depois da instalação"
+  },
+  {
+   "id": "library-06#090",
+   "path": "categories/2/sections/3/items/2/brands/0/note",
+   "ru": "открытый мониторинг, российская разработка",
+   "en": "открытый мониторинг, российская разработка",
+   "pt": "monitoramento aberto, desenvolvimento russo"
+  },
+  {
+   "id": "library-06#091",
+   "path": "categories/2/sections/3/items/2/brands/1/note",
+   "ru": "управление парком плееров",
+   "en": "управление парком плееров",
+   "pt": "gestão de um parque de players"
+  },
+  {
+   "id": "library-06#092",
+   "path": "categories/2/sections/3/items/3/name",
+   "ru": "Система управления содержанием",
+   "en": "Content management system",
+   "pt": "Sistema de gestão de conteúdo"
+  },
+  {
+   "id": "library-06#093",
+   "path": "categories/2/sections/3/items/3/line",
+   "ru": "Чтобы менять текст без подрядчика",
+   "en": "So text can change without the contractor",
+   "pt": "Para que o texto mude sem o fornecedor"
+  },
+  {
+   "id": "library-06#094",
+   "path": "categories/2/sections/3/items/3/what",
+   "ru": "Панель, через которую музей сам правит подписи, меняет фотографии и добавляет язык. Самая важная строка приёмки и самая часто отсутствующая.",
+   "en": "The panel through which the museum edits captions itself, swaps photographs and adds a language. The most important line in the acceptance list and the most frequently absent.",
+   "pt": "O painel pelo qual o museu edita legendas sozinho, troca fotos e acrescenta um idioma. A linha mais importante da lista de recebimento e a mais frequentemente ausente."
+  },
+  {
+   "id": "library-06#095",
+   "path": "categories/2/sections/3/items/3/good/0",
+   "ru": "Содержание будет меняться — а оно будет",
+   "en": "The content will change — and it will",
+   "pt": "O conteúdo vai mudar — e vai mesmo"
+  },
+  {
+   "id": "library-06#096",
+   "path": "categories/2/sections/3/items/3/good/1",
+   "ru": "Несколько языков, которые добавляются со временем",
+   "en": "Several languages, added over time",
+   "pt": "Vários idiomas, acrescentados ao longo do tempo"
+  },
+  {
+   "id": "library-06#097",
+   "path": "categories/2/sections/3/items/3/good/2",
+   "ru": "Временные выставки внутри постоянной экспозиции",
+   "en": "Temporary exhibitions inside a permanent display",
+   "pt": "Exposições temporárias dentro de uma mostra permanente"
+  },
+  {
+   "id": "library-06#098",
+   "path": "categories/2/sections/3/items/3/bad/0",
+   "ru": "Экспонат разовый и меняться не будет — редкий случай, но бывает",
+   "en": "A one-off exhibit that will never change — rare, but it happens",
+   "pt": "Um exponente único que nunca vai mudar — raro, mas acontece"
+  },
+  {
+   "id": "library-06#099",
+   "path": "categories/2/sections/3/items/3/bad/1",
+   "ru": "Некому пользоваться: панель без обученного сотрудника мертва",
+   "en": "Nobody to use it: a panel without a trained member of staff is dead",
+   "pt": "Ninguém para usar: um painel sem um funcionário treinado é morto"
+  },
+  {
+   "id": "library-06#100",
+   "path": "categories/2/sections/3/items/3/warn",
+   "ru": "Требовать на приёмке прямо: показать, как сотрудник музея меняет подпись на экспонате, при вас и без звонка подрядчику. Если это невозможно — вы купили зависимость.",
+   "en": "Demand it explicitly at acceptance: have a member of museum staff change a caption on an exhibit, in front of you, without phoning the contractor. If that is impossible, you have bought a dependency.",
+   "pt": "Exija isso explicitamente no recebimento: peça que um funcionário do museu mude uma legenda de um exponente, na sua frente, sem telefonar para o fornecedor. Se isso for impossível, você comprou uma dependência."
+  },
+  {
+   "id": "library-06#101",
+   "path": "categories/2/sections/3/items/4/name",
+   "ru": "Синхронизация машин",
+   "en": "Machine synchronisation",
+   "pt": "Sincronização de máquinas"
+  },
+  {
+   "id": "library-06#102",
+   "path": "categories/2/sections/3/items/4/line",
+   "ru": "Чтобы соседние экраны шли в такт",
+   "en": "So adjacent screens stay in step",
+   "pt": "Para que telas vizinhas fiquem em sincronia"
+  },
+  {
+   "id": "library-06#103",
+   "path": "categories/2/sections/3/items/4/what",
+   "ru": "Каждая машина идёт по своим часам, и через минуту показа расхождение видно глазом. Синхронизация связывает их общим временем: кадр к кадру, звук к изображению.",
+   "en": "Each machine runs on its own clock, and within a minute of playback the drift is visible to the eye. Synchronisation binds them to a common time: frame to frame, sound to image.",
+   "pt": "Cada máquina roda no próprio relógio, e em um minuto de reprodução o desvio já se vê a olho nu. A sincronização amarra todas a um tempo comum: quadro a quadro, som com imagem."
+  },
+  {
+   "id": "library-06#104",
+   "path": "categories/2/sections/3/items/4/good/0",
+   "ru": "Панорама или стена, собранная из нескольких машин",
+   "en": "A panorama or wall assembled from several machines",
+   "pt": "Um panorama ou parede montada com várias máquinas"
+  },
+  {
+   "id": "library-06#105",
+   "path": "categories/2/sections/3/items/4/good/1",
+   "ru": "Звук и изображение с разных источников должны совпадать",
+   "en": "Sound and image from different sources that have to coincide",
+   "pt": "Som e imagem de fontes diferentes que precisam coincidir"
+  },
+  {
+   "id": "library-06#106",
+   "path": "categories/2/sections/3/items/4/good/2",
+   "ru": "Показ идёт по кругу целый день и не должен расползаться",
+   "en": "The show loops all day and must not drift apart",
+   "pt": "O espetáculo roda em laço o dia todo e não pode se desencontrar"
+  },
+  {
+   "id": "library-06#107",
+   "path": "categories/2/sections/3/items/4/bad/0",
+   "ru": "Одна машина на всё — ничего не нужно",
+   "en": "One machine for everything — nothing is needed",
+   "pt": "Uma máquina para tudo — não é preciso nada"
+  },
+  {
+   "id": "library-06#108",
+   "path": "categories/2/sections/3/items/4/bad/1",
+   "ru": "Экраны далеко друг от друга и не видны одновременно",
+   "en": "Screens far apart and never seen at the same time",
+   "pt": "Telas distantes que nunca são vistas ao mesmo tempo"
+  },
+  {
+   "id": "library-06#109",
+   "path": "categories/2/sections/3/items/4/brands/0/note",
+   "ru": "аппаратная синхронизация выходов",
+   "en": "аппаратная синхронизация выходов",
+   "pt": "sincronização de saídas por hardware"
+  },
+  {
+   "id": "library-06#110",
+   "path": "categories/2/sections/3/items/4/brands/1/note",
+   "ru": "единое время по сети",
+   "en": "единое время по сети",
+   "pt": "tempo único pela rede"
+  },
+  {
+   "id": "library-06#111",
+   "path": "categories/2/sections/3/items/5/name",
+   "ru": "Резервирование и восстановление",
+   "en": "Backup and recovery",
+   "pt": "Backup e recuperação"
+  },
+  {
+   "id": "library-06#112",
+   "path": "categories/2/sections/3/items/5/line",
+   "ru": "План на день, когда всё-таки сломалось",
+   "en": "A plan for the day it does break",
+   "pt": "Um plano para o dia em que quebrar mesmo"
+  },
+  {
+   "id": "library-06#113",
+   "path": "categories/2/sections/3/items/5/what",
+   "ru": "Образ каждой машины, копия содержания и записанный порядок восстановления. Не оборудование, а строка в договоре — но без неё замена сгоревшего компьютера превращается из часа в неделю.",
+   "en": "An image of every machine, a copy of the content and a written recovery procedure. Not equipment but a clause in the contract — and without it, replacing a burnt-out computer turns from an hour into a week.",
+   "pt": "Uma imagem de cada máquina, uma cópia do conteúdo e um procedimento escrito de recuperação. Não é equipamento, é uma cláusula do contrato — e sem isso trocar um computador queimado passa de uma hora para uma semana."
+  },
+  {
+   "id": "library-06#114",
+   "path": "categories/2/sections/3/items/5/good/0",
+   "ru": "Экспозиция, которая должна открыться завтра при любом раскладе",
+   "en": "An exhibition that has to open tomorrow whatever happens",
+   "pt": "Uma exposição que tem que abrir amanhã aconteça o que acontecer"
+  },
+  {
+   "id": "library-06#115",
+   "path": "categories/2/sections/3/items/5/good/1",
+   "ru": "Подрядчик может уйти с рынка — а музей останется",
+   "en": "The contractor may leave the market — the museum will not",
+   "pt": "O fornecedor pode sair do mercado — o museu não"
+  },
+  {
+   "id": "library-06#116",
+   "path": "categories/2/sections/3/items/5/good/2",
+   "ru": "Оборудование однотипное: один образ на десять машин",
+   "en": "Uniform equipment: one image covers ten machines",
+   "pt": "Equipamento padronizado: uma imagem cobre dez máquinas"
+  },
+  {
+   "id": "library-06#117",
+   "path": "categories/2/sections/3/items/5/bad/0",
+   "ru": "Нет ни одного человека, кто выполнит инструкцию — тогда нужен договор на обслуживание",
+   "en": "Not a single person who will follow the procedure — then you need a service contract",
+   "pt": "Nenhuma pessoa que vá seguir o procedimento — aí é preciso um contrato de manutenção"
+  },
+  {
+   "id": "library-06#118",
+   "path": "categories/2/sections/3/items/5/warn",
+   "ru": "Просить на приёмке отдельно: образы машин, исходники содержания и инструкцию восстановления на бумаге. Это то, что музей получает в собственность, а не берёт в пользование.",
+   "en": "Ask for these separately at acceptance: machine images, content source files and a printed recovery procedure. This is what the museum owns outright, rather than borrows for the duration.",
+   "pt": "Peça isso separadamente no recebimento: imagens das máquinas, arquivos-fonte do conteúdo e um procedimento de recuperação impresso. É isso que o museu tem para si, em vez de tomar emprestado por um tempo."
+  },
+  {
+   "id": "library-06#119",
+   "path": "categories/2/sections/3/items/5/brands/0/note",
+   "ru": "снятие образов, открытое и бесплатное",
+   "en": "снятие образов, открытое и бесплатное",
+   "pt": "criação de imagens, aberto e gratuito"
+  },
+  {
+   "id": "library-06#120",
+   "path": "categories/2/sections/3/items/5/brands/1/note",
+   "ru": "резервное копирование парка машин",
+   "en": "резервное копирование парка машин",
+   "pt": "backup de um parque de máquinas"
+  }
+ ]
+}

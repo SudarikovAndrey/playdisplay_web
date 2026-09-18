@@ -1,0 +1,966 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "library-01 (1 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "library-01#001",
+   "path": "categories/0/name",
+   "ru": "Вывод",
+   "en": "Output",
+   "pt": "Saída"
+  },
+  {
+   "id": "library-01#002",
+   "path": "categories/0/full",
+   "ru": "Оборудование вывода",
+   "en": "Output equipment",
+   "pt": "Equipamentos de saída"
+  },
+  {
+   "id": "library-01#003",
+   "path": "categories/0/line",
+   "ru": "Чем экспозиция говорит с человеком",
+   "en": "How the exhibition speaks to a person",
+   "pt": "Como a exposição fala com a pessoa"
+  },
+  {
+   "id": "library-01#004",
+   "path": "categories/0/lead",
+   "ru": "Свет, изображение, звук, вибрация — всё, что доходит до человека. Самая заметная часть сметы и самая коварная: экран в четыре метра, мимо которого идут не глядя, проигрывает подзорной трубе, к которой стоит очередь.",
+   "en": "Light, image, sound, vibration — everything that reaches a person. The most visible part of the budget and the most treacherous: a four-metre screen people walk past without looking loses to a spyglass with a queue in front of it.",
+   "pt": "Luz, imagem, som, vibração — tudo que chega à pessoa. A parte mais visível do orçamento e a mais traiçoeira: uma tela de quatro metros por onde se passa sem olhar perde para uma luneta com fila na frente."
+  },
+  {
+   "id": "library-01#005",
+   "path": "categories/0/principle",
+   "ru": "Здесь решают три числа: сколько света в зале, с какого расстояния смотрят и сколько человек стоят одновременно. Не диагональ и не бренд.",
+   "en": "Three numbers decide it: how much light is in the room, from what distance people look, and how many stand there at once. Not the diagonal, not the brand.",
+   "pt": "Três números decidem: quanta luz há na sala, de que distância as pessoas olham e quantas ficam ali ao mesmo tempo. Não a diagonal, não a marca."
+  },
+  {
+   "id": "library-01#006",
+   "path": "categories/0/sections/0/name",
+   "ru": "Проекция",
+   "en": "Projection",
+   "pt": "Projeção"
+  },
+  {
+   "id": "library-01#007",
+   "path": "categories/0/sections/0/note",
+   "ru": "Свет, брошенный на поверхность. Единственный способ получить картинку размером с зал и единственный, который ложится на кривое.",
+   "en": "Light thrown at a surface. The only way to get a picture the size of a room, and the only one that lies down on something curved.",
+   "pt": "Luz lançada sobre uma superfície. O único jeito de ter uma imagem do tamanho de uma sala, e o único que se deita sobre algo curvo."
+  },
+  {
+   "id": "library-01#008",
+   "path": "categories/0/sections/0/items/0/name",
+   "ru": "Инсталляционный лазерный проектор",
+   "en": "Installation laser projector",
+   "pt": "Projetor laser de instalação"
+  },
+  {
+   "id": "library-01#009",
+   "path": "categories/0/sections/0/items/0/line",
+   "ru": "Рабочая лошадь. Светит годами и не просит лампу",
+   "en": "The workhorse. Runs for years and never asks for a lamp",
+   "pt": "O cavalo de batalha. Roda por anos e nunca pede lâmpada"
+  },
+  {
+   "id": "library-01#010",
+   "path": "categories/0/sections/0/items/0/what",
+   "ru": "Лазер вместо лампы: 20 000 часов без замены, мгновенный старт, вешается хоть вверх ногами. Ламповые в новые экспозиции больше не ставят — не потому что хуже светят, а потому что лампу надо менять, а менять её некому.",
+   "en": "Laser instead of a lamp: 20,000 hours without a change, instant start, mounts upside down if it has to. Lamp models are no longer specified for new exhibitions — not because they throw less light, but because someone has to change the lamp, and there is nobody to do it.",
+   "pt": "Laser no lugar de lâmpada: 20 mil horas sem troca, partida instantânea, monta de cabeça para baixo se precisar. Modelos de lâmpada não são mais especificados para exposições novas — não porque iluminem menos, mas porque alguém tem que trocar a lâmpada, e não há quem faça isso."
+  },
+  {
+   "id": "library-01#011",
+   "path": "categories/0/sections/0/items/0/good/0",
+   "ru": "Изображение больше физического экрана — от трёх метров и до целой стены",
+   "en": "An image larger than a physical screen — from three metres up to a whole wall",
+   "pt": "Uma imagem maior que uma tela física — de três metros a uma parede inteira"
+  },
+  {
+   "id": "library-01#012",
+   "path": "categories/0/sections/0/items/0/good/1",
+   "ru": "Поверхность не плоская: макет, свод, колонна, фасад",
+   "en": "A surface that is not flat: a model, a vault, a column, a façade",
+   "pt": "Uma superfície que não é plana: uma maquete, uma abóbada, uma coluna, uma fachada"
+  },
+  {
+   "id": "library-01#013",
+   "path": "categories/0/sections/0/items/0/good/2",
+   "ru": "Экран должен исчезнуть, когда выключен: чёрная стена вместо чёрного прямоугольника",
+   "en": "The screen has to disappear when off: a black wall instead of a black rectangle",
+   "pt": "A tela precisa sumir quando desligada: uma parede preta em vez de um retângulo preto"
+  },
+  {
+   "id": "library-01#014",
+   "path": "categories/0/sections/0/items/0/bad/0",
+   "ru": "Зал с окнами и без штор. Проекция — единственная технология, которую полностью убивает солнце, и никакие люмены этого не решают",
+   "en": "A room with windows and no blinds. Projection is the one technology sunlight kills outright, and no amount of lumens fixes that",
+   "pt": "Uma sala com janelas e sem persianas. A projeção é a única tecnologia que a luz do sol mata de vez, e lúmen nenhum resolve isso"
+  },
+  {
+   "id": "library-01#015",
+   "path": "categories/0/sections/0/items/0/bad/1",
+   "ru": "Нужен мелкий текст: разрешение делится на площадь, и подписи расплываются первыми",
+   "en": "Small type is needed: resolution divides across the area, and captions blur first",
+   "pt": "É preciso letra pequena: a resolução se divide pela área, e as legendas borram primeiro"
+  },
+  {
+   "id": "library-01#016",
+   "path": "categories/0/sections/0/items/0/bad/2",
+   "ru": "Между зрителем и стеной ходят люди — тени будут",
+   "en": "People walk between the viewer and the wall — there will be shadows",
+   "pt": "Pessoas passam entre quem olha e a parede — vai haver sombras"
+  },
+  {
+   "id": "library-01#017",
+   "path": "categories/0/sections/0/items/0/spec",
+   "ru": "Ключевое число — не люмены, а люмены на квадратный метр при вашем уровне засветки. Второе — контраст: в светлом зале выигрывает не самый яркий, а тот, у кого чёрный остаётся чёрным.",
+   "en": "The number that matters is not lumens but lumens per square metre at your actual ambient light. The second is contrast: in a bright room the winner is not the brightest projector but the one whose black stays black.",
+   "pt": "O número que importa não é lúmen, e sim lúmen por metro quadrado na sua luz ambiente real. O segundo é contraste: numa sala clara ganha não o projetor mais brilhante, e sim aquele cujo preto continua preto."
+  },
+  {
+   "id": "library-01#018",
+   "path": "categories/0/sections/0/items/0/brands/0/note",
+   "ru": "верхний сегмент, купола и большие площади",
+   "en": "верхний сегмент, купола и большие площади",
+   "pt": "segmento premium, cúpulas e grandes áreas"
+  },
+  {
+   "id": "library-01#019",
+   "path": "categories/0/sections/0/items/0/brands/1/note",
+   "ru": "инсталляции, свои системы сшивки",
+   "en": "инсталляции, свои системы сшивки",
+   "pt": "instalações, sistemas próprios de mesclagem"
+  },
+  {
+   "id": "library-01#020",
+   "path": "categories/0/sections/0/items/0/brands/2/note",
+   "ru": "музейный стандарт по надёжности",
+   "en": "музейный стандарт по надёжности",
+   "pt": "padrão de museu em confiabilidade"
+  },
+  {
+   "id": "library-01#021",
+   "path": "categories/0/sections/0/items/0/brands/3/note",
+   "ru": "средний сегмент, доступное обслуживание",
+   "en": "средний сегмент, доступное обслуживание",
+   "pt": "segmento médio, manutenção acessível"
+  },
+  {
+   "id": "library-01#022",
+   "path": "categories/0/sections/0/items/0/brands/4/note",
+   "ru": "высокая яркость, нестандартная оптика",
+   "en": "высокая яркость, нестандартная оптика",
+   "pt": "alto brilho, óptica não padronizada"
+  },
+  {
+   "id": "library-01#023",
+   "path": "categories/0/sections/0/items/1/name",
+   "ru": "Ультракороткофокусный проектор",
+   "en": "Ultra-short-throw projector",
+   "pt": "Projetor de distância ultracurta"
+  },
+  {
+   "id": "library-01#024",
+   "path": "categories/0/sections/0/items/1/line",
+   "ru": "Картинка есть, луча нет",
+   "en": "You get the picture without the beam",
+   "pt": "Você ganha a imagem sem o feixe"
+  },
+  {
+   "id": "library-01#025",
+   "path": "categories/0/sections/0/items/1/what",
+   "ru": "Стоит вплотную к поверхности и бросает изображение почти под прямым углом. Человек подходит к самой стене и не закрывает кадр собой — то, ради чего он и берётся.",
+   "en": "Sits right against the surface and throws the image at almost a right angle. A person can walk up to the wall without blocking the frame with their own body — which is the whole point.",
+   "pt": "Fica encostado na superfície e lança a imagem em ângulo quase reto. A pessoa pode chegar até a parede sem bloquear o quadro com o próprio corpo — e é disso que se trata."
+  },
+  {
+   "id": "library-01#026",
+   "path": "categories/0/sections/0/items/1/good/0",
+   "ru": "Интерактивный пол и стол: посетитель стоит прямо в изображении",
+   "en": "Interactive floors and tables: the visitor stands inside the image",
+   "pt": "Pisos e mesas interativas: o visitante fica dentro da imagem"
+  },
+  {
+   "id": "library-01#027",
+   "path": "categories/0/sections/0/items/1/good/1",
+   "ru": "Низкие потолки, где обычный проектор некуда повесить",
+   "en": "Low ceilings, where a normal projector has nowhere to hang",
+   "pt": "Pé-direito baixo, onde um projetor normal não tem onde ser pendurado"
+  },
+  {
+   "id": "library-01#028",
+   "path": "categories/0/sections/0/items/1/good/2",
+   "ru": "Нужно, чтобы к поверхности подходили вплотную и трогали её",
+   "en": "People need to come right up to the surface and touch it",
+   "pt": "As pessoas precisam chegar perto da superfície e tocar nela"
+  },
+  {
+   "id": "library-01#029",
+   "path": "categories/0/sections/0/items/1/bad/0",
+   "ru": "Поверхность неровная: чем острее угол, тем заметнее любая выпуклость",
+   "en": "An uneven surface: the sharper the angle, the more every bump shows",
+   "pt": "Uma superfície irregular: quanto mais agudo o ângulo, mais cada saliência aparece"
+  },
+  {
+   "id": "library-01#030",
+   "path": "categories/0/sections/0/items/1/bad/1",
+   "ru": "Большие размеры — за пределами трёх-четырёх метров геометрия начинает капризничать",
+   "en": "Large sizes — beyond three or four metres the geometry starts misbehaving",
+   "pt": "Tamanhos grandes — acima de três ou quatro metros a geometria começa a se comportar mal"
+  },
+  {
+   "id": "library-01#031",
+   "path": "categories/0/sections/0/items/1/brands/0/note",
+   "ru": "линейка со сменной УКФ-оптикой",
+   "en": "линейка со сменной УКФ-оптикой",
+   "pt": "linha com óptica UST intercambiável"
+  },
+  {
+   "id": "library-01#032",
+   "path": "categories/0/sections/0/items/1/brands/1/note",
+   "ru": "готовые УКФ-модели",
+   "en": "готовые УКФ-модели",
+   "pt": "modelos UST prontos"
+  },
+  {
+   "id": "library-01#033",
+   "path": "categories/0/sections/0/items/1/brands/2/note",
+   "ru": "бюджетный сегмент",
+   "en": "бюджетный сегмент",
+   "pt": "segmento econômico"
+  },
+  {
+   "id": "library-01#034",
+   "path": "categories/0/sections/0/items/2/name",
+   "ru": "Обратная проекция",
+   "en": "Rear projection",
+   "pt": "Retroprojeção"
+  },
+  {
+   "id": "library-01#035",
+   "path": "categories/0/sections/0/items/2/line",
+   "ru": "Проектор спрятан за поверхностью",
+   "en": "The projector hides behind the surface",
+   "pt": "O projetor se esconde atrás da superfície"
+  },
+  {
+   "id": "library-01#036",
+   "path": "categories/0/sections/0/items/2/what",
+   "ru": "Светит на просветный экран сзади. Зритель видит светящуюся поверхность и не видит ни аппарата, ни луча, и не отбрасывает тень — сколько бы человек ни столпилось.",
+   "en": "Throws onto a translucent screen from behind. The viewer sees a glowing surface, never the machine or the beam, and casts no shadow — however many people crowd in.",
+   "pt": "Projeta por trás sobre uma tela translúcida. Quem olha vê uma superfície luminosa, nunca a máquina nem o feixe, e não faz sombra — por mais gente que se aglomere."
+  },
+  {
+   "id": "library-01#037",
+   "path": "categories/0/sections/0/items/2/good/0",
+   "ru": "Витрина или окно, которое должно светиться изнутри",
+   "en": "A vitrine or window that should glow from within",
+   "pt": "Uma vitrine ou janela que deve brilhar por dentro"
+  },
+  {
+   "id": "library-01#038",
+   "path": "categories/0/sections/0/items/2/good/1",
+   "ru": "Плотный поток людей вплотную к изображению",
+   "en": "Dense foot traffic right up against the image",
+   "pt": "Fluxo intenso de pessoas bem junto da imagem"
+  },
+  {
+   "id": "library-01#039",
+   "path": "categories/0/sections/0/items/2/good/2",
+   "ru": "Нужно совместить изображение с настоящим предметом за стеклом",
+   "en": "The image has to sit together with a real object behind glass",
+   "pt": "A imagem precisa ficar junto de um objeto real atrás do vidro"
+  },
+  {
+   "id": "library-01#040",
+   "path": "categories/0/sections/0/items/2/bad/0",
+   "ru": "Нет места сзади: нужна техническая ниша глубиной от полуметра",
+   "en": "No room behind: you need a service recess half a metre deep or more",
+   "pt": "Não há espaço atrás: é preciso um nicho de serviço de meio metro ou mais"
+  },
+  {
+   "id": "library-01#041",
+   "path": "categories/0/sections/0/items/2/bad/1",
+   "ru": "Смотрят сильно сбоку — у просветных материалов угол обзора уже, чем у обычного экрана",
+   "en": "People look from far to the side — translucent materials have a narrower viewing angle than an ordinary screen",
+   "pt": "As pessoas olham de longe e de lado — materiais translúcidos têm ângulo de visão mais estreito que uma tela comum"
+  },
+  {
+   "id": "library-01#042",
+   "path": "categories/0/sections/0/items/2/brands/0/note",
+   "ru": "просветные экраны и плёнки",
+   "en": "просветные экраны и плёнки",
+   "pt": "telas e películas de retroprojeção"
+  },
+  {
+   "id": "library-01#043",
+   "path": "categories/0/sections/0/items/2/brands/1/note",
+   "ru": "театральные ткани и просветные полотна",
+   "en": "театральные ткани и просветные полотна",
+   "pt": "tecidos cênicos e telas de retroprojeção"
+  },
+  {
+   "id": "library-01#044",
+   "path": "categories/0/sections/0/items/2/brands/2/note",
+   "ru": "акустически прозрачные полотна",
+   "en": "акустически прозрачные полотна",
+   "pt": "telas acusticamente transparentes"
+  },
+  {
+   "id": "library-01#045",
+   "path": "categories/0/sections/0/items/3/name",
+   "ru": "Маппинг на объём",
+   "en": "Mapping onto volume",
+   "pt": "Mapeamento sobre volume"
+  },
+  {
+   "id": "library-01#046",
+   "path": "categories/0/sections/0/items/3/line",
+   "ru": "Свет ложится по граням настоящего предмета",
+   "en": "Light lands along the facets of a real object",
+   "pt": "A luz cai ao longo das faces de um objeto real"
+  },
+  {
+   "id": "library-01#047",
+   "path": "categories/0/sections/0/items/3/what",
+   "ru": "Не железка, а способ применения: картинка считается под геометрию макета, фасада или изделия. Нужны точная модель объекта и сшивка нескольких проекторов — зато объём настоящий, а не нарисованный.",
+   "en": "Not a device but a technique: the image is computed for the geometry of a model, a façade or a product. Needs an accurate model and blended projectors — in return the volume is real, not drawn.",
+   "pt": "Não é um aparelho, e sim uma técnica: a imagem é calculada para a geometria de uma maquete, de uma fachada ou de um produto. Exige um modelo preciso e projetores mesclados — em troca, o volume é real e não desenhado."
+  },
+  {
+   "id": "library-01#048",
+   "path": "categories/0/sections/0/items/3/good/0",
+   "ru": "Есть физическая форма — макет территории, здание, изделие, ландшафт",
+   "en": "There is a physical form — a site model, a building, a product, a landscape",
+   "pt": "Existe uma forma física — maquete de terreno, prédio, produto, paisagem"
+  },
+  {
+   "id": "library-01#049",
+   "path": "categories/0/sections/0/items/3/good/1",
+   "ru": "Решение принимается по масштабу: где что стоит и как связано",
+   "en": "The decision turns on scale: what stands where and how it connects",
+   "pt": "A decisão depende da escala: o que fica onde e como se conecta"
+  },
+  {
+   "id": "library-01#050",
+   "path": "categories/0/sections/0/items/3/good/2",
+   "ru": "Нужно показать несколько слоёв поверх одного объекта — было, стало, будет",
+   "en": "Several layers have to sit over one object — was, is, will be",
+   "pt": "Várias camadas precisam ficar sobre um mesmo objeto — era, é, será"
+  },
+  {
+   "id": "library-01#051",
+   "path": "categories/0/sections/0/items/3/bad/0",
+   "ru": "Объект мелкий: на предмете меньше метра дешевле и чётче обычный экран рядом",
+   "en": "The object is small: for anything under a metre a plain screen beside it is cheaper and sharper",
+   "pt": "O objeto é pequeno: para qualquer coisa abaixo de um metro, uma tela comum ao lado sai mais barata e mais nítida"
+  },
+  {
+   "id": "library-01#052",
+   "path": "categories/0/sections/0/items/3/bad/1",
+   "ru": "Макет ещё не построен — калибровка делается по факту, а не по чертежу",
+   "en": "The model is not built yet — calibration is done against the real thing, not the drawing",
+   "pt": "A maquete ainda não foi construída — a calibração se faz contra a coisa real, não contra o desenho"
+  },
+  {
+   "id": "library-01#053",
+   "path": "categories/0/sections/0/items/3/brands/0/note",
+   "ru": "автокалибровка по камере",
+   "en": "автокалибровка по камере",
+   "pt": "autocalibração por câmera"
+  },
+  {
+   "id": "library-01#054",
+   "path": "categories/0/sections/0/items/3/brands/1/note",
+   "ru": "сшивка и коррекция геометрии",
+   "en": "сшивка и коррекция геометрии",
+   "pt": "mesclagem e correção de geometria"
+  },
+  {
+   "id": "library-01#055",
+   "path": "categories/0/sections/0/items/3/brands/2/note",
+   "ru": "купола и сложные поверхности",
+   "en": "купола и сложные поверхности",
+   "pt": "cúpulas e superfícies complexas"
+  },
+  {
+   "id": "library-01#056",
+   "path": "categories/0/sections/1/name",
+   "ru": "Светодиодные экраны",
+   "en": "LED screens",
+   "pt": "Telas de LED"
+  },
+  {
+   "id": "library-01#057",
+   "path": "categories/0/sections/1/note",
+   "ru": "Не «ещё один экран», а конструктор. Полотно набирается из модулей — плиток примерно 50×50 см. Какой модуль выбрали, такими и будут форма, цена и возможность починить это на месте.",
+   "en": "Not «another screen» but a construction set. The canvas is assembled from modules — tiles of roughly 50×50 cm. The module you pick decides the shape, the price, and whether it can be repaired in place.",
+   "pt": "Não é “mais uma tela”, e sim um jogo de montar. A superfície é montada com módulos — placas de cerca de 50×50 cm. O módulo escolhido decide a forma, o preço e se dá para consertar no lugar."
+  },
+  {
+   "id": "library-01#058",
+   "path": "categories/0/sections/1/items/0/name",
+   "ru": "Плоский модульный экран",
+   "en": "Flat modular screen",
+   "pt": "Tela modular plana"
+  },
+  {
+   "id": "library-01#059",
+   "path": "categories/0/sections/1/items/0/line",
+   "ru": "Стена любого размера, которой не страшно солнце",
+   "en": "A wall of any size that sunlight cannot bother",
+   "pt": "Uma parede de qualquer tamanho que a luz do sol não incomoda"
+  },
+  {
+   "id": "library-01#060",
+   "path": "categories/0/sections/1/items/0/what",
+   "ru": "Модуль — плитка со своими диодами, питанием и платой. Из них набирается полотно любой формы и пропорции, а разбитая плитка меняется поштучно. Один вопрос решается до закупки: есть ли сзади полметра на обслуживание, или модули должны сниматься спереди.",
+   "en": "A module is a tile with its own LEDs, power and board. They build into a canvas of any shape, and a broken tile is replaced one tile at a time. One question is settled before purchase: is there half a metre behind for servicing, or must the modules come out from the front.",
+   "pt": "Um módulo é uma placa com LEDs, alimentação e placa eletrônica próprios. Eles se montam em uma superfície de qualquer formato, e uma placa quebrada é trocada uma a uma. Uma questão se resolve antes da compra: existe meio metro atrás para manutenção, ou os módulos têm que sair pela frente?"
+  },
+  {
+   "id": "library-01#061",
+   "path": "categories/0/sections/1/items/0/spec",
+   "ru": "Шаг пикселя — расстояние между светодиодами в миллиметрах. Грубое правило: комфортная дистанция в метрах примерно равна шагу в миллиметрах. Шаг 2,5 мм — смотреть с двух с половиной метров и дальше. Проверять на образце в вашем зале, а не по таблице поставщика: яркость и муар видны только вживую.",
+   "en": "Pixel pitch is the distance between LEDs in millimetres. A rough rule: comfortable viewing distance in metres roughly equals the pitch in millimetres. A 2.5 mm pitch means two and a half metres and further. Check on a sample in your own room rather than from the vendor's table: brightness and moiré only show in the flesh.",
+   "pt": "Pixel pitch é a distância entre LEDs em milímetros. Regra grosseira: a distância confortável de visão em metros equivale mais ou menos ao pitch em milímetros. Um pitch de 2,5 mm significa dois metros e meio ou mais. Confira em uma amostra na sua própria sala, e não pela tabela do fornecedor: brilho e moiré só aparecem ao vivo."
+  },
+  {
+   "id": "library-01#062",
+   "path": "categories/0/sections/1/items/0/good/0",
+   "ru": "Светлый зал, атриум, витрина на улицу — солнце ему не помеха",
+   "en": "A bright room, an atrium, a window facing the street — sunlight is no obstacle",
+   "pt": "Uma sala clara, um átrio, uma janela para a rua — a luz do sol não é obstáculo"
+  },
+  {
+   "id": "library-01#063",
+   "path": "categories/0/sections/1/items/0/good/1",
+   "ru": "Нестандартные пропорции: длинная лента, вертикаль, квадрат во всю стену",
+   "en": "Non-standard proportions: a long ribbon, a vertical, a square across a wall",
+   "pt": "Proporções fora do padrão: uma faixa longa, uma vertical, um quadrado na parede"
+  },
+  {
+   "id": "library-01#064",
+   "path": "categories/0/sections/1/items/0/good/2",
+   "ru": "Круглосуточная работа: светодиод не выгорает так, как лампа проектора",
+   "en": "Round-the-clock operation: an LED does not fade the way a projector lamp does",
+   "pt": "Operação ininterrupta: um LED não desbota como a lâmpada de um projetor"
+  },
+  {
+   "id": "library-01#065",
+   "path": "categories/0/sections/1/items/0/good/3",
+   "ru": "Экран сам по себе архитектурный элемент",
+   "en": "The screen is an architectural element in its own right",
+   "pt": "A tela é um elemento arquitetônico por si só"
+  },
+  {
+   "id": "library-01#066",
+   "path": "categories/0/sections/1/items/0/bad/0",
+   "ru": "Подходят вплотную: при шаге 2 мм картинка рассыпается примерно с двух метров, а «взять шаг помельче» — это кратно другой бюджет",
+   "en": "People come right up to it: at a 2 mm pitch the picture breaks into dots at about two metres, and «just take a finer pitch» is a different budget entirely",
+   "pt": "As pessoas chegam bem perto: com pitch de 2 mm a imagem se quebra em pontos a uns dois metros, e “é só pegar um pitch mais fino” é outro orçamento inteiramente"
+  },
+  {
+   "id": "library-01#067",
+   "path": "categories/0/sections/1/items/0/bad/1",
+   "ru": "Нужен глубокий чёрный в тёмном зале: светодиод светится даже выключенный",
+   "en": "Deep black is needed in a dark room: an LED glows a little even when off",
+   "pt": "É preciso preto profundo em sala escura: um LED brilha um pouco mesmo apagado"
+  },
+  {
+   "id": "library-01#068",
+   "path": "categories/0/sections/1/items/0/bad/2",
+   "ru": "Вес и питание: полотно 3×2 м — это уже вопрос к несущей способности стены",
+   "en": "Weight and power: a 3×2 m canvas is already a question for the wall's load rating",
+   "pt": "Peso e energia: uma superfície de 3×2 m já é uma questão para a carga da parede"
+  },
+  {
+   "id": "library-01#069",
+   "path": "categories/0/sections/1/items/0/bad/3",
+   "ru": "Съёмка на камеру: без синхронизации частот на видео пойдут полосы",
+   "en": "Filming: without frequency sync the video will show banding",
+   "pt": "Filmagem: sem sincronismo de frequência o vídeo vai mostrar faixas"
+  },
+  {
+   "id": "library-01#070",
+   "path": "categories/0/sections/1/items/0/brands/0/note",
+   "ru": "широкий ряд, доступен в РФ, много б/у на рынке аренды",
+   "en": "широкий ряд, доступен в РФ, много б/у на рынке аренды",
+   "pt": "linha ampla, disponível na Rússia, muito seminovo no mercado de locação"
+  },
+  {
+   "id": "library-01#071",
+   "path": "categories/0/sections/1/items/0/brands/1/note",
+   "ru": "мелкий шаг, стационар и аренда",
+   "en": "мелкий шаг, стационар и аренда",
+   "pt": "pitch fino, fixo e locação"
+  },
+  {
+   "id": "library-01#072",
+   "path": "categories/0/sections/1/items/0/brands/2/note",
+   "ru": "верхний сегмент, очень мелкий шаг",
+   "en": "верхний сегмент, очень мелкий шаг",
+   "pt": "segmento premium, pitch muito fino"
+  },
+  {
+   "id": "library-01#073",
+   "path": "categories/0/sections/1/items/0/brands/3/note",
+   "ru": "microLED, готовые конфигурации под ключ",
+   "en": "microLED, готовые конфигурации под ключ",
+   "pt": "microLED, configurações prontas chave na mão"
+  },
+  {
+   "id": "library-01#074",
+   "path": "categories/0/sections/1/items/0/brands/4/note",
+   "ru": "стандарт сценической аренды и виртуальных студий",
+   "en": "стандарт сценической аренды и виртуальных студий",
+   "pt": "padrão da locação cênica e dos estúdios virtuais"
+  },
+  {
+   "id": "library-01#075",
+   "path": "categories/0/sections/1/items/1/name",
+   "ru": "Гибкие модули",
+   "en": "Flexible modules",
+   "pt": "Módulos flexíveis"
+  },
+  {
+   "id": "library-01#076",
+   "path": "categories/0/sections/1/items/1/line",
+   "ru": "Экран, который гнётся по месту",
+   "en": "A screen that bends to fit",
+   "pt": "Uma tela que se dobra ao formato"
+  },
+  {
+   "id": "library-01#077",
+   "path": "categories/0/sections/1/items/1/what",
+   "ru": "Те же диоды на резиновой подложке: полотно оборачивает колонну, ложится на свод, повторяет волну стены. Там, где плоский экран дал бы стык, гибкий даёт непрерывную поверхность.",
+   "en": "The same LEDs on a rubber backing: the canvas wraps a column, lies over a vault, follows the wave of a wall. Where a flat panel would leave a seam, this gives one continuous surface.",
+   "pt": "Os mesmos LEDs sobre uma base de borracha: a superfície envolve uma coluna, se deita sobre uma abóbada, acompanha a onda de uma parede. Onde um painel plano deixaria uma emenda, isso dá uma superfície contínua."
+  },
+  {
+   "id": "library-01#078",
+   "path": "categories/0/sections/1/items/1/good/0",
+   "ru": "Колонна, арка, свод, изогнутая стена — там, где плоское полотно даст стык",
+   "en": "A column, an arch, a vault, a curved wall — anywhere a flat canvas would leave a seam",
+   "pt": "Uma coluna, um arco, uma abóbada, uma parede curva — onde uma superfície plana deixaria emenda"
+  },
+  {
+   "id": "library-01#079",
+   "path": "categories/0/sections/1/items/1/good/1",
+   "ru": "Форма важнее разрешения: издалека читается силуэт, а не пиксель",
+   "en": "Shape matters more than resolution: from a distance the silhouette reads, not the pixel",
+   "pt": "A forma importa mais que a resolução: de longe se lê a silhueta, não o pixel"
+  },
+  {
+   "id": "library-01#080",
+   "path": "categories/0/sections/1/items/1/good/2",
+   "ru": "Временная застройка: гибкое полотно легче и прощает неточность каркаса",
+   "en": "Temporary builds: a flexible canvas is lighter and forgives an imprecise frame",
+   "pt": "Montagens temporárias: uma superfície flexível é mais leve e perdoa uma estrutura imprecisa"
+  },
+  {
+   "id": "library-01#081",
+   "path": "categories/0/sections/1/items/1/bad/0",
+   "ru": "Мелкий шаг: чем гибче подложка, тем крупнее доступный шаг",
+   "en": "Fine pitch: the more flexible the backing, the coarser the available pitch",
+   "pt": "Pitch fino: quanto mais flexível a base, mais grosso o pitch disponível"
+  },
+  {
+   "id": "library-01#082",
+   "path": "categories/0/sections/1/items/1/bad/1",
+   "ru": "Радиус ограничен — уточнять минимальный до проектирования каркаса",
+   "en": "The radius is limited — get the minimum figure before designing the frame",
+   "pt": "O raio é limitado — pegue o número mínimo antes de projetar a estrutura"
+  },
+  {
+   "id": "library-01#083",
+   "path": "categories/0/sections/1/items/1/bad/2",
+   "ru": "Ресурс ниже плоского: изгиб работает против пайки, а перевешивать полотно туда-сюда оно не любит",
+   "en": "Shorter service life than flat: bending works against the solder, and it does not enjoy being rehung again and again",
+   "pt": "Vida útil menor que a da plana: dobrar trabalha contra a solda, e ela não gosta de ser remontada várias vezes"
+  },
+  {
+   "id": "library-01#084",
+   "path": "categories/0/sections/1/items/1/brands/0/note",
+   "ru": "гибкие серии для колонн и сводов",
+   "en": "гибкие серии для колонн и сводов",
+   "pt": "séries flexíveis para colunas e abóbadas"
+  },
+  {
+   "id": "library-01#085",
+   "path": "categories/0/sections/1/items/1/brands/1/note",
+   "ru": "силиконовые модули",
+   "en": "силиконовые модули",
+   "pt": "módulos de silicone"
+  },
+  {
+   "id": "library-01#086",
+   "path": "categories/0/sections/1/items/1/brands/2/note",
+   "ru": "гибкие сценические полотна",
+   "en": "гибкие сценические полотна",
+   "pt": "telas cênicas flexíveis"
+  },
+  {
+   "id": "library-01#087",
+   "path": "categories/0/sections/1/items/2/name",
+   "ru": "Объёмные формы: шар, цилиндр, куб",
+   "en": "Volumetric forms: sphere, cylinder, cube",
+   "pt": "Formas volumétricas: esfera, cilindro, cubo"
+  },
+  {
+   "id": "library-01#088",
+   "path": "categories/0/sections/1/items/2/line",
+   "ru": "У этого экрана нет зрительского места",
+   "en": "This screen has no viewer's seat",
+   "pt": "Essa tela não tem lugar de espectador"
+  },
+  {
+   "id": "library-01#089",
+   "path": "categories/0/sections/1/items/2/what",
+   "ru": "Готовые светодиодные шары, цилиндры, кубы и кольца. Изображение обтекает форму целиком, поэтому объект работает на круговой обход и одинаково читается с балкона и снизу.",
+   "en": "Ready-made LED spheres, cylinders, cubes and rings. The image wraps the whole form, so the object works for people circling it and reads the same from a balcony and from below.",
+   "pt": "Esferas, cilindros, cubos e anéis de LED prontos. A imagem envolve toda a forma, então o objeto funciona para quem circula em volta e é lido igual de um mezanino e de baixo."
+  },
+  {
+   "id": "library-01#090",
+   "path": "categories/0/sections/1/items/2/note_hw",
+   "ru": "Содержание для такой формы считается иначе: плоское видео на шар не натягивается без искажения. Нужна развёртка под конкретную геометрию, и это работа, которую в сметах регулярно забывают заложить.",
+   "en": "Content for such a form is computed differently: flat video does not stretch onto a sphere without distortion. It needs an unwrap made for that exact geometry, and that is the work budgets routinely forget to include.",
+   "pt": "Conteúdo para uma forma dessas é calculado de outro jeito: vídeo plano não estica sobre uma esfera sem distorção. É preciso uma planificação feita para aquela geometria exata, e esse é o trabalho que os orçamentos sistematicamente esquecem de incluir."
+  },
+  {
+   "id": "library-01#091",
+   "path": "categories/0/sections/1/items/2/good/0",
+   "ru": "Атриум, вестибюль, центр зала — точка, вокруг которой ходят",
+   "en": "An atrium, a lobby, the centre of a room — a point people walk around",
+   "pt": "Um átrio, um saguão, o centro de uma sala — um ponto em volta do qual se caminha"
+  },
+  {
+   "id": "library-01#092",
+   "path": "categories/0/sections/1/items/2/good/1",
+   "ru": "Глобус, планета, ядро, молекула — когда сама тема круглая",
+   "en": "A globe, a planet, a core, a molecule — when the subject itself is round",
+   "pt": "Um globo, um planeta, um núcleo, uma molécula — quando o próprio assunto é redondo"
+  },
+  {
+   "id": "library-01#093",
+   "path": "categories/0/sections/1/items/2/good/2",
+   "ru": "Нужен объект, который видно с балкона и снизу одинаково",
+   "en": "An object that must read equally from a balcony and from below",
+   "pt": "Um objeto que precisa ser lido igualmente de um mezanino e de baixo"
+  },
+  {
+   "id": "library-01#094",
+   "path": "categories/0/sections/1/items/2/bad/0",
+   "ru": "Текст и схемы: на кривизне не читается ничего",
+   "en": "Text and diagrams: nothing is legible across curvature",
+   "pt": "Texto e diagramas: nada fica legível sobre curvatura"
+  },
+  {
+   "id": "library-01#095",
+   "path": "categories/0/sections/1/items/2/bad/1",
+   "ru": "Малый бюджет: нестандартная форма всегда дороже той же площади плоского",
+   "en": "A tight budget: a non-standard form always costs more than the same area of flat",
+   "pt": "Orçamento apertado: uma forma fora do padrão sempre custa mais que a mesma área plana"
+  },
+  {
+   "id": "library-01#096",
+   "path": "categories/0/sections/1/items/2/bad/2",
+   "ru": "Низкий потолок — объект должен висеть с запасом над головами",
+   "en": "Low ceilings — the object has to hang with clearance over people's heads",
+   "pt": "Pé-direito baixo — o objeto precisa ficar suspenso com folga sobre as cabeças"
+  },
+  {
+   "id": "library-01#097",
+   "path": "categories/0/sections/1/items/2/brands/0/note",
+   "ru": "сферы и цилиндры под заказ",
+   "en": "сферы и цилиндры под заказ",
+   "pt": "esferas e cilindros sob encomenda"
+  },
+  {
+   "id": "library-01#098",
+   "path": "categories/0/sections/1/items/2/brands/1/note",
+   "ru": "нестандартная геометрия",
+   "en": "нестандартная геометрия",
+   "pt": "geometria não padronizada"
+  },
+  {
+   "id": "library-01#099",
+   "path": "categories/0/sections/1/items/2/brands/2/note",
+   "ru": "креативные формы и шары",
+   "en": "креативные формы и шары",
+   "pt": "formas criativas e esferas"
+  },
+  {
+   "id": "library-01#100",
+   "path": "categories/0/sections/1/items/3/name",
+   "ru": "Кинетический светодиодный экран",
+   "en": "Kinetic LED screen",
+   "pt": "Tela de LED cinética"
+  },
+  {
+   "id": "library-01#101",
+   "path": "categories/0/sections/1/items/3/line",
+   "ru": "Полотно, которое двигается в воздухе",
+   "en": "A canvas that moves through the air",
+   "pt": "Uma superfície que se move pelo ar"
+  },
+  {
+   "id": "library-01#102",
+   "path": "categories/0/sections/1/items/3/what",
+   "ru": "Модули висят на лебёдках и меняют положение по ходу показа: экран расходится, собирается, превращается в волну. Картинка и движение считаются одним сценарием — повторить это роликом нельзя.",
+   "en": "Modules hang on winches and change position through the show: the screen parts, gathers, becomes a wave. Image and movement are one score — you cannot reproduce it with a video.",
+   "pt": "Os módulos ficam pendurados em guinchos e mudam de posição ao longo do espetáculo: a tela se separa, se junta, vira onda. Imagem e movimento são uma partitura só — não dá para reproduzir isso com um vídeo."
+  },
+  {
+   "id": "library-01#103",
+   "path": "categories/0/sections/1/items/3/good/0",
+   "ru": "Открытие, презентация, шоу — событие с началом и финалом",
+   "en": "An opening, a launch, a show — an event with a beginning and a finale",
+   "pt": "Uma inauguração, um lançamento, um espetáculo — um evento com começo e final"
+  },
+  {
+   "id": "library-01#104",
+   "path": "categories/0/sections/1/items/3/good/1",
+   "ru": "Атриум с высоким потолком, где движение видно снизу",
+   "en": "An atrium with a high ceiling where the movement reads from below",
+   "pt": "Um átrio de pé-direito alto onde o movimento se lê de baixo"
+  },
+  {
+   "id": "library-01#105",
+   "path": "categories/0/sections/1/items/3/good/2",
+   "ru": "Нужен эффект, который нельзя повторить видеороликом",
+   "en": "An effect that cannot be reproduced by playing a video",
+   "pt": "Um efeito que não dá para reproduzir tocando um vídeo"
+  },
+  {
+   "id": "library-01#106",
+   "path": "categories/0/sections/1/items/3/bad/0",
+   "ru": "Постоянная экспозиция: лебёдки требуют регламента и допуска, как любой подъём груза",
+   "en": "A permanent exhibition: winches need inspection regimes and permits, like any lifting gear",
+   "pt": "Uma exposição permanente: guinchos exigem regime de inspeção e licenças, como todo equipamento de elevação"
+  },
+  {
+   "id": "library-01#107",
+   "path": "categories/0/sections/1/items/3/bad/1",
+   "ru": "Люди под конструкцией — отдельный расчёт безопасности, а не пожелание",
+   "en": "People underneath the rig — that is a safety calculation, not a preference",
+   "pt": "Pessoas embaixo da estrutura — isso é cálculo de segurança, não preferência"
+  },
+  {
+   "id": "library-01#108",
+   "path": "categories/0/sections/1/items/3/bad/2",
+   "ru": "Тихий зал: приводы слышно",
+   "en": "A quiet room: the drives are audible",
+   "pt": "Uma sala silenciosa: os acionamentos são audíveis"
+  },
+  {
+   "id": "library-01#109",
+   "path": "categories/0/sections/1/items/3/spec",
+   "ru": "Считается как подъёмное оборудование: нагрузка, страховка, зона под конструкцией. Это не вопрос дизайна, а вопрос допуска и регламента.",
+   "en": "Treated as lifting equipment: load, secondary safeties, exclusion zone underneath. This is a matter of permits and inspection regime, not of design.",
+   "pt": "Tratado como equipamento de elevação: carga, travas secundárias, zona de exclusão embaixo. Isso é assunto de licença e regime de inspeção, não de design."
+  },
+  {
+   "id": "library-01#110",
+   "path": "categories/0/sections/1/items/3/brands/0/note",
+   "ru": "лебёдки и светящиеся элементы, сценарное управление",
+   "en": "лебёдки и светящиеся элементы, сценарное управление",
+   "pt": "guinchos e elementos luminosos, controle por roteiro"
+  },
+  {
+   "id": "library-01#111",
+   "path": "categories/0/sections/1/items/3/brands/1/note",
+   "ru": "сценическая автоматика верхнего уровня",
+   "en": "сценическая автоматика верхнего уровня",
+   "pt": "automação cênica de alto nível"
+  },
+  {
+   "id": "library-01#112",
+   "path": "categories/0/sections/1/items/3/brands/2/note",
+   "ru": "приводы и подъёмные системы",
+   "en": "приводы и подъёмные системы",
+   "pt": "acionamentos e sistemas de elevação"
+  },
+  {
+   "id": "library-01#113",
+   "path": "categories/0/sections/2/name",
+   "ru": "Экраны",
+   "en": "Panels",
+   "pt": "Painéis"
+  },
+  {
+   "id": "library-01#114",
+   "path": "categories/0/sections/2/note",
+   "ru": "Готовая светящаяся плоскость, ничего собирать не надо. Всё, чего не может проекция: солнце, мелкий шрифт, работа без выходных.",
+   "en": "A finished glowing plane, nothing to assemble. Everything projection cannot do: sunlight, small type, working without a day off.",
+   "pt": "Um plano luminoso pronto, nada a montar. Tudo que a projeção não consegue: luz do sol, letra pequena, trabalhar sem folga."
+  },
+  {
+   "id": "library-01#115",
+   "path": "categories/0/sections/2/items/0/name",
+   "ru": "Профессиональная панель и видеостена",
+   "en": "Professional panel and video wall",
+   "pt": "Painel profissional e videowall"
+  },
+  {
+   "id": "library-01#116",
+   "path": "categories/0/sections/2/items/0/line",
+   "ru": "Скучно, надёжно, читается",
+   "en": "Dull, dependable, legible",
+   "pt": "Sem graça, confiável, legível"
+  },
+  {
+   "id": "library-01#117",
+   "path": "categories/0/sections/2/items/0/what",
+   "ru": "Промышленный родственник телевизора: круглосуточная работа, вертикальная установка, удалённое управление, годы без выключения. Бытовой телевизор в экспозиции живёт до первого лета.",
+   "en": "The industrial relative of a television: round-the-clock operation, portrait mounting, remote management, years without being switched off. A consumer TV in an exhibition lasts until its first summer.",
+   "pt": "O parente industrial da televisão: operação ininterrupta, montagem em retrato, gestão remota, anos sem ser desligado. Uma TV doméstica em exposição dura até o primeiro verão."
+  },
+  {
+   "id": "library-01#118",
+   "path": "categories/0/sections/2/items/0/good/0",
+   "ru": "Нужно читать текст, чертежи, архивные документы",
+   "en": "Text, drawings and archive documents have to be read",
+   "pt": "Texto, desenhos e documentos de arquivo precisam ser lidos"
+  },
+  {
+   "id": "library-01#119",
+   "path": "categories/0/sections/2/items/0/good/1",
+   "ru": "Экран висит долго и должен просто работать",
+   "en": "The screen hangs for a long time and simply has to work",
+   "pt": "A tela fica pendurada por muito tempo e simplesmente tem que funcionar"
+  },
+  {
+   "id": "library-01#120",
+   "path": "categories/0/sections/2/items/0/good/2",
+   "ru": "Небольшой бюджет: лучшее соотношение цены к разборчивости",
+   "en": "A modest budget: the best ratio of cost to legibility",
+   "pt": "Orçamento modesto: a melhor relação entre custo e legibilidade"
+  },
+  {
+   "id": "library-01#121",
+   "path": "categories/0/sections/2/items/0/bad/0",
+   "ru": "Задача — впечатление, а не чтение: панель не создаёт события",
+   "en": "The job is impression, not reading: a panel does not create an event",
+   "pt": "A tarefa é impressão, não leitura: um painel não cria um acontecimento"
+  },
+  {
+   "id": "library-01#122",
+   "path": "categories/0/sections/2/items/0/bad/1",
+   "ru": "Видеостена из нескольких панелей: рамки видны всегда, и на общем кадре это читается как решётка",
+   "en": "A video wall of several panels: the bezels are always visible, and across a single image they read as a grid",
+   "pt": "Um videowall de vários painéis: as molduras aparecem sempre, e sobre uma imagem única elas são lidas como uma grade"
+  },
+  {
+   "id": "library-01#123",
+   "path": "categories/0/sections/2/items/0/brands/0/note",
+   "ru": "серия для витрин с высокой яркостью",
+   "en": "серия для витрин с высокой яркостью",
+   "pt": "série para vitrines com alto brilho"
+  },
+  {
+   "id": "library-01#124",
+   "path": "categories/0/sections/2/items/0/brands/1/note",
+   "ru": "широкая линейка, в том числе растянутые форматы",
+   "en": "широкая линейка, в том числе растянутые форматы",
+   "pt": "linha ampla, inclusive formatos alongados"
+  },
+  {
+   "id": "library-01#125",
+   "path": "categories/0/sections/2/items/0/brands/2/note",
+   "ru": "инсталляционный стандарт",
+   "en": "инсталляционный стандарт",
+   "pt": "padrão de instalação"
+  },
+  {
+   "id": "library-01#126",
+   "path": "categories/0/sections/2/items/1/name",
+   "ru": "Прозрачный экран",
+   "en": "Transparent screen",
+   "pt": "Tela transparente"
+  },
+  {
+   "id": "library-01#127",
+   "path": "categories/0/sections/2/items/1/line",
+   "ru": "Данные поверх настоящего предмета",
+   "en": "Data over the real object",
+   "pt": "Dados sobre o objeto real"
+  },
+  {
+   "id": "library-01#128",
+   "path": "categories/0/sections/2/items/1/what",
+   "ru": "Изображение висит на стекле, а экспонат виден насквозь. Подлинник остаётся подлинником, а разрезы, подписи и анимация ложатся на него слоем. Выключили — осталось просто стекло.",
+   "en": "The image hangs on glass and the exhibit shows through. The original stays original while cutaways, labels and animation lie over it as a layer. Switch it off and only glass remains.",
+   "pt": "A imagem fica sobre o vidro e o exponente aparece atrás. O original continua original enquanto cortes, legendas e animação ficam por cima como uma camada. Desligue e sobra só o vidro."
+  },
+  {
+   "id": "library-01#129",
+   "path": "categories/0/sections/2/items/1/good/0",
+   "ru": "Витрина с подлинником, который надо объяснить, не закрывая",
+   "en": "A vitrine holding an original that needs explaining without being covered",
+   "pt": "Uma vitrine com um original que precisa ser explicado sem ser coberto"
+  },
+  {
+   "id": "library-01#130",
+   "path": "categories/0/sections/2/items/1/good/1",
+   "ru": "Разрез, схема или траектория поверх настоящего изделия",
+   "en": "A cutaway, a diagram or a trajectory laid over a real product",
+   "pt": "Um corte, um diagrama ou uma trajetória sobre um produto real"
+  },
+  {
+   "id": "library-01#131",
+   "path": "categories/0/sections/2/items/1/good/2",
+   "ru": "Нужно, чтобы после выключения осталось просто стекло",
+   "en": "When it is switched off, only glass should remain",
+   "pt": "Quando desligada, deve sobrar apenas o vidro"
+  },
+  {
+   "id": "library-01#132",
+   "path": "categories/0/sections/2/items/1/bad/0",
+   "ru": "Яркий зал: прозрачный экран проигрывает засветке первым",
+   "en": "A bright room: a transparent screen is the first to lose to ambient light",
+   "pt": "Uma sala clara: a tela transparente é a primeira a perder para a luz ambiente"
+  },
+  {
+   "id": "library-01#133",
+   "path": "categories/0/sections/2/items/1/bad/1",
+   "ru": "За стеклом пёстрый фон — изображение теряет читаемость",
+   "en": "A busy background behind the glass — the image loses legibility",
+   "pt": "Um fundo carregado atrás do vidro — a imagem perde legibilidade"
+  },
+  {
+   "id": "library-01#134",
+   "path": "categories/0/sections/2/items/1/bad/2",
+   "ru": "Нужна насыщенная плотная картинка: прозрачность работает против контраста",
+   "en": "A dense, saturated picture is needed: transparency works against contrast",
+   "pt": "É preciso uma imagem densa e saturada: a transparência trabalha contra o contraste"
+  },
+  {
+   "id": "library-01#135",
+   "path": "categories/0/sections/2/items/1/brands/0/note",
+   "ru": "основной поставщик прозрачных панелей",
+   "en": "основной поставщик прозрачных панелей",
+   "pt": "principal fornecedor de painéis transparentes"
+  },
+  {
+   "id": "library-01#136",
+   "path": "categories/0/sections/2/items/1/brands/1/note",
+   "ru": "прозрачные решения для витрин",
+   "en": "прозрачные решения для витрин",
+   "pt": "soluções transparentes para vitrines"
+  },
+  {
+   "id": "library-01#137",
+   "path": "categories/0/sections/2/items/1/brands/2/note",
+   "ru": "нестандартные размеры и формы",
+   "en": "нестандартные размеры и формы",
+   "pt": "tamanhos e formatos não padronizados"
+  }
+ ]
+}

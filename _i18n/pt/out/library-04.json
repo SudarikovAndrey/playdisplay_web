@@ -1,0 +1,966 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "library-04 (4 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "library-04#001",
+   "path": "categories/1/sections/1/items/4/good/2",
+   "ru": "Экспонат должен работать для человека с любым ростом и любыми руками",
+   "en": "The exhibit has to work for a person of any height and any hands",
+   "pt": "O exponente precisa funcionar para uma pessoa de qualquer altura e de qualquer mão"
+  },
+  {
+   "id": "library-04#002",
+   "path": "categories/1/sections/1/items/4/bad/0",
+   "ru": "Точное измерение как содержание: бытовые датчики плывут со временем",
+   "en": "Precise measurement as the content: consumer sensors drift over time",
+   "pt": "Medida precisa como conteúdo: sensores domésticos desviam com o tempo"
+  },
+  {
+   "id": "library-04#003",
+   "path": "categories/1/sections/1/items/4/bad/1",
+   "ru": "Постоянная нагрузка изнашивает механику быстрее электроники",
+   "en": "Constant load wears the mechanics faster than the electronics",
+   "pt": "Carga constante desgasta a mecânica mais rápido que a eletrônica"
+  },
+  {
+   "id": "library-04#004",
+   "path": "categories/1/sections/1/items/4/brands/0/note",
+   "ru": "тензодатчики промышленной точности",
+   "en": "тензодатчики промышленной точности",
+   "pt": "células de carga de precisão industrial"
+  },
+  {
+   "id": "library-04#005",
+   "path": "categories/1/sections/1/items/4/brands/1/note",
+   "ru": "готовые модули с подключением",
+   "en": "готовые модули с подключением",
+   "pt": "módulos prontos com conexão"
+  },
+  {
+   "id": "library-04#006",
+   "path": "categories/1/sections/2/name",
+   "ru": "Тело и жест",
+   "en": "Body and gesture",
+   "pt": "Corpo e gesto"
+  },
+  {
+   "id": "library-04#007",
+   "path": "categories/1/sections/2/note",
+   "ru": "Трогать ничего не надо и объяснять нечего. Самая эффектная группа и самая капризная: чем меньше контакта, тем труднее догадаться, что ты вообще управляешь.",
+   "en": "Nothing to touch and nothing to explain. The most striking group and the most temperamental: the less contact there is, the harder it is to realise you are in control at all.",
+   "pt": "Nada a tocar e nada a explicar. O grupo mais marcante e o mais temperamental: quanto menos contato existe, mais difícil é perceber que você está no controle."
+  },
+  {
+   "id": "library-04#008",
+   "path": "categories/1/sections/2/items/0/name",
+   "ru": "Камера глубины и скелет",
+   "en": "Depth camera and skeleton tracking",
+   "pt": "Câmera de profundidade e rastreamento de esqueleto"
+  },
+  {
+   "id": "library-04#009",
+   "path": "categories/1/sections/2/items/0/line",
+   "ru": "Система видит позу и движение",
+   "en": "The system sees posture and movement",
+   "pt": "O sistema enxerga postura e movimento"
+  },
+  {
+   "id": "library-04#010",
+   "path": "categories/1/sections/2/items/0/what",
+   "ru": "Камера меряет расстояние до каждой точки кадра и достраивает скелет: где руки, куда наклон, сколько людей. Основа всего, где машут, повторяют и уворачиваются.",
+   "en": "The camera measures distance to every point in frame and builds a skeleton: where the arms are, which way the lean goes, how many people. The basis of everything involving waving, copying and dodging.",
+   "pt": "A câmera mede a distância até cada ponto do quadro e monta um esqueleto: onde estão os braços, para que lado é a inclinação, quantas pessoas há. A base de tudo que envolve acenar, copiar e desviar."
+  },
+  {
+   "id": "library-04#011",
+   "path": "categories/1/sections/2/items/0/note_hw",
+   "ru": "Важное для спецификации: Microsoft прекратила выпуск Azure Kinect DK в 2023 году и передала технологию партнёрам. Прямой преемник — Orbbec Femto Bolt на той же измерительной технологии, с совместимым программным интерфейсом: код с Kinect переносится почти без правок. Если в вашей спецификации до сих пор написано «Kinect» — это красный флаг, значит документ писали по старым образцам.",
+   "en": "Important for the specification: Microsoft ended production of the Azure Kinect DK in 2023 and passed the technology to partners. The direct successor is the Orbbec Femto Bolt, on the same depth technology with a compatible programming interface: Kinect code ports across with almost no changes. If your specification still says «Kinect», that is a red flag — the document was written from old templates.",
+   "pt": "Importante para a especificação: a Microsoft encerrou a produção do Azure Kinect DK em 2023 e passou a tecnologia a parceiros. O sucessor direto é o Orbbec Femto Bolt, com a mesma tecnologia de profundidade e interface de programação compatível: o código de Kinect migra quase sem alterações. Se a sua especificação ainda diz “Kinect”, isso é um sinal de alerta — o documento foi escrito com modelos antigos."
+  },
+  {
+   "id": "library-04#012",
+   "path": "categories/1/sections/2/items/0/good/0",
+   "ru": "Движение всем телом: повторить, увернуться, станцевать, замереть",
+   "en": "Whole-body movement: copy it, dodge it, dance it, hold still",
+   "pt": "Movimento de corpo inteiro: copiar, desviar, dançar, ficar parado"
+  },
+  {
+   "id": "library-04#013",
+   "path": "categories/1/sections/2/items/0/good/1",
+   "ru": "Несколько человек одновременно перед одним экспонатом",
+   "en": "Several people at once in front of one exhibit",
+   "pt": "Várias pessoas ao mesmo tempo diante de um mesmo exponente"
+  },
+  {
+   "id": "library-04#014",
+   "path": "categories/1/sections/2/items/0/good/2",
+   "ru": "Нужно считать очередь и понимать, есть ли вообще кто-то",
+   "en": "Counting the queue and knowing whether anyone is there at all",
+   "pt": "Contar a fila e saber se há alguém ali"
+  },
+  {
+   "id": "library-04#015",
+   "path": "categories/1/sections/2/items/0/bad/0",
+   "ru": "Яркое солнце: инфракрасные камеры глубины на улице слепнут",
+   "en": "Bright sunlight: infrared depth cameras go blind outdoors",
+   "pt": "Sol forte: câmeras de profundidade infravermelhas ficam cegas ao ar livre"
+  },
+  {
+   "id": "library-04#016",
+   "path": "categories/1/sections/2/items/0/bad/1",
+   "ru": "Плотная толпа — скелеты сливаются",
+   "en": "A dense crowd — skeletons merge",
+   "pt": "Multidão densa — os esqueletos se fundem"
+  },
+  {
+   "id": "library-04#017",
+   "path": "categories/1/sections/2/items/0/bad/2",
+   "ru": "Тёмная одежда и отражающие поверхности дают провалы в измерении",
+   "en": "Dark clothing and reflective surfaces leave holes in the measurement",
+   "pt": "Roupas escuras e superfícies refletivas deixam buracos na medição"
+  },
+  {
+   "id": "library-04#018",
+   "path": "categories/1/sections/2/items/0/brands/0/note",
+   "ru": "официальный преемник Azure Kinect",
+   "en": "официальный преемник Azure Kinect",
+   "pt": "sucessor oficial do Azure Kinect"
+  },
+  {
+   "id": "library-04#019",
+   "path": "categories/1/sections/2/items/0/brands/1/note",
+   "ru": "стереокамеры; с 2025 самостоятельная компания вне Intel",
+   "en": "стереокамеры; с 2025 самостоятельная компания вне Intel",
+   "pt": "câmeras estéreo; desde 2025 empresa independente fora da Intel"
+  },
+  {
+   "id": "library-04#020",
+   "path": "categories/1/sections/2/items/0/brands/2/note",
+   "ru": "глубина плюс нейросеть в самой камере",
+   "en": "глубина плюс нейросеть в самой камере",
+   "pt": "profundidade mais rede neural dentro da própria câmera"
+  },
+  {
+   "id": "library-04#021",
+   "path": "categories/1/sections/2/items/0/brands/3/note",
+   "ru": "стерео на больших дистанциях",
+   "en": "стерео на больших дистанциях",
+   "pt": "estéreo em grandes distâncias"
+  },
+  {
+   "id": "library-04#022",
+   "path": "categories/1/sections/2/items/1/name",
+   "ru": "Отслеживание кистей рук",
+   "en": "Hand tracking",
+   "pt": "Rastreamento de mãos"
+  },
+  {
+   "id": "library-04#023",
+   "path": "categories/1/sections/2/items/1/line",
+   "ru": "Пальцы в воздухе, без перчаток",
+   "en": "Fingers in the air, no gloves",
+   "pt": "Dedos no ar, sem luvas"
+  },
+  {
+   "id": "library-04#024",
+   "path": "categories/1/sections/2/items/1/what",
+   "ru": "Прибор смотрит вверх и видит кисти до отдельных пальцев: виртуальный предмет можно взять, повернуть и разобрать руками. Ни одного касания — и выглядит как магия.",
+   "en": "The device looks up and sees hands down to individual fingers: a virtual object can be picked up, turned and taken apart by hand. Not one touch — and it looks like magic.",
+   "pt": "O aparelho olha para cima e enxerga as mãos até os dedos individuais: um objeto virtual pode ser pego, girado e desmontado com a mão. Nenhum toque — e parece mágica."
+  },
+  {
+   "id": "library-04#025",
+   "path": "categories/1/sections/2/items/1/good/0",
+   "ru": "Гигиена важнее всего: медицина, детский музей, эпидемические ограничения",
+   "en": "Hygiene above all: medicine, a children's museum, epidemic restrictions",
+   "pt": "Higiene acima de tudo: medicina, museu infantil, restrições sanitárias"
+  },
+  {
+   "id": "library-04#026",
+   "path": "categories/1/sections/2/items/1/good/1",
+   "ru": "Действие с предметом: повернуть, раскрыть, разобрать",
+   "en": "An action on an object: turn it, open it, dismantle it",
+   "pt": "Uma ação sobre um objeto: girar, abrir, desmontar"
+  },
+  {
+   "id": "library-04#027",
+   "path": "categories/1/sections/2/items/1/good/2",
+   "ru": "Экспонат должен выглядеть как магия",
+   "en": "The exhibit should look like magic",
+   "pt": "O exponente deve parecer mágica"
+  },
+  {
+   "id": "library-04#028",
+   "path": "categories/1/sections/2/items/1/bad/0",
+   "ru": "Рабочая зона маленькая — примерно кубометр над прибором, не больше",
+   "en": "The working volume is small — about a cubic metre above the device, no more",
+   "pt": "O volume útil é pequeno — cerca de um metro cúbico acima do aparelho, não mais"
+  },
+  {
+   "id": "library-04#029",
+   "path": "categories/1/sections/2/items/1/bad/1",
+   "ru": "Люди не догадываются поднять руки: нужна подсказка движением на экране",
+   "en": "People do not think to raise their hands: the screen must hint with movement",
+   "pt": "As pessoas não pensam em levantar as mãos: a tela precisa dar a dica com movimento"
+  },
+  {
+   "id": "library-04#030",
+   "path": "categories/1/sections/2/items/1/bad/2",
+   "ru": "Руки устают за минуту — сценарий должен быть коротким",
+   "en": "Arms tire within a minute — the scenario has to be short",
+   "pt": "Os braços cansam em um minuto — o roteiro tem que ser curto"
+  },
+  {
+   "id": "library-04#031",
+   "path": "categories/1/sections/2/items/1/brands/0/note",
+   "ru": "отраслевой стандарт по кистям рук",
+   "en": "отраслевой стандарт по кистям рук",
+   "pt": "padrão do setor em mãos"
+  },
+  {
+   "id": "library-04#032",
+   "path": "categories/1/sections/2/items/2/name",
+   "ru": "Датчик присутствия",
+   "en": "Presence sensor",
+   "pt": "Sensor de presença"
+  },
+  {
+   "id": "library-04#033",
+   "path": "categories/1/sections/2/items/2/line",
+   "ru": "Экспонат просыпается сам",
+   "en": "The exhibit wakes up by itself",
+   "pt": "O exponente acorda sozinho"
+  },
+  {
+   "id": "library-04#034",
+   "path": "categories/1/sections/2/items/2/what",
+   "ru": "Инфракрасный или радарный датчик замечает человека рядом. Самая дешёвая деталь во всей спецификации и одна из самых полезных: экспонат зовёт, а в пустом зале бережёт ресурс.",
+   "en": "An infrared or radar sensor notices someone nearby. The cheapest part in the whole specification and one of the most useful: the exhibit calls out, and in an empty room it saves its own life.",
+   "pt": "Um sensor infravermelho ou de radar percebe alguém por perto. A peça mais barata de toda a especificação e uma das mais úteis: o exponente chama, e em uma sala vazia ele economiza a própria vida."
+  },
+  {
+   "id": "library-04#035",
+   "path": "categories/1/sections/2/items/2/good/0",
+   "ru": "Экспонат должен звать, а не ждать нажатия",
+   "en": "The exhibit should call out rather than wait to be pressed",
+   "pt": "O exponente deve chamar em vez de esperar ser apertado"
+  },
+  {
+   "id": "library-04#036",
+   "path": "categories/1/sections/2/items/2/good/1",
+   "ru": "Экономия ресурса панелей и проекторов в пустые часы",
+   "en": "Saving panel and projector hours through the empty times",
+   "pt": "Economizar horas de painel e de projetor nos períodos vazios"
+  },
+  {
+   "id": "library-04#037",
+   "path": "categories/1/sections/2/items/2/good/2",
+   "ru": "Нужна честная статистика посещаемости по зонам",
+   "en": "Honest footfall statistics by zone",
+   "pt": "Estatística honesta de fluxo por zona"
+  },
+  {
+   "id": "library-04#038",
+   "path": "categories/1/sections/2/items/2/bad/0",
+   "ru": "Проходной коридор: срабатывает на каждого идущего мимо",
+   "en": "A through corridor: it triggers on everyone walking past",
+   "pt": "Um corredor de passagem: dispara com todo mundo que passa"
+  },
+  {
+   "id": "library-04#039",
+   "path": "categories/1/sections/2/items/2/bad/1",
+   "ru": "Радар видит сквозь тонкую перегородку — соседний зал будет будить ваш",
+   "en": "Radar sees through a thin partition — the next room will keep waking yours",
+   "pt": "O radar enxerga através de uma divisória fina — a sala ao lado vai ficar acordando a sua"
+  },
+  {
+   "id": "library-04#040",
+   "path": "categories/1/sections/2/items/2/bad/2",
+   "ru": "Резкий запуск пугает: включать плавно",
+   "en": "An abrupt start startles people: bring it up gently",
+   "pt": "Uma partida abrupta assusta as pessoas: suba o efeito com suavidade"
+  },
+  {
+   "id": "library-04#041",
+   "path": "categories/1/sections/2/items/2/brands/0/note",
+   "ru": "миллиметровые радары присутствия, доступны",
+   "en": "миллиметровые радары присутствия, доступны",
+   "pt": "radares milimétricos de presença, acessíveis"
+  },
+  {
+   "id": "library-04#042",
+   "path": "categories/1/sections/2/items/2/brands/1/note",
+   "ru": "тепловая матрица, считает людей",
+   "en": "тепловая матрица, считает людей",
+   "pt": "matriz térmica, conta pessoas"
+  },
+  {
+   "id": "library-04#043",
+   "path": "categories/1/sections/2/items/2/brands/2/note",
+   "ru": "подсчёт посетителей в проёмах",
+   "en": "подсчёт посетителей в проёмах",
+   "pt": "contagem de visitantes em vãos"
+  },
+  {
+   "id": "library-04#044",
+   "path": "categories/1/sections/2/items/3/name",
+   "ru": "Считывание мозговой активности",
+   "en": "Reading brain activity",
+   "pt": "Leitura de atividade cerebral"
+  },
+  {
+   "id": "library-04#045",
+   "path": "categories/1/sections/2/items/3/line",
+   "ru": "Экспонат, которым управляют, ничего не делая",
+   "en": "An exhibit you operate by doing nothing",
+   "pt": "Um exponente que se opera não fazendo nada"
+  },
+  {
+   "id": "library-04#046",
+   "path": "categories/1/sections/2/items/3/what",
+   "ru": "Лёгкий обруч снимает активность мозга и различает состояния — сосредоточенность, расслабление, всплеск внимания. Мысли он не читает, и честно сказать это со сцены — уже половина сценария.",
+   "en": "A light headband reads brain activity and tells states apart — concentration, relaxation, a spike of attention. It does not read thoughts, and saying so plainly on the exhibit is already half the scenario.",
+   "pt": "Uma faixa leve lê a atividade cerebral e distingue estados — concentração, relaxamento, um pico de atenção. Ela não lê pensamentos, e dizer isso com todas as letras no exponente já é metade do roteiro."
+  },
+  {
+   "id": "library-04#047",
+   "path": "categories/1/sections/2/items/3/note_hw",
+   "ru": "Ожидания надо снижать заранее. Бытовые модели дают несколько каналов и различают два-три состояния с задержкой в секунды. Всё, что обещает больше на потребительском обруче, — маркетинг.",
+   "en": "Expectations have to be lowered in advance. Consumer models give a few channels and distinguish two or three states with a delay of seconds. Anything promising more from a consumer headband is marketing.",
+   "pt": "As expectativas precisam ser baixadas antes. Modelos de consumo dão alguns canais e distinguem dois ou três estados com atraso de segundos. Qualquer coisa que prometa mais de uma faixa de consumo é marketing."
+  },
+  {
+   "id": "library-04#048",
+   "path": "categories/1/sections/2/items/3/good/0",
+   "ru": "Тема экспозиции — сам мозг, внимание, медитация, работа сознания",
+   "en": "The subject of the exhibition is the brain itself, attention, meditation, consciousness",
+   "pt": "O tema da exposição é o próprio cérebro, a atenção, a meditação, a consciência"
+  },
+  {
+   "id": "library-04#049",
+   "path": "categories/1/sections/2/items/3/good/1",
+   "ru": "Экспонат-соревнование: кто быстрее расслабится или сосредоточится",
+   "en": "A contest exhibit: who can relax or concentrate faster",
+   "pt": "Um exponente de disputa: quem relaxa ou se concentra mais rápido"
+  },
+  {
+   "id": "library-04#050",
+   "path": "categories/1/sections/2/items/3/good/2",
+   "ru": "Сопровождаемая зона, где сотрудник надевает прибор и объясняет",
+   "en": "An attended zone where staff fit the device and explain it",
+   "pt": "Uma zona com atendimento, onde a equipe coloca o aparelho e explica"
+  },
+  {
+   "id": "library-04#051",
+   "path": "categories/1/sections/2/items/3/good/3",
+   "ru": "Нужен разговор о технологии, а не просто эффект",
+   "en": "A conversation about the technology is wanted, not just an effect",
+   "pt": "Deseja-se uma conversa sobre a tecnologia, não apenas um efeito"
+  },
+  {
+   "id": "library-04#052",
+   "path": "categories/1/sections/2/items/3/bad/0",
+   "ru": "Свободный поток: обруч надевается, настраивается и протирается — это минуты",
+   "en": "Free flow: the headband is fitted, tuned and wiped down — that takes minutes",
+   "pt": "Fluxo livre: a faixa é colocada, ajustada e higienizada — isso leva minutos"
+  },
+  {
+   "id": "library-04#053",
+   "path": "categories/1/sections/2/items/3/bad/1",
+   "ru": "Гигиена и волосы: контакт электродов зависит от причёски и геля",
+   "en": "Hygiene and hair: electrode contact depends on hairstyle and gel",
+   "pt": "Higiene e cabelo: o contato dos eletrodos depende do penteado e do gel"
+  },
+  {
+   "id": "library-04#054",
+   "path": "categories/1/sections/2/items/3/bad/2",
+   "ru": "Гарантированный результат: у части людей сигнал просто не читается",
+   "en": "A guaranteed result: for some people the signal simply does not read",
+   "pt": "Resultado garantido: em algumas pessoas o sinal simplesmente não é lido"
+  },
+  {
+   "id": "library-04#055",
+   "path": "categories/1/sections/2/items/3/bad/3",
+   "ru": "Данные о состоянии человека — снова правовой вопрос, если их сохранять",
+   "en": "Data about a person's state is a legal question again, if it is stored",
+   "pt": "Dados sobre o estado de uma pessoa são de novo questão jurídica, se forem armazenados"
+  },
+  {
+   "id": "library-04#056",
+   "path": "categories/1/sections/2/items/3/brands/0/note",
+   "ru": "обруч с сухими электродами, есть поток данных для разработчика",
+   "en": "обруч с сухими электродами, есть поток данных для разработчика",
+   "pt": "faixa com eletrodos secos, com fluxo de dados para o desenvolvedor"
+  },
+  {
+   "id": "library-04#057",
+   "path": "categories/1/sections/2/items/3/brands/1/note",
+   "ru": "больше каналов, исследовательский уровень",
+   "en": "больше каналов, исследовательский уровень",
+   "pt": "mais canais, nível de pesquisa"
+  },
+  {
+   "id": "library-04#058",
+   "path": "categories/1/sections/2/items/3/brands/2/note",
+   "ru": "открытая платформа, полный доступ к сырым данным",
+   "en": "открытая платформа, полный доступ к сырым данным",
+   "pt": "plataforma aberta, acesso completo aos dados brutos"
+  },
+  {
+   "id": "library-04#059",
+   "path": "categories/1/sections/2/items/3/brands/3/note",
+   "ru": "открытый протокол: связывает прибор со сценой",
+   "en": "открытый протокол: связывает прибор со сценой",
+   "pt": "protocolo aberto: liga o aparelho à cena"
+  },
+  {
+   "id": "library-04#060",
+   "path": "categories/1/sections/3/name",
+   "ru": "Камера и алгоритм",
+   "en": "Camera and algorithm",
+   "pt": "Câmera e algoritmo"
+  },
+  {
+   "id": "library-04#061",
+   "path": "categories/1/sections/3/note",
+   "ru": "Обычная камера плюс программа, которая понимает кадр. Единственная группа, где юрист нужен раньше инженера.",
+   "en": "An ordinary camera plus software that understands the frame. The only group where you need a lawyer before you need an engineer.",
+   "pt": "Uma câmera comum mais um software que entende o quadro. O único grupo em que você precisa de um advogado antes de precisar de um engenheiro."
+  },
+  {
+   "id": "library-04#062",
+   "path": "categories/1/sections/3/items/0/name",
+   "ru": "Компьютерное зрение",
+   "en": "Computer vision",
+   "pt": "Visão computacional"
+  },
+  {
+   "id": "library-04#063",
+   "path": "categories/1/sections/3/items/0/line",
+   "ru": "Камера, которая понимает кадр",
+   "en": "A camera that understands the frame",
+   "pt": "Uma câmera que entende o quadro"
+  },
+  {
+   "id": "library-04#064",
+   "path": "categories/1/sections/3/items/0/what",
+   "ru": "Промышленная камера и нейросеть: различает предметы, считает людей, узнаёт жест или рисунок. Одна камера заменяет десяток датчиков и делает то, чего датчики не умеют вовсе.",
+   "en": "An industrial camera and a neural network: tells objects apart, counts people, recognises a gesture or a drawing. One camera replaces a dozen sensors and does what sensors cannot do at all.",
+   "pt": "Uma câmera industrial e uma rede neural: distingue objetos, conta pessoas, reconhece um gesto ou um desenho. Uma câmera substitui uma dúzia de sensores e faz o que sensores não fazem de jeito nenhum."
+  },
+  {
+   "id": "library-04#065",
+   "path": "categories/1/sections/3/items/0/good/0",
+   "ru": "Посетитель рисует, складывает, строит — а система это понимает",
+   "en": "The visitor draws, assembles or builds — and the system understands it",
+   "pt": "O visitante desenha, monta ou constrói — e o sistema entende"
+  },
+  {
+   "id": "library-04#066",
+   "path": "categories/1/sections/3/items/0/good/1",
+   "ru": "Подсчёт потока и тепловая карта зала: где стоят, где проходят мимо",
+   "en": "Counting flow and heat-mapping the room: where people stand, where they walk past",
+   "pt": "Contar fluxo e mapear o calor da sala: onde as pessoas ficam, por onde passam direto"
+  },
+  {
+   "id": "library-04#067",
+   "path": "categories/1/sections/3/items/0/good/2",
+   "ru": "Реакция на предмет, который принесли с собой",
+   "en": "Reacting to an object someone has brought with them",
+   "pt": "Reagir a um objeto que alguém trouxe consigo"
+  },
+  {
+   "id": "library-04#068",
+   "path": "categories/1/sections/3/items/0/bad/0",
+   "ru": "Свет меняется в течение дня — модель, обученная утром, ошибается вечером",
+   "en": "Light changes through the day — a model trained in the morning errs by evening",
+   "pt": "A luz muda ao longo do dia — um modelo treinado de manhã erra à noite"
+  },
+  {
+   "id": "library-04#069",
+   "path": "categories/1/sections/3/items/0/bad/1",
+   "ru": "Нужна гарантированная точность: зрение вероятностно по природе",
+   "en": "Guaranteed accuracy is required: vision is probabilistic by nature",
+   "pt": "Exige-se precisão garantida: a visão é probabilística por natureza"
+  },
+  {
+   "id": "library-04#070",
+   "path": "categories/1/sections/3/items/0/bad/2",
+   "ru": "Съёмка людей: правовое основание и информирование обязательны",
+   "en": "Filming people: a legal basis and clear notice are obligatory",
+   "pt": "Filmar pessoas: base legal e aviso claro são obrigatórios"
+  },
+  {
+   "id": "library-04#071",
+   "path": "categories/1/sections/3/items/0/brands/0/note",
+   "ru": "промышленные камеры, долгий срок поставки моделей",
+   "en": "промышленные камеры, долгий срок поставки моделей",
+   "pt": "câmeras industriais, prazo longo de fornecimento dos modelos"
+  },
+  {
+   "id": "library-04#072",
+   "path": "categories/1/sections/3/items/0/brands/1/note",
+   "ru": "нейросеть внутри камеры",
+   "en": "нейросеть внутри камеры",
+   "pt": "rede neural dentro da câmera"
+  },
+  {
+   "id": "library-04#073",
+   "path": "categories/1/sections/3/items/0/brands/2/note",
+   "ru": "вычисление на месте, без облака",
+   "en": "вычисление на месте, без облака",
+   "pt": "processamento local, sem nuvem"
+  },
+  {
+   "id": "library-04#074",
+   "path": "categories/1/sections/3/items/0/brands/3/note",
+   "ru": "распознавание предметов, открытая модель",
+   "en": "распознавание предметов, открытая модель",
+   "pt": "reconhecimento de objetos, modelo aberto"
+  },
+  {
+   "id": "library-04#075",
+   "path": "categories/1/sections/3/items/1/name",
+   "ru": "Распознавание лиц и эмоций",
+   "en": "Face and emotion recognition",
+   "pt": "Reconhecimento facial e de emoções"
+  },
+  {
+   "id": "library-04#076",
+   "path": "categories/1/sections/3/items/1/line",
+   "ru": "Технически просто, юридически дорого",
+   "en": "Technically easy, legally expensive",
+   "pt": "Tecnicamente fácil, juridicamente caro"
+  },
+  {
+   "id": "library-04#077",
+   "path": "categories/1/sections/3/items/1/what",
+   "ru": "Возраст, пол, эмоция, личность — по лицу. Работает надёжно и стоит недорого. Ставим редко и обсуждаем отдельно: биометрия — данные особой категории, и правила строже, чем кажется на демонстрации у поставщика.",
+   "en": "Age, gender, emotion, identity — from a face. It works reliably and costs little. We install it rarely and discuss it separately: biometrics are a special category of personal data, and the rules are stricter than they look in a vendor demo.",
+   "pt": "Idade, gênero, emoção, identidade — a partir de um rosto. Funciona de forma confiável e custa pouco. A gente instala isso raramente e discute à parte: biometria é uma categoria especial de dado pessoal, e as regras são mais duras do que parecem na demonstração do fornecedor."
+  },
+  {
+   "id": "library-04#078",
+   "path": "categories/1/sections/3/items/1/good/0",
+   "ru": "Обезличенная статистика без сохранения кадров: сколько людей, какого возраста",
+   "en": "Anonymous statistics with no frames retained: how many people, of roughly what age",
+   "pt": "Estatística anônima sem guardar quadros: quantas pessoas, de que faixa etária aproximada"
+  },
+  {
+   "id": "library-04#079",
+   "path": "categories/1/sections/3/items/1/good/1",
+   "ru": "Сюжет, где узнавание — сама тема экспозиции, и посетитель на это согласился",
+   "en": "A narrative where recognition is the subject of the exhibition and the visitor has agreed to it",
+   "pt": "Uma narrativa em que o reconhecimento é o tema da exposição e o visitante concordou com isso"
+  },
+  {
+   "id": "library-04#080",
+   "path": "categories/1/sections/3/items/1/bad/0",
+   "ru": "Сохранение биометрии без письменного согласия — прямое нарушение",
+   "en": "Storing biometrics without written consent is a straightforward breach",
+   "pt": "Guardar biometria sem consentimento por escrito é uma infração direta"
+  },
+  {
+   "id": "library-04#081",
+   "path": "categories/1/sections/3/items/1/bad/1",
+   "ru": "Детская аудитория: отдельный уровень требований",
+   "en": "A young audience: a further level of requirements",
+   "pt": "Público jovem: mais um nível de exigências"
+  },
+  {
+   "id": "library-04#082",
+   "path": "categories/1/sections/3/items/1/bad/2",
+   "ru": "Ошибка распознавания на публике унижает человека, и это не техническая проблема",
+   "en": "A recognition error in public humiliates a person, and that is not a technical problem",
+   "pt": "Um erro de reconhecimento em público humilha a pessoa, e isso não é problema técnico"
+  },
+  {
+   "id": "library-04#083",
+   "path": "categories/1/sections/3/items/1/warn",
+   "ru": "Здесь мы обычно отговариваем. В девяти случаях из десяти нужную задачу решает обезличенный подсчёт силуэтов без единого лица — дешевле, надёжнее и без правовых последствий.",
+   "en": "This is where we usually talk clients out of it. Nine times in ten the actual job is done by anonymous silhouette counting with no faces at all — cheaper, more reliable and with no legal consequences.",
+   "pt": "É aqui que normalmente dissuadimos o cliente. Nove em cada dez vezes a tarefa real é resolvida por contagem anônima de silhuetas, sem rosto nenhum — mais barato, mais confiável e sem consequência jurídica."
+  },
+  {
+   "id": "library-04#084",
+   "path": "categories/1/sections/3/items/2/name",
+   "ru": "Голос",
+   "en": "Voice",
+   "pt": "Voz"
+  },
+  {
+   "id": "library-04#085",
+   "path": "categories/1/sections/3/items/2/line",
+   "ru": "Спросил вслух — получил ответ",
+   "en": "Ask out loud, get an answer",
+   "pt": "Pergunte em voz alta, receba uma resposta"
+  },
+  {
+   "id": "library-04#086",
+   "path": "categories/1/sections/3/items/2/what",
+   "ru": "Рабочим это стало недавно: современные модели понимают живую речь, а не заученные команды, и отвечают по содержанию экспозиции, а не по списку из десяти вопросов.",
+   "en": "This only became usable recently: current models understand living speech rather than memorised commands, and answer from the content of the exhibition rather than from a list of ten questions.",
+   "pt": "Isso só ficou utilizável recentemente: os modelos atuais entendem fala viva em vez de comandos decorados, e respondem a partir do conteúdo da exposição, e não de uma lista de dez perguntas."
+  },
+  {
+   "id": "library-04#087",
+   "path": "categories/1/sections/3/items/2/good/0",
+   "ru": "Свободные вопросы, которых нельзя предусмотреть заранее",
+   "en": "Open questions that cannot be anticipated",
+   "pt": "Perguntas abertas que não dá para antecipar"
+  },
+  {
+   "id": "library-04#088",
+   "path": "categories/1/sections/3/items/2/good/1",
+   "ru": "Доступность: посетитель, которому трудно читать или тянуться к экрану",
+   "en": "Accessibility: a visitor who finds reading or reaching a screen difficult",
+   "pt": "Acessibilidade: um visitante para quem ler ou alcançar uma tela é difícil"
+  },
+  {
+   "id": "library-04#089",
+   "path": "categories/1/sections/3/items/2/good/2",
+   "ru": "Диалог как сама тема — разговор с персонажем, свидетелем, экспертом",
+   "en": "Dialogue as the subject itself — a conversation with a character, a witness, an expert",
+   "pt": "O diálogo como o próprio tema — uma conversa com um personagem, uma testemunha, um especialista"
+  },
+  {
+   "id": "library-04#090",
+   "path": "categories/1/sections/3/items/2/bad/0",
+   "ru": "Шумный зал: распознавание падает первым, и виноватым чувствует себя посетитель",
+   "en": "A noisy room: recognition fails first, and the visitor is the one who feels at fault",
+   "pt": "Uma sala barulhenta: o reconhecimento falha primeiro, e quem se sente culpado é o visitante"
+  },
+  {
+   "id": "library-04#091",
+   "path": "categories/1/sections/3/items/2/bad/1",
+   "ru": "Говорить вслух при чужих людях многие стесняются — нужна полузакрытая зона",
+   "en": "Many people are shy about speaking aloud among strangers — a semi-enclosed zone helps",
+   "pt": "Muita gente tem vergonha de falar alto entre estranhos — uma zona semifechada ajuda"
+  },
+  {
+   "id": "library-04#092",
+   "path": "categories/1/sections/3/items/2/bad/2",
+   "ru": "Ответ модели надо ограничивать содержанием музея, иначе она сочинит",
+   "en": "The model's answers must be bounded by the museum's content, or it will invent",
+   "pt": "As respostas do modelo precisam estar limitadas ao conteúdo do museu, ou ele vai inventar"
+  },
+  {
+   "id": "library-04#093",
+   "path": "categories/1/sections/3/items/2/brands/0/note",
+   "ru": "распознавание и синтез, работает в РФ",
+   "en": "распознавание и синтез, работает в РФ",
+   "pt": "reconhecimento e síntese, funciona na Rússia"
+  },
+  {
+   "id": "library-04#094",
+   "path": "categories/1/sections/3/items/2/brands/1/note",
+   "ru": "распознавание без интернета, открытое",
+   "en": "распознавание без интернета, открытое",
+   "pt": "reconhecimento sem internet, aberto"
+  },
+  {
+   "id": "library-04#095",
+   "path": "categories/1/sections/3/items/2/brands/2/note",
+   "ru": "распознавание речи, открытая модель",
+   "en": "распознавание речи, открытая модель",
+   "pt": "reconhecimento de fala, modelo aberto"
+  },
+  {
+   "id": "library-04#096",
+   "path": "categories/1/sections/3/items/3/name",
+   "ru": "Позиционирование в зале",
+   "en": "Positioning within the building",
+   "pt": "Posicionamento dentro do prédio"
+  },
+  {
+   "id": "library-04#097",
+   "path": "categories/1/sections/3/items/3/line",
+   "ru": "Экспозиция знает, где вы стоите",
+   "en": "The exhibition knows where you are standing",
+   "pt": "A exposição sabe onde você está"
+  },
+  {
+   "id": "library-04#098",
+   "path": "categories/1/sections/3/items/3/what",
+   "ru": "Метка на билете и приёмники по залу: система понимает, кто где, с точностью от десятков сантиметров. Содержание приходит по месту, а вы получаете карту реальных маршрутов.",
+   "en": "A tag on the ticket and receivers around the building: the system knows who is where, to within tens of centimetres. Content arrives by location, and you get a map of the routes people actually walk.",
+   "pt": "Uma etiqueta no ingresso e receptores pelo prédio: o sistema sabe quem está onde, com precisão de dezenas de centímetros. O conteúdo chega pela localização, e você ganha um mapa dos percursos que as pessoas realmente fazem."
+  },
+  {
+   "id": "library-04#099",
+   "path": "categories/1/sections/3/items/3/good/0",
+   "ru": "Большая площадь со сквозным сюжетом и личным маршрутом",
+   "en": "A large floor area with a running narrative and a personal route",
+   "pt": "Uma área grande com narrativa contínua e percurso pessoal"
+  },
+  {
+   "id": "library-04#100",
+   "path": "categories/1/sections/3/items/3/good/1",
+   "ru": "Аудиогид, который сам знает, у какого экспоната вы стоите",
+   "en": "An audio guide that knows for itself which exhibit you are standing at",
+   "pt": "Um audioguia que sabe sozinho diante de que exponente você está"
+  },
+  {
+   "id": "library-04#101",
+   "path": "categories/1/sections/3/items/3/good/2",
+   "ru": "Аналитика маршрутов: где реально ходят, а где мёртвая зона",
+   "en": "Route analytics: where people actually walk and where the dead zone is",
+   "pt": "Análise de percurso: por onde as pessoas realmente andam e onde fica a zona morta"
+  },
+  {
+   "id": "library-04#102",
+   "path": "categories/1/sections/3/items/3/bad/0",
+   "ru": "Малая экспозиция: датчик присутствия дешевле в десятки раз и решает то же",
+   "en": "A small exhibition: a presence sensor is tens of times cheaper and does the same job",
+   "pt": "Uma exposição pequena: um sensor de presença é dezenas de vezes mais barato e faz o mesmo"
+  },
+  {
+   "id": "library-04#103",
+   "path": "categories/1/sections/3/items/3/bad/1",
+   "ru": "Металл и толстые стены сбивают радио",
+   "en": "Metal and thick walls disrupt radio",
+   "pt": "Metal e paredes grossas atrapalham o rádio"
+  },
+  {
+   "id": "library-04#104",
+   "path": "categories/1/sections/3/items/3/bad/2",
+   "ru": "Привязка к личности посетителя — снова правовой вопрос",
+   "en": "Tying it to a visitor's identity — a legal question once more",
+   "pt": "Vincular isso à identidade do visitante — de novo uma questão jurídica"
+  },
+  {
+   "id": "library-04#105",
+   "path": "categories/1/sections/3/items/3/brands/0/note",
+   "ru": "сверхширокополосное позиционирование, десятки сантиметров",
+   "en": "сверхширокополосное позиционирование, десятки сантиметров",
+   "pt": "posicionamento de banda ultralarga, dezenas de centímetros"
+  },
+  {
+   "id": "library-04#106",
+   "path": "categories/1/sections/3/items/3/brands/1/note",
+   "ru": "маяки Bluetooth, метры",
+   "en": "маяки Bluetooth, метры",
+   "pt": "beacons Bluetooth, metros"
+  },
+  {
+   "id": "library-04#107",
+   "path": "categories/1/sections/3/items/4/name",
+   "ru": "Нарисуй и оживи",
+   "en": "Draw it and bring it to life",
+   "pt": "Desenhe e dê vida"
+  },
+  {
+   "id": "library-04#108",
+   "path": "categories/1/sections/3/items/4/line",
+   "ru": "Рисунок посетителя уплывает на общий экран",
+   "en": "A visitor's drawing swims onto the shared screen",
+   "pt": "O desenho de um visitante nada até a tela coletiva"
+  },
+  {
+   "id": "library-04#109",
+   "path": "categories/1/sections/3/items/4/what",
+   "ru": "Стол с бумагой и сканер: раскрасил лист, положил под камеру — через десять секунд твой персонаж плывёт вместе с чужими. Безотказно держит ребёнка, а лист уезжает домой.",
+   "en": "A table with paper and a scanner: colour a sheet, place it under the camera, and ten seconds later your character is swimming among everyone else's. It holds a child without fail, and the sheet goes home.",
+   "pt": "Uma mesa com papel e um scanner: pinte uma folha, coloque sob a câmera e dez segundos depois o seu personagem está nadando junto com os dos outros. Segura uma criança sem falhar, e a folha vai para casa."
+  },
+  {
+   "id": "library-04#110",
+   "path": "categories/1/sections/3/items/4/good/0",
+   "ru": "Детская и семейная аудитория: работает безотказно",
+   "en": "A children's and family audience: it works without fail",
+   "pt": "Público infantil e familiar: funciona sem falhar"
+  },
+  {
+   "id": "library-04#111",
+   "path": "categories/1/sections/3/items/4/good/1",
+   "ru": "Нужен след после визита — лист остаётся у посетителя",
+   "en": "A trace after the visit — the sheet stays with the visitor",
+   "pt": "Um rastro depois da visita — a folha fica com o visitante"
+  },
+  {
+   "id": "library-04#112",
+   "path": "categories/1/sections/3/items/4/good/2",
+   "ru": "Общий экран, на котором копится вклад всех, кто прошёл за день",
+   "en": "A shared screen accumulating the contribution of everyone who passed through that day",
+   "pt": "Uma tela coletiva acumulando a contribuição de todo mundo que passou naquele dia"
+  },
+  {
+   "id": "library-04#113",
+   "path": "categories/1/sections/3/items/4/bad/0",
+   "ru": "Расходники: бумага, карандаши, и кто-то должен их пополнять",
+   "en": "Consumables: paper, pencils, and somebody has to restock them",
+   "pt": "Consumíveis: papel, lápis, e alguém tem que repor"
+  },
+  {
+   "id": "library-04#114",
+   "path": "categories/1/sections/3/items/4/bad/1",
+   "ru": "Модерация — на листе может оказаться что угодно, нужен фильтр или сотрудник",
+   "en": "Moderation — anything at all may end up on a sheet, so a filter or staff are needed",
+   "pt": "Moderação — qualquer coisa pode acabar em uma folha, então são necessários filtro ou equipe"
+  },
+  {
+   "id": "library-04#115",
+   "path": "categories/1/sections/3/items/4/bad/2",
+   "ru": "Взрослая аудитория без детей проходит мимо",
+   "en": "An adult audience without children walks straight past",
+   "pt": "Público adulto sem crianças passa direto"
+  },
+  {
+   "id": "library-04#116",
+   "path": "categories/1/sections/3/items/4/brands/0/note",
+   "ru": "камеры для сканирующего стола",
+   "en": "камеры для сканирующего стола",
+   "pt": "câmeras para mesa de digitalização"
+  },
+  {
+   "id": "library-04#117",
+   "path": "categories/1/sections/3/items/5/name",
+   "ru": "Трёхмерное сканирование",
+   "en": "Three-dimensional scanning",
+   "pt": "Digitalização tridimensional"
+  },
+  {
+   "id": "library-04#118",
+   "path": "categories/1/sections/3/items/5/line",
+   "ru": "Как настоящий объект попадает в сцену",
+   "en": "How a real object gets into the scene",
+   "pt": "Como um objeto real entra na cena"
+  },
+  {
+   "id": "library-04#119",
+   "path": "categories/1/sections/3/items/5/what",
+   "ru": "Лазерный сканер или фотограмметрия превращают предмет, зал или территорию в точную модель. Смоделировать здание с нуля дороже и менее достоверно, чем отсканировать его за день.",
+   "en": "A laser scanner or photogrammetry turns an object, a room or a site into an accurate model. Modelling a building from scratch costs more and convinces less than scanning it in a day.",
+   "pt": "Um scanner a laser ou fotogrametria transforma um objeto, uma sala ou um terreno em um modelo preciso. Modelar um prédio do zero custa mais e convence menos do que escaneá-lo em um dia."
+  },
+  {
+   "id": "library-04#120",
+   "path": "categories/1/sections/3/items/5/good/0",
+   "ru": "Есть подлинник, здание или площадка, которые надо показать достоверно",
+   "en": "There is an original, a building or a site that has to be shown truthfully",
+   "pt": "Existe um original, um prédio ou um terreno que precisa ser mostrado com fidelidade"
+  },
+  {
+   "id": "library-04#121",
+   "path": "categories/1/sections/3/items/5/good/1",
+   "ru": "Проекция на макет: развёртка считается по скану, а не по чертежу",
+   "en": "Projection onto a model: the unwrap is computed from the scan, not the drawing",
+   "pt": "Projeção sobre maquete: a planificação é calculada a partir do escaneamento, não do desenho"
+  },
+  {
+   "id": "library-04#122",
+   "path": "categories/1/sections/3/items/5/good/2",
+   "ru": "Объект скоро изменится или исчезнет — скан остаётся навсегда",
+   "en": "The object is about to change or disappear — the scan remains for good",
+   "pt": "O objeto está prestes a mudar ou desaparecer — o escaneamento fica para sempre"
+  },
+  {
+   "id": "library-04#123",
+   "path": "categories/1/sections/3/items/5/good/3",
+   "ru": "Нужна выверенная геометрия зала до монтажа оборудования",
+   "en": "Verified room geometry is needed before equipment is installed",
+   "pt": "É preciso geometria verificada da sala antes de instalar equipamento"
+  },
+  {
+   "id": "library-04#124",
+   "path": "categories/1/sections/3/items/5/bad/0",
+   "ru": "Блестящее, прозрачное и чёрное сканируется плохо — стекло и полировка требуют матирующего спрея или ручной доработки",
+   "en": "Shiny, transparent and black surfaces scan poorly — glass and polish need matting spray or hand repair",
+   "pt": "Superfícies brilhantes, transparentes e pretas escaneiam mal — vidro e polimento exigem spray fosco ou reparo manual"
+  },
+  {
+   "id": "library-04#125",
+   "path": "categories/1/sections/3/items/5/bad/1",
+   "ru": "Сырой скан не годится для показа: миллионы точек надо чистить и упрощать, и эта работа больше самого сканирования",
+   "en": "A raw scan is not fit to show: millions of points have to be cleaned and simplified, and that work exceeds the scanning itself",
+   "pt": "Um escaneamento bruto não serve para mostrar: milhões de pontos precisam ser limpos e simplificados, e esse trabalho supera o próprio escaneamento"
+  },
+  {
+   "id": "library-04#126",
+   "path": "categories/1/sections/3/items/5/bad/2",
+   "ru": "Мелкая ювелирная деталь: нужен другой класс приборов",
+   "en": "Fine jewellery-scale detail: that needs a different class of instrument",
+   "pt": "Detalhe fino em escala de joalheria: isso exige outra classe de instrumento"
+  },
+  {
+   "id": "library-04#127",
+   "path": "categories/1/sections/3/items/5/spec",
+   "ru": "Сканирование — это один-два дня, а обработка — недели. В сметах регулярно закладывают первое и забывают второе.",
+   "en": "Scanning is one or two days; processing is weeks. Budgets routinely include the first and forget the second.",
+   "pt": "Escanear leva um ou dois dias; processar leva semanas. Os orçamentos costumam incluir o primeiro e esquecer o segundo."
+  },
+  {
+   "id": "library-04#128",
+   "path": "categories/1/sections/3/items/5/brands/0/note",
+   "ru": "стационарные сканеры помещений и площадок",
+   "en": "стационарные сканеры помещений и площадок",
+   "pt": "scanners fixos de ambientes e terrenos"
+  },
+  {
+   "id": "library-04#129",
+   "path": "categories/1/sections/3/items/5/brands/1/note",
+   "ru": "верхний сегмент, большие территории",
+   "en": "верхний сегмент, большие территории",
+   "pt": "segmento premium, grandes territórios"
+  },
+  {
+   "id": "library-04#130",
+   "path": "categories/1/sections/3/items/5/brands/2/note",
+   "ru": "ручные сканеры предметов, российские корни",
+   "en": "ручные сканеры предметов, российские корни",
+   "pt": "scanners manuais de objetos, raízes russas"
+  },
+  {
+   "id": "library-04#131",
+   "path": "categories/1/sections/3/items/5/brands/3/note",
+   "ru": "фотограмметрия из обычных снимков",
+   "en": "фотограмметрия из обычных снимков",
+   "pt": "fotogrametria a partir de fotos comuns"
+  },
+  {
+   "id": "library-04#132",
+   "path": "categories/1/sections/3/items/5/brands/4/note",
+   "ru": "сканирование лидаром айфона, черновая съёмка на месте",
+   "en": "сканирование лидаром айфона, черновая съёмка на месте",
+   "pt": "escaneamento com o lidar do iPhone, captura preliminar no local"
+  },
+  {
+   "id": "library-04#133",
+   "path": "categories/1/sections/4/name",
+   "ru": "Устройство посетителя",
+   "en": "The visitor's own device",
+   "pt": "O aparelho do próprio visitante"
+  },
+  {
+   "id": "library-04#134",
+   "path": "categories/1/sections/4/note",
+   "ru": "Телефон не влезает в три категории: он сразу ввод, вывод и обработка. И он уже в кармане у каждого — самое дешёвое оборудование здесь и самое трудное в применении.",
+   "en": "A phone does not fit the three categories: it is input, output and processing at once. And it is already in everyone's pocket — the cheapest equipment here and the hardest to use well.",
+   "pt": "Um celular não cabe nas três categorias: ele é entrada, saída e processamento ao mesmo tempo. E já está no bolso de todo mundo — o equipamento mais barato daqui e o mais difícil de usar bem."
+  },
+  {
+   "id": "library-04#135",
+   "path": "categories/1/sections/4/items/0/name",
+   "ru": "Телефон как готовая система",
+   "en": "The phone as a complete system",
+   "pt": "O celular como sistema completo"
+  },
+  {
+   "id": "library-04#136",
+   "path": "categories/1/sections/4/items/0/line",
+   "ru": "Ввод, вывод и вычисление сразу — и за чужой счёт",
+   "en": "Input, output and computing at once — at someone else's expense",
+   "pt": "Entrada, saída e processamento ao mesmo tempo — às custas de outra pessoa"
+  },
+  {
+   "id": "library-04#137",
+   "path": "categories/1/sections/4/items/0/what",
+   "ru": "В телефоне уже есть тач, камера, микрофон, датчики, лидар на старших моделях, экран, звук и мощности на дополненную реальность. Ноль рублей на железо. Платят другим: каждый шаг до запуска теряет людей.",
+   "en": "A phone already has touch, camera, microphone, sensors, lidar on the higher models, a screen, sound and enough power for augmented reality. Nothing spent on hardware. You pay elsewhere: every step before launch loses people.",
+   "pt": "Um celular já tem toque, câmera, microfone, sensores, lidar nos modelos superiores, tela, som e potência suficiente para realidade aumentada. Nada gasto em hardware. Você paga em outro lugar: cada passo antes de iniciar perde gente."
+  }
+ ]
+}

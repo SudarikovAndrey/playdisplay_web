@@ -1,0 +1,945 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "library-05 (5 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "library-05#001",
+   "path": "categories/1/sections/4/items/0/spec",
+   "ru": "Считать воронку честно. До экспоната доходит сто человек; заметили призыв — половина; достали телефон — треть от них; поставили приложение — единицы. Веб-страница без установки меняет арифметику кратно, и почти всегда стоит выбрать её.",
+   "en": "Count the funnel honestly. A hundred people reach the exhibit; half notice the invitation; a third of those get their phone out; a handful install an app. A web page with no installation changes that arithmetic several times over, and is almost always the right choice.",
+   "pt": "Conte o funil com honestidade. Cem pessoas chegam ao exponente; metade nota o convite; um terço dessas tira o celular; um punhado instala um aplicativo. Uma página web sem instalação muda essa aritmética várias vezes, e quase sempre é a escolha certa."
+  },
+  {
+   "id": "library-05#002",
+   "path": "categories/1/sections/4/items/0/good/0",
+   "ru": "Экспонат вне здания: двор, парк, улица, маршрут по городу",
+   "en": "An exhibit outside the building: a courtyard, a park, a street, a city route",
+   "pt": "Um exponente fora do prédio: um pátio, um parque, uma rua, um percurso pela cidade"
+  },
+  {
+   "id": "library-05#003",
+   "path": "categories/1/sections/4/items/0/good/1",
+   "ru": "Личный маршрут и то, что человек уносит с собой: фото, результат, ссылка",
+   "en": "A personal route and something to take away: a photo, a result, a link",
+   "pt": "Um percurso pessoal e algo para levar: uma foto, um resultado, um link"
+  },
+  {
+   "id": "library-05#004",
+   "path": "categories/1/sections/4/items/0/good/2",
+   "ru": "Много языков без единой кнопки — телефон знает язык владельца",
+   "en": "Many languages with no button — the phone knows its owner's language",
+   "pt": "Muitos idiomas sem botão — o celular sabe o idioma do dono"
+  },
+  {
+   "id": "library-05#005",
+   "path": "categories/1/sections/4/items/0/good/3",
+   "ru": "Временная выставка, где строить нечего, а рассказать надо",
+   "en": "A temporary exhibition where there is nothing to build but something to tell",
+   "pt": "Uma exposição temporária em que não há o que construir, mas há o que contar"
+  },
+  {
+   "id": "library-05#006",
+   "path": "categories/1/sections/4/items/0/good/4",
+   "ru": "Доступность: свой экран, свой шрифт, свои настройки под зрение",
+   "en": "Accessibility: their own screen, their own type size, their own vision settings",
+   "pt": "Acessibilidade: a tela da pessoa, o tamanho de letra dela, os ajustes de visão dela"
+  },
+  {
+   "id": "library-05#007",
+   "path": "categories/1/sections/4/items/0/bad/0",
+   "ru": "Основной экспонат маршрута: часть посетителей просто не достанет телефон",
+   "en": "As the main exhibit on the route: some visitors will simply not take a phone out",
+   "pt": "Como exponente principal do percurso: parte dos visitantes simplesmente não vai tirar o celular"
+  },
+  {
+   "id": "library-05#008",
+   "path": "categories/1/sections/4/items/0/bad/1",
+   "ru": "Расчёт на установку приложения ради одного визита — почти никто не поставит",
+   "en": "Counting on an app being installed for a single visit — almost nobody will",
+   "pt": "Contar que um aplicativo seja instalado para uma visita única — quase ninguém vai"
+  },
+  {
+   "id": "library-05#009",
+   "path": "categories/1/sections/4/items/0/bad/2",
+   "ru": "Пожилая аудитория и школьные группы без телефонов",
+   "en": "An older audience, and school groups without phones",
+   "pt": "Público mais velho e grupos escolares sem celular"
+  },
+  {
+   "id": "library-05#010",
+   "path": "categories/1/sections/4/items/0/bad/3",
+   "ru": "Слабый интернет: гостевую сеть надо проверять до, а не в день открытия",
+   "en": "Weak connectivity: the guest network has to be tested beforehand, not on opening day",
+   "pt": "Conectividade fraca: a rede de visitantes tem que ser testada antes, não no dia da abertura"
+  },
+  {
+   "id": "library-05#011",
+   "path": "categories/1/sections/4/items/0/bad/4",
+   "ru": "Заряд: длинный сценарий сажает батарею, и виноватым окажется музей",
+   "en": "Battery: a long scenario drains it, and the museum will get the blame",
+   "pt": "Bateria: um roteiro longo esgota ela, e a culpa vai para o museu"
+  },
+  {
+   "id": "library-05#012",
+   "path": "categories/1/sections/4/items/0/brands/0/note",
+   "ru": "лучший трекинг, лидар на старших моделях",
+   "en": "лучший трекинг, лидар на старших моделях",
+   "pt": "melhor rastreamento, lidar nos modelos superiores"
+  },
+  {
+   "id": "library-05#013",
+   "path": "categories/1/sections/4/items/0/brands/1/note",
+   "ru": "Android, работает без установки через Scene Viewer",
+   "en": "Android, работает без установки через Scene Viewer",
+   "pt": "Android, funciona sem instalação pelo Scene Viewer"
+  },
+  {
+   "id": "library-05#014",
+   "path": "categories/1/sections/4/items/0/brands/2/note",
+   "ru": "дополненная реальность прямо в браузере, без приложения",
+   "en": "дополненная реальность прямо в браузере, без приложения",
+   "pt": "realidade aumentada direto no navegador, sem aplicativo"
+  },
+  {
+   "id": "library-05#015",
+   "path": "categories/1/sections/4/items/0/brands/3/note",
+   "ru": "готовая платформа аудиогидов, бесплатна для музеев",
+   "en": "готовая платформа аудиогидов, бесплатна для музеев",
+   "pt": "plataforma pronta de audioguias, gratuita para museus"
+  },
+  {
+   "id": "library-05#016",
+   "path": "categories/2/name",
+   "ru": "Обработка",
+   "en": "Processing",
+   "pt": "Processamento"
+  },
+  {
+   "id": "library-05#017",
+   "path": "categories/2/full",
+   "ru": "Обработка и управление",
+   "en": "Processing and control",
+   "pt": "Processamento e controle"
+  },
+  {
+   "id": "library-05#018",
+   "path": "categories/2/line",
+   "ru": "То, чего не видно, и на чём всё держится",
+   "en": "What nobody sees and everything rests on",
+   "pt": "O que ninguém vê e sustenta tudo"
+  },
+  {
+   "id": "library-05#019",
+   "path": "categories/2/lead",
+   "ru": "Машины, движки, сеть, управление залом. Этой части нет ни на одной фотографии экспозиции, поэтому её режут из сметы первой. Через год именно она решает, работает экспозиция или стоит.",
+   "en": "Machines, engines, network, room control. None of it appears in a single photograph of an exhibition, which is why it gets cut from the budget first. A year later it is exactly this part that decides whether the place runs or stands idle.",
+   "pt": "Máquinas, engines, rede, controle da sala. Nada disso aparece em uma única foto de exposição, e é por isso que é a primeira coisa cortada do orçamento. Um ano depois é exatamente essa parte que decide se o lugar funciona ou fica parado."
+  },
+  {
+   "id": "library-05#020",
+   "path": "categories/2/principle",
+   "ru": "Приёмка в два вопроса: поднимается ли экспонат одной кнопкой силами смотрителя и может ли музей сам поменять текст. Два «нет» — вы купили не систему, а подрядчика в вечное пользование.",
+   "en": "Acceptance in two questions: does the exhibit come up on one button pressed by an attendant, and can the museum change the text itself. Two nos and you have bought a contractor in perpetuity, not a system.",
+   "pt": "Recebimento em duas perguntas: o exponente sobe com um botão apertado por um atendente, e o museu consegue mudar o texto sozinho? Dois nãos e você comprou um fornecedor perpétuo, não um sistema."
+  },
+  {
+   "id": "library-05#021",
+   "path": "categories/2/sections/0/name",
+   "ru": "Машины",
+   "en": "Machines",
+   "pt": "Máquinas"
+  },
+  {
+   "id": "library-05#022",
+   "path": "categories/2/sections/0/note",
+   "ru": "Железо, на котором всё считается. Выбирают не по мощности, а по тому, кто и как будет это перезапускать.",
+   "en": "The hardware it all runs on. Chosen not by power but by who will restart it, and how.",
+   "pt": "O hardware em que tudo roda. Escolhido não pela potência, e sim por quem vai reiniciar aquilo, e como."
+  },
+  {
+   "id": "library-05#023",
+   "path": "categories/2/sections/0/items/0/name",
+   "ru": "Плеер-приставка",
+   "en": "Media player appliance",
+   "pt": "Player de mídia dedicado"
+  },
+  {
+   "id": "library-05#024",
+   "path": "categories/2/sections/0/items/0/line",
+   "ru": "Коробка, которая просто играет",
+   "en": "A box that simply plays",
+   "pt": "Uma caixa que simplesmente toca"
+  },
+  {
+   "id": "library-05#025",
+   "path": "categories/2/sections/0/items/0/what",
+   "ru": "Без движущихся частей и без операционной системы в привычном смысле: включил — идёт расписание. Не зависает, не обновляется не вовремя и не показывает рабочий стол посреди зала.",
+   "en": "No moving parts and no operating system in the usual sense: switch it on and the schedule runs. It does not hang, does not update at the wrong moment, and does not show a desktop in the middle of a gallery.",
+   "pt": "Sem partes móveis e sem sistema operacional no sentido usual: ligue e a programação roda. Não trava, não atualiza na hora errada e não mostra uma área de trabalho no meio de uma galeria."
+  },
+  {
+   "id": "library-05#026",
+   "path": "categories/2/sections/0/items/0/good/0",
+   "ru": "Ролик или расписание без интерактива",
+   "en": "A film or a schedule with no interactivity",
+   "pt": "Um filme ou uma programação sem interatividade"
+  },
+  {
+   "id": "library-05#027",
+   "path": "categories/2/sections/0/items/0/good/1",
+   "ru": "Много одинаковых точек: десять экранов с одним содержанием",
+   "en": "Many identical points: ten screens with the same content",
+   "pt": "Muitos pontos iguais: dez telas com o mesmo conteúdo"
+  },
+  {
+   "id": "library-05#028",
+   "path": "categories/2/sections/0/items/0/good/2",
+   "ru": "Обслуживать некому — нужна вещь, которая просто не ломается",
+   "en": "Nobody to service it — you need a thing that simply does not break",
+   "pt": "Ninguém para fazer manutenção — você precisa de uma coisa que simplesmente não quebre"
+  },
+  {
+   "id": "library-05#029",
+   "path": "categories/2/sections/0/items/0/bad/0",
+   "ru": "Настоящая интерактивность и 3D в реальном времени — не потянет",
+   "en": "Genuine interactivity and real-time 3D — beyond it",
+   "pt": "Interatividade de verdade e 3D em tempo real — está além dele"
+  },
+  {
+   "id": "library-05#030",
+   "path": "categories/2/sections/0/items/0/bad/1",
+   "ru": "Содержание завязано на внешние данные и логику",
+   "en": "Content that depends on external data and logic",
+   "pt": "Conteúdo que depende de dados e lógica externos"
+  },
+  {
+   "id": "library-05#031",
+   "path": "categories/2/sections/0/items/0/brands/0/note",
+   "ru": "отраслевой стандарт цифровых вывесок",
+   "en": "отраслевой стандарт цифровых вывесок",
+   "pt": "padrão do setor de sinalização digital"
+  },
+  {
+   "id": "library-05#032",
+   "path": "categories/2/sections/0/items/0/brands/1/note",
+   "ru": "промышленные плееры и панели",
+   "en": "промышленные плееры и панели",
+   "pt": "players e painéis industriais"
+  },
+  {
+   "id": "library-05#033",
+   "path": "categories/2/sections/0/items/1/name",
+   "ru": "Промышленный компьютер",
+   "en": "Industrial computer",
+   "pt": "Computador industrial"
+  },
+  {
+   "id": "library-05#034",
+   "path": "categories/2/sections/0/items/1/line",
+   "ru": "Без вентилятора, без пыли, без сюрпризов",
+   "en": "No fan, no dust, no surprises",
+   "pt": "Sem ventoinha, sem poeira, sem surpresas"
+  },
+  {
+   "id": "library-05#035",
+   "path": "categories/2/sections/0/items/1/what",
+   "ru": "Закрытый корпус, пассивное охлаждение, годы поставки одной и той же модели. Последнее важнее скорости: через три года понадобится точно такой же на замену.",
+   "en": "A sealed case, passive cooling, and years of the same model staying available. That last point matters more than speed: in three years you will need exactly the same one.",
+   "pt": "Gabinete selado, refrigeração passiva e anos com o mesmo modelo disponível. Esse último ponto importa mais que velocidade: daqui a três anos você vai precisar exatamente do mesmo."
+  },
+  {
+   "id": "library-05#036",
+   "path": "categories/2/sections/0/items/1/note_hw",
+   "ru": "Обычная офисная сборка в витрине проживает до первого лета: пыль садится на вентилятор, температура растёт, машина уходит в защиту в самый людный день. Это самая частая ошибка в готовых спецификациях.",
+   "en": "An ordinary office build inside a plinth survives until its first summer: dust settles on the fan, the temperature climbs, and the machine throttles out on the busiest day. This is the commonest mistake in ready-made specifications.",
+   "pt": "Uma montagem de escritório comum dentro de um pedestal sobrevive até o primeiro verão: a poeira assenta na ventoinha, a temperatura sobe e a máquina reduz o desempenho no dia mais movimentado. Esse é o erro mais comum nas especificações prontas."
+  },
+  {
+   "id": "library-05#037",
+   "path": "categories/2/sections/0/items/1/good/0",
+   "ru": "Экспонат в закрытом коробе или в пыльном зале",
+   "en": "An exhibit inside a sealed box or in a dusty room",
+   "pt": "Um exponente dentro de uma caixa fechada ou em uma sala empoeirada"
+  },
+  {
+   "id": "library-05#038",
+   "path": "categories/2/sections/0/items/1/good/1",
+   "ru": "Работа без выключения месяцами",
+   "en": "Running for months without being switched off",
+   "pt": "Funcionar por meses sem ser desligado"
+  },
+  {
+   "id": "library-05#039",
+   "path": "categories/2/sections/0/items/1/good/2",
+   "ru": "Нужна гарантия, что через три года купится такой же",
+   "en": "A guarantee that the same unit can be bought in three years",
+   "pt": "Uma garantia de que a mesma unidade poderá ser comprada daqui a três anos"
+  },
+  {
+   "id": "library-05#040",
+   "path": "categories/2/sections/0/items/1/bad/0",
+   "ru": "Тяжёлая графика в реальном времени: нужна отдельная видеокарта и активное охлаждение",
+   "en": "Heavy real-time graphics: that needs a discrete card and active cooling",
+   "pt": "Gráficos pesados em tempo real: isso exige placa dedicada e refrigeração ativa"
+  },
+  {
+   "id": "library-05#041",
+   "path": "categories/2/sections/0/items/1/bad/1",
+   "ru": "Разовая выставка на неделю — переплата",
+   "en": "A one-week trade show — overpaying",
+   "pt": "Uma feira de uma semana — pagar a mais"
+  },
+  {
+   "id": "library-05#042",
+   "path": "categories/2/sections/0/items/1/brands/0/note",
+   "ru": "долгий жизненный цикл моделей",
+   "en": "долгий жизненный цикл моделей",
+   "pt": "ciclo de vida longo dos modelos"
+  },
+  {
+   "id": "library-05#043",
+   "path": "categories/2/sections/0/items/1/brands/1/note",
+   "ru": "линейка NUC, перешедшая к ASUS от Intel",
+   "en": "линейка NUC, перешедшая к ASUS от Intel",
+   "pt": "linha NUC, que passou da Intel para a ASUS"
+  },
+  {
+   "id": "library-05#044",
+   "path": "categories/2/sections/0/items/1/brands/2/note",
+   "ru": "сборки под задачу",
+   "en": "сборки под задачу",
+   "pt": "montagens sob medida"
+  },
+  {
+   "id": "library-05#045",
+   "path": "categories/2/sections/0/items/2/name",
+   "ru": "Одноплатный компьютер",
+   "en": "Single-board computer",
+   "pt": "Computador de placa única"
+  },
+  {
+   "id": "library-05#046",
+   "path": "categories/2/sections/0/items/2/line",
+   "ru": "Три тысячи рублей вместо тридцати",
+   "en": "Thirty dollars instead of three hundred",
+   "pt": "Trinta dólares em vez de trezentos"
+  },
+  {
+   "id": "library-05#047",
+   "path": "categories/2/sections/0/items/2/what",
+   "ru": "Компьютер с ладонь закрывает половину точек в экспозиции: датчик, кнопка, звук на срабатывание, подсветка, простое видео. Всё, где иначе стоял бы полноценный ПК «на всякий случай».",
+   "en": "A computer the size of a palm covers half the points in an exhibition: a sensor, a button, sound on a trigger, lighting, simple video. Everywhere a full PC would otherwise stand «just in case».",
+   "pt": "Um computador do tamanho da palma cobre metade dos pontos de uma exposição: um sensor, um botão, som em um gatilho, iluminação, vídeo simples. Em todo lugar onde de outro jeito ficaria um PC completo “por precaução”."
+  },
+  {
+   "id": "library-05#048",
+   "path": "categories/2/sections/0/items/2/good/0",
+   "ru": "Много мелких точек: датчик, кнопка, лампа, звуковой отклик",
+   "en": "Many small points: a sensor, a button, a lamp, an audio response",
+   "pt": "Muitos pontos pequenos: um sensor, um botão, uma lâmpada, uma resposta em áudio"
+  },
+  {
+   "id": "library-05#049",
+   "path": "categories/2/sections/0/items/2/good/1",
+   "ru": "Экспонат прячется в постамент, где нет места и вентиляции",
+   "en": "The exhibit hides in a plinth with no room and no ventilation",
+   "pt": "O exponente se esconde em um pedestal sem espaço e sem ventilação"
+  },
+  {
+   "id": "library-05#050",
+   "path": "categories/2/sections/0/items/2/good/2",
+   "ru": "Нужен запас: держать на полке три подменных дёшево",
+   "en": "Spares matter: keeping three on a shelf is cheap",
+   "pt": "Reposição importa: manter três na prateleira é barato"
+  },
+  {
+   "id": "library-05#051",
+   "path": "categories/2/sections/0/items/2/good/3",
+   "ru": "Связь с физикой — датчики и приводы подключаются напрямую",
+   "en": "A link to the physical world — sensors and actuators connect directly",
+   "pt": "Uma ligação com o mundo físico — sensores e atuadores conectam direto"
+  },
+  {
+   "id": "library-05#052",
+   "path": "categories/2/sections/0/items/2/bad/0",
+   "ru": "3D в реальном времени и тяжёлое видео: не для него",
+   "en": "Real-time 3D and heavy video: not for this",
+   "pt": "3D em tempo real e vídeo pesado: não é para isso"
+  },
+  {
+   "id": "library-05#053",
+   "path": "categories/2/sections/0/items/2/bad/1",
+   "ru": "Карта памяти — слабое место, при частых отключениях она умирает первой; лечится загрузкой с диска и файловой системой только на чтение",
+   "en": "The memory card is the weak point; with frequent hard power-offs it dies first — cured by booting from an SSD and a read-only filesystem",
+   "pt": "O cartão de memória é o ponto fraco; com desligamentos bruscos frequentes ele morre primeiro — cura-se dando boot de um SSD e com sistema de arquivos somente leitura"
+  },
+  {
+   "id": "library-05#054",
+   "path": "categories/2/sections/0/items/2/bad/2",
+   "ru": "Поставка партиями: в дефицит цена и сроки прыгают втрое",
+   "en": "Supply in batches: in a shortage, price and lead time triple",
+   "pt": "Fornecimento em lotes: em falta de mercado, preço e prazo triplicam"
+  },
+  {
+   "id": "library-05#055",
+   "path": "categories/2/sections/0/items/2/spec",
+   "ru": "Главный вопрос не мощность, а как он переживает выключение рубильником в конце дня. Настроенный на чтение с защищённого раздела одноплатник живёт годами; обычная установка на карту памяти — месяцы.",
+   "en": "The main question is not performance but how it survives being switched off at the mains at closing time. A board configured to read from a protected partition lasts years; a stock install on a memory card lasts months.",
+   "pt": "A pergunta principal não é desempenho, e sim como ele sobrevive a ser desligado na tomada no fim do expediente. Uma placa configurada para ler de uma partição protegida dura anos; uma instalação padrão em cartão de memória dura meses."
+  },
+  {
+   "id": "library-05#056",
+   "path": "categories/2/sections/0/items/2/brands/0/note",
+   "ru": "стандарт: документация, сообщество, промышленные сроки поставки",
+   "en": "стандарт: документация, сообщество, промышленные сроки поставки",
+   "pt": "padrão: documentação, comunidade, prazos industriais de fornecimento"
+  },
+  {
+   "id": "library-05#057",
+   "path": "categories/2/sections/0/items/2/brands/1/note",
+   "ru": "то же, но с нейросетями на борту",
+   "en": "то же, но с нейросетями на борту",
+   "pt": "o mesmo, mas com redes neurais embarcadas"
+  },
+  {
+   "id": "library-05#058",
+   "path": "categories/2/sections/0/items/2/brands/2/note",
+   "ru": "если нужна только физика, без операционной системы",
+   "en": "если нужна только физика, без операционной системы",
+   "pt": "se você só precisa da física, sem sistema operacional"
+  },
+  {
+   "id": "library-05#059",
+   "path": "categories/2/sections/0/items/2/brands/3/note",
+   "ru": "альтернатива Raspberry Pi, часто доступнее",
+   "en": "альтернатива Raspberry Pi, часто доступнее",
+   "pt": "alternativa ao Raspberry Pi, muitas vezes mais acessível"
+  },
+  {
+   "id": "library-05#060",
+   "path": "categories/2/sections/0/items/3/name",
+   "ru": "Графическая станция",
+   "en": "Graphics workstation",
+   "pt": "Estação gráfica"
+  },
+  {
+   "id": "library-05#061",
+   "path": "categories/2/sections/0/items/3/line",
+   "ru": "Когда картинка считается прямо сейчас",
+   "en": "When the picture is computed right now",
+   "pt": "Quando a imagem é calculada agora"
+  },
+  {
+   "id": "library-05#062",
+   "path": "categories/2/sections/0/items/3/what",
+   "ru": "Профессиональная видеокарта и несколько выходов. Нужна там, где изображение не проигрывается, а рождается: 3D в реальном времени, реакция на человека, синхронные экраны с одной сцены.",
+   "en": "A professional graphics card and several outputs. Needed where the image is not played back but born: real-time 3D, reaction to a person, synchronised screens from one scene.",
+   "pt": "Uma placa gráfica profissional e várias saídas. Necessária onde a imagem não é reproduzida, e sim gerada: 3D em tempo real, reação a uma pessoa, telas sincronizadas a partir de uma mesma cena."
+  },
+  {
+   "id": "library-05#063",
+   "path": "categories/2/sections/0/items/3/good/0",
+   "ru": "Интерактивная 3D-сцена, реагирующая на посетителя",
+   "en": "An interactive 3D scene reacting to visitors",
+   "pt": "Uma cena 3D interativa reagindo aos visitantes"
+  },
+  {
+   "id": "library-05#064",
+   "path": "categories/2/sections/0/items/3/good/1",
+   "ru": "Несколько проекторов с одного источника, сшитых в одно поле",
+   "en": "Several projectors from one source, blended into a single field",
+   "pt": "Vários projetores a partir de uma fonte, mesclados em um campo único"
+  },
+  {
+   "id": "library-05#065",
+   "path": "categories/2/sections/0/items/3/good/2",
+   "ru": "Содержание зависит от данных и меняется на лету",
+   "en": "Content that depends on data and changes on the fly",
+   "pt": "Conteúdo que depende de dados e muda ao vivo"
+  },
+  {
+   "id": "library-05#066",
+   "path": "categories/2/sections/0/items/3/bad/0",
+   "ru": "Играет ролик — переплата в разы",
+   "en": "It plays a film — several times the money for nothing",
+   "pt": "Ela toca um filme — várias vezes o dinheiro por nada"
+  },
+  {
+   "id": "library-05#067",
+   "path": "categories/2/sections/0/items/3/bad/1",
+   "ru": "Нет вентиляции в постаменте: такая машина греется всерьёз",
+   "en": "No ventilation in the plinth: this machine runs genuinely hot",
+   "pt": "Sem ventilação no pedestal: essa máquina esquenta de verdade"
+  },
+  {
+   "id": "library-05#068",
+   "path": "categories/2/sections/0/items/3/brands/0/note",
+   "ru": "профессиональные карты, синхронизация выходов",
+   "en": "профессиональные карты, синхронизация выходов",
+   "pt": "placas profissionais, sincronização de saídas"
+  },
+  {
+   "id": "library-05#069",
+   "path": "categories/2/sections/0/items/3/brands/1/note",
+   "ru": "станции с длительной поддержкой",
+   "en": "станции с длительной поддержкой",
+   "pt": "estações com suporte prolongado"
+  },
+  {
+   "id": "library-05#070",
+   "path": "categories/2/sections/0/items/3/brands/2/note",
+   "ru": "то же, альтернативный поставщик",
+   "en": "то же, альтернативный поставщик",
+   "pt": "o mesmo, fornecedor alternativo"
+  },
+  {
+   "id": "library-05#071",
+   "path": "categories/2/sections/0/items/4/name",
+   "ru": "Нейросети на месте",
+   "en": "Neural networks on site",
+   "pt": "Redes neurais no local"
+  },
+  {
+   "id": "library-05#072",
+   "path": "categories/2/sections/0/items/4/line",
+   "ru": "Считает здесь и никуда не отправляет",
+   "en": "Computes here, sends nothing anywhere",
+   "pt": "Calcula aqui, não manda nada para lugar nenhum"
+  },
+  {
+   "id": "library-05#073",
+   "path": "categories/2/sections/0/items/4/what",
+   "ru": "Модуль выполняет распознавание прямо в зале, без интернета и облака. Кадры не покидают музей — и половина правовых вопросов отпадает до того, как возникла.",
+   "en": "The module runs recognition right in the room, with no internet and no cloud. Frames never leave the museum — and half the legal questions vanish before they arise.",
+   "pt": "O módulo roda o reconhecimento na própria sala, sem internet e sem nuvem. As imagens nunca saem do museu — e metade das questões jurídicas desaparece antes de surgir."
+  },
+  {
+   "id": "library-05#074",
+   "path": "categories/2/sections/0/items/4/good/0",
+   "ru": "Распознавание, где отправлять данные наружу нельзя",
+   "en": "Recognition where data may not be sent outside",
+   "pt": "Reconhecimento onde os dados não podem ser enviados para fora"
+  },
+  {
+   "id": "library-05#075",
+   "path": "categories/2/sections/0/items/4/good/1",
+   "ru": "Нестабильный интернет или его отсутствие",
+   "en": "Unstable internet, or none at all",
+   "pt": "Internet instável, ou nenhuma"
+  },
+  {
+   "id": "library-05#076",
+   "path": "categories/2/sections/0/items/4/good/2",
+   "ru": "Задержка критична: реакция должна быть мгновенной",
+   "en": "Latency is critical: the response must be immediate",
+   "pt": "A latência é crítica: a resposta tem que ser imediata"
+  },
+  {
+   "id": "library-05#077",
+   "path": "categories/2/sections/0/items/4/bad/0",
+   "ru": "Самые тяжёлые модели: мощности на месте всегда меньше облачной",
+   "en": "The heaviest models: on-site capacity is always less than cloud capacity",
+   "pt": "Os modelos mais pesados: a capacidade local é sempre menor que a da nuvem"
+  },
+  {
+   "id": "library-05#078",
+   "path": "categories/2/sections/0/items/4/bad/1",
+   "ru": "Модель надо часто обновлять — на месте это ручная работа",
+   "en": "A model that needs frequent updates — on site that is manual work",
+   "pt": "Um modelo que precisa de atualizações frequentes — no local isso é trabalho manual"
+  },
+  {
+   "id": "library-05#079",
+   "path": "categories/2/sections/0/items/4/brands/0/note",
+   "ru": "стандарт для зрения на месте",
+   "en": "стандарт для зрения на месте",
+   "pt": "padrão para visão no local"
+  },
+  {
+   "id": "library-05#080",
+   "path": "categories/2/sections/0/items/4/brands/1/note",
+   "ru": "камера и вычислитель в одном корпусе",
+   "en": "камера и вычислитель в одном корпусе",
+   "pt": "câmera e processador no mesmo gabinete"
+  },
+  {
+   "id": "library-05#081",
+   "path": "categories/2/sections/0/items/5/name",
+   "ru": "Операционная система зала",
+   "en": "The operating system of the room",
+   "pt": "O sistema operacional da sala"
+  },
+  {
+   "id": "library-05#082",
+   "path": "categories/2/sections/0/items/5/line",
+   "ru": "Скучный выбор, который аукается два года",
+   "en": "A dull choice that echoes for two years",
+   "pt": "Uma escolha sem graça que ecoa por dois anos"
+  },
+  {
+   "id": "library-05#083",
+   "path": "categories/2/sections/0/items/5/what",
+   "ru": "Windows, macOS или Linux решается один раз и определяет, кто сможет обслуживать экспозицию. Выбирают не по вкусу, а по тому, на чём идёт нужный софт и кто это починит в субботу днём.",
+   "en": "Windows, macOS or Linux is decided once and determines who can service the exhibition. Chosen not by taste but by what the required software runs on, and who will fix it on a Saturday afternoon.",
+   "pt": "Windows, macOS ou Linux se decide uma vez e determina quem consegue fazer a manutenção da exposição. Escolhido não por gosto, e sim pelo que o software necessário roda, e por quem vai consertar num sábado à tarde."
+  },
+  {
+   "id": "library-05#084",
+   "path": "categories/2/sections/0/items/5/compare",
+   "ru": "**Windows** — на нём почти всё: медиасерверы, TouchDesigner, сборки Unity и Unreal, драйверы любого железа. Плата — обновления, которые приходят не вовремя и перезагружают зал; лечится отдельной редакцией с длительной поддержкой, а не галочкой «отложить». **macOS** — надёжен и тих, хорош для звука и видео, но выбор софта уже, а поставить машину в постамент и оставить на пять лет труднее. **Linux** — бесплатен, не перезагружается сам и идеален для плееров и одноплатников; профессиональные медиасерверы под него встречаются редко.",
+   "en": "**Windows** runs nearly everything: media servers, TouchDesigner, Unity and Unreal builds, drivers for any hardware. The price is updates that arrive at the wrong moment and reboot the gallery; cured by a long-term-servicing edition, not by a «defer» checkbox. **macOS** is reliable and quiet, good for audio and video, but the software choice is narrower and it is harder to put a machine in a plinth and leave it for five years. **Linux** is free, does not reboot itself and is ideal for players and single-board machines; professional media servers for it are rare.",
+   "pt": "**Windows** roda quase tudo: servidores de mídia, TouchDesigner, builds de Unity e Unreal, drivers para qualquer hardware. O preço são atualizações que chegam na hora errada e reiniciam a galeria; cura-se com uma edição de suporte de longo prazo, não com uma caixinha de “adiar”. **macOS** é confiável e silencioso, bom para áudio e vídeo, mas a escolha de software é mais estreita e é mais difícil colocar a máquina em um pedestal e deixar por cinco anos. **Linux** é gratuito, não se reinicia sozinho e é ideal para players e placas únicas; servidores de mídia profissionais para ele são raros."
+  },
+  {
+   "id": "library-05#085",
+   "path": "categories/2/sections/0/items/5/good/0",
+   "ru": "Windows: интерактив, 3D, нестандартное железо, медиасерверы",
+   "en": "Windows: interactivity, 3D, unusual hardware, media servers",
+   "pt": "Windows: interatividade, 3D, hardware incomum, servidores de mídia"
+  },
+  {
+   "id": "library-05#086",
+   "path": "categories/2/sections/0/items/5/good/1",
+   "ru": "macOS: звук, видео, точность цвета, небольшая тихая точка",
+   "en": "macOS: audio, video, colour accuracy, a small quiet point",
+   "pt": "macOS: áudio, vídeo, precisão de cor, um ponto pequeno e silencioso"
+  },
+  {
+   "id": "library-05#087",
+   "path": "categories/2/sections/0/items/5/good/2",
+   "ru": "Linux: расписание, плееры, одноплатники, всё, что должно просто не падать",
+   "en": "Linux: schedules, players, single-board machines, anything that must simply not fall over",
+   "pt": "Linux: programações, players, placas únicas, tudo que simplesmente não pode cair"
+  },
+  {
+   "id": "library-05#088",
+   "path": "categories/2/sections/0/items/5/bad/0",
+   "ru": "Смешанный парк из трёх систем в одном зале: обслуживать будет некому",
+   "en": "A mixed estate of three systems in one gallery: there will be nobody to service it",
+   "pt": "Um parque misto de três sistemas em uma mesma galeria: não vai haver quem faça a manutenção"
+  },
+  {
+   "id": "library-05#089",
+   "path": "categories/2/sections/0/items/5/bad/1",
+   "ru": "Выбор по привычке подрядчика, а не по софту — самая частая причина, по которой музей потом привязан к одному исполнителю",
+   "en": "Choosing by the contractor's habit rather than by the software — the commonest reason a museum ends up tied to one supplier",
+   "pt": "Escolher pelo hábito do fornecedor e não pelo software — o motivo mais comum de um museu acabar amarrado a um único prestador"
+  },
+  {
+   "id": "library-05#090",
+   "path": "categories/2/sections/0/items/5/warn",
+   "ru": "Что бы ни выбрали, отключить автоматические обновления и автоматический сон, поставить автозапуск сценария и автоматический вход в систему. Проверить на приёмке простым способом: выдернуть питание и посмотреть, поднимется ли экспонат сам, без клавиатуры.",
+   "en": "Whatever is chosen, disable automatic updates and automatic sleep, set the scenario to launch on boot, and enable automatic login. Test it at acceptance the simple way: pull the power and see whether the exhibit comes back up on its own, with no keyboard.",
+   "pt": "Seja qual for a escolha, desative atualizações automáticas e suspensão automática, configure o roteiro para iniciar no boot e habilite o login automático. Teste isso no recebimento do jeito simples: tire da tomada e veja se o exponente volta sozinho, sem teclado."
+  },
+  {
+   "id": "library-05#091",
+   "path": "categories/2/sections/0/items/5/brands/0/note",
+   "ru": "редакция без внезапных обновлений, для киосков",
+   "en": "редакция без внезапных обновлений, для киосков",
+   "pt": "edição sem atualizações repentinas, para quiosques"
+  },
+  {
+   "id": "library-05#092",
+   "path": "categories/2/sections/0/items/5/brands/1/note",
+   "ru": "долгая поддержка, бесплатно",
+   "en": "долгая поддержка, бесплатно",
+   "pt": "suporte longo, gratuito"
+  },
+  {
+   "id": "library-05#093",
+   "path": "categories/2/sections/0/items/5/brands/2/note",
+   "ru": "основа большинства плееров и одноплатников",
+   "en": "основа большинства плееров и одноплатников",
+   "pt": "base da maioria dos players e placas únicas"
+  },
+  {
+   "id": "library-05#094",
+   "path": "categories/2/sections/1/name",
+   "ru": "Медиасерверы",
+   "en": "Media servers",
+   "pt": "Servidores de mídia"
+  },
+  {
+   "id": "library-05#095",
+   "path": "categories/2/sections/1/note",
+   "ru": "Отдельный класс: машина и софт вместе. Задача — свести десяток изображений и выходов в одну управляемую картину.",
+   "en": "A class of its own: machine and software together. The job is to bring a dozen images and outputs into one governable picture.",
+   "pt": "Uma classe à parte: máquina e software juntos. A tarefa é reunir uma dúzia de imagens e saídas em uma única imagem governável."
+  },
+  {
+   "id": "library-05#096",
+   "path": "categories/2/sections/1/items/0/name",
+   "ru": "Медиасервер",
+   "en": "Media server",
+   "pt": "Servidor de mídia"
+  },
+  {
+   "id": "library-05#097",
+   "path": "categories/2/sections/1/items/0/line",
+   "ru": "Один мозг на всю проекционную стену",
+   "en": "One brain for a whole projection wall",
+   "pt": "Um cérebro para uma parede de projeção inteira"
+  },
+  {
+   "id": "library-05#098",
+   "path": "categories/2/sections/1/items/0/what",
+   "ru": "Раздаёт картинку на десяток выходов, сшивает проекторы в единое поле, правит геометрию под кривую поверхность и держит всё по временной шкале. Больше двух проекторов без него — зоопарк.",
+   "en": "Feeds a dozen outputs, blends projectors into one field, corrects geometry for a curved surface and holds it all to a timeline. More than two projectors without one is a zoo.",
+   "pt": "Alimenta uma dúzia de saídas, mescla projetores em um campo único, corrige a geometria para uma superfície curva e mantém tudo em uma linha do tempo. Mais de dois projetores sem um deles é um zoológico."
+  },
+  {
+   "id": "library-05#099",
+   "path": "categories/2/sections/1/items/0/good/0",
+   "ru": "Несколько проекторов в одно поле: панорама, купол, свод",
+   "en": "Several projectors into one field: a panorama, a dome, a vault",
+   "pt": "Vários projetores em um campo único: um panorama, uma cúpula, uma abóbada"
+  },
+  {
+   "id": "library-05#100",
+   "path": "categories/2/sections/1/items/0/good/1",
+   "ru": "Маппинг на объём с точной геометрией",
+   "en": "Mapping onto volume with exact geometry",
+   "pt": "Mapeamento sobre volume com geometria exata"
+  },
+  {
+   "id": "library-05#101",
+   "path": "categories/2/sections/1/items/0/good/2",
+   "ru": "Показ идёт по расписанию и должен запускаться сам",
+   "en": "The show runs to a schedule and must start itself",
+   "pt": "O espetáculo roda por programação e precisa iniciar sozinho"
+  },
+  {
+   "id": "library-05#102",
+   "path": "categories/2/sections/1/items/0/bad/0",
+   "ru": "Один экран с роликом — избыточно на порядок",
+   "en": "One screen with a film — an order of magnitude more than needed",
+   "pt": "Uma tela com um filme — uma ordem de grandeza mais do que o necessário"
+  },
+  {
+   "id": "library-05#103",
+   "path": "categories/2/sections/1/items/0/bad/1",
+   "ru": "Глубокая интерактивность: медиасервер силён в показе, а не в логике",
+   "en": "Deep interactivity: a media server is strong at playback, not at logic",
+   "pt": "Interatividade profunda: um servidor de mídia é forte em reprodução, não em lógica"
+  },
+  {
+   "id": "library-05#104",
+   "path": "categories/2/sections/1/items/0/brands/0/note",
+   "ru": "музейный стандарт, много выходов",
+   "en": "музейный стандарт, много выходов",
+   "pt": "padrão de museu, muitas saídas"
+  },
+  {
+   "id": "library-05#105",
+   "path": "categories/2/sections/1/items/0/brands/1/note",
+   "ru": "верхний сегмент, сцена и большие площадки",
+   "en": "верхний сегмент, сцена и большие площадки",
+   "pt": "segmento premium, palco e grandes espaços"
+  },
+  {
+   "id": "library-05#106",
+   "path": "categories/2/sections/1/items/0/brands/2/note",
+   "ru": "маппинг и живое управление",
+   "en": "маппинг и живое управление",
+   "pt": "mapeamento e controle ao vivo"
+  },
+  {
+   "id": "library-05#107",
+   "path": "categories/2/sections/1/items/0/brands/3/note",
+   "ru": "инсталляции, сильная геометрия",
+   "en": "инсталляции, сильная геометрия",
+   "pt": "instalações, geometria forte"
+  },
+  {
+   "id": "library-05#108",
+   "path": "categories/2/sections/1/items/0/brands/4/note",
+   "ru": "купола и планетарии",
+   "en": "купола и планетарии",
+   "pt": "cúpulas e planetários"
+  },
+  {
+   "id": "library-05#109",
+   "path": "categories/2/sections/1/items/0/brands/5/note",
+   "ru": "показ и маппинг в одной системе",
+   "en": "показ и маппинг в одной системе",
+   "pt": "exibição e mapeamento em um só sistema"
+  },
+  {
+   "id": "library-05#110",
+   "path": "categories/2/sections/1/items/1/name",
+   "ru": "Сшивка и коррекция геометрии",
+   "en": "Warping and geometry correction",
+   "pt": "Warping e correção de geometria"
+  },
+  {
+   "id": "library-05#111",
+   "path": "categories/2/sections/1/items/1/line",
+   "ru": "Чтобы шва не было видно",
+   "en": "So the seam cannot be seen",
+   "pt": "Para que a emenda não seja vista"
+  },
+  {
+   "id": "library-05#112",
+   "path": "categories/2/sections/1/items/1/what",
+   "ru": "Программа считает по снимкам с камеры, как исказить каждое изображение, чтобы проекторы слились в одно поле без стыка. Пересчитывается за минуты, а не за ночь — и это важно, потому что здание живёт и оборудование сдвигается.",
+   "en": "Software works out from camera shots how to distort each image so the projectors merge into one field. Recomputed in minutes rather than overnight — which matters, because buildings move and equipment shifts.",
+   "pt": "O software descobre, a partir de fotos de câmera, como distorcer cada imagem para que os projetores se fundam em um campo único. Recalculado em minutos e não da noite para o dia — o que importa, porque prédios se mexem e equipamentos se deslocam."
+  },
+  {
+   "id": "library-05#113",
+   "path": "categories/2/sections/1/items/1/good/0",
+   "ru": "Больше одного проектора на одну поверхность",
+   "en": "More than one projector on one surface",
+   "pt": "Mais de um projetor sobre uma mesma superfície"
+  },
+  {
+   "id": "library-05#114",
+   "path": "categories/2/sections/1/items/1/good/1",
+   "ru": "Поверхность не плоская: свод, купол, угол, макет",
+   "en": "A surface that is not flat: a vault, a dome, a corner, a model",
+   "pt": "Uma superfície que não é plana: uma abóbada, uma cúpula, um canto, uma maquete"
+  },
+  {
+   "id": "library-05#115",
+   "path": "categories/2/sections/1/items/1/good/2",
+   "ru": "Калибровку придётся повторять — здание живёт и оборудование сдвигается",
+   "en": "Calibration will have to be repeated — buildings move and equipment shifts",
+   "pt": "A calibração vai precisar ser refeita — prédios se mexem e equipamentos se deslocam"
+  },
+  {
+   "id": "library-05#116",
+   "path": "categories/2/sections/1/items/1/bad/0",
+   "ru": "Один проектор на ровную стену — ничего не нужно",
+   "en": "One projector on a flat wall — nothing is needed",
+   "pt": "Um projetor em parede plana — não é preciso nada"
+  },
+  {
+   "id": "library-05#117",
+   "path": "categories/2/sections/1/items/1/bad/1",
+   "ru": "Нет доступа поставить камеру там, где стоит зритель",
+   "en": "No way to place a camera where the viewer stands",
+   "pt": "Sem como posicionar uma câmera onde o espectador fica"
+  },
+  {
+   "id": "library-05#118",
+   "path": "categories/2/sections/1/items/1/brands/0/note",
+   "ru": "автокалибровка по камере",
+   "en": "автокалибровка по камере",
+   "pt": "autocalibração por câmera"
+  },
+  {
+   "id": "library-05#119",
+   "path": "categories/2/sections/1/items/1/brands/1/note",
+   "ru": "сшивка, в том числе внутри медиасерверов",
+   "en": "сшивка, в том числе внутри медиасерверов",
+   "pt": "mesclagem, inclusive dentro de servidores de mídia"
+  },
+  {
+   "id": "library-05#120",
+   "path": "categories/2/sections/1/items/1/brands/2/note",
+   "ru": "купола и сферы",
+   "en": "купола и сферы",
+   "pt": "cúpulas e esferas"
+  },
+  {
+   "id": "library-05#121",
+   "path": "categories/2/sections/2/name",
+   "ru": "Движки и среды",
+   "en": "Engines and environments",
+   "pt": "Motores e ambientes"
+  },
+  {
+   "id": "library-05#122",
+   "path": "categories/2/sections/2/note",
+   "ru": "В чём делается содержание. Выбор решает не то, как это выглядит, а то, кто сможет это потом поменять.",
+   "en": "Where the content gets made. The choice decides not how it looks but who will be able to change it later.",
+   "pt": "Onde o conteúdo é feito. A escolha decide não como aquilo fica, e sim quem vai conseguir mudar depois."
+  },
+  {
+   "id": "library-05#123",
+   "path": "categories/2/sections/2/items/0/line",
+   "ru": "Рабочая лошадь интерактивных экспонатов",
+   "en": "The workhorse of interactive exhibits",
+   "pt": "O cavalo de batalha dos exponentes interativos"
+  },
+  {
+   "id": "library-05#124",
+   "path": "categories/2/sections/2/items/0/what",
+   "ru": "Стандарт музейного интерактива: 3D в реальном времени, любые датчики, сборка подо что угодно — от экрана в зале до шлема и телефона. Специалистов на рынке больше, чем по любому другому инструменту в этом списке, и подрядчика легко заменить.",
+   "en": "The standard for museum interactivity: real-time 3D, any sensor, builds for anything from a gallery screen to a headset to a phone. More specialists on the market than for any other tool on this list, and a contractor who is easy to replace.",
+   "pt": "O padrão da interatividade museológica: 3D em tempo real, qualquer sensor, builds para tudo, de uma tela de galeria a um óculos e a um celular. Mais especialistas no mercado do que para qualquer outra ferramenta desta lista, e um fornecedor fácil de substituir."
+  },
+  {
+   "id": "library-05#125",
+   "path": "categories/2/sections/2/items/0/good/0",
+   "ru": "Интерактивный экспонат с настоящей логикой и состоянием",
+   "en": "An interactive exhibit with real logic and state",
+   "pt": "Um exponente interativo com lógica e estado de verdade"
+  },
+  {
+   "id": "library-05#126",
+   "path": "categories/2/sections/2/items/0/good/1",
+   "ru": "Одно содержание на несколько устройств: зал, шлем, телефон",
+   "en": "One body of content across several devices: gallery, headset, phone",
+   "pt": "Um mesmo corpo de conteúdo em vários aparelhos: galeria, óculos, celular"
+  },
+  {
+   "id": "library-05#127",
+   "path": "categories/2/sections/2/items/0/good/2",
+   "ru": "Нужен подрядчик, которого потом легко заменить",
+   "en": "You want a contractor who can easily be replaced later",
+   "pt": "Você quer um fornecedor que possa ser substituído com facilidade depois"
+  },
+  {
+   "id": "library-05#128",
+   "path": "categories/2/sections/2/items/0/bad/0",
+   "ru": "Простой ролик — избыточно",
+   "en": "A simple film — overkill",
+   "pt": "Um filme simples — exagero"
+  },
+  {
+   "id": "library-05#129",
+   "path": "categories/2/sections/2/items/0/bad/1",
+   "ru": "Фотореалистичная архитектура высшего качества: здесь сильнее Unreal",
+   "en": "Top-grade photorealistic architecture: Unreal is stronger there",
+   "pt": "Arquitetura fotorrealista de primeira linha: a Unreal é mais forte nisso"
+  },
+  {
+   "id": "library-05#130",
+   "path": "categories/2/sections/2/items/0/brands/0/note",
+   "ru": "движок и среда разработки",
+   "en": "движок и среда разработки",
+   "pt": "motor e ambiente de desenvolvimento"
+  },
+  {
+   "id": "library-05#131",
+   "path": "categories/2/sections/2/items/1/line",
+   "ru": "Когда решает достоверность картинки",
+   "en": "When the credibility of the image decides it",
+   "pt": "Quando a credibilidade da imagem decide"
+  },
+  {
+   "id": "library-05#132",
+   "path": "categories/2/sections/2/items/1/what",
+   "ru": "Сильнейший свет и материалы из коробки. Берут там, где изображение должно быть неотличимо от съёмки: архитектура, интерьер, ландшафт, изделие в рекламном качестве.",
+   "en": "The strongest lighting and materials out of the box. Chosen where the image must be indistinguishable from a photograph: architecture, interiors, landscape, a product at advertising quality.",
+   "pt": "A iluminação e os materiais mais fortes prontos de fábrica. Escolhida onde a imagem precisa ser indistinguível de uma fotografia: arquitetura, interiores, paisagem, um produto em qualidade de publicidade."
+  },
+  {
+   "id": "library-05#133",
+   "path": "categories/2/sections/2/items/1/good/0",
+   "ru": "Архитектура и территория, которые должны выглядеть настоящими",
+   "en": "Architecture and territory that must look real",
+   "pt": "Arquitetura e território que precisam parecer reais"
+  },
+  {
+   "id": "library-05#134",
+   "path": "categories/2/sections/2/items/1/good/1",
+   "ru": "Большой мир с дальними планами",
+   "en": "A large world with distant views",
+   "pt": "Um mundo grande com vistas distantes"
+  }
+ ]
+}

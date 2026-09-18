@@ -1,0 +1,301 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "og-01 (1 de 1)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "og-01#001",
+   "path": "og/og-home.jpg/0",
+   "ru": "Мультимедийные экспозиции",
+   "en": "Multimedia exhibitions",
+   "pt": "Exposições multimídia"
+  },
+  {
+   "id": "og-01#002",
+   "path": "og/og-home.jpg/1",
+   "ru": "Пространства, которые люди запоминают",
+   "en": "Spaces people remember",
+   "pt": "Espaços que as pessoas lembram"
+  },
+  {
+   "id": "og-01#003",
+   "path": "og/og-home.jpg/2",
+   "ru": "Музеи, выставки, интерактивные экспозиции. С 2011 года",
+   "en": "Museums, expos, interactive exhibitions. Since 2011",
+   "pt": "Museus, feiras, exposições interativas. Desde 2011"
+  },
+  {
+   "id": "og-01#004",
+   "path": "og/og-library.jpg/0",
+   "ru": "Библиотека оборудования",
+   "en": "Equipment library",
+   "pt": "Biblioteca de equipamentos"
+  },
+  {
+   "id": "og-01#005",
+   "path": "og/og-library.jpg/1",
+   "ru": "Мультимедиа технологии",
+   "en": "Multimedia technology",
+   "pt": "Tecnologias multimídia"
+  },
+  {
+   "id": "og-01#006",
+   "path": "og/og-library.jpg/2",
+   "ru": "65 типов: что каждое умеет и обо что спотыкаются на второй год",
+   "en": "65 types: what each one does and where it fails in year two",
+   "pt": "65 tipos: o que cada um faz e onde se tropeça no segundo ano"
+  },
+  {
+   "id": "og-01#007",
+   "path": "og/og-lib-output.jpg/0",
+   "ru": "Оборудование вывода",
+   "en": "Output equipment",
+   "pt": "Equipamentos de saída"
+  },
+  {
+   "id": "og-01#008",
+   "path": "og/og-lib-output.jpg/1",
+   "ru": "Чем экспозиция говорит с человеком",
+   "en": "How the exhibition speaks",
+   "pt": "Como a exposição fala com o visitante"
+  },
+  {
+   "id": "og-01#009",
+   "path": "og/og-lib-output.jpg/2",
+   "ru": "Проекция, светодиод, объём, звук, движение — 24 позиции",
+   "en": "Projection, LED, volume, sound, motion — 24 entries",
+   "pt": "Projeção, LED, volume, som, movimento — 24 itens"
+  },
+  {
+   "id": "og-01#010",
+   "path": "og/og-lib-input.jpg/0",
+   "ru": "Оборудование ввода",
+   "en": "Input equipment",
+   "pt": "Equipamentos de entrada"
+  },
+  {
+   "id": "og-01#011",
+   "path": "og/og-lib-input.jpg/1",
+   "ru": "Чем человек отвечает экспозиции",
+   "en": "How the visitor answers",
+   "pt": "Como o visitante responde"
+  },
+  {
+   "id": "og-01#012",
+   "path": "og/og-lib-input.jpg/2",
+   "ru": "Касание, жест, голос, присутствие — 20 позиций",
+   "en": "Touch, gesture, voice, presence — 20 entries",
+   "pt": "Toque, gesto, voz, presença — 20 itens"
+  },
+  {
+   "id": "og-01#013",
+   "path": "og/og-lib-proc.jpg/0",
+   "ru": "Обработка и управление",
+   "en": "Processing and control",
+   "pt": "Processamento e controle"
+  },
+  {
+   "id": "og-01#014",
+   "path": "og/og-lib-proc.jpg/1",
+   "ru": "То, чего не видно, и на чём всё держится",
+   "en": "The part nobody sees",
+   "pt": "O que ninguém vê e sustenta tudo"
+  },
+  {
+   "id": "og-01#015",
+   "path": "og/og-lib-proc.jpg/2",
+   "ru": "Машины, движки, сеть, эксплуатация — 21 позиция",
+   "en": "Machines, engines, network, operation — 21 entries",
+   "pt": "Máquinas, engines, rede, operação — 21 itens"
+  },
+  {
+   "id": "og-01#016",
+   "path": "og/og-services.jpg/0",
+   "ru": "Услуги",
+   "en": "Services",
+   "pt": "Serviços"
+  },
+  {
+   "id": "og-01#017",
+   "path": "og/og-services.jpg/1",
+   "ru": "Что мы делаем",
+   "en": "What we do",
+   "pt": "O que fazemos"
+  },
+  {
+   "id": "og-01#018",
+   "path": "og/og-services.jpg/2",
+   "ru": "От концепции музея до запуска экспозиции",
+   "en": "From museum concept to opening day",
+   "pt": "Do conceito do museu à abertura da exposição"
+  },
+  {
+   "id": "og-01#019",
+   "path": "og/og-equipping.jpg/0",
+   "ru": "Оснащение музея",
+   "en": "Museum equipping",
+   "pt": "Equipagem de museus"
+  },
+  {
+   "id": "og-01#020",
+   "path": "og/og-equipping.jpg/1",
+   "ru": "Техническое задание, которое можно защитить",
+   "en": "A spec that survives review",
+   "pt": "Um termo de referência que passa na análise"
+  },
+  {
+   "id": "og-01#021",
+   "path": "og/og-equipping.jpg/2",
+   "ru": "Напишем или проверим ваше. Бесплатно",
+   "en": "We write yours or audit it. Free",
+   "pt": "Escrevemos o seu ou revisamos. De graça"
+  },
+  {
+   "id": "og-01#022",
+   "path": "og/og-equipment.jpg/0",
+   "ru": "Оборудование для музея",
+   "en": "Museum equipment",
+   "pt": "Equipamentos para museu"
+  },
+  {
+   "id": "og-01#023",
+   "path": "og/og-equipment.jpg/1",
+   "ru": "Железо выбирают последним",
+   "en": "Hardware comes last",
+   "pt": "O hardware se escolhe por último"
+  },
+  {
+   "id": "og-01#024",
+   "path": "og/og-equipment.jpg/2",
+   "ru": "Сначала сценарий, потом взаимодействие, и только потом техника",
+   "en": "Story first, interaction second, devices third",
+   "pt": "Primeiro o roteiro, depois a interação, e só então os equipamentos"
+  },
+  {
+   "id": "og-01#025",
+   "path": "og/og-concepts.jpg/0",
+   "ru": "Авторские концепции",
+   "en": "Original concepts",
+   "pt": "Conceitos autorais"
+  },
+  {
+   "id": "og-01#026",
+   "path": "og/og-concepts.jpg/1",
+   "ru": "Библиотека решений",
+   "en": "A library of solutions",
+   "pt": "Uma biblioteca de soluções"
+  },
+  {
+   "id": "og-01#027",
+   "path": "og/og-concepts.jpg/2",
+   "ru": "28 готовых форматов: замысел, сценарий, что нужно",
+   "en": "28 ready formats: intent, script, what it takes",
+   "pt": "28 formatos prontos: a ideia, o roteiro, o que é preciso"
+  },
+  {
+   "id": "og-01#028",
+   "path": "og/og-atlas.jpg/0",
+   "ru": "Атлас",
+   "en": "Atlas",
+   "pt": "Atlas"
+  },
+  {
+   "id": "og-01#029",
+   "path": "og/og-atlas.jpg/1",
+   "ru": "Как создаются впечатления",
+   "en": "How experiences are made",
+   "pt": "Como as experiências são feitas"
+  },
+  {
+   "id": "og-01#030",
+   "path": "og/og-atlas.jpg/2",
+   "ru": "50 принципов, по которым работает студия",
+   "en": "50 principles the studio works by",
+   "pt": "50 princípios que guiam o estúdio"
+  },
+  {
+   "id": "og-01#031",
+   "path": "og/og-mm-equipment.jpg/0",
+   "ru": "Мультимедийное оборудование",
+   "en": "Multimedia equipment",
+   "pt": "Equipamentos multimídia"
+  },
+  {
+   "id": "og-01#032",
+   "path": "og/og-mm-equipment.jpg/1",
+   "ru": "Десять коробок или одна система",
+   "en": "Ten boxes or one system",
+   "pt": "Dez caixas ou um sistema"
+  },
+  {
+   "id": "og-01#033",
+   "path": "og/og-mm-equipment.jpg/2",
+   "ru": "Из чего собирается комплекс, чем профи отличается от бытового, коды ОКПД2",
+   "en": "What the system is made of and how professional gear differs from consumer kit",
+   "pt": "Do que o sistema é feito e como o equipamento profissional difere do doméstico"
+  },
+  {
+   "id": "og-01#034",
+   "path": "og/og-corp-museum.jpg/0",
+   "ru": "Корпоративный музей",
+   "en": "Corporate museum",
+   "pt": "Museu corporativo"
+  },
+  {
+   "id": "og-01#035",
+   "path": "og/og-corp-museum.jpg/1",
+   "ru": "Не комната, куда водят гостей",
+   "en": "Not a room guests are walked through",
+   "pt": "Não é a sala para onde se leva visita"
+  },
+  {
+   "id": "og-01#036",
+   "path": "og/og-corp-museum.jpg/2",
+   "ru": "Партнёры, новички и школьники — одна экспозиция на три аудитории",
+   "en": "Partners, new hires and school groups in one exhibition",
+   "pt": "Parceiros, novos funcionários e estudantes — uma exposição para três públicos"
+  },
+  {
+   "id": "og-01#037",
+   "path": "og/og-web.jpg/0",
+   "ru": "Интерактивный сайт",
+   "en": "Interactive website",
+   "pt": "Site interativo"
+  },
+  {
+   "id": "og-01#038",
+   "path": "og/og-web.jpg/1",
+   "ru": "Вы уже на примере",
+   "en": "You are looking at the example",
+   "pt": "Você já está vendo um exemplo"
+  },
+  {
+   "id": "og-01#039",
+   "path": "og/og-web.jpg/2",
+   "ru": "Сцена в реальном времени вместо страницы с блоками. И брендированные игры",
+   "en": "A real-time scene instead of a page of blocks — and branded games",
+   "pt": "Uma cena em tempo real no lugar de uma página de blocos. E jogos de marca"
+  },
+  {
+   "id": "og-01#040",
+   "path": "og/og-space.jpg/0",
+   "ru": "Мультимедийное пространство",
+   "en": "Multimedia space",
+   "pt": "Espaço multimídia"
+  },
+  {
+   "id": "og-01#041",
+   "path": "og/og-space.jpg/1",
+   "ru": "Место, которое продаёт образ жизни",
+   "en": "A place that sells a way of living",
+   "pt": "Um lugar que vende um jeito de viver"
+  },
+  {
+   "id": "og-01#042",
+   "path": "og/og-space.jpg/2",
+   "ru": "Шоурум, бренд-зона, презентационный зал",
+   "en": "Showroom, brand zone, presentation hall",
+   "pt": "Showroom, espaço de marca, sala de apresentação"
+  }
+ ]
+}

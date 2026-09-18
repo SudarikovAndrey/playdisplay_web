@@ -1,0 +1,1269 @@
+{
+ "_комментарий": "Посадочные страницы под услуги. Собираются build_seo.py в /services/<slug>/ и /en/services/<slug>/. Блоки flow — те же типы, что у кейсов в projects.json: h, p, steps, notes, stats. Блок cases перечисляет slug'и проектов из projects.json — перелинковка отсюда в кейсы и обратно. Английская версия — site/data/en/services.json.",
+ "services": [
+  {
+   "slug": "museum-concept",
+   "title": "Concepção de museu",
+   "nav": "Concepção de museu",
+   "subtitle": "De “por que este museu existe” a um projeto expositivo pronto para ser construído.",
+   "keywords": [
+    "projeto de museu",
+    "conceito de exposição",
+    "design de museu",
+    "museu chave na mão",
+    "plano diretor de exposição",
+    "roteiro museográfico",
+    "plano temático-expositivo",
+    "narrativa museológica"
+   ],
+   "cases": [
+    "stalingrad",
+    "vdnh-space",
+    "vdnh-space-center",
+    "proryv"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "Um museu não começa por vitrines nem por equipamentos. Começa por uma resposta: por que ele existe e o que a pessoa leva embora ao sair. Enquanto essa resposta não existe, toda decisão — sobre luz, percurso, tela, vitrine — é tomada no escuro, e a discussão sobre ela pode durar para sempre."
+    },
+    {
+     "t": "p",
+     "text": "O conceito é o documento que encerra a discussão. Ele diz o que o visitante deve sentir, como se move, o que faz com as mãos, onde para e por quê. Todo o resto — layout, tecnologia, orçamento — decorre dele."
+    },
+    {
+     "t": "h",
+     "text": "O que o conceito contém"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "A ideia central: por que o museu é necessário, para quem, e o que ele muda na pessoa.",
+      "Perfis de visitante: um estudante, uma família, um especialista, um visitante estrangeiro — cada um com seu percurso e sua profundidade.",
+      "Roteiro do percurso: a sequência de salas e pontos de sentido, e o ritmo — onde está a tensão, onde a pausa, onde a descoberta.",
+      "Inventário expositivo: cada exponente e objeto interativo descrito pelo que faz e por que está exatamente ali.",
+      "Decisões espaciais: layouts, zoneamento, esboços dos objetos principais, referências de material e iluminação.",
+      "A parte técnica: quais tecnologias são necessárias, quais não são, como se faz a manutenção e o que fazer quando quebra.",
+      "Faseamento e faixas de orçamento — para que o conceito possa ser defendido, e não apenas apresentado."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "A regra dos cinco segundos e dos cinco minutos"
+    },
+    {
+     "t": "p",
+     "text": "Cada objeto da exposição se entende em cinco segundos e se abre ao longo de cinco minutos. Em cinco segundos uma criança entende o que fazer — sem instrução na etiqueta. Em cinco minutos um especialista encontra a profundidade que veio buscar. Um mesmo objeto funciona para todos os visitantes ao mesmo tempo, e mantemos essa exigência em cada exponente: se ele só se entende depois de ler as regras, o exponente é refeito."
+    },
+    {
+     "t": "h",
+     "text": "Como o trabalho acontece"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Imersão. Lemos o que já existe: o conceito científico, o acervo, pesquisas, projetos anteriores. Conversamos com curadores e pesquisadores — eles guardam material que não está em documento nenhum.",
+      "O quadro de sentido. Colocamos em palavras o que a pessoa deve sentir. É a parte mais curta do documento e a mais cara em consequências: todo o resto deriva dela.",
+      "Roteiro e percurso. Distribuímos os sentidos pelas salas e conferimos o ritmo — e o que acontece com a pessoa no quadragésimo minuto, quando a atenção já está gasta.",
+      "Decisões expositivas. Cada objeto ganha uma descrição: o que o visitante faz, o que vê, o que leva embora.",
+      "Defesa. Montamos o documento de modo que ele possa ser levado a um conselho, a um ministério ou a um investidor e produza uma decisão, em vez de mais uma rodada de discussão."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Com o que trabalhamos"
+    },
+    {
+     "t": "p",
+     "text": "Museus nacionais, museus corporativos e institucionais, sítios históricos, centros de visitantes em unidades industriais, centros de ciência. Um caso à parte são as exposições sobre temas difíceis: tecnologia, produção, ciência, história que não cabe em um slogan. O melhor jeito de explicar algo complexo é deixar as pessoas brincarem com ele, e fazemos isso sem perder precisão: o conteúdo é acordado com consultores acadêmicos, e não recontado à vontade."
+    },
+    {
+     "t": "h",
+     "text": "O que define custo e prazo"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Área e número de zonas de sentido — um conceito para uma sala e para um museu de vinte salas diferem em natureza, não em proporção.",
+      "O estado do material de origem: com um conceito científico e um acervo catalogado o trabalho anda mais rápido; sem eles, primeiro é preciso reunir tudo.",
+      "Quantas partes precisam aprovar. Um único cliente e um conselho interdepartamental significam prazos diferentes para a mesma quantidade de trabalho.",
+      "Se você precisa de um conceito para defesa ou de documentação de projeto pronta para obra."
+     ]
+    },
+    {
+     "t": "p",
+     "text": "Com sinceridade sobre tempo: nossos projetos de museu levaram seis meses ou mais do começo ao fim. O conceito é a primeira parte disso. A conversa faz sentido um ano antes da abertura, não três meses antes."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Qual a diferença entre conceito e projeto executivo?",
+     "a": "O conceito responde o quê e por quê; o projeto executivo responde como construir. O conceito define o que o visitante faz e sente; o projeto executivo transforma isso em desenhos, especificações e orçamentos. Um projeto executivo sem conceito é uma sala bonita sem nada para fazer dentro."
+    },
+    {
+     "q": "Dá para contratar só o conceito, sem a execução?",
+     "a": "Dá, e é um arranjo comum. O conceito é um documento autônomo: dá para defendê-lo, buscar financiamento com ele e abrir uma licitação de execução. Trabalhamos tanto assim quanto no ciclo completo até a abertura."
+    },
+    {
+     "q": "Vocês trabalham com um museu que já existe?",
+     "a": "Sim. Renovar uma exposição é um tipo de tarefa próprio: o prédio, o acervo, o percurso consolidado e um visitante acostumado a ele já estão ali. O trabalho é menos construir algo novo e mais achar o que impede o que existe de funcionar."
+    },
+    {
+     "q": "Quem escreve o conteúdo científico?",
+     "a": "O conteúdo científico fica com o museu e seus especialistas — eles conhecem o material. A nossa parte é transformar esse conteúdo em experiência: roteiro, percurso, objetos, interação. A precisão é verificada pelos consultores acadêmicos do cliente."
+    }
+   ]
+  },
+  {
+   "slug": "corporate-museum",
+   "title": "Museu corporativo",
+   "nav": "Museu corporativo",
+   "subtitle": "Um museu de empresa que as pessoas realmente olham: um espaço que funciona para parceiros, novos funcionários e grupos escolares — e conta algo diferente para cada um deles.",
+   "keywords": [
+    "museu corporativo",
+    "museu da empresa",
+    "centro de memória da marca",
+    "exposição de memória corporativa",
+    "criação de museu corporativo",
+    "museu corporativo chave na mão",
+    "museu institucional"
+   ],
+   "cases": [
+    "odk-oak",
+    "industry-rf",
+    "sinara",
+    "coalco"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "Um museu corporativo quase sempre começa do mesmo jeito: existe uma história, existe um armário de troféus e existe um aniversário no horizonte. E existe um medo silencioso de que aquilo acabe virando a sala por onde se passeiam convidados enquanto eles esperam educadamente o almoço."
+    },
+    {
+     "t": "p",
+     "text": "O medo tem fundamento. Essas salas são construídas por inércia: uma vitrine de amostras, painéis por década, retratos de diretores. Formalmente completo — e a história que conta é “existimos há muito tempo”, o que não vale um salão e um orçamento."
+    },
+    {
+     "t": "h",
+     "text": "Três públicos, e eles não são parecidos"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Parceiros e delegações. Quarenta minutos, metade deles em conversa. Precisam de prova de escala e competência, rápido e visual — não de uma aula de história.",
+      "Novos funcionários. Trazidos na primeira semana. Aqui o museu funciona como integração: o que fazemos, por que é difícil e onde você entra. Essa visita economiza um mês de onboarding para a empresa.",
+      "Estudantes e grupos escolares. Orientação profissional que a maioria das fábricas faz mal. São os seus futuros engenheiros, e esse é o único jeito de mostrar o chão de fábrica sem levar crianças até lá."
+     ]
+    },
+    {
+     "t": "p",
+     "text": "Uma mesma exposição precisa servir aos três — não com três percursos separados, e sim com um percurso em profundidades diferentes: uma delegação leva a camada de cima em quarenta minutos, um adolescente de quinze anos passa duas horas e toca em tudo."
+    },
+    {
+     "t": "h",
+     "text": "O que mantém isso vivo"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Fazer, não ler. Montar uma peça, rodar um processo, sentar no lugar do operador. As pessoas lembram do que fizeram com as mãos.",
+      "Um objeto real no centro. Uma peça, uma ferramenta, um produto — com mídia em volta explicando por que aquilo importa. Um número sem objeto é morto; um objeto sem explicação é mudo.",
+      "Pessoas, não só datas. Histórias de funcionários com nome e sobrenome carregam mais que uma linha do tempo: têm um rosto e uma escolha dentro.",
+      "Espaço para mudar. Uma empresa segue em frente, e um museu de painéis impressos fica datado em dois anos. A própria equipe precisa conseguir atualizar o conteúdo."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Como isso difere de um museu público"
+    },
+    {
+     "t": "p",
+     "text": "Quem decide é você. Sem lei de licitações, sem seis meses de processo, sem conselho metodológico. Existe um cliente com orçamento e uma data — normalmente um aniversário, e ele não se mexe."
+    },
+    {
+     "t": "p",
+     "text": "Biblioteca de equipamentos: com o que essas exposições são montadas →"
+    },
+    {
+     "t": "link",
+     "href": "/library/",
+     "text": "Biblioteca de equipamentos: com o que essas exposições são montadas →"
+    }
+   ],
+   "faq": [
+    {
+     "q": "Quanto custa um museu corporativo?",
+     "a": "Depende da área e de quanto da sala envolve fazer em vez de olhar. Um salão pequeno de 60–80 m² com cinco ou seis pontos interativos é uma ordem de grandeza; um andar com teatro e grandes instalações é outra. Orçamos a partir do roteiro, não de uma tabela de preços de equipamento, e mostramos a composição para você poder cortar de olhos abertos."
+    },
+    {
+     "q": "Nosso aniversário é daqui a oito meses. Dá tempo?",
+     "a": "Dá, desde que se comece pelo roteiro e não pela obra. O perigo não é o número de meses, e sim mudanças tardias de conteúdo: quando texto e gráficos ainda estão sendo aprovados nas últimas semanas, tudo pega fogo de uma vez. A gente congela o conteúdo antes do acabamento, e é por isso que as datas costumam se sustentar."
+    },
+    {
+     "q": "Quase não sobrou acervo. E agora?",
+     "a": "É comum, e tem solução. Objetos que faltam são substituídos por reconstituição: um modelo 3D de um produto perdido, uma foto de arquivo reanimada, um processo recriado. Às vezes funciona melhor que o original — um modelo dá para desmontar na frente do visitante, uma peça de museu não."
+    },
+    {
+     "q": "Quem faz a manutenção depois?",
+     "a": "A sua própria equipe, e isso é previsto no projeto. A exposição precisa ligar com um botão, avisar sozinha quando falha e permitir mudar textos sem programador. Entregamos arquivos-fonte, imagens das máquinas e documentação — para que daqui a três anos você não dependa da gente."
+    },
+    {
+     "q": "Dá para fazer um museu se a produção é fechada?",
+     "a": "É justamente para isso que ele é mais necessário. Se o chão de fábrica não pode ser mostrado, o museu vira o único jeito de demonstrar como tudo funciona: maquete com projeção, corte do produto, visita virtual. O visitante vê a produção sem entrar na área."
+    }
+   ]
+  },
+  {
+   "slug": "interactive-exhibition",
+   "title": "Projeto de exposição interativa",
+   "nav": "Exposição interativa",
+   "subtitle": "Uma exposição que o visitante não lê, e sim explora.",
+   "keywords": [
+    "projeto de exposição interativa",
+    "exponentes interativos",
+    "exposição multimídia",
+    "centro de visitantes",
+    "exponentes de centro de ciência",
+    "visitor centre",
+    "centro de visitantes interativo",
+    "museu interativo"
+   ],
+   "cases": [
+    "vdnh-space",
+    "industry-rf",
+    "airports",
+    "proryv"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "O visitante não lê uma exposição — ele explora. A diferença aparece no comportamento: diante de um painel de texto a pessoa fica quatro segundos e segue; diante de um objeto que responde a uma ação, fica minutos. A interatividade não está ali para parecer contemporânea. Está ali onde o conteúdo é mais complexo do que um parágrafo na parede consegue carregar."
+    },
+    {
+     "t": "h",
+     "text": "Quando a interatividade se justifica"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "O conteúdo não pode ser mostrado — um processo, um princípio de funcionamento, uma escala, algo que acontece por dentro e é invisível na realidade.",
+      "O público é misto. Um mesmo objeto precisa funcionar para um estudante e para um especialista da área; uma vitrine estática não consegue, um objeto interativo consegue, pela profundidade.",
+      "Há mais material do que as paredes comportam. A interatividade comprime: um objeto pode carregar o que de outro jeito exigiria um salão inteiro.",
+      "Você precisa que a pessoa faça alguma coisa. Entender pela ação dura mais do que entender pela leitura."
+     ]
+    },
+    {
+     "t": "p",
+     "text": "E o contrário também: onde o conteúdo é um objeto autêntico e a história em volta dele, a interatividade ao lado costuma atrapalhar. Nesses lugares a gente tira, e isso também faz parte do trabalho."
+    },
+    {
+     "t": "h",
+     "text": "Formatos que construímos"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Maquetes interativas de territórios e objetos — com projeção, destaque de zonas e camadas de informação sobre a forma física.",
+      "Instalações multimídia: telas grandes, superfícies multitoque, objetos que respondem à aproximação e ao gesto.",
+      "Exposições jogáveis — um sistema único em que o visitante percorre um roteiro, e não um conjunto de estandes.",
+      "Vitrines holográficas e exponentes volumétricos para equipamentos que não podem ser trazidos.",
+      "Realidade aumentada e virtual, quando é preciso estar dentro de um espaço em que não se pode entrar.",
+      "Exponentes de mecanismo: ação física com as mãos, não um toque na tela."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Como funciona por dentro"
+    },
+    {
+     "t": "p",
+     "text": "Uma regra: se entende em cinco segundos, se abre ao longo de cinco minutos. Em cinco segundos a pessoa entende o que fazer, sem instruções. Em cinco minutos ela encontra profundidade, se ficou. Regras sem manual, descobertas que o visitante faz sozinho e conteúdo de reserva suficiente para quem quiser ir além."
+    },
+    {
+     "t": "p",
+     "text": "A segunda regra é sobre operação. Uma exposição vive por anos, e quem faz a manutenção não é quem a desenvolveu, e sim quem cuida do salão. Por isso os objetos são projetados para reiniciar com um botão, aguentar uso bruto e contar que um dia a rede vai cair ou um projetor vai morrer. Um exponente que só funciona em condições ideais não funciona em museu nenhum."
+    },
+    {
+     "t": "h",
+     "text": "Como o trabalho acontece"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Roteiro de interação: o que o visitante faz, o que acontece em resposta, como aquilo termina.",
+      "Protótipo. Testamos a mecânica com pessoas antes de qualquer equipamento ser comprado. Um protótipo barato agora evita uma reforma cara depois.",
+      "Produção: design, 3D, desenvolvimento, montagem, conteúdo.",
+      "Instalação e comissionamento no local — luz, som, calibração da projeção, uma rotina de manutenção.",
+      "Suporte depois da abertura: as primeiras semanas mostram o que nenhum protótipo mostra."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Escala"
+    },
+    {
+     "t": "stats",
+     "items": [
+      {
+       "n": "115",
+       "label": "exponentes em uma única exposição — Centro de Cosmonáutica e Aviação, VDNH"
+      },
+      {
+       "n": "2011",
+       "label": "fundação do estúdio; trabalhamos no mundo todo"
+      },
+      {
+       "n": "3 sem.",
+       "label": "nosso projeto interativo chave na mão mais rápido"
+      }
+     ]
+    },
+    {
+     "t": "link",
+     "href": "/library/input/",
+     "text": "Como o visitante responde: 20 dispositivos de entrada — toque, gesto, voz, presença →"
+    }
+   ],
+   "faq": [
+    {
+     "q": "Quanto tempo dura um exponente interativo?",
+     "a": "As partes mecânicas e o gabinete duram anos com manutenção de rotina. Os itens vulneráveis são projetores (lâmpadas e filtros) e superfícies de toque em pontos de muito contato. Prevemos a troca de consumíveis na rotina de manutenção e escolhemos equipamentos que ainda serão compráveis daqui a cinco anos."
+    },
+    {
+     "q": "O que acontece se um exponente falhar num fim de semana?",
+     "a": "Nada, se isso foi previsto. Os objetos são projetados para reiniciar sozinhos e para parecerem seguros quando ociosos — um visitante nunca deve ver uma área de trabalho. Quem atende o salão recebe uma instrução de uma página."
+    },
+    {
+     "q": "Precisamos de equipe dedicada para operar?",
+     "a": "Para uma exposição comum, não: a operação diária se resume a ligar e desligar. Para sistemas grandes com muitos objetos vale treinar um funcionário do museu, e esse treinamento a gente dá."
+    },
+    {
+     "q": "Dá para acrescentar interatividade a uma exposição que já existe?",
+     "a": "Dá. Muitas vezes rende mais que refazer o salão: um objeto forte no lugar certo muda o percurso inteiro. Começamos observando como as pessoas realmente circulam hoje."
+    }
+   ]
+  },
+  {
+   "slug": "museum-equipment",
+   "title": "Equipamento interativo",
+   "nav": "Equipamentos para museu",
+   "subtitle": "Uma tela, uma maquete ou uma vitrine não contam nada sozinhas. Montamos o equipamento em volta da história, e não a história em volta do equipamento.",
+   "keywords": [
+    "equipamento para museu",
+    "equipamento interativo para museu",
+    "equipamento multimídia para museu",
+    "tecnologia para museus",
+    "exponentes interativos",
+    "equipamento audiovisual para museu",
+    "equipamento para museu multimídia",
+    "equipamento interativo para museu escolar",
+    "exponentes interativos",
+    "equipamento interativo para museus"
+   ],
+   "cases": [
+    "vdnh-space-center",
+    "proryv",
+    "pano360",
+    "industry-rf"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "“Equipamento para museu” costuma ser buscado por quem já tem uma rubrica no orçamento e um prazo para entregar uma lista de itens. A resposta honesta: o equipamento se escolhe por último. Não porque não importe, mas porque enquanto a história não estiver escrita não há como dizer qual equipamento é o certo."
+    },
+    {
+     "t": "p",
+     "text": "Hardware multimídia não conta nada por si só. Uma mesa de toque sem conteúdo que valha a pena vasculhar é um tablet caro com pernas, de que as pessoas param de se aproximar em um mês. Um projetor sem roteiro é uma mancha clara na parede. A diferença entre um museu com fila num exponente e um museu cujas telas estão desligadas desde o ano passado não é a marca do hardware."
+    },
+    {
+     "t": "h",
+     "text": "O que se decide antes do hardware"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "O que o visitante deve levar embora. Sem essa resposta, cada linha da especificação é um palpite.",
+      "Quem vem: um grupo escolar, uma família no domingo, um especialista, uma delegação oficial. Ritmo diferente, altura diferente, paciência diferente — e isso já são requisitos técnicos.",
+      "Onde o visitante fica e por quanto tempo. Um exponente pelo qual se passa a caminho do guarda-volumes e um exponente em que se senta por cinco minutos são máquinas diferentes.",
+      "Quantas pessoas por vez. Uma tela de toque para um grupo de trinta significa vinte e nove olhando as costas de alguém.",
+      "O que é de fato mostrado. Conteúdo é a maior e mais subestimada parte do orçamento: modelos, filmagem, textos, locução, animação.",
+      "Quem faz a manutenção. Museus raramente têm engenheiro no quadro. O que não reinicia com um botão não sobrevive ao segundo ano."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "O que existe, e no que cada tipo é realmente bom"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Mesas e painéis de toque — para conteúdo que vale vasculhar: mapas, arquivos, desenhos, biografias. Ruins sob fluxo de público, quase inúteis para grupo.",
+      "Projeção sobre maquete física — quando existe uma forma com que trabalhar: um território, um prédio, uma fábrica, um campo. Mais forte que qualquer tela, porque o volume é real e não desenhado.",
+      "Telas grandes e videowalls — para impressão geral e como ponto de reunião de um grupo. Não para leitura: ninguém lê texto longo nelas.",
+      "Vitrines holográficas e displays volumétricos — quando o objeto não pode ser transportado, não pode ser cortado ou não existe fisicamente.",
+      "Interfaces sem toque — gesto, aproximação, sensores. O exponente ganha vida sozinho, sem etiqueta de “aperte aqui”, e é o único jeito de alcançar visitantes que têm vergonha de tocar nas coisas.",
+      "Realidade aumentada em tablet do museu ou no celular do próprio visitante — mais barata em hardware, mais cara em conteúdo, e precisa de alguém para explicar como começar.",
+      "VR — impressão forte para exatamente uma pessoa e fila para todo o resto. Calcule a vazão antes da compra, não depois."
+     ]
+    },
+    {
+     "t": "p",
+     "text": "O que “moderno” significa de verdade"
+    },
+    {
+     "t": "link",
+     "href": "/library/",
+     "text": "Um museu não é moderno pelo ano de fabricação do hardware nem pelo tamanho da diagonal. Um exponente é moderno quando se entende sem instruções. Cinco segundos para uma criança descobrir o que fazer. Cinco minutos para um especialista encontrar a profundidade que veio buscar. O mesmo objeto serve aos dois. Se for preciso ler uma placa de regras para começar, o objeto é refeito — por mais novo que seja o hardware embaixo dele."
+    },
+    {
+     "t": "h",
+     "text": "Como escolhemos o equipamento"
+    },
+    {
+     "t": "p",
+     "text": "Partimos do efeito desejado, não de uma tecnologia específica. Primeiro definimos o que o visitante deve levar embora, e só então com o que construir isso. Não temos vínculo com fabricante nenhum e não vendemos nada do nosso próprio estoque, então a solução é escolhida para a tarefa, e não para o que é familiar ou já está no depósito. O fornecimento fica com nossos parceiros: qualquer equipamento, nas melhores condições para o cliente. A nossa parte é a história, o conteúdo, a interação, o software e a integração — construímos sistemas complexos de hardware e software e respondemos pelo conjunto funcionando como uma coisa só, e não como uma pilha de caixas de fornecedores diferentes."
+    },
+    {
+     "t": "h",
+     "text": "O que define o custo"
+    },
+    {
+     "t": "p",
+     "text": "Partimos do efeito desejado, não de uma tecnologia específica. Primeiro se decide o que a pessoa deve levar embora, e só então com o que fazer isso. Não temos vínculo com fabricante nenhum, então para cada tarefa se escolhe a melhor solução, e não a mais familiar ou a que já está no depósito. O fornecimento fica com nossos parceiros: qualquer equipamento nas melhores condições para o cliente. A nossa parte é o roteiro, o conteúdo, a interação, a parte de software e a integração: sabemos construir sistemas complexos de hardware e software e respondemos por isso funcionar como um todo, e não como um conjunto de caixas de fornecedores diferentes."
+    },
+    {
+     "t": "h",
+     "text": "O que define o custo"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "O volume de conteúdo. Ele se multiplica pelo número de roteiros, não pelo número de telas: dez painéis com um roteiro saem mais barato que três com roteiros diferentes.",
+      "Se existe material pronto — acervo, desenhos, 3D, filmagem — ou se é preciso criar do zero.",
+      "Se é um fornecimento pontual ou um sistema que o museu depois alimenta sozinho.",
+      "As condições do salão: luz, pé-direito, acesso às redes e se é possível furar as paredes."
+     ]
+    },
+    {
+     "t": "stats",
+     "items": [
+      {
+       "n": "115",
+       "label": "instalações em uma única exposição — Centro de Cosmonáutica e Aviação, na VDNH"
+      },
+      {
+       "n": "2011",
+       "label": "ano de fundação do estúdio, trabalhamos no mundo todo"
+      },
+      {
+       "n": "3 sem.",
+       "label": "nosso projeto interativo chave na mão mais rápido"
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "text": "Se o orçamento já está detalhado por itens e não existe roteiro por baixo dele — ainda dá para corrigir, enquanto o contrato de fornecimento não foi assinado. Mande a lista: dizemos o que sobra nela, o que falta e o que não sobrevive ao primeiro ano. É de graça e leva uma conversa."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Vocês fornecem o equipamento?",
+     "a": "Sim — por meio de parceiros, e isso sai melhor para o cliente. Não temos vínculo com fabricante nenhum e não vendemos nada do nosso estoque, então escolhemos pela tarefa e não pelo que está disponível. Nós escrevemos a especificação; nossos parceiros organizam o fornecimento nas melhores condições. A nossa parte é a história, o conteúdo, o software e a integração — o sistema completo de hardware e software."
+    },
+    {
+     "q": "Quanto custa equipamento interativo para museu?",
+     "a": "O número sai do roteiro, não de uma tabela de preços: enquanto não se sabe o número de exponentes e o que acontece neles, qualquer valor é ficção. Uma proporção, porém, dá para afirmar de antemão — no orçamento de uma exposição multimídia o hardware raramente passa de um terço. O resto é conteúdo e o trabalho em cima dele. Orçamentos em que tudo foi para o equipamento e nada sobrou para conteúdo se reconhecem pelas telas desligadas."
+    },
+    {
+     "q": "Somos um museu escolar ou departamental pequeno. O que é realista?",
+     "a": "Um exponente bem pensado vale mais que cinco medianos, e isso vale ainda mais com orçamento pequeno. As coisas mais baratas que funcionam de verdade são projeção sobre maquete física e conteúdo feito para uma tela que você já tem. O erro mais caro é tentar cobrir todas as paredes com painéis."
+    },
+    {
+     "q": "Como saber de antemão que o equipamento não vai ficar parado?",
+     "a": "Dois testes. Primeiro: um atendente consegue reiniciar o exponente com um único botão. Segundo: o museu consegue mudar o conteúdo sem chamar o fornecedor. Se as duas respostas forem não, em um ano aquilo será mobília."
+    },
+    {
+     "q": "Podemos mostrar uma especificação que já escreveram para nós?",
+     "a": "Podem — a gente olha e diz o que acha, sem nenhum compromisso do seu lado. Duas coisas costumam aparecer nessas listas: itens comprados por precaução e nenhuma linha para conteúdo."
+    }
+   ]
+  },
+  {
+   "slug": "museum-equipping",
+   "title": "Equipagem técnica de museus",
+   "nav": "Equipagem de museus",
+   "subtitle": "Escrevemos e auditamos a especificação, montamos a lista de equipamentos e respondemos por tudo isso funcionar como um sistema único.",
+   "keywords": [
+    "equipagem de museu",
+    "termo de referência para museu",
+    "especificação de equipamento para museu",
+    "briefing de museu multimídia",
+    "equipar um museu",
+    "termo de referência para licitação de museu",
+    "equipagem de museus escolares"
+   ],
+   "cases": [
+    "vdnh-space-center",
+    "stalingrad",
+    "proryv",
+    "industry-rf"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "Equipar um museu começa por um termo de referência, não por uma ordem de compra. E o termo quase sempre é escrito com pressa: o prazo do programa está queimando, o dinheiro precisa ser gasto até o fim do ano, e quem escreve trabalha com outra coisa. O que vem depois é previsível — vence o pacote mais barato, porque um termo assim não dá como diferenciar pacotes."
+    },
+    {
+     "t": "p",
+     "text": "A gente pega pelo outro lado. Não “quais itens comprar”, e sim “o que deve acontecer na sala” — e a lista decorre disso. Um termo assim ganha duas vezes: dá para ver quem entendeu a tarefa e dá para receber a obra contra ele depois."
+    },
+    {
+     "t": "h",
+     "text": "O que uma equipagem contém além de hardware"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "A história: o que a pessoa faz em cada ponto e o que leva embora. Sem isso a especificação é palpite.",
+      "A lista de exponentes: quantos, quais, onde ficam e quantas pessoas cada um atende por vez.",
+      "Conteúdo: modelos, filmagem, textos, locução, animação. A maior e mais subestimada parte do orçamento.",
+      "Software e integração: para que dez exponentes sejam um sistema, e não dez caixas.",
+      "Engenharia da sala: energia, rede, caminhos de cabo, fixação, iluminação, acústica.",
+      "Operação: quem liga, quem conserta, quem muda o texto. Isso são linhas do termo, não boa vontade do fornecedor."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Como um termo ruim difere de um que funciona"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "O ruim lista itens: “painel de 55 polegadas — 6 un.”. O que funciona descreve a tarefa: “seis pontos, a pessoa fica em cada um até cinco minutos lendo um documento de arquivo”. A lista decorre do segundo, não do primeiro.",
+      "O ruim não diz nada sobre conteúdo. Vence quem orçou só hardware — e depois não há o que colocar nele.",
+      "O ruim não descreve o recebimento. O que funciona diz com todas as letras: o atendente reinicia um exponente com um botão, o museu muda as legendas sozinho, o fornecedor entrega imagens das máquinas e arquivos-fonte do conteúdo.",
+      "O ruim não calcula vazão. Um óculos de VR para um grupo escolar de trinta são duas horas e meia de fila, e isso já se vê no papel antes.",
+      "O ruim ignora a sala: luz do dia mata projeção, e o pé-direito decide o que pode ser pendurado."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Para museus municipais e escolares"
+    },
+    {
+     "t": "p",
+     "text": "Orçamento menor, mais prestação de contas. Uma regra se mantém: um exponente bem pensado vale mais que cinco medianos. As coisas mais baratas que funcionam de verdade são projeção sobre maquete física e conteúdo feito para uma tela que você já tem. O erro mais caro é cobrir todas as paredes com painéis."
+    },
+    {
+     "t": "link",
+     "href": "/library/",
+     "text": "Biblioteca de equipamentos: 65 tipos, o que cada um faz e quem fabrica →"
+    },
+    {
+     "t": "h",
+     "text": "Como a gente entra"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Escrevendo o termo do zero — quando existe prédio, acervo e objetivo, mas não existe a formulação.",
+      "Auditando um termo ou especificação existente: o que sobra, o que falta, o que não sobrevive ao primeiro ano. De graça.",
+      "Conduzindo o projeto inteiro: história, conteúdo, interação, software, integração e abertura.",
+      "O fornecimento fica com nossos parceiros — não temos depósito, então escolhemos pela tarefa e não pelo estoque."
+     ]
+    },
+    {
+     "t": "stats",
+     "items": [
+      {
+       "n": "115",
+       "label": "instalações em uma única exposição — Centro de Cosmonáutica e Aviação, na VDNH"
+      },
+      {
+       "n": "2011",
+       "label": "fundação do estúdio, trabalhando no mundo todo"
+      },
+      {
+       "n": "65",
+       "label": "tipos de equipamento cobertos na nossa biblioteca aberta"
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "text": "Se o termo já está escrito e prestes a ir para licitação — mande para a gente. Dizemos o que os fornecedores vão ler nele e o que você vai acabar recebendo. De graça, uma conversa, sem compromisso."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Dá para contratar só a especificação?",
+     "a": "Dá, e é um arranjo comum. Um termo de referência é um documento por si só: você leva para licitação, defende um orçamento com ele, compara propostas contra ele. Escrevemos de modo que sirva tanto para escolher o fornecedor quanto para receber a obra depois."
+    },
+    {
+     "q": "Vocês concorrem em licitações cujo termo vocês escreveram?",
+     "a": "Se o cliente quiser isso, a gente discute separadamente e com antecedência, porque o arranjo levanta perguntas óbvias. Mais frequentemente ficamos do lado do museu: escrevemos o termo, ajudamos a ler as propostas e a receber a obra. É mais confortável para todo mundo."
+    },
+    {
+     "q": "Quanto custa equipar um museu?",
+     "a": "O número sai da história, não de uma tabela de preços. Uma proporção, porém, dá para afirmar de antemão: no orçamento de uma exposição multimídia o hardware raramente passa de um terço; o resto é conteúdo e o trabalho em cima dele. Orçamentos em que tudo foi para o equipamento se reconhecem depois pelas telas apagadas."
+    },
+    {
+     "q": "Somos um museu municipal com orçamento bem modesto.",
+     "a": "É um briefing normal e tem solução. A gente olha o que a sala já tem e coloca o dinheiro em um ou dois exponentes fortes, em vez de uma camada uniforme de tecnologia em todas as paredes. Revisar seu orçamento e apontar onde há desperdício não custa nada."
+    },
+    {
+     "q": "Em que vocês insistem no recebimento?",
+     "a": "Três coisas que o museu precisa ter para si: imagens das máquinas, arquivos-fonte do conteúdo e um procedimento escrito de recuperação. Sem eles, trocar um computador queimado passa de uma hora para uma semana, e qualquer ajuste de texto vira um chamado."
+    }
+   ]
+  },
+  {
+   "slug": "multimedia-equipment",
+   "title": "Equipamentos multimídia",
+   "nav": "Equipamentos multimídia",
+   "subtitle": "Do que um sistema multimídia é realmente feito, como o equipamento profissional difere do doméstico e por que a especificação importa mais que a marca.",
+   "keywords": [
+    "equipamento multimídia",
+    "equipamento multimídia para museu",
+    "equipamento multimídia para exposições",
+    "equipamento audiovisual para museus",
+    "hardware para exponente interativo",
+    "equipamento multimídia para museus",
+    "licitação de equipamento multimídia",
+    "fornecimento de equipamento multimídia",
+    "sistema de equipamento multimídia",
+    "equipamento multimídia para salas de conferência",
+    "equipamento multimídia para feiras"
+   ],
+   "cases": [
+    "vdnh-space-center",
+    "proryv",
+    "stalingrad",
+    "industry-rf"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "“Equipamento multimídia” não é uma linha de tabela de preços. É tudo com que uma exposição viva é montada: telas e projetores, sensores e câmeras, as máquinas embaixo da bancada que amarram tudo, e a cabeação que ninguém vê. A lista é longa, mas o comprimento não é o problema. O problema é que dá para comprar cada item corretamente e mesmo assim terminar com dez caixas em vez de um sistema."
+    },
+    {
+     "t": "p",
+     "text": "A gente não vende esse hardware. Trabalha com ele há quinze anos, e é por isso que conhece as partes chatas: onde a ficha técnica discorda da sala real, o que falha no segundo ano e qual peça de três dólares um dia vai parar a exposição inteira por uma semana."
+    },
+    {
+     "t": "h",
+     "text": "Do que o sistema é feito"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "O que mostra. Painéis e videowalls, projetores, telas de LED em qualquer formato — planas, curvas, esféricas, cinéticas. Vitrines holográficas e ventiladores holográficos entram aqui também: tudo que coloca a imagem na frente da pessoa.",
+      "O que responde. Telas de toque, câmeras e sensores de profundidade, botões, volantes, encoders, etiquetas RFID, microfones. Tudo com que o visitante responde, em vez de só olhar.",
+      "O que amarra tudo. Players, computadores e servidores, comutação, rede, controle e monitoramento. Nada disso é visível, e sem isso uma exposição é um conjunto de imagens sem relação que alguém liga na mão toda manhã."
+     ]
+    },
+    {
+     "t": "link",
+     "href": "/library/",
+     "text": "Biblioteca de equipamentos: 65 tipos, o que cada um faz e onde falha no segundo ano →"
+    },
+    {
+     "t": "h",
+     "text": "Profissional contra doméstico"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Ciclo de trabalho. Uma TV doméstica é feita para algumas horas por dia. Uma exposição roda dez horas por dia, sete dias por semana, e nessa carga um painel doméstico queima a imagem em uma temporada — primeiro como fantasma sob um logo estático, depois na tela inteira.",
+      "Brilho na sala real. Um projetor com lúmens honestos é glorioso no escuro e parece um trapo cinza ao lado de uma janela panorâmica. O que importa é o nível de luz daquela sala naquele horário, não o número da ficha técnica.",
+      "O que acontece depois. As linhas profissionais ficam em produção por anos, então um painel queimado num videowall pode ser trocado pelo mesmo modelo. O modelo doméstico já saiu de linha, e aí você troca a parede inteira.",
+      "Controle. Equipamento profissional liga por agenda, responde pela rede e informa o próprio estado. Equipamento doméstico espera uma pessoa com controle remoto — e um dia essa pessoa falta."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Nossa função"
+    },
+    {
+     "t": "p",
+     "text": "Partimos do efeito desejado, não de um modelo específico. Primeiro decidimos o que deve acontecer com a pessoa no salão, e só então derivamos disso a composição dos equipamentos — assim a técnica deixa de ser motivo de discussão e vira consequência do plano."
+    },
+    {
+     "t": "p",
+     "text": "Depois nossa equipe escolhe as melhores soluções para a tarefa e para o orçamento, e os parceiros organizam o fornecimento nas melhores condições para o cliente. Construímos sistemas complexos de hardware e software e respondemos por tudo isso funcionar como um sistema só, e não como um depósito de caixas compatíveis. Nas nossas mãos um monitor comum vira uma vitrine de primeira linha — e, ao contrário, o painel mais caro sem roteiro continua sendo um painel caro."
+    },
+    {
+     "t": "link",
+     "href": "/services/museum-equipping/",
+     "text": "Escrevemos ou revisamos o termo de referência — de graça →"
+    }
+   ],
+   "faq": [
+    {
+     "q": "Vocês fornecem o equipamento?",
+     "a": "Não diretamente, e isso é proposital: um estúdio que ganha margem em hardware sempre tem um interesse a mais em vender mais hardware. Projetamos o sistema e selecionamos os componentes; nossos parceiros cuidam do fornecimento nas melhores condições para o cliente, incluindo entrega direta e assistência. Você não precisa procurar fornecedores."
+    },
+    {
+     "q": "Já temos equipamento. Dá para trabalhar com ele?",
+     "a": "Em geral dá, e com prazer. Primeiro olhamos o que existe: modelos, idade, ciclo de trabalho, como é controlado. Depois dizemos com clareza o que aguenta a carga, o que está na última temporada e o que precisa ser trocado — com números, não a olho. Construir em cima do que você já tem quase sempre sai mais barato que começar do zero."
+    },
+    {
+     "q": "Quanto tempo dura equipamento multimídia em uma exposição?",
+     "a": "Painéis profissionais e LED: de cinco a sete anos com jornada de dez horas. Projetores são limitados pela fonte de luz — cerca de vinte mil horas para laser. As máquinas ficam obsoletas mais rápido do que quebram. Planeje a substituição com antecedência e como linha de orçamento: uma exposição sem plano de renovação começa a parecer datada por volta do terceiro ano."
+    },
+    {
+     "q": "Qual a diferença disso para um integrador de AV?",
+     "a": "O integrador responde pelo equipamento funcionar. Nós respondemos pela exposição funcionar. A diferença aparece no recebimento: um sistema pode estar instalado de forma impecável e ainda assim deixar o visitante indiferente. Por isso começamos pelo roteiro e pelo conteúdo, e derivamos deles a lista de equipamentos."
+    },
+    {
+     "q": "Qual a diferença da sua abordagem para a de um integrador?",
+     "a": "O integrador responde pela técnica funcionar. Nós respondemos pela exposição funcionar. A diferença aparece no recebimento: o sistema pode estar montado de forma impecável e ainda assim deixar o visitante indiferente. Por isso começamos pelo roteiro e pelo conteúdo, e a composição dos equipamentos já sai deles."
+    }
+   ]
+  },
+  {
+   "slug": "exhibition-stand",
+   "title": "Estande de exposição interativo",
+   "nav": "Estande de exposição",
+   "subtitle": "Um estande em que as pessoas param — e ficam tempo suficiente para alguém conversar com elas.",
+   "keywords": [
+    "estande de exposição interativo",
+    "estande de feira chave na mão",
+    "projeto de estande para feira",
+    "estande multimídia",
+    "estande interativo",
+    "exponente para feira",
+    "estande multimídia",
+    "estande com interatividade",
+    "exponente para exposição"
+   ],
+   "cases": [
+    "mig2019",
+    "odk-oak",
+    "rostec",
+    "sinara",
+    "ptk-group",
+    "urban-forum-2018"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "Numa feira você tem três segundos enquanto alguém passa. Depois disso a pessoa parou ou não parou, e não haverá segunda chance naquele dia. A função de um estande não é parecer caro. A função é dar a quem passa um motivo para chegar perto e um motivo para ficar tempo suficiente para a sua equipe alcançá-la."
+    },
+    {
+     "t": "p",
+     "text": "Fila na instalação é a melhor métrica que um estande tem. Ela se vê do outro lado do pavilhão e funciona melhor que qualquer sinalização."
+    },
+    {
+     "t": "h",
+     "text": "O que construímos em estandes"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Um exponente central — o objeto em volta do qual todo o resto se organiza. Normalmente é ele que faz o estande ser lembrado.",
+      "Demonstração interativa de produto: uma máquina complexa pode ser desmontada, girada, olhada por dentro — algo que nenhuma maquete ou vídeo entrega.",
+      "Ferramentas de demonstração para o time comercial: não um conjunto de slides, e sim um roteiro de conversa com o cliente.",
+      "Vitrines holográficas e displays volumétricos para equipamentos que fisicamente não podem ser levados ao pavilhão.",
+      "Maquetes interativas de territórios, fábricas e logística.",
+      "Mecânicas de jogo — curtas, noventa segundos, com resultado claro e um motivo para começar a conversar."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Um produto complexo é vendido por quem deixa tocar nele"
+    },
+    {
+     "t": "p",
+     "text": "Isso vale para indústria, aviação, energia, material rodante — qualquer coisa cujo produto não cabe em uma mesa. Um exponente que deixa alguém olhar dentro de um motor ou montar um trem já faz metade da conversa de venda: o visitante faz sozinho a próxima pergunta, e essa é uma conversa diferente de “leve um folheto”."
+    },
+    {
+     "t": "h",
+     "text": "Prazo — o que decide tudo numa feira"
+    },
+    {
+     "t": "p",
+     "text": "Uma data de abertura não se mexe. Nosso estande interativo chave na mão mais rápido levou três semanas, e não foi caso isolado — três semanas do briefing a um exponente funcionando no pavilhão já aconteceu mais de uma vez. Mas esse prazo impõe limites duros de escopo: nem tudo que se imagina dá para construir em três semanas, e a gente diz isso antes de assinar, não depois."
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Semana um — roteiro, mecânica, especificação de equipamento e compra do que tem prazo longo de entrega.",
+      "Semana dois — fabricação, desenvolvimento, conteúdo. Em paralelo, não em sequência.",
+      "Semana três — montagem, ensaio completo, instalação no local, ajuste no lugar.",
+      "Dias de feira — estar presente no primeiro dia não é opcional: um pavilhão sempre se comporta diferente de uma oficina."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "O que acontece com o estande depois da feira"
+    },
+    {
+     "t": "p",
+     "text": "Normalmente nada, e isso é dinheiro jogado fora. Um exponente projetado para uma segunda vida vai para a próxima feira, muda para um escritório de vendas ou para um museu corporativo. Isso se decide na etapa de engenharia: desmontabilidade, caixas de transporte, independência de uma sala específica. Um pouco mais caro no começo e bem mais barato por exibição."
+    },
+    {
+     "t": "h",
+     "text": "Com quem já trabalhamos"
+    },
+    {
+     "t": "p",
+     "text": "Rostec, United Engine Corporation, RSK MiG, Sinara Transport Machines, PTK Group, Governo de Moscou, BMW. Feiras: Salão Internacional de Aviação e Espaço MAKS, Rostec Expo, Moscow Urban Forum, Expo Rússia."
+    },
+    {
+     "t": "link",
+     "href": "/library/output/",
+     "text": "Equipamentos de saída: 24 itens, de projetores a laser a shows de drones →"
+    }
+   ],
+   "faq": [
+    {
+     "q": "Qual o prazo mínimo para um estande interativo?",
+     "a": "Três semanas é o nosso mínimo real chave na mão, comprovado em vários projetos. É possível quando as decisões são tomadas rápido e o escopo fica enxuto: um exponente forte em vez de cinco medianos."
+    },
+    {
+     "q": "Vocês constroem o estande em si ou só a parte interativa?",
+     "a": "Dos dois jeitos. Muitas vezes a estrutura é feita por um montador de estandes enquanto nós fazemos os exponentes e o conteúdo — e aí importa combinar tudo ainda na etapa de layout, porque um objeto interativo precisa de espaço, luz, energia e distância de visão."
+    },
+    {
+     "q": "E se o equipamento não chegar a tempo?",
+     "a": "É justamente por isso que o equipamento é comprado na semana um e o roteiro é escrito em torno do que está de fato disponível. A gente não projeta uma mecânica em cima de um único aparelho com três meses de prazo — isso é experiência, não cautela."
+    },
+    {
+     "q": "Um exponente pode ser reaproveitado em outra feira?",
+     "a": "Pode, se a engenharia previu isso: desmontabilidade, caixas, independência de um layout específico. Diga desde o começo — converter um exponente pronto para viagem custa mais do que já construí-lo assim."
+    }
+   ]
+  },
+  {
+   "slug": "holographic-showcase",
+   "title": "Vitrines holográficas e displays volumétricos",
+   "nav": "Vitrines holográficas",
+   "subtitle": "Um objeto que parece impossível — e por isso para a multidão.",
+   "keywords": [
+    "vitrine holográfica",
+    "cubo holográfico",
+    "holocube",
+    "display volumétrico",
+    "holograma para exposição",
+    "display transparente",
+    "instalação holográfica",
+    "vitrine 3D"
+   ],
+   "cases": [
+    "rostec",
+    "sinara"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "Existe um recurso que funciona num pavilhão barulhento melhor que qualquer outro: um objeto que parece impossível. Uma imagem fica suspensa no ar, o salão continua visível atrás dela, dá para dar a volta — e a pessoa para antes de entender o que está vendo. Isso não é sobre tecnologia, é sobre a física da atenção: o olho se prende ao que a experiência comum não consegue explicar."
+    },
+    {
+     "t": "p",
+     "text": "Aí começa o trabalho. Fazer alguém parar é metade; a outra metade é que, nesses segundos, essa pessoa entenda o assunto e queira ficar."
+    },
+    {
+     "t": "h",
+     "text": "O que queremos dizer com isso"
+    },
+    {
+     "t": "p",
+     "text": "Na linguagem do dia a dia “holograma” significa quase qualquer coisa, então vamos ser precisos. Holografia de verdade é um registro de interferência, e em trabalho expositivo quase nunca é usada. Outras soluções dão conta, e cada uma produz um efeito diferente:"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Um display ou vitrine transparente: imagem sobre um objeto real ou sobre o espaço atrás do vidro. O objeto continua real enquanto dados, cortes e animação são sobrepostos a ele.",
+      "Um cubo volumétrico com a imagem em vários planos: o objeto é lido como tridimensional de qualquer lado, e um grupo se junta em volta dele.",
+      "Uma pirâmide pseudo-holográfica ou imagem “flutuante”: mais barata, mais compacta, marcante em objeto pequeno — e visivelmente mais fraca em objeto grande.",
+      "Displays volumétricos de ventilador e de LED: bem brilhantes, aguentam luz ambiente, e são limitados em resolução e em tipo de assunto.",
+      "Realidade aumentada sobre a vitrine: a imagem aparece na tela do próprio visitante e o objeto não é tocado — é o único caminho quando o exponente não pode ser manipulado."
+     ]
+    },
+    {
+     "t": "p",
+     "text": "A escolha não é decidida pelo quanto impressiona, e sim por três coisas: distância de visão, iluminação da sala e quantas pessoas precisam ver o objeto ao mesmo tempo."
+    },
+    {
+     "t": "h",
+     "text": "Um catálogo holográfico: um objeto no lugar de um estande"
+    },
+    {
+     "t": "p",
+     "text": "A tarefa mais prática desse gênero é mostrar o que fisicamente não está na sala. Uma corporação tem centenas de produtos em dezenas de fábricas; não dá para trazê-los, e um carrossel de slides não funciona. Uma vitrine volumétrica com console transforma isso em um catálogo que dá para folhear junto com o visitante: o produto gira, se abre, mostra o interior. Para a Rostec Expo construímos um objeto assim com a forma do logotipo do grupo — uma tela transparente mantinha a vista do salão enquanto o console abria o acesso aos produtos de todas as empresas."
+    },
+    {
+     "t": "p",
+     "text": "Essa solução tem uma propriedade que não é óbvia de início: ela sobrevive à exposição. O cubo holográfico da Rostec ainda funciona anos depois da inauguração — o conteúdo muda enquanto o sistema em si virou parte da infraestrutura do pavilhão. Um mesmo objeto segue funcionando para empresas, produtos e roteiros diferentes."
+    },
+    {
+     "t": "h",
+     "text": "Onde um holograma perde — e a gente diz isso antes do orçamento"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Sala clara. Quase todas as soluções volumétricas dependem de brilhar no escuro; sob luz solar direta não sobra nada do efeito. Luz controlada em volta do objeto é indispensável.",
+      "Grupo grande. Muitos esquemas têm um ângulo estreito dentro do qual a ilusão se sustenta. Se o objeto precisa funcionar para uma delegação de vinte, escolhe-se outro esquema — e ele custa mais.",
+      "Texto pequeno. Displays volumétricos resolvem menos que uma tela comum: números e legendas vão para uma tela de apoio, não para dentro do volume.",
+      "Um objeto autêntico ao lado. Se o coração da exposição é a própria peça, uma vitrine luminosa ao lado disputa a atenção e normalmente atrapalha."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Como o trabalho acontece"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Desmontamos a tarefa: o que é mostrado, para quem, de que distância e com que luz. O esquema se escolhe aqui, não a partir de imagens de referência.",
+      "Conceito e design do objeto: uma forma que pertença ao espaço. Para a Rostec foi o logotipo do grupo — o objeto é reconhecível antes de ser ligado.",
+      "Engenharia, especificação e compras. A etapa mais longa em prazo: alguns componentes levam meses, e o roteiro é escrito em torno do que está de fato disponível.",
+      "Estrutura e console de controle: quem conduz a apresentação precisa de um instrumento, não de um controle de TV.",
+      "Software, comissionamento, treinamento da equipe e uma rotina de manutenção."
+     ]
+    },
+    {
+     "t": "p",
+     "text": "Nosso projeto dessa classe levou seis meses do briefing ao lançamento. É uma referência honesta para um objeto construído uma vez e que funciona por anos."
+    },
+    {
+     "t": "link",
+     "href": "/library/output/",
+     "text": "Volume e ilusão: quatro jeitos de mostrar um objeto que não está ali →"
+    }
+   ],
+   "faq": [
+    {
+     "q": "É um holograma de verdade?",
+     "a": "Não, e quase nada em feiras é. Holografia de verdade é um registro de interferência e praticamente não se usa em trabalho expositivo. O que funciona são displays transparentes, cubos volumétricos, esquemas pseudo-holográficos e displays volumétricos. A gente chama as coisas pelo nome e escolhe o esquema pela sala, não pela palavra."
+    },
+    {
+     "q": "Precisa de escuridão?",
+     "a": "Precisa de luz controlada em volta do objeto e nenhum brilho direto. Um salão totalmente escurecido não é necessário, mas brilho nenhum salva um objeto colocado embaixo de uma vitrine de rua. A iluminação é calculada antes de comprar equipamento."
+    },
+    {
+     "q": "Quantas pessoas conseguem ver ao mesmo tempo?",
+     "a": "Depende do esquema: em alguns a ilusão só se sustenta dentro de um ângulo estreito, enquanto um cubo volumétrico é lido de qualquer lado. Diga desde o começo se o objeto atende um visitante no console ou uma delegação — a escolha e o preço mudam bastante."
+    },
+    {
+     "q": "Dá para mudar o conteúdo depois?",
+     "a": "Dá, e esse é o principal motivo para construir um objeto assim. O cubo holográfico da Rostec funciona há anos: o conteúdo muda, o sistema fica. Separar conteúdo de estrutura se decide na etapa de projeto."
+    }
+   ]
+  },
+  {
+   "slug": "projection-mapping",
+   "title": "Maquetes interativas e projeção mapeada",
+   "nav": "Maquetes e mapeamento",
+   "subtitle": "Forma física com informação sobreposta: um território, uma fábrica, um objeto.",
+   "keywords": [
+    "projeção mapeada",
+    "maquete interativa",
+    "maquete com projeção mapeada",
+    "videomapping",
+    "maquete de território",
+    "mapeamento 3D em maquete",
+    "maquete de plano diretor",
+    "projeção mapeada e maquetes interativas"
+   ],
+   "cases": [
+    "coalco",
+    "industry-rf",
+    "airports",
+    "urban-forum-2018"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "Logística que se vê, em vez de se ler num folheto. Existe uma classe de problemas em que explicar com palavras sempre perde: a escala de um território, como uma fábrica é organizada, a sequência de um programa de obras, os fluxos dentro de um hub. Um slide simplifica além do reconhecível, e um diagrama honesto fica ilegível. Uma maquete física com projeção resolve exatamente isso: a forma dá a escala, a projeção dá as camadas de sentido por cima."
+    },
+    {
+     "t": "h",
+     "text": "O que é uma maquete interativa"
+    },
+    {
+     "t": "p",
+     "text": "Um relevo ou um objeto construído em escala, com uma imagem projetada sobre ele registrada com precisão à geometria. A projeção não “mostra uma figura” — ela destaca zonas, traça percursos, troca camadas: fases de obra, transporte, redes, hora do dia, um cenário de desenvolvimento de dez anos. O visitante troca as camadas sozinho, e nesse momento o território fica legível."
+    },
+    {
+     "t": "h",
+     "text": "Onde funciona"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Territórios em desenvolvimento, sítios industriais, hubs logísticos, portos — onde quer que a decisão dependa da escala.",
+      "Cidades e planejamento urbano: o que muda, onde e em que ordem.",
+      "Fábricas e cadeias de processo: como um processo funciona quando não dá para ver tudo de uma vez.",
+      "Grandes equipamentos — aeroportos, estações, estádios: arquitetura e fluxo de pessoas por dentro.",
+      "Mapeamento de objeto: projeção sobre um produto, uma fachada ou uma forma arquitetônica, quando o objeto inteiro ganha vida."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "O que se decide na etapa de projeto"
+    },
+    {
+     "t": "p",
+     "text": "Mapeamento é uma disciplina em que quase tudo se resolve antes de o projetor ser ligado. A geometria da maquete e a óptica são calculadas juntas: distância e ângulo decidem se haverá sombras nas reentrâncias e se há brilho suficiente nas superfícies claras. A iluminação da sala é metade do resultado — uma maquete colocada embaixo de uma vitrine de rua não é salva por hardware nenhum. Por isso pedimos a planta e o corte da sala antes de discutir conteúdo."
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Geometria: o que é de fato modelado em três dimensões e o que continua plano. Nem tudo vale construir em relevo.",
+      "Cálculo de projeção: quantos projetores, posições de fixação, sobreposições, folga de brilho para a luz ambiente real.",
+      "Camadas de conteúdo: que histórias vivem na maquete e como se passa de uma para outra.",
+      "Controle: console de operador, botões na maquete, tablet, sensores de presença ou voz — escolhido para quem de fato vai usar.",
+      "Calibração no local. Registrar a projeção à forma só acontece no lugar, e é uma etapa própria, não a última meia hora da instalação."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Sobre confiabilidade"
+    },
+    {
+     "t": "p",
+     "text": "A projeção desalinha com vibração, com troca de lâmpada, com um esbarrão na maquete durante a limpeza. A gente fixa a geometria, guarda perfis de calibração e deixa uma instrução de recuperação no local — para que realinhar não exija trazer o desenvolvedor de avião."
+    },
+    {
+     "t": "link",
+     "href": "/library/output/",
+     "text": "Projetores e servidores de mídia: o que o mapeamento realmente precisa →"
+    }
+   ],
+   "faq": [
+    {
+     "q": "A sala precisa ficar totalmente escura?",
+     "a": "Não, mas a iluminação precisa ser planejada. Luz controlada na zona da maquete e nenhuma luz do dia direta sobre ela são indispensáveis; um salão totalmente escurecido não é. Se a sala for clara, resolve-se com brilho e material de superfície — mas tem que ser resolvido antes de comprar equipamento."
+    },
+    {
+     "q": "Por que uma maquete interativa é melhor que uma tela grande?",
+     "a": "Escala e fisicalidade. Uma tela mostra a imagem de um território; uma maquete entrega o território — dá para dar a volta, apontar, discutir de duas ou três pessoas. Para uma conversa em grupo, e decisões sobre territórios são tomadas em grupo, essa diferença é fundamental."
+    },
+    {
+     "q": "Dá para atualizar o conteúdo depois?",
+     "a": "Dá, se for projetado assim: camadas e dados são mantidos separados da geometria. Um programa de desenvolvimento muda, e o conteúdo da maquete tem que mudar junto sem refazer o relevo."
+    },
+    {
+     "q": "Quanto tempo leva?",
+     "a": "Nossos projetos dessa classe levaram de dois a três meses. O gargalo não é a projeção, e sim a fabricação da própria maquete, que dinheiro não comprime do jeito que comprime desenvolvimento."
+    }
+   ]
+  },
+  {
+   "slug": "showroom",
+   "title": "Espaço multimídia",
+   "nav": "Espaço multimídia",
+   "subtitle": "Um espaço onde o produto é mostrado pela ação, não por um folheto.",
+   "keywords": [
+    "showroom interativo",
+    "espaço de marca",
+    "showroom digital",
+    "configurador na loja",
+    "showroom chave na mão",
+    "museu corporativo",
+    "configurador na concessionária",
+    "showroom chave na mão",
+    "museu corporativo",
+    "showroom interativo e espaço de marca"
+   ],
+   "cases": [
+    "bmwx5",
+    "sinara",
+    "pano360",
+    "ptk-group"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "O carro que você mesmo montou é o que você quer comprar. Isso não é sobre tecnologia, é sobre posse: quem fez a escolha com as próprias mãos já trata o resultado como seu. Num showroom isso funciona de forma mais aguda que em qualquer outro lugar, porque a decisão é tomada aqui e agora, e não um mês depois."
+    },
+    {
+     "t": "h",
+     "text": "O que construímos em showrooms e espaços de marca"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Configuradores de produto: acabamento, materiais e cor, com um resultado que dá para ver em volume e em escala.",
+      "Mostrar o que não pode ser trazido: máquinas pesadas, equipamentos grandes, uma unidade inteira — em volume, como holograma ou em realidade aumentada.",
+      "Espaços de marca: história, valores e tecnologia da empresa como experiência, e não como uma parede de texto.",
+      "Museus corporativos e salas de reunião com conteúdo — onde o cliente é conduzido rumo a um negócio.",
+      "Realidade aumentada em mirantes e em espaços públicos.",
+      "Ferramentas para o time de vendas: não uma apresentação, e sim um roteiro de conversa."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "A diferença entre pendurar uma tela e fazer um showroom"
+    },
+    {
+     "t": "p",
+     "text": "Uma tela em sala de vendas quase sempre fica parada. Não por ser uma tela ruim, mas porque ninguém decidiu em que ponto da conversa ela entra e o que o vendedor faz enquanto o cliente está ocupado com ela. Projetamos uma cena, não um aparelho: onde a pessoa fica, o que vê primeiro, quem inicia a interação, como aquilo termina e o que acontece com o vendedor e o cliente depois. Sem essa cena, qualquer equipamento vira mobília."
+    },
+    {
+     "t": "h",
+     "text": "Como o trabalho acontece"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "Observação. A gente observa como as pessoas se movem e conversam na sala como ela é — antes de qualquer ideia. Quase ninguém faz isso, e é aqui que se encontram as coisas importantes.",
+      "Roteiro: em que momento o interativo entra, o que o cliente faz, o que o funcionário faz.",
+      "Protótipo com pessoas reais. Testado em visitantes, não na equipe do projeto — a equipe sabe como aquilo deveria funcionar e por isso não percebe nada.",
+      "Produção e instalação.",
+      "Treinamento da equipe. A etapa mais subestimada: uma ferramenta que o vendedor não sabe usar não é usada, por melhor que seja."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "O que define o custo"
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Uma sala ou uma rede: uma solução feita para ser replicada é projetada de outro jeito, e isso se resolve no começo.",
+      "Se ela precisa conversar com os seus dados — estoque, preços, configurações, CRM.",
+      "O volume de conteúdo 3D: os modelos de produto costumam ser a maior parte do trabalho, e depois são reaproveitados em publicidade e em feiras.",
+      "Quem faz a manutenção e a atualização: um fornecimento pontual ou um sistema em que você mesmo acrescenta novos produtos."
+     ]
+    },
+    {
+     "t": "p",
+     "text": "Esse último ponto muitas vezes decide todos os outros. Um showroom cujo conteúdo não pode ser atualizado sem o fornecedor fica desatualizado na primeira troca de linha de produtos."
+    },
+    {
+     "t": "link",
+     "href": "/library/",
+     "text": "Biblioteca de equipamentos: 65 tipos e o que cada um realmente faz →"
+    }
+   ],
+   "faq": [
+    {
+     "q": "Dá para instalar um configurador em um showroom que já existe?",
+     "a": "Dá, e normalmente é essa a tarefa. Começamos observando a sala: onde as pessoas ficam, por onde passam direto, em que momento um vendedor entra na conversa. O lugar decorre disso, e não de qual parede está livre."
+    },
+    {
+     "q": "Precisamos de integração com os nossos sistemas?",
+     "a": "Depende do que você mostra. Demonstração de produto funciona de forma autônoma; preços ao vivo, disponibilidade e prazos de entrega exigem conexão com os seus dados. Autônomo é mais barato e mais robusto, integrado é mais preciso. Escolha no começo: passar do primeiro para o segundo custa mais que já fazer o segundo."
+    },
+    {
+     "q": "E o conteúdo daqui a um ano?",
+     "a": "Se a linha de produtos muda, o sistema precisa permitir que vocês mesmos acrescentem itens novos. Isso é uma decisão de arquitetura, e tem que ser tomada no começo, não quando o modelo novo chega."
+    },
+    {
+     "q": "Isso funciona em B2B, onde não é uma pessoa só que decide?",
+     "a": "Funciona de outro jeito. Em B2B o interativo não está ali pela emoção, e sim como um objeto comum em volta do qual se conversa: um grupo se junta diante de uma maquete ou de um configurador e a discussão segue o objeto, não os slides. Nossos projetos para indústria e material rodante são construídos exatamente assim."
+    }
+   ]
+  },
+  {
+   "slug": "interactive-website",
+   "title": "Site interativo",
+   "nav": "Site interativo",
+   "subtitle": "Um site que se comporta como uma exposição: cena em tempo real, movimento, som e uma história no lugar de uma página de blocos. O nosso próprio site é o exemplo.",
+   "keywords": [
+    "site interativo",
+    "site 3d",
+    "site webgl",
+    "jogo de marca",
+    "jogo promocional",
+    "site 3d",
+    "site com gráficos 3d",
+    "site interativo de empresa",
+    "jogo de marca",
+    "jogo para marca",
+    "jogo promocional"
+   ],
+   "cases": [
+    "pano360",
+    "bmwx5",
+    "coalco"
+   ],
+   "flow": [
+    {
+     "t": "p",
+     "text": "Você já está vendo o exemplo. Tudo neste site — a nuvem de pontos que se monta em objetos, o som reagindo à rolagem, o voo que dá para jogar desde a primeira tela — foi feito pelas mesmas pessoas e com o mesmo motor dos nossos salões de museu. Só se troca o projetor por um navegador."
+    },
+    {
+     "t": "p",
+     "text": "Esse é o argumento. Um estúdio que promete interatividade é fácil de conferir: olhe o site dele. Se estiver montado com blocos de template, a promessa é vazia."
+    },
+    {
+     "t": "h",
+     "text": "Quando um site precisa de cena, e não de página"
+    },
+    {
+     "t": "steps",
+     "items": [
+      "O produto é complexo e precisa de volume. Um objeto que dá para girar, desmontar e remontar no navegador se explica em um minuto, onde texto e fotos não conseguem.",
+      "Um território, um terreno, uma maquete. Um empreendimento, uma fábrica, um resort: as pessoas precisam entender onde as coisas estão, não ler uma descrição.",
+      "A marca precisa que as pessoas fiquem. Um site comum ganha oito segundos. Uma cena que dá para girar, iniciar e jogar segura minutos."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Jogos de marca"
+    },
+    {
+     "t": "p",
+     "text": "Um gênero à parte que nasceu deste site. O motor de voo da primeira tela virou um jogo completo, com fases, combustível e melhorias — ele vive em play.playdisplay.com e foi feito inteiramente em casa."
+    },
+    {
+     "t": "p",
+     "text": "Um jogo assim resolve tarefas que um banner não alcança: segurar uma fila no estande, dar um motivo para voltar ao site, explicar o produto pela ação, coletar contatos em troca de um resultado no ranking. Funciona no navegador e na tela do salão — o motor é o mesmo."
+    },
+    {
+     "t": "notes",
+     "items": [
+      "Não é “gamificação” com pontos e medalhas. É um jogo de verdade, jogado por vontade própria e não em troca de desconto.",
+      "Os prazos são diferentes dos de um site: mecânica simples — semanas, história com fases — meses. A gente diz isso antes do orçamento, não depois.",
+      "Um jogo vive mais que a campanha se tiver ranking e um motivo para voltar. Dá para fazer descartável, mas aí sai mais caro que um banner com o mesmo efeito."
+     ]
+    },
+    {
+     "t": "h",
+     "text": "Do mesmo jeito que um salão: primeiro se decide o que a pessoa deve fazer e sentir, depois se escolhe a tecnologia. Uma cena pode ser WebGL, vídeo com pontos interativos ou 3D honesto em tempo real — os orçamentos diferem em múltiplos, e essa escolha deve ser deliberada, e não movida pela palavra “3D” no briefing."
+    },
+    {
+     "t": "p",
+     "text": "Atlas: os princípios pelos quais projetamos →"
+    },
+    {
+     "t": "p",
+     "text": "Contamos à parte o que normalmente se esquece: como o site vai se comportar em um celular de cinco anos atrás e o que vai ver a pessoa em quem o WebGL não abriu. Uma cena bonita que mostra tela preta para metade do público não é um site interativo, é um erro caro."
+    },
+    {
+     "t": "link",
+     "href": "/atlas/",
+     "text": "Atlas: os princípios pelos quais projetamos isso →"
+    }
+   ],
+   "faq": [
+    {
+     "q": "Vai funcionar no celular?",
+     "a": "Vai, e isso é projetado desde o começo, não conferido no fim. A cena é construída em vários pesos: um celular forte recebe a versão completa, um fraco recebe uma versão reduzida, e um aparelho sem WebGL vê uma versão estática com a mesma estrutura. Testamos em aparelhos reais."
+    },
+    {
+     "q": "Vocês fazem o site inteiro ou só a parte interativa?",
+     "a": "Normalmente o site inteiro — mais barato e mais rápido, porque a cena e a marcação não brigam entre si. Mas se vocês já têm um fornecedor de web, dá para entregar só a cena como um módulo documentado. Já trabalhamos assim também."
+    },
+    {
+     "q": "A equipe do site é a mesma da exposição?",
+     "a": "É a mesma, e essa é a principal vantagem. O motor que roda uma cena no navegador roda ela também em uma tela no salão. Um projeto na web e um projeto no espaço podem compartilhar um roteiro e um fluxo de conteúdo em vez de serem encomendados em dois lugares e costurados depois."
+    },
+    {
+     "q": "Qual a diferença do seu jogo para gamificação?",
+     "a": "Gamificação são pontos e medalhas por cima de uma interface comum; ninguém joga isso, as pessoas toleram. A gente faz um jogo que se joga por vontade própria: com mecânica, dificuldade e vontade de jogar de novo. Conferir é simples — jogue o nosso, ele está aberto e não pede nada em troca."
+    },
+    {
+     "q": "Site e exposição são a mesma equipe?",
+     "a": "É uma só, e essa é a principal vantagem. O motor que roda a cena no navegador roda ela também na tela do salão. Por isso um projeto na web e um projeto no espaço podem ser feitos com um roteiro comum e um conteúdo comum, em vez de encomendados em dois lugares e depois costurados."
+    }
+   ]
+  }
+ ]
+}

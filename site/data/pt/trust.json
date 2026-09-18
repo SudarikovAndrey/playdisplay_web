@@ -1,0 +1,81 @@
+{
+ "note": "Отзывы, благодарности и награды. Сканы НЕ публикуем: в письмах есть подписи, печати и внутренние телефоны исполнителей. Здесь только суть — кто, за что и кем подписано. kind задаёт подпись-бейдж, quote необязателен (у дипломов его нет).",
+ "items": [
+  {
+   "org": "Roscosmos",
+   "full": "Corporação Estatal Roscosmos",
+   "kind": "Certificado de Honra",
+   "for": "pela contribuição ativa à divulgação do legado histórico da cosmonáutica russa",
+   "who": "Diretor-Geral da Corporação Estatal",
+   "year": ""
+  },
+  {
+   "org": "URSC",
+   "full": "Corporação Unida de Foguetes e Espaço",
+   "kind": "Carta de reconhecimento",
+   "for": "pela instalação interativa da espaçonave Express AM5 com realidade aumentada",
+   "quote": "pelo profissionalismo e pela agilidade",
+   "who": "Diretor-Geral Adjunto",
+   "year": ""
+  },
+  {
+   "org": "Gazprom",
+   "full": "Gazprom Dobycha Astrakhan LLC",
+   "kind": "Carta de agradecimento",
+   "for": "pelo apoio na modernização da infraestrutura de TI",
+   "quote": "profissionalismo e agilidade",
+   "who": "Diretor-Geral Adjunto",
+   "year": "2015"
+  },
+  {
+   "org": "Spetstyazhmash",
+   "full": "Fábrica de Máquinas Pesadas de Sukhodolsk",
+   "kind": "Carta de agradecimento",
+   "for": "pela cooperação frutífera na organização da inauguração da fábrica",
+   "quote": "nosso sincero agradecimento e profundo reconhecimento",
+   "who": "Diretor de Comunicação Corporativa",
+   "year": "2014"
+  },
+  {
+   "org": "BereZka",
+   "full": "O primeiro fórum de negócios para adolescentes da Rússia",
+   "kind": "Carta de reconhecimento",
+   "for": "pela contribuição na preparação e realização do fórum",
+   "quote": "o interesse demonstrado, o alto profissionalismo e a contribuição significativa",
+   "who": "Produtores executivos",
+   "year": "2019"
+  },
+  {
+   "org": "Samsung",
+   "full": "Samsung Electronics Rus",
+   "kind": "Carta oficial",
+   "for": "confirmação do status de parceiro autorizado",
+   "who": "Diretor de Vendas Corporativas",
+   "year": "2013"
+  },
+  {
+   "org": "Salão aeroespacial MAKS",
+   "full": "Departamento de Ciência, Política Industrial e Empreendedorismo de Moscou",
+   "kind": "Diploma",
+   "for": "pela participação na exposição coletiva do Governo de Moscou no 11º Salão Internacional de Aviação e Espaço",
+   "who": "Chefe do Departamento",
+   "year": "2013"
+  },
+  {
+   "org": "Open Innovations",
+   "full": "Fórum Internacional de Desenvolvimento Inovador de Moscou",
+   "kind": "Diploma",
+   "for": "pela participação na Open Innovations Expo, Crocus Expo",
+   "who": "Comitê Organizador",
+   "year": "2013"
+  },
+  {
+   "org": "Líder em alta tecnologia",
+   "full": "Associação de Empreendedores de Moscou",
+   "kind": "Diploma",
+   "for": "laureado dos programas de competição no 2º Fórum Internacional “Tecnologias na Indústria de Máquinas”",
+   "who": "Chefe do Departamento de Ciência de Moscou",
+   "year": "2012"
+  }
+ ]
+}

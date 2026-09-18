@@ -1,0 +1,623 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "services-06 (6 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "services-06#001",
+   "path": "services/8/faq/3/a",
+   "ru": "Наши проекты такого класса занимали от двух до трёх месяцев. Дольше всего идёт не проекция, а само изготовление макета — его нельзя ускорить деньгами так же, как разработку.",
+   "en": "Our projects of this class have taken two to three months. The long pole is not the projection but the fabrication of the model itself, which money cannot compress the way it can compress development.",
+   "pt": "Nossos projetos dessa classe levaram de dois a três meses. O gargalo não é a projeção, e sim a fabricação da própria maquete, que dinheiro não comprime do jeito que comprime desenvolvimento."
+  },
+  {
+   "id": "services-06#002",
+   "path": "services/9/title",
+   "ru": "Мультимедийное пространство",
+   "en": "Multimedia space",
+   "pt": "Espaço multimídia"
+  },
+  {
+   "id": "services-06#003",
+   "path": "services/9/nav",
+   "ru": "Мультимедийное пространство",
+   "en": "Multimedia space",
+   "pt": "Espaço multimídia"
+  },
+  {
+   "id": "services-06#004",
+   "path": "services/9/subtitle",
+   "ru": "Пространство, где продукт показывают действием, а не буклетом.",
+   "en": "A space where the product is shown through action, not through a brochure.",
+   "pt": "Um espaço onde o produto é mostrado pela ação, não por um folheto."
+  },
+  {
+   "id": "services-06#005",
+   "path": "services/9/keywords/0",
+   "ru": "мультимедийный зал",
+   "en": "interactive showroom",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "showroom interativo"
+  },
+  {
+   "id": "services-06#006",
+   "path": "services/9/keywords/1",
+   "ru": "бренд пространство",
+   "en": "brand space",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "espaço de marca"
+  },
+  {
+   "id": "services-06#007",
+   "path": "services/9/keywords/2",
+   "ru": "мультимедийное пространство",
+   "en": "digital showroom",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "showroom digital"
+  },
+  {
+   "id": "services-06#008",
+   "path": "services/9/keywords/3",
+   "ru": "интерактивный шоурум",
+   "en": "in-store configurator",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "configurador na loja"
+  },
+  {
+   "id": "services-06#009",
+   "path": "services/9/keywords/4",
+   "ru": "бренд-пространство",
+   "en": "turnkey showroom",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "showroom chave na mão"
+  },
+  {
+   "id": "services-06#010",
+   "path": "services/9/keywords/5",
+   "ru": "digital-шоурум",
+   "en": "corporate museum",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "museu corporativo"
+  },
+  {
+   "id": "services-06#011",
+   "path": "services/9/keywords/6",
+   "ru": "конфигуратор в салоне",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "configurador na concessionária"
+  },
+  {
+   "id": "services-06#012",
+   "path": "services/9/keywords/7",
+   "ru": "шоурум под ключ",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "showroom chave na mão"
+  },
+  {
+   "id": "services-06#013",
+   "path": "services/9/keywords/8",
+   "ru": "корпоративный музей",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "museu corporativo"
+  },
+  {
+   "id": "services-06#014",
+   "path": "services/9/keywords/9",
+   "ru": "интерактивный шоурум и бренд-пространство",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "showroom interativo e espaço de marca"
+  },
+  {
+   "id": "services-06#015",
+   "path": "services/9/flow/0/text",
+   "ru": "Машину, которую собрал сам, хочется купить. Это не про технологию — это про присвоение: человек, который сделал выбор руками, уже считает результат своим. В шоуруме это работает точнее, чем где-либо ещё, потому что решение о покупке принимается здесь и сейчас, а не через месяц.",
+   "en": "The car you built yourself is the one you want to buy. This is not about technology, it is about ownership: a person who made the choice with their hands already treats the result as theirs. In a showroom it works more sharply than anywhere else, because the decision is made here and now rather than a month later.",
+   "pt": "O carro que você mesmo montou é o que você quer comprar. Isso não é sobre tecnologia, é sobre posse: quem fez a escolha com as próprias mãos já trata o resultado como seu. Num showroom isso funciona de forma mais aguda que em qualquer outro lugar, porque a decisão é tomada aqui e agora, e não um mês depois."
+  },
+  {
+   "id": "services-06#016",
+   "path": "services/9/flow/1/text",
+   "ru": "Что мы делаем в шоурумах и бренд-пространствах",
+   "en": "What we build in showrooms and brand spaces",
+   "pt": "O que construímos em showrooms e espaços de marca"
+  },
+  {
+   "id": "services-06#017",
+   "path": "services/9/flow/2/items/0",
+   "ru": "Конфигураторы продукта: выбор комплектации, материалов, цвета — с результатом, который видно в объёме и в масштабе.",
+   "en": "Product configurators: trim, materials and colour, with a result you can see in volume and at scale.",
+   "pt": "Configuradores de produto: acabamento, materiais e cor, com um resultado que dá para ver em volume e em escala."
+  },
+  {
+   "id": "services-06#018",
+   "path": "services/9/flow/2/items/1",
+   "ru": "Демонстрация того, что не привезти: тяжёлая техника, крупное оборудование, объект целиком — в объёме, голограммой или в дополненной реальности.",
+   "en": "Showing what cannot be brought in: heavy machinery, large equipment, a whole facility — in volume, as a hologram or in augmented reality.",
+   "pt": "Mostrar o que não pode ser trazido: máquinas pesadas, equipamentos grandes, uma unidade inteira — em volume, como holograma ou em realidade aumentada."
+  },
+  {
+   "id": "services-06#019",
+   "path": "services/9/flow/2/items/2",
+   "ru": "Бренд-пространства: история компании, ценности и технология как опыт, а не как стена с текстом.",
+   "en": "Brand spaces: company history, values and technology as an experience rather than a wall of text.",
+   "pt": "Espaços de marca: história, valores e tecnologia da empresa como experiência, e não como uma parede de texto."
+  },
+  {
+   "id": "services-06#020",
+   "path": "services/9/flow/2/items/3",
+   "ru": "Корпоративные музеи и переговорные с содержанием — там, где клиента ведут до сделки.",
+   "en": "Corporate museums and meeting rooms with content — where a client is walked towards a deal.",
+   "pt": "Museus corporativos e salas de reunião com conteúdo — onde o cliente é conduzido rumo a um negócio."
+  },
+  {
+   "id": "services-06#021",
+   "path": "services/9/flow/2/items/4",
+   "ru": "Дополненная реальность на смотровых площадках и в общественных пространствах.",
+   "en": "Augmented reality on observation decks and in public spaces.",
+   "pt": "Realidade aumentada em mirantes e em espaços públicos."
+  },
+  {
+   "id": "services-06#022",
+   "path": "services/9/flow/2/items/5",
+   "ru": "Инструменты для менеджера зала: не презентация, а сценарий разговора.",
+   "en": "Tools for the floor team: not a presentation, but a script for a conversation.",
+   "pt": "Ferramentas para o time de vendas: não uma apresentação, e sim um roteiro de conversa."
+  },
+  {
+   "id": "services-06#023",
+   "path": "services/9/flow/3/text",
+   "ru": "Разница между «поставить экран» и «сделать шоурум»",
+   "en": "The difference between putting up a screen and making a showroom",
+   "pt": "A diferença entre pendurar uma tela e fazer um showroom"
+  },
+  {
+   "id": "services-06#024",
+   "path": "services/9/flow/4/text",
+   "ru": "Экран в салоне почти всегда простаивает. Не потому, что плохой, а потому что никто не решил, в какой момент разговора он включается и что делает менеджер, пока клиент им занят. Мы проектируем не устройство, а сцену: где стоит человек, что он видит первым, кто начинает взаимодействие, чем оно заканчивается и что после этого происходит с менеджером и с клиентом. Без этой сцены любое оборудование становится мебелью.",
+   "en": "A screen in a salesroom almost always sits idle. Not because it is a bad screen, but because nobody decided at which point in the conversation it comes on and what the salesperson does while the client is busy with it. We design a scene, not a device: where the person stands, what they see first, who starts the interaction, how it ends, and what happens to the salesperson and the client afterwards. Without that scene any equipment becomes furniture.",
+   "pt": "Uma tela em sala de vendas quase sempre fica parada. Não por ser uma tela ruim, mas porque ninguém decidiu em que ponto da conversa ela entra e o que o vendedor faz enquanto o cliente está ocupado com ela. Projetamos uma cena, não um aparelho: onde a pessoa fica, o que vê primeiro, quem inicia a interação, como aquilo termina e o que acontece com o vendedor e o cliente depois. Sem essa cena, qualquer equipamento vira mobília."
+  },
+  {
+   "id": "services-06#025",
+   "path": "services/9/flow/5/text",
+   "ru": "Как идёт работа",
+   "en": "How the work goes",
+   "pt": "Como o trabalho acontece"
+  },
+  {
+   "id": "services-06#026",
+   "path": "services/9/flow/6/items/0",
+   "ru": "Наблюдение. Смотрим, как в зале ходят и разговаривают сейчас — до всяких идей. Обычно этого не делает никто, и именно здесь находится главное.",
+   "en": "Observation. We watch how people move and talk in the room as it is — before any ideas. Almost nobody does this, and this is where the important things are found.",
+   "pt": "Observação. A gente observa como as pessoas se movem e conversam na sala como ela é — antes de qualquer ideia. Quase ninguém faz isso, e é aqui que se encontram as coisas importantes."
+  },
+  {
+   "id": "services-06#027",
+   "path": "services/9/flow/6/items/1",
+   "ru": "Сценарий: в какой момент включается интерактив, что делает клиент, что делает сотрудник.",
+   "en": "Scenario: at what moment the interactive comes on, what the client does, what the staff member does.",
+   "pt": "Roteiro: em que momento o interativo entra, o que o cliente faz, o que o funcionário faz."
+  },
+  {
+   "id": "services-06#028",
+   "path": "services/9/flow/6/items/2",
+   "ru": "Прототип на живых людях. Проверяем на посетителях зала, а не на команде проекта — команда знает, как надо, и поэтому ничего не замечает.",
+   "en": "Prototype with real people. Tested on visitors, not on the project team — the team knows how it is supposed to work and therefore notices nothing.",
+   "pt": "Protótipo com pessoas reais. Testado em visitantes, não na equipe do projeto — a equipe sabe como aquilo deveria funcionar e por isso não percebe nada."
+  },
+  {
+   "id": "services-06#029",
+   "path": "services/9/flow/6/items/3",
+   "ru": "Продакшн и монтаж.",
+   "en": "Production and installation.",
+   "pt": "Produção e instalação."
+  },
+  {
+   "id": "services-06#030",
+   "path": "services/9/flow/6/items/4",
+   "ru": "Обучение сотрудников. Самый недооценённый этап: инструмент, которым менеджер не умеет пользоваться, не используется вовсе, каким бы хорошим он ни был.",
+   "en": "Staff training. The most underrated stage: a tool the salesperson cannot use goes unused, however good it is.",
+   "pt": "Treinamento da equipe. A etapa mais subestimada: uma ferramenta que o vendedor não sabe usar não é usada, por melhor que seja."
+  },
+  {
+   "id": "services-06#031",
+   "path": "services/9/flow/7/text",
+   "ru": "Что определяет стоимость",
+   "en": "What drives cost",
+   "pt": "O que define o custo"
+  },
+  {
+   "id": "services-06#032",
+   "path": "services/9/flow/8/items/0",
+   "ru": "Один сценарий или сеть залов: тиражируемое решение проектируется иначе, и это решается в начале.",
+   "en": "One room or a network: a solution meant to be replicated is designed differently, and that is settled at the start.",
+   "pt": "Uma sala ou uma rede: uma solução feita para ser replicada é projetada de outro jeito, e isso se resolve no começo."
+  },
+  {
+   "id": "services-06#033",
+   "path": "services/9/flow/8/items/1",
+   "ru": "Нужна ли связь с вашими данными — складом, ценами, конфигурациями, CRM.",
+   "en": "Whether it needs to talk to your data — stock, prices, configurations, CRM.",
+   "pt": "Se ela precisa conversar com os seus dados — estoque, preços, configurações, CRM."
+  },
+  {
+   "id": "services-06#034",
+   "path": "services/9/flow/8/items/2",
+   "ru": "Объём 3D-содержания: модели изделий — обычно самая большая часть работы, и они переиспользуются потом в рекламе и на выставках.",
+   "en": "The volume of 3D content: product models are usually the largest part of the work, and they get reused afterwards in advertising and at trade fairs.",
+   "pt": "O volume de conteúdo 3D: os modelos de produto costumam ser a maior parte do trabalho, e depois são reaproveitados em publicidade e em feiras."
+  },
+  {
+   "id": "services-06#035",
+   "path": "services/9/flow/8/items/3",
+   "ru": "Кто обслуживает и обновляет: разовая поставка или система, в которую вы сами добавляете новые продукты.",
+   "en": "Who maintains and updates it: a one-off delivery, or a system you add new products to yourself.",
+   "pt": "Quem faz a manutenção e a atualização: um fornecimento pontual ou um sistema em que você mesmo acrescenta novos produtos."
+  },
+  {
+   "id": "services-06#036",
+   "path": "services/9/flow/9/text",
+   "ru": "Последнее часто определяет всё остальное. Шоурум, содержание которого нельзя обновить без подрядчика, устаревает вместе с первой сменой модельного ряда.",
+   "en": "That last point often decides all the others. A showroom whose content cannot be updated without the contractor goes out of date with the first change of model range.",
+   "pt": "Esse último ponto muitas vezes decide todos os outros. Um showroom cujo conteúdo não pode ser atualizado sem o fornecedor fica desatualizado na primeira troca de linha de produtos."
+  },
+  {
+   "id": "services-06#037",
+   "path": "services/9/flow/10/text",
+   "ru": "Библиотека оборудования: 65 типов, что каждый реально умеет →",
+   "en": "Equipment library: 65 types and what each one really does →",
+   "pt": "Biblioteca de equipamentos: 65 tipos e o que cada um realmente faz →"
+  },
+  {
+   "id": "services-06#038",
+   "path": "services/9/faq/0/q",
+   "ru": "Можно ли встроить конфигуратор в существующий салон?",
+   "en": "Can a configurator be fitted into an existing showroom?",
+   "pt": "Dá para instalar um configurador em um showroom que já existe?"
+  },
+  {
+   "id": "services-06#039",
+   "path": "services/9/faq/0/a",
+   "ru": "Да, и обычно это и есть задача. Начинаем с наблюдения за залом: где люди задерживаются, где проходят мимо, в какой момент менеджер вступает в разговор. Место определяется этим, а не свободной стеной.",
+   "en": "Yes, and usually that is the task. We start by watching the room: where people linger, where they walk past, at what moment a salesperson joins the conversation. The location follows from that, not from which wall happens to be free.",
+   "pt": "Dá, e normalmente é essa a tarefa. Começamos observando a sala: onde as pessoas ficam, por onde passam direto, em que momento um vendedor entra na conversa. O lugar decorre disso, e não de qual parede está livre."
+  },
+  {
+   "id": "services-06#040",
+   "path": "services/9/faq/1/q",
+   "ru": "Нужна ли интеграция с нашими системами?",
+   "en": "Do we need integration with our systems?",
+   "pt": "Precisamos de integração com os nossos sistemas?"
+  },
+  {
+   "id": "services-06#041",
+   "path": "services/9/faq/1/a",
+   "ru": "Зависит от того, что показываете. Демонстрация продукта работает автономно; актуальные цены, наличие и сроки поставки требуют связи с вашими данными. Автономный вариант дешевле и надёжнее, интегрированный — точнее. Выбор лучше сделать сразу: переход от первого ко второму дороже, чем сделать сразу второй.",
+   "en": "It depends on what you are showing. Product demonstration works standalone; live prices, availability and delivery dates need a connection to your data. Standalone is cheaper and more robust, integrated is more accurate. Choose at the start: moving from the first to the second costs more than building the second outright.",
+   "pt": "Depende do que você mostra. Demonstração de produto funciona de forma autônoma; preços ao vivo, disponibilidade e prazos de entrega exigem conexão com os seus dados. Autônomo é mais barato e mais robusto, integrado é mais preciso. Escolha no começo: passar do primeiro para o segundo custa mais que já fazer o segundo."
+  },
+  {
+   "id": "services-06#042",
+   "path": "services/9/faq/2/q",
+   "ru": "Что делать с содержанием через год?",
+   "en": "What about the content a year from now?",
+   "pt": "E o conteúdo daqui a um ano?"
+  },
+  {
+   "id": "services-06#043",
+   "path": "services/9/faq/2/a",
+   "ru": "Если модельный ряд меняется, система должна позволять добавлять новое своими силами. Это архитектурное решение, и принимать его надо в начале, а не когда вышла новая модель.",
+   "en": "If the model range changes, the system has to let you add new items yourselves. That is an architectural decision, and it has to be taken at the beginning rather than when the new model ships.",
+   "pt": "Se a linha de produtos muda, o sistema precisa permitir que vocês mesmos acrescentem itens novos. Isso é uma decisão de arquitetura, e tem que ser tomada no começo, não quando o modelo novo chega."
+  },
+  {
+   "id": "services-06#044",
+   "path": "services/9/faq/3/q",
+   "ru": "Работает ли это в B2B, где решение принимает не один человек?",
+   "en": "Does this work in B2B, where no single person decides?",
+   "pt": "Isso funciona em B2B, onde não é uma pessoa só que decide?"
+  },
+  {
+   "id": "services-06#045",
+   "path": "services/9/faq/3/a",
+   "ru": "Работает иначе. В B2B интерактив нужен не для эмоции, а как общий предмет разговора: вокруг макета или конфигуратора собирается группа, и обсуждение идёт по объекту, а не по слайдам. Наши проекты для промышленности и транспортного машиностроения сделаны именно так.",
+   "en": "It works differently. In B2B the interactive is not there for emotion but as a shared object to talk around: a group gathers at a model or a configurator and the discussion follows the object rather than the slides. Our projects for industry and rolling stock are built exactly that way.",
+   "pt": "Funciona de outro jeito. Em B2B o interativo não está ali pela emoção, e sim como um objeto comum em volta do qual se conversa: um grupo se junta diante de uma maquete ou de um configurador e a discussão segue o objeto, não os slides. Nossos projetos para indústria e material rodante são construídos exatamente assim."
+  },
+  {
+   "id": "services-06#046",
+   "path": "services/10/title",
+   "ru": "Интерактивный сайт",
+   "en": "Interactive website",
+   "pt": "Site interativo"
+  },
+  {
+   "id": "services-06#047",
+   "path": "services/10/nav",
+   "ru": "Интерактивный сайт",
+   "en": "Interactive website",
+   "pt": "Site interativo"
+  },
+  {
+   "id": "services-06#048",
+   "path": "services/10/subtitle",
+   "ru": "Сайт, который работает как экспозиция: сцена в реальном времени, движение, звук и сюжет вместо страницы с блоками. Наш собственный сайт — и есть пример.",
+   "en": "A site that behaves like an exhibition: a real-time scene, motion, sound and a story instead of a page of blocks. Our own site is the example.",
+   "pt": "Um site que se comporta como uma exposição: cena em tempo real, movimento, som e uma história no lugar de uma página de blocos. O nosso próprio site é o exemplo."
+  },
+  {
+   "id": "services-06#049",
+   "path": "services/10/keywords/0",
+   "ru": "интерактивный сайт",
+   "en": "interactive website",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "site interativo"
+  },
+  {
+   "id": "services-06#050",
+   "path": "services/10/keywords/1",
+   "ru": "создание интерактивного сайта",
+   "en": "3d website",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "site 3d"
+  },
+  {
+   "id": "services-06#051",
+   "path": "services/10/keywords/2",
+   "ru": "создать интерактивный сайт",
+   "en": "webgl website",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "site webgl"
+  },
+  {
+   "id": "services-06#052",
+   "path": "services/10/keywords/3",
+   "ru": "сделать интерактивный сайт",
+   "en": "branded game",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "jogo de marca"
+  },
+  {
+   "id": "services-06#053",
+   "path": "services/10/keywords/4",
+   "ru": "разработка интерактивного сайта",
+   "en": "promo game",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "jogo promocional"
+  },
+  {
+   "id": "services-06#054",
+   "path": "services/10/keywords/5",
+   "ru": "3d сайт",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "site 3d"
+  },
+  {
+   "id": "services-06#055",
+   "path": "services/10/keywords/6",
+   "ru": "сайт с 3d графикой",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "site com gráficos 3d"
+  },
+  {
+   "id": "services-06#056",
+   "path": "services/10/keywords/7",
+   "ru": "интерактивный сайт компании",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "site interativo de empresa"
+  },
+  {
+   "id": "services-06#057",
+   "path": "services/10/keywords/8",
+   "ru": "брендированная игра",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "jogo de marca"
+  },
+  {
+   "id": "services-06#058",
+   "path": "services/10/keywords/9",
+   "ru": "игра для бренда",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "jogo para marca"
+  },
+  {
+   "id": "services-06#059",
+   "path": "services/10/keywords/10",
+   "ru": "промо игра",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "jogo promocional"
+  },
+  {
+   "id": "services-06#060",
+   "path": "services/10/flow/0/text",
+   "ru": "Вы уже на примере. Всё, что происходит на этом сайте, — облако точек, которое собирается в объекты, звук, реагирующий на прокрутку, полёт, в который можно сыграть прямо из первого экрана, — сделано теми же руками и тем же движком, что и залы наших музеев. Просто вместо проектора здесь браузер.",
+   "en": "You are already looking at the example. Everything on this site — the point cloud assembling into objects, the sound reacting to scroll, the flight you can play from the first screen — was built by the same people and the same engine as our museum halls. The projector is simply replaced by a browser.",
+   "pt": "Você já está vendo o exemplo. Tudo neste site — a nuvem de pontos que se monta em objetos, o som reagindo à rolagem, o voo que dá para jogar desde a primeira tela — foi feito pelas mesmas pessoas e com o mesmo motor dos nossos salões de museu. Só se troca o projetor por um navegador."
+  },
+  {
+   "id": "services-06#061",
+   "path": "services/10/flow/1/text",
+   "ru": "Это и есть аргумент. Студию, которая обещает интерактив, легко проверить: посмотрите на её собственный сайт. Если он свёрстан блоками из конструктора, обещание пустое.",
+   "en": "That is the argument. A studio promising interactivity is easy to check: look at its own site. If it is assembled from template blocks, the promise is empty.",
+   "pt": "Esse é o argumento. Um estúdio que promete interatividade é fácil de conferir: olhe o site dele. Se estiver montado com blocos de template, a promessa é vazia."
+  },
+  {
+   "id": "services-06#062",
+   "path": "services/10/flow/2/text",
+   "ru": "Когда сайту нужна сцена, а не страница",
+   "en": "When a site needs a scene rather than a page",
+   "pt": "Quando um site precisa de cena, e não de página"
+  },
+  {
+   "id": "services-06#063",
+   "path": "services/10/flow/3/items/0",
+   "ru": "Продукт сложный, и его надо показать в объёме. Изделие, которое крутят, разбирают и собирают в браузере, объясняет себя за минуту — там, где текст и фотографии не справляются.",
+   "en": "The product is complex and needs volume. An object you can turn, take apart and reassemble in the browser explains itself in a minute, where text and photographs cannot.",
+   "pt": "O produto é complexo e precisa de volume. Um objeto que dá para girar, desmontar e remontar no navegador se explica em um minuto, onde texto e fotos não conseguem."
+  },
+  {
+   "id": "services-06#064",
+   "path": "services/10/flow/3/items/1",
+   "ru": "Территория, объект, макет. Жилой комплекс, завод, курорт: человеку нужно понять, где что находится, а не читать описание. Работает тот же принцип, что и в зале с интерактивным макетом.",
+   "en": "A territory, a site, a scale model. A development, a plant, a resort: people need to grasp where things are, not read a description.",
+   "pt": "Um território, um terreno, uma maquete. Um empreendimento, uma fábrica, um resort: as pessoas precisam entender onde as coisas estão, não ler uma descrição."
+  },
+  {
+   "id": "services-06#065",
+   "path": "services/10/flow/3/items/2",
+   "ru": "Бренду нужно, чтобы задержались. Обычный сайт читают восемь секунд. Сцена, в которой можно повертеть, запустить и поиграть, держит минуты — и это единственный честный способ поднять глубину визита.",
+   "en": "The brand needs people to stay. An ordinary site gets eight seconds. A scene you can turn, launch and play holds minutes.",
+   "pt": "A marca precisa que as pessoas fiquem. Um site comum ganha oito segundos. Uma cena que dá para girar, iniciar e jogar segura minutos."
+  },
+  {
+   "id": "services-06#066",
+   "path": "services/10/flow/4/text",
+   "ru": "Брендированные игры",
+   "en": "Branded games",
+   "pt": "Jogos de marca"
+  },
+  {
+   "id": "services-06#067",
+   "path": "services/10/flow/5/text",
+   "ru": "Отдельный жанр, который у нас вырос из сайта. Движок полёта с первого экрана превратился в полноценную игру с уровнями, топливом и прокачкой — она живёт на play.playdisplay.com и сделана целиком у нас.",
+   "en": "A separate genre that grew out of this site. The flight engine from the first screen became a full game with levels, fuel and upgrades — it lives at play.playdisplay.com and was built entirely in-house.",
+   "pt": "Um gênero à parte que nasceu deste site. O motor de voo da primeira tela virou um jogo completo, com fases, combustível e melhorias — ele vive em play.playdisplay.com e foi feito inteiramente em casa."
+  },
+  {
+   "id": "services-06#068",
+   "path": "services/10/flow/6/text",
+   "ru": "Такая игра решает задачи, до которых баннеру не дотянуться: удержать на стенде очередь, дать повод вернуться на сайт, объяснить продукт через действие, собрать контакты за результат в таблице лидеров. Работает и в браузере, и на экране в зале — движок один.",
+   "en": null,
+   "pt": "Um jogo assim resolve tarefas que um banner não alcança: segurar uma fila no estande, dar um motivo para voltar ao site, explicar o produto pela ação, coletar contatos em troca de um resultado no ranking. Funciona no navegador e na tela do salão — o motor é o mesmo."
+  },
+  {
+   "id": "services-06#069",
+   "path": "services/10/flow/7/items/0",
+   "ru": "Не «игрофикация» с баллами и бейджами. Настоящая игра, в которую играют по своей воле, а не за скидку.",
+   "en": null,
+   "pt": "Não é “gamificação” com pontos e medalhas. É um jogo de verdade, jogado por vontade própria e não em troca de desconto."
+  },
+  {
+   "id": "services-06#070",
+   "path": "services/10/flow/7/items/1",
+   "ru": "Сроки другие, чем у сайта: простая механика — недели, история с уровнями — месяцы. Мы говорим это до сметы, а не после.",
+   "en": null,
+   "pt": "Os prazos são diferentes dos de um site: mecânica simples — semanas, história com fases — meses. A gente diz isso antes do orçamento, não depois."
+  },
+  {
+   "id": "services-06#071",
+   "path": "services/10/flow/7/items/2",
+   "ru": "Игра живёт дольше кампании, если у неё есть таблица результатов и повод вернуться. Одноразовую делать можно, но это дороже баннера при том же эффекте.",
+   "en": null,
+   "pt": "Um jogo vive mais que a campanha se tiver ranking e um motivo para voltar. Dá para fazer descartável, mas aí sai mais caro que um banner com o mesmo efeito."
+  },
+  {
+   "id": "services-06#072",
+   "path": "services/10/flow/8/text",
+   "ru": "Как устроена работа",
+   "en": "The same way as a hall: first decide what a person should do and feel, then choose the technology. A scene can be WebGL, video with interactive points, or honest real-time 3D — the budgets differ by multiples, and that choice should be deliberate rather than driven by the word “3D” in a brief.",
+   "pt": "Do mesmo jeito que um salão: primeiro se decide o que a pessoa deve fazer e sentir, depois se escolhe a tecnologia. Uma cena pode ser WebGL, vídeo com pontos interativos ou 3D honesto em tempo real — os orçamentos diferem em múltiplos, e essa escolha deve ser deliberada, e não movida pela palavra “3D” no briefing."
+  },
+  {
+   "id": "services-06#073",
+   "path": "services/10/flow/9/text",
+   "ru": "Так же, как с залом: сначала решаем, что человек должен сделать и почувствовать, потом выбираем технику. Сцена может быть на WebGL, на видео с интерактивными точками или на честном 3D в реальном времени — разница в бюджете отличается кратно, и выбирать это надо осознанно, а не по слову «3D» в брифе.",
+   "en": "Atlas: the principles we design by →",
+   "pt": "Atlas: os princípios pelos quais projetamos →"
+  },
+  {
+   "id": "services-06#074",
+   "path": "services/10/flow/10/text",
+   "ru": "Отдельно считаем то, о чём обычно забывают: как сайт поведёт себя на телефоне пятилетней давности и что увидит человек, у которого не запустился WebGL. Красивая сцена, которая половине аудитории показывает чёрный экран, — это не интерактивный сайт, а дорогая ошибка.",
+   "en": null,
+   "pt": "Contamos à parte o que normalmente se esquece: como o site vai se comportar em um celular de cinco anos atrás e o que vai ver a pessoa em quem o WebGL não abriu. Uma cena bonita que mostra tela preta para metade do público não é um site interativo, é um erro caro."
+  },
+  {
+   "id": "services-06#075",
+   "path": "services/10/flow/11/text",
+   "ru": "Атлас: принципы, по которым мы это проектируем →",
+   "en": null,
+   "pt": "Atlas: os princípios pelos quais projetamos isso →"
+  },
+  {
+   "id": "services-06#076",
+   "path": "services/10/faq/0/q",
+   "ru": "Сколько стоит интерактивный сайт?",
+   "en": "Will it work on a phone?",
+   "pt": "Vai funcionar no celular?"
+  },
+  {
+   "id": "services-06#077",
+   "path": "services/10/faq/0/a",
+   "ru": "Зависит от того, что именно в нём живое. Одна сцена на первом экране и обычные страницы дальше — это один порядок. Сайт, где каждый раздел — сцена, а между ними переходы без перезагрузки, — другой. Мы считаем от сценария и всегда показываем, что можно убрать без потери смысла.",
+   "en": "Yes, and that is designed in from the start rather than checked at the end. The scene is built at several weights: a strong phone gets the full version, a weak one a reduced version, and a device without WebGL sees a static version with the same structure. We test on real devices.",
+   "pt": "Vai, e isso é projetado desde o começo, não conferido no fim. A cena é construída em vários pesos: um celular forte recebe a versão completa, um fraco recebe uma versão reduzida, e um aparelho sem WebGL vê uma versão estática com a mesma estrutura. Testamos em aparelhos reais."
+  },
+  {
+   "id": "services-06#078",
+   "path": "services/10/faq/1/q",
+   "ru": "А на телефоне это будет работать?",
+   "en": "Do you build the whole site or only the interactive part?",
+   "pt": "Vocês fazem o site inteiro ou só a parte interativa?"
+  },
+  {
+   "id": "services-06#079",
+   "path": "services/10/faq/1/a",
+   "ru": "Да, и это закладывается с самого начала, а не проверяется в конце. Сцена делается в нескольких уровнях тяжести: мощный телефон получает полную, слабый — упрощённую, а тот, у кого не запустился WebGL, видит статичную версию с той же структурой. Проверяем на реальных устройствах, а не в эмуляторе.",
+   "en": "Usually the whole thing — cheaper and faster, because the scene and the markup do not fight each other. But if you already have a web contractor we can deliver only the scene as a documented module. We have worked that way too.",
+   "pt": "Normalmente o site inteiro — mais barato e mais rápido, porque a cena e a marcação não brigam entre si. Mas se vocês já têm um fornecedor de web, dá para entregar só a cena como um módulo documentado. Já trabalhamos assim também."
+  },
+  {
+   "id": "services-06#080",
+   "path": "services/10/faq/2/q",
+   "ru": "Вы делаете сайт целиком или только интерактивную часть?",
+   "en": "Is the site team the same as the exhibition team?",
+   "pt": "A equipe do site é a mesma da exposição?"
+  },
+  {
+   "id": "services-06#081",
+   "path": "services/10/faq/2/a",
+   "ru": "Обычно целиком — так дешевле и быстрее, потому что сцена и вёрстка не воюют между собой. Но если у вас есть подрядчик по сайту, можем сделать только сцену и отдать её как готовый модуль с документацией. Так тоже работали.",
+   "en": "The same, and that is the main advantage. The engine that drives a scene in the browser drives it on a screen in a hall. A web project and a spatial project can share one script and one content pipeline instead of being ordered in two places and stitched together later.",
+   "pt": "É a mesma, e essa é a principal vantagem. O motor que roda uma cena no navegador roda ela também em uma tela no salão. Um projeto na web e um projeto no espaço podem compartilhar um roteiro e um fluxo de conteúdo em vez de serem encomendados em dois lugares e costurados depois."
+  },
+  {
+   "id": "services-06#082",
+   "path": "services/10/faq/3/q",
+   "ru": "Чем ваша игра отличается от игрофикации?",
+   "en": null,
+   "pt": "Qual a diferença do seu jogo para gamificação?"
+  },
+  {
+   "id": "services-06#083",
+   "path": "services/10/faq/3/a",
+   "ru": "Игрофикация — это баллы и бейджи поверх обычного интерфейса; в неё не играют, её терпят. Мы делаем игру, в которую играют по своей воле: с механикой, сложностью и желанием пройти ещё раз. Проверить просто — сыграйте в нашу, она открыта и ничего не просит взамен.",
+   "en": null,
+   "pt": "Gamificação são pontos e medalhas por cima de uma interface comum; ninguém joga isso, as pessoas toleram. A gente faz um jogo que se joga por vontade própria: com mecânica, dificuldade e vontade de jogar de novo. Conferir é simples — jogue o nosso, ele está aberto e não pede nada em troca."
+  },
+  {
+   "id": "services-06#084",
+   "path": "services/10/faq/4/q",
+   "ru": "Сайт и экспозиция — это одна команда?",
+   "en": null,
+   "pt": "Site e exposição são a mesma equipe?"
+  },
+  {
+   "id": "services-06#085",
+   "path": "services/10/faq/4/a",
+   "ru": "Одна, и это главное преимущество. Движок, который крутит сцену в браузере, крутит её же на экране в зале. Поэтому проект в вебе и проект в пространстве можно делать общим сценарием и общим содержанием, а не заказывать в двух местах и потом сводить.",
+   "en": null,
+   "pt": "É uma só, e essa é a principal vantagem. O motor que roda a cena no navegador roda ela também na tela do salão. Por isso um projeto na web e um projeto no espaço podem ser feitos com um roteiro comum e um conteúdo comum, em vez de encomendados em dois lugares e depois costurados."
+  }
+ ]
+}

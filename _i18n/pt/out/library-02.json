@@ -1,0 +1,1050 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "library-02 (2 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "library-02#001",
+   "path": "categories/0/sections/3/name",
+   "ru": "Объём и иллюзия",
+   "en": "Volume and illusion",
+   "pt": "Volume e ilusão"
+  },
+  {
+   "id": "library-02#002",
+   "path": "categories/0/sections/3/note",
+   "ru": "Попытки показать предмет объёмным. Больше всего маркетинга на единицу площади и меньше всего честных оговорок в презентациях.",
+   "en": "Attempts to make an object look three-dimensional. The most marketing per square metre and the fewest honest caveats in the deck.",
+   "pt": "Tentativas de fazer um objeto parecer tridimensional. O maior teor de marketing por metro quadrado e o menor número de ressalvas honestas na apresentação."
+  },
+  {
+   "id": "library-02#003",
+   "path": "categories/0/sections/3/items/0/name",
+   "ru": "Псевдоголограмма: призрак Пеппера",
+   "en": "Pseudo-hologram: Pepper's ghost",
+   "pt": "Pseudo-holograma: fantasma de Pepper"
+  },
+  {
+   "id": "library-02#004",
+   "path": "categories/0/sections/3/items/0/line",
+   "ru": "Отражение в наклонном стекле. Работает двести лет",
+   "en": "A reflection in angled glass. Two hundred years and counting",
+   "pt": "Um reflexo em vidro inclinado. Duzentos anos e contando"
+  },
+  {
+   "id": "library-02#005",
+   "path": "categories/0/sections/3/items/0/what",
+   "ru": "Картинка с экрана отражается в полупрозрачной плёнке и кажется висящей в воздухе. Приёму два века, его знал театр XIX века — и он до сих пор самый надёжный из «голограмм», потому что ломаться там нечему.",
+   "en": "The picture from a screen reflects in a semi-transparent film and appears to hang in mid-air. Nineteenth-century theatre knew this trick, and it is still the most dependable of the «holograms» — there is nothing in it to break.",
+   "pt": "A imagem de uma tela se reflete em uma película semitransparente e parece ficar suspensa no ar. O teatro do século XIX já conhecia o truque, e ele ainda é o mais confiável dos “hologramas” — não há nada nele para quebrar."
+  },
+  {
+   "id": "library-02#006",
+   "path": "categories/0/sections/3/items/0/good/0",
+   "ru": "Небольшой предмет, вокруг которого собирается один-два человека",
+   "en": "A small object with one or two people gathered around it",
+   "pt": "Um objeto pequeno com uma ou duas pessoas em volta"
+  },
+  {
+   "id": "library-02#007",
+   "path": "categories/0/sections/3/items/0/good/1",
+   "ru": "Тёмная зона: иллюзия строится на свечении в темноте",
+   "en": "A dark zone: the illusion is built on glowing in darkness",
+   "pt": "Uma zona escura: a ilusão se constrói sobre brilhar no escuro"
+  },
+  {
+   "id": "library-02#008",
+   "path": "categories/0/sections/3/items/0/good/2",
+   "ru": "Нужен эффект «парения» без очков и без обучения посетителя",
+   "en": "A floating effect without glasses and without teaching the visitor anything",
+   "pt": "Um efeito flutuante sem óculos e sem ensinar nada ao visitante"
+  },
+  {
+   "id": "library-02#009",
+   "path": "categories/0/sections/3/items/0/bad/0",
+   "ru": "Делегация в двадцать человек: иллюзия держится в узком угле",
+   "en": "A delegation of twenty: the illusion holds only within a narrow angle",
+   "pt": "Uma delegação de vinte: a ilusão só se sustenta dentro de um ângulo estreito"
+  },
+  {
+   "id": "library-02#010",
+   "path": "categories/0/sections/3/items/0/bad/1",
+   "ru": "Светлый зал — эффект исчезает полностью",
+   "en": "A bright room — the effect disappears entirely",
+   "pt": "Uma sala clara — o efeito desaparece por completo"
+  },
+  {
+   "id": "library-02#011",
+   "path": "categories/0/sections/3/items/0/bad/2",
+   "ru": "Мелкие подписи: выносить на отдельный экран рядом",
+   "en": "Small captions: put them on a separate screen alongside",
+   "pt": "Legendas pequenas: coloque-as em uma tela separada ao lado"
+  },
+  {
+   "id": "library-02#012",
+   "path": "categories/0/sections/3/items/0/brands/0/note",
+   "ru": "готовые витрины-кубы",
+   "en": "готовые витрины-кубы",
+   "pt": "vitrines-cubo prontas"
+  },
+  {
+   "id": "library-02#013",
+   "path": "categories/0/sections/3/items/0/brands/1/note",
+   "ru": "сценические установки большого размера",
+   "en": "сценические установки большого размера",
+   "pt": "montagens cênicas de grande porte"
+  },
+  {
+   "id": "library-02#014",
+   "path": "categories/0/sections/3/items/1/name",
+   "ru": "Вентиляторный дисплей",
+   "en": "Holographic fan display",
+   "pt": "Display holográfico de ventilador"
+  },
+  {
+   "id": "library-02#015",
+   "path": "categories/0/sections/3/items/1/line",
+   "ru": "Диоды на лопастях. Дёшево и наглухо приковывает взгляд",
+   "en": "LEDs on spinning blades. Cheap and impossible to ignore",
+   "pt": "LEDs em pás girando. Barato e impossível de ignorar"
+  },
+  {
+   "id": "library-02#016",
+   "path": "categories/0/sections/3/items/1/what",
+   "ru": "Полоса светодиодов крутится так быстро, что глаз собирает из следа целую картинку, висящую в воздухе. Ставится за час, объединяется в стену — так делают крупные «парящие» объекты.",
+   "en": "A strip of LEDs turns fast enough that the eye assembles the trail into a whole image hanging in the air. Installed in an hour, gangs into a wall — that is how the big «floating» objects are made.",
+   "pt": "Uma faixa de LEDs gira rápido o bastante para o olho montar o rastro em uma imagem inteira suspensa no ar. Instala-se em uma hora, agrupa-se em parede — é assim que se fazem os grandes objetos “flutuantes”."
+  },
+  {
+   "id": "library-02#017",
+   "path": "categories/0/sections/3/items/1/good/0",
+   "ru": "Витрина, вход, точка привлечения внимания",
+   "en": "A window, an entrance, a point that has to catch attention",
+   "pt": "Uma vitrine, uma entrada, um ponto que precisa prender a atenção"
+  },
+  {
+   "id": "library-02#018",
+   "path": "categories/0/sections/3/items/1/good/1",
+   "ru": "Короткий яркий образ — логотип, предмет, знак",
+   "en": "A short bright image — a logo, an object, a sign",
+   "pt": "Uma imagem curta e brilhante — um logotipo, um objeto, um sinal"
+  },
+  {
+   "id": "library-02#019",
+   "path": "categories/0/sections/3/items/1/good/2",
+   "ru": "Нужен вау-эффект при малом бюджете",
+   "en": "A wow effect on a small budget",
+   "pt": "Um efeito de impacto com orçamento pequeno"
+  },
+  {
+   "id": "library-02#020",
+   "path": "categories/0/sections/3/items/1/bad/0",
+   "ru": "Музейная экспозиция всерьёз: вращающаяся деталь на уровне рук — вопрос безопасности и шума",
+   "en": "A museum exhibition proper: a spinning part at hand height is a safety and noise question",
+   "pt": "Uma exposição museológica de verdade: uma peça girando na altura da mão é questão de segurança e de ruído"
+  },
+  {
+   "id": "library-02#021",
+   "path": "categories/0/sections/3/items/1/bad/1",
+   "ru": "Долгий рассказ: разрешение и яркость не для содержания",
+   "en": "A long story: neither the resolution nor the brightness carries content",
+   "pt": "Uma história longa: nem a resolução nem o brilho sustentam conteúdo"
+  },
+  {
+   "id": "library-02#022",
+   "path": "categories/0/sections/3/items/1/bad/2",
+   "ru": "Съёмка на телефон — камера ловит стробирование",
+   "en": "Filming on a phone — the camera catches the strobing",
+   "pt": "Filmar com celular — a câmera capta a cintilação"
+  },
+  {
+   "id": "library-02#023",
+   "path": "categories/0/sections/3/items/1/brands/0/note",
+   "ru": "основной игрок, сборки в стены",
+   "en": "основной игрок, сборки в стены",
+   "pt": "player principal, montagens em parede"
+  },
+  {
+   "id": "library-02#024",
+   "path": "categories/0/sections/3/items/2/name",
+   "ru": "Светополевой дисплей",
+   "en": "Light-field display",
+   "pt": "Display de campo de luz"
+  },
+  {
+   "id": "library-02#025",
+   "path": "categories/0/sections/3/items/2/line",
+   "ru": "Объём без очков. Честный",
+   "en": "Volume without glasses. The honest kind",
+   "pt": "Volume sem óculos. Do tipo honesto"
+  },
+  {
+   "id": "library-02#026",
+   "path": "categories/0/sections/3/items/2/what",
+   "ru": "Экран выдаёт десятки ракурсов сразу: глаза видят разное, предмет поворачивается вслед за головой. Размеры пока небольшие, цена соответствующая — зато это настоящий объём, а не иллюзия.",
+   "en": "The screen emits dozens of viewpoints at once: the eyes see different things and the object turns as you move your head. Sizes are still modest and the price matches — but this is real volume, not an illusion.",
+   "pt": "A tela emite dezenas de pontos de vista ao mesmo tempo: os olhos veem coisas diferentes e o objeto gira conforme você mexe a cabeça. Os tamanhos ainda são modestos e o preço acompanha — mas isso é volume de verdade, não ilusão."
+  },
+  {
+   "id": "library-02#027",
+   "path": "categories/0/sections/3/items/2/good/0",
+   "ru": "Один предмет, который надо рассмотреть со всех сторон — изделие, молекула, деталь",
+   "en": "A single object to be examined from every side — a product, a molecule, a part",
+   "pt": "Um único objeto a ser examinado de todos os lados — um produto, uma molécula, uma peça"
+  },
+  {
+   "id": "library-02#028",
+   "path": "categories/0/sections/3/items/2/good/1",
+   "ru": "Нужен объём без очков и без обучения",
+   "en": "Volume with no glasses and no instructions",
+   "pt": "Volume sem óculos e sem instruções"
+  },
+  {
+   "id": "library-02#029",
+   "path": "categories/0/sections/3/items/2/good/2",
+   "ru": "Экспонат для одного-двух человек за раз",
+   "en": "An exhibit for one or two people at a time",
+   "pt": "Um exponente para uma ou duas pessoas por vez"
+  },
+  {
+   "id": "library-02#030",
+   "path": "categories/0/sections/3/items/2/bad/0",
+   "ru": "Большая аудитория и большие размеры",
+   "en": "A large audience and large sizes",
+   "pt": "Público grande e tamanhos grandes"
+  },
+  {
+   "id": "library-02#031",
+   "path": "categories/0/sections/3/items/2/bad/1",
+   "ru": "Ограниченный бюджет: за те же деньги делается интерактивная 3D-модель на обычном экране, и понимают её не хуже",
+   "en": "A limited budget: for the same money you get an interactive 3D model on an ordinary screen, and people understand it just as well",
+   "pt": "Orçamento limitado: pelo mesmo dinheiro se tem um modelo 3D interativo em uma tela comum, e as pessoas entendem igualmente bem"
+  },
+  {
+   "id": "library-02#032",
+   "path": "categories/0/sections/3/items/2/brands/0/note",
+   "ru": "настольные и настенные модели",
+   "en": "настольные и настенные модели",
+   "pt": "modelos de mesa e de parede"
+  },
+  {
+   "id": "library-02#033",
+   "path": "categories/0/sections/3/items/2/brands/1/note",
+   "ru": "воксельный объём, вид с любой стороны",
+   "en": "воксельный объём, вид с любой стороны",
+   "pt": "volume voxel, visão de qualquer lado"
+  },
+  {
+   "id": "library-02#034",
+   "path": "categories/0/sections/3/items/3/name",
+   "ru": "Автостереоскопический экран",
+   "en": "Autostereoscopic screen",
+   "pt": "Tela autoestereoscópica"
+  },
+  {
+   "id": "library-02#035",
+   "path": "categories/0/sections/3/items/3/line",
+   "ru": "Объём без очков по цене панели",
+   "en": "Volume without glasses at panel money",
+   "pt": "Volume sem óculos pelo preço de um painel"
+  },
+  {
+   "id": "library-02#036",
+   "path": "categories/0/sections/3/items/3/what",
+   "ru": "Оптический растр на обычной панели: каждому глазу свой набор пикселей. Дешевле светополевого и крупнее — платой идёт узкая зона, в которой эффект держится.",
+   "en": "An optical raster on an ordinary panel gives each eye its own pixels. Cheaper and larger than light-field; you pay in the narrow zone where the effect holds.",
+   "pt": "Uma grade óptica sobre um painel comum dá a cada olho os próprios pixels. Mais barato e maior que o campo de luz; paga-se com a zona estreita em que o efeito se sustenta."
+  },
+  {
+   "id": "library-02#037",
+   "path": "categories/0/sections/3/items/3/good/0",
+   "ru": "Витрина или пилон, к которому подходят по одному",
+   "en": "A vitrine or pylon that people approach one at a time",
+   "pt": "Uma vitrine ou um pilar de que as pessoas se aproximam uma por vez"
+  },
+  {
+   "id": "library-02#038",
+   "path": "categories/0/sections/3/items/3/good/1",
+   "ru": "Изделие, которое надо показать в объёме, не выдавая очки",
+   "en": "A product to be shown in volume without handing out glasses",
+   "pt": "Um produto a ser mostrado em volume sem distribuir óculos"
+  },
+  {
+   "id": "library-02#039",
+   "path": "categories/0/sections/3/items/3/good/2",
+   "ru": "Нужен объём при бюджете панели, а не установки",
+   "en": "Volume is wanted at the price of a panel, not of an installation",
+   "pt": "Quer-se volume pelo preço de um painel, não de uma instalação"
+  },
+  {
+   "id": "library-02#040",
+   "path": "categories/0/sections/3/items/3/bad/0",
+   "ru": "Группа: зона просмотра узкая, шаг в сторону — и объём рассыпается",
+   "en": "A group: the viewing zone is narrow, one step aside and the volume falls apart",
+   "pt": "Um grupo: a zona de visão é estreita, um passo para o lado e o volume se desfaz"
+  },
+  {
+   "id": "library-02#041",
+   "path": "categories/0/sections/3/items/3/bad/1",
+   "ru": "Разрешение по горизонтали делится между ракурсами: мелкий текст не выживает",
+   "en": "Horizontal resolution is divided between viewpoints: small type does not survive",
+   "pt": "A resolução horizontal é dividida entre os pontos de vista: letra pequena não sobrevive"
+  },
+  {
+   "id": "library-02#042",
+   "path": "categories/0/sections/3/items/3/bad/2",
+   "ru": "Долгий просмотр утомляет глаза сильнее обычного экрана",
+   "en": "Long viewing tires the eyes more than an ordinary screen",
+   "pt": "Visualização longa cansa mais os olhos que uma tela comum"
+  },
+  {
+   "id": "library-02#043",
+   "path": "categories/0/sections/3/items/3/brands/0/note",
+   "ru": "световое поле, много ракурсов",
+   "en": "световое поле, много ракурсов",
+   "pt": "campo de luz, muitos ângulos"
+  },
+  {
+   "id": "library-02#044",
+   "path": "categories/0/sections/3/items/3/brands/1/note",
+   "ru": "автостереоскопия со слежением за глазами",
+   "en": "автостереоскопия со слежением за глазами",
+   "pt": "autoestereoscopia com rastreamento ocular"
+  },
+  {
+   "id": "library-02#045",
+   "path": "categories/0/sections/3/items/3/brands/2/note",
+   "ru": "растровые панели для витрин",
+   "en": "растровые панели для витрин",
+   "pt": "painéis com grade para vitrines"
+  },
+  {
+   "id": "library-02#046",
+   "path": "categories/0/sections/4/name",
+   "ru": "Очки и окна",
+   "en": "Headsets and windows",
+   "pt": "Óculos e janelas"
+  },
+  {
+   "id": "library-02#047",
+   "path": "categories/0/sections/4/note",
+   "ru": "Картинка, привязанная к голове или к устройству в руке, а не к стене.",
+   "en": "A picture tied to a head or to a device in the hand, rather than to a wall.",
+   "pt": "Uma imagem presa a uma cabeça ou a um aparelho na mão, e não a uma parede."
+  },
+  {
+   "id": "library-02#048",
+   "path": "categories/0/sections/4/items/0/name",
+   "ru": "Виртуальная реальность",
+   "en": "Virtual reality",
+   "pt": "Realidade virtual"
+  },
+  {
+   "id": "library-02#049",
+   "path": "categories/0/sections/4/items/0/line",
+   "ru": "Самое сильное впечатление и самая длинная очередь",
+   "en": "The strongest impression and the longest queue",
+   "pt": "A impressão mais forte e a fila mais longa"
+  },
+  {
+   "id": "library-02#050",
+   "path": "categories/0/sections/4/items/0/what",
+   "ru": "Шлем закрывает мир целиком: человек оказывается там, где физически быть нельзя. Переживает это один человек за раз — и всё расписание считается от этого числа.",
+   "en": "The headset closes off the world: a person ends up where they physically cannot be. One person at a time experiences it — and the whole schedule is counted from that number.",
+   "pt": "O óculos fecha o mundo: a pessoa acaba onde fisicamente não pode estar. Uma pessoa por vez vive aquilo — e toda a programação é contada a partir desse número."
+  },
+  {
+   "id": "library-02#051",
+   "path": "categories/0/sections/4/items/0/good/0",
+   "ru": "Место, куда нельзя попасть: недра, орбита, разрушенное здание, тело человека",
+   "en": "A place you cannot go: underground, in orbit, inside a ruined building, inside a body",
+   "pt": "Um lugar aonde não dá para ir: no subsolo, em órbita, dentro de um prédio em ruínas, dentro de um corpo"
+  },
+  {
+   "id": "library-02#052",
+   "path": "categories/0/sections/4/items/0/good/1",
+   "ru": "Отдельная зона с очередью и сопровождающим",
+   "en": "A separate zone with a queue and an attendant",
+   "pt": "Uma zona separada com fila e um atendente"
+  },
+  {
+   "id": "library-02#053",
+   "path": "categories/0/sections/4/items/0/good/2",
+   "ru": "Сеанс, который можно продать отдельно",
+   "en": "A session that can be sold on its own",
+   "pt": "Uma sessão que pode ser vendida por si só"
+  },
+  {
+   "id": "library-02#054",
+   "path": "categories/0/sections/4/items/0/bad/0",
+   "ru": "Основной маршрут экспозиции: очередь встанет и всё остановится",
+   "en": "The main route of the exhibition: the queue forms and everything stops",
+   "pt": "O percurso principal da exposição: a fila se forma e tudo para"
+  },
+  {
+   "id": "library-02#055",
+   "path": "categories/0/sections/4/items/0/bad/1",
+   "ru": "Нет сотрудника рядом: надеть, настроить, продезинфицировать, снять",
+   "en": "No staff nearby: fitting, adjusting, disinfecting, removing",
+   "pt": "Sem equipe por perto: colocar, ajustar, desinfetar, retirar"
+  },
+  {
+   "id": "library-02#056",
+   "path": "categories/0/sections/4/items/0/bad/2",
+   "ru": "Группа школьников по расписанию — арифметика не сходится",
+   "en": "A school group on a timetable — the arithmetic does not work",
+   "pt": "Um grupo escolar com horário marcado — a aritmética não fecha"
+  },
+  {
+   "id": "library-02#057",
+   "path": "categories/0/sections/4/items/0/spec",
+   "ru": "Считать до закупки: сеанс 4 минуты плюс минута на смену = 12 человек в час на один шлем. Группа в 30 человек — два с половиной часа на одном комплекте.",
+   "en": "Work it out before purchase: a 4-minute session plus a minute to change over = 12 people an hour per headset. A group of 30 is two and a half hours on one unit.",
+   "pt": "Calcule antes da compra: sessão de 4 minutos mais um minuto de troca = 12 pessoas por hora por óculos. Um grupo de 30 são duas horas e meia em um único aparelho."
+  },
+  {
+   "id": "library-02#058",
+   "path": "categories/0/sections/4/items/0/brands/0/note",
+   "ru": "автономные, массовые",
+   "en": "автономные, массовые",
+   "pt": "autônomos, de massa"
+  },
+  {
+   "id": "library-02#059",
+   "path": "categories/0/sections/4/items/0/brands/1/note",
+   "ru": "корпоративные и залы",
+   "en": "корпоративные и залы",
+   "pt": "corporativos e para salas"
+  },
+  {
+   "id": "library-02#060",
+   "path": "categories/0/sections/4/items/0/brands/2/note",
+   "ru": "автономные, доступны в РФ",
+   "en": "автономные, доступны в РФ",
+   "pt": "autônomos, disponíveis na Rússia"
+  },
+  {
+   "id": "library-02#061",
+   "path": "categories/0/sections/4/items/0/brands/3/note",
+   "ru": "верхний сегмент, разрешение уровня глаза",
+   "en": "верхний сегмент, разрешение уровня глаза",
+   "pt": "segmento premium, resolução no nível do olho"
+  },
+  {
+   "id": "library-02#062",
+   "path": "categories/0/sections/4/items/1/name",
+   "ru": "Дополненная реальность на устройстве",
+   "en": "Augmented reality on a device",
+   "pt": "Realidade aumentada em aparelho"
+  },
+  {
+   "id": "library-02#063",
+   "path": "categories/0/sections/4/items/1/line",
+   "ru": "Слой поверх настоящего зала",
+   "en": "A layer over the real room",
+   "pt": "Uma camada sobre a sala real"
+  },
+  {
+   "id": "library-02#064",
+   "path": "categories/0/sections/4/items/1/what",
+   "ru": "Планшет или телефон показывает камеру, а поверх — то, чего в зале нет: достроенное здание, работающий механизм, персонажа. Дёшево в железе, дорого в содержании.",
+   "en": "A tablet or phone shows the camera feed with what the room does not contain laid over it: a building completed, a mechanism running, a character. Cheap in hardware, expensive in content.",
+   "pt": "Um tablet ou celular mostra a imagem da câmera com o que a sala não contém sobreposto: um prédio concluído, um mecanismo funcionando, um personagem. Barato em hardware, caro em conteúdo."
+  },
+  {
+   "id": "library-02#065",
+   "path": "categories/0/sections/4/items/1/good/0",
+   "ru": "Достроить то, чего не сохранилось: руина, утраченный интерьер, снятый с эксплуатации агрегат",
+   "en": "Completing what has not survived: a ruin, a lost interior, a decommissioned machine",
+   "pt": "Completar o que não sobreviveu: uma ruína, um interior perdido, uma máquina desativada"
+  },
+  {
+   "id": "library-02#066",
+   "path": "categories/0/sections/4/items/1/good/1",
+   "ru": "Показать невидимое поверх видимого: потоки, разрезы, процессы",
+   "en": "Showing the invisible over the visible: flows, cutaways, processes",
+   "pt": "Mostrar o invisível sobre o visível: fluxos, cortes, processos"
+  },
+  {
+   "id": "library-02#067",
+   "path": "categories/0/sections/4/items/1/good/2",
+   "ru": "Экспонат вне здания — двор, парк, улица",
+   "en": "An exhibit outside the building — a courtyard, a park, a street",
+   "pt": "Um exponente fora do prédio — um pátio, um parque, uma rua"
+  },
+  {
+   "id": "library-02#068",
+   "path": "categories/0/sections/4/items/1/bad/0",
+   "ru": "Расчёт на телефон посетителя без сопровождения: до запуска доходит малая доля",
+   "en": "Relying on the visitor's phone with no guidance: only a fraction ever get it running",
+   "pt": "Contar com o celular do visitante sem orientação: só uma parte consegue fazer funcionar"
+  },
+  {
+   "id": "library-02#069",
+   "path": "categories/0/sections/4/items/1/bad/1",
+   "ru": "Плохая связь и нежелание ставить приложение",
+   "en": "Poor connectivity and unwillingness to install an app",
+   "pt": "Conectividade ruim e falta de vontade de instalar um app"
+  },
+  {
+   "id": "library-02#070",
+   "path": "categories/0/sections/4/items/1/bad/2",
+   "ru": "Экспонат должен работать всегда: телефон разряжается, планшеты воруют",
+   "en": "The exhibit has to work always: phones run flat, tablets get stolen",
+   "pt": "O exponente precisa funcionar sempre: celulares descarregam, tablets somem"
+  },
+  {
+   "id": "library-02#071",
+   "path": "categories/0/sections/4/items/1/brands/0/note",
+   "ru": "iOS, лучшее качество трекинга",
+   "en": "iOS, лучшее качество трекинга",
+   "pt": "iOS, melhor qualidade de rastreamento"
+  },
+  {
+   "id": "library-02#072",
+   "path": "categories/0/sections/4/items/1/brands/2/note",
+   "ru": "привязка к меткам и предметам",
+   "en": "привязка к меткам и предметам",
+   "pt": "vínculo com marcadores e objetos"
+  },
+  {
+   "id": "library-02#073",
+   "path": "categories/0/sections/5/name",
+   "ru": "Звук и тело",
+   "en": "Sound and body",
+   "pt": "Som e corpo"
+  },
+  {
+   "id": "library-02#074",
+   "path": "categories/0/sections/5/note",
+   "ru": "Недооценённая половина впечатления. В спецификациях звук появляется строкой «колонки — 4 шт.» и на этом заканчивается.",
+   "en": "The underrated half of the impression. In specifications sound appears as «speakers — 4 pcs» and stops there.",
+   "pt": "A metade subestimada da impressão. Em especificações o som aparece como “caixas de som — 4 un.” e para por aí."
+  },
+  {
+   "id": "library-02#075",
+   "path": "categories/0/sections/5/items/0/name",
+   "ru": "Звуковой душ, направленный звук",
+   "en": "Sound shower, directional audio",
+   "pt": "Chuveiro sonoro, áudio direcional"
+  },
+  {
+   "id": "library-02#076",
+   "path": "categories/0/sections/5/items/0/line",
+   "ru": "Слышно здесь и тихо в шаге отсюда",
+   "en": "Audible here, silent one step away",
+   "pt": "Audível aqui, silencioso um passo adiante"
+  },
+  {
+   "id": "library-02#077",
+   "path": "categories/0/sections/5/items/0/what",
+   "ru": "Звук, ограниченный узкой зоной: посетитель у экспоната слышит рассказ, сосед в метре — тишину, и наушники никому не нужны. Лечит главную беду мультимедийной экспозиции — когда десять экспонатов говорят разом и не слышно ни одного.",
+   "en": "Sound confined to a narrow zone: the visitor at the exhibit hears the story, a neighbour a metre away hears nothing, and nobody needs headphones. It cures the chief affliction of multimedia exhibitions — ten exhibits talking at once and none of them audible.",
+   "pt": "Som confinado a uma zona estreita: o visitante no exponente ouve a história, alguém a um metro não ouve nada, e ninguém precisa de fones. Isso cura a principal doença das exposições multimídia — dez exponentes falando ao mesmo tempo e nenhum deles audível."
+  },
+  {
+   "id": "library-02#078",
+   "path": "categories/0/sections/5/items/0/compare",
+   "ru": "Два разных принципа, и путать их дорого. **Параболический купол** — обычный динамик в отражателе: звук честный и полный, зона под куполом около метра, работает без искажений. **Ультразвуковой параметрический излучатель** — узкий луч из ультразвука, который превращается в звук уже в воздухе: зона намного уже и дальнобойнее, но бас теряется, и речь звучит суше. Для голоса и атмосферы — купол; для точечного луча через зал — параметрический.",
+   "en": "Two different principles, and confusing them is expensive. A **parabolic dome** is an ordinary loudspeaker in a reflector: the sound is honest and full, the zone under the dome is about a metre across, and there is no distortion. An **ultrasonic parametric emitter** is a narrow beam of ultrasound that turns into sound in the air itself: the zone is far narrower and reaches further, but the bass is lost and speech sounds drier. For voice and atmosphere, the dome; for a pinpoint beam across a room, the parametric.",
+   "pt": "São dois princípios diferentes, e confundi-los sai caro. Uma **cúpula parabólica** é um alto-falante comum dentro de um refletor: o som é honesto e cheio, a zona embaixo da cúpula tem cerca de um metro e não há distorção. Um **emissor paramétrico ultrassônico** é um feixe estreito de ultrassom que vira som no próprio ar: a zona é bem mais estreita e alcança mais longe, mas o grave se perde e a fala soa mais seca. Para voz e atmosfera, a cúpula; para um feixe pontual atravessando a sala, o paramétrico."
+  },
+  {
+   "id": "library-02#079",
+   "path": "categories/0/sections/5/items/0/good/0",
+   "ru": "Несколько экспонатов со звуком в одном зале",
+   "en": "Several exhibits with sound in one room",
+   "pt": "Vários exponentes com som em uma mesma sala"
+  },
+  {
+   "id": "library-02#080",
+   "path": "categories/0/sections/5/items/0/good/1",
+   "ru": "Рассказ, который нужен только стоящему здесь",
+   "en": "A story that only the person standing here needs",
+   "pt": "Uma história que só interessa a quem está parado ali"
+  },
+  {
+   "id": "library-02#081",
+   "path": "categories/0/sections/5/items/0/good/2",
+   "ru": "Наушники нежелательны — поток людей или гигиена",
+   "en": "Headphones are unwelcome — foot traffic or hygiene",
+   "pt": "Fones não são bem-vindos — fluxo de público ou higiene"
+  },
+  {
+   "id": "library-02#082",
+   "path": "categories/0/sections/5/items/0/bad/0",
+   "ru": "Нужен полноценный бас и объёмное звучание",
+   "en": "Full bass and enveloping sound are needed",
+   "pt": "São necessários graves plenos e som envolvente"
+  },
+  {
+   "id": "library-02#083",
+   "path": "categories/0/sections/5/items/0/bad/1",
+   "ru": "Высокие потолки и сильный фоновый шум: зона размывается",
+   "en": "High ceilings and heavy background noise: the zone smears",
+   "pt": "Pé-direito alto e muito ruído de fundo: a zona se espalha"
+  },
+  {
+   "id": "library-02#084",
+   "path": "categories/0/sections/5/items/0/bad/2",
+   "ru": "Посетители подходят с разных сторон",
+   "en": "Visitors approach from several directions",
+   "pt": "Os visitantes se aproximam de várias direções"
+  },
+  {
+   "id": "library-02#085",
+   "path": "categories/0/sections/5/items/0/brands/0/note",
+   "ru": "параболические купола, музейный стандарт",
+   "en": "параболические купола, музейный стандарт",
+   "pt": "cúpulas parabólicas, padrão de museu"
+  },
+  {
+   "id": "library-02#086",
+   "path": "categories/0/sections/5/items/0/brands/1/note",
+   "ru": "панельные направленные излучатели",
+   "en": "панельные направленные излучатели",
+   "pt": "emissores direcionais em painel"
+  },
+  {
+   "id": "library-02#087",
+   "path": "categories/0/sections/5/items/0/brands/2/note",
+   "ru": "ультразвуковой узкий луч",
+   "en": "ультразвуковой узкий луч",
+   "pt": "feixe estreito ultrassônico"
+  },
+  {
+   "id": "library-02#088",
+   "path": "categories/0/sections/5/items/0/brands/3/note",
+   "ru": "формирование звукового поля в большом зале",
+   "en": "формирование звукового поля в большом зале",
+   "pt": "formação de campo sonoro em salão grande"
+  },
+  {
+   "id": "library-02#089",
+   "path": "categories/0/sections/5/items/1/name",
+   "ru": "Инсталляционная акустика и пространственный звук",
+   "en": "Installation audio and spatial sound",
+   "pt": "Áudio de instalação e som espacial"
+  },
+  {
+   "id": "library-02#090",
+   "path": "categories/0/sections/5/items/1/line",
+   "ru": "Звук, у которого есть место в зале",
+   "en": "Sound that has a place in the room",
+   "pt": "Som que tem um lugar na sala"
+  },
+  {
+   "id": "library-02#091",
+   "path": "categories/0/sections/5/items/1/what",
+   "ru": "Источники, расставленные по залу, дают звуку направление и расстояние: шаг слева, гул сверху, голос из конкретной точки. Половина ощущения присутствия делается здесь, а не на экране.",
+   "en": "Sources placed around the room give sound direction and distance: a footstep on the left, a rumble overhead, a voice from one point. Half the sense of presence is made here, not on the screen.",
+   "pt": "Fontes distribuídas pela sala dão ao som direção e distância: um passo à esquerda, um estrondo por cima, uma voz vinda de um ponto. Metade da sensação de presença se faz aqui, não na tela."
+  },
+  {
+   "id": "library-02#092",
+   "path": "categories/0/sections/5/items/1/good/0",
+   "ru": "Большой зал с единым сценарием — панорама, реконструкция, погружение",
+   "en": "A large room with a single score — a panorama, a reconstruction, an immersion",
+   "pt": "Um salão grande com uma partitura única — um panorama, uma reconstituição, uma imersão"
+  },
+  {
+   "id": "library-02#093",
+   "path": "categories/0/sections/5/items/1/good/1",
+   "ru": "Нужно вести человека звуком, а не стрелками на полу",
+   "en": "People need to be led by sound rather than by arrows on the floor",
+   "pt": "É preciso conduzir as pessoas pelo som em vez de setas no chão"
+  },
+  {
+   "id": "library-02#094",
+   "path": "categories/0/sections/5/items/1/good/2",
+   "ru": "Есть сценарий с ритмом: тишина, нарастание, пауза",
+   "en": "There is a score with rhythm: silence, build, pause",
+   "pt": "Existe uma partitura com ritmo: silêncio, crescimento, pausa"
+  },
+  {
+   "id": "library-02#095",
+   "path": "categories/0/sections/5/items/1/bad/0",
+   "ru": "Разрозненные стенды со своим содержанием — будет каша",
+   "en": "Scattered stands each with their own content — it will be a mess",
+   "pt": "Estandes espalhados, cada um com seu conteúdo — vai virar bagunça"
+  },
+  {
+   "id": "library-02#096",
+   "path": "categories/0/sections/5/items/1/bad/1",
+   "ru": "Гулкое помещение без акустической обработки: сначала потолок, потом колонки",
+   "en": "A reverberant room with no acoustic treatment: fix the ceiling before buying speakers",
+   "pt": "Uma sala reverberante sem tratamento acústico: resolva o teto antes de comprar caixas"
+  },
+  {
+   "id": "library-02#097",
+   "path": "categories/0/sections/5/items/1/brands/0/note",
+   "ru": "точность, малые формы",
+   "en": "точность, малые формы",
+   "pt": "precisão, formatos pequenos"
+  },
+  {
+   "id": "library-02#098",
+   "path": "categories/0/sections/5/items/1/brands/1/note",
+   "ru": "инсталляции и пространственные системы",
+   "en": "инсталляции и пространственные системы",
+   "pt": "instalações e sistemas espaciais"
+  },
+  {
+   "id": "library-02#099",
+   "path": "categories/0/sections/5/items/1/brands/2/note",
+   "ru": "системы с объёмным движением звука",
+   "en": "системы с объёмным движением звука",
+   "pt": "sistemas com movimento volumétrico do som"
+  },
+  {
+   "id": "library-02#100",
+   "path": "categories/0/sections/5/items/1/brands/3/note",
+   "ru": "объёмный звук для залов",
+   "en": "объёмный звук для залов",
+   "pt": "som volumétrico para salões"
+  },
+  {
+   "id": "library-02#101",
+   "path": "categories/0/sections/5/items/2/name",
+   "ru": "Наушники и персональный звук",
+   "en": "Headphones and personal audio",
+   "pt": "Fones e áudio pessoal"
+  },
+  {
+   "id": "library-02#102",
+   "path": "categories/0/sections/5/items/2/line",
+   "ru": "Когда рассказ длинный и личный",
+   "en": "When the story is long and personal",
+   "pt": "Quando a história é longa e pessoal"
+  },
+  {
+   "id": "library-02#103",
+   "path": "categories/0/sections/5/items/2/what",
+   "ru": "От классического аудиогида до раздачи звука на телефон посетителя. Единственный способ дать длинный текст, несколько языков и разную глубину на одном и том же экспонате.",
+   "en": "From a classic audio guide to streaming audio to the visitor's phone. The only way to deliver a long text, several languages and different depths from one and the same exhibit.",
+   "pt": "Do audioguia clássico ao áudio transmitido para o celular do visitante. O único jeito de entregar um texto longo, vários idiomas e profundidades diferentes a partir de um mesmo exponente."
+  },
+  {
+   "id": "library-02#104",
+   "path": "categories/0/sections/5/items/2/good/0",
+   "ru": "Много языков и разные уровни глубины — детский, обзорный, специальный",
+   "en": "Many languages and different depths — children's, general, specialist",
+   "pt": "Muitos idiomas e profundidades diferentes — infantil, geral, especializada"
+  },
+  {
+   "id": "library-02#105",
+   "path": "categories/0/sections/5/items/2/good/1",
+   "ru": "Длинный рассказ дольше двух минут",
+   "en": "A story longer than two minutes",
+   "pt": "Uma história mais longa que dois minutos"
+  },
+  {
+   "id": "library-02#106",
+   "path": "categories/0/sections/5/items/2/good/2",
+   "ru": "Тихий зал, где звук вслух неуместен",
+   "en": "A quiet room where sound out loud would be out of place",
+   "pt": "Uma sala silenciosa onde som em voz alta ficaria deslocado"
+  },
+  {
+   "id": "library-02#107",
+   "path": "categories/0/sections/5/items/2/bad/0",
+   "ru": "Семья или пара: наушники разъединяют людей, пришедших вместе",
+   "en": "A family or a couple: headphones separate people who came together",
+   "pt": "Uma família ou um casal: fones separam quem veio junto"
+  },
+  {
+   "id": "library-02#108",
+   "path": "categories/0/sections/5/items/2/bad/1",
+   "ru": "Короткая подпись — надеть наушники дороже, чем прочитать",
+   "en": "A short caption — putting headphones on costs more than reading it",
+   "pt": "Uma legenda curta — colocar fones custa mais do que lê-la"
+  },
+  {
+   "id": "library-02#109",
+   "path": "categories/0/sections/5/items/2/bad/2",
+   "ru": "Обслуживание: зарядка, дезинфекция, потери",
+   "en": "Servicing: charging, disinfecting, losses",
+   "pt": "Manutenção: carga, desinfecção, perdas"
+  },
+  {
+   "id": "library-02#110",
+   "path": "categories/0/sections/5/items/2/brands/0/note",
+   "ru": "звук на телефон посетителя по Wi-Fi",
+   "en": "звук на телефон посетителя по Wi-Fi",
+   "pt": "som no celular do visitante por Wi-Fi"
+  },
+  {
+   "id": "library-02#111",
+   "path": "categories/0/sections/5/items/2/brands/1/note",
+   "ru": "бесплатная платформа аудиогидов",
+   "en": "бесплатная платформа аудиогидов",
+   "pt": "plataforma gratuita de audioguias"
+  },
+  {
+   "id": "library-02#112",
+   "path": "categories/0/sections/5/items/2/brands/2/note",
+   "ru": "радиогиды, поставка в РФ",
+   "en": "радиогиды, поставка в РФ",
+   "pt": "radioguias, fornecimento na Rússia"
+  },
+  {
+   "id": "library-02#113",
+   "path": "categories/0/sections/5/items/3/name",
+   "ru": "Вибрация, ветер, тепло, запах",
+   "en": "Vibration, wind, heat, scent",
+   "pt": "Vibração, vento, calor, cheiro"
+  },
+  {
+   "id": "library-02#114",
+   "path": "categories/0/sections/5/items/3/line",
+   "ru": "То, что помнят дольше картинки",
+   "en": "What is remembered longer than the picture",
+   "pt": "O que se lembra por mais tempo que a imagem"
+  },
+  {
+   "id": "library-02#115",
+   "path": "categories/0/sections/5/items/3/what",
+   "ru": "Шейкеры в полу и скамьях, вентиляторы, тепло, запах. Стоит копейки на фоне экранов и работает непропорционально сильно: тело запоминает раньше, чем голова.",
+   "en": "Shakers in floors and benches, fans, heat, scent. Pennies next to screens, and it works disproportionately hard: the body remembers before the head does.",
+   "pt": "Shakers em pisos e bancos, ventiladores, calor, cheiro. Centavos ao lado das telas, e funciona de forma desproporcional: o corpo lembra antes da cabeça."
+  },
+  {
+   "id": "library-02#116",
+   "path": "categories/0/sections/5/items/3/good/0",
+   "ru": "Момент, который должен запомниться телом: взрыв, взлёт, шторм, спуск",
+   "en": "A moment that should be remembered by the body: a blast, a launch, a storm, a descent",
+   "pt": "Um momento que deve ser lembrado pelo corpo: uma explosão, um lançamento, uma tempestade, uma descida"
+  },
+  {
+   "id": "library-02#117",
+   "path": "categories/0/sections/5/items/3/good/1",
+   "ru": "Реконструкция среды — жара цеха, сырость окопа, ветер палубы",
+   "en": "Recreating an environment — the heat of a workshop, the damp of a trench, wind on a deck",
+   "pt": "Recriar um ambiente — o calor de uma oficina, a umidade de uma trincheira, o vento num convés"
+  },
+  {
+   "id": "library-02#118",
+   "path": "categories/0/sections/5/items/3/good/2",
+   "ru": "Детская аудитория: телесное впечатление доходит раньше текста",
+   "en": "A young audience: a physical impression lands before text does",
+   "pt": "Público jovem: uma impressão física chega antes do texto"
+  },
+  {
+   "id": "library-02#119",
+   "path": "categories/0/sections/5/items/3/bad/0",
+   "ru": "Постоянное фоновое действие — привыкают за минуту и перестают замечать",
+   "en": "A constant background effect — people habituate within a minute and stop noticing",
+   "pt": "Um efeito de fundo constante — as pessoas se acostumam em um minuto e param de notar"
+  },
+  {
+   "id": "library-02#120",
+   "path": "categories/0/sections/5/items/3/bad/1",
+   "ru": "Запах: остаётся в зале дольше, чем нужно, и нравится не всем",
+   "en": "Scent: it stays in the room longer than intended, and not everyone likes it",
+   "pt": "Cheiro: ele fica na sala mais tempo do que se pretendia, e nem todo mundo gosta"
+  },
+  {
+   "id": "library-02#121",
+   "path": "categories/0/sections/5/items/3/bad/2",
+   "ru": "Аллергии и посетители с чувствительностью — нужна возможность обойти зону",
+   "en": "Allergies and sensitivities — there must be a way to bypass the zone",
+   "pt": "Alergias e sensibilidades — precisa haver um jeito de desviar da zona"
+  },
+  {
+   "id": "library-02#122",
+   "path": "categories/0/sections/5/items/3/brands/0/note",
+   "ru": "низкочастотные шейкеры под сиденья и пол",
+   "en": "низкочастотные шейкеры под сиденья и пол",
+   "pt": "shakers de baixa frequência sob assentos e piso"
+  },
+  {
+   "id": "library-02#123",
+   "path": "categories/0/sections/5/items/3/brands/1/note",
+   "ru": "эффекты ветра, воды, запаха",
+   "en": "эффекты ветра, воды, запаха",
+   "pt": "efeitos de vento, água, cheiro"
+  },
+  {
+   "id": "library-02#124",
+   "path": "categories/0/sections/5/items/3/brands/2/note",
+   "ru": "дозирование запаха в помещении",
+   "en": "дозирование запаха в помещении",
+   "pt": "dosagem de aroma em ambiente"
+  },
+  {
+   "id": "library-02#125",
+   "path": "categories/0/sections/5/items/4/name",
+   "ru": "Управляемый свет",
+   "en": "Controlled light",
+   "pt": "Luz controlada"
+  },
+  {
+   "id": "library-02#126",
+   "path": "categories/0/sections/5/items/4/line",
+   "ru": "Самый дешёвый способ сменить сцену",
+   "en": "The cheapest way to change a scene",
+   "pt": "O jeito mais barato de mudar uma cena"
+  },
+  {
+   "id": "library-02#127",
+   "path": "categories/0/sections/5/items/4/what",
+   "ru": "Свет в экспозиции не освещает, а рассказывает: выделяет, гасит, ведёт, задаёт ритм. Управляется теми же сценариями, что и всё остальное, и стоит кратно дешевле любого экрана.",
+   "en": "Light in an exhibition does not illuminate, it narrates: singles out, extinguishes, leads, sets the rhythm. It runs on the same cues as everything else at a fraction of any screen.",
+   "pt": "A luz em uma exposição não ilumina, ela narra: destaca, apaga, conduz, marca o ritmo. Roda nas mesmas deixas de todo o resto por uma fração do preço de qualquer tela."
+  },
+  {
+   "id": "library-02#128",
+   "path": "categories/0/sections/5/items/4/good/0",
+   "ru": "Нужен ритм маршрута: тьма, вспышка, тишина",
+   "en": "The route needs rhythm: darkness, flash, stillness",
+   "pt": "O percurso precisa de ritmo: escuridão, clarão, quietude"
+  },
+  {
+   "id": "library-02#129",
+   "path": "categories/0/sections/5/items/4/good/1",
+   "ru": "Выделить один подлинник в зале, не трогая остальное",
+   "en": "One original has to be picked out without touching the rest of the room",
+   "pt": "Um original precisa ser destacado sem mexer no resto da sala"
+  },
+  {
+   "id": "library-02#130",
+   "path": "categories/0/sections/5/items/4/good/2",
+   "ru": "Бюджет кончился, а зал скучный",
+   "en": "The budget has run out and the room is dull",
+   "pt": "O orçamento acabou e a sala está sem graça"
+  },
+  {
+   "id": "library-02#131",
+   "path": "categories/0/sections/5/items/4/bad/0",
+   "ru": "Свет по сценарию конфликтует с общим освещением зала: их надо разводить сразу",
+   "en": "Scripted light fights the room's general lighting: separate the two from the start",
+   "pt": "A luz roteirizada briga com a iluminação geral da sala: separe as duas desde o começo"
+  },
+  {
+   "id": "library-02#132",
+   "path": "categories/0/sections/5/items/4/bad/1",
+   "ru": "Требования к сохранности экспонатов — люксы и ультрафиолет считаются с хранителем",
+   "en": "Conservation requirements — lux levels and UV are agreed with the curator",
+   "pt": "Exigências de conservação — níveis de lux e UV são acordados com o curador"
+  },
+  {
+   "id": "library-02#133",
+   "path": "categories/0/sections/5/items/4/bad/2",
+   "ru": "Мигание и стробы: медицинское ограничение, не эстетическое",
+   "en": "Flashing and strobes: a medical constraint, not an aesthetic one",
+   "pt": "Piscadas e estroboscópio: é uma restrição médica, não estética"
+  },
+  {
+   "id": "library-02#134",
+   "path": "categories/0/sections/5/items/4/brands/0/note",
+   "ru": "музейный и театральный стандарт",
+   "en": "музейный и театральный стандарт",
+   "pt": "padrão de museu e de teatro"
+  },
+  {
+   "id": "library-02#135",
+   "path": "categories/0/sections/5/items/4/brands/1/note",
+   "ru": "подвижные приборы",
+   "en": "подвижные приборы",
+   "pt": "refletores móveis"
+  },
+  {
+   "id": "library-02#136",
+   "path": "categories/0/sections/5/items/4/brands/2/note",
+   "ru": "доступный сегмент",
+   "en": "доступный сегмент",
+   "pt": "segmento acessível"
+  },
+  {
+   "id": "library-02#137",
+   "path": "categories/0/sections/5/items/4/brands/3/note",
+   "ru": "инсталляционные линейки",
+   "en": "инсталляционные линейки",
+   "pt": "linhas de instalação"
+  },
+  {
+   "id": "library-02#138",
+   "path": "categories/0/sections/6/name",
+   "ru": "Движение и материя",
+   "en": "Motion and matter",
+   "pt": "Movimento e matéria"
+  },
+  {
+   "id": "library-02#139",
+   "path": "categories/0/sections/6/note",
+   "ru": "Вывод, который не светится. Экспозиция может ответить физически: повернуться, раскрыться, сменить состояние.",
+   "en": "Output that does not glow. An exhibition can answer physically: turn, open, change state.",
+   "pt": "Saída que não brilha. Uma exposição pode responder fisicamente: girar, abrir, mudar de estado."
+  },
+  {
+   "id": "library-02#140",
+   "path": "categories/0/sections/6/items/0/name",
+   "ru": "Кинетика и механика",
+   "en": "Kinetics and mechanics",
+   "pt": "Cinética e mecânica"
+  },
+  {
+   "id": "library-02#141",
+   "path": "categories/0/sections/6/items/0/line",
+   "ru": "Экспонат двигается по-настоящему",
+   "en": "The exhibit genuinely moves",
+   "pt": "O exponente se move de verdade"
+  },
+  {
+   "id": "library-02#142",
+   "path": "categories/0/sections/6/items/0/what",
+   "ru": "Приводы и механизмы: макет раскрывается, модель поворачивается, разрез расходится. Впечатление другой природы — предмет настоящий, и это видно с другого конца зала.",
+   "en": "Actuators and mechanisms: a model opens out, a machine rotates, a cutaway parts. A different order of impression — the object is real, and it reads from the far end of the hall.",
+   "pt": "Atuadores e mecanismos: uma maquete se abre, uma máquina gira, um corte se separa. Outra ordem de impressão — o objeto é real, e se lê do outro lado do salão."
+  },
+  {
+   "id": "library-02#143",
+   "path": "categories/0/sections/6/items/0/good/0",
+   "ru": "Устройство изделия: показать в разрезе, раскрыв настоящую форму",
+   "en": "How a product is made: shown in section, with the real form opening up",
+   "pt": "Como um produto é feito: mostrado em corte, com a forma real se abrindo"
+  },
+  {
+   "id": "library-02#144",
+   "path": "categories/0/sections/6/items/0/good/1",
+   "ru": "Зал, где экранов уже слишком много и они перестали работать",
+   "en": "A room where there are already too many screens and they have stopped working",
+   "pt": "Uma sala onde já há telas demais e elas pararam de funcionar"
+  },
+  {
+   "id": "library-02#145",
+   "path": "categories/0/sections/6/items/0/good/2",
+   "ru": "Нужно событие, которое видно с другого конца зала",
+   "en": "An event visible from the far end of the hall",
+   "pt": "Um acontecimento visível do outro lado do salão"
+  },
+  {
+   "id": "library-02#146",
+   "path": "categories/0/sections/6/items/0/bad/0",
+   "ru": "Механика в руках у посетителя: считать ресурс и защиту от защемления",
+   "en": "Mechanics within reach of visitors: count the duty cycle and the pinch protection",
+   "pt": "Mecânica ao alcance dos visitantes: calcule o ciclo de trabalho e a proteção contra esmagamento"
+  },
+  {
+   "id": "library-02#147",
+   "path": "categories/0/sections/6/items/0/bad/1",
+   "ru": "Тихий зал — приводы шумят, и это слышно",
+   "en": "A quiet room — drives are audible",
+   "pt": "Uma sala silenciosa — os acionamentos são audíveis"
+  },
+  {
+   "id": "library-02#148",
+   "path": "categories/0/sections/6/items/0/bad/2",
+   "ru": "Нужен инженер на обслуживании: движущееся изнашивается, экраны нет",
+   "en": "Someone has to maintain it: moving things wear out, screens do not",
+   "pt": "Alguém tem que fazer manutenção: coisas que se movem se desgastam, telas não"
+  },
+  {
+   "id": "library-02#149",
+   "path": "categories/0/sections/6/items/0/spec",
+   "ru": "Единственная группа во всей библиотеке, где нужна оценка рисков по безопасности: движущаяся часть на уровне рук ребёнка — это не вопрос дизайна, а вопрос защиты от травмы.",
+   "en": "The one group in this whole library that needs a safety risk assessment: a moving part at a child's hand height is not a design question but an injury question.",
+   "pt": "O único grupo de toda esta biblioteca que exige análise de risco de segurança: uma peça em movimento na altura da mão de uma criança não é questão de projeto, é questão de lesão."
+  }
+ ]
+}

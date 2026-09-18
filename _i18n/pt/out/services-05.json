@@ -1,0 +1,544 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "services-05 (5 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "services-05#001",
+   "path": "services/7/keywords/4",
+   "ru": "голограмма для выставки",
+   "en": "hologram for exhibition",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "holograma para exposição"
+  },
+  {
+   "id": "services-05#002",
+   "path": "services/7/keywords/5",
+   "ru": "прозрачный экран",
+   "en": "transparent display",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "display transparente"
+  },
+  {
+   "id": "services-05#003",
+   "path": "services/7/keywords/6",
+   "ru": "голографическая инсталляция",
+   "en": "holographic installation",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "instalação holográfica"
+  },
+  {
+   "id": "services-05#004",
+   "path": "services/7/keywords/7",
+   "ru": "3D-витрина",
+   "en": "3D showcase",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "vitrine 3D"
+  },
+  {
+   "id": "services-05#005",
+   "path": "services/7/flow/0/text",
+   "ru": "Есть один приём, который работает в шумном павильоне лучше любого другого: объект, который выглядит невозможным. Изображение висит в воздухе, за ним видно зал, вокруг можно обойти — и человек останавливается, ещё не понимая, что перед ним. Это не про технологию, это про физику внимания: глаз цепляется за то, что не объясняется привычным опытом.",
+   "en": "There is one device that works in a noisy exhibition hall better than any other: an object that looks impossible. An image hangs in the air, the hall is visible behind it, you can walk around it — and a person stops before understanding what they are looking at. This is not about technology, it is about the physics of attention: the eye catches on whatever ordinary experience cannot explain.",
+   "pt": "Existe um recurso que funciona num pavilhão barulhento melhor que qualquer outro: um objeto que parece impossível. Uma imagem fica suspensa no ar, o salão continua visível atrás dela, dá para dar a volta — e a pessoa para antes de entender o que está vendo. Isso não é sobre tecnologia, é sobre a física da atenção: o olho se prende ao que a experiência comum não consegue explicar."
+  },
+  {
+   "id": "services-05#006",
+   "path": "services/7/flow/1/text",
+   "ru": "Дальше начинается работа. Остановить — половина дела; вторая половина в том, чтобы за эти секунды человек понял, о чём речь, и захотел остаться.",
+   "en": "Then the work begins. Stopping someone is half of it; the other half is that in those seconds they grasp the subject and want to stay.",
+   "pt": "Aí começa o trabalho. Fazer alguém parar é metade; a outra metade é que, nesses segundos, essa pessoa entenda o assunto e queira ficar."
+  },
+  {
+   "id": "services-05#007",
+   "path": "services/7/flow/2/text",
+   "ru": "Что мы под этим понимаем",
+   "en": "What we mean by it",
+   "pt": "O que queremos dizer com isso"
+  },
+  {
+   "id": "services-05#008",
+   "path": "services/7/flow/3/text",
+   "ru": "«Голограмма» в обиходе означает почти всё что угодно, поэтому разберём честно. Настоящая голография — это интерференционная запись, и в выставочных задачах она почти не применяется. Работают другие решения, и каждое даёт свой эффект:",
+   "en": "In everyday speech “hologram” means almost anything, so let us be precise. True holography is an interference recording, and in exhibition work it is almost never used. Other solutions do the job, and each gives a different effect:",
+   "pt": "Na linguagem do dia a dia “holograma” significa quase qualquer coisa, então vamos ser precisos. Holografia de verdade é um registro de interferência, e em trabalho expositivo quase nunca é usada. Outras soluções dão conta, e cada uma produz um efeito diferente:"
+  },
+  {
+   "id": "services-05#009",
+   "path": "services/7/flow/4/items/0",
+   "ru": "Прозрачный экран или витрина: изображение поверх реального предмета или пространства за стеклом. Предмет остаётся настоящим, а данные, разрезы и анимация ложатся на него слоем.",
+   "en": "A transparent display or showcase: an image over a real object or the space behind the glass. The object stays real while data, cutaways and animation are laid over it.",
+   "pt": "Um display ou vitrine transparente: imagem sobre um objeto real ou sobre o espaço atrás do vidro. O objeto continua real enquanto dados, cortes e animação são sobrepostos a ele."
+  },
+  {
+   "id": "services-05#010",
+   "path": "services/7/flow/4/items/1",
+   "ru": "Объёмный куб с изображением на нескольких плоскостях: объект читается как трёхмерный с любой стороны, вокруг него собирается группа.",
+   "en": "A volumetric cube with the image on several planes: the object reads as three-dimensional from any side, and a group gathers around it.",
+   "pt": "Um cubo volumétrico com a imagem em vários planos: o objeto é lido como tridimensional de qualquer lado, e um grupo se junta em volta dele."
+  },
+  {
+   "id": "services-05#011",
+   "path": "services/7/flow/4/items/2",
+   "ru": "Псевдоголографическая пирамида и «парящее» изображение: дешевле, компактнее, эффектнее на малом объекте — и заметно слабее на большом.",
+   "en": "A pseudo-holographic pyramid or “floating” image: cheaper, more compact, striking on a small object — and noticeably weaker on a large one.",
+   "pt": "Uma pirâmide pseudo-holográfica ou imagem “flutuante”: mais barata, mais compacta, marcante em objeto pequeno — e visivelmente mais fraca em objeto grande."
+  },
+  {
+   "id": "services-05#012",
+   "path": "services/7/flow/4/items/3",
+   "ru": "Вентиляторные и светодиодные объёмные дисплеи: очень яркие, хорошо работают в засветке, ограничены по разрешению и сюжету.",
+   "en": "Fan and LED volumetric displays: very bright, they hold up in ambient light, and they are limited in resolution and subject matter.",
+   "pt": "Displays volumétricos de ventilador e de LED: bem brilhantes, aguentam luz ambiente, e são limitados em resolução e em tipo de assunto."
+  },
+  {
+   "id": "services-05#013",
+   "path": "services/7/flow/4/items/4",
+   "ru": "Дополненная реальность поверх витрины: изображение появляется на экране гостя, сам объект остаётся нетронутым — единственный путь, когда трогать экспонат нельзя.",
+   "en": "Augmented reality over a showcase: the image appears on the guest’s own screen and the object is untouched — the only route when the exhibit cannot be handled.",
+   "pt": "Realidade aumentada sobre a vitrine: a imagem aparece na tela do próprio visitante e o objeto não é tocado — é o único caminho quando o exponente não pode ser manipulado."
+  },
+  {
+   "id": "services-05#014",
+   "path": "services/7/flow/5/text",
+   "ru": "Что выбрать, решает не эффектность, а три вещи: расстояние до зрителя, освещение в зале и то, сколько человек должны видеть объект одновременно.",
+   "en": "The choice is decided not by how impressive it looks but by three things: viewing distance, the lighting in the room, and how many people must see the object at once.",
+   "pt": "A escolha não é decidida pelo quanto impressiona, e sim por três coisas: distância de visão, iluminação da sala e quantas pessoas precisam ver o objeto ao mesmo tempo."
+  },
+  {
+   "id": "services-05#015",
+   "path": "services/7/flow/6/text",
+   "ru": "Голографический каталог: один объект вместо стенда",
+   "en": "A holographic catalogue: one object instead of a stand",
+   "pt": "Um catálogo holográfico: um objeto no lugar de um estande"
+  },
+  {
+   "id": "services-05#016",
+   "path": "services/7/flow/7/text",
+   "ru": "Самая практичная задача этого жанра — показать то, чего физически нет в зале. У корпорации сотни изделий на десятках предприятий; привезти их нельзя, а листалка на экране не работает. Объёмная витрина с пультом превращает это в каталог, который можно листать вместе с гостем: изделие поворачивается, разбирается, показывает начинку. Для Ростех Экспо мы собрали такой объект в форме логотипа холдинга — прозрачный экран сохранил вид зала, а пульт открыл доступ к продукции всех предприятий.",
+   "en": "The most practical task in this genre is showing what is physically not in the room. A corporation has hundreds of products across dozens of plants; you cannot ship them, and a slide carousel does not work. A volumetric showcase with a console turns this into a catalogue you can page through together with a guest: the product rotates, comes apart, shows its insides. For Rostec Expo we built such an object in the shape of the group’s logo — a transparent screen kept the view of the hall while the console opened access to the products of every enterprise.",
+   "pt": "A tarefa mais prática desse gênero é mostrar o que fisicamente não está na sala. Uma corporação tem centenas de produtos em dezenas de fábricas; não dá para trazê-los, e um carrossel de slides não funciona. Uma vitrine volumétrica com console transforma isso em um catálogo que dá para folhear junto com o visitante: o produto gira, se abre, mostra o interior. Para a Rostec Expo construímos um objeto assim com a forma do logotipo do grupo — uma tela transparente mantinha a vista do salão enquanto o console abria o acesso aos produtos de todas as empresas."
+  },
+  {
+   "id": "services-05#017",
+   "path": "services/7/flow/8/text",
+   "ru": "У этого решения есть свойство, которое обнаруживается не сразу: оно переживает выставку. Голографический куб Ростеха работает спустя годы после запуска — контент меняется, а сама система стала частью инфраструктуры павильона. Один объект продолжает работать для разных компаний, продуктов и сценариев.",
+   "en": "This solution has a property that is not obvious at first: it outlives the exhibition. Rostec’s holographic cube still works years after launch — the content changes while the system itself has become part of the pavilion’s infrastructure. One object keeps working for different companies, products and scenarios.",
+   "pt": "Essa solução tem uma propriedade que não é óbvia de início: ela sobrevive à exposição. O cubo holográfico da Rostec ainda funciona anos depois da inauguração — o conteúdo muda enquanto o sistema em si virou parte da infraestrutura do pavilhão. Um mesmo objeto segue funcionando para empresas, produtos e roteiros diferentes."
+  },
+  {
+   "id": "services-05#018",
+   "path": "services/7/flow/9/text",
+   "ru": "Где голограмма проигрывает — и мы это говорим до сметы",
+   "en": "Where a hologram loses — and we say so before the quote",
+   "pt": "Onde um holograma perde — e a gente diz isso antes do orçamento"
+  },
+  {
+   "id": "services-05#019",
+   "path": "services/7/flow/10/items/0",
+   "ru": "Яркий зал. Почти все объёмные решения строятся на свечении в темноте; на прямом солнце от эффекта не остаётся ничего. Управляемый свет в зоне объекта обязателен.",
+   "en": "A bright room. Almost all volumetric solutions rely on glowing in the dark; in direct sunlight nothing of the effect survives. Controlled light around the object is essential.",
+   "pt": "Sala clara. Quase todas as soluções volumétricas dependem de brilhar no escuro; sob luz solar direta não sobra nada do efeito. Luz controlada em volta do objeto é indispensável."
+  },
+  {
+   "id": "services-05#020",
+   "path": "services/7/flow/10/items/1",
+   "ru": "Большая группа. Многие схемы имеют узкий угол, при котором иллюзия держится. Если нужно, чтобы объект работал на делегацию из двадцати человек, схема выбирается другая — и стоит дороже.",
+   "en": "A large group. Many schemes have a narrow angle within which the illusion holds. If the object must work for a delegation of twenty, a different scheme is chosen — and it costs more.",
+   "pt": "Grupo grande. Muitos esquemas têm um ângulo estreito dentro do qual a ilusão se sustenta. Se o objeto precisa funcionar para uma delegação de vinte, escolhe-se outro esquema — e ele custa mais."
+  },
+  {
+   "id": "services-05#021",
+   "path": "services/7/flow/10/items/2",
+   "ru": "Мелкий текст. Разрешение объёмных дисплеев ниже, чем у обычного экрана: цифры и подписи выносятся на сопутствующий экран, а не в объём.",
+   "en": "Small text. Volumetric displays resolve less than an ordinary screen: figures and captions go on a companion screen, not into the volume.",
+   "pt": "Texto pequeno. Displays volumétricos resolvem menos que uma tela comum: números e legendas vão para uma tela de apoio, não para dentro do volume."
+  },
+  {
+   "id": "services-05#022",
+   "path": "services/7/flow/10/items/3",
+   "ru": "Подлинный предмет рядом. Если главное в экспозиции — сам артефакт, светящаяся витрина рядом с ним конкурирует за внимание и обычно вредит.",
+   "en": "An authentic object nearby. If the heart of the exhibition is the artefact itself, a glowing showcase beside it competes for attention and usually does harm.",
+   "pt": "Um objeto autêntico ao lado. Se o coração da exposição é a própria peça, uma vitrine luminosa ao lado disputa a atenção e normalmente atrapalha."
+  },
+  {
+   "id": "services-05#023",
+   "path": "services/7/flow/11/text",
+   "ru": "Как идёт работа",
+   "en": "How the work goes",
+   "pt": "Como o trabalho acontece"
+  },
+  {
+   "id": "services-05#024",
+   "path": "services/7/flow/12/items/0",
+   "ru": "Разбираем задачу: что показываем, кому, с какого расстояния и в каком свете. Схема выбирается здесь, а не по картинкам референсов.",
+   "en": "We take the task apart: what is shown, to whom, from what distance and in what light. The scheme is chosen here, not from reference pictures.",
+   "pt": "Desmontamos a tarefa: o que é mostrado, para quem, de que distância e com que luz. O esquema se escolhe aqui, não a partir de imagens de referência."
+  },
+  {
+   "id": "services-05#025",
+   "path": "services/7/flow/12/items/1",
+   "ru": "Концепция и дизайн объекта: форма, вписанная в пространство. У Ростеха это был логотип холдинга — объект узнаваем до того, как включился.",
+   "en": "Concept and design of the object: a form that belongs in the space. For Rostec it was the group’s logo — the object is recognisable before it is switched on.",
+   "pt": "Conceito e design do objeto: uma forma que pertença ao espaço. Para a Rostec foi o logotipo do grupo — o objeto é reconhecível antes de ser ligado."
+  },
+  {
+   "id": "services-05#026",
+   "path": "services/7/flow/12/items/2",
+   "ru": "Инженерия, подбор и поставка оборудования. Самый долгий по срокам этап: часть комплектующих едет месяцами, и сценарий пишется с учётом того, что реально доступно.",
+   "en": "Engineering, specification and procurement. The longest stage by schedule: some components take months, and the scenario is written around what is actually available.",
+   "pt": "Engenharia, especificação e compras. A etapa mais longa em prazo: alguns componentes levam meses, e o roteiro é escrito em torno do que está de fato disponível."
+  },
+  {
+   "id": "services-05#027",
+   "path": "services/7/flow/12/items/3",
+   "ru": "Конструкция и пульт управления: тем, кто ведёт презентацию, нужен инструмент, а не пульт от телевизора.",
+   "en": "Structure and control console: whoever runs the presentation needs an instrument, not a TV remote.",
+   "pt": "Estrutura e console de controle: quem conduz a apresentação precisa de um instrumento, não de um controle de TV."
+  },
+  {
+   "id": "services-05#028",
+   "path": "services/7/flow/12/items/4",
+   "ru": "Программная часть и ввод в эксплуатацию, обучение сотрудников, регламент обслуживания.",
+   "en": "Software, commissioning, staff training and a maintenance routine.",
+   "pt": "Software, comissionamento, treinamento da equipe e uma rotina de manutenção."
+  },
+  {
+   "id": "services-05#029",
+   "path": "services/7/flow/13/text",
+   "ru": "Наш проект такого класса занял шесть месяцев от задачи до запуска. Это честный ориентир для объекта, который делается один раз и работает годами.",
+   "en": "Our project of this class took six months from brief to launch. That is an honest benchmark for an object built once and working for years.",
+   "pt": "Nosso projeto dessa classe levou seis meses do briefing ao lançamento. É uma referência honesta para um objeto construído uma vez e que funciona por anos."
+  },
+  {
+   "id": "services-05#030",
+   "path": "services/7/flow/14/text",
+   "ru": "Объём и иллюзия: четыре способа показать предмет, которого нет →",
+   "en": "Volume and illusion: four ways to show an object that is not there →",
+   "pt": "Volume e ilusão: quatro jeitos de mostrar um objeto que não está ali →"
+  },
+  {
+   "id": "services-05#031",
+   "path": "services/7/faq/0/q",
+   "ru": "Это настоящая голограмма?",
+   "en": "Is it a real hologram?",
+   "pt": "É um holograma de verdade?"
+  },
+  {
+   "id": "services-05#032",
+   "path": "services/7/faq/0/a",
+   "ru": "Нет, и почти ничто на выставках ею не является. Настоящая голография — интерференционная запись, в экспозиционных задачах она практически не применяется. Работают прозрачные экраны, объёмные кубы, псевдоголографические схемы и объёмные дисплеи. Мы называем вещи своими именами и подбираем схему под зал, а не под слово.",
+   "en": "No, and almost nothing at trade fairs is. True holography is an interference recording and is practically never used in exhibition work. What works are transparent displays, volumetric cubes, pseudo-holographic schemes and volumetric displays. We call things by their names and pick the scheme for the room, not for the word.",
+   "pt": "Não, e quase nada em feiras é. Holografia de verdade é um registro de interferência e praticamente não se usa em trabalho expositivo. O que funciona são displays transparentes, cubos volumétricos, esquemas pseudo-holográficos e displays volumétricos. A gente chama as coisas pelo nome e escolhe o esquema pela sala, não pela palavra."
+  },
+  {
+   "id": "services-05#033",
+   "path": "services/7/faq/1/q",
+   "ru": "Нужна ли темнота?",
+   "en": "Does it need darkness?",
+   "pt": "Precisa de escuridão?"
+  },
+  {
+   "id": "services-05#034",
+   "path": "services/7/faq/1/a",
+   "ru": "Нужен управляемый свет в зоне объекта и отсутствие прямой засветки. Полностью затемнённый зал не обязателен, но объект под витринным окном не спасёт никакая яркость. Освещение считается до заказа оборудования.",
+   "en": "It needs controlled light around the object and no direct glare. A fully blacked-out hall is not required, but no amount of brightness saves an object placed under a shop window. Lighting is calculated before equipment is ordered.",
+   "pt": "Precisa de luz controlada em volta do objeto e nenhum brilho direto. Um salão totalmente escurecido não é necessário, mas brilho nenhum salva um objeto colocado embaixo de uma vitrine de rua. A iluminação é calculada antes de comprar equipamento."
+  },
+  {
+   "id": "services-05#035",
+   "path": "services/7/faq/2/q",
+   "ru": "Сколько человек могут смотреть одновременно?",
+   "en": "How many people can watch at once?",
+   "pt": "Quantas pessoas conseguem ver ao mesmo tempo?"
+  },
+  {
+   "id": "services-05#036",
+   "path": "services/7/faq/2/a",
+   "ru": "Зависит от схемы: у части решений иллюзия держится в узком угле, у объёмного куба — с любой стороны. Скажите сразу, работает объект на одного гостя у пульта или на делегацию, — от этого выбор и цена меняются существенно.",
+   "en": "It depends on the scheme: for some the illusion holds only within a narrow angle, while a volumetric cube reads from any side. Tell us at the start whether the object serves one guest at a console or a delegation — the choice and the price change substantially.",
+   "pt": "Depende do esquema: em alguns a ilusão só se sustenta dentro de um ângulo estreito, enquanto um cubo volumétrico é lido de qualquer lado. Diga desde o começo se o objeto atende um visitante no console ou uma delegação — a escolha e o preço mudam bastante."
+  },
+  {
+   "id": "services-05#037",
+   "path": "services/7/faq/3/q",
+   "ru": "Можно ли менять содержание потом?",
+   "en": "Can the content be changed later?",
+   "pt": "Dá para mudar o conteúdo depois?"
+  },
+  {
+   "id": "services-05#038",
+   "path": "services/7/faq/3/a",
+   "ru": "Да, и это главная причина делать такой объект. Голографический куб Ростеха работает годами: контент меняется, система остаётся. Разделение содержания и конструкции закладывается на этапе проектирования.",
+   "en": "Yes, and that is the main reason to build such an object. Rostec’s holographic cube has been working for years: the content changes, the system stays. Separating content from structure is decided at the design stage.",
+   "pt": "Dá, e esse é o principal motivo para construir um objeto assim. O cubo holográfico da Rostec funciona há anos: o conteúdo muda, o sistema fica. Separar conteúdo de estrutura se decide na etapa de projeto."
+  },
+  {
+   "id": "services-05#039",
+   "path": "services/8/title",
+   "ru": "Интерактивный макет и проекционный маппинг",
+   "en": "Interactive scale models and projection mapping",
+   "pt": "Maquetes interativas e projeção mapeada"
+  },
+  {
+   "id": "services-05#040",
+   "path": "services/8/nav",
+   "ru": "Интерактивные макеты",
+   "en": "Models and mapping",
+   "pt": "Maquetes e mapeamento"
+  },
+  {
+   "id": "services-05#041",
+   "path": "services/8/subtitle",
+   "ru": "Физическая форма, на которую ложится информация: территория, производство, объект.",
+   "en": "Physical form with information laid over it: a territory, a plant, an object.",
+   "pt": "Forma física com informação sobreposta: um território, uma fábrica, um objeto."
+  },
+  {
+   "id": "services-05#042",
+   "path": "services/8/keywords/0",
+   "ru": "проекционный маппинг",
+   "en": "projection mapping",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "projeção mapeada"
+  },
+  {
+   "id": "services-05#043",
+   "path": "services/8/keywords/1",
+   "ru": "интерактивный макет",
+   "en": "interactive scale model",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "maquete interativa"
+  },
+  {
+   "id": "services-05#044",
+   "path": "services/8/keywords/2",
+   "ru": "макет с проекцией",
+   "en": "projection mapped model",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "maquete com projeção mapeada"
+  },
+  {
+   "id": "services-05#045",
+   "path": "services/8/keywords/3",
+   "ru": "видеомаппинг",
+   "en": "video mapping",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "videomapping"
+  },
+  {
+   "id": "services-05#046",
+   "path": "services/8/keywords/4",
+   "ru": "макет территории",
+   "en": "territory model",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "maquete de território"
+  },
+  {
+   "id": "services-05#047",
+   "path": "services/8/keywords/5",
+   "ru": "интерактивный макет территории",
+   "en": "3D mapping on model",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "mapeamento 3D em maquete"
+  },
+  {
+   "id": "services-05#048",
+   "path": "services/8/keywords/6",
+   "ru": "3D-маппинг на макет",
+   "en": "masterplan model",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "maquete de plano diretor"
+  },
+  {
+   "id": "services-05#049",
+   "path": "services/8/keywords/7",
+   "ru": "проекционный маппинг и интерактивные макеты",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "projeção mapeada e maquetes interativas"
+  },
+  {
+   "id": "services-05#050",
+   "path": "services/8/flow/0/text",
+   "ru": "Логистику видно, а не читаешь в буклете. Есть класс задач, где объяснение словами проигрывает всегда: масштаб территории, устройство производства, последовательность стройки, потоки внутри узла. Схема на слайде это упрощает до неузнаваемости, а честная схема становится нечитаемой. Физический макет с проекцией решает ровно это: форма даёт масштаб, проекция — слои смысла поверх.",
+   "en": "Logistics you can see instead of reading about it in a brochure. There is a class of problems where explaining in words always loses: the scale of a territory, how a plant is laid out, the sequence of a construction programme, the flows inside a hub. A slide simplifies it beyond recognition, and an honest diagram becomes unreadable. A physical model with projection solves exactly this: the form gives the scale, the projection gives the layers of meaning on top.",
+   "pt": "Logística que se vê, em vez de se ler num folheto. Existe uma classe de problemas em que explicar com palavras sempre perde: a escala de um território, como uma fábrica é organizada, a sequência de um programa de obras, os fluxos dentro de um hub. Um slide simplifica além do reconhecível, e um diagrama honesto fica ilegível. Uma maquete física com projeção resolve exatamente isso: a forma dá a escala, a projeção dá as camadas de sentido por cima."
+  },
+  {
+   "id": "services-05#051",
+   "path": "services/8/flow/1/text",
+   "ru": "Что такое интерактивный макет",
+   "en": "What an interactive model is",
+   "pt": "O que é uma maquete interativa"
+  },
+  {
+   "id": "services-05#052",
+   "path": "services/8/flow/2/text",
+   "ru": "Это рельеф или объект, собранный в масштабе, на который сверху проецируется изображение с точной привязкой к геометрии. Проекция не «показывает картинку» — она подсвечивает зоны, ведёт по маршрутам, включает слои: очереди строительства, транспорт, инженерные сети, время суток, сценарий развития на десять лет вперёд. Посетитель переключает слои сам, и в этот момент территория становится понятной.",
+   "en": "A relief or an object built to scale, with an image projected onto it registered precisely to the geometry. The projection does not “show a picture” — it highlights zones, traces routes, switches layers: construction phases, transport, utilities, time of day, a ten-year development scenario. The visitor switches layers themselves, and in that moment the territory becomes legible.",
+   "pt": "Um relevo ou um objeto construído em escala, com uma imagem projetada sobre ele registrada com precisão à geometria. A projeção não “mostra uma figura” — ela destaca zonas, traça percursos, troca camadas: fases de obra, transporte, redes, hora do dia, um cenário de desenvolvimento de dez anos. O visitante troca as camadas sozinho, e nesse momento o território fica legível."
+  },
+  {
+   "id": "services-05#053",
+   "path": "services/8/flow/3/text",
+   "ru": "Где это работает",
+   "en": "Where it works",
+   "pt": "Onde funciona"
+  },
+  {
+   "id": "services-05#054",
+   "path": "services/8/flow/4/items/0",
+   "ru": "Территории развития, промышленные площадки, логистические узлы, порты — там, где решение принимается по масштабу.",
+   "en": "Development territories, industrial sites, logistics hubs, ports — anywhere the decision turns on scale.",
+   "pt": "Territórios em desenvolvimento, sítios industriais, hubs logísticos, portos — onde quer que a decisão dependa da escala."
+  },
+  {
+   "id": "services-05#055",
+   "path": "services/8/flow/4/items/1",
+   "ru": "Города и градостроительные проекты: что меняется, где и в какой очерёдности.",
+   "en": "Cities and urban planning: what changes, where and in what order.",
+   "pt": "Cidades e planejamento urbano: o que muda, onde e em que ordem."
+  },
+  {
+   "id": "services-05#056",
+   "path": "services/8/flow/4/items/2",
+   "ru": "Производства и технологические цепочки: как устроен процесс, который целиком не увидеть.",
+   "en": "Plants and process chains: how a process works when you cannot see all of it at once.",
+   "pt": "Fábricas e cadeias de processo: como um processo funciona quando não dá para ver tudo de uma vez."
+  },
+  {
+   "id": "services-05#057",
+   "path": "services/8/flow/4/items/3",
+   "ru": "Крупные объекты — аэропорты, вокзалы, стадионы: архитектура и потоки людей внутри.",
+   "en": "Large facilities — airports, stations, stadiums: architecture and the flow of people inside.",
+   "pt": "Grandes equipamentos — aeroportos, estações, estádios: arquitetura e fluxo de pessoas por dentro."
+  },
+  {
+   "id": "services-05#058",
+   "path": "services/8/flow/4/items/4",
+   "ru": "Объектный маппинг: проекция на изделие, фасад или архитектурную форму, когда объект оживает целиком.",
+   "en": "Object mapping: projection onto a product, a façade or an architectural form, when the whole object comes alive.",
+   "pt": "Mapeamento de objeto: projeção sobre um produto, uma fachada ou uma forma arquitetônica, quando o objeto inteiro ganha vida."
+  },
+  {
+   "id": "services-05#059",
+   "path": "services/8/flow/5/text",
+   "ru": "Что решается на этапе проектирования",
+   "en": "What is decided at the design stage",
+   "pt": "O que se decide na etapa de projeto"
+  },
+  {
+   "id": "services-05#060",
+   "path": "services/8/flow/6/text",
+   "ru": "Маппинг — жанр, в котором почти всё определяется до включения проектора. Геометрия макета и оптика считаются вместе: от расстояния и угла зависит, будут ли тени в углублениях и хватит ли яркости на светлых поверхностях. Свет в помещении — половина результата: макет, поставленный под витринное окно, не спасёт никакая техника. Поэтому мы просим планировку и разрез помещения раньше, чем обсуждаем содержание.",
+   "en": "Mapping is a discipline where almost everything is settled before the projector is switched on. Model geometry and optics are calculated together: distance and angle decide whether there will be shadows in the recesses and whether there is enough brightness on the light surfaces. Room lighting is half the result — a model placed under a shop window will not be saved by any hardware. So we ask for the room plan and section before we discuss content.",
+   "pt": "Mapeamento é uma disciplina em que quase tudo se resolve antes de o projetor ser ligado. A geometria da maquete e a óptica são calculadas juntas: distância e ângulo decidem se haverá sombras nas reentrâncias e se há brilho suficiente nas superfícies claras. A iluminação da sala é metade do resultado — uma maquete colocada embaixo de uma vitrine de rua não é salva por hardware nenhum. Por isso pedimos a planta e o corte da sala antes de discutir conteúdo."
+  },
+  {
+   "id": "services-05#061",
+   "path": "services/8/flow/7/items/0",
+   "ru": "Геометрия: что именно моделируем в объёме, а что остаётся плоским. Не всё имеет смысл делать рельефом.",
+   "en": "Geometry: what is actually modelled in three dimensions and what stays flat. Not everything is worth building as relief.",
+   "pt": "Geometria: o que é de fato modelado em três dimensões e o que continua plano. Nem tudo vale construir em relevo."
+  },
+  {
+   "id": "services-05#062",
+   "path": "services/8/flow/7/items/1",
+   "ru": "Расчёт проекции: количество проекторов, точки установки, перекрытия, запас по яркости под реальную засветку.",
+   "en": "Projection calculation: how many projectors, mounting positions, overlaps, brightness headroom for the real ambient light.",
+   "pt": "Cálculo de projeção: quantos projetores, posições de fixação, sobreposições, folga de brilho para a luz ambiente real."
+  },
+  {
+   "id": "services-05#063",
+   "path": "services/8/flow/7/items/2",
+   "ru": "Слои содержания: какие сюжеты живут на макете и как между ними переключаться.",
+   "en": "Content layers: which stories live on the model and how you move between them.",
+   "pt": "Camadas de conteúdo: que histórias vivem na maquete e como se passa de uma para outra."
+  },
+  {
+   "id": "services-05#064",
+   "path": "services/8/flow/7/items/3",
+   "ru": "Управление: пульт оператора, кнопки у макета, планшет, датчики присутствия или голос — выбирается под то, кто будет этим пользоваться.",
+   "en": "Control: an operator console, buttons at the model, a tablet, presence sensors or voice — chosen for whoever will actually use it.",
+   "pt": "Controle: console de operador, botões na maquete, tablet, sensores de presença ou voz — escolhido para quem de fato vai usar."
+  },
+  {
+   "id": "services-05#065",
+   "path": "services/8/flow/7/items/4",
+   "ru": "Калибровка на месте. Совмещение проекции с формой делается только на объекте, и это отдельный этап, а не финальные полчаса монтажа.",
+   "en": "On-site calibration. Registering projection to form happens only on location, and it is a stage of its own, not the last half hour of installation.",
+   "pt": "Calibração no local. Registrar a projeção à forma só acontece no lugar, e é uma etapa própria, não a última meia hora da instalação."
+  },
+  {
+   "id": "services-05#066",
+   "path": "services/8/flow/8/text",
+   "ru": "Про надёжность",
+   "en": "On reliability",
+   "pt": "Sobre confiabilidade"
+  },
+  {
+   "id": "services-05#067",
+   "path": "services/8/flow/9/text",
+   "ru": "Проекция сбивается от вибрации, от смены лампы, от того, что макет случайно сдвинули при уборке. Мы фиксируем геометрию, сохраняем профили калибровки и оставляем на объекте инструкцию по восстановлению совмещения — чтобы это не требовало вызова разработчика из другого города.",
+   "en": "Projection drifts from vibration, from a lamp change, from the model being nudged during cleaning. We fix the geometry, keep calibration profiles and leave a restoration instruction on site — so realigning does not require flying in the developer.",
+   "pt": "A projeção desalinha com vibração, com troca de lâmpada, com um esbarrão na maquete durante a limpeza. A gente fixa a geometria, guarda perfis de calibração e deixa uma instrução de recuperação no local — para que realinhar não exija trazer o desenvolvedor de avião."
+  },
+  {
+   "id": "services-05#068",
+   "path": "services/8/flow/10/text",
+   "ru": "Проекторы и медиасерверы: что берут под маппинг и обо что спотыкаются на второй год →",
+   "en": "Projectors and media servers: what mapping actually needs →",
+   "pt": "Projetores e servidores de mídia: o que o mapeamento realmente precisa →"
+  },
+  {
+   "id": "services-05#069",
+   "path": "services/8/faq/0/q",
+   "ru": "Нужна ли полная темнота?",
+   "en": "Does the room need to be fully dark?",
+   "pt": "A sala precisa ficar totalmente escura?"
+  },
+  {
+   "id": "services-05#070",
+   "path": "services/8/faq/0/a",
+   "ru": "Нет, но освещение считается заранее. Управляемый свет в зоне макета и отсутствие прямой засветки от окон — обязательны; полный затемнённый зал не нужен. Если помещение светлое, это решается яркостью и материалом поверхности, но решать надо до заказа оборудования.",
+   "en": "No, but lighting has to be planned. Controlled light in the model zone and no direct daylight on it are essential; a fully blacked-out hall is not. If the room is bright it is solved with brightness and surface material — but it must be solved before equipment is ordered.",
+   "pt": "Não, mas a iluminação precisa ser planejada. Luz controlada na zona da maquete e nenhuma luz do dia direta sobre ela são indispensáveis; um salão totalmente escurecido não é. Se a sala for clara, resolve-se com brilho e material de superfície — mas tem que ser resolvido antes de comprar equipamento."
+  },
+  {
+   "id": "services-05#071",
+   "path": "services/8/faq/1/q",
+   "ru": "Чем интерактивный макет лучше большого экрана?",
+   "en": "Why is an interactive model better than a large screen?",
+   "pt": "Por que uma maquete interativa é melhor que uma tela grande?"
+  },
+  {
+   "id": "services-05#072",
+   "path": "services/8/faq/1/a",
+   "ru": "Масштабом и телесностью. Экран показывает изображение территории, макет даёт саму территорию — вокруг него можно ходить, показывать пальцем, обсуждать вдвоём и втроём. Для группового разговора — а решения по территориям принимаются группой — это принципиальная разница.",
+   "en": "Scale and physicality. A screen shows an image of a territory; a model gives you the territory — you can walk around it, point at it, discuss it two or three people at a time. For a group conversation, and decisions about territories are made by groups, that difference is fundamental.",
+   "pt": "Escala e fisicalidade. Uma tela mostra a imagem de um território; uma maquete entrega o território — dá para dar a volta, apontar, discutir de duas ou três pessoas. Para uma conversa em grupo, e decisões sobre territórios são tomadas em grupo, essa diferença é fundamental."
+  },
+  {
+   "id": "services-05#073",
+   "path": "services/8/faq/2/q",
+   "ru": "Можно ли обновлять содержание потом?",
+   "en": "Can the content be updated later?",
+   "pt": "Dá para atualizar o conteúdo depois?"
+  },
+  {
+   "id": "services-05#074",
+   "path": "services/8/faq/2/a",
+   "ru": "Да, если это заложено: слои и данные отделены от геометрии. Проект развития меняется, и содержание макета должно меняться вместе с ним без пересборки рельефа.",
+   "en": "Yes, if it is designed that way: layers and data are kept separate from geometry. A development programme changes, and the model’s content has to change with it without rebuilding the relief.",
+   "pt": "Dá, se for projetado assim: camadas e dados são mantidos separados da geometria. Um programa de desenvolvimento muda, e o conteúdo da maquete tem que mudar junto sem refazer o relevo."
+  },
+  {
+   "id": "services-05#075",
+   "path": "services/8/faq/3/q",
+   "ru": "Сколько это занимает?",
+   "en": "How long does it take?",
+   "pt": "Quanto tempo leva?"
+  }
+ ]
+}

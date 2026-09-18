@@ -1,0 +1,427 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "concepts-04 (4 de 4)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "concepts-04#001",
+   "path": "concepts/24/solves/0",
+   "ru": "Снижает психологический барьер перед нагрузкой.",
+   "en": "Lowers the mental barrier to physical effort.",
+   "pt": "Reduz a barreira mental para o esforço físico."
+  },
+  {
+   "id": "concepts-04#002",
+   "path": "concepts/24/solves/1",
+   "ru": "Адаптирует задания под уровень человека.",
+   "en": "Adapts tasks to each person's level.",
+   "pt": "Adapta as tarefas ao nível de cada pessoa."
+  },
+  {
+   "id": "concepts-04#003",
+   "path": "concepts/24/solves/2",
+   "ru": "Создаёт индивидуальные и командные соревнования.",
+   "en": "Sets up both solo and team competition.",
+   "pt": "Monta competição individual e em equipe."
+  },
+  {
+   "id": "concepts-04#004",
+   "path": "concepts/24/essence",
+   "ru": "Свет, проекция и сенсоры превращают зал в игровое поле. Система показывает, куда двигаться, что задевать, куда бросать и когда менять темп.",
+   "en": "Light, projection and sensors turn a room into a playing field. The system shows where to move, what to touch, where to throw and when to change pace.",
+   "pt": "Luz, projeção e sensores transformam uma sala em campo de jogo. O sistema mostra para onde se mover, o que tocar, onde arremessar e quando mudar o ritmo."
+  },
+  {
+   "id": "concepts-04#005",
+   "path": "concepts/24/feel",
+   "ru": "Я играю — и только потом замечаю, насколько серьёзно тренировался.",
+   "en": "I'm playing — and only afterwards do I notice how hard I worked.",
+   "pt": "Estou jogando — e só depois percebo o quanto me esforcei."
+  },
+  {
+   "id": "concepts-04#006",
+   "path": "concepts/24/spaces",
+   "ru": "Фитнес-клубы • спортивные центры • школы • реабилитация • семейные развлечения",
+   "en": "Fitness clubs • sports centers • schools • rehabilitation • family entertainment",
+   "pt": "Academias • centros esportivos • escolas • reabilitação • entretenimento familiar"
+  },
+  {
+   "id": "concepts-04#007",
+   "path": "concepts/24/mechanics/0",
+   "ru": "Трекинг движений",
+   "en": "Motion tracking",
+   "pt": "Rastreamento de movimento"
+  },
+  {
+   "id": "concepts-04#008",
+   "path": "concepts/24/mechanics/1",
+   "ru": "Световые и проекционные цели",
+   "en": "Light and projection targets",
+   "pt": "Alvos de luz e projeção"
+  },
+  {
+   "id": "concepts-04#009",
+   "path": "concepts/24/mechanics/2",
+   "ru": "Адаптивная сложность",
+   "en": "Adaptive difficulty",
+   "pt": "Dificuldade adaptativa"
+  },
+  {
+   "id": "concepts-04#010",
+   "path": "concepts/24/mechanics/3",
+   "ru": "Система очков",
+   "en": "Scoring system",
+   "pt": "Sistema de pontuação"
+  },
+  {
+   "id": "concepts-04#011",
+   "path": "concepts/24/mechanics/4",
+   "ru": "Командные режимы",
+   "en": "Team modes",
+   "pt": "Modos em equipe"
+  },
+  {
+   "id": "concepts-04#012",
+   "path": "concepts/24/comment",
+   "ru": "Игра заменяет абстрактную цель «тренироваться» конкретными короткими задачами и мгновенной обратной связью. Человек видит прогресс, принимает решения и получает эмоциональную награду, поэтому нагрузка воспринимается легче.",
+   "en": "A game swaps the abstract goal of \"working out\" for short, concrete tasks and instant feedback. People see progress, make decisions and get an emotional reward, so the effort feels lighter.",
+   "pt": "O jogo troca o objetivo abstrato de “treinar” por tarefas curtas e concretas com retorno imediato. A pessoa vê progresso, toma decisões e recebe recompensa emocional, então o esforço parece mais leve."
+  },
+  {
+   "id": "concepts-04#013",
+   "path": "concepts/24/adapt",
+   "ru": "Кардио, координация, реакция, командные игры, детские занятия, реабилитационные упражнения.",
+   "en": "Cardio, coordination, reaction time, team games, children's classes, rehabilitation exercises.",
+   "pt": "Cardio, coordenação, tempo de reação, jogos em equipe, aulas infantis, exercícios de reabilitação."
+  },
+  {
+   "id": "concepts-04#014",
+   "path": "concepts/25/title",
+   "ru": "Каждый шаг становится частью сообщения",
+   "en": "Every Step Becomes Part of the Message",
+   "pt": "Cada passo vira parte da mensagem"
+  },
+  {
+   "id": "concepts-04#015",
+   "path": "concepts/25/line",
+   "ru": "Когда привычный маршрут должен превратиться в заметный смысловой и визуальный элемент.",
+   "en": "When an everyday route should turn into a visual and narrative event.",
+   "pt": "Quando um percurso cotidiano deve virar um acontecimento visual e narrativo."
+  },
+  {
+   "id": "concepts-04#016",
+   "path": "concepts/25/need",
+   "ru": "Когда привычный маршрут должен превратиться в заметный смысловой и визуальный элемент.",
+   "en": "When an everyday route should turn into a visual and narrative event.",
+   "pt": "Quando um percurso cotidiano deve virar um acontecimento visual e narrativo."
+  },
+  {
+   "id": "concepts-04#017",
+   "path": "concepts/25/solves/0",
+   "ru": "Использует лестницу как полноценный медианоситель.",
+   "en": "Turns a staircase into a full-fledged medium.",
+   "pt": "Transforma uma escada em um meio de comunicação de verdade."
+  },
+  {
+   "id": "concepts-04#018",
+   "path": "concepts/25/solves/1",
+   "ru": "Связывает движение человека с раскрытием контента.",
+   "en": "Links a person's movement to the unfolding of content.",
+   "pt": "Liga o movimento da pessoa ao desdobramento do conteúdo."
+  },
+  {
+   "id": "concepts-04#019",
+   "path": "concepts/25/solves/2",
+   "ru": "Создаёт сильный образ без дополнительной площади.",
+   "en": "Creates a strong image without taking up extra floor space.",
+   "pt": "Cria uma imagem forte sem ocupar área de piso extra."
+  },
+  {
+   "id": "concepts-04#020",
+   "path": "concepts/25/essence",
+   "ru": "Специальный LED-экран покрывает подступенки или всю поверхность лестницы. Текст, графика и произведения искусства складываются в единое изображение.",
+   "en": "Purpose-built LED screens cover the risers or the entire surface of a staircase. Text, graphics and artworks assemble into one image.",
+   "pt": "Telas de LED feitas sob medida cobrem os espelhos dos degraus ou toda a superfície da escada. Texto, gráficos e obras se montam em uma imagem única."
+  },
+  {
+   "id": "concepts-04#021",
+   "path": "concepts/25/feel",
+   "ru": "Я поднимаюсь сквозь историю, а не просто по лестнице.",
+   "en": "I'm climbing through a story, not just up the stairs.",
+   "pt": "Estou subindo por dentro de uma história, e não só uma escada."
+  },
+  {
+   "id": "concepts-04#022",
+   "path": "concepts/25/spaces",
+   "ru": "Музеи • офисы • университеты • торговые центры • выставки • общественные здания",
+   "en": "Museums • offices • universities • shopping centers • exhibitions • public buildings",
+   "pt": "Museus • escritórios • universidades • shoppings • exposições • prédios públicos"
+  },
+  {
+   "id": "concepts-04#023",
+   "path": "concepts/25/mechanics/0",
+   "ru": "Прочные LED-модули",
+   "en": "Load-rated LED modules",
+   "pt": "Módulos de LED com carga estrutural certificada"
+  },
+  {
+   "id": "concepts-04#024",
+   "path": "concepts/25/mechanics/1",
+   "ru": "Контент под геометрию ступеней",
+   "en": "Content built to the geometry of the steps",
+   "pt": "Conteúdo construído para a geometria dos degraus"
+  },
+  {
+   "id": "concepts-04#025",
+   "path": "concepts/25/mechanics/2",
+   "ru": "Анаморфный вид",
+   "en": "Anamorphic view",
+   "pt": "Vista anamórfica"
+  },
+  {
+   "id": "concepts-04#026",
+   "path": "concepts/25/mechanics/3",
+   "ru": "Реакция на движение — опционально",
+   "en": "Response to movement — optional",
+   "pt": "Resposta ao movimento — opcional"
+  },
+  {
+   "id": "concepts-04#027",
+   "path": "concepts/25/mechanics/4",
+   "ru": "Интеграция с навигацией",
+   "en": "Wayfinding integration",
+   "pt": "Integração com a orientação do espaço"
+  },
+  {
+   "id": "concepts-04#028",
+   "path": "concepts/25/comment",
+   "ru": "Лестница уже задаёт последовательность и ритм. Контент может раскрываться шаг за шагом, направлять человека и собираться в большой образ с ключевой точки. Повседневное действие превращается в часть сценария.",
+   "en": "A staircase already sets a sequence and a rhythm. Content can reveal itself step by step, guide people and resolve into one big image from a key vantage point. An everyday action becomes part of the narrative.",
+   "pt": "Uma escada já estabelece uma sequência e um ritmo. O conteúdo pode se revelar degrau por degrau, guiar as pessoas e se resolver em uma grande imagem a partir de um ponto de vista principal. Uma ação cotidiana vira parte da narrativa."
+  },
+  {
+   "id": "concepts-04#029",
+   "path": "concepts/25/adapt",
+   "ru": "Навигация, история организации, данные, искусство, рекламные кампании, игровые задания и образовательные последовательности.",
+   "en": "Wayfinding, the story of an organization, data, art, ad campaigns, game challenges and learning sequences.",
+   "pt": "Orientação, a história de uma organização, dados, arte, campanhas publicitárias, desafios de jogo e sequências de aprendizado."
+  },
+  {
+   "id": "concepts-04#030",
+   "path": "concepts/26/title",
+   "ru": "Космическая миссия для настоящей команды",
+   "en": "A Space Mission for a Real Crew",
+   "pt": "Uma missão espacial para uma tripulação de verdade"
+  },
+  {
+   "id": "concepts-04#031",
+   "path": "concepts/26/line",
+   "ru": "Когда нужен флагманский аттракцион с длинным сценарием, повторными посещениями и сильной групповой динамикой.",
+   "en": "When you need a flagship attraction with a long scenario, repeat visits and strong group dynamics.",
+   "pt": "Quando é preciso uma atração principal com roteiro longo, revisitas e forte dinâmica de grupo."
+  },
+  {
+   "id": "concepts-04#032",
+   "path": "concepts/26/need",
+   "ru": "Когда нужен флагманский аттракцион с длинным сценарием, повторными посещениями и сильной групповой динамикой.",
+   "en": "When you need a flagship attraction with a long scenario, repeat visits and strong group dynamics.",
+   "pt": "Quando é preciso uma atração principal com roteiro longo, revisitas e forte dinâmica de grupo."
+  },
+  {
+   "id": "concepts-04#033",
+   "path": "concepts/26/solves/0",
+   "ru": "Создаёт полноценное приключение внутри музея или центра.",
+   "en": "Builds a full-scale adventure inside a museum or a center.",
+   "pt": "Constrói uma aventura em escala real dentro de um museu ou de um centro."
+  },
+  {
+   "id": "concepts-04#034",
+   "path": "concepts/26/solves/1",
+   "ru": "Объединяет участников общей ответственностью.",
+   "en": "Binds participants together with shared responsibility.",
+   "pt": "Amarra os participantes por responsabilidade compartilhada."
+  },
+  {
+   "id": "concepts-04#035",
+   "path": "concepts/26/solves/2",
+   "ru": "Позволяет выпускать новые миссии и возвращать аудиторию.",
+   "en": "Lets you release new missions and bring the audience back.",
+   "pt": "Permite lançar novas missões e trazer o público de volta."
+  },
+  {
+   "id": "concepts-04#036",
+   "path": "concepts/26/essence",
+   "ru": "Группа занимает места в космическом корабле. Каждый управляет собственной системой, а полёт и сюжет зависят от совместных решений команды.",
+   "en": "A group takes their seats aboard a spacecraft. Each person runs one system, and both the flight and the story depend on the crew's joint decisions.",
+   "pt": "Um grupo ocupa seus lugares a bordo de uma nave. Cada pessoa opera um sistema, e tanto o voo quanto a história dependem das decisões conjuntas da tripulação."
+  },
+  {
+   "id": "concepts-04#037",
+   "path": "concepts/26/feel",
+   "ru": "Мы действительно экипаж — ошибка одного влияет на всех.",
+   "en": "We really are a crew — one person's mistake hits everyone.",
+   "pt": "A gente é mesmo uma tripulação — o erro de um atinge todo mundo."
+  },
+  {
+   "id": "concepts-04#038",
+   "path": "concepts/26/spaces",
+   "ru": "Музеи космоса • научные центры • тематические парки • футуристические visitor centres",
+   "en": "Space museums • science centers • theme parks • future-facing visitor centres",
+   "pt": "Museus espaciais • centros de ciência • parques temáticos • centros de visitantes voltados ao futuro"
+  },
+  {
+   "id": "concepts-04#039",
+   "path": "concepts/26/mechanics/0",
+   "ru": "Сферический панорамный экран",
+   "en": "Spherical panoramic screen",
+   "pt": "Tela panorâmica esférica"
+  },
+  {
+   "id": "concepts-04#040",
+   "path": "concepts/26/mechanics/1",
+   "ru": "Персональные пульты",
+   "en": "Individual consoles",
+   "pt": "Consoles individuais"
+  },
+  {
+   "id": "concepts-04#041",
+   "path": "concepts/26/mechanics/2",
+   "ru": "Командные головоломки",
+   "en": "Team puzzles",
+   "pt": "Enigmas em equipe"
+  },
+  {
+   "id": "concepts-04#042",
+   "path": "concepts/26/mechanics/3",
+   "ru": "Динамическая платформа",
+   "en": "Motion platform",
+   "pt": "Plataforma de movimento"
+  },
+  {
+   "id": "concepts-04#043",
+   "path": "concepts/26/mechanics/4",
+   "ru": "Пространственный звук и физическая сценография",
+   "en": "Spatial audio and physical set design",
+   "pt": "Áudio espacial e cenografia física"
+  },
+  {
+   "id": "concepts-04#044",
+   "path": "concepts/26/comment",
+   "ru": "Длинный опыт удерживает внимание благодаря ролям, общей цели и постоянной смене типов задач. Каждый участник получает собственную ответственность, а результат рождается только из координации. Серийная структура позволяет открывать новые миссии и создавать постоянную аудиторию.",
+   "en": "A long experience holds attention through roles, a shared goal and a constant change in the kind of task at hand. Everyone carries their own responsibility, and the result exists only through coordination. A serial structure lets new missions launch and builds a returning audience.",
+   "pt": "Uma experiência longa segura a atenção por meio de papéis, de um objetivo comum e da troca constante do tipo de tarefa. Cada um carrega a própria responsabilidade, e o resultado só existe pela coordenação. A estrutura em série permite lançar novas missões e construir um público que volta."
+  },
+  {
+   "id": "concepts-04#045",
+   "path": "concepts/26/adapt",
+   "ru": "Космический полёт, подводная экспедиция, управление городом будущего, научная миссия или философский интерактивный спектакль.",
+   "en": "A spaceflight, a deep-sea expedition, running a city of the future, a research mission or a philosophical interactive performance.",
+   "pt": "Um voo espacial, uma expedição de águas profundas, administrar uma cidade do futuro, uma missão de pesquisa ou uma performance interativa filosófica."
+  },
+  {
+   "id": "concepts-04#046",
+   "path": "concepts/27/title",
+   "ru": "Физический прыжок переносит в цифровой мир",
+   "en": "A Real Jump Lands You in a Digital World",
+   "pt": "Um salto real cai em um mundo digital"
+  },
+  {
+   "id": "concepts-04#047",
+   "path": "concepts/27/line",
+   "ru": "Когда нужен зрелищный аттракцион, понятный с первого взгляда и основанный на настоящем движении.",
+   "en": "When you need a spectacular attraction that reads at a glance and runs on real physical movement.",
+   "pt": "Quando é preciso uma atração espetacular, que se entenda de relance e funcione por movimento físico real."
+  },
+  {
+   "id": "concepts-04#048",
+   "path": "concepts/27/need",
+   "ru": "Когда нужен зрелищный аттракцион, понятный с первого взгляда и основанный на настоящем движении.",
+   "en": "When you need a spectacular attraction that reads at a glance and runs on real physical movement.",
+   "pt": "Quando é preciso uma atração espetacular, que se entenda de relance e funcione por movimento físico real."
+  },
+  {
+   "id": "concepts-04#049",
+   "path": "concepts/27/solves/0",
+   "ru": "Соединяет физическую активность и виртуальное путешествие.",
+   "en": "Joins physical activity to a virtual journey.",
+   "pt": "Junta atividade física a uma viagem virtual."
+  },
+  {
+   "id": "concepts-04#050",
+   "path": "concepts/27/solves/1",
+   "ru": "Создаёт сильный зрительский эффект вокруг участника.",
+   "en": "Creates a strong show for everyone watching.",
+   "pt": "Cria um belo espetáculo para quem está assistindo."
+  },
+  {
+   "id": "concepts-04#051",
+   "path": "concepts/27/solves/2",
+   "ru": "Подходит для коротких повторяемых сессий.",
+   "en": "Suits short, repeatable sessions.",
+   "pt": "Serve para sessões curtas e repetíveis."
+  },
+  {
+   "id": "concepts-04#052",
+   "path": "concepts/27/essence",
+   "ru": "Посетитель прыгает на батуте, а система трекинга переносит каждый прыжок в трёхмерный мир на большом экране: между крышами, по лесам, горам или терминалам аэропорта.",
+   "en": "The visitor jumps on a trampoline and a tracking system carries every jump into a 3D world on a large screen: across rooftops, through forests and mountains, or down an airport terminal.",
+   "pt": "O visitante pula em um trampolim e um sistema de rastreamento leva cada salto para um mundo 3D em uma tela grande: por cima de telhados, por florestas e montanhas, ou por um terminal de aeroporto."
+  },
+  {
+   "id": "concepts-04#053",
+   "path": "concepts/27/feel",
+   "ru": "Моё настоящее движение стало частью видеоигры.",
+   "en": "My own movement became part of a video game.",
+   "pt": "Meu próprio movimento virou parte de um videogame."
+  },
+  {
+   "id": "concepts-04#054",
+   "path": "concepts/27/spaces",
+   "ru": "Аэропорты • развлекательные центры • музеи • брендинговые события • спортивные пространства",
+   "en": "Airports • entertainment centers • museums • brand events • sports venues",
+   "pt": "Aeroportos • centros de entretenimento • museus • eventos de marca • espaços esportivos"
+  },
+  {
+   "id": "concepts-04#055",
+   "path": "concepts/27/mechanics/0",
+   "ru": "Батут",
+   "en": "Trampoline",
+   "pt": "Trampolim"
+  },
+  {
+   "id": "concepts-04#056",
+   "path": "concepts/27/mechanics/1",
+   "ru": "Трекинг тела и прыжков",
+   "en": "Body and jump tracking",
+   "pt": "Rastreamento do corpo e do salto"
+  },
+  {
+   "id": "concepts-04#057",
+   "path": "concepts/27/mechanics/3",
+   "ru": "Экран, согласованный с точкой зрения",
+   "en": "Screen aligned to the player's viewpoint",
+   "pt": "Tela alinhada ao ponto de vista do jogador"
+  },
+  {
+   "id": "concepts-04#058",
+   "path": "concepts/27/mechanics/4",
+   "ru": "Игровой сценарий",
+   "en": "Game scenario",
+   "pt": "Roteiro de jogo"
+  },
+  {
+   "id": "concepts-04#059",
+   "path": "concepts/27/comment",
+   "ru": "Связь между усилием тела и мгновенной реакцией виртуального мира создаёт редкое чувство контроля. Механика понятна без инструкции, а наблюдать за игроком почти так же интересно, как участвовать — поэтому вокруг инсталляции естественно возникает аудитория.",
+   "en": "The link between physical effort and the virtual world's instant response gives a rare feeling of control. The mechanic needs no instructions, and watching is nearly as good as taking part, so a crowd gathers around the installation on its own.",
+   "pt": "A ligação entre o esforço físico e a resposta imediata do mundo virtual dá uma sensação rara de controle. A mecânica não precisa de instruções, e assistir vale quase tanto quanto participar, então o público se junta sozinho em volta da instalação."
+  },
+  {
+   "id": "concepts-04#060",
+   "path": "concepts/27/adapt",
+   "ru": "Городские маршруты, природные миры, путешествия по объектам бренда, спортивные испытания, обучение и фантастические приключения.*6",
+   "en": "City routes, natural worlds, journeys through a brand's own locations, athletic challenges, training and fantasy adventures.*6",
+   "pt": "Percursos urbanos, mundos naturais, viagens pelos locais da própria marca, desafios esportivos, treinamento e aventuras fantásticas.*6"
+  }
+ ]
+}

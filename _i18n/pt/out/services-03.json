@@ -1,0 +1,606 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "services-03 (3 de 6)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "services-03#001",
+   "path": "services/3/flow/11/text",
+   "ru": "Мы отталкиваемся от желаемого эффекта, а не от конкретной технологии. Сначала решается, что человек должен унести с собой, и только потом — чем это сделать. Мы не привязаны ни к одному производителю, поэтому под задачу подбирается лучшее решение, а не то, что привычнее или уже лежит на складе. Поставку берут на себя наши партнёры: любое оборудование на лучших для клиента условиях. Наша часть — сценарий, содержание, интерактив, программная часть и интеграция: мы умеем строить сложные программно-аппаратные комплексы и отвечаем за то, чтобы это работало как одно целое, а не как набор коробок от разных поставщиков.",
+   "en": null,
+   "pt": "Partimos do efeito desejado, não de uma tecnologia específica. Primeiro se decide o que a pessoa deve levar embora, e só então com o que fazer isso. Não temos vínculo com fabricante nenhum, então para cada tarefa se escolhe a melhor solução, e não a mais familiar ou a que já está no depósito. O fornecimento fica com nossos parceiros: qualquer equipamento nas melhores condições para o cliente. A nossa parte é o roteiro, o conteúdo, a interação, a parte de software e a integração: sabemos construir sistemas complexos de hardware e software e respondemos por isso funcionar como um todo, e não como um conjunto de caixas de fornecedores diferentes."
+  },
+  {
+   "id": "services-03#002",
+   "path": "services/3/flow/12/text",
+   "ru": "От чего зависит стоимость",
+   "en": null,
+   "pt": "O que define o custo"
+  },
+  {
+   "id": "services-03#003",
+   "path": "services/3/flow/13/items/0",
+   "ru": "Объём содержания. Он умножается на количество сценариев, а не на количество экранов: десять панелей с одним сценарием дешевле трёх с разными.",
+   "en": null,
+   "pt": "O volume de conteúdo. Ele se multiplica pelo número de roteiros, não pelo número de telas: dez painéis com um roteiro saem mais barato que três com roteiros diferentes."
+  },
+  {
+   "id": "services-03#004",
+   "path": "services/3/flow/13/items/1",
+   "ru": "Есть ли готовый материал — фонды, чертежи, 3D, съёмка — или его нужно создавать с нуля.",
+   "en": null,
+   "pt": "Se existe material pronto — acervo, desenhos, 3D, filmagem — ou se é preciso criar do zero."
+  },
+  {
+   "id": "services-03#005",
+   "path": "services/3/flow/13/items/2",
+   "ru": "Разовая поставка или система, которую музей дальше наполняет сам.",
+   "en": null,
+   "pt": "Se é um fornecimento pontual ou um sistema que o museu depois alimenta sozinho."
+  },
+  {
+   "id": "services-03#006",
+   "path": "services/3/flow/13/items/3",
+   "ru": "Условия зала: свет, высота потолков, доступ к сетям и то, можно ли вообще сверлить стены.",
+   "en": null,
+   "pt": "As condições do salão: luz, pé-direito, acesso às redes e se é possível furar as paredes."
+  },
+  {
+   "id": "services-03#007",
+   "path": "services/3/flow/14/items/0/label",
+   "ru": "инсталляций в одной экспозиции — центр «Космонавтика и авиация» на ВДНХ",
+   "en": null,
+   "pt": "instalações em uma única exposição — Centro de Cosmonáutica e Aviação, na VDNH"
+  },
+  {
+   "id": "services-03#008",
+   "path": "services/3/flow/14/items/1/label",
+   "ru": "год основания студии, работаем по всему миру",
+   "en": null,
+   "pt": "ano de fundação do estúdio, trabalhamos no mundo todo"
+  },
+  {
+   "id": "services-03#009",
+   "path": "services/3/flow/14/items/2/n",
+   "ru": "3 нед.",
+   "en": null,
+   "pt": "3 sem."
+  },
+  {
+   "id": "services-03#010",
+   "path": "services/3/flow/14/items/2/label",
+   "ru": "самый быстрый интерактивный проект под ключ",
+   "en": null,
+   "pt": "nosso projeto interativo chave na mão mais rápido"
+  },
+  {
+   "id": "services-03#011",
+   "path": "services/3/flow/15/text",
+   "ru": "Если бюджет уже расписан по позициям, а сценария под ним нет — это ещё можно исправить, пока не подписан контракт на поставку. Пришлите список: скажем, что в нём лишнее, чего не хватает и что не переживёт первый год. Это бесплатно и занимает один разговор.",
+   "en": null,
+   "pt": "Se o orçamento já está detalhado por itens e não existe roteiro por baixo dele — ainda dá para corrigir, enquanto o contrato de fornecimento não foi assinado. Mande a lista: dizemos o que sobra nela, o que falta e o que não sobrevive ao primeiro ano. É de graça e leva uma conversa."
+  },
+  {
+   "id": "services-03#012",
+   "path": "services/3/faq/0/q",
+   "ru": "Вы поставляете оборудование?",
+   "en": "Do you supply the equipment?",
+   "pt": "Vocês fornecem o equipamento?"
+  },
+  {
+   "id": "services-03#013",
+   "path": "services/3/faq/0/a",
+   "ru": "Да — через партнёров, и для заказчика это выгоднее. Мы не привязаны ни к одному производителю и ничего не продаём со своего склада, поэтому подбираем решение под задачу, а не под остатки. Спецификацию пишем мы, поставку на лучших условиях организуют партнёры. За нами — сценарий, содержание, программная часть и интеграция: программно-аппаратный комплекс целиком.",
+   "en": "Yes — through partners, and that works out better for the client. We are tied to no manufacturer and sell nothing off our own shelf, so we pick for the job rather than for stock. We write the specification; our partners arrange supply on the best terms. Ours is the story, the content, the software and the integration — the whole hardware-and-software system.",
+   "pt": "Sim — por meio de parceiros, e isso sai melhor para o cliente. Não temos vínculo com fabricante nenhum e não vendemos nada do nosso estoque, então escolhemos pela tarefa e não pelo que está disponível. Nós escrevemos a especificação; nossos parceiros organizam o fornecimento nas melhores condições. A nossa parte é a história, o conteúdo, o software e a integração — o sistema completo de hardware e software."
+  },
+  {
+   "id": "services-03#014",
+   "path": "services/3/faq/1/q",
+   "ru": "Сколько стоит интерактивное оборудование для музея?",
+   "en": "How much does interactive museum equipment cost?",
+   "pt": "Quanto custa equipamento interativo para museu?"
+  },
+  {
+   "id": "services-03#015",
+   "path": "services/3/faq/1/a",
+   "ru": "Цифра выводится из сценария, а не из прайса: пока неизвестно, сколько экспонатов и что на них происходит, любая сумма — фантазия. Но одну пропорцию можно назвать заранее: в бюджете мультимедийной экспозиции само железо редко занимает больше трети. Остальное — содержание и работа над ним. Бюджеты, где на технику ушло всё, а на наполнение не осталось, узнаются по выключенным экранам.",
+   "en": "The figure comes out of the scenario, not out of a price list: until the number of exhibits and what happens on them is known, any sum is fiction. One proportion can be stated in advance though — in a multimedia exhibition budget the hardware itself rarely exceeds a third. The rest is content and the work on it. Budgets where everything went into the kit and nothing was left for content are recognisable by their switched-off screens.",
+   "pt": "O número sai do roteiro, não de uma tabela de preços: enquanto não se sabe o número de exponentes e o que acontece neles, qualquer valor é ficção. Uma proporção, porém, dá para afirmar de antemão — no orçamento de uma exposição multimídia o hardware raramente passa de um terço. O resto é conteúdo e o trabalho em cima dele. Orçamentos em que tudo foi para o equipamento e nada sobrou para conteúdo se reconhecem pelas telas desligadas."
+  },
+  {
+   "id": "services-03#016",
+   "path": "services/3/faq/2/q",
+   "ru": "У нас школьный или небольшой ведомственный музей. Что реально сделать?",
+   "en": "We are a small school or departmental museum. What is realistic?",
+   "pt": "Somos um museu escolar ou departamental pequeno. O que é realista?"
+  },
+  {
+   "id": "services-03#017",
+   "path": "services/3/faq/2/a",
+   "ru": "Один хорошо придуманный экспонат сильнее пяти посредственных, и это особенно верно при небольшом бюджете. Дешевле всего работают проекция на физический макет и содержание, сделанное под уже имеющийся экран. Дороже всего — попытка закрыть все стены панелями.",
+   "en": "One well-conceived exhibit beats five mediocre ones, and that is especially true on a small budget. The cheapest things that genuinely work are projection onto a physical model, and content built for a screen you already own. The most expensive mistake is trying to cover every wall with panels.",
+   "pt": "Um exponente bem pensado vale mais que cinco medianos, e isso vale ainda mais com orçamento pequeno. As coisas mais baratas que funcionam de verdade são projeção sobre maquete física e conteúdo feito para uma tela que você já tem. O erro mais caro é tentar cobrir todas as paredes com painéis."
+  },
+  {
+   "id": "services-03#018",
+   "path": "services/3/faq/3/q",
+   "ru": "Как понять заранее, что оборудование не будет простаивать?",
+   "en": "How do we know in advance the equipment will not sit idle?",
+   "pt": "Como saber de antemão que o equipamento não vai ficar parado?"
+  },
+  {
+   "id": "services-03#019",
+   "path": "services/3/faq/3/a",
+   "ru": "По двум признакам. Первый: перезапускается ли экспонат одной кнопкой силами смотрителя. Второй: может ли музей сам менять содержание, не вызывая подрядчика. Если оба ответа «нет», через год это будет мебель.",
+   "en": "Two tests. First: can an attendant restart the exhibit with a single button. Second: can the museum change the content without calling the contractor. If both answers are no, in a year it will be furniture.",
+   "pt": "Dois testes. Primeiro: um atendente consegue reiniciar o exponente com um único botão. Segundo: o museu consegue mudar o conteúdo sem chamar o fornecedor. Se as duas respostas forem não, em um ano aquilo será mobília."
+  },
+  {
+   "id": "services-03#020",
+   "path": "services/3/faq/4/q",
+   "ru": "Можно показать вам спецификацию, которую нам уже составили?",
+   "en": "Can we show you a specification someone has already written for us?",
+   "pt": "Podemos mostrar uma especificação que já escreveram para nós?"
+  },
+  {
+   "id": "services-03#021",
+   "path": "services/3/faq/4/a",
+   "ru": "Да, посмотрим и скажем, что думаем, — без обязательств с вашей стороны. Чаще всего в таких списках находятся две вещи: позиции, которые куплены на всякий случай, и отсутствие строки на содержание.",
+   "en": "Yes — we will look and tell you what we think, with no obligation on your side. Two things usually turn up in such lists: items bought just in case, and no line for content at all.",
+   "pt": "Podem — a gente olha e diz o que acha, sem nenhum compromisso do seu lado. Duas coisas costumam aparecer nessas listas: itens comprados por precaução e nenhuma linha para conteúdo."
+  },
+  {
+   "id": "services-03#022",
+   "path": "services/4/title",
+   "ru": "Техническое оснащение музея",
+   "en": "Technical fit-out for museums",
+   "pt": "Equipagem técnica de museus"
+  },
+  {
+   "id": "services-03#023",
+   "path": "services/4/nav",
+   "ru": "Оснащение музея",
+   "en": "Museum fit-out",
+   "pt": "Equipagem de museus"
+  },
+  {
+   "id": "services-03#024",
+   "path": "services/4/subtitle",
+   "ru": "Пишем и проверяем техническое задание, подбираем состав оборудования и отвечаем за то, чтобы всё это работало как одна система.",
+   "en": "We write and audit the specification, put together the equipment list, and answer for all of it working as one system.",
+   "pt": "Escrevemos e auditamos a especificação, montamos a lista de equipamentos e respondemos por tudo isso funcionar como um sistema único."
+  },
+  {
+   "id": "services-03#025",
+   "path": "services/4/keywords/0",
+   "ru": "оснащение музеев",
+   "en": "museum fit-out",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipagem de museu"
+  },
+  {
+   "id": "services-03#026",
+   "path": "services/4/keywords/1",
+   "ru": "техническое оснащение музея",
+   "en": "museum technical specification",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "termo de referência para museu"
+  },
+  {
+   "id": "services-03#027",
+   "path": "services/4/keywords/2",
+   "ru": "техническое оснащение муниципальных музеев",
+   "en": "museum equipment specification",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "especificação de equipamento para museu"
+  },
+  {
+   "id": "services-03#028",
+   "path": "services/4/keywords/3",
+   "ru": "оснащение региональных и муниципальных музеев",
+   "en": "multimedia museum brief",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "briefing de museu multimídia"
+  },
+  {
+   "id": "services-03#029",
+   "path": "services/4/keywords/4",
+   "ru": "тз на мультимедийное оснащение музея",
+   "en": "equipping a museum",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipar um museu"
+  },
+  {
+   "id": "services-03#030",
+   "path": "services/4/keywords/5",
+   "ru": "оснащение музея оборудованием",
+   "en": "museum tender specification",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "termo de referência para licitação de museu"
+  },
+  {
+   "id": "services-03#031",
+   "path": "services/4/keywords/6",
+   "ru": "оснащение школьных музеев",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipagem de museus escolares"
+  },
+  {
+   "id": "services-03#032",
+   "path": "services/4/flow/0/text",
+   "ru": "Оснащение начинается не с закупки, а с техзадания. И почти всегда пишется оно в спешке: сроки по программе горят, деньги нужно освоить до конца года, а формулировать приходится тому, у кого это не основная работа. Дальше всё предсказуемо: побеждает самый дешёвый набор, потому что различить наборы по такому ТЗ невозможно.",
+   "en": "Fitting out a museum starts with a brief, not a purchase order. And the brief is almost always written in a hurry: the programme deadline is burning, the money has to be spent before year end, and the person writing it does something else for a living. What follows is predictable — the cheapest bundle wins, because a brief like that gives you no way to tell bundles apart.",
+   "pt": "Equipar um museu começa por um termo de referência, não por uma ordem de compra. E o termo quase sempre é escrito com pressa: o prazo do programa está queimando, o dinheiro precisa ser gasto até o fim do ano, e quem escreve trabalha com outra coisa. O que vem depois é previsível — vence o pacote mais barato, porque um termo assim não dá como diferenciar pacotes."
+  },
+  {
+   "id": "services-03#033",
+   "path": "services/4/flow/1/text",
+   "ru": "Мы разбираем это с другой стороны. Не «какие позиции закупить», а «что должно происходить в зале» — и уже из этого выводится состав. Такое ТЗ выигрывает дважды: по нему видно, кто понял задачу, и по нему потом можно принять работу.",
+   "en": "We take it from the other end. Not «which line items to buy» but «what should happen in the room» — and the list follows from that. Such a brief wins twice: you can see who understood the job, and you can later accept the work against it.",
+   "pt": "A gente pega pelo outro lado. Não “quais itens comprar”, e sim “o que deve acontecer na sala” — e a lista decorre disso. Um termo assim ganha duas vezes: dá para ver quem entendeu a tarefa e dá para receber a obra contra ele depois."
+  },
+  {
+   "id": "services-03#034",
+   "path": "services/4/flow/2/text",
+   "ru": "Что входит в оснащение, кроме железа",
+   "en": "What a fit-out contains besides hardware",
+   "pt": "O que uma equipagem contém além de hardware"
+  },
+  {
+   "id": "services-03#035",
+   "path": "services/4/flow/3/items/0",
+   "ru": "Сценарий: что человек делает в каждой точке и что уносит с собой. Без него спецификация — угадывание.",
+   "en": "The story: what a person does at each point and what they carry out. Without it the specification is guesswork.",
+   "pt": "A história: o que a pessoa faz em cada ponto e o que leva embora. Sem isso a especificação é palpite."
+  },
+  {
+   "id": "services-03#036",
+   "path": "services/4/flow/3/items/1",
+   "ru": "Состав экспонатов: сколько их, какие, где стоят и сколько людей обслуживает каждый одновременно.",
+   "en": "The exhibit list: how many, which ones, where they stand and how many people each serves at once.",
+   "pt": "A lista de exponentes: quantos, quais, onde ficam e quantas pessoas cada um atende por vez."
+  },
+  {
+   "id": "services-03#037",
+   "path": "services/4/flow/3/items/2",
+   "ru": "Содержание: модели, съёмка, тексты, озвучка, анимация. Самая большая и самая недооценённая часть сметы.",
+   "en": "Content: models, filming, texts, voice-over, animation. The largest and most underestimated part of the budget.",
+   "pt": "Conteúdo: modelos, filmagem, textos, locução, animação. A maior e mais subestimada parte do orçamento."
+  },
+  {
+   "id": "services-03#038",
+   "path": "services/4/flow/3/items/3",
+   "ru": "Программная часть и интеграция: чтобы десять экспонатов были системой, а не десятью коробками.",
+   "en": "Software and integration: so that ten exhibits are a system rather than ten boxes.",
+   "pt": "Software e integração: para que dez exponentes sejam um sistema, e não dez caixas."
+  },
+  {
+   "id": "services-03#039",
+   "path": "services/4/flow/3/items/4",
+   "ru": "Инженерия зала: питание, сеть, трассы, крепёж, свет, акустика помещения.",
+   "en": "Room engineering: power, network, cable routes, mounting, lighting, room acoustics.",
+   "pt": "Engenharia da sala: energia, rede, caminhos de cabo, fixação, iluminação, acústica."
+  },
+  {
+   "id": "services-03#040",
+   "path": "services/4/flow/3/items/5",
+   "ru": "Эксплуатация: кто включает, кто чинит, кто меняет текст. Это строки ТЗ, а не добрая воля подрядчика.",
+   "en": "Operations: who switches it on, who fixes it, who changes the text. Those are lines in the brief, not the contractor's goodwill.",
+   "pt": "Operação: quem liga, quem conserta, quem muda o texto. Isso são linhas do termo, não boa vontade do fornecedor."
+  },
+  {
+   "id": "services-03#041",
+   "path": "services/4/flow/4/text",
+   "ru": "Чем плохое ТЗ отличается от рабочего",
+   "en": "How a bad brief differs from a working one",
+   "pt": "Como um termo ruim difere de um que funciona"
+  },
+  {
+   "id": "services-03#042",
+   "path": "services/4/flow/5/items/0",
+   "ru": "Плохое перечисляет позиции: «панель 55″ — 6 шт.». Рабочее описывает задачу: «шесть точек, у каждой человек стоит до пяти минут и читает архивный документ». Из второго состав выводится, из первого — нет.",
+   "en": "A bad one lists items: «55-inch panel — 6 pcs». A working one describes the job: «six points, a person stands at each for up to five minutes reading an archive document». The list follows from the second, not the first.",
+   "pt": "O ruim lista itens: “painel de 55 polegadas — 6 un.”. O que funciona descreve a tarefa: “seis pontos, a pessoa fica em cada um até cinco minutos lendo um documento de arquivo”. A lista decorre do segundo, não do primeiro."
+  },
+  {
+   "id": "services-03#043",
+   "path": "services/4/flow/5/items/1",
+   "ru": "Плохое молчит о содержании. Побеждает тот, кто заложил только железо, а наполнять оказывается нечем.",
+   "en": "A bad one says nothing about content. The winner is whoever budgeted only hardware — and then there is nothing to put on it.",
+   "pt": "O ruim não diz nada sobre conteúdo. Vence quem orçou só hardware — e depois não há o que colocar nele."
+  },
+  {
+   "id": "services-03#044",
+   "path": "services/4/flow/5/items/2",
+   "ru": "Плохое не описывает приёмку. Рабочее говорит прямо: экспонат поднимается одной кнопкой силами смотрителя, музей сам меняет подписи, подрядчик сдаёт образы машин и исходники.",
+   "en": "A bad one does not describe acceptance. A working one says plainly: an attendant restarts an exhibit with one button, the museum changes captions itself, the contractor hands over machine images and content sources.",
+   "pt": "O ruim não descreve o recebimento. O que funciona diz com todas as letras: o atendente reinicia um exponente com um botão, o museu muda as legendas sozinho, o fornecedor entrega imagens das máquinas e arquivos-fonte do conteúdo."
+  },
+  {
+   "id": "services-03#045",
+   "path": "services/4/flow/5/items/3",
+   "ru": "Плохое не считает пропускную способность. Один VR-шлем на школьную группу из тридцати человек — это два с половиной часа очереди, и это видно на бумаге заранее.",
+   "en": "A bad one does not count throughput. One VR headset for a school group of thirty is two and a half hours of queue, and that is visible on paper in advance.",
+   "pt": "O ruim não calcula vazão. Um óculos de VR para um grupo escolar de trinta são duas horas e meia de fila, e isso já se vê no papel antes."
+  },
+  {
+   "id": "services-03#046",
+   "path": "services/4/flow/5/items/4",
+   "ru": "Плохое не учитывает зал: свет из окон убивает проекцию, а высота потолка решает, что вообще можно повесить.",
+   "en": "A bad one ignores the room: daylight kills projection, and ceiling height decides what can be hung at all.",
+   "pt": "O ruim ignora a sala: luz do dia mata projeção, e o pé-direito decide o que pode ser pendurado."
+  },
+  {
+   "id": "services-03#047",
+   "path": "services/4/flow/6/text",
+   "ru": "Муниципальным и школьным музеям",
+   "en": "For municipal and school museums",
+   "pt": "Para museus municipais e escolares"
+  },
+  {
+   "id": "services-03#048",
+   "path": "services/4/flow/7/text",
+   "ru": "Бюджет здесь меньше, а требований к отчётности больше. Работает одно правило: один хорошо придуманный экспонат сильнее пяти посредственных. Дешевле всего дают результат проекция на физический макет и содержание, сделанное под уже имеющийся экран. Дороже всего обходится попытка закрыть панелями все стены.",
+   "en": "Smaller budget, more reporting. One rule holds: one well-conceived exhibit beats five mediocre ones. The cheapest things that genuinely work are projection onto a physical model, and content built for a screen you already own. The most expensive mistake is covering every wall with panels.",
+   "pt": "Orçamento menor, mais prestação de contas. Uma regra se mantém: um exponente bem pensado vale mais que cinco medianos. As coisas mais baratas que funcionam de verdade são projeção sobre maquete física e conteúdo feito para uma tela que você já tem. O erro mais caro é cobrir todas as paredes com painéis."
+  },
+  {
+   "id": "services-03#049",
+   "path": "services/4/flow/8/text",
+   "ru": "Библиотека оборудования: 65 типов, что каждый умеет и кто выпускает →",
+   "en": "Equipment library: 65 types, what each does and who makes it →",
+   "pt": "Biblioteca de equipamentos: 65 tipos, o que cada um faz e quem fabrica →"
+  },
+  {
+   "id": "services-03#050",
+   "path": "services/4/flow/9/text",
+   "ru": "Как мы включаемся",
+   "en": "How we come in",
+   "pt": "Como a gente entra"
+  },
+  {
+   "id": "services-03#051",
+   "path": "services/4/flow/10/items/0",
+   "ru": "Пишем ТЗ с нуля — когда есть здание, фонды и задача, но нет формулировок.",
+   "en": "Writing the brief from scratch — when there is a building, a collection and a goal, but no wording.",
+   "pt": "Escrevendo o termo do zero — quando existe prédio, acervo e objetivo, mas não existe a formulação."
+  },
+  {
+   "id": "services-03#052",
+   "path": "services/4/flow/10/items/1",
+   "ru": "Проверяем готовое ТЗ или спецификацию: что лишнее, чего не хватает, что не переживёт первый год. Бесплатно.",
+   "en": "Auditing an existing brief or specification: what is redundant, what is missing, what will not survive year one. Free.",
+   "pt": "Auditando um termo ou especificação existente: o que sobra, o que falta, o que não sobrevive ao primeiro ano. De graça."
+  },
+  {
+   "id": "services-03#053",
+   "path": "services/4/flow/10/items/2",
+   "ru": "Ведём проект целиком: сценарий, содержание, интерактив, софт, интеграция и запуск.",
+   "en": "Running the whole project: story, content, interaction, software, integration and opening.",
+   "pt": "Conduzindo o projeto inteiro: história, conteúdo, interação, software, integração e abertura."
+  },
+  {
+   "id": "services-03#054",
+   "path": "services/4/flow/10/items/3",
+   "ru": "Поставку берут наши партнёры — мы не держим склад, поэтому подбираем под задачу, а не под остатки.",
+   "en": "Supply is handled by our partners — we keep no warehouse, so we pick for the job rather than for the stock.",
+   "pt": "O fornecimento fica com nossos parceiros — não temos depósito, então escolhemos pela tarefa e não pelo estoque."
+  },
+  {
+   "id": "services-03#055",
+   "path": "services/4/flow/11/items/0/label",
+   "ru": "инсталляций в одной экспозиции — центр «Космонавтика и авиация» на ВДНХ",
+   "en": "installations in a single exhibition — Cosmonautics and Aviation Centre, VDNH",
+   "pt": "instalações em uma única exposição — Centro de Cosmonáutica e Aviação, na VDNH"
+  },
+  {
+   "id": "services-03#056",
+   "path": "services/4/flow/11/items/1/label",
+   "ru": "год основания студии, работаем по всему миру",
+   "en": "studio founded, working worldwide",
+   "pt": "fundação do estúdio, trabalhando no mundo todo"
+  },
+  {
+   "id": "services-03#057",
+   "path": "services/4/flow/11/items/2/label",
+   "ru": "типов оборудования разобрано в открытой библиотеке",
+   "en": "equipment types covered in our open library",
+   "pt": "tipos de equipamento cobertos na nossa biblioteca aberta"
+  },
+  {
+   "id": "services-03#058",
+   "path": "services/4/flow/12/text",
+   "ru": "Если ТЗ уже написано и вот-вот уйдёт на конкурс — пришлите. Посмотрим и скажем, что в нём прочтут подрядчики и что вы получите в итоге. Это бесплатно, занимает один разговор и ни к чему вас не обязывает.",
+   "en": "If the brief is written and about to go out to tender — send it over. We will tell you what contractors will read into it and what you will end up with. Free, one conversation, no obligation.",
+   "pt": "Se o termo já está escrito e prestes a ir para licitação — mande para a gente. Dizemos o que os fornecedores vão ler nele e o que você vai acabar recebendo. De graça, uma conversa, sem compromisso."
+  },
+  {
+   "id": "services-03#059",
+   "path": "services/4/faq/0/q",
+   "ru": "Можно заказать только техническое задание?",
+   "en": "Can we commission just the specification?",
+   "pt": "Dá para contratar só a especificação?"
+  },
+  {
+   "id": "services-03#060",
+   "path": "services/4/faq/0/a",
+   "ru": "Да, и это частый вариант. ТЗ — самостоятельный документ: с ним выходят на конкурс, защищают бюджет и сравнивают предложения. Мы пишем его так, чтобы по нему можно было и выбрать подрядчика, и потом принять у него работу.",
+   "en": "Yes, and it is a common arrangement. A brief is a document in its own right: you take it to tender, you defend a budget with it, you compare bids against it. We write it so it works for both choosing a contractor and accepting their work later.",
+   "pt": "Dá, e é um arranjo comum. Um termo de referência é um documento por si só: você leva para licitação, defende um orçamento com ele, compara propostas contra ele. Escrevemos de modo que sirva tanto para escolher o fornecedor quanto para receber a obra depois."
+  },
+  {
+   "id": "services-03#061",
+   "path": "services/4/faq/1/q",
+   "ru": "Вы участвуете в конкурсе, для которого писали ТЗ?",
+   "en": "Do you bid for tenders you wrote the brief for?",
+   "pt": "Vocês concorrem em licitações cujo termo vocês escreveram?"
+  },
+  {
+   "id": "services-03#062",
+   "path": "services/4/faq/1/a",
+   "ru": "Если заказчик этого хочет — обсуждаем отдельно и заранее, потому что у такого совмещения есть очевидные вопросы. Чаще мы остаёмся на стороне музея: пишем задание, помогаем читать предложения и принимать работу. Так спокойнее обеим сторонам.",
+   "en": "If the client wants that, we discuss it separately and in advance, because the arrangement raises obvious questions. More often we stay on the museum's side: write the brief, help read the bids and accept the work. That is more comfortable for everyone.",
+   "pt": "Se o cliente quiser isso, a gente discute separadamente e com antecedência, porque o arranjo levanta perguntas óbvias. Mais frequentemente ficamos do lado do museu: escrevemos o termo, ajudamos a ler as propostas e a receber a obra. É mais confortável para todo mundo."
+  },
+  {
+   "id": "services-03#063",
+   "path": "services/4/faq/2/q",
+   "ru": "Сколько стоит оснащение музея?",
+   "en": "How much does fitting out a museum cost?",
+   "pt": "Quanto custa equipar um museu?"
+  },
+  {
+   "id": "services-03#064",
+   "path": "services/4/faq/2/a",
+   "ru": "Цифра выводится из сценария, а не из прайса. Но одну пропорцию можно назвать заранее: в бюджете мультимедийной экспозиции само железо редко занимает больше трети, остальное — содержание и работа над ним. Сметы, где на технику ушло всё, узнаются потом по тёмным экранам.",
+   "en": "The figure comes out of the story, not a price list. One proportion can be stated in advance though: in a multimedia exhibition budget the hardware itself rarely exceeds a third; the rest is content and the work on it. Budgets where everything went into the kit are recognisable later by their dark screens.",
+   "pt": "O número sai da história, não de uma tabela de preços. Uma proporção, porém, dá para afirmar de antemão: no orçamento de uma exposição multimídia o hardware raramente passa de um terço; o resto é conteúdo e o trabalho em cima dele. Orçamentos em que tudo foi para o equipamento se reconhecem depois pelas telas apagadas."
+  },
+  {
+   "id": "services-03#065",
+   "path": "services/4/faq/3/q",
+   "ru": "У нас муниципальный музей и очень скромный бюджет.",
+   "en": "We are a municipal museum on a very modest budget.",
+   "pt": "Somos um museu municipal com orçamento bem modesto."
+  },
+  {
+   "id": "services-03#066",
+   "path": "services/4/faq/3/a",
+   "ru": "Это нормальная задача, и она решается. Смотрим, что уже есть в зале, и вкладываемся в один-два сильных экспоната вместо равномерного слоя техники по всем стенам. Проверить вашу смету и сказать, где деньги потрачены зря, мы можем бесплатно.",
+   "en": "That is a normal brief and it is solvable. We look at what the room already has and put the money into one or two strong exhibits rather than an even layer of technology across every wall. Reviewing your estimate and pointing out where money is wasted costs you nothing.",
+   "pt": "É um briefing normal e tem solução. A gente olha o que a sala já tem e coloca o dinheiro em um ou dois exponentes fortes, em vez de uma camada uniforme de tecnologia em todas as paredes. Revisar seu orçamento e apontar onde há desperdício não custa nada."
+  },
+  {
+   "id": "services-03#067",
+   "path": "services/4/faq/4/q",
+   "ru": "Что вы просите на приёмке?",
+   "en": "What do you insist on at acceptance?",
+   "pt": "Em que vocês insistem no recebimento?"
+  },
+  {
+   "id": "services-03#068",
+   "path": "services/4/faq/4/a",
+   "ru": "Три вещи, которые музей должен получить в собственность: образы машин, исходники содержания и написанную инструкцию восстановления. Без них замена сгоревшего компьютера превращается из часа в неделю, а любая правка текста — в вызов подрядчика.",
+   "en": "Three things the museum must own outright: machine images, content source files and a written recovery procedure. Without them, replacing a burnt-out computer turns from an hour into a week, and any text edit into a call-out.",
+   "pt": "Três coisas que o museu precisa ter para si: imagens das máquinas, arquivos-fonte do conteúdo e um procedimento escrito de recuperação. Sem eles, trocar um computador queimado passa de uma hora para uma semana, e qualquer ajuste de texto vira um chamado."
+  },
+  {
+   "id": "services-03#069",
+   "path": "services/5/title",
+   "ru": "Мультимедийное оборудование",
+   "en": "Multimedia equipment",
+   "pt": "Equipamentos multimídia"
+  },
+  {
+   "id": "services-03#070",
+   "path": "services/5/nav",
+   "ru": "Мультимедийное оборудование",
+   "en": "Multimedia equipment",
+   "pt": "Equipamentos multimídia"
+  },
+  {
+   "id": "services-03#071",
+   "path": "services/5/subtitle",
+   "ru": "Разбираем, из чего состоит мультимедийный комплекс, чем профессиональная техника отличается от бытовой и какими кодами ОКПД2 всё это закупается.",
+   "en": "What a multimedia system is actually made of, how professional gear differs from consumer kit, and why the spec matters more than the brand.",
+   "pt": "Do que um sistema multimídia é realmente feito, como o equipamento profissional difere do doméstico e por que a especificação importa mais que a marca."
+  },
+  {
+   "id": "services-03#072",
+   "path": "services/5/keywords/0",
+   "ru": "экспозиционное оборудование",
+   "en": "multimedia equipment",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento multimídia"
+  },
+  {
+   "id": "services-03#073",
+   "path": "services/5/keywords/1",
+   "ru": "av оборудование",
+   "en": "museum multimedia equipment",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento multimídia para museu"
+  },
+  {
+   "id": "services-03#074",
+   "path": "services/5/keywords/2",
+   "ru": "аудиовизуальный комплекс",
+   "en": "multimedia equipment for exhibitions",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento multimídia para exposições"
+  },
+  {
+   "id": "services-03#075",
+   "path": "services/5/keywords/3",
+   "ru": "мультимедийный комплекс",
+   "en": "audiovisual equipment for museums",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento audiovisual para museus"
+  },
+  {
+   "id": "services-03#076",
+   "path": "services/5/keywords/4",
+   "ru": "мультимедийное оборудование",
+   "en": "interactive exhibit hardware",
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "hardware para exponente interativo"
+  },
+  {
+   "id": "services-03#077",
+   "path": "services/5/keywords/5",
+   "ru": "мультимедийное оборудование для музеев",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento multimídia para museus"
+  },
+  {
+   "id": "services-03#078",
+   "path": "services/5/keywords/6",
+   "ru": "окпд2 мультимедийное оборудование",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "licitação de equipamento multimídia"
+  },
+  {
+   "id": "services-03#079",
+   "path": "services/5/keywords/7",
+   "ru": "поставка мультимедийного оборудования",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "fornecimento de equipamento multimídia"
+  },
+  {
+   "id": "services-03#080",
+   "path": "services/5/keywords/8",
+   "ru": "комплекс мультимедийного оборудования",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "sistema de equipamento multimídia"
+  },
+  {
+   "id": "services-03#081",
+   "path": "services/5/keywords/9",
+   "ru": "мультимедийное оборудование для конференц-залов",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento multimídia para salas de conferência"
+  },
+  {
+   "id": "services-03#082",
+   "path": "services/5/keywords/10",
+   "ru": "мультимедийное оборудование для выставок",
+   "en": null,
+   "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
+   "pt": "equipamento multimídia para feiras"
+  },
+  {
+   "id": "services-03#083",
+   "path": "services/5/flow/0/text",
+   "ru": "«Мультимедийное оборудование» — не строка в прайсе, а всё, из чего собирается живая экспозиция: экраны и проекторы, датчики и камеры, машины под столом, которые всё это сводят, и провода, которых никто не видит. Список длинный, но пугает не он. Пугает то, что купить можно каждую позицию отдельно и правильно — и всё равно получить десять коробок вместо одной системы.",
+   "en": "“Multimedia equipment” is not a line in a price list. It is everything a living exhibition is assembled from: screens and projectors, sensors and cameras, the machines under the desk that tie it all together, and the cabling nobody ever sees. The list is long, but the length is not the problem. The problem is that you can buy every single item correctly and still end up with ten boxes instead of one system.",
+   "pt": "“Equipamento multimídia” não é uma linha de tabela de preços. É tudo com que uma exposição viva é montada: telas e projetores, sensores e câmeras, as máquinas embaixo da bancada que amarram tudo, e a cabeação que ninguém vê. A lista é longa, mas o comprimento não é o problema. O problema é que dá para comprar cada item corretamente e mesmo assim terminar com dez caixas em vez de um sistema."
+  }
+ ]
+}

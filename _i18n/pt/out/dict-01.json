@@ -1,0 +1,1974 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "dict-01 (1 de 2)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "dict-01#001",
+   "path": "dict/0",
+   "ru": "Проекты",
+   "en": "Work",
+   "pt": "Projetos"
+  },
+  {
+   "id": "dict-01#002",
+   "path": "dict/1",
+   "ru": "Библиотека",
+   "en": "Library",
+   "pt": "Biblioteca"
+  },
+  {
+   "id": "dict-01#003",
+   "path": "dict/2",
+   "ru": "Атлас",
+   "en": "Atlas",
+   "pt": "Atlas"
+  },
+  {
+   "id": "dict-01#004",
+   "path": "dict/3",
+   "ru": "Студия",
+   "en": "Studio",
+   "pt": "Estúdio"
+  },
+  {
+   "id": "dict-01#005",
+   "path": "dict/4",
+   "ru": "▶︎ Обсудить идею",
+   "en": "▶︎ Book a call",
+   "pt": "▶︎ Falar sobre a ideia"
+  },
+  {
+   "id": "dict-01#006",
+   "path": "dict/5",
+   "ru": "▶︎ Сыграть в пространство",
+   "en": "▶︎ Play the space",
+   "pt": "▶︎ Jogar no espaço"
+  },
+  {
+   "id": "dict-01#007",
+   "path": "dict/6",
+   "ru": "Сыграть в пространство",
+   "en": "Play the space",
+   "pt": "Jogar no espaço"
+  },
+  {
+   "id": "dict-01#008",
+   "path": "dict/7",
+   "ru": "Проекты →",
+   "en": "See the work →",
+   "pt": "Ver os projetos →"
+  },
+  {
+   "id": "dict-01#009",
+   "path": "dict/8",
+   "ru": "· полёт",
+   "en": "· flight",
+   "pt": "· voo"
+  },
+  {
+   "id": "dict-01#010",
+   "path": "dict/9",
+   "ru": "playdisplay — на главную",
+   "en": "playdisplay — home",
+   "pt": "playdisplay — página inicial"
+  },
+  {
+   "id": "dict-01#011",
+   "path": "dict/10",
+   "ru": "playdisplay — облако точек",
+   "en": "playdisplay — point cloud",
+   "pt": "playdisplay — nuvem de pontos"
+  },
+  {
+   "id": "dict-01#012",
+   "path": "dict/11",
+   "ru": "Музеи",
+   "en": "Museums",
+   "pt": "Museus"
+  },
+  {
+   "id": "dict-01#013",
+   "path": "dict/12",
+   "ru": "Выставки",
+   "en": "Exhibitions",
+   "pt": "Exposições"
+  },
+  {
+   "id": "dict-01#014",
+   "path": "dict/13",
+   "ru": "Визит-центры",
+   "en": "Visitor centres",
+   "pt": "Centros de visitantes"
+  },
+  {
+   "id": "dict-01#015",
+   "path": "dict/14",
+   "ru": "Шоурумы",
+   "en": "Showrooms",
+   "pt": "Showrooms"
+  },
+  {
+   "id": "dict-01#016",
+   "path": "dict/15",
+   "ru": "Иммерсивные комнаты",
+   "en": "Immersive environments",
+   "pt": "Ambientes imersivos"
+  },
+  {
+   "id": "dict-01#017",
+   "path": "dict/16",
+   "ru": "Дополненная и виртуальная реальность",
+   "en": "AR & VR experiences",
+   "pt": "Realidade aumentada e virtual"
+  },
+  {
+   "id": "dict-01#018",
+   "path": "dict/17",
+   "ru": "Веб-пространства",
+   "en": "Interactive web experiences",
+   "pt": "Experiências web interativas"
+  },
+  {
+   "id": "dict-01#019",
+   "path": "dict/18",
+   "ru": "Бренд-пространства",
+   "en": "Branded environments",
+   "pt": "Espaços de marca"
+  },
+  {
+   "id": "dict-01#020",
+   "path": "dict/19",
+   "ru": "Общественные пространства",
+   "en": "Public spaces",
+   "pt": "Espaços públicos"
+  },
+  {
+   "id": "dict-01#021",
+   "path": "dict/20",
+   "ru": "Пространства, которые люди",
+   "en": "Spaces people",
+   "pt": "Espaços que as pessoas"
+  },
+  {
+   "id": "dict-01#022",
+   "path": "dict/21",
+   "ru": "запоминают",
+   "en": "remember",
+   "pt": "lembram"
+  },
+  {
+   "id": "dict-01#023",
+   "path": "dict/22",
+   "ru": "Превращаем пространство в яркое",
+   "en": "We turn space into a lasting",
+   "pt": "Transformamos o espaço em uma"
+  },
+  {
+   "id": "dict-01#024",
+   "path": "dict/23",
+   "ru": "впечатление",
+   "en": "experience",
+   "pt": "experiência marcante"
+  },
+  {
+   "id": "dict-01#025",
+   "path": "dict/24",
+   "ru": "Создаём музеи, выставки, бренд-пространства и интерактивные экспозиции — от первой идеи до запуска.",
+   "en": "We create museums, exhibitions and branded environments — from concept and spatial storytelling to technology, production and opening day.",
+   "pt": "Criamos museus, exposições, espaços de marca e mostras interativas — da primeira ideia à abertura."
+  },
+  {
+   "id": "dict-01#026",
+   "path": "dict/25",
+   "ru": "Подход",
+   "en": "Experiential design studio",
+   "pt": "Estúdio de design de experiências"
+  },
+  {
+   "id": "dict-01#027",
+   "path": "dict/26",
+   "ru": "Сначала определяем, что должен",
+   "en": "First we decide what a person should",
+   "pt": "Primeiro definimos o que a pessoa deve"
+  },
+  {
+   "id": "dict-01#028",
+   "path": "dict/27",
+   "ru": "почувствовать",
+   "en": "feel",
+   "pt": "sentir"
+  },
+  {
+   "id": "dict-01#029",
+   "path": "dict/28",
+   "ru": "человек.",
+   "en": "in this space.",
+   "pt": "neste espaço."
+  },
+  {
+   "id": "dict-01#030",
+   "path": "dict/29",
+   "ru": "Потом превращаем это в сценарий, пространство и технологии.",
+   "en": "Strategy, narrative, space and technology are shaped around that one decision.",
+   "pt": "Depois transformamos isso em roteiro, espaço e tecnologia."
+  },
+  {
+   "id": "dict-01#031",
+   "path": "dict/30",
+   "ru": "Смысл",
+   "en": "Purpose",
+   "pt": "Propósito"
+  },
+  {
+   "id": "dict-01#032",
+   "path": "dict/31",
+   "ru": "Зачем это пространство существует.",
+   "en": "Why this space exists.",
+   "pt": "Por que este espaço existe."
+  },
+  {
+   "id": "dict-01#033",
+   "path": "dict/32",
+   "ru": "Сценарий",
+   "en": "Narrative",
+   "pt": "Roteiro"
+  },
+  {
+   "id": "dict-01#034",
+   "path": "dict/33",
+   "ru": "Что человек делает и как проходит путь.",
+   "en": "What the visitor does and how the journey unfolds.",
+   "pt": "O que a pessoa faz e como percorre o caminho."
+  },
+  {
+   "id": "dict-01#035",
+   "path": "dict/34",
+   "ru": "Опыт",
+   "en": "Experience",
+   "pt": "Experiência"
+  },
+  {
+   "id": "dict-01#036",
+   "path": "dict/35",
+   "ru": "Что он чувствует и запоминает.",
+   "en": "What they feel and remember.",
+   "pt": "O que ela sente e o que ela lembra."
+  },
+  {
+   "id": "dict-01#037",
+   "path": "dict/36",
+   "ru": "Технология",
+   "en": "Technology",
+   "pt": "Tecnologia"
+  },
+  {
+   "id": "dict-01#038",
+   "path": "dict/37",
+   "ru": "Что помогает этому произойти.",
+   "en": "What makes it happen.",
+   "pt": "O que faz isso acontecer."
+  },
+  {
+   "id": "dict-01#039",
+   "path": "dict/38",
+   "ru": "Посмотрите, как идеи превращаются в опыт.",
+   "en": "See how ideas turn into experiences.",
+   "pt": "Veja como as ideias viram experiências."
+  },
+  {
+   "id": "dict-01#040",
+   "path": "dict/39",
+   "ru": "15 реальных проектов: музеи, выставки, бренд-пространства и общественные пространства.",
+   "en": "15 projects delivered across museums, exhibitions, branded environments and public spaces.",
+   "pt": "15 projetos reais: museus, exposições, espaços de marca e espaços públicos."
+  },
+  {
+   "id": "dict-01#041",
+   "path": "dict/40",
+   "ru": "создаём пространственный опыт",
+   "en": "designing spatial experiences",
+   "pt": "criando experiências espaciais"
+  },
+  {
+   "id": "dict-01#042",
+   "path": "dict/41",
+   "ru": "инсталляций в одном музее",
+   "en": "interactive exhibits in a single museum",
+   "pt": "instalações em um único museu"
+  },
+  {
+   "id": "dict-01#043",
+   "path": "dict/42",
+   "ru": "3 нед.",
+   "en": "3 wks",
+   "pt": "3 sem."
+  },
+  {
+   "id": "dict-01#044",
+   "path": "dict/43",
+   "ru": "самый быстрый стенд под ключ",
+   "en": "from brief to opening",
+   "pt": "o estande chave na mão mais rápido"
+  },
+  {
+   "id": "dict-01#045",
+   "path": "dict/44",
+   "ru": "полный цикл — от идеи до эксплуатации",
+   "en": "end to end, from concept to daily operation",
+   "pt": "ciclo completo — da ideia à operação"
+  },
+  {
+   "id": "dict-01#046",
+   "path": "dict/45",
+   "ru": "Доверие",
+   "en": "Trust",
+   "pt": "Confiança"
+  },
+  {
+   "id": "dict-01#047",
+   "path": "dict/46",
+   "ru": "Наши работы показывал канал",
+   "en": "Our work has been featured on",
+   "pt": "Nosso trabalho já apareceu no canal"
+  },
+  {
+   "id": "dict-01#048",
+   "path": "dict/47",
+   "ru": "Среди клиентов",
+   "en": "Our clients",
+   "pt": "Entre os clientes"
+  },
+  {
+   "id": "dict-01#049",
+   "path": "dict/48",
+   "ru": "— автопроизводители, международные аэропорты, национальные музеи и промышленные корпорации.",
+   "en": "carmakers, international airports, national museums and industrial groups.",
+   "pt": "— montadoras, aeroportos internacionais, museus nacionais e grupos industriais."
+  },
+  {
+   "id": "dict-01#050",
+   "path": "dict/49",
+   "ru": "Синара — Транспортные Машины",
+   "en": "Sinara Transport Machines",
+   "pt": "Sinara Transport Machines"
+  },
+  {
+   "id": "dict-01#051",
+   "path": "dict/50",
+   "ru": "Группа ПТК",
+   "en": "PTK Group",
+   "pt": "PTK Group"
+  },
+  {
+   "id": "dict-01#052",
+   "path": "dict/51",
+   "ru": "Правительство Москвы",
+   "en": "Moscow City Government",
+   "pt": "Governo de Moscou"
+  },
+  {
+   "id": "dict-01#053",
+   "path": "dict/52",
+   "ru": "Музей «Гараж»",
+   "en": "Garage Museum",
+   "pt": "Museu Garage"
+  },
+  {
+   "id": "dict-01#054",
+   "path": "dict/53",
+   "ru": "Аэропорты Регионов",
+   "en": "Airports of Regions",
+   "pt": "Airports of Regions"
+  },
+  {
+   "id": "dict-01#055",
+   "path": "dict/54",
+   "ru": "Парк Горького",
+   "en": "Gorky Park",
+   "pt": "Parque Gorky"
+  },
+  {
+   "id": "dict-01#056",
+   "path": "dict/55",
+   "ru": "ЛАНИТ",
+   "en": "LANIT",
+   "pt": "LANIT"
+  },
+  {
+   "id": "dict-01#057",
+   "path": "dict/56",
+   "ru": "Ростех",
+   "en": "Rostec",
+   "pt": "Rostec"
+  },
+  {
+   "id": "dict-01#058",
+   "path": "dict/57",
+   "ru": "ВДНХ",
+   "en": "VDNH",
+   "pt": "VDNH"
+  },
+  {
+   "id": "dict-01#059",
+   "path": "dict/58",
+   "ru": "Роскосмос",
+   "en": "Roscosmos",
+   "pt": "Roscosmos"
+  },
+  {
+   "id": "dict-01#060",
+   "path": "dict/59",
+   "ru": "Транснефть",
+   "en": "Transneft",
+   "pt": "Transneft"
+  },
+  {
+   "id": "dict-01#061",
+   "path": "dict/60",
+   "ru": "Газпром",
+   "en": "Gazprom",
+   "pt": "Gazprom"
+  },
+  {
+   "id": "dict-01#062",
+   "path": "dict/61",
+   "ru": "Росатом",
+   "en": "Rosatom",
+   "pt": "Rosatom"
+  },
+  {
+   "id": "dict-01#063",
+   "path": "dict/62",
+   "ru": "Авторские концепции",
+   "en": "Original concepts",
+   "pt": "Conceitos autorais"
+  },
+  {
+   "id": "dict-01#064",
+   "path": "dict/63",
+   "ru": "Библиотека решений.",
+   "en": "A library of concepts.",
+   "pt": "Uma biblioteca de conceitos."
+  },
+  {
+   "id": "dict-01#065",
+   "path": "dict/64",
+   "ru": "Авторские концепции. Сценарии. Форматы. Готовые к реализации.",
+   "en": "Original concepts, narratives and formats — ready to adapt and build.",
+   "pt": "Conceitos autorais, roteiros e formatos — prontos para adaptar e realizar."
+  },
+  {
+   "id": "dict-01#066",
+   "path": "dict/65",
+   "ru": "Как создаются впечатления.",
+   "en": "How experiences are made.",
+   "pt": "Como as experiências são feitas."
+  },
+  {
+   "id": "dict-01#067",
+   "path": "dict/66",
+   "ru": "Единая карта знаний и подходов студии: концепты, принципы, технологии, наблюдения, приёмы и исследования.",
+   "en": "A living map of the principles, techniques and technologies behind our work.",
+   "pt": "Um mapa vivo dos princípios, técnicas e tecnologias por trás do nosso trabalho."
+  },
+  {
+   "id": "dict-01#068",
+   "path": "dict/67",
+   "ru": "Поиск концепций",
+   "en": "Search concepts",
+   "pt": "Buscar conceitos"
+  },
+  {
+   "id": "dict-01#069",
+   "path": "dict/68",
+   "ru": "Поиск по атласу",
+   "en": "Search the atlas",
+   "pt": "Buscar no atlas"
+  },
+  {
+   "id": "dict-01#070",
+   "path": "dict/69",
+   "ru": "Прокрутка ленты",
+   "en": "Scroll the row",
+   "pt": "Rolar a faixa"
+  },
+  {
+   "id": "dict-01#071",
+   "path": "dict/70",
+   "ru": "Назад",
+   "en": "Previous",
+   "pt": "Anterior"
+  },
+  {
+   "id": "dict-01#072",
+   "path": "dict/71",
+   "ru": "Вперёд",
+   "en": "Next",
+   "pt": "Próximo"
+  },
+  {
+   "id": "dict-01#073",
+   "path": "dict/72",
+   "ru": "назад",
+   "en": "previous",
+   "pt": "anterior"
+  },
+  {
+   "id": "dict-01#074",
+   "path": "dict/73",
+   "ru": "вперёд",
+   "en": "next",
+   "pt": "próximo"
+  },
+  {
+   "id": "dict-01#075",
+   "path": "dict/74",
+   "ru": "закрыть",
+   "en": "close",
+   "pt": "fechar"
+  },
+  {
+   "id": "dict-01#076",
+   "path": "dict/75",
+   "ru": "Все",
+   "en": "All",
+   "pt": "Todos"
+  },
+  {
+   "id": "dict-01#077",
+   "path": "dict/76",
+   "ru": "Открыть разбор →",
+   "en": "Open the note →",
+   "pt": "Abrir a análise →"
+  },
+  {
+   "id": "dict-01#078",
+   "path": "dict/77",
+   "ru": "Ничего не нашлось — попробуйте другой запрос.",
+   "en": "Nothing found — try another query.",
+   "pt": "Nada encontrado — tente outra busca."
+  },
+  {
+   "id": "dict-01#079",
+   "path": "dict/78",
+   "ru": "Решение ·",
+   "en": "Concept ·",
+   "pt": "Conceito ·"
+  },
+  {
+   "id": "dict-01#080",
+   "path": "dict/79",
+   "ru": "Атлас ·",
+   "en": "Atlas ·",
+   "pt": "Atlas ·"
+  },
+  {
+   "id": "dict-01#081",
+   "path": "dict/80",
+   "ru": "решение",
+   "en": "concept",
+   "pt": "conceito"
+  },
+  {
+   "id": "dict-01#082",
+   "path": "dict/81",
+   "ru": "решения",
+   "en": "concepts",
+   "pt": "conceitos"
+  },
+  {
+   "id": "dict-01#083",
+   "path": "dict/82",
+   "ru": "решений",
+   "en": "concepts",
+   "pt": "conceitos"
+  },
+  {
+   "id": "dict-01#084",
+   "path": "dict/83",
+   "ru": "из",
+   "en": "of",
+   "pt": "de"
+  },
+  {
+   "id": "dict-01#085",
+   "path": "dict/84",
+   "ru": "Когда пригодится",
+   "en": "When it fits",
+   "pt": "Quando serve"
+  },
+  {
+   "id": "dict-01#086",
+   "path": "dict/85",
+   "ru": "Что чувствует человек",
+   "en": "What the visitor feels",
+   "pt": "O que a pessoa sente"
+  },
+  {
+   "id": "dict-01#087",
+   "path": "dict/86",
+   "ru": "Что решает",
+   "en": "What it solves",
+   "pt": "O que resolve"
+  },
+  {
+   "id": "dict-01#088",
+   "path": "dict/87",
+   "ru": "Где применять",
+   "en": "Where it works",
+   "pt": "Onde aplicar"
+  },
+  {
+   "id": "dict-01#089",
+   "path": "dict/88",
+   "ru": "Из чего складывается опыт",
+   "en": "What the experience is made of",
+   "pt": "Do que a experiência é feita"
+  },
+  {
+   "id": "dict-01#090",
+   "path": "dict/89",
+   "ru": "Почему это работает",
+   "en": "Why it works",
+   "pt": "Por que funciona"
+  },
+  {
+   "id": "dict-01#091",
+   "path": "dict/90",
+   "ru": "Что можно адаптировать",
+   "en": "What can be adapted",
+   "pt": "O que dá para adaptar"
+  },
+  {
+   "id": "dict-01#092",
+   "path": "dict/91",
+   "ru": "Связанные проекты",
+   "en": "Related projects",
+   "pt": "Projetos relacionados"
+  },
+  {
+   "id": "dict-01#093",
+   "path": "dict/92",
+   "ru": "▶︎ Обсудить похожую задачу",
+   "en": "▶︎ Discuss a similar brief",
+   "pt": "▶︎ Falar sobre um desafio parecido"
+  },
+  {
+   "id": "dict-01#094",
+   "path": "dict/93",
+   "ru": "Предыдущая концепция",
+   "en": "Previous concept",
+   "pt": "Conceito anterior"
+  },
+  {
+   "id": "dict-01#095",
+   "path": "dict/94",
+   "ru": "Следующая концепция",
+   "en": "Next concept",
+   "pt": "Próximo conceito"
+  },
+  {
+   "id": "dict-01#096",
+   "path": "dict/95",
+   "ru": "Как это устроено",
+   "en": "How it works",
+   "pt": "Como funciona"
+  },
+  {
+   "id": "dict-01#097",
+   "path": "dict/96",
+   "ru": "Примеры применения",
+   "en": "Examples",
+   "pt": "Exemplos de aplicação"
+  },
+  {
+   "id": "dict-01#098",
+   "path": "dict/97",
+   "ru": "смотреть",
+   "en": "watch",
+   "pt": "assistir"
+  },
+  {
+   "id": "dict-01#099",
+   "path": "dict/98",
+   "ru": "Цель проекта",
+   "en": "The goal",
+   "pt": "O objetivo"
+  },
+  {
+   "id": "dict-01#100",
+   "path": "dict/99",
+   "ru": "Результат",
+   "en": "Outcome",
+   "pt": "Resultado"
+  },
+  {
+   "id": "dict-01#101",
+   "path": "dict/100",
+   "ru": "Решение",
+   "en": "The solution",
+   "pt": "A solução"
+  },
+  {
+   "id": "dict-01#102",
+   "path": "dict/101",
+   "ru": "Заказчик",
+   "en": "Client",
+   "pt": "Cliente"
+  },
+  {
+   "id": "dict-01#103",
+   "path": "dict/102",
+   "ru": "Срок реализации",
+   "en": "Timeline",
+   "pt": "Prazo"
+  },
+  {
+   "id": "dict-01#104",
+   "path": "dict/103",
+   "ru": "Год",
+   "en": "Year",
+   "pt": "Ano"
+  },
+  {
+   "id": "dict-01#105",
+   "path": "dict/104",
+   "ru": "Следующий проект ·",
+   "en": "Next project ·",
+   "pt": "Próximo projeto ·"
+  },
+  {
+   "id": "dict-01#106",
+   "path": "dict/105",
+   "ru": "потяните ручку",
+   "en": "drag the handle",
+   "pt": "arraste a alça"
+  },
+  {
+   "id": "dict-01#107",
+   "path": "dict/106",
+   "ru": "Мы превращаем идею, историю, пространство или бренд в",
+   "en": "We turn ideas, stories, spaces and brands into",
+   "pt": "Transformamos ideias, histórias, espaços e marcas em"
+  },
+  {
+   "id": "dict-01#108",
+   "path": "dict/107",
+   "ru": "опыт, который хочется пережить",
+   "en": "experiences people want to be part of",
+   "pt": "experiências das quais se quer fazer parte"
+  },
+  {
+   "id": "dict-01#109",
+   "path": "dict/108",
+   "ru": ". Лучший способ рассказать сложное — дать в него поиграть: с правилами без инструкций, с открытиями, которые посетитель совершает сам, с глубиной для тех, кто остался подольше.",
+   "en": ". The best way to make something complex clear is to let people explore it: intuitive rules, discoveries of their own and deeper layers for those who stay longer.",
+   "pt": ". O melhor jeito de explicar algo complexo é deixar brincar com ele: regras sem manual, descobertas que o visitante faz sozinho e profundidade para quem fica mais tempo."
+  },
+  {
+   "id": "dict-01#110",
+   "path": "dict/109",
+   "ru": "Принцип 5 / 5",
+   "en": "The 5 / 5 principle",
+   "pt": "O princípio 5 / 5"
+  },
+  {
+   "id": "dict-01#111",
+   "path": "dict/110",
+   "ru": "5 секунд / 5 минут",
+   "en": "5 seconds / 5 minutes",
+   "pt": "5 segundos / 5 minutos"
+  },
+  {
+   "id": "dict-01#112",
+   "path": "dict/111",
+   "ru": "Любой наш объект считывается за 5 секунд и раскрывается за 5 минут. За 5 секунд ребёнок понимает, что делать. За 5 минут эксперт находит глубину.",
+   "en": "Every experience we create makes sense in five seconds and reveals its depth over five minutes. In five seconds, a child knows what to do. In five minutes, an expert finds something worth exploring.",
+   "pt": "Qualquer objeto nosso se entende em 5 segundos e se revela em 5 minutos. Em 5 segundos uma criança entende o que fazer. Em 5 minutos um especialista encontra profundidade."
+  },
+  {
+   "id": "dict-01#113",
+   "path": "dict/112",
+   "ru": "Один объект — для всех зрителей сразу.",
+   "en": "One experience, designed for many levels of attention.",
+   "pt": "Um mesmo objeto, para todos os públicos ao mesmo tempo."
+  },
+  {
+   "id": "dict-01#114",
+   "path": "dict/113",
+   "ru": "Как устроена студия",
+   "en": "How the studio is built",
+   "pt": "Como o estúdio funciona"
+  },
+  {
+   "id": "dict-01#115",
+   "path": "dict/114",
+   "ru": "Распределённая модель",
+   "en": "A distributed model",
+   "pt": "Um modelo distribuído"
+  },
+  {
+   "id": "dict-01#116",
+   "path": "dict/115",
+   "ru": "Креативное ядро ведёт каждый проект от идеи до запуска, а под задачу собирается точная команда: геймдизайнеры, 3D-художники, разработчики, инженеры.",
+   "en": "Every project is led by a senior creative core from first concept to opening. Around it, we assemble a purpose-built team of game designers, 3D artists, developers and engineers.",
+   "pt": "Um núcleo criativo conduz cada projeto da ideia à abertura, e para cada tarefa montamos o time exato: game designers, artistas 3D, desenvolvedores, engenheiros."
+  },
+  {
+   "id": "dict-01#117",
+   "path": "dict/116",
+   "ru": "Никакого раздутого штата — только те, кто нужен вашему проекту.",
+   "en": "Focused senior expertise, scaled to the needs of the project.",
+   "pt": "Nada de equipe inchada — só quem o seu projeto precisa."
+  },
+  {
+   "id": "dict-01#118",
+   "path": "dict/117",
+   "ru": "Основатель",
+   "en": "Founder",
+   "pt": "Fundador"
+  },
+  {
+   "id": "dict-01#119",
+   "path": "dict/118",
+   "ru": "Андрей Судариков",
+   "en": "Andrey Sudarikov",
+   "pt": "Andrey Sudarikov"
+  },
+  {
+   "id": "dict-01#120",
+   "path": "dict/119",
+   "ru": "Основатель и креативный директор. В дизайне с 1999 года: графический, промышленный, мультимедиа. Выпускник Московской школы управления «Сколково». Лично ведёт каждый проект студии.",
+   "en": "Founder and creative director. Working across graphic, industrial and multimedia design since 1999. A graduate of the Moscow School of Management SKOLKOVO. Personally leads every PlayDisplay project.",
+   "pt": "Fundador e diretor criativo. No design desde 1999: gráfico, industrial, multimídia. Formado pela Escola de Administração de Moscou SKOLKOVO. Conduz pessoalmente cada projeto do estúdio."
+  },
+  {
+   "id": "dict-01#121",
+   "path": "dict/120",
+   "ru": "Discovery Channel и не только",
+   "en": "Discovery Channel and beyond",
+   "pt": "Discovery Channel e não só"
+  },
+  {
+   "id": "dict-01#122",
+   "path": "dict/121",
+   "ru": "География",
+   "en": "Geography",
+   "pt": "Geografia"
+  },
+  {
+   "id": "dict-01#123",
+   "path": "dict/122",
+   "ru": "Работаем по всему миру",
+   "en": "We work worldwide",
+   "pt": "Trabalhamos no mundo todo"
+  },
+  {
+   "id": "dict-01#124",
+   "path": "dict/123",
+   "ru": "Россия",
+   "en": "Rossiya",
+   "pt": "Rússia"
+  },
+  {
+   "id": "dict-01#125",
+   "path": "dict/124",
+   "ru": "Кипр",
+   "en": "Cyprus",
+   "pt": "Chipre"
+  },
+  {
+   "id": "dict-01#126",
+   "path": "dict/125",
+   "ru": "Бразилия",
+   "en": "Brazil",
+   "pt": "Brasil"
+  },
+  {
+   "id": "dict-01#127",
+   "path": "dict/126",
+   "ru": "Следующий шаг",
+   "en": "Next step",
+   "pt": "Próximo passo"
+  },
+  {
+   "id": "dict-01#128",
+   "path": "dict/127",
+   "ru": "Основатель playdisplay",
+   "en": "Founder of PlayDisplay",
+   "pt": "Fundador da playdisplay"
+  },
+  {
+   "id": "dict-01#129",
+   "path": "dict/128",
+   "ru": "Если кажется, что проекту нужен нестандартный подход — давайте обсудим его вместе.",
+   "en": "Tell us what you’re planning. In 30 minutes, we’ll help frame the challenge, identify the strongest direction and decide whether PlayDisplay is the right partner.",
+   "pt": "Conte o que você está planejando. Em 30 minutos ajudamos a enquadrar o desafio, achar a direção mais forte e decidir se a playdisplay é o parceiro certo."
+  },
+  {
+   "id": "dict-01#130",
+   "path": "dict/129",
+   "ru": "▶︎ Забронировать креативную сессию",
+   "en": "▶︎ Book a 30-minute call",
+   "pt": "▶︎ Agendar uma sessão criativa"
+  },
+  {
+   "id": "dict-01#131",
+   "path": "dict/130",
+   "ru": "Говорим по-русски, по-английски и по-португальски.",
+   "en": "We work in Russian, English and Portuguese.",
+   "pt": "Falamos russo, inglês e português."
+  },
+  {
+   "id": "dict-01#132",
+   "path": "dict/131",
+   "ru": "Как вас зовут",
+   "en": "Your name",
+   "pt": "Seu nome"
+  },
+  {
+   "id": "dict-01#133",
+   "path": "dict/132",
+   "ru": "Компания или проект",
+   "en": "Company or project",
+   "pt": "Empresa ou projeto"
+  },
+  {
+   "id": "dict-01#134",
+   "path": "dict/133",
+   "ru": "Как связаться",
+   "en": "How to reach you",
+   "pt": "Como falar com você"
+  },
+  {
+   "id": "dict-01#135",
+   "path": "dict/134",
+   "ru": "почта, телефон или телеграм",
+   "en": "email, phone or Telegram",
+   "pt": "e-mail, telefone ou Telegram"
+  },
+  {
+   "id": "dict-01#136",
+   "path": "dict/135",
+   "ru": "Когда вам удобно",
+   "en": "When suits you",
+   "pt": "Quando é melhor para você"
+  },
+  {
+   "id": "dict-01#137",
+   "path": "dict/136",
+   "ru": "например, будни после 15:00 МСК",
+   "en": "e.g. weekdays after 3pm CET",
+   "pt": "por exemplo, dias úteis depois das 15h (horário de Moscou)"
+  },
+  {
+   "id": "dict-01#138",
+   "path": "dict/137",
+   "ru": "О чём хотите поговорить",
+   "en": "What would you like to talk about",
+   "pt": "Sobre o que você quer conversar"
+  },
+  {
+   "id": "dict-01#139",
+   "path": "dict/138",
+   "ru": "Пространство, задача, сроки — что уже понятно. Необязательно и можно коротко.",
+   "en": "The space, the challenge, the timeline — whatever is already clear. Optional, and short is fine.",
+   "pt": "O espaço, o desafio, o prazo — o que já estiver claro. Opcional, e pode ser curto."
+  },
+  {
+   "id": "dict-01#140",
+   "path": "dict/139",
+   "ru": "Не заполняйте это поле",
+   "en": "Leave this field empty",
+   "pt": "Não preencha este campo"
+  },
+  {
+   "id": "dict-01#141",
+   "path": "dict/140",
+   "ru": "Согласен на обработку этих данных — они нужны, чтобы с вами связаться.",
+   "en": "I agree to my details being processed so you can get back to me.",
+   "pt": "Concordo com o processamento destes dados — eles são necessários para entrarmos em contato."
+  },
+  {
+   "id": "dict-01#142",
+   "path": "dict/141",
+   "ru": "Как мы с ними обращаемся",
+   "en": "How we handle them",
+   "pt": "Como cuidamos deles"
+  },
+  {
+   "id": "dict-01#143",
+   "path": "dict/142",
+   "ru": "Отправить",
+   "en": "Send",
+   "pt": "Enviar"
+  },
+  {
+   "id": "dict-01#144",
+   "path": "dict/143",
+   "ru": "Отправляем…",
+   "en": "Sending…",
+   "pt": "Enviando…"
+  },
+  {
+   "id": "dict-01#145",
+   "path": "dict/144",
+   "ru": "Спасибо, получили.",
+   "en": "Thank you — received.",
+   "pt": "Obrigado, recebemos."
+  },
+  {
+   "id": "dict-01#146",
+   "path": "dict/145",
+   "ru": "Андрей ответит лично и предложит время — обычно в течение рабочего дня.",
+   "en": "Andrey will reply personally and suggest a time — usually within one working day.",
+   "pt": "Andrey responde pessoalmente e sugere um horário — normalmente dentro de um dia útil."
+  },
+  {
+   "id": "dict-01#147",
+   "path": "dict/146",
+   "ru": "Если удобнее раньше —",
+   "en": "If you need us sooner —",
+   "pt": "Se precisar antes —"
+  },
+  {
+   "id": "dict-01#148",
+   "path": "dict/147",
+   "ru": "Скажите, как к вам обращаться.",
+   "en": "Please tell us your name.",
+   "pt": "Diga como podemos chamar você."
+  },
+  {
+   "id": "dict-01#149",
+   "path": "dict/148",
+   "ru": "Нужен способ связи — почта, телефон или телеграм.",
+   "en": "We need a way to reach you — email, phone or Telegram.",
+   "pt": "Precisamos de um jeito de falar com você — e-mail, telefone ou Telegram."
+  },
+  {
+   "id": "dict-01#150",
+   "path": "dict/149",
+   "ru": "Без согласия на обработку данных мы не сможем ответить.",
+   "en": "Without your consent we can’t get back to you.",
+   "pt": "Sem o consentimento para o processamento dos dados não conseguimos responder."
+  },
+  {
+   "id": "dict-01#151",
+   "path": "dict/150",
+   "ru": "Сервер долго не отвечает.",
+   "en": "The server is taking too long to respond.",
+   "pt": "O servidor está demorando para responder."
+  },
+  {
+   "id": "dict-01#152",
+   "path": "dict/151",
+   "ru": "Что-то не сошлось.",
+   "en": "Something did not add up.",
+   "pt": "Alguma coisa não bateu."
+  },
+  {
+   "id": "dict-01#153",
+   "path": "dict/152",
+   "ru": "Форма сейчас недоступна. Напишите на info@playdisplay.com — ответим так же быстро.",
+   "en": "The form is unavailable right now. Write to info@playdisplay.com — we answer just as fast.",
+   "pt": "O formulário está indisponível agora. Escreva para info@playdisplay.com — respondemos com a mesma rapidez."
+  },
+  {
+   "id": "dict-01#154",
+   "path": "dict/153",
+   "ru": "Пространства, которые люди запоминают. Работаем по всему миру с 2011 года.",
+   "en": "Spaces people remember. Working worldwide since 2011.",
+   "pt": "Espaços que as pessoas lembram. Trabalhamos no mundo todo desde 2011."
+  },
+  {
+   "id": "dict-01#155",
+   "path": "dict/154",
+   "ru": "Сайт создан в",
+   "en": "This site was made at",
+   "pt": "Este site foi feito na"
+  },
+  {
+   "id": "dict-01#156",
+   "path": "dict/155",
+   "ru": "Обработка данных",
+   "en": "Data & privacy",
+   "pt": "Dados e privacidade"
+  },
+  {
+   "id": "dict-01#157",
+   "path": "dict/156",
+   "ru": "Речь распознаёт ваш браузер, к нам приходит текст. Разговор разбирает языковая модель, запись не сохраняется.",
+   "en": "Speech recognition happens in your browser; only text reaches us. A language model reads the conversation, and no audio is stored.",
+   "pt": "O reconhecimento de fala acontece no seu navegador; até nós chega só o texto. Um modelo de linguagem lê a conversa, e nenhum áudio é guardado."
+  },
+  {
+   "id": "dict-01#158",
+   "path": "dict/157",
+   "ru": "Как мы обращаемся с данными",
+   "en": "How we handle your data",
+   "pt": "Como cuidamos dos seus dados"
+  },
+  {
+   "id": "dict-01#159",
+   "path": "dict/158",
+   "ru": "Есть готовый запрос, ТЗ или план помещения?",
+   "en": "Have a brief, a spec or a floor plan?",
+   "pt": "Já tem um briefing, um termo de referência ou uma planta do espaço?"
+  },
+  {
+   "id": "dict-01#160",
+   "path": "dict/159",
+   "ru": "▶︎ Приложить файл",
+   "en": "▶︎ Attach a file",
+   "pt": "▶︎ Anexar um arquivo"
+  },
+  {
+   "id": "dict-01#161",
+   "path": "dict/160",
+   "ru": "✕ Убрать файл",
+   "en": "✕ Remove file",
+   "pt": "✕ Remover o arquivo"
+  },
+  {
+   "id": "dict-01#162",
+   "path": "dict/161",
+   "ru": "или ссылка на папку в облаке",
+   "en": "or a link to a cloud folder",
+   "pt": "ou um link para uma pasta na nuvem"
+  },
+  {
+   "id": "dict-01#163",
+   "path": "dict/162",
+   "ru": "Согласен на обработку имени, контакта, текста разговора и приложенных файлов — на условиях",
+   "en": "I agree to the processing of my name, contact details, conversation text and attached files under the",
+   "pt": "Concordo com o processamento do meu nome, contato, texto da conversa e arquivos anexados, nos termos das"
+  },
+  {
+   "id": "dict-01#164",
+   "path": "dict/163",
+   "ru": "правил обработки данных",
+   "en": "data processing rules",
+   "pt": "regras de processamento de dados"
+  },
+  {
+   "id": "dict-01#165",
+   "path": "dict/164",
+   "ru": "Текст разговора уходит в языковую модель и в письмо студии, файл удаляется с сервера сразу после отправки. Разговор храним до 6 месяцев, удалим раньше по первому письму.",
+   "en": "The conversation text goes to a language model and into the email to the studio; the file is deleted from the server right after sending. We keep the conversation for up to 6 months, or delete it sooner on request.",
+   "pt": "O texto da conversa vai para um modelo de linguagem e para o e-mail do estúdio; o arquivo é apagado do servidor logo após o envio. Guardamos a conversa por até 6 meses, e apagamos antes se você pedir."
+  },
+  {
+   "id": "dict-01#166",
+   "path": "dict/165",
+   "ru": "Примем pdf, word, powerpoint, excel или картинку.",
+   "en": "We accept pdf, word, powerpoint, excel or an image.",
+   "pt": "Aceitamos pdf, word, powerpoint, excel ou uma imagem."
+  },
+  {
+   "id": "dict-01#167",
+   "path": "dict/166",
+   "ru": "Загружаем файл…",
+   "en": "Uploading the file…",
+   "pt": "Enviando o arquivo…"
+  },
+  {
+   "id": "dict-01#168",
+   "path": "dict/167",
+   "ru": "Сформулируйте идею",
+   "en": "Put your idea into words",
+   "pt": "Coloque a ideia em palavras"
+  },
+  {
+   "id": "dict-01#169",
+   "path": "dict/168",
+   "ru": "Попробуйте сформулировать идею вслух.",
+   "en": "Try saying your idea out loud.",
+   "pt": "Tente falar a sua ideia em voz alta."
+  },
+  {
+   "id": "dict-01#170",
+   "path": "dict/169",
+   "ru": "Не обязательно последовательно. Расскажите так, как рассказываете коллеге, — мы соберём основные смыслы в короткое описание проекта.",
+   "en": "It does not have to be in order. Say it the way you would say it to a colleague — we will gather the essentials into a short project brief.",
+   "pt": "Não precisa ser em ordem. Conte do jeito que contaria para um colega — a gente reúne o essencial num resumo curto do projeto."
+  },
+  {
+   "id": "dict-01#171",
+   "path": "dict/170",
+   "ru": "Рассказать идею голосом",
+   "en": "Tell us by voice",
+   "pt": "Contar a ideia por voz"
+  },
+  {
+   "id": "dict-01#172",
+   "path": "dict/171",
+   "ru": "Начните с того, что уже знаете",
+   "en": "Start with what you already know",
+   "pt": "Comece pelo que você já sabe"
+  },
+  {
+   "id": "dict-01#173",
+   "path": "dict/172",
+   "ru": "Расскажите, какое пространство вы хотите создать.",
+   "en": "Tell us what space you want to create.",
+   "pt": "Conte que espaço você quer criar."
+  },
+  {
+   "id": "dict-01#174",
+   "path": "dict/173",
+   "ru": "Мы выделим основные смыслы и соберём их в понятное описание проекта.",
+   "en": "We will pick out the essentials and turn them into a clear project brief.",
+   "pt": "A gente separa o essencial e transforma isso num resumo claro do projeto."
+  },
+  {
+   "id": "dict-01#175",
+   "path": "dict/174",
+   "ru": "Или написать текстом",
+   "en": "Or type instead",
+   "pt": "Ou escrever por texto"
+  },
+  {
+   "id": "dict-01#176",
+   "path": "dict/175",
+   "ru": "Говорите свободно — ассистент слушает и задаёт вопросы.",
+   "en": "Speak freely — the assistant listens and asks questions.",
+   "pt": "Fale à vontade — o assistente escuta e faz perguntas."
+  },
+  {
+   "id": "dict-01#177",
+   "path": "dict/176",
+   "ru": "Расскажите про вашу идею.",
+   "en": "Tell us about your idea.",
+   "pt": "Conte para nós sobre a sua ideia."
+  },
+  {
+   "id": "dict-01#178",
+   "path": "dict/177",
+   "ru": "Мы будем собирать основные смыслы.",
+   "en": "We will collect the essentials as you go.",
+   "pt": "Vamos reunir os pontos principais."
+  },
+  {
+   "id": "dict-01#179",
+   "path": "dict/178",
+   "ru": "Собрать бриф",
+   "en": "Build the brief",
+   "pt": "Montar o briefing"
+  },
+  {
+   "id": "dict-01#180",
+   "path": "dict/179",
+   "ru": "Краткое описание",
+   "en": "In short",
+   "pt": "Em resumo"
+  },
+  {
+   "id": "dict-01#181",
+   "path": "dict/180",
+   "ru": "Для кого",
+   "en": "Who it is for",
+   "pt": "Para quem é"
+  },
+  {
+   "id": "dict-01#182",
+   "path": "dict/181",
+   "ru": "Что человек должен почувствовать",
+   "en": "What the visitor should feel",
+   "pt": "O que o visitante deve sentir"
+  },
+  {
+   "id": "dict-01#183",
+   "path": "dict/182",
+   "ru": "Рассказать ещё",
+   "en": "Tell us more",
+   "pt": "Contar mais"
+  },
+  {
+   "id": "dict-01#184",
+   "path": "dict/183",
+   "ru": "▶︎ Отправить в playdisplay",
+   "en": "▶︎ Send to playdisplay",
+   "pt": "▶︎ Enviar para a playdisplay"
+  },
+  {
+   "id": "dict-01#185",
+   "path": "dict/184",
+   "ru": "Почти готово",
+   "en": "Almost done",
+   "pt": "Quase pronto"
+  },
+  {
+   "id": "dict-01#186",
+   "path": "dict/185",
+   "ru": "Куда отправить описание идеи?",
+   "en": "Where should we send the brief?",
+   "pt": "Para onde enviamos o resumo?"
+  },
+  {
+   "id": "dict-01#187",
+   "path": "dict/186",
+   "ru": "Согласен на отправку описания идеи в playdisplay",
+   "en": "I agree to send this brief to playdisplay",
+   "pt": "Concordo em enviar este resumo para a playdisplay"
+  },
+  {
+   "id": "dict-01#188",
+   "path": "dict/187",
+   "ru": "▶︎ Отправить",
+   "en": "▶︎ Send",
+   "pt": "▶︎ Enviar"
+  },
+  {
+   "id": "dict-01#189",
+   "path": "dict/188",
+   "ru": "Запрос отправлен",
+   "en": "Sent",
+   "pt": "Enviado"
+  },
+  {
+   "id": "dict-01#190",
+   "path": "dict/189",
+   "ru": "Спасибо. Мы получили описание проекта.",
+   "en": "Thank you. We have your brief.",
+   "pt": "Obrigado. Recebemos o resumo do projeto."
+  },
+  {
+   "id": "dict-01#191",
+   "path": "dict/190",
+   "ru": "Следующий шаг — персональная креативная сессия с playdisplay.",
+   "en": "The next step is a personal creative session with playdisplay.",
+   "pt": "O próximo passo é uma sessão criativa personalizada com a playdisplay."
+  },
+  {
+   "id": "dict-01#192",
+   "path": "dict/191",
+   "ru": "Прислать мне копию описания на эту почту",
+   "en": "Send me a copy of this summary by email",
+   "pt": "Enviar para mim uma cópia deste resumo por e-mail"
+  },
+  {
+   "id": "dict-01#193",
+   "path": "dict/192",
+   "ru": "Прошлый разговор сохранён",
+   "en": "Your previous conversation is saved",
+   "pt": "A conversa anterior está salva"
+  },
+  {
+   "id": "dict-01#194",
+   "path": "dict/193",
+   "ru": "▶︎ Продолжить",
+   "en": "▶︎ Continue",
+   "pt": "▶︎ Continuar"
+  },
+  {
+   "id": "dict-01#195",
+   "path": "dict/194",
+   "ru": "Начать заново",
+   "en": "Start over",
+   "pt": "Começar de novo"
+  },
+  {
+   "id": "dict-01#196",
+   "path": "dict/195",
+   "ru": "@ник в Telegram или телефон",
+   "en": "@handle on Telegram, or a phone number",
+   "pt": "@handle no Telegram, ou telefone"
+  },
+  {
+   "id": "dict-01#197",
+   "path": "dict/196",
+   "ru": "Номер в WhatsApp",
+   "en": "WhatsApp number",
+   "pt": "Número no WhatsApp"
+  },
+  {
+   "id": "dict-01#198",
+   "path": "dict/197",
+   "ru": "Телефон для звонка",
+   "en": "Phone number to call",
+   "pt": "Telefone para ligação"
+  },
+  {
+   "id": "dict-01#199",
+   "path": "dict/198",
+   "ru": "Email для ответа",
+   "en": "Email for our reply",
+   "pt": "E-mail para resposta"
+  },
+  {
+   "id": "dict-01#200",
+   "path": "dict/199",
+   "ru": "Начать формулирование идеи",
+   "en": "Start shaping the idea",
+   "pt": "Começar a formular a ideia"
+  },
+  {
+   "id": "dict-01#201",
+   "path": "dict/200",
+   "ru": "Сформулировать идею вслух",
+   "en": "Say the idea out loud",
+   "pt": "Falar a ideia em voz alta"
+  },
+  {
+   "id": "dict-01#202",
+   "path": "dict/201",
+   "ru": "Рассказать идею",
+   "en": "Tell us the idea",
+   "pt": "Contar a ideia"
+  },
+  {
+   "id": "dict-01#203",
+   "path": "dict/202",
+   "ru": "Включить микрофон",
+   "en": "Turn on the microphone",
+   "pt": "Ligar o microfone"
+  },
+  {
+   "id": "dict-01#204",
+   "path": "dict/203",
+   "ru": "Написать ответ",
+   "en": "Type an answer",
+   "pt": "Escrever a resposta"
+  },
+  {
+   "id": "dict-01#205",
+   "path": "dict/204",
+   "ru": "Отправить ответ",
+   "en": "Send the answer",
+   "pt": "Enviar a resposta"
+  },
+  {
+   "id": "dict-01#206",
+   "path": "dict/205",
+   "ru": "Микрофон: пауза и продолжение",
+   "en": "Microphone: pause and resume",
+   "pt": "Microfone: pausar e continuar"
+  },
+  {
+   "id": "dict-01#207",
+   "path": "dict/206",
+   "ru": "Имя",
+   "en": "Name",
+   "pt": "Nome"
+  },
+  {
+   "id": "dict-01#208",
+   "path": "dict/207",
+   "ru": "Email или телефон",
+   "en": "Email or phone",
+   "pt": "E-mail ou telefone"
+  },
+  {
+   "id": "dict-01#209",
+   "path": "dict/208",
+   "ru": "Компания (необязательно)",
+   "en": "Company (optional)",
+   "pt": "Empresa (opcional)"
+  },
+  {
+   "id": "dict-01#210",
+   "path": "dict/209",
+   "ru": "Ассистент долго не отвечает — попробуйте ещё раз.",
+   "en": "The assistant is taking too long — please try again.",
+   "pt": "O assistente está demorando — tente de novo."
+  },
+  {
+   "id": "dict-01#211",
+   "path": "dict/210",
+   "ru": "Что должно случиться с человеком внутри?",
+   "en": "What should happen to a person inside?",
+   "pt": "O que deve acontecer com a pessoa lá dentro?"
+  },
+  {
+   "id": "dict-01#212",
+   "path": "dict/211",
+   "ru": "смысл, а не оборудование",
+   "en": "meaning, not equipment",
+   "pt": "sentido, não equipamento"
+  },
+  {
+   "id": "dict-01#213",
+   "path": "dict/212",
+   "ru": "Кто ваш посетитель — кого вы видите первым?",
+   "en": "Who is your visitor — who do you picture first?",
+   "pt": "Quem é o seu visitante — quem você imagina primeiro?"
+  },
+  {
+   "id": "dict-01#214",
+   "path": "dict/213",
+   "ru": "аудитория",
+   "en": "audience",
+   "pt": "público"
+  },
+  {
+   "id": "dict-01#215",
+   "path": "dict/214",
+   "ru": "Где это будет? Площадка уже есть?",
+   "en": "Where will it be? Do you have the venue?",
+   "pt": "Onde vai ser? O espaço já existe?"
+  },
+  {
+   "id": "dict-01#216",
+   "path": "dict/215",
+   "ru": "место и площадь",
+   "en": "venue and floor area",
+   "pt": "local e área"
+  },
+  {
+   "id": "dict-01#217",
+   "path": "dict/216",
+   "ru": "К какой дате нужно открыться?",
+   "en": "What is the opening date?",
+   "pt": "Para que data precisa abrir?"
+  },
+  {
+   "id": "dict-01#218",
+   "path": "dict/217",
+   "ru": "сроки",
+   "en": "timeline",
+   "pt": "prazos"
+  },
+  {
+   "id": "dict-01#219",
+   "path": "dict/218",
+   "ru": "Что ещё важно знать про проект?",
+   "en": "What else should we know about the project?",
+   "pt": "O que mais é importante saber sobre o projeto?"
+  },
+  {
+   "id": "dict-01#220",
+   "path": "dict/219",
+   "ru": "музей",
+   "en": "museum",
+   "pt": "museu"
+  },
+  {
+   "id": "dict-01#221",
+   "path": "dict/220",
+   "ru": "история региона",
+   "en": "regional history",
+   "pt": "história da região"
+  },
+  {
+   "id": "dict-01#222",
+   "path": "dict/221",
+   "ru": "дети и семьи",
+   "en": "children and families",
+   "pt": "crianças e famílias"
+  },
+  {
+   "id": "dict-01#223",
+   "path": "dict/222",
+   "ru": "интерактив",
+   "en": "hands-on discovery",
+   "pt": "descoberta com as mãos"
+  },
+  {
+   "id": "dict-01#224",
+   "path": "dict/223",
+   "ru": "игра",
+   "en": "play",
+   "pt": "jogo"
+  },
+  {
+   "id": "dict-01#225",
+   "path": "dict/224",
+   "ru": "энергия",
+   "en": "energy",
+   "pt": "energia"
+  },
+  {
+   "id": "dict-01#226",
+   "path": "dict/225",
+   "ru": "исследование",
+   "en": "discovery",
+   "pt": "descoberta"
+  },
+  {
+   "id": "dict-01#227",
+   "path": "dict/226",
+   "ru": "наследие",
+   "en": "heritage",
+   "pt": "patrimônio"
+  },
+  {
+   "id": "dict-01#228",
+   "path": "dict/227",
+   "ru": "эмоция",
+   "en": "emotion",
+   "pt": "emoção"
+  },
+  {
+   "id": "dict-01#229",
+   "path": "dict/228",
+   "ru": "маршрут",
+   "en": "route",
+   "pt": "percurso"
+  },
+  {
+   "id": "dict-01#230",
+   "path": "dict/229",
+   "ru": "коллективное участие",
+   "en": "shared participation",
+   "pt": "participação coletiva"
+  },
+  {
+   "id": "dict-01#231",
+   "path": "dict/230",
+   "ru": "реальные истории",
+   "en": "real stories",
+   "pt": "histórias reais"
+  },
+  {
+   "id": "dict-01#232",
+   "path": "dict/231",
+   "ru": "Модель не подключена — ассистент отвечает по прошитому сценарию.",
+   "en": "No model connected — the assistant is following a built-in script.",
+   "pt": "Modelo não conectado — o assistente responde por um roteiro embutido."
+  },
+  {
+   "id": "dict-01#233",
+   "path": "dict/232",
+   "ru": "Бэкенд недоступен — идёт демонстрация сценария, письмо не отправится.",
+   "en": "Backend unavailable — this is a scripted demo, no email will be sent.",
+   "pt": "Backend indisponível — isto é uma demonstração, nenhum e-mail será enviado."
+  },
+  {
+   "id": "dict-01#234",
+   "path": "dict/233",
+   "ru": "Интерактивный музей энергии для семейной аудитории",
+   "en": "An interactive energy museum for families",
+   "pt": "Um museu interativo da energia para o público familiar"
+  },
+  {
+   "id": "dict-01#235",
+   "path": "dict/234",
+   "ru": "Пространство, где посетители через движение, игру и реальные истории исследуют энергию как живую силу — и видят последствия собственных решений.",
+   "en": "A space where visitors explore energy as a living force through movement, play and real stories — and see the consequences of their own decisions.",
+   "pt": "Um espaço onde os visitantes exploram a energia como força viva através do movimento, do jogo e de histórias reais — e veem as consequências das próprias decisões."
+  },
+  {
+   "id": "dict-01#236",
+   "path": "dict/235",
+   "ru": "Семьи с детьми, школьные группы, молодёжь региона.",
+   "en": "Families with children, school groups, local teenagers.",
+   "pt": "Famílias com crianças, grupos escolares, jovens da região."
+  },
+  {
+   "id": "dict-01#237",
+   "path": "dict/236",
+   "ru": "Энергия — не абстракция, а живая сила, на которую влияют мои собственные решения.",
+   "en": "Energy is not an abstraction but a living force my own decisions act upon.",
+   "pt": "Energia não é abstração, e sim uma força viva sobre a qual as minhas próprias decisões agem."
+  },
+  {
+   "id": "dict-01#238",
+   "path": "dict/237",
+   "ru": "Семьи и школьники",
+   "en": "Families and school groups",
+   "pt": "Famílias e grupos escolares"
+  },
+  {
+   "id": "dict-01#239",
+   "path": "dict/238",
+   "ru": "Интерактивное участие",
+   "en": "Hands-on participation",
+   "pt": "Participação com as mãos"
+  },
+  {
+   "id": "dict-01#240",
+   "path": "dict/239",
+   "ru": "Истории людей",
+   "en": "Human stories",
+   "pt": "Histórias de pessoas"
+  },
+  {
+   "id": "dict-01#241",
+   "path": "dict/240",
+   "ru": "Исследование и выбор",
+   "en": "Discovery and choice",
+   "pt": "Descoberta e escolha"
+  },
+  {
+   "id": "dict-01#242",
+   "path": "dict/241",
+   "ru": "В этом браузере нет распознавания речи — можно написать текстом.",
+   "en": "This browser has no speech recognition — you can type instead.",
+   "pt": "Este navegador não tem reconhecimento de fala — dá para escrever por texto."
+  },
+  {
+   "id": "dict-01#243",
+   "path": "dict/242",
+   "ru": "Начать и написать текстом",
+   "en": "Start and type instead",
+   "pt": "Começar e escrever por texto"
+  },
+  {
+   "id": "dict-01#244",
+   "path": "dict/243",
+   "ru": "Связь с ассистентом потеряна. Можно собрать бриф из того, что уже сказано.",
+   "en": "Connection to the assistant is lost. We can build the brief from what has been said already.",
+   "pt": "A conexão com o assistente caiu. Dá para montar o briefing com o que já foi dito."
+  },
+  {
+   "id": "dict-01#245",
+   "path": "dict/244",
+   "ru": "Микрофон включён — нажмите, чтобы поставить на паузу",
+   "en": "Microphone on — tap to pause",
+   "pt": "Microfone ligado — toque para pausar"
+  },
+  {
+   "id": "dict-01#246",
+   "path": "dict/245",
+   "ru": "Микрофон на паузе — нажмите, чтобы продолжить",
+   "en": "Microphone paused — tap to resume",
+   "pt": "Microfone em pausa — toque para continuar"
+  },
+  {
+   "id": "dict-01#247",
+   "path": "dict/246",
+   "ru": "Микрофон запрещён в настройках браузера — напишите текстом.",
+   "en": "The microphone is blocked in your browser settings — please type instead.",
+   "pt": "O microfone está bloqueado nas configurações do navegador — escreva por texto."
+  },
+  {
+   "id": "dict-01#248",
+   "path": "dict/247",
+   "ru": "Микрофон не найден — напишите текстом.",
+   "en": "No microphone found — please type instead.",
+   "pt": "Nenhum microfone encontrado — escreva por texto."
+  },
+  {
+   "id": "dict-01#249",
+   "path": "dict/248",
+   "ru": "Распознавание речи прервалось — напишите текстом.",
+   "en": "Speech recognition stopped — please type instead.",
+   "pt": "O reconhecimento de fala parou — escreva por texto."
+  },
+  {
+   "id": "dict-01#250",
+   "path": "dict/249",
+   "ru": "Ассистент недоступен. Напишите нам через раздел «Контакты».",
+   "en": "The assistant is unavailable. Please write to us from the contact section.",
+   "pt": "O assistente está indisponível. Escreva para nós pela seção de contato."
+  },
+  {
+   "id": "dict-01#251",
+   "path": "dict/250",
+   "ru": "Ассистент недоступен — бриф собрать не получилось.",
+   "en": "The assistant is unavailable — the brief could not be built.",
+   "pt": "O assistente está indisponível — não deu para montar o briefing."
+  },
+  {
+   "id": "dict-01#252",
+   "path": "dict/251",
+   "ru": "Демо-режим: письмо не отправлено.",
+   "en": "Demo mode: no email was sent.",
+   "pt": "Modo demo: nenhum e-mail foi enviado."
+  },
+  {
+   "id": "dict-01#253",
+   "path": "dict/252",
+   "ru": "Бриф собран, но ассистент не подключён к почте — напишите нам через раздел «Контакты».",
+   "en": "The brief is ready, but the assistant has no mail connection — please write to us from the contact section.",
+   "pt": "O briefing está pronto, mas o assistente não está conectado ao e-mail — escreva para nós pela seção de contato."
+  },
+  {
+   "id": "dict-01#254",
+   "path": "dict/253",
+   "ru": "Отправка недоступна. Напишите нам через раздел «Контакты».",
+   "en": "Sending is unavailable. Please write to us from the contact section.",
+   "pt": "Envio indisponível. Escreva para nós pela seção de contato."
+  },
+  {
+   "id": "dict-01#255",
+   "path": "dict/254",
+   "ru": "Продать сложное",
+   "en": "Sell the complex",
+   "pt": "Vender o complexo"
+  },
+  {
+   "id": "dict-01#256",
+   "path": "dict/255",
+   "ru": "Удивить",
+   "en": "Amaze",
+   "pt": "Surpreender"
+  },
+  {
+   "id": "dict-01#257",
+   "path": "dict/256",
+   "ru": "Рассказать",
+   "en": "Tell the story",
+   "pt": "Contar"
+  },
+  {
+   "id": "dict-01#258",
+   "path": "dict/257",
+   "ru": "Промышленность РФ",
+   "en": "Russian Industry",
+   "pt": "Indústria Russa"
+  },
+  {
+   "id": "dict-01#259",
+   "path": "dict/258",
+   "ru": "Деп. промышленности",
+   "en": "Department of Industry",
+   "pt": "Depto. de Indústria"
+  },
+  {
+   "id": "dict-01#260",
+   "path": "dict/259",
+   "ru": "Интерактивные экспозиции для судостроительной отрасли: продукция и производственные процессы в наглядном цифровом формате.",
+   "en": "Interactive exhibits for the shipbuilding industry: products and production processes in a clear digital form.",
+   "pt": "Exposições interativas para a indústria naval: produtos e processos de produção em formato digital claro."
+  },
+  {
+   "id": "dict-01#261",
+   "path": "dict/260",
+   "ru": "Отрасль, которую можно рассмотреть вблизи.",
+   "en": "An industry you can examine up close.",
+   "pt": "Uma indústria que dá para examinar de perto."
+  },
+  {
+   "id": "dict-01#262",
+   "path": "dict/261",
+   "ru": "Аэропорты России",
+   "en": "Russian Airports",
+   "pt": "Aeroportos da Rússia"
+  },
+  {
+   "id": "dict-01#263",
+   "path": "dict/262",
+   "ru": "Форум «Россия»",
+   "en": "Russia Expo",
+   "pt": "Expo Rússia"
+  },
+  {
+   "id": "dict-01#264",
+   "path": "dict/263",
+   "ru": "Мультимедийные инсталляции для аэропортов: навигация, история и сервисы объединены в единую визуальную систему.",
+   "en": "Multimedia installations for airports: wayfinding, history and services brought into one visual system.",
+   "pt": "Instalações multimídia para aeroportos: navegação, história e serviços reunidos em um único sistema visual."
+  },
+  {
+   "id": "dict-01#265",
+   "path": "dict/264",
+   "ru": "Пространство, которое ведёт за руку.",
+   "en": "A space that takes you by the hand.",
+   "pt": "Um espaço que leva você pela mão."
+  },
+  {
+   "id": "dict-01#266",
+   "path": "dict/265",
+   "ru": "ОДК ОАК",
+   "en": "UEC UAC",
+   "pt": "UEC UAC"
+  },
+  {
+   "id": "dict-01#267",
+   "path": "dict/266",
+   "ru": "ОДК · МАКС",
+   "en": "UEC · MAKS",
+   "pt": "UEC · MAKS"
+  },
+  {
+   "id": "dict-01#268",
+   "path": "dict/267",
+   "ru": "Экспозиции авиадвигателестроения на МАКС: голограммы двигателей и интерактивные разборы технологий, объясняющие устройство изделий без единой строчки текста.",
+   "en": "Aircraft engine exhibits at the MAKS airshow: engine holograms and interactive teardowns that explain the hardware without a single line of text.",
+   "pt": "Exposições de motores aeronáuticos na MAKS: hologramas de motores e desmontagens interativas que explicam o funcionamento sem uma linha de texto."
+  },
+  {
+   "id": "dict-01#269",
+   "path": "dict/268",
+   "ru": "Сложный продукт продаёт тот, кто дал его потрогать.",
+   "en": "A complex product is sold by whoever lets you touch it.",
+   "pt": "Um produto complexo é vendido por quem deixa tocar nele."
+  },
+  {
+   "id": "dict-01#270",
+   "path": "dict/269",
+   "ru": "Прорыв",
+   "en": "Proryv",
+   "pt": "Proryv"
+  },
+  {
+   "id": "dict-01#271",
+   "path": "dict/270",
+   "ru": "Инсталляция «Росатома» о замкнутом ядерном топливном цикле: сложная физика превращается в наглядный, зрелищный интерактив.",
+   "en": "A Rosatom installation about the closed nuclear fuel cycle: hard physics turned into a clear, spectacular interactive.",
+   "pt": "Instalação da Rosatom sobre o ciclo fechado do combustível nuclear: física complexa virando um interativo claro e espetacular."
+  },
+  {
+   "id": "dict-01#272",
+   "path": "dict/271",
+   "ru": "О технологии будущего — на языке впечатления.",
+   "en": "Tomorrow’s technology told in the language of experience.",
+   "pt": "A tecnologia do futuro contada na linguagem da experiência."
+  },
+  {
+   "id": "dict-01#273",
+   "path": "dict/272",
+   "ru": "Ростех-Экспо",
+   "en": "Rostec Expo",
+   "pt": "Rostec Expo"
+  },
+  {
+   "id": "dict-01#274",
+   "path": "dict/273",
+   "ru": "Выставочный комплекс госкорпорации: мультимедийная среда, объединяющая десятки предприятий в один сценарий.",
+   "en": "An exhibition complex for the state corporation: a multimedia environment that brings dozens of companies into one narrative.",
+   "pt": "Complexo expositivo da corporação estatal: um ambiente multimídia que reúne dezenas de empresas em um único roteiro."
+  },
+  {
+   "id": "dict-01#275",
+   "path": "dict/274",
+   "ru": "Масштаб корпорации — в одном пространстве.",
+   "en": "The scale of a corporation held in one space.",
+   "pt": "A escala de uma corporação em um só espaço."
+  },
+  {
+   "id": "dict-01#276",
+   "path": "dict/275",
+   "ru": "Интерактивный корпоративный стенд: продукты и процессы компании собраны в единый цифровой сценарий для переговоров и выставок.",
+   "en": "An interactive corporate booth: the company’s products and processes gathered into one digital narrative for meetings and trade shows.",
+   "pt": "Estande corporativo interativo: produtos e processos da empresa reunidos em um roteiro digital único para reuniões e feiras."
+  },
+  {
+   "id": "dict-01#277",
+   "path": "dict/276",
+   "ru": "Презентация, в которую вовлекаются.",
+   "en": "A presentation people take part in.",
+   "pt": "Uma apresentação da qual se participa."
+  },
+  {
+   "id": "dict-01#278",
+   "path": "dict/277",
+   "ru": "Стенд МИГ-35",
+   "en": "MiG-35 Booth",
+   "pt": "Estande do MiG-35"
+  },
+  {
+   "id": "dict-01#279",
+   "path": "dict/278",
+   "ru": "РСК «МИГ»",
+   "en": "RSK MiG",
+   "pt": "RSK MiG"
+  },
+  {
+   "id": "dict-01#280",
+   "path": "dict/279",
+   "ru": "Сцена для истребителя на международном авиасалоне: подиум, 15-метровый LED-экран и 3D-контент, раскрывающий характеристики машины. Бонус-уровень: дизайн ливреи самого самолёта.",
+   "en": "A stage for a fighter jet at an international airshow: a plinth, a 15-metre LED screen and 3D content that reveals what the aircraft can do. Bonus level: the livery design for the jet itself.",
+   "pt": "Um palco para um caça em um salão aeronáutico internacional: pódio, tela de LED de 15 metros e conteúdo 3D que revela o que a aeronave faz. Nível bônus: o design da pintura do próprio avião."
+  },
+  {
+   "id": "dict-01#281",
+   "path": "dict/280",
+   "ru": "Самолёт и так звезда — мы построили ему сцену.",
+   "en": "The jet was already a star — we built it a stage.",
+   "pt": "O avião já era estrela — a gente construiu o palco."
+  }
+ ]
+}

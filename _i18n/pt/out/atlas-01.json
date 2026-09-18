@@ -1,0 +1,777 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "atlas-01 (1 de 1)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "atlas-01#001",
+   "path": "catLabels/Принцип",
+   "ru": "Принципы",
+   "en": null,
+   "pt": "Princípios"
+  },
+  {
+   "id": "atlas-01#002",
+   "path": "catLabels/Технология",
+   "ru": "Технологии",
+   "en": null,
+   "pt": "Tecnologias"
+  },
+  {
+   "id": "atlas-01#003",
+   "path": "catLabels/Наблюдение",
+   "ru": "Наблюдения",
+   "en": null,
+   "pt": "Observações"
+  },
+  {
+   "id": "atlas-01#004",
+   "path": "catLabels/Приём",
+   "ru": "Приёмы",
+   "en": null,
+   "pt": "Técnicas"
+  },
+  {
+   "id": "atlas-01#005",
+   "path": "catLabels/Исследование",
+   "ru": "Исследования",
+   "en": null,
+   "pt": "Pesquisas"
+  },
+  {
+   "id": "atlas-01#006",
+   "path": "cats/0",
+   "ru": "Принцип",
+   "en": "Principle",
+   "pt": "Princípio"
+  },
+  {
+   "id": "atlas-01#007",
+   "path": "cats/1",
+   "ru": "Технология",
+   "en": "Technology",
+   "pt": "Tecnologia"
+  },
+  {
+   "id": "atlas-01#008",
+   "path": "cats/2",
+   "ru": "Наблюдение",
+   "en": "Observation",
+   "pt": "Observação"
+  },
+  {
+   "id": "atlas-01#009",
+   "path": "cats/3",
+   "ru": "Приём",
+   "en": "Technique",
+   "pt": "Técnica"
+  },
+  {
+   "id": "atlas-01#010",
+   "path": "cats/4",
+   "ru": "Исследование",
+   "en": "Research",
+   "pt": "Pesquisa"
+  },
+  {
+   "id": "atlas-01#011",
+   "path": "items/0/title",
+   "ru": "Дизайнер не украшает — он находит форму решения",
+   "en": "Designers don't decorate — they find the form of the solution",
+   "pt": "O designer não decora — ele encontra a forma da solução"
+  },
+  {
+   "id": "atlas-01#012",
+   "path": "items/0/desc",
+   "ru": "Выразительность появляется не поверх функции. Она рождается из самой задачи: из поведения людей, особенностей пространства, ограничений проекта и выбранных технологий.",
+   "en": "Expression is never laid on top of function. It grows out of the problem itself: how people behave, what the space is like, what the project's limits are, and which technologies are chosen.",
+   "pt": "A expressividade não se coloca por cima da função. Ela nasce da própria tarefa: de como as pessoas se comportam, de como é o espaço, dos limites do projeto e das tecnologias escolhidas."
+  },
+  {
+   "id": "atlas-01#013",
+   "path": "items/1/title",
+   "ru": "Будущее уже существует в виде вариантов",
+   "en": "The future already exists as options",
+   "pt": "O futuro já existe como possibilidades"
+  },
+  {
+   "id": "atlas-01#014",
+   "path": "items/1/desc",
+   "ru": "Вдохновение — это момент, когда дизайнер замечает один из возможных вариантов будущего раньше других. Ценность возникает, когда этот вариант удаётся превратить в реальный объект, пространство или опыт.",
+   "en": "Inspiration is the moment a designer notices one of the possible futures before anyone else does. Value appears when that option can be turned into a real object, space or experience.",
+   "pt": "Inspiração é o momento em que o designer percebe um dos futuros possíveis antes dos outros. O valor aparece quando essa possibilidade vira um objeto, um espaço ou uma experiência real."
+  },
+  {
+   "id": "atlas-01#015",
+   "path": "items/2/title",
+   "ru": "Поток требует предельного внимания",
+   "en": "Flow demands total attention",
+   "pt": "O fluxo exige atenção inteira"
+  },
+  {
+   "id": "atlas-01#016",
+   "path": "items/2/desc",
+   "ru": "Сильные решения редко рождаются между делом. Дизайнер полностью погружается в задачу, замечает связи, отбрасывает очевидные ответы и удерживает идею, пока она не приобретает точную форму.",
+   "en": "Strong solutions rarely arrive in passing. The designer goes all the way into the problem, notices connections, discards the obvious answers and holds the idea until it takes exact form.",
+   "pt": "Soluções fortes raramente chegam de passagem. O designer entra na tarefa até o fim, percebe conexões, descarta as respostas óbvias e segura a ideia até ela ganhar forma exata."
+  },
+  {
+   "id": "atlas-01#017",
+   "path": "items/3/title",
+   "ru": "Технология ничего не гарантирует",
+   "en": "Technology guarantees nothing",
+   "pt": "A tecnologia não garante nada"
+  },
+  {
+   "id": "atlas-01#018",
+   "path": "items/3/desc",
+   "ru": "Одна и та же технология может создать сильное впечатление или остаться дорогим оборудованием. Ценность появляется, когда она становится частью точной идеи.",
+   "en": "The same technology can create a powerful experience or stay expensive equipment. Value appears when it becomes part of a precise idea.",
+   "pt": "A mesma tecnologia pode criar uma experiência forte ou continuar sendo equipamento caro. O valor aparece quando ela vira parte de uma ideia precisa."
+  },
+  {
+   "id": "atlas-01#019",
+   "path": "items/4/title",
+   "ru": "Каждое ограничение делает идею сильнее",
+   "en": "Every constraint makes the idea stronger",
+   "pt": "Cada limite deixa a ideia mais forte"
+  },
+  {
+   "id": "atlas-01#020",
+   "path": "items/4/desc",
+   "ru": "Бюджет, сроки, архитектура, безопасность и существующее оборудование задают давление, из которого рождается точное решение.",
+   "en": "Budget, schedule, architecture, safety and existing equipment apply the pressure that an exact solution is born out of.",
+   "pt": "Orçamento, prazo, arquitetura, segurança e o equipamento já existente criam a pressão da qual nasce a solução exata."
+  },
+  {
+   "id": "atlas-01#021",
+   "path": "items/5/title",
+   "ru": "Пространство — это язык",
+   "en": "Space is a language",
+   "pt": "O espaço é uma linguagem"
+  },
+  {
+   "id": "atlas-01#022",
+   "path": "items/5/desc",
+   "ru": "Свет, масштаб, маршрут, звук и движение рассказывают историю раньше любого текста.",
+   "en": "Light, scale, path, sound and movement tell the story before any text does.",
+   "pt": "Luz, escala, percurso, som e movimento contam a história antes de qualquer texto."
+  },
+  {
+   "id": "atlas-01#023",
+   "path": "items/6/title",
+   "ru": "Лучшие идеи выглядят неизбежными",
+   "en": "The best ideas look inevitable",
+   "pt": "As melhores ideias parecem inevitáveis"
+  },
+  {
+   "id": "atlas-01#024",
+   "path": "items/6/desc",
+   "ru": "После реализации кажется, что иначе и быть не могло. Такой эффект возникает, когда сложная задача решена по-настоящему точно.",
+   "en": "Once it is built, it seems there was no other way. That effect appears when a difficult problem has been solved with real precision.",
+   "pt": "Depois de pronta, parece que não havia outro jeito. Esse efeito aparece quando uma tarefa difícil foi resolvida com precisão de verdade."
+  },
+  {
+   "id": "atlas-01#025",
+   "path": "items/7/title",
+   "ru": "Сложность должна оставаться за кулисами",
+   "en": "Complexity belongs backstage",
+   "pt": "A complexidade fica nos bastidores"
+  },
+  {
+   "id": "atlas-01#026",
+   "path": "items/7/desc",
+   "ru": "Чем естественнее ощущается взаимодействие, тем больше работы обычно скрыто внутри проекта.",
+   "en": "The more natural an interaction feels, the more work is usually hidden inside the project.",
+   "pt": "Quanto mais natural parece a interação, mais trabalho costuma estar escondido dentro do projeto."
+  },
+  {
+   "id": "atlas-01#027",
+   "path": "items/8/title",
+   "ru": "Мы проектируем поведение",
+   "en": "We design behavior",
+   "pt": "Projetamos comportamento"
+  },
+  {
+   "id": "atlas-01#028",
+   "path": "items/8/desc",
+   "ru": "Экраны, проекторы и программное обеспечение можно купить. Настоящая работа — спроектировать, как люди будут двигаться, останавливаться, удивляться и взаимодействовать.",
+   "en": "Screens, projectors and software can be bought. The real work is designing how people will move, stop, wonder and interact.",
+   "pt": "Telas, projetores e software dá para comprar. O trabalho de verdade é projetar como as pessoas vão andar, parar, se surpreender e interagir."
+  },
+  {
+   "id": "atlas-01#029",
+   "path": "items/9/title",
+   "ru": "Впечатление начинается ещё до первого шага",
+   "en": "The experience begins before the first step",
+   "pt": "A experiência começa antes do primeiro passo"
+  },
+  {
+   "id": "atlas-01#030",
+   "path": "items/9/desc",
+   "ru": "Проект начинается с ожидания и заканчивается воспоминанием. Вход, очередь и первый взгляд уже формируют отношение к опыту.",
+   "en": "A project starts with anticipation and ends with a memory. The entrance, the queue and the first glance already shape how the experience is received.",
+   "pt": "Um projeto começa na expectativa e termina na lembrança. A entrada, a fila e o primeiro olhar já moldam como a experiência é recebida."
+  },
+  {
+   "id": "atlas-01#031",
+   "path": "items/10/title",
+   "ru": "Хорошая идея объединяет людей",
+   "en": "A good idea brings people together",
+   "pt": "Uma boa ideia junta as pessoas"
+  },
+  {
+   "id": "atlas-01#032",
+   "path": "items/10/desc",
+   "ru": "Сильный проект рождает разговор: люди показывают друг другу детали, фотографируются, смеются и возвращаются вместе.",
+   "en": "A strong project starts a conversation: people point out details to each other, take photos, laugh and come back together.",
+   "pt": "Um projeto forte começa uma conversa: as pessoas apontam detalhes umas para as outras, fotografam, riem e voltam juntas."
+  },
+  {
+   "id": "atlas-01#033",
+   "path": "items/11/title",
+   "ru": "Настоящее волшебство оставляет вопросы",
+   "en": "Real magic leaves questions",
+   "pt": "A mágica de verdade deixa perguntas"
+  },
+  {
+   "id": "atlas-01#034",
+   "path": "items/11/desc",
+   "ru": "Когда хочется ещё раз посмотреть, обойти вокруг и проверить собственные ощущения, впечатление остаётся надолго.",
+   "en": "When people want a second look, want to walk around it and check their own senses, the impression stays with them.",
+   "pt": "Quando a pessoa quer olhar de novo, dar a volta e conferir os próprios sentidos, a impressão fica com ela."
+  },
+  {
+   "id": "atlas-01#035",
+   "path": "items/12/title",
+   "ru": "Память хранит пережитые моменты",
+   "en": "Memory keeps moments you lived through",
+   "pt": "A memória guarda o que foi vivido"
+  },
+  {
+   "id": "atlas-01#036",
+   "path": "items/12/desc",
+   "ru": "Факты быстро стираются. Личный опыт, неожиданность и эмоция продолжают жить в памяти.",
+   "en": "Facts fade fast. Personal experience, surprise and emotion go on living in memory.",
+   "pt": "Fatos somem rápido. Experiência pessoal, surpresa e emoção seguem vivendo na memória."
+  },
+  {
+   "id": "atlas-01#037",
+   "path": "items/13/title",
+   "ru": "Удивление открывает внимание",
+   "en": "Surprise opens attention",
+   "pt": "A surpresa abre a atenção"
+  },
+  {
+   "id": "atlas-01#038",
+   "path": "items/13/desc",
+   "ru": "Удивление создаёт паузу, в которой человек готов смотреть, слушать и исследовать дальше.",
+   "en": "Surprise creates a pause in which a person is ready to look, listen and explore further.",
+   "pt": "A surpresa cria uma pausa em que a pessoa fica pronta para olhar, ouvir e explorar mais."
+  },
+  {
+   "id": "atlas-01#039",
+   "path": "items/14/title",
+   "ru": "Лучшие технологии исчезают",
+   "en": "The best technology disappears",
+   "pt": "A melhor tecnologia desaparece"
+  },
+  {
+   "id": "atlas-01#040",
+   "path": "items/14/desc",
+   "ru": "Когда посетитель обсуждает впечатление, а не оборудование, технология выполнила свою задачу.",
+   "en": "When visitors talk about the experience and not the equipment, the technology has done its job.",
+   "pt": "Quando o visitante fala da experiência e não do equipamento, a tecnologia fez o trabalho dela."
+  },
+  {
+   "id": "atlas-01#041",
+   "path": "items/15/title",
+   "ru": "Дизайн — это способ принимать решения",
+   "en": "Design is a way of making decisions",
+   "pt": "Design é um jeito de tomar decisões"
+  },
+  {
+   "id": "atlas-01#042",
+   "path": "items/15/desc",
+   "ru": "Дизайн начинается с вопроса, что должен почувствовать и сделать человек, а затем собирает форму, сценарий и технологии вокруг этого ответа.",
+   "en": "Design starts with the question of what a person should feel and do, then builds form, narrative and technology around that answer.",
+   "pt": "O design começa pela pergunta do que a pessoa deve sentir e fazer, e só então constrói forma, narrativa e tecnologia em volta dessa resposta."
+  },
+  {
+   "id": "atlas-01#043",
+   "path": "items/16/title",
+   "ru": "Ограничения — лучший соавтор",
+   "en": "Constraints are the best co-author",
+   "pt": "Os limites são o melhor coautor"
+  },
+  {
+   "id": "atlas-01#044",
+   "path": "items/16/desc",
+   "ru": "Выразительность часто рождается именно благодаря границам проекта, а не вопреки им.",
+   "en": "Expression often comes about because of a project's limits, not in spite of them.",
+   "pt": "A expressividade muitas vezes acontece por causa dos limites do projeto, não apesar deles."
+  },
+  {
+   "id": "atlas-01#045",
+   "path": "items/17/title",
+   "ru": "Хорошая идея кажется очевидной после того, как её придумали",
+   "en": "A good idea looks obvious once someone has had it",
+   "pt": "Uma boa ideia parece óbvia depois que alguém a teve"
+  },
+  {
+   "id": "atlas-01#046",
+   "path": "items/17/desc",
+   "ru": "Точность решения скрывает путь поиска и делает результат естественным.",
+   "en": "Precision hides the search behind it and makes the result feel natural.",
+   "pt": "A precisão esconde a busca que veio antes e faz o resultado parecer natural."
+  },
+  {
+   "id": "atlas-01#047",
+   "path": "items/18/title",
+   "ru": "Творчество — это способность увидеть связь",
+   "en": "Creativity is the ability to see a connection",
+   "pt": "Criatividade é conseguir enxergar uma conexão"
+  },
+  {
+   "id": "atlas-01#048",
+   "path": "items/18/desc",
+   "ru": "Сильная идея соединяет элементы, которые до этого воспринимались раздельно.",
+   "en": "A strong idea joins together elements that until then were seen separately.",
+   "pt": "Uma ideia forte junta elementos que até então eram vistos separados."
+  },
+  {
+   "id": "atlas-01#049",
+   "path": "items/19/title",
+   "ru": "Каждый проект начинается с ощущения",
+   "en": "Every project starts with a feeling",
+   "pt": "Todo projeto começa por uma sensação"
+  },
+  {
+   "id": "atlas-01#050",
+   "path": "items/19/desc",
+   "ru": "Сначала определяем, что должен почувствовать человек. Потом создаём всё, что поможет ему это пережить.",
+   "en": "First we decide what a person should feel. Then we build everything that helps them live it.",
+   "pt": "Primeiro decidimos o que a pessoa deve sentir. Depois construímos tudo o que ajuda ela a viver isso."
+  },
+  {
+   "id": "atlas-01#051",
+   "path": "items/20/title",
+   "ru": "Виртуальная реальность для обучения",
+   "en": "Virtual reality for training",
+   "pt": "Realidade virtual para treinamento"
+  },
+  {
+   "id": "atlas-01#052",
+   "path": "items/20/desc",
+   "ru": "VR позволяет безопасно отрабатывать сложные и редкие ситуации, повторять сценарии и получать мгновенную обратную связь.",
+   "en": "VR makes it safe to rehearse difficult and rare situations, repeat scenarios and get instant feedback.",
+   "pt": "A RV deixa seguro ensaiar situações difíceis e raras, repetir cenários e receber retorno na hora."
+  },
+  {
+   "id": "atlas-01#053",
+   "path": "items/21/title",
+   "ru": "Генеративная графика",
+   "en": "Generative graphics",
+   "pt": "Gráficos generativos"
+  },
+  {
+   "id": "atlas-01#054",
+   "path": "items/21/desc",
+   "ru": "Визуальный образ создаётся в реальном времени и меняется в ответ на человека, данные или состояние пространства.",
+   "en": "The image is created in real time and changes in response to a person, to data or to the state of the space.",
+   "pt": "A imagem é criada em tempo real e muda em resposta à pessoa, aos dados ou ao estado do espaço."
+  },
+  {
+   "id": "atlas-01#055",
+   "path": "items/22/title",
+   "ru": "Компьютерное зрение",
+   "en": "Computer vision",
+   "pt": "Visão computacional"
+  },
+  {
+   "id": "atlas-01#056",
+   "path": "items/22/desc",
+   "ru": "Камеры распознают движение, положение и действия людей, превращая естественное поведение в способ управления.",
+   "en": "Cameras read movement, position and action, turning natural behavior into a way of controlling things.",
+   "pt": "Câmeras leem movimento, posição e ação, transformando comportamento natural em forma de controle."
+  },
+  {
+   "id": "atlas-01#057",
+   "path": "items/23/title",
+   "ru": "Пространственный звук",
+   "en": "Spatial sound",
+   "pt": "Som espacial"
+  },
+  {
+   "id": "atlas-01#058",
+   "path": "items/23/desc",
+   "ru": "Звук формирует направление, глубину и ощущение присутствия, связывая виртуальное событие с физическим местом.",
+   "en": "Sound builds direction, depth and a sense of presence, tying a virtual event to a physical place.",
+   "pt": "O som constrói direção, profundidade e sensação de presença, amarrando um evento virtual a um lugar físico."
+  },
+  {
+   "id": "atlas-01#059",
+   "path": "items/24/title",
+   "ru": "Сенсорные системы",
+   "en": "Sensor systems",
+   "pt": "Sistemas de sensores"
+  },
+  {
+   "id": "atlas-01#060",
+   "path": "items/24/desc",
+   "ru": "Движение, прикосновение, голос и положение тела становятся входными данными для сценария.",
+   "en": "Movement, touch, voice and body position become inputs for the scenario.",
+   "pt": "Movimento, toque, voz e posição do corpo viram entradas para o roteiro."
+  },
+  {
+   "id": "atlas-01#061",
+   "path": "items/25/title",
+   "ru": "Люди редко пересказывают факты",
+   "en": "People rarely retell facts",
+   "pt": "As pessoas raramente recontam fatos"
+  },
+  {
+   "id": "atlas-01#062",
+   "path": "items/25/desc",
+   "ru": "Зато почти всегда пересказывают моменты, которые их удивили.",
+   "en": "But they almost always retell the moments that surprised them.",
+   "pt": "Mas quase sempre recontam os momentos que as surpreenderam."
+  },
+  {
+   "id": "atlas-01#063",
+   "path": "items/26/title",
+   "ru": "Архитектура говорит первой",
+   "en": "Architecture speaks first",
+   "pt": "A arquitetura fala primeiro"
+  },
+  {
+   "id": "atlas-01#064",
+   "path": "items/26/desc",
+   "ru": "Человек считывает масштаб, свет, форму и маршрут ещё до появления текста.",
+   "en": "People read scale, light, form and route before any text appears.",
+   "pt": "As pessoas leem escala, luz, forma e percurso antes de aparecer qualquer texto."
+  },
+  {
+   "id": "atlas-01#065",
+   "path": "items/27/title",
+   "ru": "Пространство может направлять без указателей",
+   "en": "Space can guide without signage",
+   "pt": "O espaço guia sem placas"
+  },
+  {
+   "id": "atlas-01#066",
+   "path": "items/27/desc",
+   "ru": "Свет, звук, перспектива и движение сами подсказывают следующий шаг.",
+   "en": "Light, sound, perspective and movement suggest the next step on their own.",
+   "pt": "Luz, som, perspectiva e movimento sugerem sozinhos o próximo passo."
+  },
+  {
+   "id": "atlas-01#067",
+   "path": "items/28/title",
+   "ru": "Простота обычно скрывает большую работу",
+   "en": "Simplicity usually hides a lot of work",
+   "pt": "A simplicidade costuma esconder muito trabalho"
+  },
+  {
+   "id": "atlas-01#068",
+   "path": "items/28/desc",
+   "ru": "Чем естественнее выглядит взаимодействие, тем точнее продуманы сценарий и технология.",
+   "en": "The more natural an interaction looks, the more carefully the scenario and the technology behind it were worked out.",
+   "pt": "Quanto mais natural parece a interação, com mais cuidado foram trabalhados o roteiro e a tecnologia por trás."
+  },
+  {
+   "id": "atlas-01#069",
+   "path": "items/29/title",
+   "ru": "Если обсуждают оборудование, идея проиграла",
+   "en": "If people discuss the equipment, the idea has lost",
+   "pt": "Se falam do equipamento, a ideia perdeu"
+  },
+  {
+   "id": "atlas-01#070",
+   "path": "items/29/desc",
+   "ru": "Если обсуждают то, что почувствовали и пережили, технология сработала.",
+   "en": "If they discuss what they felt and lived through, the technology worked.",
+   "pt": "Se falam do que sentiram e viveram, a tecnologia funcionou."
+  },
+  {
+   "id": "atlas-01#071",
+   "path": "items/30/title",
+   "ru": "Совместная эмоция сильнее одиночной",
+   "en": "A shared emotion is stronger than a private one",
+   "pt": "Emoção compartilhada é mais forte que emoção sozinha"
+  },
+  {
+   "id": "atlas-01#072",
+   "path": "items/30/desc",
+   "ru": "Люди лучше запоминают опыт, который разделили с другими.",
+   "en": "People remember an experience better when they have shared it with others.",
+   "pt": "As pessoas lembram melhor de uma experiência quando dividiram ela com alguém."
+  },
+  {
+   "id": "atlas-01#073",
+   "path": "items/31/title",
+   "ru": "Наблюдать иногда так же интересно, как участвовать",
+   "en": "Watching can be as good as taking part",
+   "pt": "Assistir pode valer tanto quanto participar"
+  },
+  {
+   "id": "atlas-01#074",
+   "path": "items/31/desc",
+   "ru": "Реакции участников могут стать частью шоу и усиливать интерес окружающих.",
+   "en": "Participants' reactions can become part of the show and draw in the people around them.",
+   "pt": "A reação de quem participa pode virar parte do espetáculo e puxar quem está em volta."
+  },
+  {
+   "id": "atlas-01#075",
+   "path": "items/32/title",
+   "ru": "Личное действие меняет ценность опыта",
+   "en": "A personal action changes what the experience is worth",
+   "pt": "Uma ação própria muda o valor da experiência"
+  },
+  {
+   "id": "atlas-01#076",
+   "path": "items/32/desc",
+   "ru": "То, на что человек повлиял сам, воспринимается как более значимое.",
+   "en": "Whatever a person has influenced themselves feels more significant to them.",
+   "pt": "O que a pessoa mesma influenciou parece mais importante para ela."
+  },
+  {
+   "id": "atlas-01#077",
+   "path": "items/33/title",
+   "ru": "Пространство, которое хочется сфотографировать",
+   "en": "A space people want to photograph",
+   "pt": "Um espaço que dá vontade de fotografar"
+  },
+  {
+   "id": "atlas-01#078",
+   "path": "items/33/desc",
+   "ru": "Сильная инсталляция сама подсказывает человеку, где остановиться и что сделать. Фотография становится частью сценария, а впечатление распространяется дальше.",
+   "en": "A strong installation tells a person where to stop and what to do. The photograph becomes part of the narrative, and the experience travels further.",
+   "pt": "Uma instalação forte diz à pessoa onde parar e o que fazer. A foto vira parte da narrativa, e a experiência vai mais longe."
+  },
+  {
+   "id": "atlas-01#079",
+   "path": "items/34/title",
+   "ru": "Вернуть взрослому любопытство",
+   "en": "Give adults their curiosity back",
+   "pt": "Devolver a curiosidade aos adultos"
+  },
+  {
+   "id": "atlas-01#080",
+   "path": "items/34/desc",
+   "ru": "Игра на время снимает статус, должность и привычную серьёзность. Человек снова исследует, пробует и радуется открытию.",
+   "en": "Play briefly removes status, job title and habitual seriousness. A person explores, tries things and enjoys discovery again.",
+   "pt": "O jogo tira por um momento o status, o cargo e a seriedade de sempre. A pessoa explora, experimenta e volta a gostar de descobrir."
+  },
+  {
+   "id": "atlas-01#081",
+   "path": "items/35/title",
+   "ru": "Магия сильнее технологии",
+   "en": "Magic is stronger than technology",
+   "pt": "A mágica é mais forte que a tecnologia"
+  },
+  {
+   "id": "atlas-01#082",
+   "path": "items/35/desc",
+   "ru": "Посетителю важнее момент невозможного, чем объяснение устройства. Реальный объект оживает, изображение появляется в воздухе, привычная физика меняется.",
+   "en": "Visitors care more about the moment of the impossible than about how it is done. A real object comes alive, an image appears in mid-air, familiar physics changes.",
+   "pt": "O visitante se importa mais com o momento do impossível do que com o como. Um objeto real ganha vida, uma imagem aparece no ar, a física conhecida muda."
+  },
+  {
+   "id": "atlas-01#083",
+   "path": "items/36/title",
+   "ru": "Несколько технологий — один фокус",
+   "en": "Several technologies, one effect",
+   "pt": "Várias tecnologias, um efeito"
+  },
+  {
+   "id": "atlas-01#084",
+   "path": "items/36/desc",
+   "ru": "Свет, звук, механика, графика и сенсоры работают одновременно, но воспринимаются как одно цельное событие.",
+   "en": "Light, sound, mechanics, graphics and sensors all work at once, but read as a single whole event.",
+   "pt": "Luz, som, mecânica, gráficos e sensores trabalham ao mesmo tempo, mas são lidos como um acontecimento único."
+  },
+  {
+   "id": "atlas-01#085",
+   "path": "items/37/title",
+   "ru": "Человек становится участником",
+   "en": "The visitor becomes a participant",
+   "pt": "O visitante vira participante"
+  },
+  {
+   "id": "atlas-01#086",
+   "path": "items/37/desc",
+   "ru": "История становится личной, когда посетитель влияет на происходящее движением, голосом или выбором.",
+   "en": "The story turns personal when a visitor affects what happens through movement, voice or choice.",
+   "pt": "A história fica pessoal quando o visitante influencia o que acontece com movimento, voz ou escolha."
+  },
+  {
+   "id": "atlas-01#087",
+   "path": "items/38/title",
+   "ru": "Вместе интереснее",
+   "en": "Better together",
+   "pt": "Melhor junto"
+  },
+  {
+   "id": "atlas-01#088",
+   "path": "items/38/desc",
+   "ru": "Совместная задача превращает группу в команду и создаёт общее воспоминание.",
+   "en": "A shared task turns a group into a team and creates a memory they hold in common.",
+   "pt": "Uma tarefa compartilhada transforma um grupo em time e cria uma lembrança em comum."
+  },
+  {
+   "id": "atlas-01#089",
+   "path": "items/39/title",
+   "ru": "Впечатление начинается ещё в очереди",
+   "en": "The experience begins in the queue",
+   "pt": "A experiência começa na fila"
+  },
+  {
+   "id": "atlas-01#090",
+   "path": "items/39/desc",
+   "ru": "Инсталляцию интересно не только проходить, но и наблюдать со стороны. Реакции других людей создают интригу.",
+   "en": "An installation is worth watching from the outside, not only going through. Other people's reactions build the intrigue.",
+   "pt": "Uma instalação vale ser vista de fora, não só atravessada. A reação dos outros constrói a expectativa."
+  },
+  {
+   "id": "atlas-01#091",
+   "path": "items/40/title",
+   "ru": "Сначала удивить, потом объяснить",
+   "en": "Surprise first, explain after",
+   "pt": "Primeiro surpreender, depois explicar"
+  },
+  {
+   "id": "atlas-01#092",
+   "path": "items/40/desc",
+   "ru": "Первый эффект открывает внимание. После этого сложную историю можно раскрыть глубже.",
+   "en": "The first effect opens attention. After that a complex story can be told in real depth.",
+   "pt": "O primeiro efeito abre a atenção. Depois dá para contar uma história complexa com profundidade de verdade."
+  },
+  {
+   "id": "atlas-01#093",
+   "path": "items/41/title",
+   "ru": "Действие должно быть естественным",
+   "en": "The action has to feel natural",
+   "pt": "A ação precisa parecer natural"
+  },
+  {
+   "id": "atlas-01#094",
+   "path": "items/41/desc",
+   "ru": "Подойти, заглянуть, коснуться, повернуть, прыгнуть — чем понятнее первый жест, тем быстрее человек входит в опыт.",
+   "en": "Step up, look in, touch, turn, jump — the clearer the first gesture, the faster a person enters the experience.",
+   "pt": "Chegar perto, olhar dentro, tocar, girar, pular — quanto mais claro o primeiro gesto, mais rápido a pessoa entra na experiência."
+  },
+  {
+   "id": "atlas-01#095",
+   "path": "items/42/title",
+   "ru": "История продолжается после выхода",
+   "en": "The story continues after the exit",
+   "pt": "A história continua depois da saída"
+  },
+  {
+   "id": "atlas-01#096",
+   "path": "items/42/desc",
+   "ru": "Фотография, результат игры, созданный образ или пересказ продлевают жизнь впечатления.",
+   "en": "A photograph, a game result, an image someone made or simply retelling it all extend the life of the experience.",
+   "pt": "Uma foto, o resultado de um jogo, uma imagem que alguém criou ou simplesmente o recontar prolongam a vida da experiência."
+  },
+  {
+   "id": "atlas-01#097",
+   "path": "items/43/title",
+   "ru": "Каждый посетитель проходит свою историю",
+   "en": "Every visitor goes through their own story",
+   "pt": "Cada visitante atravessa a própria história"
+  },
+  {
+   "id": "atlas-01#098",
+   "path": "items/43/desc",
+   "ru": "Одно пространство может давать разные маршруты, выборы и глубину взаимодействия.",
+   "en": "One space can offer different routes, choices and depths of interaction.",
+   "pt": "Um mesmo espaço pode oferecer percursos, escolhas e profundidades de interação diferentes."
+  },
+  {
+   "id": "atlas-01#099",
+   "path": "items/44/title",
+   "ru": "Настоящее начинается там, где заканчиваются экраны",
+   "en": "The real thing begins where the screens end",
+   "pt": "O de verdade começa onde as telas acabam"
+  },
+  {
+   "id": "atlas-01#100",
+   "path": "items/44/desc",
+   "ru": "Когда медиа становятся частью архитектуры, света, предметов и движения, пространство воспринимается как единое целое.",
+   "en": "When media become part of the architecture, the light, the objects and the movement, the space reads as one whole.",
+   "pt": "Quando a mídia vira parte da arquitetura, da luz, dos objetos e do movimento, o espaço é lido como um todo."
+  },
+  {
+   "id": "atlas-01#101",
+   "path": "items/45/title",
+   "ru": "Память любит неожиданности",
+   "en": "Memory loves the unexpected",
+   "pt": "A memória gosta do inesperado"
+  },
+  {
+   "id": "atlas-01#102",
+   "path": "items/45/desc",
+   "ru": "Моменты, которые нарушают ожидания, запоминаются сильнее последовательного объяснения.",
+   "en": "Moments that break expectations stay with people longer than a consistent explanation.",
+   "pt": "Momentos que quebram a expectativa ficam mais tempo do que uma explicação bem encadeada."
+  },
+  {
+   "id": "atlas-01#103",
+   "path": "items/46/title",
+   "ru": "Виртуальные миры вместо сайтов",
+   "en": "Virtual worlds instead of websites",
+   "pt": "Mundos virtuais no lugar de sites"
+  },
+  {
+   "id": "atlas-01#104",
+   "path": "items/46/desc",
+   "ru": "Браузер может стать пространством для путешествия, презентации, обучения или совместного действия.",
+   "en": "A browser can become a space for travel, presentation, learning or acting together.",
+   "pt": "Um navegador pode virar espaço de viagem, apresentação, aprendizado ou ação conjunta."
+  },
+  {
+   "id": "atlas-01#105",
+   "path": "items/47/title",
+   "ru": "Персональный звук в общественном пространстве",
+   "en": "Personal sound in a public space",
+   "pt": "Som pessoal em espaço público"
+  },
+  {
+   "id": "atlas-01#106",
+   "path": "items/47/desc",
+   "ru": "Направленные акустические системы позволяют создавать индивидуальные аудиосценарии без наушников.",
+   "en": "Directional audio systems make individual sound scenarios possible without headphones.",
+   "pt": "Sistemas de áudio direcional permitem roteiros sonoros individuais sem fones."
+  },
+  {
+   "id": "atlas-01#107",
+   "path": "items/48/title",
+   "ru": "Купол как окно",
+   "en": "The dome as a window",
+   "pt": "A cúpula como janela"
+  },
+  {
+   "id": "atlas-01#108",
+   "path": "items/48/desc",
+   "ru": "Вертикальная полусфера создаёт иной тип погружения: человек смотрит не вверх, а будто сквозь проём в другую среду.",
+   "en": "A vertical hemisphere creates a different kind of immersion: you are not looking up, you are looking through an opening into another environment.",
+   "pt": "Um hemisfério vertical cria outro tipo de imersão: você não olha para cima, você olha através de uma abertura para outro ambiente."
+  },
+  {
+   "id": "atlas-01#109",
+   "path": "items/49/title",
+   "ru": "Персонализация пространства",
+   "en": "Personalizing the space",
+   "pt": "Personalizar o espaço"
+  },
+  {
+   "id": "atlas-01#110",
+   "path": "items/49/desc",
+   "ru": "Одно место может менять содержание, язык и сложность в зависимости от конкретного посетителя.",
+   "en": "One place can change its content, its language and its level of difficulty for the particular visitor in front of it.",
+   "pt": "Um mesmo lugar pode mudar conteúdo, idioma e nível de dificuldade para o visitante que está ali na frente."
+  }
+ ]
+}

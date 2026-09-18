@@ -1,0 +1,322 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "trust-01 (1 de 1)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "trust-01#001",
+   "path": "items/0/org",
+   "ru": "Роскосмос",
+   "en": "Roscosmos",
+   "pt": "Roscosmos"
+  },
+  {
+   "id": "trust-01#002",
+   "path": "items/0/full",
+   "ru": "Госкорпорация «Роскосмос»",
+   "en": "Roscosmos State Corporation",
+   "pt": "Corporação Estatal Roscosmos"
+  },
+  {
+   "id": "trust-01#003",
+   "path": "items/0/kind",
+   "ru": "Почётная грамота",
+   "en": "Certificate of Honour",
+   "pt": "Certificado de Honra"
+  },
+  {
+   "id": "trust-01#004",
+   "path": "items/0/for",
+   "ru": "за активное участие в деле популяризации исторического наследия российской космонавтики",
+   "en": "for active contribution to popularising the historical legacy of Russian cosmonautics",
+   "pt": "pela contribuição ativa à divulgação do legado histórico da cosmonáutica russa"
+  },
+  {
+   "id": "trust-01#005",
+   "path": "items/0/who",
+   "ru": "Генеральный директор госкорпорации",
+   "en": "Director General of the State Corporation",
+   "pt": "Diretor-Geral da Corporação Estatal"
+  },
+  {
+   "id": "trust-01#006",
+   "path": "items/1/org",
+   "ru": "ОРКК",
+   "en": "URSC",
+   "pt": "URSC"
+  },
+  {
+   "id": "trust-01#007",
+   "path": "items/1/full",
+   "ru": "Объединённая ракетно-космическая корпорация",
+   "en": "United Rocket and Space Corporation",
+   "pt": "Corporação Unida de Foguetes e Espaço"
+  },
+  {
+   "id": "trust-01#008",
+   "path": "items/1/kind",
+   "ru": "Благодарственное письмо",
+   "en": "Letter of appreciation",
+   "pt": "Carta de reconhecimento"
+  },
+  {
+   "id": "trust-01#009",
+   "path": "items/1/for",
+   "ru": "за разработку интерактивной инсталляции космического аппарата «Экспресс АМ5» с применением дополненной реальности",
+   "en": "for the interactive installation of the Express AM5 spacecraft using augmented reality",
+   "pt": "pela instalação interativa da espaçonave Express AM5 com realidade aumentada"
+  },
+  {
+   "id": "trust-01#010",
+   "path": "items/1/quote",
+   "ru": "за профессионализм и оперативность",
+   "en": "for professionalism and responsiveness",
+   "pt": "pelo profissionalismo e pela agilidade"
+  },
+  {
+   "id": "trust-01#011",
+   "path": "items/1/who",
+   "ru": "Заместитель генерального директора",
+   "en": "Deputy Director General",
+   "pt": "Diretor-Geral Adjunto"
+  },
+  {
+   "id": "trust-01#012",
+   "path": "items/2/org",
+   "ru": "Газпром",
+   "en": "Gazprom",
+   "pt": "Gazprom"
+  },
+  {
+   "id": "trust-01#013",
+   "path": "items/2/full",
+   "ru": "ООО «Газпром добыча Астрахань»",
+   "en": "Gazprom Dobycha Astrakhan LLC",
+   "pt": "Gazprom Dobycha Astrakhan LLC"
+  },
+  {
+   "id": "trust-01#014",
+   "path": "items/2/kind",
+   "ru": "Благодарность",
+   "en": "Letter of thanks",
+   "pt": "Carta de agradecimento"
+  },
+  {
+   "id": "trust-01#015",
+   "path": "items/2/for",
+   "ru": "за содействие в модернизации IT-инфраструктуры",
+   "en": "for support in modernising the IT infrastructure",
+   "pt": "pelo apoio na modernização da infraestrutura de TI"
+  },
+  {
+   "id": "trust-01#016",
+   "path": "items/2/quote",
+   "ru": "профессионализм и оперативность",
+   "en": "professionalism and responsiveness",
+   "pt": "profissionalismo e agilidade"
+  },
+  {
+   "id": "trust-01#017",
+   "path": "items/2/who",
+   "ru": "Заместитель генерального директора",
+   "en": "Deputy Director General",
+   "pt": "Diretor-Geral Adjunto"
+  },
+  {
+   "id": "trust-01#018",
+   "path": "items/3/org",
+   "ru": "Спецтяжмаш",
+   "en": "Spetstyazhmash",
+   "pt": "Spetstyazhmash"
+  },
+  {
+   "id": "trust-01#019",
+   "path": "items/3/full",
+   "ru": "Суходольский завод тяжёлого машиностроения",
+   "en": "Sukhodolsk Heavy Engineering Plant",
+   "pt": "Fábrica de Máquinas Pesadas de Sukhodolsk"
+  },
+  {
+   "id": "trust-01#020",
+   "path": "items/3/kind",
+   "ru": "Благодарность",
+   "en": "Letter of thanks",
+   "pt": "Carta de agradecimento"
+  },
+  {
+   "id": "trust-01#021",
+   "path": "items/3/for",
+   "ru": "за плодотворное сотрудничество в организации открытия завода",
+   "en": "for fruitful cooperation in organising the plant opening",
+   "pt": "pela cooperação frutífera na organização da inauguração da fábrica"
+  },
+  {
+   "id": "trust-01#022",
+   "path": "items/3/quote",
+   "ru": "искреннюю благодарность и глубокую признательность",
+   "en": "our sincere gratitude and deep appreciation",
+   "pt": "nosso sincero agradecimento e profundo reconhecimento"
+  },
+  {
+   "id": "trust-01#023",
+   "path": "items/3/who",
+   "ru": "Директор по корпоративным коммуникациям",
+   "en": "Director of Corporate Communications",
+   "pt": "Diretor de Comunicação Corporativa"
+  },
+  {
+   "id": "trust-01#024",
+   "path": "items/4/org",
+   "ru": "БереZka",
+   "en": "BereZka",
+   "pt": "BereZka"
+  },
+  {
+   "id": "trust-01#025",
+   "path": "items/4/full",
+   "ru": "Первый в России бизнес-форум для подростков",
+   "en": "Russia’s first business forum for teenagers",
+   "pt": "O primeiro fórum de negócios para adolescentes da Rússia"
+  },
+  {
+   "id": "trust-01#026",
+   "path": "items/4/kind",
+   "ru": "Благодарственное письмо",
+   "en": "Letter of appreciation",
+   "pt": "Carta de reconhecimento"
+  },
+  {
+   "id": "trust-01#027",
+   "path": "items/4/for",
+   "ru": "за вклад в подготовку и проведение форума",
+   "en": "for the contribution to preparing and running the forum",
+   "pt": "pela contribuição na preparação e realização do fórum"
+  },
+  {
+   "id": "trust-01#028",
+   "path": "items/4/quote",
+   "ru": "проявленный интерес, высокий профессионализм и значительный вклад",
+   "en": "genuine interest, high professionalism and a significant contribution",
+   "pt": "o interesse demonstrado, o alto profissionalismo e a contribuição significativa"
+  },
+  {
+   "id": "trust-01#029",
+   "path": "items/4/who",
+   "ru": "Генеральные продюсеры",
+   "en": "Executive producers",
+   "pt": "Produtores executivos"
+  },
+  {
+   "id": "trust-01#030",
+   "path": "items/5/kind",
+   "ru": "Информационное письмо",
+   "en": "Official letter",
+   "pt": "Carta oficial"
+  },
+  {
+   "id": "trust-01#031",
+   "path": "items/5/for",
+   "ru": "подтверждение статуса уполномоченного партнёра",
+   "en": "confirmation of authorised partner status",
+   "pt": "confirmação do status de parceiro autorizado"
+  },
+  {
+   "id": "trust-01#032",
+   "path": "items/5/who",
+   "ru": "Директор по корпоративным продажам",
+   "en": "Director of Corporate Sales",
+   "pt": "Diretor de Vendas Corporativas"
+  },
+  {
+   "id": "trust-01#033",
+   "path": "items/6/org",
+   "ru": "МАКС авиасалон",
+   "en": "MAKS air show",
+   "pt": "Salão aeroespacial MAKS"
+  },
+  {
+   "id": "trust-01#034",
+   "path": "items/6/full",
+   "ru": "Департамент науки, промышленной политики и предпринимательства Москвы",
+   "en": "Moscow Department of Science, Industrial Policy and Entrepreneurship",
+   "pt": "Departamento de Ciência, Política Industrial e Empreendedorismo de Moscou"
+  },
+  {
+   "id": "trust-01#035",
+   "path": "items/6/kind",
+   "ru": "Диплом",
+   "en": "Diploma",
+   "pt": "Diploma"
+  },
+  {
+   "id": "trust-01#036",
+   "path": "items/6/for",
+   "ru": "за участие в коллективной экспозиции Правительства Москвы на 11-м Международном авиационно-космическом салоне",
+   "en": "for taking part in the Moscow Government collective exposition at the 11th International Aviation and Space Salon",
+   "pt": "pela participação na exposição coletiva do Governo de Moscou no 11º Salão Internacional de Aviação e Espaço"
+  },
+  {
+   "id": "trust-01#037",
+   "path": "items/6/who",
+   "ru": "Руководитель департамента",
+   "en": "Head of the Department",
+   "pt": "Chefe do Departamento"
+  },
+  {
+   "id": "trust-01#038",
+   "path": "items/7/full",
+   "ru": "Московский международный форум инновационного развития",
+   "en": "Moscow International Forum for Innovative Development",
+   "pt": "Fórum Internacional de Desenvolvimento Inovador de Moscou"
+  },
+  {
+   "id": "trust-01#039",
+   "path": "items/7/for",
+   "ru": "за участие в выставке Open Innovations Expo, Crocus Expo",
+   "en": "for participation in the Open Innovations Expo, Crocus Expo",
+   "pt": "pela participação na Open Innovations Expo, Crocus Expo"
+  },
+  {
+   "id": "trust-01#040",
+   "path": "items/7/who",
+   "ru": "Организационный комитет",
+   "en": "The Organising Committee",
+   "pt": "Comitê Organizador"
+  },
+  {
+   "id": "trust-01#041",
+   "path": "items/8/org",
+   "ru": "Лидер в области высоких технологий",
+   "en": "High-Tech Leader",
+   "pt": "Líder em alta tecnologia"
+  },
+  {
+   "id": "trust-01#042",
+   "path": "items/8/full",
+   "ru": "Московская ассоциация предпринимателей",
+   "en": "Moscow Association of Entrepreneurs",
+   "pt": "Associação de Empreendedores de Moscou"
+  },
+  {
+   "id": "trust-01#043",
+   "path": "items/8/kind",
+   "ru": "Диплом",
+   "en": "Diploma",
+   "pt": "Diploma"
+  },
+  {
+   "id": "trust-01#044",
+   "path": "items/8/for",
+   "ru": "лауреат конкурсных программ на Втором Международном форуме «Технологии в машиностроении»",
+   "en": "laureate of the competition programmes at the 2nd International Forum “Technologies in Machine Building”",
+   "pt": "laureado dos programas de competição no 2º Fórum Internacional “Tecnologias na Indústria de Máquinas”"
+  },
+  {
+   "id": "trust-01#045",
+   "path": "items/8/who",
+   "ru": "Руководитель Департамента науки Москвы",
+   "en": "Head of the Moscow Department of Science",
+   "pt": "Chefe do Departamento de Ciência de Moscou"
+  }
+ ]
+}

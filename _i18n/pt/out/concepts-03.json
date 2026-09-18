@@ -1,0 +1,938 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "concepts-03 (3 de 4)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "concepts-03#001",
+   "path": "concepts/15/comment",
+   "ru": "Линейная форма естественно направляет взгляд и движение. Вместо отдельного экрана информация становится частью маршрута: сопровождает человека, связывает зоны и может меняться в зависимости от времени, события или аудитории.",
+   "en": "A line naturally guides the eye and the feet. Instead of sitting on a separate screen, information becomes part of the route: it travels with people, links zones and can change with the hour, the event or the audience.",
+   "pt": "Uma linha guia naturalmente o olhar e os pés. Em vez de ficar em uma tela separada, a informação vira parte do percurso: anda junto com as pessoas, liga zonas e pode mudar com a hora, com o evento ou com o público."
+  },
+  {
+   "id": "concepts-03#002",
+   "path": "concepts/15/adapt",
+   "ru": "Навигация, новости, данные компании, произведения искусства, биржевые показатели, персональные сообщения и сценарные подсказки.",
+   "en": "Wayfinding, news, company data, artworks, market figures, personal messages and cues inside a scenario.",
+   "pt": "Orientação, notícias, dados da empresa, obras de arte, números de mercado, mensagens pessoais e deixas dentro de um roteiro."
+  },
+  {
+   "id": "concepts-03#003",
+   "path": "concepts/16/title",
+   "ru": "Один объект останавливает поток",
+   "en": "One Object Stops the Crowd",
+   "pt": "Um objeto para a multidão"
+  },
+  {
+   "id": "concepts-03#004",
+   "path": "concepts/16/line",
+   "ru": "Когда нужен простой, физически убедительный центр притяжения внимания.",
+   "en": "When you need a simple, physically convincing center of attention.",
+   "pt": "Quando é preciso um centro de atenção simples e fisicamente convincente."
+  },
+  {
+   "id": "concepts-03#005",
+   "path": "concepts/16/need",
+   "ru": "Когда нужен простой, физически убедительный центр притяжения внимания.",
+   "en": "When you need a simple, physically convincing center of attention.",
+   "pt": "Quando é preciso um centro de atenção simples e fisicamente convincente."
+  },
+  {
+   "id": "concepts-03#006",
+   "path": "concepts/16/solves/0",
+   "ru": "Создаёт мгновенный визуальный вопрос.",
+   "en": "Poses an instant visual question.",
+   "pt": "Coloca uma pergunta visual imediata."
+  },
+  {
+   "id": "concepts-03#007",
+   "path": "concepts/16/solves/1",
+   "ru": "Выделяет продукт или экспонат среди информационного шума.",
+   "en": "Lifts a product or an exhibit out of the informational noise.",
+   "pt": "Tira um produto ou um exponente do ruído informativo."
+  },
+  {
+   "id": "concepts-03#008",
+   "path": "concepts/16/solves/2",
+   "ru": "Работает даже без экрана и сложного интерфейса.",
+   "en": "Works with no screen and no interface at all.",
+   "pt": "Funciona sem tela nenhuma e sem interface nenhuma."
+  },
+  {
+   "id": "concepts-03#009",
+   "path": "concepts/16/essence",
+   "ru": "Объект парит в воздухе и медленно вращается. Форма, свет и материал подбираются так, чтобы его вес казался особенно убедительным.",
+   "en": "The object floats in the air, turning slowly. Form, light and material are chosen to make its weight look utterly real.",
+   "pt": "O objeto flutua no ar, girando devagar. Forma, luz e material são escolhidos para que o peso dele pareça absolutamente real."
+  },
+  {
+   "id": "concepts-03#010",
+   "path": "concepts/16/feel",
+   "ru": "Я понимаю, что вижу, но всё равно не могу объяснить, как это возможно.",
+   "en": "I know what I'm seeing, and I still can't explain how it's possible.",
+   "pt": "Eu sei o que estou vendo, e mesmo assim não consigo explicar como é possível."
+  },
+  {
+   "id": "concepts-03#011",
+   "path": "concepts/16/spaces",
+   "ru": "Выставки • музеи • витрины • шоурумы • презентации продуктов",
+   "en": "Exhibitions • museums • window displays • showrooms • product launches",
+   "pt": "Exposições • museus • vitrines • showrooms • lançamentos de produto"
+  },
+  {
+   "id": "concepts-03#012",
+   "path": "concepts/16/mechanics/0",
+   "ru": "Магнитная левитация",
+   "en": "Magnetic levitation",
+   "pt": "Levitação magnética"
+  },
+  {
+   "id": "concepts-03#013",
+   "path": "concepts/16/mechanics/1",
+   "ru": "Облегчённый макет",
+   "en": "Weight-optimized replica",
+   "pt": "Réplica otimizada em peso"
+  },
+  {
+   "id": "concepts-03#014",
+   "path": "concepts/16/mechanics/2",
+   "ru": "Скрытая конструкция",
+   "en": "Concealed structure",
+   "pt": "Estrutura oculta"
+  },
+  {
+   "id": "concepts-03#015",
+   "path": "concepts/16/mechanics/3",
+   "ru": "Точный свет",
+   "en": "Precise lighting",
+   "pt": "Iluminação precisa"
+  },
+  {
+   "id": "concepts-03#016",
+   "path": "concepts/16/mechanics/4",
+   "ru": "Медленное вращение",
+   "en": "Slow rotation",
+   "pt": "Rotação lenta"
+  },
+  {
+   "id": "concepts-03#017",
+   "path": "concepts/16/comment",
+   "ru": "Человеческий мозг мгновенно замечает нарушение привычных физических ожиданий. Контраст между визуальной тяжестью объекта и его парением создаёт напряжение, которое удерживает взгляд и заставляет подойти ближе.",
+   "en": "The brain spots a broken law of physics instantly. The contrast between how heavy the object looks and the fact that it simply hangs there creates a tension that holds the eye and pulls people closer.",
+   "pt": "O cérebro percebe na hora uma lei da física quebrada. O contraste entre o peso aparente do objeto e o fato de ele simplesmente ficar pendurado cria uma tensão que segura o olhar e puxa as pessoas para perto."
+  },
+  {
+   "id": "concepts-03#018",
+   "path": "concepts/16/adapt",
+   "ru": "Камень, продукт, артефакт, логотип, модель планеты, технологическая деталь или художественный объект.",
+   "en": "A stone, a product, an artifact, a logo, a model of a planet, an engineered component or an art object.",
+   "pt": "Uma pedra, um produto, um artefato, um logotipo, o modelo de um planeta, uma peça de engenharia ou um objeto de arte."
+  },
+  {
+   "id": "concepts-03#019",
+   "path": "concepts/17/title",
+   "ru": "Музей как настоящая космическая база",
+   "en": "Museum as a Working Space Base",
+   "pt": "Museu como base espacial em operação"
+  },
+  {
+   "id": "concepts-03#020",
+   "path": "concepts/17/line",
+   "ru": "Когда образовательную тему нужно превратить в последовательность личных миссий.",
+   "en": "When an educational subject has to become a sequence of personal missions.",
+   "pt": "Quando um tema educativo precisa virar uma sequência de missões pessoais."
+  },
+  {
+   "id": "concepts-03#021",
+   "path": "concepts/17/need",
+   "ru": "Когда образовательную тему нужно превратить в последовательность личных миссий.",
+   "en": "When an educational subject has to become a sequence of personal missions.",
+   "pt": "Quando um tema educativo precisa virar uma sequência de missões pessoais."
+  },
+  {
+   "id": "concepts-03#022",
+   "path": "concepts/17/solves/0",
+   "ru": "Объединяет знания, игру и эффект присутствия.",
+   "en": "Fuses knowledge, play and the sense of presence.",
+   "pt": "Funde conhecimento, jogo e sensação de presença."
+  },
+  {
+   "id": "concepts-03#023",
+   "path": "concepts/17/solves/1",
+   "ru": "Позволяет посетителю примерить роль исследователя.",
+   "en": "Lets a visitor step into the role of an explorer.",
+   "pt": "Deixa o visitante entrar no papel de explorador."
+  },
+  {
+   "id": "concepts-03#024",
+   "path": "concepts/17/solves/2",
+   "ru": "Создаёт цельный маршрут из разных экспонатов.",
+   "en": "Turns separate exhibits into one coherent route.",
+   "pt": "Transforma exponentes separados em um percurso coerente."
+  },
+  {
+   "id": "concepts-03#025",
+   "path": "concepts/17/essence",
+   "ru": "Посетители входят на марсианскую базу, видят поверхность планеты через полусферический экран и выполняют задания на интерактивных станциях.",
+   "en": "Visitors enter a Mars base, look out at the surface of the planet through a hemispherical screen and complete tasks at interactive stations.",
+   "pt": "Os visitantes entram em uma base em Marte, olham a superfície do planeta por uma tela hemisférica e cumprem tarefas em estações interativas."
+  },
+  {
+   "id": "concepts-03#026",
+   "path": "concepts/17/feel",
+   "ru": "Мы не изучаем Марс. Мы живём и работаем на нём.",
+   "en": "We're not studying Mars. We live and work here.",
+   "pt": "A gente não está estudando Marte. A gente mora e trabalha aqui."
+  },
+  {
+   "id": "concepts-03#027",
+   "path": "concepts/17/spaces",
+   "ru": "Музеи космоса • научные центры • образование • тематические парки • visitor centres",
+   "en": "Space museums • science centers • education • theme parks • visitor centres",
+   "pt": "Museus espaciais • centros de ciência • educação • parques temáticos • centros de visitantes"
+  },
+  {
+   "id": "concepts-03#028",
+   "path": "concepts/17/mechanics/0",
+   "ru": "Полусферический экран",
+   "en": "Hemispherical screen",
+   "pt": "Tela hemisférica"
+  },
+  {
+   "id": "concepts-03#029",
+   "path": "concepts/17/mechanics/1",
+   "ru": "Станции с кнопками и механикой",
+   "en": "Stations with physical buttons and mechanics",
+   "pt": "Estações com botões e mecanismos físicos"
+  },
+  {
+   "id": "concepts-03#030",
+   "path": "concepts/17/mechanics/2",
+   "ru": "Система миссий",
+   "en": "Mission system",
+   "pt": "Sistema de missões"
+  },
+  {
+   "id": "concepts-03#031",
+   "path": "concepts/17/mechanics/3",
+   "ru": "Персональные и групповые задания",
+   "en": "Solo and group tasks",
+   "pt": "Tarefas individuais e em grupo"
+  },
+  {
+   "id": "concepts-03#032",
+   "path": "concepts/17/mechanics/4",
+   "ru": "Физическая сценография",
+   "en": "Physical set design",
+   "pt": "Cenografia física"
+  },
+  {
+   "id": "concepts-03#033",
+   "path": "concepts/17/comment",
+   "ru": "Роль и цель превращают набор фактов в историю. Посетитель узнаёт информацию в момент, когда она нужна для решения задачи: выбрать место посадки, распределить ресурсы, пережить бурю или исследовать образец. Знание становится инструментом действия.",
+   "en": "A role and a goal turn a pile of facts into a story. Information arrives at the moment it's needed to solve something: choose a landing site, ration supplies, ride out a storm, analyze a sample. Knowledge becomes a tool for action.",
+   "pt": "Um papel e um objetivo transformam um monte de fatos em história. A informação chega no momento em que é necessária para resolver algo: escolher o local de pouso, racionar suprimentos, atravessar uma tempestade, analisar uma amostra. O conhecimento vira ferramenta de ação."
+  },
+  {
+   "id": "concepts-03#034",
+   "path": "concepts/17/adapt",
+   "ru": "Лунная база, полярная станция, подводная лаборатория, археологическая экспедиция и другие образовательные миры.",
+   "en": "A lunar base, a polar station, an underwater laboratory, an archaeological expedition and other worlds built for learning.",
+   "pt": "Uma base lunar, uma estação polar, um laboratório submarino, uma expedição arqueológica e outros mundos criados para aprender."
+  },
+  {
+   "id": "concepts-03#035",
+   "path": "concepts/18/title",
+   "ru": "Стена, которая живёт вместе с пространством",
+   "en": "A Wall That Lives With the Space",
+   "pt": "Uma parede que vive junto com o espaço"
+  },
+  {
+   "id": "concepts-03#036",
+   "path": "concepts/18/line",
+   "ru": "Когда большой архитектурный объём должен сочетать постоянную идентичность и обновляемый контент.",
+   "en": "When a large architectural volume has to hold both a permanent identity and content that keeps changing.",
+   "pt": "Quando um grande volume arquitetônico precisa sustentar ao mesmo tempo uma identidade permanente e um conteúdo que muda sempre."
+  },
+  {
+   "id": "concepts-03#037",
+   "path": "concepts/18/need",
+   "ru": "Когда большой архитектурный объём должен сочетать постоянную идентичность и обновляемый контент.",
+   "en": "When a large architectural volume has to hold both a permanent identity and content that keeps changing.",
+   "pt": "Quando um grande volume arquitetônico precisa sustentar ao mesmo tempo uma identidade permanente e um conteúdo que muda sempre."
+  },
+  {
+   "id": "concepts-03#038",
+   "path": "concepts/18/solves/0",
+   "ru": "Оживляет глухую стену.",
+   "en": "Brings a blank wall to life.",
+   "pt": "Dá vida a uma parede cega."
+  },
+  {
+   "id": "concepts-03#039",
+   "path": "concepts/18/solves/1",
+   "ru": "Соединяет памятный объект с актуальной жизнью организации.",
+   "en": "Connects a commemorative object to the organization's current life.",
+   "pt": "Conecta um objeto comemorativo à vida atual da organização."
+  },
+  {
+   "id": "concepts-03#040",
+   "path": "concepts/18/solves/2",
+   "ru": "Создаёт сильный центр интерьера.",
+   "en": "Gives the interior a strong center.",
+   "pt": "Dá ao interior um centro forte."
+  },
+  {
+   "id": "concepts-03#041",
+   "path": "concepts/18/essence",
+   "ru": "Материальный монумент или стенд объединяется с крупным экраном. Постоянная часть хранит основу истории, а цифровая — события, людей, данные и новые смыслы.",
+   "en": "A solid monument or display merges with a large screen. The permanent part holds the core of the story; the digital part carries events, people, data and new meaning.",
+   "pt": "Um monumento ou painel sólido se funde com uma tela grande. A parte permanente guarda o núcleo da história; a parte digital carrega eventos, pessoas, dados e sentido novo."
+  },
+  {
+   "id": "concepts-03#042",
+   "path": "concepts/18/feel",
+   "ru": "История этого места продолжается прямо сейчас.",
+   "en": "The story of this place is continuing right now.",
+   "pt": "A história deste lugar está continuando agora mesmo."
+  },
+  {
+   "id": "concepts-03#043",
+   "path": "concepts/18/spaces",
+   "ru": "Университеты • бизнес-школы • музеи • корпоративные центры • общественные здания",
+   "en": "Universities • business schools • museums • corporate centers • public buildings",
+   "pt": "Universidades • escolas de negócios • museus • centros corporativos • prédios públicos"
+  },
+  {
+   "id": "concepts-03#044",
+   "path": "concepts/18/mechanics/0",
+   "ru": "Материальный монолит",
+   "en": "Solid monolith",
+   "pt": "Monólito sólido"
+  },
+  {
+   "id": "concepts-03#045",
+   "path": "concepts/18/mechanics/1",
+   "ru": "Крупный LED-экран",
+   "en": "Large LED screen",
+   "pt": "Grande tela de LED"
+  },
+  {
+   "id": "concepts-03#046",
+   "path": "concepts/18/mechanics/2",
+   "ru": "Обновляемый контент",
+   "en": "Updatable content",
+   "pt": "Conteúdo atualizável"
+  },
+  {
+   "id": "concepts-03#047",
+   "path": "concepts/18/mechanics/3",
+   "ru": "Инфографика и архив",
+   "en": "Infographics and archive",
+   "pt": "Infográficos e arquivo"
+  },
+  {
+   "id": "concepts-03#048",
+   "path": "concepts/18/mechanics/4",
+   "ru": "Сценарии событий",
+   "en": "Event scenarios",
+   "pt": "Roteiros de eventos"
+  },
+  {
+   "id": "concepts-03#049",
+   "path": "concepts/18/comment",
+   "ru": "Полностью цифровая стена быстро теряет ощущение веса, а полностью материальная — перестаёт развиваться. Сочетание двух слоёв даёт одновременно стабильность и жизнь: место сохраняет символ, но постоянно показывает новое.",
+   "en": "A fully digital wall loses its sense of weight fast; a fully material one stops developing. Two layers together give both permanence and life: the place keeps its symbol and still shows something new.",
+   "pt": "Uma parede totalmente digital perde rápido a sensação de peso; uma totalmente material para de se desenvolver. As duas camadas juntas dão permanência e vida: o lugar mantém seu símbolo e ainda mostra algo novo."
+  },
+  {
+   "id": "concepts-03#050",
+   "path": "concepts/18/adapt",
+   "ru": "Доска основателей, история компании, достижения, научные открытия, календарь событий и живой архив сообщества.",
+   "en": "A founders' wall, company history, achievements, scientific discoveries, an events calendar and a living community archive.",
+   "pt": "Uma parede de fundadores, a história da empresa, conquistas, descobertas científicas, um calendário de eventos e um arquivo vivo da comunidade."
+  },
+  {
+   "id": "concepts-03#051",
+   "path": "concepts/19/title",
+   "ru": "Произведение, созданное состоянием человека",
+   "en": "Artwork Painted by a State of Mind",
+   "pt": "Uma obra pintada por um estado de espírito"
+  },
+  {
+   "id": "concepts-03#052",
+   "path": "concepts/19/line",
+   "ru": "Когда посетителю нужно дать необычный способ увидеть и выразить своё внутреннее состояние.",
+   "en": "When you want to give visitors an unexpected way to see and express what's going on inside them.",
+   "pt": "Quando se quer dar ao visitante um jeito inesperado de ver e expressar o que está acontecendo dentro dele."
+  },
+  {
+   "id": "concepts-03#053",
+   "path": "concepts/19/need",
+   "ru": "Когда посетителю нужно дать необычный способ увидеть и выразить своё внутреннее состояние.",
+   "en": "When you want to give visitors an unexpected way to see and express what's going on inside them.",
+   "pt": "Quando se quer dar ao visitante um jeito inesperado de ver e expressar o que está acontecendo dentro dele."
+  },
+  {
+   "id": "concepts-03#054",
+   "path": "concepts/19/solves/0",
+   "ru": "Делает невидимую активность мозга видимой.",
+   "en": "Makes invisible brain activity visible.",
+   "pt": "Torna visível a atividade cerebral invisível."
+  },
+  {
+   "id": "concepts-03#055",
+   "path": "concepts/19/solves/1",
+   "ru": "Создаёт персональное произведение без художественных навыков.",
+   "en": "Produces a personal artwork with no artistic skill required.",
+   "pt": "Produz uma obra pessoal sem exigir nenhuma habilidade artística."
+  },
+  {
+   "id": "concepts-03#056",
+   "path": "concepts/19/solves/2",
+   "ru": "Соединяет искусство, науку и самонаблюдение.",
+   "en": "Brings together art, science and self-observation.",
+   "pt": "Junta arte, ciência e auto-observação."
+  },
+  {
+   "id": "concepts-03#057",
+   "path": "concepts/19/essence",
+   "ru": "Нейроинтерфейс считывает активность мозга, а генеративная система превращает её в цвет, движение, композицию и звук.",
+   "en": "A neurointerface reads brain activity, and a generative system turns it into color, movement, composition and sound.",
+   "pt": "Uma neurointerface lê a atividade cerebral, e um sistema generativo transforma isso em cor, movimento, composição e som."
+  },
+  {
+   "id": "concepts-03#058",
+   "path": "concepts/19/feel",
+   "ru": "Я увидел визуальный след собственного сознания.",
+   "en": "I saw a visual trace of my own consciousness.",
+   "pt": "Eu vi um rastro visual da minha própria consciência."
+  },
+  {
+   "id": "concepts-03#059",
+   "path": "concepts/19/spaces",
+   "ru": "Музеи искусства и науки • wellness-пространства • выставки • образовательные центры • события",
+   "en": "Art and science museums • wellness spaces • exhibitions • education centers • events",
+   "pt": "Museus de arte e ciência • espaços de bem-estar • exposições • centros educativos • eventos"
+  },
+  {
+   "id": "concepts-03#060",
+   "path": "concepts/19/mechanics/0",
+   "ru": "EEG-гарнитура",
+   "en": "EEG headset",
+   "pt": "Capacete de EEG"
+  },
+  {
+   "id": "concepts-03#061",
+   "path": "concepts/19/mechanics/1",
+   "ru": "Анализ сигналов",
+   "en": "Signal analysis",
+   "pt": "Análise do sinal"
+  },
+  {
+   "id": "concepts-03#062",
+   "path": "concepts/19/mechanics/2",
+   "ru": "Генеративная графика",
+   "en": "Generative graphics",
+   "pt": "Gráficos generativos"
+  },
+  {
+   "id": "concepts-03#063",
+   "path": "concepts/19/mechanics/3",
+   "ru": "Стилизация под тему экспозиции",
+   "en": "Styling to match the exhibition theme",
+   "pt": "Estilização de acordo com o tema da exposição"
+  },
+  {
+   "id": "concepts-03#064",
+   "path": "concepts/19/mechanics/4",
+   "ru": "Сохранение результата",
+   "en": "Saving the result",
+   "pt": "Salvamento do resultado"
+  },
+  {
+   "id": "concepts-03#065",
+   "path": "concepts/19/comment",
+   "ru": "Мозговую активность невозможно почувствовать напрямую и трудно представить. Когда она получает визуальную форму, человек начинает воспринимать собственное состояние как объект исследования. Уникальность результата усиливает личную ценность опыта.",
+   "en": "You can't feel your own brain activity directly, and it's hard to picture. Given a visual form, a person's inner state becomes something they can study. Because no two results are alike, the experience carries real personal value.",
+   "pt": "Não dá para sentir a própria atividade cerebral diretamente, e é difícil imaginá-la. Ganhando forma visual, o estado interno da pessoa vira algo que ela pode estudar. E como nenhum resultado é igual a outro, a experiência carrega valor pessoal de verdade."
+  },
+  {
+   "id": "concepts-03#066",
+   "path": "concepts/19/adapt",
+   "ru": "Абстрактное искусство, стили художников, музыкальная визуализация, медитативные сценарии, сравнение состояний до и после воздействия.",
+   "en": "Abstract art, the styles of specific artists, music visualization, meditative scenarios, before-and-after comparisons of a person's state.",
+   "pt": "Arte abstrata, estilos de artistas específicos, visualização de música, roteiros meditativos, comparações do estado da pessoa antes e depois."
+  },
+  {
+   "id": "concepts-03#067",
+   "path": "concepts/20/title",
+   "ru": "Улица получает окно в другое пространство",
+   "en": "The Street Gets a Window Into Somewhere Else",
+   "pt": "A rua ganha uma janela para outro lugar"
+  },
+  {
+   "id": "concepts-03#068",
+   "path": "concepts/20/line",
+   "ru": "Когда прохожих нужно заинтересовать событием или местом ещё до того, как они решили войти.",
+   "en": "When passers-by need a reason to care about a place or an event before they've decided to go in.",
+   "pt": "Quando quem passa precisa de um motivo para se interessar por um lugar ou um evento antes de decidir entrar."
+  },
+  {
+   "id": "concepts-03#069",
+   "path": "concepts/20/need",
+   "ru": "Когда прохожих нужно заинтересовать событием или местом ещё до того, как они решили войти.",
+   "en": "When passers-by need a reason to care about a place or an event before they've decided to go in.",
+   "pt": "Quando quem passa precisa de um motivo para se interessar por um lugar ou um evento antes de decidir entrar."
+  },
+  {
+   "id": "concepts-03#070",
+   "path": "concepts/20/solves/0",
+   "ru": "Создаёт яркий городской тизер.",
+   "en": "Creates a striking teaser out in the city.",
+   "pt": "Cria um teaser marcante no meio da cidade."
+  },
+  {
+   "id": "concepts-03#071",
+   "path": "concepts/20/solves/1",
+   "ru": "Показывает, что происходит внутри пространства.",
+   "en": "Shows what's happening inside the space.",
+   "pt": "Mostra o que está acontecendo dentro do espaço."
+  },
+  {
+   "id": "concepts-03#072",
+   "path": "concepts/20/solves/2",
+   "ru": "Провоцирует фотографии и органическое распространение.",
+   "en": "Invites photos and spreads on its own.",
+   "pt": "Convida à foto e se espalha sozinho."
+  },
+  {
+   "id": "concepts-03#073",
+   "path": "concepts/20/essence",
+   "ru": "Светящийся уличный объект выглядит как портал. Внутри движется художественная графика или прямая трансляция из музея, магазина, шоурума или события.",
+   "en": "A glowing street object looks like a portal. Inside it: moving artwork, or a live feed from a museum, a store, a showroom or an event.",
+   "pt": "Um objeto luminoso de rua parece um portal. Dentro dele: arte em movimento, ou uma transmissão ao vivo de um museu, de uma loja, de um showroom ou de um evento."
+  },
+  {
+   "id": "concepts-03#074",
+   "path": "concepts/20/feel",
+   "ru": "Я случайно нашёл проход в другое место.",
+   "en": "I just stumbled on a passage to somewhere else.",
+   "pt": "Acabei de topar com uma passagem para outro lugar."
+  },
+  {
+   "id": "concepts-03#075",
+   "path": "concepts/20/spaces",
+   "ru": "Городские пространства • музеи • фестивали • магазины • офисные центры • выставки",
+   "en": "Urban spaces • museums • festivals • stores • office centers • exhibitions",
+   "pt": "Espaços urbanos • museus • festivais • lojas • centros empresariais • exposições"
+  },
+  {
+   "id": "concepts-03#076",
+   "path": "concepts/20/mechanics/0",
+   "ru": "Уличный экран",
+   "en": "Outdoor screen",
+   "pt": "Tela para ambiente externo"
+  },
+  {
+   "id": "concepts-03#077",
+   "path": "concepts/20/mechanics/1",
+   "ru": "Архитектурный корпус",
+   "en": "Architectural enclosure",
+   "pt": "Gabinete arquitetônico"
+  },
+  {
+   "id": "concepts-03#078",
+   "path": "concepts/20/mechanics/2",
+   "ru": "Художественный или live-контент",
+   "en": "Artistic or live content",
+   "pt": "Conteúdo artístico ou ao vivo"
+  },
+  {
+   "id": "concepts-03#079",
+   "path": "concepts/20/mechanics/3",
+   "ru": "Камера и интерактив — опционально",
+   "en": "Camera and interaction — optional",
+   "pt": "Câmera e interação — opcional"
+  },
+  {
+   "id": "concepts-03#080",
+   "path": "concepts/20/mechanics/4",
+   "ru": "Фотогеничная композиция",
+   "en": "Photogenic composition",
+   "pt": "Composição fotogênica"
+  },
+  {
+   "id": "concepts-03#081",
+   "path": "concepts/20/comment",
+   "ru": "Портал использует естественное любопытство: человеку хочется заглянуть внутрь рамки и понять, где находится показанное пространство. Форма создаёт понятный визуальный жест, а живой контент превращает рекламу в самостоятельный городской опыт.",
+   "en": "The portal runs on plain curiosity: you want to look inside the frame and work out where that space actually is. The form makes a clear visual gesture, and live content turns advertising into an experience the city gets to keep.",
+   "pt": "O portal funciona por pura curiosidade: dá vontade de olhar dentro do quadro e descobrir onde aquele espaço fica de verdade. A forma faz um gesto visual claro, e o conteúdo ao vivo transforma publicidade em uma experiência que a cidade fica tendo."
+  },
+  {
+   "id": "concepts-03#082",
+   "path": "concepts/20/adapt",
+   "ru": "Тизер выставки, окно между городами, трансляция из пространства, художественный объект, бренд-активация или сезонная инсталляция.",
+   "en": "An exhibition teaser, a window between two cities, a live feed from a venue, an art object, a brand activation or a seasonal installation.",
+   "pt": "Um teaser de exposição, uma janela entre duas cidades, uma transmissão ao vivo de um local, um objeto de arte, uma ativação de marca ou uma instalação sazonal."
+  },
+  {
+   "id": "concepts-03#083",
+   "path": "concepts/21/title",
+   "ru": "Экраны становятся архитектурой",
+   "en": "Screens Become Architecture",
+   "pt": "Telas viram arquitetura"
+  },
+  {
+   "id": "concepts-03#084",
+   "path": "concepts/21/line",
+   "ru": "Когда пространство должно иметь собственную форму, а контент — выходить за рамки обычного прямоугольника.",
+   "en": "When a space needs a form of its own and content has to escape the standard rectangle.",
+   "pt": "Quando um espaço precisa de forma própria e o conteúdo tem que escapar do retângulo padrão."
+  },
+  {
+   "id": "concepts-03#085",
+   "path": "concepts/21/need",
+   "ru": "Когда пространство должно иметь собственную форму, а контент — выходить за рамки обычного прямоугольника.",
+   "en": "When a space needs a form of its own and content has to escape the standard rectangle.",
+   "pt": "Quando um espaço precisa de forma própria e o conteúdo tem que escapar do retângulo padrão."
+  },
+  {
+   "id": "concepts-03#086",
+   "path": "concepts/21/solves/0",
+   "ru": "Создаёт узнаваемый визуальный язык.",
+   "en": "Creates a recognizable visual language.",
+   "pt": "Cria uma linguagem visual reconhecível."
+  },
+  {
+   "id": "concepts-03#087",
+   "path": "concepts/21/solves/1",
+   "ru": "Объединяет архитектуру и медиа.",
+   "en": "Merges architecture and media.",
+   "pt": "Funde arquitetura e mídia."
+  },
+  {
+   "id": "concepts-03#088",
+   "path": "concepts/21/solves/2",
+   "ru": "Позволяет собирать разные композиции из модулей.",
+   "en": "Lets you assemble different compositions from the same modules.",
+   "pt": "Permite montar composições diferentes com os mesmos módulos."
+  },
+  {
+   "id": "concepts-03#089",
+   "path": "concepts/21/essence",
+   "ru": "Экраны разных размеров и геометрии складываются в ломаные объекты. С определённой точки зрения контент объединяется в целое, а при движении раскрывается как многослойная композиция.",
+   "en": "Screens of different sizes and geometries fold into faceted objects. From one particular viewpoint the content locks into a single image; as you move, it unfolds into a layered composition.",
+   "pt": "Telas de tamanhos e geometrias diferentes se dobram em objetos facetados. De um ponto de vista específico o conteúdo trava em uma imagem única; conforme você anda, ele se abre em uma composição em camadas."
+  },
+  {
+   "id": "concepts-03#090",
+   "path": "concepts/21/feel",
+   "ru": "Изображение существует одновременно на экране и в реальном объёме.",
+   "en": "The image exists on the screen and in real space at once.",
+   "pt": "A imagem existe ao mesmo tempo na tela e no espaço real."
+  },
+  {
+   "id": "concepts-03#091",
+   "path": "concepts/21/spaces",
+   "ru": "Выставки • шоурумы • retail • музеи • офисы • сцены",
+   "en": "Exhibitions • showrooms • retail • museums • offices • stages",
+   "pt": "Exposições • showrooms • varejo • museus • escritórios • palcos"
+  },
+  {
+   "id": "concepts-03#092",
+   "path": "concepts/21/mechanics/0",
+   "ru": "Экраны нестандартной формы",
+   "en": "Custom-shaped screens",
+   "pt": "Telas de formato sob medida"
+  },
+  {
+   "id": "concepts-03#093",
+   "path": "concepts/21/mechanics/1",
+   "ru": "Анаморфный контент",
+   "en": "Anamorphic content",
+   "pt": "Conteúdo anamórfico"
+  },
+  {
+   "id": "concepts-03#094",
+   "path": "concepts/21/mechanics/2",
+   "ru": "Модульная конструкция",
+   "en": "Modular structure",
+   "pt": "Estrutura modular"
+  },
+  {
+   "id": "concepts-03#095",
+   "path": "concepts/21/mechanics/3",
+   "ru": "Кинетика — опционально",
+   "en": "Kinetics — optional",
+   "pt": "Cinética — opcional"
+  },
+  {
+   "id": "concepts-03#096",
+   "path": "concepts/21/mechanics/4",
+   "ru": "Синхронная графика",
+   "en": "Synchronized graphics",
+   "pt": "Gráficos sincronizados"
+  },
+  {
+   "id": "concepts-03#097",
+   "path": "concepts/21/comment",
+   "ru": "Необычная форма вызывает внимание ещё до появления контента. Анаморфный эффект награждает зрителя за поиск правильной точки и превращает движение по пространству в часть восприятия.",
+   "en": "An unusual form earns attention before a single frame plays. The anamorphic effect rewards the viewer for finding the right spot and makes moving through the space part of the experience.",
+   "pt": "Uma forma incomum conquista atenção antes de rodar um único quadro. O efeito anamórfico recompensa quem encontra o ponto certo e faz do caminhar pelo espaço parte da experiência."
+  },
+  {
+   "id": "concepts-03#098",
+   "path": "concepts/21/adapt",
+   "ru": "Масштаб, конфигурация, степень кинетики, тип контента и количество точек идеального обзора.",
+   "en": "Scale, configuration, how much of it moves, the type of content and the number of perfect viewing points.",
+   "pt": "Escala, configuração, quanto dela se move, o tipo de conteúdo e o número de pontos de visão perfeitos."
+  },
+  {
+   "id": "concepts-03#099",
+   "path": "concepts/22/title",
+   "ru": "История корабля разворачивается вокруг макета",
+   "en": "A Ship's Story Unfolds Around Its Model",
+   "pt": "A história de um navio se abre em volta da maquete"
+  },
+  {
+   "id": "concepts-03#100",
+   "path": "concepts/22/line",
+   "ru": "Когда физический экспонат нужно дополнить движением, масштабом и событиями.",
+   "en": "When a physical exhibit needs movement, scale and events added to it.",
+   "pt": "Quando um exponente físico precisa ganhar movimento, escala e acontecimentos."
+  },
+  {
+   "id": "concepts-03#101",
+   "path": "concepts/22/need",
+   "ru": "Когда физический экспонат нужно дополнить движением, масштабом и событиями.",
+   "en": "When a physical exhibit needs movement, scale and events added to it.",
+   "pt": "Quando um exponente físico precisa ganhar movimento, escala e acontecimentos."
+  },
+  {
+   "id": "concepts-03#102",
+   "path": "concepts/22/solves/0",
+   "ru": "Оживляет статичные макеты.",
+   "en": "Brings static models to life.",
+   "pt": "Dá vida a maquetes estáticas."
+  },
+  {
+   "id": "concepts-03#103",
+   "path": "concepts/22/solves/1",
+   "ru": "Показывает процессы, которые невозможно разместить физически.",
+   "en": "Shows processes that could never fit into the physical build.",
+   "pt": "Mostra processos que nunca caberiam na construção física."
+  },
+  {
+   "id": "concepts-03#104",
+   "path": "concepts/22/solves/2",
+   "ru": "Создаёт серию самостоятельных историй в одном зале.",
+   "en": "Fits a series of self-contained stories into one hall.",
+   "pt": "Cabe uma série de histórias autônomas em um único salão."
+  },
+  {
+   "id": "concepts-03#105",
+   "path": "concepts/22/essence",
+   "ru": "Материальный макет корабля находится внутри голографического стенда. Виртуальная графика показывает движение, внутреннее устройство, экипаж и события вокруг него.",
+   "en": "A physical ship model sits inside a holographic display. Virtual graphics show its motion, its interior, its crew and the events around it.",
+   "pt": "Uma maquete física de navio fica dentro de um display holográfico. Gráficos virtuais mostram o movimento dele, o interior, a tripulação e os acontecimentos em volta."
+  },
+  {
+   "id": "concepts-03#106",
+   "path": "concepts/22/feel",
+   "ru": "Макет перестал быть моделью — передо мной разворачивается настоящая сцена.",
+   "en": "It stopped being a model — a real scene is playing out in front of me.",
+   "pt": "Deixou de ser maquete — uma cena real está acontecendo na minha frente."
+  },
+  {
+   "id": "concepts-03#107",
+   "path": "concepts/22/spaces",
+   "ru": "Морские музеи • исторические экспозиции • образование • visitor centres",
+   "en": "Maritime museums • history exhibitions • education • visitor centres",
+   "pt": "Museus marítimos • exposições de história • educação • centros de visitantes"
+  },
+  {
+   "id": "concepts-03#108",
+   "path": "concepts/22/mechanics/0",
+   "ru": "Физический макет",
+   "en": "Physical model",
+   "pt": "Maquete física"
+  },
+  {
+   "id": "concepts-03#109",
+   "path": "concepts/22/mechanics/1",
+   "ru": "Отражающая плоскость",
+   "en": "Reflective pane",
+   "pt": "Lâmina refletiva"
+  },
+  {
+   "id": "concepts-03#110",
+   "path": "concepts/22/mechanics/2",
+   "ru": "Скрытый экран",
+   "en": "Concealed screen",
+   "pt": "Tela oculta"
+  },
+  {
+   "id": "concepts-03#111",
+   "path": "concepts/22/mechanics/3",
+   "ru": "3D-анимация",
+   "en": "3D animation",
+   "pt": "Animação 3D"
+  },
+  {
+   "id": "concepts-03#112",
+   "path": "concepts/22/mechanics/4",
+   "ru": "Синхронный звук и свет",
+   "en": "Synchronized sound and light",
+   "pt": "Som e luz sincronizados"
+  },
+  {
+   "id": "concepts-03#113",
+   "path": "concepts/22/comment",
+   "ru": "Макет даёт точную форму и настоящую глубину, а цифровой слой добавляет время. Посетитель видит не только то, как объект выглядел, но и что с ним происходило: посадку самолётов, работу экипажа, погружение или движение парусов.",
+   "en": "The model gives exact form and genuine depth; the digital layer adds time. Visitors see not just what the object looked like but what happened to it: aircraft landing on deck, the crew at work, a dive, sails filling with wind.",
+   "pt": "A maquete dá forma exata e profundidade real; a camada digital acrescenta tempo. O visitante vê não só como o objeto era, mas o que aconteceu com ele: aeronaves pousando no convés, a tripulação trabalhando, um mergulho, velas enchendo de vento."
+  },
+  {
+   "id": "concepts-03#114",
+   "path": "concepts/22/adapt",
+   "ru": "Корабли, архитектура, сражения, города, технологические процессы и природные системы.",
+   "en": "Ships, architecture, battles, cities, industrial processes and natural systems.",
+   "pt": "Navios, arquitetura, batalhas, cidades, processos industriais e sistemas naturais."
+  },
+  {
+   "id": "concepts-03#115",
+   "path": "concepts/23/title",
+   "ru": "Навык через действие и полное присутствие",
+   "en": "Skill Through Action and Full Presence",
+   "pt": "Habilidade por ação e presença completa"
+  },
+  {
+   "id": "concepts-03#116",
+   "path": "concepts/23/line",
+   "ru": "Когда человеку нужно тренироваться или проходить миссии в контролируемой виртуальной среде.",
+   "en": "When someone has to train or run missions in a controlled virtual environment.",
+   "pt": "Quando alguém precisa treinar ou cumprir missões em um ambiente virtual controlado."
+  },
+  {
+   "id": "concepts-03#117",
+   "path": "concepts/23/need",
+   "ru": "Когда человеку нужно тренироваться или проходить миссии в контролируемой виртуальной среде.",
+   "en": "When someone has to train or run missions in a controlled virtual environment.",
+   "pt": "Quando alguém precisa treinar ou cumprir missões em um ambiente virtual controlado."
+  },
+  {
+   "id": "concepts-03#118",
+   "path": "concepts/23/solves/0",
+   "ru": "Объединяет визуальное, физическое и тактильное воздействие.",
+   "en": "Combines visual, physical and tactile input.",
+   "pt": "Combina estímulo visual, físico e tátil."
+  },
+  {
+   "id": "concepts-03#119",
+   "path": "concepts/23/solves/1",
+   "ru": "Позволяет повторять сложные сценарии безопасно.",
+   "en": "Makes difficult scenarios repeatable and safe.",
+   "pt": "Torna cenários difíceis repetíveis e seguros."
+  },
+  {
+   "id": "concepts-03#120",
+   "path": "concepts/23/solves/2",
+   "ru": "Подходит для развлечения и профессиональной подготовки.",
+   "en": "Serves entertainment and professional training alike.",
+   "pt": "Serve tanto ao entretenimento quanto ao treinamento profissional."
+  },
+  {
+   "id": "concepts-03#121",
+   "path": "concepts/23/essence",
+   "ru": "Панорамный экран, контроллеры с отдачей и динамическая платформа создают ощущение движения внутри виртуального мира.",
+   "en": "A panoramic screen, force-feedback controllers and a motion platform create the sensation of moving through a virtual world.",
+   "pt": "Uma tela panorâmica, controles com retorno de força e uma plataforma de movimento criam a sensação de se deslocar por um mundo virtual."
+  },
+  {
+   "id": "concepts-03#122",
+   "path": "concepts/23/feel",
+   "ru": "Моё тело реагирует так, будто событие происходит на самом деле.",
+   "en": "My body reacts as if this were really happening.",
+   "pt": "Meu corpo reage como se isso estivesse acontecendo de verdade."
+  },
+  {
+   "id": "concepts-03#123",
+   "path": "concepts/23/spaces",
+   "ru": "Тренировочные центры • музеи • тематические парки • корпоративное обучение • развлечения",
+   "en": "Training centers • museums • theme parks • corporate training • entertainment",
+   "pt": "Centros de treinamento • museus • parques temáticos • treinamento corporativo • entretenimento"
+  },
+  {
+   "id": "concepts-03#124",
+   "path": "concepts/23/mechanics/0",
+   "ru": "Панорамный экран",
+   "en": "Panoramic screen",
+   "pt": "Tela panorâmica"
+  },
+  {
+   "id": "concepts-03#125",
+   "path": "concepts/23/mechanics/1",
+   "ru": "Физические контроллеры",
+   "en": "Physical controllers",
+   "pt": "Controles físicos"
+  },
+  {
+   "id": "concepts-03#126",
+   "path": "concepts/23/mechanics/2",
+   "ru": "Отдача и вибрация",
+   "en": "Force feedback and vibration",
+   "pt": "Retorno de força e vibração"
+  },
+  {
+   "id": "concepts-03#127",
+   "path": "concepts/23/mechanics/3",
+   "ru": "Динамическая платформа",
+   "en": "Motion platform",
+   "pt": "Plataforma de movimento"
+  },
+  {
+   "id": "concepts-03#128",
+   "path": "concepts/23/mechanics/4",
+   "ru": "Панель инструктора",
+   "en": "Instructor console",
+   "pt": "Console do instrutor"
+  },
+  {
+   "id": "concepts-03#129",
+   "path": "concepts/23/comment",
+   "ru": "Навык формируется быстрее, когда решение сопровождается физическим действием и немедленной обратной связью. Система позволяет задавать сложность, повторять эпизоды и анализировать реакцию участника, сохраняя контролируемые условия.",
+   "en": "Skills form faster when a decision comes paired with a physical action and immediate feedback. The system sets the difficulty, replays episodes and analyzes how the trainee responded, all under controlled conditions.",
+   "pt": "A habilidade se forma mais rápido quando a decisão vem junto com uma ação física e retorno imediato. O sistema define a dificuldade, repete episódios e analisa como a pessoa respondeu, tudo em condições controladas."
+  },
+  {
+   "id": "concepts-03#130",
+   "path": "concepts/23/adapt",
+   "ru": "Спасательные операции, промышленная безопасность, транспорт, спорт, исторические сценарии и фантастические миссии.",
+   "en": "Rescue operations, industrial safety, transportation, sports, historical scenarios and science-fiction missions.",
+   "pt": "Operações de resgate, segurança industrial, transportes, esportes, cenários históricos e missões de ficção científica."
+  },
+  {
+   "id": "concepts-03#131",
+   "path": "concepts/24/title",
+   "ru": "Тренировка превращается в игру",
+   "en": "Training Turns Into a Game",
+   "pt": "O treino vira jogo"
+  },
+  {
+   "id": "concepts-03#132",
+   "path": "concepts/24/line",
+   "ru": "Когда людям нужна мотивация двигаться дольше, чаще и с большим азартом.",
+   "en": "When people need a reason to move longer, more often and with more appetite.",
+   "pt": "Quando as pessoas precisam de um motivo para se mexer por mais tempo, com mais frequência e com mais vontade."
+  },
+  {
+   "id": "concepts-03#133",
+   "path": "concepts/24/need",
+   "ru": "Когда людям нужна мотивация двигаться дольше, чаще и с большим азартом.",
+   "en": "When people need a reason to move longer, more often and with more appetite.",
+   "pt": "Quando as pessoas precisam de um motivo para se mexer por mais tempo, com mais frequência e com mais vontade."
+  }
+ ]
+}

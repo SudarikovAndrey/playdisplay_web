@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeto de exposição interativa — playdisplay</title>
+<meta name="description" content="Uma exposição que o visitante não lê, e sim explora.">
+<link rel="canonical" href="https://playdisplay.com/pt/services/interactive-exhibition/">
+<link rel="alternate" hreflang="ru" href="https://playdisplay.com/services/interactive-exhibition/">
+<link rel="alternate" hreflang="en" href="https://playdisplay.com/en/services/interactive-exhibition/">
+<link rel="alternate" hreflang="pt" href="https://playdisplay.com/pt/services/interactive-exhibition/">
+<link rel="alternate" hreflang="x-default" href="https://playdisplay.com/services/interactive-exhibition/">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Projeto de exposição interativa — playdisplay">
+<meta property="og:description" content="Uma exposição que o visitante não lê, e sim explora.">
+<meta property="og:url" content="https://playdisplay.com/pt/services/interactive-exhibition/">
+<meta property="og:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="playdisplay">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Projeto de exposição interativa — playdisplay">
+<meta name="twitter:description" content="Uma exposição que o visitante não lê, e sim explora.">
+<meta name="twitter:image" content="https://playdisplay.com/assets/work/vdnh-space/space_st-960x960.jpg">
+<script type="application/ld+json">[
+{
+"@context": "https://schema.org",
+"@type": "Service",
+"name": "Projeto de exposição interativa",
+"description": "Uma exposição que o visitante não lê, e sim explora.",
+"url": "https://playdisplay.com/pt/services/interactive-exhibition/",
+"serviceType": "Projeto de exposição interativa",
+"provider": {
+"@type": "Organization",
+"name": "playdisplay",
+"url": "https://playdisplay.com/"
+},
+"areaServed": "Worldwide",
+"inLanguage": "pt",
+"keywords": "projeto de exposição interativa, exponentes interativos, exposição multimídia, centro de visitantes, exponentes de centro de ciência, visitor centre, centro de visitantes interativo, museu interativo"
+},
+{
+"@context": "https://schema.org",
+"@type": "BreadcrumbList",
+"itemListElement": [
+{
+"@type": "ListItem",
+"position": 1,
+"name": "playdisplay",
+"item": "https://playdisplay.com/pt/"
+},
+{
+"@type": "ListItem",
+"position": 2,
+"name": "Serviços",
+"item": "https://playdisplay.com/pt/services/"
+},
+{
+"@type": "ListItem",
+"position": 3,
+"name": "Projeto de exposição interativa",
+"item": "https://playdisplay.com/pt/services/interactive-exhibition/"
+}
+]
+},
+{
+"@context": "https://schema.org",
+"@type": "FAQPage",
+"mainEntity": [
+{
+"@type": "Question",
+"name": "Quanto tempo dura um exponente interativo?",
+"acceptedAnswer": {
+"@type": "Answer",
+"text": "As partes mecânicas e o gabinete duram anos com manutenção de rotina. Os itens vulneráveis são projetores (lâmpadas e filtros) e superfícies de toque em pontos de muito contato. Prevemos a troca de consumíveis na rotina de manutenção e escolhemos equipamentos que ainda serão compráveis daqui a cinco anos."
+}
+},
+{
+"@type": "Question",
+"name": "O que acontece se um exponente falhar num fim de semana?",
+"acceptedAnswer": {
+"@type": "Answer",
+"text": "Nada, se isso foi previsto. Os objetos são projetados para reiniciar sozinhos e para parecerem seguros quando ociosos — um visitante nunca deve ver uma área de trabalho. Quem atende o salão recebe uma instrução de uma página."
+}
+},
+{
+"@type": "Question",
+"name": "Precisamos de equipe dedicada para operar?",
+"acceptedAnswer": {
+"@type": "Answer",
+"text": "Para uma exposição comum, não: a operação diária se resume a ligar e desligar. Para sistemas grandes com muitos objetos vale treinar um funcionário do museu, e esse treinamento a gente dá."
+}
+},
+{
+"@type": "Question",
+"name": "Dá para acrescentar interatividade a uma exposição que já existe?",
+"acceptedAnswer": {
+"@type": "Answer",
+"text": "Dá. Muitas vezes rende mais que refazer o salão: um objeto forte no lugar certo muda o percurso inteiro. Começamos observando como as pessoas realmente circulam hoje."
+}
+}
+]
+}
+]</script>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/assets/logos/favicon-32.png?v=be32f3d0" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/logos/favicon-180.png?v=c9973eae">
+<script src="../../../analytics.js?v=f2766706" defer></script>
+<link rel="preload" href="../../../assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../../../styles.css?v=20d8f814">
+<style>
+  body { margin:0; background:var(--space-void); color:var(--scan-white);
+         font:400 18px/1.7 var(--font-body); }
+  /* Заголовки — Unbounded, как на главной. Раньше раздел шёл системным шрифтом
+     и читался как чужая страница, пришитая сбоку. */
+  h1, h2, h3 { font-family:var(--font-display); font-weight:800; letter-spacing:-0.02em; color:#F1FBFC; }
+  .wrap { max-width:1000px; margin:0 auto; padding:64px 24px 100px; }
+  a { color:#2be0c6; }
+  h1 { font-size:clamp(34px,6vw,64px); line-height:1.05; margin:0 0 10px; letter-spacing:-.02em; }
+  h2 { font-size:clamp(22px,3vw,32px); margin:52px 0 14px; }
+  h3 { font-size:20px; margin:28px 0 6px; color:#fff; }
+  .lead { color:#9fb4c8; font-size:22px; line-height:1.5; margin:0 0 8px; }
+  ol.steps { padding-left:1.3em; } li { margin:10px 0; }
+  ul.notes { list-style:none; padding-left:0; }
+  ul.notes li { padding-left:1.2em; position:relative; }
+  ul.notes li:before { content:"\2014"; position:absolute; left:0; color:#2be0c6; }
+  ul.stats { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:30px; }
+  ul.stats b { font-size:34px; color:#2be0c6; display:block; }
+  ul.stats.figures { gap:34px 40px; }
+  ul.stats.figures li { max-width:250px; }
+  ul.stats.figures b { color:#ff6a3d; font-size:40px; line-height:1.05; }
+  ul.stats.figures a { font-size:14px; }
+  ul.cases { list-style:none; padding:0; }
+  ul.cases li { margin:16px 0; padding-left:1.2em; position:relative; }
+  ul.cases li:before { content:"\2192"; position:absolute; left:0; color:#2be0c6; }
+  ul.cases b { color:#fff; }
+  .qa { border-top:1px solid rgba(159,180,200,.22); padding-top:6px; }
+  .qa p { color:#c8d8e2; }
+  .other { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:10px 18px; font-size:16px; }
+  .cta { display:inline-block; margin-top:44px; padding:15px 26px; border:1px solid #2be0c6; color:#2be0c6; text-decoration:none; font-weight:600; }
+  .golink { margin:26px 0; padding:16px 20px; border:1px solid rgba(43,224,198,.45);
+            background:rgba(43,224,198,.05); }
+  .golink a { text-decoration:none; font-weight:600; font-size:19px; }
+  .crumbs { font:500 13px monospace; letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8; margin-bottom:40px; }
+  footer { margin-top:80px; color:#9fb4c8; font-size:14px; border-top:1px solid rgba(159,180,200,.22); padding-top:22px; }
+
+  /* ---------- Обвязка страницы: шапка, кнопки, курсор ----------
+     Раздел лежит вне лендинга и своих стилей лендинга не тянет, поэтому шапка
+     собрана здесь заново — но по тем же правилам: фиксирована сверху, прозрачная
+     над первым экраном и с подложкой после прокрутки. Без неё «провалившись»
+     в раздел человек терял навигацию и мог вернуться только кнопкой браузера. */
+  body { padding-top:0; }
+  .pdhdr { position:fixed; top:0; left:0; right:0; z-index:60;
+           border-bottom:1px solid transparent;
+           transition:background .3s ease, border-color .3s ease; }
+  .pdhdr.scrolled { background:rgba(3,12,16,.82); backdrop-filter:blur(12px);
+                    border-bottom-color:var(--space-line); }
+  .pdhdr .in { display:flex; align-items:center; justify-content:space-between; padding:22px 64px; }
+  .pdhdr .lg { display:inline-flex; align-items:center; flex:0 0 auto; }
+  .pdhdr .lg img { height:19px; display:block; filter:brightness(0) invert(1); }
+  .pdhdr nav { display:flex; gap:34px; }
+  .pdhdr nav a { text-decoration:none; color:var(--scan-white-dim);
+                 font:700 12.5px "Blender Pro", var(--font-body); letter-spacing:0.24em;
+                 text-transform:uppercase; transition:color .18s; }
+  .pdhdr nav a:hover { color:var(--scan-white); }
+  .pdhdr nav a[aria-current="page"] { color:var(--signal-teal); }
+  .pdhdr .talk { display:inline-flex; align-items:center; gap:9px; text-decoration:none;
+                 font:700 13px "Blender Pro", var(--font-body); letter-spacing:0.1em;
+                 text-transform:uppercase; background:var(--signal-amber); color:var(--space-void);
+                 padding:11px 20px; border:none;
+                 clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+                 transition:transform .25s cubic-bezier(.2,.8,.2,1); }
+  .pdhdr .talk:hover { transform:translateY(-2px); }
+  .pdhdr .lang { display:flex; align-items:center; gap:2px; margin-left:18px; }
+  .pdhdr .lang a { font:700 11.5px "Blender Pro", var(--font-mono); letter-spacing:0.16em;
+                   text-transform:uppercase; color:var(--scan-white-dim); padding:5px 7px;
+                   border:1px solid transparent; text-decoration:none; transition:color .18s; }
+  .pdhdr .lang a:hover { color:var(--scan-white); }
+  .pdhdr .lang a.on { color:var(--space-void); background:var(--scan-white); }
+  .pdhdr .snd { margin-left:14px; width:30px; height:30px; display:flex; align-items:center;
+                justify-content:center; background:none; border:1px solid transparent;
+                color:var(--scan-white-dim); cursor:pointer; transition:color .18s, border-color .18s; }
+  .pdhdr .snd:hover { color:var(--scan-white); border-color:var(--scan-white-faint); }
+  .pdhdr .snd svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6;
+                    stroke-linecap:round; stroke-linejoin:round; }
+  .pdhdr .snd .wave { transition:opacity .18s; }
+  .pdhdr .snd .slash { opacity:0; transition:opacity .18s; }
+  .pdhdr .snd.off { color:var(--scan-white-faint); }
+  .pdhdr .snd.off .wave { opacity:0; }
+  .pdhdr .snd.off .slash { opacity:1; }
+  /* Пункты меню на узком экране прячем, как на главной: шесть названий в строку
+     не помещаются. Логотип, кнопка и язык остаются — этого хватает, чтобы уйти. */
+  @media (max-width:1100px) {
+    .pdhdr .in { padding:16px 24px; }
+    .pdhdr nav { gap:22px; overflow-x:auto; scrollbar-width:none; }
+    .pdhdr nav::-webkit-scrollbar { display:none; }
+    .pdhdr nav a { flex:0 0 auto; letter-spacing:0.16em; font-size:11.5px; }
+  }
+  @media (max-width:760px) {
+    .pdhdr nav, .pdhdr .talk { display:none; }
+    .pdhdr .lang { margin-left:auto; }
+  }
+
+  /* Панель фильтра липнет ПОД шапкой, а не под верх окна: иначе она уезжала бы
+     под неё и первые кнопки были не видны. Высота шапки подставляется скриптом. */
+  .libbar { top:var(--hdr,58px); }
+  .wrap { padding-top:calc(var(--hdr, 84px) + 44px); }
+
+  /* Кнопки «назад» и «наверх». Стопкой в правом нижнем углу: там их ищут,
+     и они не спорят с содержанием. «Наверх» появляется после первого экрана. */
+  .pdnav { position:fixed; right:22px; bottom:22px; z-index:55;
+           display:flex; flex-direction:column; gap:10px; }
+  .pdnav button { width:44px; height:44px; cursor:pointer; display:grid; place-items:center;
+                  background:rgba(4,12,16,.82); backdrop-filter:blur(8px);
+                  border:1px solid rgba(159,180,200,.28); color:#9fb4c8;
+                  transition:color .18s, border-color .18s, background .18s, opacity .3s, transform .3s; }
+  .pdnav button:hover { color:#2be0c6; border-color:#2be0c6; background:rgba(43,224,198,.1); }
+  .pdnav button svg { width:18px; height:18px; display:block; }
+  .pdnav .up { opacity:0; transform:translateY(10px); pointer-events:none; }
+  .pdnav .up.on { opacity:1; transform:none; pointer-events:auto; }
+
+  /* Проявление карточек при прокрутке — тот же приём, что на лендинге.
+     Без скриптов и при prefers-reduced-motion карточки видны сразу. */
+  /* Кривая, длительность и блюр — те же, что на главной (см. .rv в index.html).
+     Свои значения читались бы как другая страница: глаз замечает разницу в темпе
+     раньше, чем разницу в цвете. */
+  .rv { opacity:0; transform:translateY(22px); filter:blur(6px);
+        transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1),
+                   filter .8s ease; }
+  .rv.in { opacity:1; transform:none; filter:none; }
+  @media (prefers-reduced-motion:reduce) { .rv { opacity:1; transform:none; filter:none; transition:none; } }
+
+  /* Вход на страницу: содержание всплывает целиком, а не появляется рывком.
+     Класс снимается скриптом; без скриптов страница видна сразу. */
+  body.pd-enter .wrap { opacity:0; transform:translateY(14px); }
+  body.pd-enter .pdhdr { opacity:0; transform:translateY(-100%); }
+  .wrap { transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+  .pdhdr { transition:background .3s ease, border-color .3s ease,
+                      opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1); }
+  @media (prefers-reduced-motion:reduce) {
+    body.pd-enter .wrap, body.pd-enter .pdhdr { opacity:1; transform:none; }
+  }
+
+  /* Курсор: точка с мягким ореолом. Системный не прячем — на длинном тексте
+     он нужен для выделения, а метка идёт следом и добавляет живости. */
+  .pdcur { position:fixed; left:0; top:0; z-index:70; pointer-events:none;
+           width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%;
+           background:#2be0c6; opacity:0; transition:opacity .3s, width .2s, height .2s, margin .2s; }
+  .pdcur.on { opacity:.9; }
+  .pdcur.big { width:26px; height:26px; margin:-13px 0 0 -13px; opacity:.35; }
+  .pdglow { position:fixed; left:0; top:0; z-index:69; pointer-events:none;
+            width:190px; height:190px; margin:-95px 0 0 -95px; opacity:0;
+            background:radial-gradient(closest-side, rgba(43,224,198,.16), transparent 70%);
+            transition:opacity .4s; }
+  .pdglow.on { opacity:1; }
+
+  @media (max-width:760px) {
+    .pdhdr .in { gap:16px; padding:12px 16px; }
+    .pdhdr .talk { display:none; }
+    .wrap { padding-top:92px; }
+    .pdnav { right:14px; bottom:14px; }
+    .pdcur, .pdglow { display:none; }
+  }
+</style>
+</head>
+<body>
+<header class="pdhdr"><div class="in"><a class="lg" href="../../../pt/" aria-label="playdisplay"><img src="../../../assets/logos/playdisplay-logo-black.png" alt="playdisplay"></a><nav><a href="../../../pt/services/" aria-current="page">Serviços</a><a href="../../../pt/#work">Projetos</a><a href="../../../pt/#concepts">Conceitos</a><a href="../../../pt/library/">Equipamentos</a><a href="../../../pt/#atlas">Atlas</a><a href="../../../pt/#studio">Estúdio</a></nav><a class="talk" href="../../../pt/#contact">▶ Falar sobre a ideia</a><div class="lang"><a href="/services/interactive-exhibition/" hreflang="ru">RU</a><a href="/en/services/interactive-exhibition/" hreflang="en">ENG</a><a class="on" aria-current="true">PT</a></div><button class="snd" type="button" data-off="Desligar o som" data-on="Ligar o som"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13L7.2 14.5H4z"/><path class="wave" d="M16 9c1.2 1 1.2 5 0 6"/><path class="wave" d="M18.7 6.8c2.3 2 2.3 8.4 0 10.4"/><path class="slash" d="M16.6 9.6l4.8 4.8m0-4.8l-4.8 4.8"/></svg></button></div></header><div class="pdnav"><button class="back" type="button" data-home="../../../pt/services/" aria-label="Voltar" title="Voltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button><button class="up" type="button" aria-label="Ao topo" title="Ao topo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14 L12 7 L19 14"/></svg></button></div>
+<main class="wrap">
+  <nav class="crumbs"><a href="../../../pt/">playdisplay</a> / <a href="../../../pt/services/">Serviços</a> / Projeto de exposição interativa</nav>
+  <article>
+    <h1>Projeto de exposição interativa</h1>
+    <p class="lead">Uma exposição que o visitante não lê, e sim explora.</p>
+    <p>O visitante não lê uma exposição — ele explora. A diferença aparece no comportamento: diante de um painel de texto a pessoa fica quatro segundos e segue; diante de um objeto que responde a uma ação, fica minutos. A interatividade não está ali para parecer contemporânea. Está ali onde o conteúdo é mais complexo do que um parágrafo na parede consegue carregar.</p>
+<h2>Quando a interatividade se justifica</h2>
+<ol class="steps"><li>O conteúdo não pode ser mostrado — um processo, um princípio de funcionamento, uma escala, algo que acontece por dentro e é invisível na realidade.</li><li>O público é misto. Um mesmo objeto precisa funcionar para um estudante e para um especialista da área; uma vitrine estática não consegue, um objeto interativo consegue, pela profundidade.</li><li>Há mais material do que as paredes comportam. A interatividade comprime: um objeto pode carregar o que de outro jeito exigiria um salão inteiro.</li><li>Você precisa que a pessoa faça alguma coisa. Entender pela ação dura mais do que entender pela leitura.</li></ol>
+<p>E o contrário também: onde o conteúdo é um objeto autêntico e a história em volta dele, a interatividade ao lado costuma atrapalhar. Nesses lugares a gente tira, e isso também faz parte do trabalho.</p>
+<h2>Formatos que construímos</h2>
+<ul class="notes"><li>Maquetes interativas de territórios e objetos — com projeção, destaque de zonas e camadas de informação sobre a forma física.</li><li>Instalações multimídia: telas grandes, superfícies multitoque, objetos que respondem à aproximação e ao gesto.</li><li>Exposições jogáveis — um sistema único em que o visitante percorre um roteiro, e não um conjunto de estandes.</li><li>Vitrines holográficas e exponentes volumétricos para equipamentos que não podem ser trazidos.</li><li>Realidade aumentada e virtual, quando é preciso estar dentro de um espaço em que não se pode entrar.</li><li>Exponentes de mecanismo: ação física com as mãos, não um toque na tela.</li></ul>
+<h2>Como funciona por dentro</h2>
+<p>Uma regra: se entende em cinco segundos, se abre ao longo de cinco minutos. Em cinco segundos a pessoa entende o que fazer, sem instruções. Em cinco minutos ela encontra profundidade, se ficou. Regras sem manual, descobertas que o visitante faz sozinho e conteúdo de reserva suficiente para quem quiser ir além.</p>
+<p>A segunda regra é sobre operação. Uma exposição vive por anos, e quem faz a manutenção não é quem a desenvolveu, e sim quem cuida do salão. Por isso os objetos são projetados para reiniciar com um botão, aguentar uso bruto e contar que um dia a rede vai cair ou um projetor vai morrer. Um exponente que só funciona em condições ideais não funciona em museu nenhum.</p>
+<h2>Como o trabalho acontece</h2>
+<ol class="steps"><li>Roteiro de interação: o que o visitante faz, o que acontece em resposta, como aquilo termina.</li><li>Protótipo. Testamos a mecânica com pessoas antes de qualquer equipamento ser comprado. Um protótipo barato agora evita uma reforma cara depois.</li><li>Produção: design, 3D, desenvolvimento, montagem, conteúdo.</li><li>Instalação e comissionamento no local — luz, som, calibração da projeção, uma rotina de manutenção.</li><li>Suporte depois da abertura: as primeiras semanas mostram o que nenhum protótipo mostra.</li></ol>
+<h2>Escala</h2>
+<ul class="stats"><li><b>115</b> exponentes em uma única exposição — Centro de Cosmonáutica e Aviação, VDNH</li><li><b>2011</b> fundação do estúdio; trabalhamos no mundo todo</li><li><b>3 sem.</b> nosso projeto interativo chave na mão mais rápido</li></ul>
+<p class="golink"><a href="/library/input/">Como o visitante responde: 20 dispositivos de entrada — toque, gesto, voz, presença →</a></p>
+    <h2>Quantas pessoas viram isso</h2><ul class="stats figures"><li><b>2 mi</b> visitantes em oito meses<br><a href="../../../pt/work/industry-rf/">Indústria Russa</a></li><li><b>600 000</b> visitantes da exposição<br><a href="../../../pt/work/airports/">Aeroportos da Rússia</a></li><li><b>7 000</b> participantes em três dias<br><a href="../../../pt/work/proryv/">Proryv</a></li></ul>
+    <h2>Projetos onde isso foi feito</h2>
+    <ul class="cases"><li><a href="../../../pt/work/vdnh-space/"><b>VDNH Espaço</b></a> — A instalação História do Voo Espacial Tripulado</li><li><a href="../../../pt/work/industry-rf/"><b>Indústria Russa</b></a> — Instalações interativas · Expo Rússia</li><li><a href="../../../pt/work/airports/"><b>Aeroportos da Rússia</b></a> — Aeroportos internacionais · Expo Rússia</li><li><a href="../../../pt/work/proryv/"><b>Proryv</b></a> — Rosatom · o túnel de apresentação</li></ul>
+    <h2>Perguntas frequentes</h2><div class="qa"><h3>Quanto tempo dura um exponente interativo?</h3><p>As partes mecânicas e o gabinete duram anos com manutenção de rotina. Os itens vulneráveis são projetores (lâmpadas e filtros) e superfícies de toque em pontos de muito contato. Prevemos a troca de consumíveis na rotina de manutenção e escolhemos equipamentos que ainda serão compráveis daqui a cinco anos.</p></div><div class="qa"><h3>O que acontece se um exponente falhar num fim de semana?</h3><p>Nada, se isso foi previsto. Os objetos são projetados para reiniciar sozinhos e para parecerem seguros quando ociosos — um visitante nunca deve ver uma área de trabalho. Quem atende o salão recebe uma instrução de uma página.</p></div><div class="qa"><h3>Precisamos de equipe dedicada para operar?</h3><p>Para uma exposição comum, não: a operação diária se resume a ligar e desligar. Para sistemas grandes com muitos objetos vale treinar um funcionário do museu, e esse treinamento a gente dá.</p></div><div class="qa"><h3>Dá para acrescentar interatividade a uma exposição que já existe?</h3><p>Dá. Muitas vezes rende mais que refazer o salão: um objeto forte no lugar certo muda o percurso inteiro. Começamos observando como as pessoas realmente circulam hoje.</p></div>
+    <a class="cta" href="../../../pt/">Agendar uma sessão criativa →</a>
+  </article>
+  <footer>
+    <p>playdisplay — espaços que as pessoas lembram: museus, exposições interativas, centros de visitantes e mostras imersivas.</p>
+    <h3 style="margin-top:26px">Outras frentes</h3>
+    <ul class="other"><li><a href="../../../pt/services/museum-concept/">Concepção de museu</a></li><li><a href="../../../pt/services/corporate-museum/">Museu corporativo</a></li><li><a href="../../../pt/services/museum-equipment/">Equipamentos para museu</a></li><li><a href="../../../pt/services/museum-equipping/">Equipagem de museus</a></li><li><a href="../../../pt/services/multimedia-equipment/">Equipamentos multimídia</a></li><li><a href="../../../pt/services/exhibition-stand/">Estande de exposição</a></li><li><a href="../../../pt/services/holographic-showcase/">Vitrines holográficas</a></li><li><a href="../../../pt/services/projection-mapping/">Maquetes e mapeamento</a></li><li><a href="../../../pt/services/showroom/">Espaço multimídia</a></li><li><a href="../../../pt/services/interactive-website/">Site interativo</a></li></ul>
+    <p style="margin-top:22px"><a href="../../../pt/">Página inicial</a> · <a href="../../../pt/#work">Todos os projetos</a> · <a href="../../../pt/services/">Serviços</a> · <a href="../../../pt/concepts/">Conceitos</a> · <a href="../../../pt/atlas/">Atlas</a> · <a href="../../../pt/library/">Biblioteca de equipamentos</a></p>
+  </footer>
+</main>
+<script>
+/* Обвязка страницы раздела: подложка шапки, кнопка «наверх», проявление карточек,
+   метка курсора. Всё необязательное: без скриптов страница остаётся читаемой,
+   карточки видны, навигация работает. */
+(function () {
+  var hdr = document.querySelector('.pdhdr');
+  var up = document.querySelector('.pdnav .up');
+  var fine = window.matchMedia && matchMedia('(hover:hover) and (pointer:fine)').matches;
+  var calm = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // высота шапки уезжает в переменную: панель фильтра липнет ровно под ней,
+  // а на узком экране шапка выше, и подгонять число руками пришлось бы дважды
+  function fit() {
+    if (!hdr) return;
+    document.documentElement.style.setProperty('--hdr', hdr.offsetHeight + 'px');
+  }
+  fit();
+  addEventListener('resize', fit, { passive: true });
+  // ШРИФТЫ МЕНЯЮТ ВЫСОТУ ШАПКИ. Скрипт снимает её сразу, а Blender Pro и Onest
+  // приезжают позже и пересобирают строку меню — замер устаревал на десятки
+  // пикселей, и панель фильтра липла не туда. Пересчитываем, когда шрифты готовы.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit).catch(function(){});
+  addEventListener('load', fit);
+
+  // Вход на страницу. Класс ставим из скрипта, а не в разметке: если скрипты
+  // отключены, содержание не должно остаться невидимым.
+  if (!calm) {
+    document.body.classList.add('pd-enter');
+    var off = function () { document.body.classList.remove('pd-enter'); };
+    requestAnimationFrame(function () { requestAnimationFrame(off); });
+    setTimeout(off, 400);                       // страховка, если кадр не пришёл
+  }
+
+  var tick = false;
+  function onScroll() {
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(function () {
+      tick = false;
+      var y = window.pageYOffset || document.documentElement.scrollTop;
+      if (hdr) hdr.classList.toggle('scrolled', y > 12);
+      if (up) up.classList.toggle('on', y > innerHeight * 0.6);
+    });
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  if (up) up.addEventListener('click', function () {
+    scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
+  });
+  var back = document.querySelector('.pdnav .back');
+  if (back) back.addEventListener('click', function () {
+    // если человек пришёл из поиска, истории нет — уводим на хаб раздела,
+    // а не оставляем кнопку мёртвой
+    if (history.length > 1 && document.referrer && document.referrer.indexOf(location.host) > -1) history.back();
+    else location.href = back.getAttribute('data-home');
+  });
+
+  // проявление карточек
+  // Проявляем ВСЁ, что читается как отдельный шаг: заголовок, лид, знак категории,
+  // врезку с принципом, панель фильтра и карточки. Раньше оживали только карточки,
+  // и верх страницы выглядел статичным на фоне движения ниже.
+  var items = [].slice.call(document.querySelectorAll(
+    '.crumbs, h1, .lead, .libmark, .call, .libbar, .libitem, .libcat, .libgrid + h2, .libcats,'
+    // обычные разделы: заголовки глав, списки, врезки, карточки услуг и концепций
+    + ' article h2, article h3, ol.steps, ul.notes, ul.stats, ul.cases, .qa, .golink,'
+    + ' ol.atlas li, .cncs li, .gal img, footer'));
+  // ПРЕДОХРАНИТЕЛЬ. Проявление прячет карточки до срабатывания наблюдателя, а он
+  // завязан на отрисовку: во вкладке, открытой в фоне, кадры не идут и колбэк
+  // не приходит. Для справочника это значило бы пустую страницу, поэтому
+  // во-первых не начинаем, если вкладка скрыта, во-вторых через полторы секунды
+  // показываем всё, что попало в окно, независимо от наблюдателя.
+  if (items.length && window.IntersectionObserver && !calm && !document.hidden) {
+    items.forEach(function (el) { el.classList.add('rv'); });
+    setTimeout(function () {
+      items.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.top < innerHeight && r.bottom > 0) el.classList.add('in');
+      });
+    }, 1500);
+    // Каскад: соседи, попавшие в кадр одновременно, проявляются по очереди
+    // с тем же шагом 85 мс, что на главной. Одновременное появление читается
+    // как перерисовка, последовательное — как движение.
+    var wave = 0, waveAt = 0;
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var now = Date.now();
+        if (now - waveAt > 220) wave = 0;      // новая волна: отсчёт заново
+        waveAt = now;
+        var el = e.target, k = wave++;
+        io.unobserve(el);
+        if (k === 0) el.classList.add('in');
+        else setTimeout(function () { el.classList.add('in'); }, Math.min(k, 6) * 85);
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    items.forEach(function (el) { io.observe(el); });
+    // фильтр прячет и показывает карточки: показанная заново должна быть видимой,
+    // а не остаться в стартовом состоянии проявления
+    addEventListener('pdfilter', function () {
+      items.forEach(function (el) { if (!el.hidden) el.classList.add('in'); });
+    });
+  }
+
+  // метка курсора
+  if (fine && !calm) {
+    var dot = document.createElement('div'), glow = document.createElement('div');
+    dot.className = 'pdcur'; glow.className = 'pdglow';
+    document.body.appendChild(glow); document.body.appendChild(dot);
+    var x = 0, y = 0, gx = 0, gy = 0, raf = null;
+    function loop() {
+      raf = null;
+      gx += (x - gx) * 0.16; gy += (y - gy) * 0.16;
+      dot.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      glow.style.transform = 'translate(' + gx + 'px,' + gy + 'px)';
+      if (Math.abs(x - gx) > 0.4 || Math.abs(y - gy) > 0.4) raf = requestAnimationFrame(loop);
+    }
+    addEventListener('pointermove', function (e) {
+      x = e.clientX; y = e.clientY;
+      dot.classList.add('on'); glow.classList.add('on');
+      if (!raf) raf = requestAnimationFrame(loop);
+    }, { passive: true });
+    addEventListener('pointerdown', function () { dot.classList.add('big'); });
+    addEventListener('pointerup', function () { dot.classList.remove('big'); });
+    // над ссылками и кнопками метка растёт — подсказка, что здесь можно нажать
+    document.addEventListener('pointerover', function (e) {
+      var t = e.target;
+      dot.classList.toggle('big', !!(t.closest && t.closest('a,button,input')));
+    }, { passive: true });
+  }
+})();
+</script><script>
+/* Выключатель звука в шапке раздела. Своего звука тут нет, но ключ pd_sound общий
+   на весь сайт: выключил здесь — вернулся на главную, и сцена молчит. Кнопка,
+   которая ничего не делает, была бы обманом; эта делает ровно то, что обещает. */
+(function () {
+  var b = document.querySelector('.pdhdr .snd');
+  if (!b) return;
+  function on(){ try { return localStorage.getItem('pd_sound') !== 'off'; } catch (e) { return true; } }
+  function paint(){
+    var v = on();
+    b.classList.toggle('off', !v);
+    var l = b.getAttribute(v ? 'data-off' : 'data-on') || '';
+    b.setAttribute('aria-label', l); b.setAttribute('title', l);
+  }
+  b.addEventListener('click', function () {
+    try { localStorage.setItem('pd_sound', on() ? 'off' : 'on'); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

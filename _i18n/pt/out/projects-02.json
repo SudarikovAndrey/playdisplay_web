@@ -1,0 +1,735 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "projects-02 (2 de 3)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "projects-02#001",
+   "path": "projects/4/flow/7/items/0",
+   "ru": "Окно демонстрации тактической карты. Активируется при наличии соответствующего сценария в описании продукта.",
+   "en": "Tactical map window. Activates when the product description includes a matching scenario.",
+   "pt": "Janela do mapa tático. Ativa quando a descrição do produto inclui um cenário correspondente."
+  },
+  {
+   "id": "projects-02#002",
+   "path": "projects/4/flow/7/items/1",
+   "ru": "Текстовое окно-подсказка. Содержит сокращённое описание продукта в одном месте.",
+   "en": "Text prompt window. Holds a short description of the product in one place.",
+   "pt": "Janela de texto de apoio. Reúne em um só lugar uma descrição curta do produto."
+  },
+  {
+   "id": "projects-02#003",
+   "path": "projects/4/flow/7/items/2",
+   "ru": "Окно вывода уменьшенного продукта в 3D-виде.",
+   "en": "Window showing a scaled-down 3D view of the product.",
+   "pt": "Janela com uma vista 3D reduzida do produto."
+  },
+  {
+   "id": "projects-02#004",
+   "path": "projects/4/flow/7/items/3",
+   "ru": "Навигационная строка, демонстрирующая адресный путь в каталоге.",
+   "en": "Navigation bar showing the current path through the catalog.",
+   "pt": "Barra de navegação com o caminho atual dentro do catálogo."
+  },
+  {
+   "id": "projects-02#005",
+   "path": "projects/4/flow/7/items/4",
+   "ru": "Кнопка возврата на один уровень в каталоге.",
+   "en": "Button that steps back one level in the catalog.",
+   "pt": "Botão que volta um nível no catálogo."
+  },
+  {
+   "id": "projects-02#006",
+   "path": "projects/4/flow/7/items/5",
+   "ru": "Окно отображения актуальной даты и времени.",
+   "en": "Window with the current date and time.",
+   "pt": "Janela com data e hora atuais."
+  },
+  {
+   "id": "projects-02#007",
+   "path": "projects/4/flow/7/items/6",
+   "ru": "Окно переключения языков — RU / ENG.",
+   "en": "Language switch — RU / ENG.",
+   "pt": "Seletor de idioma — RU / ENG."
+  },
+  {
+   "id": "projects-02#008",
+   "path": "projects/4/flow/7/items/7",
+   "ru": "Окно активации инсталляции // окно перехода в стартовый режим ожидания. Работает попеременно.",
+   "en": "Window that wakes the installation // returns it to the opening idle mode. The two alternate.",
+   "pt": "Janela que acorda a instalação // devolve ela ao modo de espera inicial. As duas se alternam."
+  },
+  {
+   "id": "projects-02#009",
+   "path": "projects/4/flow/7/items/8",
+   "ru": "Навигационный блок — отображает статус проигрываемого анимационного блока, а также аудио-активность данного элемента.",
+   "en": "Navigation block — shows the status of the animation currently playing and whether that element has audio running.",
+   "pt": "Bloco de navegação — mostra o estado da animação em reprodução e se aquele elemento está com áudio."
+  },
+  {
+   "id": "projects-02#010",
+   "path": "projects/4/flow/7/items/9",
+   "ru": "Регулировка громкости инсталляции.",
+   "en": "Volume control for the installation.",
+   "pt": "Controle de volume da instalação."
+  },
+  {
+   "id": "projects-02#011",
+   "path": "projects/4/flow/7/items/10",
+   "ru": "3D-джойстик для вращения // управления 3D-моделью. В некоторых сценариях активны не все оси поворота.",
+   "en": "3D joystick for rotating and steering the 3D model. In some scenarios not every axis of rotation is live.",
+   "pt": "Joystick 3D para girar e conduzir o modelo tridimensional. Em alguns cenários nem todos os eixos de rotação estão ativos."
+  },
+  {
+   "id": "projects-02#012",
+   "path": "projects/4/flow/7/items/11",
+   "ru": "Тачпэд-указка. При нажатии и удержании отображает курсор на основном голографическом экране.",
+   "en": "Touchpad pointer. Press and hold to show a cursor on the main holographic screen.",
+   "pt": "Ponteiro do touchpad. Pressione e segure para mostrar um cursor na tela holográfica principal."
+  },
+  {
+   "id": "projects-02#013",
+   "path": "projects/4/flow/7/items/12",
+   "ru": "Основное интерфейсное окно. Предоставляет доступ к каталогу, позволяет выбирать пункты из меню с описаниями по продуктам.",
+   "en": "Main interface window. Opens the catalog and lets you pick items from the menu of product descriptions.",
+   "pt": "Janela principal da interface. Abre o catálogo e permite escolher itens no menu de descrições de produto."
+  },
+  {
+   "id": "projects-02#014",
+   "path": "projects/5/subtitle",
+   "ru": "Выставочная инсталляция",
+   "en": "Exhibition installation",
+   "pt": "Instalação expositiva"
+  },
+  {
+   "id": "projects-02#015",
+   "path": "projects/5/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-02#016",
+   "path": "projects/5/client",
+   "ru": "Группа ПТК",
+   "en": "PTK Group",
+   "pt": "PTK Group"
+  },
+  {
+   "id": "projects-02#017",
+   "path": "projects/5/term",
+   "ru": "2 месяца",
+   "en": "2 months",
+   "pt": "2 meses"
+  },
+  {
+   "id": "projects-02#018",
+   "path": "projects/5/goal",
+   "ru": "Группа ПТК выпускает современную путевую технику — машины для строительства, ремонта и обслуживания железных дорог. Почти вся эта техника имеет вытянутую, протяжённую форму.",
+   "en": "PTK Group builds modern track machines — equipment for constructing, repairing and maintaining railways. Almost all of it shares one trait: it is long and drawn out.",
+   "pt": "A PTK Group fabrica máquinas de via modernas — equipamentos para construir, reparar e manter ferrovias. Quase todas têm uma característica em comum: são longas e alongadas."
+  },
+  {
+   "id": "projects-02#019",
+   "path": "projects/5/solution",
+   "ru": "Мы обыграли эту особенность в самом формате подачи: контент создан под сверхширокий экран стенда, повторяющий пропорции путевых машин. Формат демонстрации следует за формой продукта — техника разворачивается по горизонтали во всю длину, и её устройство и характеристики читаются наглядно.",
+   "en": "We turned that trait into the format itself. The content was made for an ultra-wide screen on the booth that echoes the proportions of the machines. The display follows the shape of the product: each machine unfolds horizontally at full length, and its structure and specifications read clearly.",
+   "pt": "Transformamos essa característica no próprio formato. O conteúdo foi feito para uma tela ultralarga no estande, que repete as proporções das máquinas. A exibição acompanha a forma do produto: cada máquina se abre na horizontal em todo o seu comprimento, e a estrutura e as especificações ficam claras."
+  },
+  {
+   "id": "projects-02#020",
+   "path": "projects/5/flow/0/items/0",
+   "ru": "Разработка концепции проекта",
+   "en": "Project concept",
+   "pt": "Conceito do projeto"
+  },
+  {
+   "id": "projects-02#021",
+   "path": "projects/5/flow/0/items/1",
+   "ru": "Моделирование техники",
+   "en": "Modeling the machines",
+   "pt": "Modelagem das máquinas"
+  },
+  {
+   "id": "projects-02#022",
+   "path": "projects/5/flow/0/items/2",
+   "ru": "Работа с информационной составляющей",
+   "en": "Working through the information layer",
+   "pt": "Elaboração da camada informativa"
+  },
+  {
+   "id": "projects-02#023",
+   "path": "projects/5/flow/0/items/3",
+   "ru": "Монтаж оборудования и ввод в эксплуатацию",
+   "en": "Equipment installation and commissioning",
+   "pt": "Instalação e comissionamento dos equipamentos"
+  },
+  {
+   "id": "projects-02#024",
+   "path": "projects/6/title",
+   "ru": "Стенд МИГ-35",
+   "en": "MiG-35 Booth",
+   "pt": "Estande do MiG-35"
+  },
+  {
+   "id": "projects-02#025",
+   "path": "projects/6/subtitle",
+   "ru": "Мультимедиа-стенд на авиасалоне МАКС 2019",
+   "en": "Multimedia booth at the MAKS 2019 airshow",
+   "pt": "Estande multimídia no salão MAKS 2019"
+  },
+  {
+   "id": "projects-02#026",
+   "path": "projects/6/tags/0",
+   "ru": "выставки",
+   "en": "exhibitions",
+   "pt": "exposições"
+  },
+  {
+   "id": "projects-02#027",
+   "path": "projects/6/client",
+   "ru": "РСК «МИГ»",
+   "en": "RSK MiG",
+   "pt": "RSK MiG"
+  },
+  {
+   "id": "projects-02#028",
+   "path": "projects/6/term",
+   "ru": "3 недели",
+   "en": "3 weeks",
+   "pt": "3 semanas"
+  },
+  {
+   "id": "projects-02#029",
+   "path": "projects/6/goal",
+   "ru": "Выделить МИГ-35 среди представленной продукции других производителей, реализовать демонстрационный инструмент для презентации самолёта заказчикам.",
+   "en": "Make the MiG-35 stand out among the other manufacturers’ aircraft, and build a demonstration tool for presenting the jet to customers.",
+   "pt": "Fazer o MiG-35 se destacar entre as aeronaves dos outros fabricantes e construir uma ferramenta de demonstração para apresentar o caça aos clientes."
+  },
+  {
+   "id": "projects-02#030",
+   "path": "projects/6/solution",
+   "ru": "Для демонстрации самолёта был спроектирован подиум, несущая конструкция и смонтирован светодиодный экран. На экране демонстрировался специально реализованный 3D-контент, показывающий основные характеристики самолёта МиГ-35. Подиум, крупная несущая конструкция и экран площадью 50 м² эффектно выделяли самолёт.",
+   "en": "We designed a plinth and a load-bearing structure for the aircraft and installed an LED screen. The screen ran purpose-built 3D content laying out the key characteristics of the MiG-35. The plinth, the large structure above it and 50 sq m of screen set the jet apart.",
+   "pt": "Projetamos um pódio e uma estrutura portante para a aeronave e instalamos uma tela de LED. A tela exibia conteúdo 3D feito sob medida, apresentando as características principais do MiG-35. O pódio, a grande estrutura acima dele e 50 m² de tela destacaram o caça."
+  },
+  {
+   "id": "projects-02#031",
+   "path": "projects/6/result/figures/0/label",
+   "ru": "посетителей МАКС-2019",
+   "en": "visitors to MAKS-2019",
+   "pt": "visitantes da MAKS-2019"
+  },
+  {
+   "id": "projects-02#032",
+   "path": "projects/6/result/figures/1/n",
+   "ru": "3 недели",
+   "en": "3 weeks",
+   "pt": "3 semanas"
+  },
+  {
+   "id": "projects-02#033",
+   "path": "projects/6/result/figures/1/label",
+   "ru": "от концепции до готового павильона",
+   "en": "from concept to finished pavilion",
+   "pt": "do conceito ao pavilhão pronto"
+  },
+  {
+   "id": "projects-02#034",
+   "path": "projects/6/result/text/0",
+   "ru": "Всего за три недели мы прошли путь от концепции до готового выставочного пространства: разработали дизайн, построили павильон и создали мультимедийную презентацию с большим объёмом технической инфографики и анимации.",
+   "en": "In just three weeks we went the whole way from concept to a finished exhibition space: the design, the pavilion itself, and a multimedia presentation carrying a large volume of technical infographics and animation.",
+   "pt": "Em apenas três semanas percorremos todo o caminho do conceito a um espaço expositivo pronto: o projeto, o pavilhão em si e uma apresentação multimídia com um grande volume de infográficos técnicos e animação."
+  },
+  {
+   "id": "projects-02#035",
+   "path": "projects/6/result/text/1",
+   "ru": "На МАКС-2019, который посетили 578 810 человек, стенд стал одной из ключевых площадок презентации новой экспортной версии МиГ-35. Здесь самолёт представляли российскому руководству и иностранным делегациям, включая представителей Алжира, Египта и Ирана. Визуальная среда помогала превратить сложные технические характеристики в ясную презентацию продукта — для специалистов, потенциальных партнёров и широкой аудитории авиасалона.",
+   "en": "At MAKS-2019, attended by 578,810 people, the stand became one of the key venues for presenting the new export version of the MiG-35. The aircraft was shown here to the Russian leadership and to foreign delegations, including representatives of Algeria, Egypt and Iran. The visual environment helped turn complex technical specifications into a clear product presentation — for specialists, for potential partners and for the wider air show audience.",
+   "pt": "Na MAKS-2019, que recebeu 578.810 pessoas, o estande virou um dos lugares centrais para apresentar a nova versão de exportação do MiG-35. A aeronave foi mostrada ali à liderança russa e a delegações estrangeiras, incluindo representantes da Argélia, do Egito e do Irã. O ambiente visual ajudou a transformar especificações técnicas complexas em uma apresentação clara do produto — para especialistas, para parceiros em potencial e para o público geral do salão."
+  },
+  {
+   "id": "projects-02#036",
+   "path": "projects/6/flow/0/caption",
+   "ru": "Контент светодиодного экрана, 15 метров по фронту",
+   "en": "LED screen content, 15 meters across the front",
+   "pt": "Conteúdo da tela de LED, 15 metros de frente"
+  },
+  {
+   "id": "projects-02#037",
+   "path": "projects/6/flow/1/text",
+   "ru": "Графика",
+   "en": "Graphics",
+   "pt": "Gráficos"
+  },
+  {
+   "id": "projects-02#038",
+   "path": "projects/6/flow/2/text",
+   "ru": "На реализацию контента было отведено 15 дней. За этот срок было разработано и предложено несколько вариантов стилистики контента. Финальное разрешение видеоконтента — 6000 × 1800 px.",
+   "en": "We had 15 days to produce the content. In that time we developed and pitched several visual directions. Final resolution of the video content: 6000 × 1800 px.",
+   "pt": "Tínhamos 15 dias para produzir o conteúdo. Nesse tempo desenvolvemos e apresentamos várias direções visuais. Resolução final do conteúdo em vídeo: 6000 × 1800 px."
+  },
+  {
+   "id": "projects-02#039",
+   "path": "projects/6/flow/3/text",
+   "ru": "Процесс разработки стенда",
+   "en": "How the booth was designed",
+   "pt": "Como o estande foi projetado"
+  },
+  {
+   "id": "projects-02#040",
+   "path": "projects/6/flow/4/text",
+   "ru": "Проведя серию эскизных работ, было выбрано направление дизайна с подиумом для самолёта, несущей конструкцией и светодиодным экраном. Расчёт инсоляции указал на необходимость создания козырька, повышающего контрастность изображения на экране. Несущая конструкция выполнена из лаерных элементов и обтянута баннерной тканью с полной запечаткой.",
+   "en": "After a round of sketches we settled on a design with a plinth for the aircraft, a load-bearing structure and an LED screen. Sunlight calculations showed that a canopy was needed to raise the contrast of the image on the screen. The structure is built from Layher truss elements and wrapped in fully printed banner fabric.",
+   "pt": "Depois de uma rodada de esboços chegamos a um projeto com pódio para a aeronave, estrutura portante e tela de LED. O cálculo de incidência solar mostrou que era preciso uma cobertura para aumentar o contraste da imagem na tela. A estrutura é montada com elementos de treliça Layher e revestida com lona totalmente impressa."
+  },
+  {
+   "id": "projects-02#041",
+   "path": "projects/6/flow/6/hint",
+   "ru": "потяните — стенд повернётся",
+   "en": "drag — the booth turns",
+   "pt": "arraste — o estande gira"
+  },
+  {
+   "id": "projects-02#042",
+   "path": "projects/6/flow/6/caption",
+   "ru": "Дизайн стенда: облёт по кругу",
+   "en": "Booth design: a turn around the stand",
+   "pt": "Projeto do estande: uma volta pelo espaço"
+  },
+  {
+   "id": "projects-02#043",
+   "path": "projects/6/flow/7/caption",
+   "ru": "Фотографии с мероприятия и внутреннее убранство стенда",
+   "en": "Photographs from the event and the interior of the booth",
+   "pt": "Fotos do evento e do interior do estande"
+  },
+  {
+   "id": "projects-02#044",
+   "path": "projects/6/flow/8/text",
+   "ru": "Окраска самолёта",
+   "en": "Aircraft livery",
+   "pt": "Pintura da aeronave"
+  },
+  {
+   "id": "projects-02#045",
+   "path": "projects/6/flow/9/text",
+   "ru": "Для создания максимального презентационного эффекта была разработана специальная ливрея — дизайн окраски самолёта. Специфика процедуры нанесения подразумевала использование двух цветов — голубого и белого, а также трафаретный метод нанесения изображения.",
+   "en": "To get the strongest presentation effect we developed a special livery — the paint design of the aircraft. The painting process set the limits: two colors, light blue and white, applied through stencils.",
+   "pt": "Para obter o maior efeito de apresentação desenvolvemos uma pintura especial para a aeronave. O processo de pintura definiu os limites: duas cores, azul-claro e branco, aplicadas com estêncil."
+  },
+  {
+   "id": "projects-02#046",
+   "path": "projects/6/flow/10/hint",
+   "ru": "потяните вниз — самолёт повернётся",
+   "en": "drag down — the aircraft turns",
+   "pt": "arraste para baixo — a aeronave gira"
+  },
+  {
+   "id": "projects-02#047",
+   "path": "projects/6/flow/10/caption",
+   "ru": "Ливрея МИГ-35: облёт модели",
+   "en": "MiG-35 livery: a turn around the model",
+   "pt": "Pintura do MiG-35: uma volta pelo modelo"
+  },
+  {
+   "id": "projects-02#048",
+   "path": "projects/6/flow/11/caption",
+   "ru": "Визуальный поиск дизайна ливреи",
+   "en": "Visual search for the livery design",
+   "pt": "Busca visual do desenho da pintura"
+  },
+  {
+   "id": "projects-02#049",
+   "path": "projects/7/subtitle",
+   "ru": "Кастомизатор автомобиля",
+   "en": "Car configurator",
+   "pt": "Configurador de carro"
+  },
+  {
+   "id": "projects-02#050",
+   "path": "projects/7/tags/0",
+   "ru": "выставки",
+   "en": "exhibitions",
+   "pt": "exposições"
+  },
+  {
+   "id": "projects-02#051",
+   "path": "projects/7/tags/1",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-02#052",
+   "path": "projects/7/term",
+   "ru": "1 месяц",
+   "en": "1 month",
+   "pt": "1 mês"
+  },
+  {
+   "id": "projects-02#053",
+   "path": "projects/7/goal",
+   "ru": "Оснастить офис продаж интерактивным решением для выбора и кастомизации автомобиля.",
+   "en": "Equip the sales office with an interactive tool for choosing and configuring a car.",
+   "pt": "Equipar o showroom com uma ferramenta interativa de escolha e configuração de carro."
+  },
+  {
+   "id": "projects-02#054",
+   "path": "projects/7/solution",
+   "ru": "Благодаря технологии виртуальной реальности, touchscreen-экрана и голографической инсталляции потенциальные покупатели могли ознакомиться с дизайном интерьера и экстерьера BMW X5, выбрать колёсные диски, подобрать цвет окраски кузова и материалы отделки салона. Результат можно было посмотреть как в окружении футуристического гаража, так и на дороге через пустынную местность.",
+   "en": "With virtual reality, a touchscreen and a holographic installation, prospective buyers could explore the interior and exterior of the BMW X5, choose wheels, pick a body color and select cabin trim materials. The result could be viewed inside a futuristic garage or out on a road across the desert.",
+   "pt": "Com realidade virtual, tela sensível ao toque e uma instalação holográfica, os possíveis compradores podiam explorar o interior e o exterior do BMW X5, escolher rodas, cor da carroceria e materiais de acabamento do interior. O resultado podia ser visto dentro de uma garagem futurista ou em uma estrada atravessando o deserto."
+  },
+  {
+   "id": "projects-02#055",
+   "path": "projects/7/flow/1/text",
+   "ru": "Возможности приложения",
+   "en": "What the app does",
+   "pt": "O que o aplicativo faz"
+  },
+  {
+   "id": "projects-02#056",
+   "path": "projects/7/flow/2/items/0",
+   "ru": "Демонстрация в VR, touchscreen и голографическом виде",
+   "en": "Presentation in VR, on a touchscreen and as a hologram",
+   "pt": "Apresentação em VR, em tela sensível ao toque e como holograma"
+  },
+  {
+   "id": "projects-02#057",
+   "path": "projects/7/flow/2/items/1",
+   "ru": "Подбор колёсных дисков, окраски кузова, отделки интерьера автомобиля",
+   "en": "Choice of wheels, body paint and interior trim",
+   "pt": "Escolha de rodas, pintura da carroceria e acabamento interno"
+  },
+  {
+   "id": "projects-02#058",
+   "path": "projects/7/flow/2/items/2",
+   "ru": "Просмотр автомобиля как в стенах футуристического шоурума, так и на дороге через пустыню",
+   "en": "Viewing the car inside a futuristic showroom or on a road across the desert",
+   "pt": "Ver o carro dentro de um showroom futurista ou em uma estrada pelo deserto"
+  },
+  {
+   "id": "projects-02#059",
+   "path": "projects/7/flow/2/items/3",
+   "ru": "Вся оптика интерактивная, открытие дверей, просмотр салона глазами водителя",
+   "en": "Every light is interactive; doors open; you can see the cabin through the driver’s eyes",
+   "pt": "Todas as luzes são interativas; as portas abrem; dá para ver o interior pelos olhos do motorista"
+  },
+  {
+   "id": "projects-02#060",
+   "path": "projects/8/title",
+   "ru": "Панорама 360",
+   "en": "Panorama 360",
+   "pt": "Panorama 360"
+  },
+  {
+   "id": "projects-02#061",
+   "path": "projects/8/subtitle",
+   "ru": "Мобильный гид в дополненной реальности",
+   "en": "Mobile guide in augmented reality",
+   "pt": "Guia móvel em realidade aumentada"
+  },
+  {
+   "id": "projects-02#062",
+   "path": "projects/8/tags/0",
+   "ru": "дополненная реальность",
+   "en": "augmented reality",
+   "pt": "realidade aumentada"
+  },
+  {
+   "id": "projects-02#063",
+   "path": "projects/8/client",
+   "ru": "Панорама 360 · Смотровая площадка Москва-Сити, башня «Федерация»",
+   "en": "Panorama 360 · Moscow City observation deck, Federation Tower",
+   "pt": "Panorama 360 · mirante do Moscow City, Torre Federation"
+  },
+  {
+   "id": "projects-02#064",
+   "path": "projects/8/term",
+   "ru": "3 месяца",
+   "en": "3 months",
+   "pt": "3 meses"
+  },
+  {
+   "id": "projects-02#065",
+   "path": "projects/8/goal",
+   "ru": "Дать гостям одной из самых высоких смотровых площадок Европы — «Панорама 360» на 89-м этаже башни «Федерация» в Москва-Сити — новый способ читать город.",
+   "en": "Give visitors to one of Europe’s highest observation decks — Panorama 360, on the 89th floor of the Federation Tower in Moscow City — a new way to read the city.",
+   "pt": "Dar aos visitantes de um dos mirantes mais altos da Europa — o Panorama 360, no 89º andar da Torre Federation, no Moscow City — um novo jeito de ler a cidade."
+  },
+  {
+   "id": "projects-02#066",
+   "path": "projects/8/solution",
+   "ru": "Мы создали гид в дополненной реальности. Достаточно навести планшет на панораму за окном, чтобы над городом появились метки ключевых объектов. Нажатие открывает историю каждого: архивные и современные фото, панорамы и аудиорассказ на русском, английском и китайском. Знаковые здания и места Москвы — исторические и современные — раскрываются прямо поверх реального вида.",
+   "en": "We built a guide in augmented reality. Point a tablet at the panorama beyond the window and markers appear above the city, pinned to its landmarks. Tap one and its story opens: archive and present-day photographs, panoramas and an audio narration in Russian, English and Chinese. Moscow’s landmark buildings and places, historical and contemporary, unfold right on top of the real view.",
+   "pt": "Construímos um guia em realidade aumentada. Aponte um tablet para o panorama além da janela e marcadores aparecem sobre a cidade, presos aos seus pontos de referência. Toque em um deles e a história se abre: fotos de arquivo e atuais, panoramas e narração em áudio em russo, inglês e chinês. Prédios e lugares marcantes de Moscou, históricos e contemporâneos, se desdobram em cima da vista real."
+  },
+  {
+   "id": "projects-02#067",
+   "path": "projects/8/result/figures/0/label",
+   "ru": "загрузок приложения AR Moscow City",
+   "en": "downloads of the AR Moscow City app",
+   "pt": "downloads do app AR Moscow City"
+  },
+  {
+   "id": "projects-02#068",
+   "path": "projects/8/result/figures/1/label",
+   "ru": "знаковых объектов Москва-Сити в AR",
+   "en": "Moscow City landmarks in AR",
+   "pt": "pontos do Moscow City em RA"
+  },
+  {
+   "id": "projects-02#069",
+   "path": "projects/8/result/text/0",
+   "ru": "Дополненная реальность превратила одну из главных смотровых площадок Москвы из точки наблюдения в интерактивный способ исследовать город. Цифровой слой связал реальную панораму с архитектурой и историей столицы, а отдельная AR-экспозиция позволила посетителям познакомиться с 12 знаковыми объектами Москва-Сити.",
+   "en": "Augmented reality turned one of Moscow’s main observation decks from a viewpoint into an interactive way of exploring the city. A digital layer tied the real panorama to the capital’s architecture and history, and a separate AR exhibition let visitors get to know 12 landmarks of the Moscow City district.",
+   "pt": "A realidade aumentada transformou um dos principais mirantes de Moscou de ponto de vista em um jeito interativo de explorar a cidade. Uma camada digital amarrou o panorama real à arquitetura e à história da capital, e uma exposição de RA à parte permitiu conhecer 12 marcos do distrito Moscow City."
+  },
+  {
+   "id": "projects-02#070",
+   "path": "projects/8/result/text/1",
+   "ru": "Приложение AR Moscow City получило более 200 000 загрузок и продолжало обновляться спустя годы после запуска. Так цифровая часть стала не разовой инсталляцией, а долгоживущим сервисом PANORAMA360 — понятным российским и иностранным посетителям и расширяющим сам опыт знакомства с Москвой.",
+   "en": "The AR Moscow City app passed 200,000 downloads and kept receiving updates years after launch. The digital part became not a one-off installation but a long-lived PANORAMA360 service — clear to Russian and international visitors alike, and widening the very experience of getting to know Moscow.",
+   "pt": "O app AR Moscow City passou de 200 mil downloads e seguiu recebendo atualizações anos depois do lançamento. A parte digital virou não uma instalação pontual, mas um serviço duradouro do PANORAMA360 — claro tanto para visitantes russos quanto para estrangeiros, e ampliando a própria experiência de conhecer Moscou."
+  },
+  {
+   "id": "projects-02#071",
+   "path": "projects/8/flow/1/text",
+   "ru": "Проект реализован в 4 этапа",
+   "en": "The project ran in four stages",
+   "pt": "O projeto aconteceu em quatro etapas"
+  },
+  {
+   "id": "projects-02#072",
+   "path": "projects/8/flow/2/items/0",
+   "ru": "Разработка прототипа для трекинга панорамы города",
+   "en": "Prototyping the tracking of the city panorama",
+   "pt": "Prototipagem do rastreamento do panorama da cidade"
+  },
+  {
+   "id": "projects-02#073",
+   "path": "projects/8/flow/2/items/1",
+   "ru": "Проектирование концепции приложения, исходя из предполагаемого пользовательского опыта",
+   "en": "Designing the app concept around the intended user experience",
+   "pt": "Projeto do conceito do app em torno da experiência pretendida"
+  },
+  {
+   "id": "projects-02#074",
+   "path": "projects/8/flow/2/items/2",
+   "ru": "Моделирование, анимация, разработка интерфейсов, программирование, сборка приложения",
+   "en": "Modeling, animation, interface design, programming, building the app",
+   "pt": "Modelagem, animação, design de interface, programação, construção do app"
+  },
+  {
+   "id": "projects-02#075",
+   "path": "projects/8/flow/2/items/3",
+   "ru": "Тестирование и отладка проекта, публикация приложений iOS и Android",
+   "en": "Testing and debugging the project, publishing the iOS and Android apps",
+   "pt": "Testes e depuração do projeto, publicação dos apps para iOS e Android"
+  },
+  {
+   "id": "projects-02#076",
+   "path": "projects/8/flow/4/text",
+   "ru": "На территории площадки работает 2 приложения",
+   "en": "Two apps run on the deck",
+   "pt": "Dois aplicativos funcionam no mirante"
+  },
+  {
+   "id": "projects-02#077",
+   "path": "projects/8/flow/5/text",
+   "ru": "[1] Гид в дополненной реальности — реагирует на вид за окном, демонстрирует информацию о достопримечательностях Москвы.",
+   "en": "[1] The guide in augmented reality reacts to the view beyond the window and shows information about the landmarks of Moscow.",
+   "pt": "[1] O guia em realidade aumentada reage à vista além da janela e mostra informações sobre os pontos de referência de Moscou."
+  },
+  {
+   "id": "projects-02#078",
+   "path": "projects/8/flow/7/text",
+   "ru": "[2] На площадке установлены 12 светящихся AR-маркеров: при наведении устройства на экране вырастают 3D-модели небоскрёбов Moscow City и предоставляется информация о них.",
+   "en": "[2] Twelve illuminated AR markers are set around the deck: point a device at one and a 3D model of a Moscow City skyscraper grows on the screen, with information about it.",
+   "pt": "[2] Doze marcadores de RA iluminados ficam espalhados pelo mirante: aponte um aparelho para um deles e um modelo 3D de um arranha-céu do Moscow City cresce na tela, com informações sobre ele."
+  },
+  {
+   "id": "projects-02#079",
+   "path": "projects/9/subtitle",
+   "ru": "Мультимедиа-стенд для Правительства Москвы",
+   "en": "Multimedia booth for the Moscow City Government",
+   "pt": "Estande multimídia para o Governo de Moscou"
+  },
+  {
+   "id": "projects-02#080",
+   "path": "projects/9/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-02#081",
+   "path": "projects/9/client",
+   "ru": "Правительство Москвы",
+   "en": "Moscow City Government",
+   "pt": "Governo de Moscou"
+  },
+  {
+   "id": "projects-02#082",
+   "path": "projects/9/term",
+   "ru": "1 месяц",
+   "en": "1 month",
+   "pt": "1 mês"
+  },
+  {
+   "id": "projects-02#083",
+   "path": "projects/9/goal",
+   "ru": "Стенд для Правительства Москвы, которое говорит с горожанами на одном языке — наглядно показывая, что меняется в городе.",
+   "en": "A booth for a city government that speaks to residents in their own language — by showing plainly what is changing in the city.",
+   "pt": "Um estande para um governo municipal que fala com os moradores na língua deles — mostrando com clareza o que está mudando na cidade."
+  },
+  {
+   "id": "projects-02#084",
+   "path": "projects/9/solution",
+   "ru": "Мы построили интерактивный павильон на 100 м²: шесть мультимедийных инсталляций рассказывают о нововведениях столицы от лица её жителей. Медиафасад с 3D-графикой, макет Москвы с дополненной реальностью и живая инфографика превращают городские данные в понятный, вовлекающий опыт.",
+   "en": "We built a 100 sq m interactive pavilion. Six multimedia installations tell the story of the capital’s new initiatives in the voices of the people who live there. A media facade with 3D graphics, a scale model of Moscow with augmented reality and live infographics turn municipal data into an experience that is clear and worth staying for.",
+   "pt": "Montamos um pavilhão interativo de 100 m². Seis instalações multimídia contam as novas iniciativas da capital pela voz de quem mora nela. Uma fachada de mídia com gráficos 3D, uma maquete de Moscou com realidade aumentada e infográficos ao vivo transformam dados municipais em uma experiência clara e que vale a pena acompanhar."
+  },
+  {
+   "id": "projects-02#085",
+   "path": "projects/9/result/figures/0/label",
+   "ru": "посетителей программы форума",
+   "en": "visitors to the forum programme",
+   "pt": "visitantes da programação do fórum"
+  },
+  {
+   "id": "projects-02#086",
+   "path": "projects/9/result/figures/1/label",
+   "ru": "участников из 68 стран",
+   "en": "delegates from 68 countries",
+   "pt": "participantes de 68 países"
+  },
+  {
+   "id": "projects-02#087",
+   "path": "projects/9/result/figures/2/label",
+   "ru": "правительственных делегаций",
+   "en": "government delegations",
+   "pt": "delegações governamentais"
+  },
+  {
+   "id": "projects-02#088",
+   "path": "projects/9/result/figures/3/n",
+   "ru": "108 м²",
+   "en": "108 m²",
+   "pt": "108 m²"
+  },
+  {
+   "id": "projects-02#089",
+   "path": "projects/9/result/figures/3/label",
+   "ru": "вся мультимедийная среда",
+   "en": "the entire multimedia environment",
+   "pt": "todo o ambiente multimídia"
+  },
+  {
+   "id": "projects-02#090",
+   "path": "projects/9/result/text/0",
+   "ru": "На площади всего 108 м² мы создали мультимедийную среду Правительства Москвы, рассчитанную одновременно на международные делегации, профессиональную аудиторию и жителей города. Она стала частью крупнейшего на тот момент Moscow Urban Forum: 7 000 участников из 68 стран, 38 правительственных делегаций и 200 000 посетителей выставочной и фестивальной программы.",
+   "en": "In just 108 m² we built a multimedia environment for the Moscow City Government, designed to work at once for international delegations, industry professionals and the city’s own residents. It became part of the largest Moscow Urban Forum to date: 7,000 delegates from 68 countries, 38 government delegations and 200,000 visitors to the exhibition and festival programme.",
+   "pt": "Em apenas 108 m² construímos um ambiente multimídia para o Governo de Moscou, feito para funcionar ao mesmo tempo para delegações internacionais, profissionais do setor e os próprios moradores da cidade. Ele virou parte do maior Moscow Urban Forum até então: 7 mil participantes de 68 países, 38 delegações governamentais e 200 mil visitantes da programação de exposição e festival."
+  },
+  {
+   "id": "projects-02#091",
+   "path": "projects/9/result/text/1",
+   "ru": "Компактное пространство работало сразу на нескольких уровнях — от быстрого знакомства с изменениями Москвы до глубокого погружения в городские программы. А центральная мультимедийная сцена превратила презентацию городских инициатив в настоящее представление, которое можно было не только изучать, но и эмоционально прожить.",
+   "en": "The compact space worked on several levels at once — from a quick read of how Moscow is changing to a deep dive into the city’s programmes. And the central multimedia stage turned the presentation of urban initiatives into a genuine performance: something to live through, not only to study.",
+   "pt": "O espaço compacto funcionou em vários níveis ao mesmo tempo — da leitura rápida de como Moscou está mudando ao mergulho profundo nos programas da cidade. E o palco multimídia central transformou a apresentação das iniciativas urbanas em um espetáculo de verdade: algo para viver, não só para estudar."
+  },
+  {
+   "id": "projects-02#092",
+   "path": "projects/9/flow/0/caption",
+   "ru": "Фильм о павильоне на Московском урбанистическом форуме",
+   "en": "The pavilion film, Moscow Urban Forum",
+   "pt": "O filme do pavilhão, Moscow Urban Forum"
+  },
+  {
+   "id": "projects-02#093",
+   "path": "projects/9/flow/1/caption",
+   "ru": "Архитектура и дизайн павильона",
+   "en": "Pavilion architecture and design",
+   "pt": "Arquitetura e design do pavilhão"
+  },
+  {
+   "id": "projects-02#094",
+   "path": "projects/9/flow/1/hint",
+   "ru": "потяните — павильон повернётся",
+   "en": "drag — the pavilion turns",
+   "pt": "arraste — o pavilhão gira"
+  },
+  {
+   "id": "projects-02#095",
+   "path": "projects/9/flow/2/text",
+   "ru": "Проект реализован в 4 этапа",
+   "en": "The project ran in four stages",
+   "pt": "O projeto aconteceu em quatro etapas"
+  },
+  {
+   "id": "projects-02#096",
+   "path": "projects/9/flow/3/items/0",
+   "ru": "Разработка концепции проекта",
+   "en": "Project concept",
+   "pt": "Conceito do projeto"
+  },
+  {
+   "id": "projects-02#097",
+   "path": "projects/9/flow/3/items/1",
+   "ru": "Разработка инсталляций и создание визуального контента",
+   "en": "Developing the installations and producing the visual content",
+   "pt": "Desenvolvimento das instalações e produção do conteúdo visual"
+  },
+  {
+   "id": "projects-02#098",
+   "path": "projects/9/flow/3/items/2",
+   "ru": "Стройка стенда, установка мультимедиа-оборудования",
+   "en": "Building the booth, installing the multimedia equipment",
+   "pt": "Construção do estande, instalação dos equipamentos multimídia"
+  },
+  {
+   "id": "projects-02#099",
+   "path": "projects/9/flow/3/items/3",
+   "ru": "Ввод в эксплуатацию и сопровождение на мероприятии",
+   "en": "Commissioning and on-site support during the event",
+   "pt": "Comissionamento e suporte no local durante o evento"
+  },
+  {
+   "id": "projects-02#100",
+   "path": "projects/9/flow/4/text",
+   "ru": "Разработка концепции инсталляций",
+   "en": "Developing the concept for the installations",
+   "pt": "Desenvolvimento do conceito das instalações"
+  },
+  {
+   "id": "projects-02#101",
+   "path": "projects/9/flow/5/text",
+   "ru": "Во время проектирования концепции павильона была собрана информация от пяти департаментов Правительства Москвы. Данные были отсортированы по темам и приоритезированы, после чего креативная команда Playdisplay сформулировала ряд мультимедийных решений для трансляции смыслов и информации.",
+   "en": "While the pavilion concept was taking shape we gathered material from five departments of the Moscow City Government. The data was sorted by topic and prioritized, and the Playdisplay creative team then formulated a set of multimedia solutions to carry the messages and the facts.",
+   "pt": "Enquanto o conceito do pavilhão tomava forma, reunimos material de cinco departamentos do Governo de Moscou. Os dados foram organizados por tema e priorizados, e a equipe criativa da Playdisplay formulou então um conjunto de soluções multimídia para carregar as mensagens e os fatos."
+  },
+  {
+   "id": "projects-02#102",
+   "path": "projects/9/flow/7/text",
+   "ru": "Графика на медиафасаде",
+   "en": "Graphics on the media facade",
+   "pt": "Gráficos na fachada de mídia"
+  },
+  {
+   "id": "projects-02#103",
+   "path": "projects/9/flow/8/text",
+   "ru": "Медиафасад отделял внутреннее пространство павильона, создавая идеальные условия для демонстрации голограммы. Экран показывал специально созданный 3D-клип — собирательный архитектурный облик современной Москвы. Анимированная инфографика и ключевые цифровые показатели выводились поверх отдельным слоем.",
+   "en": "The media facade screened off the interior of the pavilion, which gave the hologram ideal conditions. The screen played a purpose-made 3D film — a composite architectural portrait of contemporary Moscow. Animated infographics and the headline figures ran over it as a separate layer.",
+   "pt": "A fachada de mídia fechava o interior do pavilhão, o que deu ao holograma condições ideais. A tela exibia um filme 3D feito sob medida — um retrato arquitetônico composto da Moscou contemporânea. Infográficos animados e os números principais corriam por cima, em uma camada à parte."
+  },
+  {
+   "id": "projects-02#104",
+   "path": "projects/9/flow/9/caption",
+   "ru": "3D-контент видеостены",
+   "en": "3D content for the video wall",
+   "pt": "Conteúdo 3D para o videowall"
+  }
+ ]
+}

@@ -1,0 +1,490 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "projects-03 (3 de 3)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "projects-03#001",
+   "path": "projects/9/flow/10/text",
+   "ru": "Макет с дополненной реальностью",
+   "en": "Scale model with augmented reality",
+   "pt": "Maquete com realidade aumentada"
+  },
+  {
+   "id": "projects-03#002",
+   "path": "projects/9/flow/11/text",
+   "ru": "На переднем плане стенда располагался макет с дополненной реальностью — собирательный архитектурный образ Москвы: высотки Москва-Сити, парк ВДНХ, технопарки. Пользуясь планшетом, посетители могли увидеть информацию о проектах Правительства Москвы и достигнутых результатах.",
+   "en": "At the front of the booth stood a scale model with augmented reality — a composite architectural image of Moscow: the towers of Moscow City, the VDNH park, the technology parks. With a tablet in hand, visitors could see information about the projects of the Moscow City Government and the results achieved.",
+   "pt": "Na frente do estande ficava uma maquete com realidade aumentada — uma imagem arquitetônica composta de Moscou: as torres do Moscow City, o parque VDNH, os parques tecnológicos. Com um tablet na mão, o visitante via informações sobre os projetos do Governo de Moscou e os resultados alcançados."
+  },
+  {
+   "id": "projects-03#003",
+   "path": "projects/9/flow/12/caption",
+   "ru": "Макет Москвы с дополненной реальностью",
+   "en": "The Moscow city model in augmented reality",
+   "pt": "A maquete de Moscou em realidade aumentada"
+  },
+  {
+   "id": "projects-03#004",
+   "path": "projects/10/title",
+   "ru": "Пароль победы «Сталинград»",
+   "en": "Password to Victory: Stalingrad",
+   "pt": "Senha da Vitória: Stalingrado"
+  },
+  {
+   "id": "projects-03#005",
+   "path": "projects/10/subtitle",
+   "ru": "Проекционный панорамный зал",
+   "en": "Panoramic projection hall",
+   "pt": "Sala de projeção panorâmica"
+  },
+  {
+   "id": "projects-03#006",
+   "path": "projects/10/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-03#007",
+   "path": "projects/10/tags/1",
+   "ru": "музей",
+   "en": "museum",
+   "pt": "museu"
+  },
+  {
+   "id": "projects-03#008",
+   "path": "projects/10/client",
+   "ru": "Музей-заповедник «Сталинградская битва»",
+   "en": "Battle of Stalingrad Museum and Memorial Complex",
+   "pt": "Complexo Museológico e Memorial da Batalha de Stalingrado"
+  },
+  {
+   "id": "projects-03#009",
+   "path": "projects/10/term",
+   "ru": "6 месяцев",
+   "en": "6 months",
+   "pt": "6 meses"
+  },
+  {
+   "id": "projects-03#010",
+   "path": "projects/10/goal",
+   "ru": "Популяризация объекта культурного наследия федерального значения и достоверный рассказ о Сталинградской битве 1942–1943 гг. — как инструмент патриотического воспитания и сохранения исторической памяти.",
+   "en": "Draw public attention to a heritage site of federal significance and tell the story of the Battle of Stalingrad of 1942–1943 accurately — as an instrument of patriotic education and of keeping historical memory alive.",
+   "pt": "Chamar a atenção do público para um sítio histórico de importância federal e contar com precisão a história da Batalha de Stalingrado de 1942–1943 — como instrumento de educação patriótica e de preservação da memória histórica."
+  },
+  {
+   "id": "projects-03#011",
+   "path": "projects/10/solution",
+   "ru": "Полное погружение за счёт света, звука и исторической реконструкции: проекция воссоздаёт довоенный Сталинград и переносит зрителя в события битвы. Тихое, но сильное пространство, где историю своего города проживаешь, а не читаешь. После открытия посещаемость музея выросла вдвое.",
+   "en": "Full immersion built from light, sound and historical reconstruction: projection rebuilds pre-war Stalingrad and carries the viewer into the battle. A quiet but powerful space, where you live the history of your own city instead of reading it. Attendance at the museum doubled after the hall opened.",
+   "pt": "Imersão completa feita de luz, som e reconstituição histórica: a projeção reconstrói a Stalingrado de antes da guerra e leva o espectador para dentro da batalha. Um espaço silencioso e forte, onde se vive a história da própria cidade em vez de ler sobre ela. A frequência do museu dobrou depois da abertura da sala."
+  },
+  {
+   "id": "projects-03#012",
+   "path": "projects/10/result/text/0",
+   "ru": "«Пароль Победы — Сталинград» помог вернуть внимание аудитории к небольшому историческому музею и привлечь новое поколение посетителей. После запуска мультимедийного формата музей отмечал заметный рост числа молодых гостей, а сама инсталляция стала постоянной частью посещения музея «Память».",
+   "en": "“Password to Victory — Stalingrad” helped bring attention back to a small history museum and drew in a new generation of visitors. After the multimedia format opened, the museum reported a marked rise in younger guests, and the installation became a permanent part of a visit to the Pamyat (Memory) museum.",
+   "pt": "“Senha da Vitória — Stalingrado” ajudou a trazer a atenção de volta para um pequeno museu de história e atraiu uma nova geração de visitantes. Depois da abertura do formato multimídia, o museu registrou um aumento nítido de visitantes jovens, e a instalação virou parte permanente da visita ao museu Pamyat (Memória)."
+  },
+  {
+   "id": "projects-03#013",
+   "path": "projects/10/result/text/1",
+   "ru": "История Сталинградской битвы получила современный эмоциональный язык, не конкурирующий с подлинными экспонатами, а усиливающий их. Успех первой инсталляции дал развитие проекту: вслед за панорамным шоу в музее появились новые мультимедийные решения, а «Пароль Победы — Сталинград» продолжал работать с посетителями спустя годы после открытия.",
+   "en": "The story of the Battle of Stalingrad found a contemporary emotional language — one that does not compete with the authentic exhibits but amplifies them. The success of the first installation carried the project further: the panoramic show was followed by new multimedia solutions in the museum, and “Password to Victory — Stalingrad” kept working with visitors years after it opened.",
+   "pt": "A história da Batalha de Stalingrado encontrou uma linguagem emocional contemporânea — que não compete com os objetos autênticos, mas os amplifica. O êxito da primeira instalação levou o projeto adiante: o espetáculo panorâmico foi seguido por novas soluções multimídia no museu, e “Senha da Vitória — Stalingrado” seguiu funcionando com os visitantes anos depois da abertura."
+  },
+  {
+   "id": "projects-03#014",
+   "path": "projects/10/flow/0/text",
+   "ru": "Проект посвящён заключительному этапу Сталинградской битвы — пленению штаба 6-й полевой немецкой армии в здании Центрального городского универмага. Проект воссоздаёт атмосферу событий на площади Павших Борцов в Сталинграде 1942–1943 гг., ставшей одним из эпицентров крупнейшего сражения на Волге.",
+   "en": "The project is devoted to the final phase of the Battle of Stalingrad — the capture of the headquarters of the German 6th Army in the building of the Central City Department Store. It recreates the atmosphere of the events on the Square of Fallen Fighters in Stalingrad in 1942–1943, one of the epicenters of the largest battle on the Volga.",
+   "pt": "O projeto é dedicado à fase final da Batalha de Stalingrado — a captura do quartel-general do 6º Exército alemão no prédio da Loja Central da Cidade. Ele recria a atmosfera dos acontecimentos na Praça dos Combatentes Tombados, em Stalingrado, em 1942–1943, um dos epicentros da maior batalha do Volga."
+  },
+  {
+   "id": "projects-03#015",
+   "path": "projects/10/flow/1/text",
+   "ru": "Проект реализован в 4 этапа",
+   "en": "The project ran in four stages",
+   "pt": "O projeto aconteceu em quatro etapas"
+  },
+  {
+   "id": "projects-03#016",
+   "path": "projects/10/flow/2/items/0",
+   "ru": "Разработка концепции проекта",
+   "en": "Project concept",
+   "pt": "Conceito do projeto"
+  },
+  {
+   "id": "projects-03#017",
+   "path": "projects/10/flow/2/items/1",
+   "ru": "Выигрыш президентского гранта",
+   "en": "Winning a presidential grant",
+   "pt": "Obtenção de um edital presidencial"
+  },
+  {
+   "id": "projects-03#018",
+   "path": "projects/10/flow/2/items/2",
+   "ru": "Реализация контента, закупка оборудования",
+   "en": "Producing the content, procuring the equipment",
+   "pt": "Produção do conteúdo, aquisição dos equipamentos"
+  },
+  {
+   "id": "projects-03#019",
+   "path": "projects/10/flow/2/items/3",
+   "ru": "Монтаж оборудования и ввод в эксплуатацию",
+   "en": "Equipment installation and commissioning",
+   "pt": "Instalação e comissionamento dos equipamentos"
+  },
+  {
+   "id": "projects-03#020",
+   "path": "projects/10/flow/5/text",
+   "ru": "Полная версия проекционного контента",
+   "en": "The projection content in full",
+   "pt": "O conteúdo da projeção na íntegra"
+  },
+  {
+   "id": "projects-03#021",
+   "path": "projects/11/title",
+   "ru": "Сухой порт COALCO",
+   "en": "COALCO Dry Port",
+   "pt": "Porto seco COALCO"
+  },
+  {
+   "id": "projects-03#022",
+   "path": "projects/11/subtitle",
+   "ru": "Интерактивная инсталляция и 3D-ролик",
+   "en": "Interactive installation and 3D film",
+   "pt": "Instalação interativa e filme 3D"
+  },
+  {
+   "id": "projects-03#023",
+   "path": "projects/11/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-03#024",
+   "path": "projects/11/client",
+   "ru": "Группа компаний «Coalco»",
+   "en": "Coalco Group",
+   "pt": "Grupo Coalco"
+  },
+  {
+   "id": "projects-03#025",
+   "path": "projects/11/term",
+   "ru": "2 месяца",
+   "en": "2 months",
+   "pt": "2 meses"
+  },
+  {
+   "id": "projects-03#026",
+   "path": "projects/11/goal",
+   "ru": "Масштаб проекта сухого порта столь велик, что показать его нужно целиком: как устроен новый транспортно-логистический узел Подмосковья, как работают его ключевые системы и как он меняет логистику региона.",
+   "en": "The dry port is on such a scale that it only makes sense shown whole: how this new transport and logistics hub outside Moscow is put together, how its key systems work, and how it changes freight across the region.",
+   "pt": "O porto seco tem uma escala que só faz sentido mostrada por inteiro: como esse novo hub de transporte e logística nos arredores de Moscou é montado, como funcionam seus sistemas principais e como ele muda o transporte de carga na região."
+  },
+  {
+   "id": "projects-03#027",
+   "path": "projects/11/solution",
+   "ru": "Это не просто ролик, а управляемая пошаговая инсталляция: зритель сам ведёт презентацию, рассматривает ключевые точки узла в 3D-графике с обзором на 360°, видит архитектуру, транспорт и динамику работы порта, а также его геополитическую роль на трёхмерной карте мира.",
+   "en": "This is not a film but a step-by-step installation under the viewer’s control. You drive the presentation yourself, examine the hub’s key points in 3D graphics with a full 360° view, and see the architecture, the traffic and the rhythm of the port at work — along with its geopolitical role on a three-dimensional world map.",
+   "pt": "Não é um filme, e sim uma instalação passo a passo sob o controle do espectador. Você mesmo conduz a apresentação, examina os pontos-chave do hub em gráficos 3D com vista completa de 360° e vê a arquitetura, o tráfego e o ritmo do porto em funcionamento — junto com seu papel geopolítico em um mapa-múndi tridimensional."
+  },
+  {
+   "id": "projects-03#028",
+   "path": "projects/11/flow/1/text",
+   "ru": "Полная версия 3D-ролика",
+   "en": "The 3D film in full",
+   "pt": "O filme 3D na íntegra"
+  },
+  {
+   "id": "projects-03#029",
+   "path": "projects/11/flow/4/text",
+   "ru": "Управление инсталляцией — поворотный джойстик Griffin PowerMate",
+   "en": "Controlling the installation — a Griffin PowerMate rotary dial",
+   "pt": "Controle da instalação — um disco rotativo Griffin PowerMate"
+  },
+  {
+   "id": "projects-03#030",
+   "path": "projects/11/flow/5/items/0",
+   "ru": "[Поворот] — вращение карты в 3D",
+   "en": "[Turn] — rotate the map in 3D",
+   "pt": "[Girar] — girar o mapa em 3D"
+  },
+  {
+   "id": "projects-03#031",
+   "path": "projects/11/flow/5/items/1",
+   "ru": "[Нажатие] — переключение между шагами презентации",
+   "en": "[Press] — move between the steps of the presentation",
+   "pt": "[Pressionar] — avançar entre as etapas da apresentação"
+  },
+  {
+   "id": "projects-03#032",
+   "path": "projects/11/flow/5/items/2",
+   "ru": "[Нажатие + поворот] — перемотка между шагами презентации",
+   "en": "[Press + turn] — scrub through the steps of the presentation",
+   "pt": "[Pressionar + girar] — percorrer as etapas da apresentação"
+  },
+  {
+   "id": "projects-03#033",
+   "path": "projects/12/title",
+   "ru": "Синара Транспортные Машины",
+   "en": "Sinara Transport Machines",
+   "pt": "Sinara Transport Machines"
+  },
+  {
+   "id": "projects-03#034",
+   "path": "projects/12/subtitle",
+   "ru": "Голографические кубы · машиностроение",
+   "en": "Holographic cubes · machinery manufacturing",
+   "pt": "Cubos holográficos · fabricação de máquinas"
+  },
+  {
+   "id": "projects-03#035",
+   "path": "projects/12/tags/0",
+   "ru": "выставки",
+   "en": "exhibitions",
+   "pt": "exposições"
+  },
+  {
+   "id": "projects-03#036",
+   "path": "projects/12/tags/1",
+   "ru": "голограмма",
+   "en": "hologram",
+   "pt": "holograma"
+  },
+  {
+   "id": "projects-03#037",
+   "path": "projects/12/tags/2",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-03#038",
+   "path": "projects/12/tags/3",
+   "ru": "музей",
+   "en": "museum",
+   "pt": "museu"
+  },
+  {
+   "id": "projects-03#039",
+   "path": "projects/12/client",
+   "ru": "Холдинг «Синара — Транспортные Машины»",
+   "en": "Sinara Transport Machines (STM) Holding",
+   "pt": "Holding Sinara Transport Machines (STM)"
+  },
+  {
+   "id": "projects-03#040",
+   "path": "projects/12/term",
+   "ru": "3 недели",
+   "en": "3 weeks",
+   "pt": "3 semanas"
+  },
+  {
+   "id": "projects-03#041",
+   "path": "projects/12/goal",
+   "ru": "Холдинг «Синара — Транспортные Машины» строит новейшие локомотивы. Показать нужно было не только сами машины, но и современный подход к делу: проектирование, испытания на цифровых двойниках, производство.",
+   "en": "Sinara Transport Machines builds a new generation of locomotives. The task was to show not only the machines but the way the company works: design, testing on digital twins, production.",
+   "pt": "A Sinara Transport Machines fabrica uma nova geração de locomotivas. A tarefa era mostrar não só as máquinas, mas o jeito como a empresa trabalha: projeto, testes em gêmeos digitais, produção."
+  },
+  {
+   "id": "projects-03#042",
+   "path": "projects/12/solution",
+   "ru": "Три голографических куба, связанных в единую линию повествования, проводят зрителя через весь цикл — от конструкторского бюро до цеха и эксплуатации. Новые промышленные процессы требуют новой подачи: голограмма совмещает цифровую графику с реальными макетами, и сложные технологии становятся осязаемыми.",
+   "en": "Three holographic cubes, linked into one narrative, walk the viewer through the entire cycle — from the design office to the shop floor to service. New industrial processes call for a new way of showing them: the hologram lays digital graphics over real scale models, and complex technology becomes tangible.",
+   "pt": "Três cubos holográficos, ligados em um único roteiro, levam o espectador por todo o ciclo — do escritório de projetos ao chão de fábrica e à manutenção. Processos industriais novos pedem um jeito novo de mostrá-los: o holograma sobrepõe gráficos digitais a maquetes reais, e a tecnologia complexa fica palpável."
+  },
+  {
+   "id": "projects-03#043",
+   "path": "projects/12/flow/1/text",
+   "ru": "О голограммах",
+   "en": "About holograms",
+   "pt": "Sobre hologramas"
+  },
+  {
+   "id": "projects-03#044",
+   "path": "projects/12/flow/2/text",
+   "ru": "Голограмма — изображение объёмного объекта, в высшей степени похожее на реальный объект. Полноценную проекцию на воздух реализовать пока невозможно: для голограммы нужна поверхность, на которую падает свет. Мы имитируем эффект голограммы внутри замкнутого пространства при помощи системы зеркал — такую установку мы называем голокубом.",
+   "en": "A hologram is an image of a three-dimensional object that comes remarkably close to the object itself. A true projection onto thin air is not yet possible: a hologram needs a surface for the light to fall on. We reproduce the effect inside a closed volume with a system of mirrors — we call that setup a holocube.",
+   "pt": "Um holograma é a imagem de um objeto tridimensional que chega notavelmente perto do próprio objeto. Uma projeção de verdade no ar ainda não é possível: o holograma precisa de uma superfície onde a luz caia. Reproduzimos o efeito dentro de um volume fechado com um sistema de espelhos — chamamos esse conjunto de holocubo."
+  },
+  {
+   "id": "projects-03#045",
+   "path": "projects/12/flow/3/caption",
+   "ru": "Три голокуба: проектирование, производство и эксплуатация локомотивов",
+   "en": "Three holocubes: designing, manufacturing and operating locomotives",
+   "pt": "Três holocubos: projetar, fabricar e operar locomotivas"
+  },
+  {
+   "id": "projects-03#046",
+   "path": "projects/13/title",
+   "ru": "ВДНХ Космос",
+   "en": "VDNH Space",
+   "pt": "VDNH Espaço"
+  },
+  {
+   "id": "projects-03#047",
+   "path": "projects/13/subtitle",
+   "ru": "Инсталляция «История пилотируемой космонавтики»",
+   "en": "The History of Human Spaceflight installation",
+   "pt": "A instalação História do Voo Espacial Tripulado"
+  },
+  {
+   "id": "projects-03#048",
+   "path": "projects/13/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-03#049",
+   "path": "projects/13/tags/1",
+   "ru": "музей",
+   "en": "museum",
+   "pt": "museu"
+  },
+  {
+   "id": "projects-03#050",
+   "path": "projects/13/client",
+   "ru": "ВДНХ · Центр «Космонавтика и авиация»",
+   "en": "VDNH · Cosmonautics and Aviation Center",
+   "pt": "VDNH · Centro de Cosmonáutica e Aviação"
+  },
+  {
+   "id": "projects-03#051",
+   "path": "projects/13/solution",
+   "ru": "Визуальный поток проекта: графика, интерфейсы и анимация инсталляций центра «Космонавтика и авиация» на ВДНХ.",
+   "en": "The visual stream of the project: graphics, interfaces and animation for the installations at the Cosmonautics and Aviation Center at VDNH.",
+   "pt": "A linha visual do projeto: gráficos, interfaces e animação para as instalações do Centro de Cosmonáutica e Aviação, na VDNH."
+  },
+  {
+   "id": "projects-03#052",
+   "path": "projects/14/title",
+   "ru": "Центр «Космонавтика и авиация»",
+   "en": "Cosmonautics and Aviation Center",
+   "pt": "Centro de Cosmonáutica e Aviação"
+  },
+  {
+   "id": "projects-03#053",
+   "path": "projects/14/subtitle",
+   "ru": "Экспозиция из 115 touch-экранов · ВДНХ",
+   "en": "An exhibition of 115 touchscreens · VDNH",
+   "pt": "Uma exposição de 115 telas sensíveis ao toque · VDNH"
+  },
+  {
+   "id": "projects-03#054",
+   "path": "projects/14/tags/0",
+   "ru": "инсталляция",
+   "en": "installation",
+   "pt": "instalação"
+  },
+  {
+   "id": "projects-03#055",
+   "path": "projects/14/client",
+   "ru": "Центр «Авиация и космонавтика»",
+   "en": "Aviation and Cosmonautics Center",
+   "pt": "Centro de Aviação e Cosmonáutica"
+  },
+  {
+   "id": "projects-03#056",
+   "path": "projects/14/term",
+   "ru": "6 месяцев",
+   "en": "6 months",
+   "pt": "6 meses"
+  },
+  {
+   "id": "projects-03#057",
+   "path": "projects/14/goal",
+   "ru": "Рассказать историю космонавтики и ракетостроения благодаря высокотехнологичным решениям.",
+   "en": "Tell the history of spaceflight and rocketry through high-technology solutions.",
+   "pt": "Contar a história do voo espacial e dos foguetes por meio de soluções de alta tecnologia."
+  },
+  {
+   "id": "projects-03#058",
+   "path": "projects/14/solution",
+   "ru": "Реализована экспозиция из 115 touch-экранов и инсталляция «История пилотируемой космонавтики» для Объединённой ракетно-космической корпорации в центре «Космонавтика и авиация».",
+   "en": "We delivered an exhibition of 115 touchscreens and the installation The History of Human Spaceflight for the United Rocket and Space Corporation at the Cosmonautics and Aviation Center.",
+   "pt": "Entregamos uma exposição de 115 telas sensíveis ao toque e a instalação História do Voo Espacial Tripulado para a Corporação Unida de Foguetes e Espaço, no Centro de Cosmonáutica e Aviação."
+  },
+  {
+   "id": "projects-03#059",
+   "path": "projects/14/flow/1/text",
+   "ru": "Единая информационная система",
+   "en": "One information system",
+   "pt": "Um sistema de informação único"
+  },
+  {
+   "id": "projects-03#060",
+   "path": "projects/14/flow/2/text",
+   "ru": "Единая информационная система сопровождает все экспонаты центра «Космонавтика и авиация» на ВДНХ. Система управляется при помощи инсталляц-интерфейса и позволяет получить практически любую информацию о космосе и достижениях человечества за пределами нашей планеты.",
+   "en": "A single information system runs alongside every exhibit at the Cosmonautics and Aviation Center at VDNH. Visitors work it through the installation interface, and it gives them almost any fact about space and about what humanity has achieved beyond our planet.",
+   "pt": "Um sistema de informação único acompanha cada exponente do Centro de Cosmonáutica e Aviação, na VDNH. Os visitantes operam ele pela interface da instalação, e ele entrega quase qualquer fato sobre o espaço e sobre o que a humanidade alcançou além do nosso planeta."
+  },
+  {
+   "id": "projects-03#061",
+   "path": "projects/14/flow/4/items/0/label",
+   "ru": "инсталляций",
+   "en": "installations",
+   "pt": "instalações"
+  },
+  {
+   "id": "projects-03#062",
+   "path": "projects/14/flow/4/items/1/label",
+   "ru": "иллюстраций и схем",
+   "en": "illustrations and diagrams",
+   "pt": "ilustrações e diagramas"
+  },
+  {
+   "id": "projects-03#063",
+   "path": "projects/14/flow/4/items/2/label",
+   "ru": "визуальных тем",
+   "en": "visual themes",
+   "pt": "temas visuais"
+  },
+  {
+   "id": "projects-03#064",
+   "path": "projects/14/flow/4/items/3/label",
+   "ru": "страниц исходного материала",
+   "en": "pages of source material",
+   "pt": "páginas de material de origem"
+  },
+  {
+   "id": "projects-03#065",
+   "path": "projects/14/flow/4/items/4/label",
+   "ru": "разработчиков",
+   "en": "developers",
+   "pt": "desenvolvedores"
+  },
+  {
+   "id": "projects-03#066",
+   "path": "projects/14/flow/4/items/5/label",
+   "ru": "интерактивных 3D-моделей",
+   "en": "interactive 3D models",
+   "pt": "modelos 3D interativos"
+  },
+  {
+   "id": "projects-03#067",
+   "path": "projects/14/flow/4/items/6/label",
+   "ru": "видео и анимаций",
+   "en": "videos and animations",
+   "pt": "vídeos e animações"
+  },
+  {
+   "id": "projects-03#068",
+   "path": "projects/14/flow/4/items/7/label",
+   "ru": "страниц уникальной вёрстки",
+   "en": "uniquely laid-out pages",
+   "pt": "páginas com diagramação própria"
+  },
+  {
+   "id": "projects-03#069",
+   "path": "projects/14/flow/5/text",
+   "ru": "Для реализации задачи был разработан специальный визуальный язык и графический интерфейс.",
+   "en": "For this task we developed a dedicated visual language and graphic interface.",
+   "pt": "Para essa tarefa desenvolvemos uma linguagem visual e uma interface gráfica dedicadas."
+  }
+ ]
+}

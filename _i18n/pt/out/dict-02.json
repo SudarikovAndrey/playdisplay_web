@@ -1,0 +1,1141 @@
+{
+ "_instrucoes": "INSTRUÇÕES — leia antes de traduzir.\n\n1. Traduza para português do Brasil (pt-BR). Não use português europeu: escreva \"time\", \"ônibus\",\n   \"tela\", \"arquivo\", \"celular\", e use gerúndio como no Brasil.\n2. Preencha APENAS o campo \"pt\" de cada item. Nunca altere \"id\", \"path\", \"ru\" ou \"en\".\n3. O campo \"ru\" é o original. O campo \"en\" é a tradução inglesa já aprovada do\n   MESMO texto: use-a como referência de terminologia, de nomes próprios e de\n   comprimento. Onde \"en\" e \"ru\" divergirem, siga o \"ru\" quanto ao conteúdo e o\n   \"en\" quanto aos termos.\n4. Preserve exatamente: tags HTML (<p>, <b>, <h2>), marcadores de formato (%d, %s),\n   quebras de linha, aspas tipográficas e números.\n5. Nomes próprios seguem a versão inglesa: Rostec, Rosatom, VDNH, UEC.\n   Não translitere de novo a partir do russo.\n6. Não deixe NENHUM caractere cirílico na resposta.\n7. Este é o site de um estúdio de experiências espaciais: museus, exposições\n   interativas, centros de visitantes, showrooms. Escreva como o estúdio fala —\n   direto, concreto, sem linguagem de catálogo publicitário.\n8. Responda SOMENTE com o JSON completo deste arquivo, com o campo \"pt\" preenchido\n   em todos os itens. Sem comentários antes ou depois.",
+ "_arquivo": "dict-02 (2 de 2)",
+ "idioma": "pt-BR",
+ "itens": [
+  {
+   "id": "dict-02#001",
+   "path": "dict/281",
+   "ru": "Кастомизатор автомобиля для офиса продаж: VR, тачскрин и голограмма. Покупатель собирает свой X5 — диски, цвет, отделку салона — и смотрит его в футуристическом гараже или на пустынном шоссе, глазами водителя.",
+   "en": "A car configurator for the sales floor: VR, touchscreen and hologram. The buyer builds their own X5 — wheels, colour, interior trim — then sees it in a futuristic garage or on an empty highway, through the driver’s eyes.",
+   "pt": "Um configurador de carro para o showroom: VR, touchscreen e holograma. O comprador monta o próprio X5 — rodas, cor, acabamento interno — e depois o vê em uma garagem futurista ou numa estrada deserta, pelos olhos do motorista."
+  },
+  {
+   "id": "dict-02#002",
+   "path": "dict/282",
+   "ru": "Машину, которую собрал сам, хочется купить.",
+   "en": "The car you built yourself is the one you want to buy.",
+   "pt": "O carro que você mesmo montou é o que você quer comprar."
+  },
+  {
+   "id": "dict-02#003",
+   "path": "dict/283",
+   "ru": "Панорама 360",
+   "en": "Panorama 360",
+   "pt": "Panorama 360"
+  },
+  {
+   "id": "dict-02#004",
+   "path": "dict/284",
+   "ru": "Москва-Сити",
+   "en": "Moscow City",
+   "pt": "Moscow City"
+  },
+  {
+   "id": "dict-02#005",
+   "path": "dict/285",
+   "ru": "Дополненная реальность 360°: зритель оказывается внутри сцены и осматривает пространство вокруг себя.",
+   "en": "Augmented reality in 360°: the viewer stands inside the scene and looks around it.",
+   "pt": "Realidade aumentada em 360°: o espectador fica dentro da cena e olha o espaço ao redor."
+  },
+  {
+   "id": "dict-02#006",
+   "path": "dict/286",
+   "ru": "Не окно в историю, а вход в неё.",
+   "en": "Not a window into history — a way in.",
+   "pt": "Não é uma janela para a história — é uma entrada nela."
+  },
+  {
+   "id": "dict-02#007",
+   "path": "dict/287",
+   "ru": "Интерактивная инсталляция для главного городского форума: живая графика реагирует на посетителей, а городские данные превращаются в образ.",
+   "en": "An interactive installation for the city’s main urban forum: live graphics respond to visitors and city data becomes an image.",
+   "pt": "Instalação interativa para o principal fórum urbano da cidade: gráficos ao vivo reagem aos visitantes e os dados da cidade viram imagem."
+  },
+  {
+   "id": "dict-02#008",
+   "path": "dict/288",
+   "ru": "Очередь к инсталляции — лучшая метрика.",
+   "en": "A queue at the installation is the best metric there is.",
+   "pt": "Fila na instalação é a melhor métrica que existe."
+  },
+  {
+   "id": "dict-02#009",
+   "path": "dict/289",
+   "ru": "Пароль победы «Сталинград»",
+   "en": "Password to Victory: Stalingrad",
+   "pt": "Senha da Vitória: Stalingrado"
+  },
+  {
+   "id": "dict-02#010",
+   "path": "dict/290",
+   "ru": "Музей-заповедник",
+   "en": "Museum and Memorial Complex",
+   "pt": "Complexo museológico e memorial"
+  },
+  {
+   "id": "dict-02#011",
+   "path": "dict/291",
+   "ru": "Мультимедийная инсталляция памяти: история, которую посетитель проживает, а не читает. Свет, звук и интерактив создают тихое, сильное пространство.",
+   "en": "A multimedia memorial installation: history the visitor lives through instead of reading. Light, sound and interaction make a quiet, powerful space.",
+   "pt": "Instalação multimídia memorial: uma história que o visitante vive em vez de ler. Luz, som e interação criam um espaço silencioso e forte."
+  },
+  {
+   "id": "dict-02#012",
+   "path": "dict/292",
+   "ru": "Игра умеет говорить и о серьёзном.",
+   "en": "Play can speak about serious things too.",
+   "pt": "O jogo também sabe falar de coisas sérias."
+  },
+  {
+   "id": "dict-02#013",
+   "path": "dict/293",
+   "ru": "Сухой порт COALCO",
+   "en": "COALCO Dry Port",
+   "pt": "Porto seco COALCO"
+  },
+  {
+   "id": "dict-02#014",
+   "path": "dict/294",
+   "ru": "Интерактивная инсталляция логистического хаба: масштаб и работа сухого порта считываются с одного взгляда на живую 3D-модель.",
+   "en": "An interactive installation for a logistics hub: the scale and the workings of a dry port read at a single glance at a live 3D model.",
+   "pt": "Instalação interativa para um hub logístico: a escala e o funcionamento de um porto seco se leem num só olhar para a maquete 3D viva."
+  },
+  {
+   "id": "dict-02#015",
+   "path": "dict/295",
+   "ru": "Логистику видно, а не читаешь в буклете.",
+   "en": "Logistics you can see instead of reading about it in a brochure.",
+   "pt": "Logística que se vê, em vez de se ler num folheto."
+  },
+  {
+   "id": "dict-02#016",
+   "path": "dict/296",
+   "ru": "Синара",
+   "en": "Sinara",
+   "pt": "Sinara"
+  },
+  {
+   "id": "dict-02#017",
+   "path": "dict/297",
+   "ru": "Холдинг СТМ",
+   "en": "STM Holding",
+   "pt": "STM Holding"
+  },
+  {
+   "id": "dict-02#018",
+   "path": "dict/298",
+   "ru": "Голограммы и интерактив для транспортного машиностроения: локомотивы и узлы можно рассмотреть в объёме и разобрать по деталям.",
+   "en": "Holograms and interactives for transport engineering: locomotives and their assemblies can be examined in the round and taken apart piece by piece.",
+   "pt": "Hologramas e interativos para a indústria de transporte: locomotivas e conjuntos podem ser examinados em volume e desmontados peça por peça."
+  },
+  {
+   "id": "dict-02#019",
+   "path": "dict/299",
+   "ru": "Тяжёлую технику показываем в ладони.",
+   "en": "Heavy machinery shown in the palm of your hand.",
+   "pt": "Máquinas pesadas mostradas na palma da mão."
+  },
+  {
+   "id": "dict-02#020",
+   "path": "dict/300",
+   "ru": "ВДНХ Космос",
+   "en": "VDNH Space",
+   "pt": "VDNH Espaço"
+  },
+  {
+   "id": "dict-02#021",
+   "path": "dict/301",
+   "ru": "Вся история космонавтики — в единой играбельной системе: 115 инсталляций, интерактивные 3D-модели кораблей и станций, единый визуальный язык, разработанный специально для музея.",
+   "en": "The whole history of spaceflight in one playable system: 115 exhibits, interactive 3D models of spacecraft and stations, and a visual language built specifically for the museum.",
+   "pt": "Toda a história da cosmonáutica em um sistema jogável: 115 instalações, modelos 3D interativos de naves e estações, e uma linguagem visual criada especialmente para o museu."
+  },
+  {
+   "id": "dict-02#022",
+   "path": "dict/302",
+   "ru": "Посетитель не читает экспозицию — он исследует её.",
+   "en": "The visitor does not read the exhibition — they explore it.",
+   "pt": "O visitante não lê a exposição — ele explora ela."
+  },
+  {
+   "id": "dict-02#023",
+   "path": "dict/303",
+   "ru": "Центр «Космонавтика и авиация»",
+   "en": "Cosmonautics and Aviation Center",
+   "pt": "Centro de Cosmonáutica e Aviação"
+  },
+  {
+   "id": "dict-02#024",
+   "path": "dict/304",
+   "ru": "Единая мультимедийная среда крупнейшего музейного комплекса авиации и космонавтики на ВДНХ: интерактивные экспонаты, проекции и цифровые модели техники.",
+   "en": "One multimedia environment for the largest aviation and space museum complex at VDNH: interactive exhibits, projections and digital models of the hardware.",
+   "pt": "Um ambiente multimídia único para o maior complexo museológico de aviação e espaço da VDNH: exposições interativas, projeções e modelos digitais dos equipamentos."
+  },
+  {
+   "id": "dict-02#025",
+   "path": "dict/305",
+   "ru": "Музей, который отвечает движением.",
+   "en": "A museum that answers with movement.",
+   "pt": "Um museu que responde com movimento."
+  },
+  {
+   "id": "dict-02#026",
+   "path": "dict/306",
+   "ru": "50 м²",
+   "en": "50 sq m",
+   "pt": "50 m²"
+  },
+  {
+   "id": "dict-02#027",
+   "path": "dict/307",
+   "ru": "LED-экран",
+   "en": "LED screen",
+   "pt": "Tela de LED"
+  },
+  {
+   "id": "dict-02#028",
+   "path": "dict/308",
+   "ru": "контент",
+   "en": "content",
+   "pt": "conteúdo"
+  },
+  {
+   "id": "dict-02#029",
+   "path": "dict/309",
+   "ru": "ливрея борта",
+   "en": "aircraft livery",
+   "pt": "pintura da aeronave"
+  },
+  {
+   "id": "dict-02#030",
+   "path": "dict/310",
+   "ru": "режим",
+   "en": "mode",
+   "pt": "modo"
+  },
+  {
+   "id": "dict-02#031",
+   "path": "dict/311",
+   "ru": "экран",
+   "en": "screen",
+   "pt": "tela"
+  },
+  {
+   "id": "dict-02#032",
+   "path": "dict/312",
+   "ru": "витрина",
+   "en": "display case",
+   "pt": "vitrine"
+  },
+  {
+   "id": "dict-02#033",
+   "path": "dict/313",
+   "ru": "инсталляций",
+   "en": "exhibits",
+   "pt": "instalações"
+  },
+  {
+   "id": "dict-02#034",
+   "path": "dict/314",
+   "ru": "3D-моделей",
+   "en": "3D models",
+   "pt": "modelos 3D"
+  },
+  {
+   "id": "dict-02#035",
+   "path": "dict/315",
+   "ru": "визуальный язык",
+   "en": "visual language",
+   "pt": "linguagem visual"
+  },
+  {
+   "id": "dict-02#036",
+   "path": "dict/316",
+   "ru": "▶︎ смотреть",
+   "en": "▶︎ watch",
+   "pt": "▶︎ assistir"
+  },
+  {
+   "id": "dict-02#037",
+   "path": "dict/317",
+   "ru": "Следующий проект",
+   "en": "Next project",
+   "pt": "Próximo projeto"
+  },
+  {
+   "id": "dict-02#038",
+   "path": "dict/318",
+   "ru": "Или напишите письмом:",
+   "en": "Prefer email?",
+   "pt": "Prefere e-mail?"
+  },
+  {
+   "id": "dict-02#039",
+   "path": "dict/319",
+   "ru": "Открыть интерактивную версию →",
+   "en": "Open the interactive version →",
+   "pt": "Abrir a versão interativa →"
+  },
+  {
+   "id": "dict-02#040",
+   "path": "dict/320",
+   "ru": "На главную",
+   "en": "Home",
+   "pt": "Página inicial"
+  },
+  {
+   "id": "dict-02#041",
+   "path": "dict/321",
+   "ru": "Все проекты",
+   "en": "All projects",
+   "pt": "Todos os projetos"
+  },
+  {
+   "id": "dict-02#042",
+   "path": "dict/322",
+   "ru": "Наверх",
+   "en": "Back to top",
+   "pt": "Voltar ao topo"
+  },
+  {
+   "id": "dict-02#043",
+   "path": "dict/323",
+   "ru": "Смотреть видео проекта →",
+   "en": "Watch the project video →",
+   "pt": "Ver o vídeo do projeto →"
+  },
+  {
+   "id": "dict-02#044",
+   "path": "dict/324",
+   "ru": "мультимедиа инсталляция",
+   "en": "multimedia installation",
+   "pt": "instalação multimídia"
+  },
+  {
+   "id": "dict-02#045",
+   "path": "dict/325",
+   "ru": "Как удобнее ответить?",
+   "en": "How should we reply?",
+   "pt": "Como prefere que a gente responda?"
+  },
+  {
+   "id": "dict-02#046",
+   "path": "dict/326",
+   "ru": "Звонок",
+   "en": "Call",
+   "pt": "Ligação"
+  },
+  {
+   "id": "dict-02#047",
+   "path": "dict/327",
+   "ru": "Почта",
+   "en": "Email",
+   "pt": "E-mail"
+  },
+  {
+   "id": "dict-02#048",
+   "path": "dict/328",
+   "ru": "Телеграм",
+   "en": "Telegram",
+   "pt": "Telegram"
+  },
+  {
+   "id": "dict-02#049",
+   "path": "dict/329",
+   "ru": "Ватсап",
+   "en": "WhatsApp",
+   "pt": "WhatsApp"
+  },
+  {
+   "id": "dict-02#050",
+   "path": "dict/330",
+   "ru": "Email, телефон или @telegram",
+   "en": "Email, phone or @telegram",
+   "pt": "E-mail, telefone ou @telegram"
+  },
+  {
+   "id": "dict-02#051",
+   "path": "dict/331",
+   "ru": "Discovery",
+   "en": "Discovery Channel",
+   "pt": "Discovery Channel"
+  },
+  {
+   "id": "dict-02#052",
+   "path": "dict/332",
+   "ru": "Музеи · Выставки · Визит-центры · Шоурумы · Иммерсивные комнаты · Дополненная и виртуальная реальность · Веб-пространства · Бренд-пространства · Общественные пространства",
+   "en": "Museums · Exhibitions · Visitor centres · Showrooms · Immersive environments · AR & VR experiences · Interactive web experiences · Branded environments · Public spaces",
+   "pt": "Museus · Exposições · Centros de visitantes · Showrooms · Ambientes imersivos · Realidade aumentada e virtual · Experiências web interativas · Espaços de marca · Espaços públicos"
+  },
+  {
+   "id": "dict-02#053",
+   "path": "dict/333",
+   "ru": "О студии рассказывали Discovery Channel и международные технологические программы.",
+   "en": "The studio has been featured by Discovery Channel and international technology programmes.",
+   "pt": "O estúdio já apareceu no Discovery Channel e em programas internacionais de tecnologia."
+  },
+  {
+   "id": "dict-02#054",
+   "path": "dict/334",
+   "ru": "Пресса",
+   "en": "Press",
+   "pt": "Imprensa"
+  },
+  {
+   "id": "dict-02#055",
+   "path": "dict/335",
+   "ru": "Одно касание",
+   "en": "One tap",
+   "pt": "Um toque"
+  },
+  {
+   "id": "dict-02#056",
+   "path": "dict/336",
+   "ru": "Поймайте точку в секторе.",
+   "en": "Catch the dot inside the sector.",
+   "pt": "Pegue o ponto dentro do setor."
+  },
+  {
+   "id": "dict-02#057",
+   "path": "dict/337",
+   "ru": "Нажмите, когда бегущая точка окажется в подсвеченном секторе. Клавиша пробел тоже работает.",
+   "en": "Tap when the moving dot reaches the highlighted sector. The space bar works too.",
+   "pt": "Toque quando o ponto em movimento chegar ao setor destacado. A barra de espaço também funciona."
+  },
+  {
+   "id": "dict-02#058",
+   "path": "dict/338",
+   "ru": "Нажмите, когда точка войдёт в подсвеченный сектор",
+   "en": "Tap when the dot enters the highlighted sector",
+   "pt": "Toque quando o ponto entrar no setor destacado"
+  },
+  {
+   "id": "dict-02#059",
+   "path": "dict/339",
+   "ru": "СКАНИРОВАНИЕ ПРОСТРАНСТВА",
+   "en": "SCANNING THE SPACE",
+   "pt": "ESCANEANDO O ESPAÇO"
+  },
+  {
+   "id": "dict-02#060",
+   "path": "dict/340",
+   "ru": "РЕКОНСТРУКЦИЯ ФОРМЫ",
+   "en": "REBUILDING THE SHAPE",
+   "pt": "RECONSTRUINDO A FORMA"
+  },
+  {
+   "id": "dict-02#061",
+   "path": "dict/341",
+   "ru": "ФОРМА ЗАФИКСИРОВАНА",
+   "en": "SHAPE LOCKED",
+   "pt": "FORMA FIXADA"
+  },
+  {
+   "id": "dict-02#062",
+   "path": "dict/342",
+   "ru": "ПРОЕКЦИЯ АКТИВНА",
+   "en": "PROJECTION LIVE",
+   "pt": "PROJEÇÃO ATIVA"
+  },
+  {
+   "id": "dict-02#063",
+   "path": "dict/343",
+   "ru": "крутите — мир вокруг",
+   "en": "drag — the world turns",
+   "pt": "arraste — o mundo gira"
+  },
+  {
+   "id": "dict-02#064",
+   "path": "dict/344",
+   "ru": "РАЗВЕДАНО",
+   "en": "EXPLORED",
+   "pt": "EXPLORADO"
+  },
+  {
+   "id": "dict-02#065",
+   "path": "dict/345",
+   "ru": "ТЯНИ ИЛИ СКРОЛЛЬ — ВРАЩЕНИЕ · КЛИК — ВЛЁТ · ESC — ВЫХОД",
+   "en": "DRAG OR SCROLL — ROTATE · CLICK — FLY IN · ESC — EXIT",
+   "pt": "ARRASTE OU ROLE — GIRAR · CLIQUE — ENTRAR · ESC — SAIR"
+  },
+  {
+   "id": "dict-02#066",
+   "path": "dict/346",
+   "ru": "ESC ИЛИ КЛИК — НАЗАД В АРХИВ",
+   "en": "ESC OR CLICK — BACK TO THE ARCHIVE",
+   "pt": "ESC OU CLIQUE — VOLTAR AO ARQUIVO"
+  },
+  {
+   "id": "dict-02#067",
+   "path": "dict/347",
+   "ru": "КЛИК ИЛИ ESC — ВЕРНУТЬСЯ В ПОРТФОЛИО",
+   "en": "CLICK OR ESC — BACK TO THE PORTFOLIO",
+   "pt": "CLIQUE OU ESC — VOLTAR AO PORTFÓLIO"
+  },
+  {
+   "id": "dict-02#068",
+   "path": "dict/348",
+   "ru": "КЛИК — ЕЩЁ РАЗ · ESC — В ПОРТФОЛИО",
+   "en": "CLICK — AGAIN · ESC — PORTFOLIO",
+   "pt": "CLIQUE — DE NOVO · ESC — PORTFÓLIO"
+  },
+  {
+   "id": "dict-02#069",
+   "path": "dict/349",
+   "ru": "← Вернуться на сайт PlayDisplay",
+   "en": "← Back to the playdisplay site",
+   "pt": "← Voltar ao site da playdisplay"
+  },
+  {
+   "id": "dict-02#070",
+   "path": "dict/350",
+   "ru": "Вернуться на сайт",
+   "en": "Back to the site",
+   "pt": "Voltar ao site"
+  },
+  {
+   "id": "dict-02#071",
+   "path": "dict/351",
+   "ru": "↻ Новый полёт",
+   "en": "↻ Fly again",
+   "pt": "↻ Novo voo"
+  },
+  {
+   "id": "dict-02#072",
+   "path": "dict/352",
+   "ru": "СТОЛКНОВЕНИЕ",
+   "en": "COLLISION",
+   "pt": "COLISÃO"
+  },
+  {
+   "id": "dict-02#073",
+   "path": "dict/353",
+   "ru": "ОПАСНОСТЬ · РЕЛЬЕФ",
+   "en": "WARNING · TERRAIN",
+   "pt": "PERIGO · RELEVO"
+  },
+  {
+   "id": "dict-02#074",
+   "path": "dict/354",
+   "ru": "ЭНЕРГИЯ СОБРАНА",
+   "en": "ENERGY COLLECTED",
+   "pt": "ENERGIA COLETADA"
+  },
+  {
+   "id": "dict-02#075",
+   "path": "dict/355",
+   "ru": "Держите палец на экране",
+   "en": "Keep your finger on the screen",
+   "pt": "Mantenha o dedo na tela"
+  },
+  {
+   "id": "dict-02#076",
+   "path": "dict/356",
+   "ru": "Выключить звук",
+   "en": "Turn the sound off",
+   "pt": "Desligar o som"
+  },
+  {
+   "id": "dict-02#077",
+   "path": "dict/357",
+   "ru": "Включить звук",
+   "en": "Turn the sound on",
+   "pt": "Ligar o som"
+  },
+  {
+   "id": "dict-02#078",
+   "path": "dict/358",
+   "ru": "Забронируйте 30 минут",
+   "en": "Book a 30-minute call.",
+   "pt": "Reserve 30 minutos"
+  },
+  {
+   "id": "dict-02#079",
+   "path": "dict/359",
+   "ru": "Креативная сессия с playdisplay",
+   "en": "A creative session with playdisplay",
+   "pt": "Uma sessão criativa com a playdisplay"
+  },
+  {
+   "id": "dict-02#080",
+   "path": "dict/360",
+   "ru": "Основатель и креативный директор",
+   "en": "Founder and creative director",
+   "pt": "Fundador e diretor criativo"
+  },
+  {
+   "id": "dict-02#081",
+   "path": "dict/361",
+   "ru": "В дизайне с 1999 года: графика, промышленный дизайн, мультимедиа",
+   "en": "In design since 1999: graphics, industrial design, multimedia",
+   "pt": "No design desde 1999: gráfico, industrial, multimídia"
+  },
+  {
+   "id": "dict-02#082",
+   "path": "dict/362",
+   "ru": "Выпускник Московской школы управления «Сколково»",
+   "en": "Graduate of the Moscow School of Management SKOLKOVO",
+   "pt": "Formado pela Escola de Administração de Moscou SKOLKOVO"
+  },
+  {
+   "id": "dict-02#083",
+   "path": "dict/363",
+   "ru": "Лично ведёт каждый проект студии — от идеи до запуска",
+   "en": "Personally leads every project in the studio — from concept to opening",
+   "pt": "Conduz pessoalmente cada projeto do estúdio — da ideia à abertura"
+  },
+  {
+   "id": "dict-02#084",
+   "path": "dict/364",
+   "ru": "Меню",
+   "en": "Menu",
+   "pt": "Menu"
+  },
+  {
+   "id": "dict-02#085",
+   "path": "dict/365",
+   "ru": "Контакты",
+   "en": "Contact",
+   "pt": "Contato"
+  },
+  {
+   "id": "dict-02#086",
+   "path": "dict/366",
+   "ru": "Полёт сквозь облако точек",
+   "en": "A flight through the point cloud",
+   "pt": "Um voo através da nuvem de pontos"
+  },
+  {
+   "id": "dict-02#087",
+   "path": "dict/367",
+   "ru": "Показать все 15 проектов",
+   "en": "Show all 15 projects",
+   "pt": "Mostrar todos os 15 projetos"
+  },
+  {
+   "id": "dict-02#088",
+   "path": "dict/368",
+   "ru": "Отзывы и благодарности",
+   "en": "Letters and awards",
+   "pt": "Cartas e prêmios"
+  },
+  {
+   "id": "dict-02#089",
+   "path": "dict/369",
+   "ru": "Наши клиенты",
+   "en": "Our clients",
+   "pt": "Nossos clientes"
+  },
+  {
+   "id": "dict-02#090",
+   "path": "dict/370",
+   "ru": "АС",
+   "en": "AS",
+   "pt": "AS"
+  },
+  {
+   "id": "dict-02#091",
+   "path": "dict/371",
+   "ru": "РАЗВЕДАНО 00/15",
+   "en": "EXPLORED 00/15",
+   "pt": "EXPLORADO 00/15"
+  },
+  {
+   "id": "dict-02#092",
+   "path": "dict/372",
+   "ru": "Километров пройдено",
+   "en": "Kilometres flown",
+   "pt": "Quilômetros percorridos"
+  },
+  {
+   "id": "dict-02#093",
+   "path": "dict/373",
+   "ru": "Кол-во точек",
+   "en": "Point count",
+   "pt": "Total de pontos"
+  },
+  {
+   "id": "dict-02#094",
+   "path": "dict/374",
+   "ru": "Лучшая серия",
+   "en": "Best streak",
+   "pt": "Melhor sequência"
+  },
+  {
+   "id": "dict-02#095",
+   "path": "dict/375",
+   "ru": "Макс. скорость, км/ч",
+   "en": "Top speed, km/h",
+   "pt": "Velocidade máx., km/h"
+  },
+  {
+   "id": "dict-02#096",
+   "path": "dict/376",
+   "ru": "Энергия собрана",
+   "en": "Energy collected",
+   "pt": "Energia coletada"
+  },
+  {
+   "id": "dict-02#097",
+   "path": "dict/377",
+   "ru": "Энергоядра",
+   "en": "Energy cores",
+   "pt": "Núcleos de energia"
+  },
+  {
+   "id": "dict-02#098",
+   "path": "dict/378",
+   "ru": "серии дают множитель",
+   "en": "streaks build a multiplier",
+   "pt": "sequências dão multiplicador"
+  },
+  {
+   "id": "dict-02#099",
+   "path": "dict/379",
+   "ru": "у земли капает бонус",
+   "en": "flying low pays a bonus",
+   "pt": "voar rasante rende bônus"
+  },
+  {
+   "id": "dict-02#100",
+   "path": "dict/380",
+   "ru": "ускорение +5",
+   "en": "boost +5",
+   "pt": "impulso +5"
+  },
+  {
+   "id": "dict-02#101",
+   "path": "dict/381",
+   "ru": "курс и высота",
+   "en": "heading and altitude",
+   "pt": "direção e altitude"
+  },
+  {
+   "id": "dict-02#102",
+   "path": "dict/382",
+   "ru": "— курс и высота",
+   "en": "— heading and altitude",
+   "pt": "— direção e altitude"
+  },
+  {
+   "id": "dict-02#103",
+   "path": "dict/383",
+   "ru": "— не касайся · бреющий полёт даёт бонус",
+   "en": "— do not touch · flying low pays a bonus",
+   "pt": "— não encoste · voo rasante rende bônus"
+  },
+  {
+   "id": "dict-02#104",
+   "path": "dict/384",
+   "ru": "— пролетай насквозь: ускорение",
+   "en": "— fly through it: boost",
+   "pt": "— atravesse: impulso"
+  },
+  {
+   "id": "dict-02#105",
+   "path": "dict/385",
+   "ru": "— собирай сериями: множитель растёт",
+   "en": "— collect in streaks: the multiplier grows",
+   "pt": "— colete em sequência: o multiplicador cresce"
+  },
+  {
+   "id": "dict-02#106",
+   "path": "dict/386",
+   "ru": "полёт",
+   "en": "flight",
+   "pt": "voo"
+  },
+  {
+   "id": "dict-02#107",
+   "path": "dict/387",
+   "ru": "Услуги",
+   "en": "Services",
+   "pt": "Serviços"
+  },
+  {
+   "id": "dict-02#108",
+   "path": "dict/388",
+   "ru": "Услуги playdisplay",
+   "en": "playdisplay services",
+   "pt": "Serviços da playdisplay"
+  },
+  {
+   "id": "dict-02#109",
+   "path": "dict/389",
+   "ru": "Проекты, где это сделано",
+   "en": "Projects where we have done this",
+   "pt": "Projetos onde isso foi feito"
+  },
+  {
+   "id": "dict-02#110",
+   "path": "dict/390",
+   "ru": "Другие направления",
+   "en": "Other directions",
+   "pt": "Outras frentes"
+  },
+  {
+   "id": "dict-02#111",
+   "path": "dict/391",
+   "ru": "Частые вопросы",
+   "en": "Frequently asked questions",
+   "pt": "Perguntas frequentes"
+  },
+  {
+   "id": "dict-02#112",
+   "path": "dict/392",
+   "ru": "Забронировать креативную сессию →",
+   "en": "Book a 30-minute call →",
+   "pt": "Agendar uma sessão criativa →"
+  },
+  {
+   "id": "dict-02#113",
+   "path": "dict/393",
+   "ru": "Направление:",
+   "en": "Part of:",
+   "pt": "Faz parte de:"
+  },
+  {
+   "id": "dict-02#114",
+   "path": "dict/394",
+   "ru": "Сколько людей это увидело",
+   "en": "How many people saw it",
+   "pt": "Quantas pessoas viram isso"
+  },
+  {
+   "id": "dict-02#115",
+   "path": "dict/395",
+   "ru": "Результаты",
+   "en": "Results",
+   "pt": "Resultados"
+  },
+  {
+   "id": "dict-02#116",
+   "path": "dict/396",
+   "ru": "Концепции",
+   "en": "Concepts",
+   "pt": "Conceitos"
+  },
+  {
+   "id": "dict-02#117",
+   "path": "dict/397",
+   "ru": "Концепции playdisplay",
+   "en": "playdisplay concepts",
+   "pt": "Conceitos da playdisplay"
+  },
+  {
+   "id": "dict-02#118",
+   "path": "dict/398",
+   "ru": "Что это решает",
+   "en": "What it solves",
+   "pt": "O que isso resolve"
+  },
+  {
+   "id": "dict-02#119",
+   "path": "dict/399",
+   "ru": "Механики",
+   "en": "Mechanics",
+   "pt": "Mecânicas"
+  },
+  {
+   "id": "dict-02#120",
+   "path": "dict/400",
+   "ru": "Почему так",
+   "en": "Why this way",
+   "pt": "Por que assim"
+  },
+  {
+   "id": "dict-02#121",
+   "path": "dict/401",
+   "ru": "Где применимо",
+   "en": "Where it applies",
+   "pt": "Onde se aplica"
+  },
+  {
+   "id": "dict-02#122",
+   "path": "dict/402",
+   "ru": "Что можно показать",
+   "en": "What it can show",
+   "pt": "O que dá para mostrar"
+  },
+  {
+   "id": "dict-02#123",
+   "path": "dict/403",
+   "ru": "Ещё концепции этого типа",
+   "en": "More concepts of this kind",
+   "pt": "Mais conceitos deste tipo"
+  },
+  {
+   "id": "dict-02#124",
+   "path": "dict/404",
+   "ru": "концепция экспозиции",
+   "en": "exhibition concept",
+   "pt": "conceito de exposição"
+  },
+  {
+   "id": "dict-02#125",
+   "path": "dict/405",
+   "ru": "интерактивная инсталляция",
+   "en": "interactive installation",
+   "pt": "instalação interativa"
+  },
+  {
+   "id": "dict-02#126",
+   "path": "dict/406",
+   "ru": "Атлас: как мы думаем о пространстве",
+   "en": "Atlas: how we think about space",
+   "pt": "Atlas: como pensamos o espaço"
+  },
+  {
+   "id": "dict-02#127",
+   "path": "dict/407",
+   "ru": "Атлас: принципы студии playdisplay",
+   "en": "Atlas: the playdisplay studio principles",
+   "pt": "Atlas: os princípios do estúdio playdisplay"
+  },
+  {
+   "id": "dict-02#128",
+   "path": "dict/408",
+   "ru": "Оборудование",
+   "en": "Equipment",
+   "pt": "Equipamentos"
+  },
+  {
+   "id": "dict-02#129",
+   "path": "dict/409",
+   "ru": "Библиотека оборудования",
+   "en": "Equipment library",
+   "pt": "Biblioteca de equipamentos"
+  },
+  {
+   "id": "dict-02#130",
+   "path": "dict/410",
+   "ru": "Чем это делается.",
+   "en": "What it is built from.",
+   "pt": "Com o que isso é feito."
+  },
+  {
+   "id": "dict-02#131",
+   "path": "dict/411",
+   "ru": "63 типа оборудования, из которых собирается интерактивная экспозиция: чем она показывает, чем слышит посетителя и что считает между этим. У каждого — когда работает, когда не работает и кто это выпускает.",
+   "en": "63 types of equipment an interactive exhibition is built from: what it shows with, what it hears the visitor with, and what does the thinking in between. For each: when it works, when it does not, and who makes it.",
+   "pt": "63 tipos de equipamento com que se monta uma exposição interativa: com o que ela mostra, com o que ela escuta o visitante e o que pensa entre as duas coisas. De cada um: quando funciona, quando não funciona e quem fabrica."
+  },
+  {
+   "id": "dict-02#132",
+   "path": "dict/412",
+   "ru": "Открыть библиотеку",
+   "en": "Open the library",
+   "pt": "Abrir a biblioteca"
+  },
+  {
+   "id": "dict-02#133",
+   "path": "dict/413",
+   "ru": "Мультимедийное оборудование.",
+   "en": "Multimedia equipment.",
+   "pt": "Equipamentos multimídia."
+  },
+  {
+   "id": "dict-02#134",
+   "path": "dict/414",
+   "ru": "Что каждое реально умеет, где привирают в презентациях и обо что\n        спотыкаются на второй год. Мы это железо не продаём — мы им работаем.",
+   "en": "What each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit — we work with it.",
+   "pt": "O que cada um faz de verdade, onde a apresentação comercial exagera e onde se tropeça no segundo ano. A gente não vende esse hardware — a gente trabalha com ele."
+  },
+  {
+   "id": "dict-02#135",
+   "path": "dict/415",
+   "ru": "типа оборудования",
+   "en": "types of equipment",
+   "pt": "tipos de equipamento"
+  },
+  {
+   "id": "dict-02#136",
+   "path": "dict/416",
+   "ru": "производителей",
+   "en": "manufacturers",
+   "pt": "fabricantes"
+  },
+  {
+   "id": "dict-02#137",
+   "path": "dict/417",
+   "ru": "роли в системе",
+   "en": "roles in the system",
+   "pt": "papéis no sistema"
+  },
+  {
+   "id": "dict-02#138",
+   "path": "dict/418",
+   "ru": "Вывод",
+   "en": "Output",
+   "pt": "Saída"
+  },
+  {
+   "id": "dict-02#139",
+   "path": "dict/419",
+   "ru": "Ввод",
+   "en": "Input",
+   "pt": "Entrada"
+  },
+  {
+   "id": "dict-02#140",
+   "path": "dict/420",
+   "ru": "Обработка",
+   "en": "Processing",
+   "pt": "Processamento"
+  },
+  {
+   "id": "dict-02#141",
+   "path": "dict/421",
+   "ru": "Чем экспозиция говорит с человеком",
+   "en": "How the exhibition speaks to a person",
+   "pt": "Com o que a exposição fala com a pessoa"
+  },
+  {
+   "id": "dict-02#142",
+   "path": "dict/422",
+   "ru": "Чем человек отвечает экспозиции",
+   "en": "How a person answers back",
+   "pt": "Com o que a pessoa responde à exposição"
+  },
+  {
+   "id": "dict-02#143",
+   "path": "dict/423",
+   "ru": "То, чего не видно, и на чём всё держится",
+   "en": "What nobody sees and everything rests on",
+   "pt": "O que ninguém vê e sustenta tudo"
+  },
+  {
+   "id": "dict-02#144",
+   "path": "dict/424",
+   "ru": "24 позиции →",
+   "en": "24 entries →",
+   "pt": "24 itens →"
+  },
+  {
+   "id": "dict-02#145",
+   "path": "dict/425",
+   "ru": "20 позиций →",
+   "en": "20 entries →",
+   "pt": "20 itens →"
+  },
+  {
+   "id": "dict-02#146",
+   "path": "dict/426",
+   "ru": "19 позиций →",
+   "en": "19 entries →",
+   "pt": "19 itens →"
+  },
+  {
+   "id": "dict-02#147",
+   "path": "dict/427",
+   "ru": "О проектах рассказывали в эфире",
+   "en": "Our projects have been on air",
+   "pt": "Nossos projetos já foram ao ar"
+  },
+  {
+   "id": "dict-02#148",
+   "path": "dict/428",
+   "ru": "Работы студии показывали федеральные каналы и международные технологические программы.",
+   "en": "The studio's work has been featured by national broadcasters and international technology programmes.",
+   "pt": "O trabalho do estúdio já apareceu em canais nacionais e em programas internacionais de tecnologia."
+  },
+  {
+   "id": "dict-02#149",
+   "path": "dict/429",
+   "ru": "Первый",
+   "en": "Perviy",
+   "pt": "Perviy"
+  },
+  {
+   "id": "dict-02#150",
+   "path": "dict/430",
+   "ru": "канал",
+   "en": "Kanal",
+   "pt": "Kanal"
+  },
+  {
+   "id": "dict-02#151",
+   "path": "dict/431",
+   "ru": "НТВ",
+   "en": "NTV",
+   "pt": "NTV"
+  },
+  {
+   "id": "dict-02#152",
+   "path": "dict/432",
+   "ru": "РЕН",
+   "en": "REN",
+   "pt": "REN"
+  },
+  {
+   "id": "dict-02#153",
+   "path": "dict/433",
+   "ru": "ТВ",
+   "en": "TV",
+   "pt": "TV"
+  },
+  {
+   "id": "dict-02#154",
+   "path": "dict/434",
+   "ru": "Клиенты",
+   "en": "Clients",
+   "pt": "Clientes"
+  },
+  {
+   "id": "dict-02#155",
+   "path": "dict+/0",
+   "ru": "Во весь экран",
+   "en": null,
+   "pt": "Tela cheia"
+  },
+  {
+   "id": "dict-02#156",
+   "path": "dict+/1",
+   "ru": "Мультимедиа технологии.",
+   "en": null,
+   "pt": "Tecnologias multimídia."
+  },
+  {
+   "id": "dict-02#157",
+   "path": "dict+/2",
+   "ru": "Что каждое реально умеет, где привирают в презентациях и обо что спотыкаются на второй год. Мы это железо не продаём — мы им работаем.",
+   "en": null,
+   "pt": "O que cada um faz de verdade, onde a apresentação comercial exagera e onde se tropeça no segundo ano. A gente não vende esse hardware — a gente trabalha com ele."
+  },
+  {
+   "id": "dict-02#158",
+   "path": "dict+/3",
+   "ru": "типов оборудования",
+   "en": null,
+   "pt": "tipos de equipamento"
+  },
+  {
+   "id": "dict-02#159",
+   "path": "dict+/4",
+   "ru": "21 позиция →",
+   "en": null,
+   "pt": "21 itens →"
+  },
+  {
+   "id": "dict-02#160",
+   "path": "dict+/5",
+   "ru": "Продолжить",
+   "en": null,
+   "pt": "Continuar"
+  },
+  {
+   "id": "dict-02#161",
+   "path": "dict+/6",
+   "ru": "Язык распознавания речи",
+   "en": null,
+   "pt": "Idioma do reconhecimento de fala"
+  },
+  {
+   "id": "dict-02#162",
+   "path": "dict+/7",
+   "ru": "Скачать PDF",
+   "en": null,
+   "pt": "Baixar PDF"
+  }
+ ]
+}
