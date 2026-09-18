@@ -3006,6 +3006,23 @@ for _L in ALT:
     os.makedirs(os.path.join(SITE, _L.prefix.rstrip('/')), exist_ok=True)
     open(os.path.join(SITE, _L.prefix, 'index.html'), 'w', encoding='utf-8').write(_home)
     print('%sindex.html: %.0f КБ, словарь %d строк' % (_L.prefix, len(_home) / 1024, len(_L.dic)))
+# ---------- карточки превью: есть ли они у КАЖДОГО языка ----------
+# og:image ведёт в папку своего языка: на карточке набран текст, и ссылку на /pt/
+# шлют бразильцу — первое, что он увидит, не должно быть кириллицей. Пока папки нет,
+# ссылка в разметке есть, а файла нет — превью в мессенджере просто не построится,
+# и молча: ни сборка, ни браузер об этом не скажут.
+_og_miss = []
+for _L in langs:
+    for _f in OG_FILES.values():
+        rel = _f if _L.code == 'ru' else '%s/%s' % (_L.code, _f)
+        if not os.path.exists(os.path.join(SITE, 'assets', 'og', rel)):
+            _og_miss.append(rel)
+if _og_miss:
+    print('НЕТ КАРТОЧЕК ПРЕВЬЮ, %d шт.: %s%s'
+          % (len(_og_miss), ', '.join(_og_miss[:5]),
+             ' …' if len(_og_miss) > 5 else ''))
+    print('   рисуются так: _tools/venv/bin/python _tools/og.py')
+
 print('sitemap/robots/llms + home JSON-LD ready; noscript items:', len(ORDER))
 if MISSING:
     # без dict.fromkeys список удваивался: страницы работ рисуются дважды (второй раз —

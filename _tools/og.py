@@ -19,7 +19,7 @@ Roboto Mono в надстрочнике. Своё лицо в ленте чуж�
 чем прочитан текст. Pillow не читает woff2, поэтому рядом лежат ttf-версии
 тех же гарнитур — их делает _tools/mkfonts.py из подмножеств сайта.
 """
-import os, sys
+import json, os, sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -236,9 +236,38 @@ CARDS_EN = [
 ]
 
 
+def extra_langs():
+    """Карточки для языков сверх русского и английского.
+
+    Тексты лежат в site/data/i18n/og/<код>.json — их пишет _tools/i18n_import.py из
+    того же перевода, что и весь сайт. Рисует карточку тот же код: кадр, затемнение и
+    типографика общие, меняются ровно три строки. Держать здесь третий список CARDS_XX
+    означало бы, что перевод сайта и перевод карточек живут порознь и однажды разойдутся.
+    """
+    d = os.path.join(SITE, 'data', 'i18n', 'og')
+    if not os.path.isdir(d):
+        return []
+    out = []
+    for fn in sorted(os.listdir(d)):
+        if not fn.endswith('.json'):
+            continue
+        code = fn[:-5]
+        t = json.load(open(os.path.join(d, fn), encoding='utf-8'))
+        rows, missing = [], []
+        for name, photo, *_ru in CARDS:
+            if name in t:
+                rows.append((name, photo, t[name][0], t[name][1], t[name][2]))
+            else:
+                missing.append(name)
+        if missing:
+            print('%s: нет текста для карточек — %s' % (code, ', '.join(missing)))
+        out.append((code, rows))
+    return out
+
+
 if __name__ == '__main__':
     made, skipped = 0, []
-    for sub_dir, cards in (('', CARDS), ('en', CARDS_EN)):
+    for sub_dir, cards in [('', CARDS), ('en', CARDS_EN)] + extra_langs():
         for name, photo, kicker, title, sub in cards:
             p = os.path.join(SITE, photo)
             if not os.path.exists(p):
