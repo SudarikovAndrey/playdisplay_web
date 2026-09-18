@@ -6,6 +6,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#06070a">
+  <!-- Пока страница живёт ТОЛЬКО по прямой ссылке (решение владельца 18.09.2026):
+       из поиска убрана noindex, в sitemap.xml её нет, ссылок с сайта тоже.
+       В robots.txt запрет НЕ ставим и не надо: Disallow закрыл бы обходчику сам
+       файл, он не увидел бы noindex — и адрес мог бы попасть в выдачу без описания.
+       og-теги оставлены: по ним строится карточка ссылки в мессенджерах. -->
+  <meta name="robots" content="noindex, nofollow">
   <meta name="description" content="Цифровой слой – цифровое продолжение пространств, событий и программ: физический проект становится точкой входа в длительное персональное взаимодействие с человеком. Направление студии Playdisplay.">
   <link rel="canonical" href="https://playdisplay.com/cifra/">
   <meta property="og:title" content="Цифровой слой – цифровое продолжение пространств, событий и программ">
