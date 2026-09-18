@@ -8,6 +8,67 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-18 11:29 — hybrid-v8 @ 53b62ac
+
+**Коммиты в этой поставке**
+```
+53b62ac Цифровой слой: презентация направления на /cifra/
+ca7cc02 Цифровой слой переехал на /cifra/
+3a8192f Farmácia Jurerê: предложение AI-ассистента продукта, тема кита по их сайту
+ca066e8 Цифровой слой: знаки в шапке, музыка, светлая тема, чистка висяков
+dcf1a5d Кит: светлая тема на ходу, расшифровка модуля у самого модуля
+b84bc03 Цифровой слой: первый экран без служебных строк
+0977fe1 «Цифровой слой»: презентация направления на десять экранов, /digital-layer/
+8ec49e2 Кит 1.5: сквозная траектория из точек, ядро с модулями, переключатель сценариев
+bce1dfe Журнал деплоя: d663316
+```
+
+**На сервер отправлено файлов:** 95, удалено: 0
+```
+llms.txt
+robots.txt
+sitemap.xml
+ai-pack/index.html
+akvion/index.html
+atlas/index.html
+avtovaz/private/page.html
+cifra/
+cifra/index.html
+cifra/scenes.js
+concepts/index.html
+digital/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/library/index.html
+en/library/input/index.html
+en/library/output/index.html
+en/library/processing/index.html
+en/services/index.html
+en/services/corporate-museum/index.html
+en/services/exhibition-stand/index.html
+en/services/holographic-showcase/index.html
+en/services/interactive-exhibition/index.html
+en/services/interactive-website/index.html
+en/services/multimedia-equipment/index.html
+en/services/museum-concept/index.html
+en/services/museum-equipment/index.html
+en/services/museum-equipping/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+…и ещё 55
+```
+
+
 ## 2026-09-08 20:22 — hybrid-v8 @ d663316
 
 **Коммиты в этой поставке**
