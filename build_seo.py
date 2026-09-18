@@ -159,12 +159,29 @@ def og_size_fix(text):
     if m and '/assets/og/' in m.group(1):
         return text
     return text.replace(OG_SIZE, '')
-ORG_DESC = ('playdisplay проектирует пространства и впечатления, которые люди запоминают: '
-            'современные музеи, интерактивные экспозиции, visitor centre, шоурумы и '
-            'иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.')
-ORG_DESC_EN = ('playdisplay designs spaces and experiences people remember: contemporary museums, '
-               'interactive exhibits, visitor centres, showrooms and immersive exhibitions. '
-               'We turn ideas, stories, spaces and brands into experiences people want to be part of.')
+# ---------- ПРОЗА ГЕНЕРАТОРА — ОДНОЙ ТАБЛИЦЕЙ НА ВСЕ ЯЗЫКИ ----------
+# Раньше эти строки лежали парами констант ..._RU / ..._EN прямо в коде, а выбор делала
+# развилка «если английский, иначе по-русски». Пока языков два, такая развилка читается
+# как перевод. С третьим она молча отдаёт РУССКИЙ текст на португальской странице:
+# ошибки нет, сборка проходит, человек видит кириллицу.
+#
+# Поэтому проза переехала в данные — site/data/i18n/prose.json. Оттуда её можно выгрузить
+# на перевод машинально и проверить на полноту, не читая генератор. То же решение, по
+# которому подписи интерфейса живут в общем словаре i18n, а не рядом со сборкой: второй
+# источник переводов рано или поздно расходится с первым.
+PROSE = json.load(open(os.path.join(SITE, 'data/i18n/prose.json'), encoding='utf-8'))
+
+
+def P(L, key):
+    """строка из prose.json на языке L (принимает объект языка или его код)"""
+    code = L if isinstance(L, str) else L.code
+    d = PROSE.get(key)
+    if d is None:
+        raise SystemExit('prose.json: нет ключа %r' % key)
+    if code not in d:
+        raise SystemExit('prose.json: у ключа %r нет языка %r — переведите строку '
+                         'или уберите язык из LANGS' % (key, code))
+    return d[code]
 SOCIALS = [
     'https://www.facebook.com/playdisplay/',
     'https://vimeo.com/playdisplay5',
@@ -175,10 +192,33 @@ SOCIALS = [
 # ---------- языки ----------
 # code: код языка; prefix: путь от корня сайта; data: папка данных; up: сколько уровней до корня
 #                                                                     со страницы work/<slug>/
+# code — путь и словарь; html — атрибут lang у <html>; hreflang — что обещаем поисковику;
+# name — подпись в переключателе. У русского и английского все три совпадали, и до
+# появления третьего языка разницы не было видно. У бразильского расходятся: код `pt`
+# (папка /pt/ и data/i18n/pt.js), атрибут `pt-BR` (текст бразильский), hreflang `pt`
+# БЕЗ региона — версия одна, и она должна забирать всех говорящих по-португальски.
+# С `pt-BR` португалец из Португалии попал бы в x-default, то есть на русскую главную.
 LANGS = [
-    {'code': 'ru', 'prefix': '', 'data': 'data', 'locale': 'ru_RU', 'up': '../../'},
-    {'code': 'en', 'prefix': 'en/', 'data': 'data/en', 'locale': 'en_US', 'up': '../../../'},
+    {'code': 'ru', 'prefix': '', 'data': 'data', 'locale': 'ru_RU',
+     'html': 'ru', 'hreflang': 'ru', 'name': 'RU', 'up': '../../'},
+    {'code': 'en', 'prefix': 'en/', 'data': 'data/en', 'locale': 'en_US',
+     'html': 'en', 'hreflang': 'en', 'name': 'ENG', 'up': '../../../'},
+    {'code': 'pt', 'prefix': 'pt/', 'data': 'data/pt', 'locale': 'pt_BR',
+     'html': 'pt-BR', 'hreflang': 'pt', 'name': 'PT', 'up': '../../../'},
 ]
+
+
+def LT(table, L, what):
+    """Выбор прозы по языку — вместо развилок «если английский, иначе по-русски».
+
+    Пока языков было два, такая развилка читалась как перевод. С третьим она молча
+    отдаёт РУССКИЙ текст на португальской странице: ошибки нет, сборка проходит,
+    а человек видит кириллицу. Поэтому выбираем из таблицы и падаем с внятным
+    текстом, если записи нет."""
+    if L.code not in table:
+        raise SystemExit('нет перевода [%s] для языка %r: добавьте запись в таблицу '
+                         'или уберите язык из LANGS' % (what, L.code))
+    return table[L.code]
 
 # ---------- кейсы: читаем прямо из index.html ----------
 # Раньше скрипту нужен был /tmp/cases.json, выложенный руками: кто-то должен был
@@ -493,10 +533,13 @@ def project_jsonld(L, slug):
 
 
 def alternates(tail):
-    """hreflang: у каждой страницы есть сёстры на других языках"""
+    """hreflang: у каждой страницы есть сёстры на других языках.
+
+    Идём по СОБРАННЫМ языкам (`langs`), а не по списку LANGS: язык без файлов данных
+    не генерируется вовсе, и обещать его страницу нельзя — это битая ссылка в выдаче."""
     out = []
-    for spec in LANGS:
-        out.append('<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (spec['code'], BASE, spec['prefix'], tail))
+    for spec in langs:
+        out.append('<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (spec.hreflang, BASE, spec.prefix, tail))
     out.append('<link rel="alternate" hreflang="x-default" href="%s/%s">' % (BASE, tail))
     return '\n'.join(out)
 
@@ -581,12 +624,40 @@ def metablk(L, slug):
     return ''.join(rows)
 
 
-FOOT_RU = ('playdisplay — пространства, которые люди запоминают: музеи, интерактивные экспозиции, '
-           'visitor centre и иммерсивные выставки.')
-FOOT_EN = ('playdisplay — spaces people remember: museums, interactive exhibits, visitor centres '
-           'and immersive exhibitions.')
+# подвал, лиды разделов и прочая проза — в site/data/i18n/prose.json
 
-langs = [Lang(spec) for spec in LANGS]
+# ЯЗЫК БЕЗ ФАЙЛОВ ДАННЫХ НЕ СОБИРАЕТСЯ — и это правило, а не заглушка. Оно уже
+# работало для услуг и концепций («язык без файла данных просто не генерируется»);
+# теперь так же ведёт себя язык целиком. Благодаря этому португальский можно вписать
+# в LANGS ЗАРАНЕЕ: пока переводов нет, сборка его молча пропускает и ничего не обещает
+# в hreflang, а появится data/pt/projects.json — начнёт собирать без правок кода.
+langs = []
+for spec in LANGS:
+    _dp = os.path.join(SITE, spec['data'], 'projects.json')
+    if not os.path.exists(_dp):
+        print('язык [%s]: пропущен, нет %s' % (spec['code'], os.path.relpath(_dp, ROOT)))
+        continue
+    langs.append(Lang(spec))
+if not langs:
+    raise SystemExit('не собран ни один язык: нет ни одного <data>/projects.json')
+
+# ---------- ПОЛНОТА ПРОЗЫ: все пропуски разом, а не по одному за сборку ----------
+# Без этой проверки непереведённая строка всплывала бы по одной: собрали — упало на
+# ключе, перевели — упало на следующем. Переводчику нужен ВЕСЬ список сразу.
+# Ключи языковых КОПИЙ главной у исходного языка отсутствуют законно: русская главная
+# не собирается из шаблона, её мета-теги лежат в самой index.html.
+COPY_ONLY = ('home_title', 'home_desc', 'home_keys', 'home_og_title',
+             'llms_lang_line', 'llms_projects_heading')
+_miss = []
+for _L in langs:
+    for _k, _v in PROSE.items():
+        if _L.code == langs[0].code and _k in COPY_ONLY:
+            continue
+        if _L.code not in _v:
+            _miss.append('%s / %s' % (_k, _L.code))
+if _miss:
+    raise SystemExit('site/data/i18n/prose.json не полон, строк без перевода %d:\n  %s'
+                     % (len(_miss), '\n  '.join(_miss)))
 
 def load_services(L):
     p = os.path.join(SITE, L.data, 'services.json')
@@ -607,7 +678,7 @@ for L in langs:
         L.cnc_foot += ' · <a href="%satlas/">%s</a>' % (L.up + L.prefix, esc(L.t('Атлас')))
     if os.path.exists(os.path.join(SITE, L.data, 'library.json')):
         L.cnc_foot += ' · <a href="%slibrary/">%s</a>' % (
-            L.up + L.prefix, esc('Equipment library' if L.code == 'en' else 'Библиотека оборудования'))
+            L.up + L.prefix, esc(P(L, 'lib_hub_link')))
 
 # языки, у которых услуги есть: только они попадают в hreflang и в sitemap
 SRV_LANGS = [L for L in langs if L.services]
@@ -686,12 +757,12 @@ for L in langs:
         d = os.path.join(SITE, L.prefix, 'work', slug)
         os.makedirs(d, exist_ok=True)
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(PAGE.format(
-            lang=L.code, title=esc(p['title']), pagetitle=esc(page_title(L, slug)), subtitle=esc(p.get('subtitle') or ''),
+            lang=L.html, title=esc(p['title']), pagetitle=esc(page_title(L, slug)), subtitle=esc(p.get('subtitle') or ''),
             desc=esc(L.meta_desc(slug)), canon=L.url('work/%s/' % slug), alts=alternates('work/%s/' % slug),
             slug=slug, cover=esc(cover_url(slug, L.pmap)), locale=L.locale, home=L.up + L.prefix,
             jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p, slug), up=L.up,
             work=L.t('Проекты'), cta=L.t('Открыть интерактивную версию →'),
-            footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+            footer=P(L, 'foot'),
             f_home=L.t('На главную'), f_all=L.t('Все проекты'), srv_foot=L.srv_foot,
             srvline=srv_of_case(L, slug))))
         n += 1
@@ -715,7 +786,7 @@ for L in langs:
 
 def srv_alternates(tail):
     # hreflang только по языкам, где страница РЕАЛЬНО есть
-    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.code, BASE, L.prefix, tail)
+    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.hreflang, BASE, L.prefix, tail)
            for L in SRV_LANGS]
     if SRV_LANGS:
         out.append('<link rel="alternate" hreflang="x-default" href="%s/%s%s">'
@@ -895,7 +966,7 @@ def og_card(key, code='ru'):
     """Текст на карточке набран, поэтому у /en/ свой комплект: ссылку на
     английскую версию шлют иностранцу, и первое, что он видит, — превью."""
     f = OG_FILES[key]
-    return OG + (f if code == 'ru' else 'en/' + f)
+    return OG + (f if code == 'ru' else code + '/' + f)
 
 
 def og_for(key, fallback, code='ru'):
@@ -925,42 +996,8 @@ def with_chrome(tpl):
 # ---------- Обвязка страниц: шапка, кнопки, курсор ----------
 # Определена ЗДЕСЬ, а не в разделе библиотеки: услуги и концепции собираются
 # раньше по файлу, и снизу они бы её не увидели.
-LIB_T = {
- 'ru': {
-  'brands': 'Производители', 'good': 'Когда работает', 'bad': 'Когда не работает',
-  'compare': 'Два принципа', 'hw': 'Важно для спецификации', 'spec': 'Как считать',
-  'warn': 'Наше мнение', 'principle': 'Принцип категории', 'other': 'Другие категории',
-  'ourcase': 'Как это сделано у нас: ', 'service': 'Где применяем: ',
-  'hub': 'Библиотека оборудования',
-  'cta': 'Прислать спецификацию на проверку →', 'open': 'Открыть раздел',
-  'search': 'Поиск по названию, задаче или бренду', 'nothing': 'Ничего не нашлось. Попробуйте другое слово.',
-  'work': 'Проекты', 'atlas': 'Атлас', 'hubnav': 'Оборудование',
-  'talk': '▶ Обсудить идею', 'back': 'Назад', 'top': 'Наверх',
-  'studio': 'Студия', 'sndoff': 'Выключить звук', 'sndon': 'Включить звук',
-  'concepts': 'Библиотека', 'services': 'Услуги', 'home': 'На главную', 'all': 'Все проекты',
-  'h1': 'Библиотека оборудования интерактивных экспозиций',
-  'pos': ('позиция', 'позиции', 'позиций'),
-  'man': ('производитель', 'производителя', 'производителей'),
-  'kind': ('тип', 'типа', 'типов'),
- },
- 'en': {
-  'brands': 'Manufacturers', 'good': 'Works when', 'bad': 'Falls short when',
-  'compare': 'Two principles', 'hw': 'Watch out in the spec', 'spec': 'How to size it',
-  'warn': 'Our take', 'principle': 'The principle here', 'other': 'Other categories',
-  'ourcase': 'How we built it: ', 'service': 'Where we apply it: ',
-  'hub': 'Equipment library',
-  'cta': 'Send us your specification for a free review →', 'open': 'Open the section',
-  'search': 'Search by name, job or brand', 'nothing': 'Nothing matched. Try another word.',
-  'work': 'Work', 'atlas': 'Atlas', 'hubnav': 'Equipment',
-  'talk': '▶ Book a call', 'back': 'Back', 'top': 'Top',
-  'studio': 'Studio', 'sndoff': 'Mute', 'sndon': 'Unmute',
-  'concepts': 'Concepts', 'services': 'Services', 'home': 'Home', 'all': 'All projects',
-  'h1': 'An equipment library for interactive exhibitions',
-  'pos': ('entry', 'entries', 'entries'),
-  'man': ('manufacturer', 'manufacturers', 'manufacturers'),
-  'kind': ('type', 'types', 'types'),
- },
-}
+# Подписи разделов библиотеки — в prose.json, ключ 'lib_ui'.
+LIB_T = PROSE['lib_ui']
 
 
 LIB_SND_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13L7.2 14.5H4z"/><path class="wave" d="M16 9c1.2 1 1.2 5 0 6"/><path class="wave" d="M18.7 6.8c2.3 2 2.3 8.4 0 10.4"/><path class="slash" d="M16.6 9.6l4.8 4.8m0-4.8l-4.8 4.8"/></svg>'
@@ -1249,11 +1286,11 @@ def chrome_js():
     return '<script>%s</script><script>%s</script>' % (LIB_CHROME_JS, LIB_HDR_JS)
 
 
-def lib_chrome(L, up, alt_url='', current='library'):
+def lib_chrome(L, up, tail='', current='library'):
     """Шапка раздела ОДИН В ОДИН как на главной: те же пункты, порядок, адреса
     и типографика. Плюс кнопки «назад» и «наверх», которых на лендинге нет —
     там некуда возвращаться, а здесь есть."""
-    T = LIB_T[L.code]
+    T = P(L, 'lib_ui')
     home = up + L.prefix
     # адреса ровно те же, что в nav.links на главной
     items = [(T['services'], home + 'services/'),
@@ -1269,10 +1306,14 @@ def lib_chrome(L, up, alt_url='', current='library'):
     nav = ''.join('<a href="%s"%s>%s</a>'
                   % (esc(u), ' aria-current="page"' if mark and u.endswith(mark) else '', esc(n))
                   for n, u in items)
-    lang = ('<div class="lang"><a class="on" aria-current="true">RU</a>'
-            '<a href="%s" hreflang="en">ENG</a></div>' % esc(alt_url)) if L.code == 'ru' else (
-           '<div class="lang"><a href="%s" hreflang="ru">RU</a>'
-           '<a class="on" aria-current="true">ENG</a></div>' % esc(alt_url))
+    # Переключатель языков собирается ЦИКЛОМ по собранным языкам, а не вёрсткой на две
+    # кнопки: свёрстанная пара RU/ENG третий язык молча теряла бы. `tail` — путь страницы
+    # БЕЗ языкового префикса, из него складывается адрес сестринской версии.
+    lang = '<div class="lang">%s</div>' % ''.join(
+        ('<a class="on" aria-current="true">%s</a>' % esc(x.name)) if x.code == L.code
+        else ('<a href="%s" hreflang="%s">%s</a>'
+              % (esc('/%s%s' % (x.prefix, tail)), x.hreflang, esc(x.name)))
+        for x in langs)
     snd = ('<button class="snd" type="button" data-off="%s" data-on="%s">%s</button>'
            % (esc(T['sndoff']), esc(T['sndon']), LIB_SND_SVG))
     return (
@@ -1397,10 +1438,6 @@ HUB_PAGE = '''<!DOCTYPE html>
 
 HUB_PAGE = with_chrome(HUB_PAGE)
 
-HUB_LEAD_RU = ('Пять направлений, в которых мы работаем с 2011 года. Внутри каждого — что входит, '
-               'как идёт работа, что определяет срок и стоимость, и проекты, на которых это уже сделано.')
-HUB_LEAD_EN = ('Five directions we have been working in since 2011. Each page covers what is included, '
-               'how the work goes, what drives cost and schedule, and the projects where we have done it.')
 
 for L in SRV_LANGS:
     # со страницы services/<slug>/ до корня столько же уровней, сколько с work/<slug>/
@@ -1414,11 +1451,11 @@ for L in SRV_LANGS:
                          for o in L.services if o['slug'] != s['slug'])
         faqblock = ('<h2>%s</h2>%s' % (esc(L.t('Частые вопросы')), render_faq(s['faq']))) if s.get('faq') else ''
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(SERVICE_PAGE.format(
-            lang=L.code, title=esc(s['title']), subtitle=esc(s['subtitle']),
+            lang=L.html, title=esc(s['title']), subtitle=esc(s['subtitle']),
             desc=esc(Lang._clip(s['subtitle'])), canon=L.url(tail), alts=srv_alternates(tail),
             cover=esc(og_for('services/' + s['slug'], cover_url(s['cases'][0], L.pmap), L.code)), locale=L.locale,
             css=SRV_CSS + LIB_CHROME_CSS,
-            chrome=lib_chrome(L, L.up, ('/en/' if L.code == 'ru' else '/') + tail, 'services'),
+            chrome=lib_chrome(L, L.up, tail, 'services'),
             chromejs=chrome_js(),
             jsonld=service_jsonld(L, s), up=L.up_srv, home=L.up_srv + L.prefix,
             srvhome=L.up_srv + L.prefix + 'services/',
@@ -1428,7 +1465,7 @@ for L in SRV_LANGS:
             t_services=esc(L.t('Услуги')), t_cases=esc(L.t('Проекты, где это сделано')),
             t_other=esc(L.t('Другие направления')), other=others,
             cta=esc(L.t('Забронировать креативную сессию →')),
-            footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+            footer=P(L, 'foot'),
             f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
     # хаб /services/: без него страницы услуг — сироты, на которые ведёт только sitemap
     hub_items = ''.join('<li><a href="%s/"><b>%s</b></a> — %s</li>'
@@ -1448,17 +1485,17 @@ for L in SRV_LANGS:
     os.makedirs(dh, exist_ok=True)
     up_hub = '../' if L.code == 'ru' else '../../'
     open(os.path.join(dh, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(HUB_PAGE.format(
-        lang=L.code, title=esc(L.t('Услуги')),
-        desc=esc(Lang._clip(HUB_LEAD_EN if L.code == 'en' else HUB_LEAD_RU)),
+        lang=L.html, title=esc(L.t('Услуги')),
+        desc=esc(Lang._clip(P(L, 'srv_hub_lead'))),
         canon=L.url('services/'), alts=srv_alternates('services/'), locale=L.locale,
         css=SRV_CSS + LIB_CHROME_CSS,
-        chrome=lib_chrome(L, up_hub, '/en/services/' if L.code == 'ru' else '/services/', 'services'),
+        chrome=lib_chrome(L, up_hub, 'services/', 'services'),
         chromejs=chrome_js(),
         cover=esc(og_card('services', L.code)),
         jsonld=hub_ld, up=up_hub, home=up_hub + L.prefix,
-        lead=esc(HUB_LEAD_EN if L.code == 'en' else HUB_LEAD_RU), items=hub_items,
+        lead=esc(P(L, 'srv_hub_lead')), items=hub_items,
         cta=esc(L.t('Забронировать креативную сессию →')),
-        footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+        footer=P(L, 'foot'),
         f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
     print('service pages [%s]: %d + хаб' % (L.code, len(L.services)))
 
@@ -1513,12 +1550,12 @@ for L in langs:
             continue
         d_ = os.path.join(SITE, L.prefix, 'work', slug)
         open(os.path.join(d_, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(PAGE.format(
-            lang=L.code, title=esc(p_['title']), pagetitle=esc(page_title(L, slug)), subtitle=esc(p_.get('subtitle') or ''),
+            lang=L.html, title=esc(p_['title']), pagetitle=esc(page_title(L, slug)), subtitle=esc(p_.get('subtitle') or ''),
             desc=esc(L.meta_desc(slug)), canon=L.url('work/%s/' % slug), alts=alternates('work/%s/' % slug),
             slug=slug, cover=esc(cover_url(slug, L.pmap)), locale=L.locale, home=L.up + L.prefix,
             jsonld=project_jsonld(L, slug), metablk=metablk(L, slug), flow=render_flow(L, p_, slug), up=L.up,
             work=L.t('Проекты'), cta=L.t('Открыть интерактивную версию →'),
-            footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+            footer=P(L, 'foot'),
             f_home=L.t('На главную'), f_all=L.t('Все проекты'), srv_foot=L.srv_foot,
             srvline=srv_of_case(L, slug))))
     print('work pages footer [%s]: обновлён' % L.code)
@@ -1526,7 +1563,7 @@ for L in langs:
 
 
 def cnc_alternates(tail):
-    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.code, BASE, L.prefix, tail)
+    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.hreflang, BASE, L.prefix, tail)
            for L in CNC_LANGS]
     if CNC_LANGS:
         out.append('<link rel="alternate" hreflang="x-default" href="%s/%s%s">'
@@ -1696,10 +1733,6 @@ CONCEPT_PAGE = with_chrome(CONCEPT_PAGE)
 # <h3>+<ul> нельзя вкладывать в <ul class="cases"> — получилась бы невалидная разметка.
 CNC_HUB_PAGE = HUB_PAGE.replace('<ul class="cases">{items}</ul>', '{items}')
 
-CNC_HUB_LEAD_RU = ('Двадцать восемь готовых к реализации концепций: замысел, что он решает, как устроен '
-                   'и где применим. Это не портфолио — это форматы, которые можно взять в проект.')
-CNC_HUB_LEAD_EN = ('Twenty-eight concepts ready to be built: the idea, what it solves, how it works and '
-                   'where it applies. Not a portfolio — formats you can take into a project.')
 
 # КОНЦЕПЦИИ — ОДНОЙ СТРАНИЦЕЙ, отдельных больше нет (06.09.2026).
 #
@@ -1763,17 +1796,17 @@ for L in CNC_LANGS:
     os.makedirs(dh, exist_ok=True)
     up_hub = '../' if L.code == 'ru' else '../../'
     open(os.path.join(dh, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(CNC_HUB_PAGE.format(
-        lang=L.code, title=esc(L.t('Концепции')),
-        desc=esc(Lang._clip(CNC_HUB_LEAD_EN if L.code == 'en' else CNC_HUB_LEAD_RU)),
+        lang=L.html, title=esc(L.t('Концепции')),
+        desc=esc(Lang._clip(P(L, 'cnc_hub_lead'))),
         cover=esc(og_card('concepts', L.code)),
         canon=L.url('concepts/'), alts=cnc_alternates('concepts/'), locale=L.locale,
         css=CNC_CSS + CNC_HUB_CSS + LIB_CHROME_CSS,
-        chrome=lib_chrome(L, up_hub, '/en/concepts/' if L.code == 'ru' else '/concepts/', 'concepts'),
+        chrome=lib_chrome(L, up_hub, 'concepts/', 'concepts'),
         chromejs=chrome_js(),
         jsonld=hub_ld, up=up_hub, home=up_hub + L.prefix,
-        lead=esc(CNC_HUB_LEAD_EN if L.code == 'en' else CNC_HUB_LEAD_RU), items=''.join(groups),
+        lead=esc(P(L, 'cnc_hub_lead')), items=''.join(groups),
         cta=esc(L.t('Забронировать креативную сессию →')),
-        footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+        footer=P(L, 'foot'),
         f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
     print('концепции [%s]: одна страница, %d концепций на ней' % (L.code, len(L.concepts)))
 
@@ -1832,7 +1865,7 @@ ATLAS_PAGE = with_chrome(ATLAS_PAGE)
 
 def atlas_alternates(tail):
     ls = [L for L in langs if getattr(L, 'has_atlas', False) or os.path.exists(os.path.join(SITE, L.data, 'atlas.json'))]
-    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.code, BASE, L.prefix, tail) for L in ls]
+    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.hreflang, BASE, L.prefix, tail) for L in ls]
     if ls:
         out.append('<link rel="alternate" hreflang="x-default" href="%s/%s%s">' % (BASE, ls[0].prefix, tail))
     return '\n'.join(out)
@@ -1854,10 +1887,6 @@ def load_atlas(L):
     return json.load(open(p, encoding='utf-8'))
 
 
-ATLAS_LEAD_RU = ('Пятьдесят принципов, приёмов и наблюдений, по которым студия работает. Не манифест '
-                 'ради манифеста: это то, на что мы опираемся, когда решаем, каким будет объект.')
-ATLAS_LEAD_EN = ('Fifty principles, techniques and observations the studio works by. Not a manifesto for '
-                 'its own sake: this is what we lean on when deciding what an object will be.')
 
 for L in langs:
     a = load_atlas(L)
@@ -1877,7 +1906,7 @@ for L in langs:
     ld = json.dumps([
         {"@context": "https://schema.org", "@type": "Article",
          "headline": L.t('Атлас: принципы студии playdisplay'),
-         "description": Lang._clip(ATLAS_LEAD_EN if L.code == 'en' else ATLAS_LEAD_RU),
+         "description": Lang._clip(P(L, 'atlas_lead')),
          "url": L.url(tail), "inLanguage": L.code,
          "author": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'},
          "publisher": {"@type": "Organization", "name": "playdisplay", "url": BASE + '/'}},
@@ -1896,20 +1925,20 @@ for L in langs:
   ol.atlas span { color:#c8d8e2; }
 '''
     open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(ATLAS_PAGE.format(
-        lang=L.code, title=esc(L.t('Атлас')),
+        lang=L.html, title=esc(L.t('Атлас')),
         h1=esc(L.t('Атлас: как мы думаем о пространстве')),
-        desc=esc(Lang._clip(ATLAS_LEAD_EN if L.code == 'en' else ATLAS_LEAD_RU)),
+        desc=esc(Lang._clip(P(L, 'atlas_lead'))),
         canon=L.url(tail), alts=atlas_alternates(tail), locale=L.locale,
         css=css + LIB_CHROME_CSS,
-        chrome=lib_chrome(L, up, '/en/atlas/' if L.code == 'ru' else '/atlas/', 'atlas'),
+        chrome=lib_chrome(L, up, 'atlas/', 'atlas'),
         chromejs=chrome_js(),
         jsonld=ld,
         cover=esc(og_card('atlas', L.code)), up=up, home=up + L.prefix,
         cnchome=up + L.prefix + 'concepts/', srvhome=up + L.prefix + 'services/',
-        lead=esc(ATLAS_LEAD_EN if L.code == 'en' else ATLAS_LEAD_RU), groups=''.join(groups),
+        lead=esc(P(L, 'atlas_lead')), groups=''.join(groups),
         t_concepts=esc(L.t('Концепции')), t_services=esc(L.t('Услуги')),
         cta=esc(L.t('Забронировать креативную сессию →')),
-        footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+        footer=P(L, 'foot'),
         f_home=esc(L.t('На главную')), f_all=esc(L.t('Все проекты')))))
     print('atlas page [%s]: %d принципов' % (L.code, len(items)))
 
@@ -2148,17 +2177,13 @@ LIB_PAGE = ATLAS_PAGE.replace(
 # и в заголовках библиотеки оно было нарушено: «...экспозиция говорит с / человеком».
 # Только заголовки и подзаголовки: в абзаце перенос не так заметен, а неразрывных
 # пробелов там набралось бы на каждой строке.
-NBSP_RU = ('в во на с со к ко о об обо у за из изо от ото по при над под про для без '
-           'через между и а но да или же ли бы не ни что как чем чтобы то ведь уже ещё').split()
-NBSP_EN = ('a an the in on at to of for and or but with by from as is it we you our your '
-           'no not its their this that').split()
 
 
 def nbsp(text, code='ru'):
     """приклеить короткие служебные слова к следующему за ними"""
     if not text:
         return text
-    words = NBSP_RU if code == 'ru' else NBSP_EN
+    words = P(code, 'nbsp_words')
     rx = re.compile(r'(?<![^\s(«"—-])(%s)\s+' % '|'.join(words), re.I | re.U)
     prev = None
     # два прохода и больше: «и в зале» — приклеить надо оба слова, а один проход
@@ -2184,7 +2209,7 @@ def lib_brands(L, item):
         '<li><a href="%s" target="_blank" rel="noopener">%s</a><span>%s</span></li>'
         % (esc(b['u']), esc(b['n']), esc(b.get('note', '')))
         for b in item['brands'])
-    return '<div class="brands"><h4>%s</h4><ul>%s</ul></div>' % (LIB_T[L.code]['brands'], li)
+    return '<div class="brands"><h4>%s</h4><ul>%s</ul></div>' % (P(L, 'lib_ui')['brands'], li)
 
 
 
@@ -2195,7 +2220,7 @@ def lib_item(L, item, idx, sec='', svc=''):
     ниже описание и «работает / не работает» двумя колонками, внизу производители.
     Плиткой было хуже: карточка в 490 пикселей ширины растягивалась на полторы
     тысячи в высоту, и две такие рядом читались как две колонки газеты."""
-    T = LIB_T[L.code]
+    T = P(L, 'lib_ui')
     out = ['<div class="libitem" id="%s" data-sec="%s">' % (esc(item['id']), esc(sec))]
 
     out.append('<div class="li-rail"><i>%s</i><span class="sec">%s</span></div>' % (idx, esc(sec)))
@@ -2256,7 +2281,7 @@ def lib_jsonld(L, cat, tail, n):
         {"@context": "https://schema.org", "@type": "BreadcrumbList",
          "itemListElement": [
              {"@type": "ListItem", "position": 1, "name": "playdisplay", "item": L.url()},
-             {"@type": "ListItem", "position": 2, "name": LIB_T[L.code]['hub'], "item": L.url('library/')},
+             {"@type": "ListItem", "position": 2, "name": P(L, 'lib_ui')['hub'], "item": L.url('library/')},
              {"@type": "ListItem", "position": 3, "name": cat['full'], "item": L.url(tail)}]},
     ], ensure_ascii=False, indent=0)
 
@@ -2274,26 +2299,20 @@ def plural(n, one, few, many):
     return many
 
 
-LIB_LEAD_RU = '%d %s оборудования: что каждое реально умеет, где привирают в презентациях и обо что спотыкаются на второй год. Мы это железо не продаём — мы им работаем.'
 
-LIB_INTRO_RU = '<p>Справочник собран не по прайс-листу, а по роли в системе. Любой интерактивный экспонат — замкнутый круг: человек что-то делает, машина считывает, экспозиция отвечает. Три категории ниже — три четверти этого круга. Слабое звено решает за все остальные.</p><p>Одна мысль проходит через каждую страницу: <b>железо выбирают последним</b>. Сначала — что человек унесёт с собой. Потом — что он для этого сделает руками. И только потом — чем это выдержать. Смету, собранную наоборот, легко узнать через год: по тёмным экранам.</p>'
 
-LIB_TAIL_RU = '<h2>Интеграция от Playdisplay</h2><p>Мы интеграторы: собираем из этого железа работающие экспозиции — от сценария до запуска. Знаем его не по каталогам, а по залам, которые сами проектировали, монтировали и потом чинили. Что из каждой позиции выжимается, где она подведёт и чем её заменить, когда бюджет не сходится, — знаем на своём опыте, а не на чужих обещаниях.</p><p>В наших руках обычный монитор становится витриной, у которой останавливаются. Тот же монитор без сценария — доска объявлений. Разница не в мониторе, а в том, что на нём происходит и почему человек это заметил.</p><p>Мы независимы от поставщиков: своего склада нет, процента с продажи железа нет. Поэтому решение подбирается под задачу, а не под остатки. Поставку возьмут наши партнёры — любое железо из этого списка на лучших для вас условиях. За нами сценарий, содержание, интерактив, софт и интеграция: программно-аппаратный комплекс целиком, а не коробки от пяти поставщиков, которые друг о друге не знают.</p><p><b>Есть спецификация на руках?</b> Пришлите. Скажем, что лишнее, чего не хватает и что не доживёт до второго года. Бесплатно, без обязательств и без коммерческого предложения следом.</p>'
 
 
 def lib_alternates(tail):
     ls = [L for L in langs if os.path.exists(os.path.join(SITE, L.data, 'library.json'))]
-    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.code, BASE, L.prefix, tail) for L in ls]
+    out = ['<link rel="alternate" hreflang="%s" href="%s/%s%s">' % (L.hreflang, BASE, L.prefix, tail) for L in ls]
     if len(ls) > 1:
         out.append('<link rel="alternate" hreflang="x-default" href="%s/%s%s">' % (BASE, ls[0].prefix, tail))
     return '\n'.join(out)
 
 
-LIB_LEAD_EN = '%d %s of equipment: what each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit — we work with it.'
 
-LIB_INTRO_EN = '<p>Organised by role in the system, not by price list. Every interactive exhibit is a closed loop: a person acts, a machine reads it, the exhibition answers. The three categories below are three quarters of that loop, and the weakest link decides for all the others.</p><p>One idea runs through every page: <b>the hardware is chosen last</b>. First, what the visitor walks out with. Then, what they do with their hands to get there. Only then, what has to survive it. A budget built the other way round is easy to spot a year later — by the dark screens.</p>'
 
-LIB_TAIL_EN = '<h2>Integration by Playdisplay</h2><p>We are integrators: we build working exhibitions out of this kit, from the story to opening day. We know it from the rooms we designed, installed and later repaired, not from catalogues. What each item really gives you, where it will let you down, and what to swap it for when the budget will not close — we know from our own work rather than from somebody else’s promises.</p><p>In our hands an ordinary monitor becomes a display people stop at. The same monitor with no story is a noticeboard. The difference is not the monitor — it is what happens on it, and why anyone noticed.</p><p>We are independent of suppliers: no warehouse of our own, no commission on hardware. So the solution gets picked for the job rather than for the stock. Supply is handled by our partners — anything on this list, on the best terms for you. Ours is the story, the content, the interaction, the software and the integration: one hardware-and-software system, rather than boxes from five vendors who have never heard of each other.</p><p><b>Got a specification in hand?</b> Send it over. We will tell you what is redundant, what is missing and what will not see year two. Free, no obligation, and no sales pitch afterwards.</p>'
 
 
 
@@ -2518,12 +2537,6 @@ LIB_FX_JS = '''/* Карточки категорий: иконка рассып
 # значит связать два независимых файла. Ключ — код языка.
 
 
-LIB_INTRO_T = {
- 'ru': LIB_INTRO_RU,
- 'en': LIB_INTRO_EN,
-}
-LIB_TAIL_T = {'ru': LIB_TAIL_RU, 'en': LIB_TAIL_EN}
-LIB_LEAD_T = {'ru': LIB_LEAD_RU, 'en': LIB_LEAD_EN}
 
 
 def load_library(L):
@@ -2546,7 +2559,7 @@ for L in langs:
     up2 = '../../' if L.code == 'ru' else '../../../'
     up1 = '../' if L.code == 'ru' else '../../'
     total = sum(len(s['items']) for c in cats for s in c['sections'])
-    T = LIB_T[L.code]
+    T = P(L, 'lib_ui')
 
     # --- страницы категорий ---
     for cat in cats:
@@ -2574,7 +2587,7 @@ for L in langs:
                   % (LIB_ICONS.get(cat['id'], ''), esc(cat['num']))
                   + '<div class="call"><b>%s</b>%s</div>' % (T['principle'], esc(cat['principle']))
                   + nav + ''.join(body)
-                  + '<h2>%s</h2><p>%s</p>' % (T['other'], other) + LIB_TAIL_T[L.code]
+                  + '<h2>%s</h2><p>%s</p>' % (T['other'], other) + P(L, 'lib_tail')
                   + '<script>var WORDS=%s,RU=%s;%s</script>'
                   % (json.dumps(list(T['pos']), ensure_ascii=False),
                      'true' if L.code == 'ru' else 'false', LIB_GRID_JS)
@@ -2583,12 +2596,12 @@ for L in langs:
         d = os.path.join(SITE, L.prefix, 'library', cat['id'])
         os.makedirs(d, exist_ok=True)
         open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
-            lang=L.code, title=esc(cat['full']),
+            lang=L.html, title=esc(cat['full']),
             h1=esc(nbsp('%s: %s' % (cat['full'], cat['line'].lower()), L.code)),
             desc=esc(Lang._clip(cat['lead'])),
             canon=L.url(tail), alts=lib_alternates(tail), locale=L.locale,
             css=LIB_CSS + LIB_CHROME_CSS,
-            chrome=lib_chrome(L, up2, ('/en/' if L.code == 'ru' else '/') + tail),
+            chrome=lib_chrome(L, up2, tail),
             chromejs='',
             jsonld=lib_jsonld(L, cat, tail, n),
             cover=esc(og_for(tail.strip('/'), cover_url(ORDER[0], L.pmap), L.code)), up=up2, home=up2 + L.prefix,
@@ -2597,7 +2610,7 @@ for L in langs:
             lead=esc(cat['lead']), groups=groups,
             t_concepts=esc(T['concepts']), t_services=esc(T['services']), cta=esc(T['cta']),
             ctahref=esc(up2 + L.prefix + '#book'),
-            footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+            footer=P(L, 'foot'),
             f_home=esc(T['home']), f_all=esc(T['all']))), )
         print('library [%s/%s]: %d позиций, %d брендов'
               % (L.code, cat['id'], n, sum(len(x['brands']) for s in cat['sections'] for x in s['items'])))
@@ -2617,7 +2630,7 @@ for L in langs:
            esc(nbsp(c['line'], L.code)), esc(c['lead']),
            _n(c), plural(_n(c), *T['pos']), _b(c), plural(_b(c), *T['man']), esc(T['open']))
         for c in cats)
-    lib_lead = LIB_LEAD_T[L.code] % (total, plural(total, *T['kind']))
+    lib_lead = P(L, 'lib_lead') % (total, plural(total, *T['kind']))
     ld = json.dumps([
         {"@context": "https://schema.org", "@type": "Article",
          "headline": T['h1'],
@@ -2632,24 +2645,24 @@ for L in langs:
     d = os.path.join(SITE, L.prefix, 'library')
     os.makedirs(d, exist_ok=True)
     open(os.path.join(d, 'index.html'), 'w', encoding='utf-8').write(stamp_assets(LIB_PAGE.format(
-        lang=L.code, title=esc(T['hub']), crumb='', h1=esc(nbsp(T['h1'], L.code)),
+        lang=L.html, title=esc(T['hub']), crumb='', h1=esc(nbsp(T['h1'], L.code)),
         desc=esc(Lang._clip(lib_lead)),
         canon=L.url('library/'), alts=lib_alternates('library/'), locale=L.locale,
         css=LIB_CSS + LIB_CHROME_CSS,
-        chrome=lib_chrome(L, up1, '/en/library/' if L.code == 'ru' else '/library/'),
+        chrome=lib_chrome(L, up1, 'library/'),
         chromejs='',
         jsonld=ld, cover=esc(og_card('library', L.code)),
         up=up1, home=up1 + L.prefix,
         cnchome=up1 + L.prefix + 'concepts/', srvhome=up1 + L.prefix + 'services/',
         lead=esc(lib_lead),
-        groups=(LIB_INTRO_T[L.code] + '<ul class="libcats">%s</ul>' % li
-                + LIB_TAIL_T[L.code]
+        groups=(P(L, 'lib_intro') + '<ul class="libcats">%s</ul>' % li
+                + P(L, 'lib_tail')
                 + '<script>%s</script>' % LIB_FX_JS
                 + '<script>%s</script>' % LIB_CHROME_JS
                 + '<script>%s</script>' % LIB_HDR_JS),
         t_concepts=esc(T['concepts']), t_services=esc(T['services']), cta=esc(T['cta']),
         ctahref=esc(up1 + L.prefix + '#book'),
-        footer=(FOOT_EN if L.code == 'en' else FOOT_RU),
+        footer=P(L, 'foot'),
         f_home=esc(T['home']), f_all=esc(T['all']))))
     print('library hub [%s]: %d категорий, %d позиций' % (L.code, len(cats), total))
 
@@ -2657,19 +2670,19 @@ for L in langs:
 # ---------- sitemap.xml: обе версии + перекрёстные hreflang ----------
 XH = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"'
 def sm_alts(tail):
-    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (s['code'], BASE, s['prefix'], tail)
-                   for s in LANGS)
+    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (s.hreflang, BASE, s.prefix, tail)
+                   for s in langs)
 urls = []
 for tail, prio in [('', '1.0')] + [('work/%s/' % s, '0.8') for s in ORDER]:
-    for spec in LANGS:
+    for spec in langs:
         urls.append('<url><loc>%s/%s%s</loc>%s<changefreq>monthly</changefreq><priority>%s</priority></url>'
-                    % (BASE, spec['prefix'], tail, sm_alts(tail), prio))
+                    % (BASE, spec.prefix, tail, sm_alts(tail), prio))
 # Самостоятельная русская продуктовая страница без английского дубля. Держим её здесь,
 # а не только в готовом sitemap: генератор запускается перед деплоем и иначе удалит URL.
 urls.append('<url><loc>%s/digital/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>' % BASE)
 # услуги: hreflang перечисляем только по языкам, где страница есть
 def sm_srv_alts(tail):
-    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.code, BASE, L.prefix, tail)
+    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.hreflang, BASE, L.prefix, tail)
                    for L in SRV_LANGS)
 for tail, prio in [('services/', '0.9')] + [('services/%s/' % s, '0.9') for s in SRV_ORDER]:
     for L in SRV_LANGS:
@@ -2677,7 +2690,7 @@ for tail, prio in [('services/', '0.9')] + [('services/%s/' % s, '0.9') for s in
                     % (BASE, L.prefix, tail, sm_srv_alts(tail), prio))
 # концепции: та же логика, свой список языков
 def sm_cnc_alts(tail):
-    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.code, BASE, L.prefix, tail)
+    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.hreflang, BASE, L.prefix, tail)
                    for L in CNC_LANGS)
 # Только хаб: отдельные адреса концепций сняты 06.09.2026 (см. пояснение выше).
 for tail, prio in [('concepts/', '0.9')]:
@@ -2689,10 +2702,10 @@ _atl = [L for L in langs if getattr(L, 'has_atlas', False)]
 for L in _atl:
     urls.append('<url><loc>%s/%satlas/</loc>%s<changefreq>monthly</changefreq><priority>0.8</priority></url>'
                 % (BASE, L.prefix,
-                   ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%satlas/"/>' % (x.code, BASE, x.prefix) for x in _atl)))
+                   ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%satlas/"/>' % (x.hreflang, BASE, x.prefix) for x in _atl)))
 # библиотека оборудования: хаб и три категории
 def sm_lib_alts(tail):
-    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.code, BASE, L.prefix, tail)
+    return ''.join('<xhtml:link rel="alternate" hreflang="%s" href="%s/%s%s"/>' % (L.hreflang, BASE, L.prefix, tail)
                    for L in LIB_LANGS) if len(LIB_LANGS) > 1 else ''
 for tail, prio in [('library/', '0.9')] + [('library/%s/' % c, '0.9') for c in LIB_ORDER]:
     for L in LIB_LANGS:
@@ -2718,14 +2731,17 @@ open(os.path.join(SITE, 'robots.txt'), 'w', encoding='utf-8').write(
     'Sitemap: %s/sitemap.xml\n' % BASE)
 
 # ---------- llms.txt: русская и английская части ----------
-RU, EN = langs[0], langs[1]
-lines = ['# playdisplay', '', '> ' + ORG_DESC, '',
+RU = langs[0]
+# ALT — языковые копии: всё, кроме исходного русского. Раньше здесь стояло
+# `RU, EN = langs[0], langs[1]`, и сборка без английского падала бы на IndexError.
+ALT = langs[1:]
+lines = ['# playdisplay', '', '> ' + P('ru', 'org_desc'), '',
          'Студия playdisplay проектирует и реализует мультимедийные инсталляции, '
          'голографические кубы, решения дополненной и виртуальной реальности, '
          'проекционные и выставочные пространства. Основатель — Андрей Судариков. '
          'О студии рассказывал Discovery Channel. Среди клиентов — BMW, Ростех, '
          'Росатом, ОДК, аэропорты и национальные музеи России.', '',
-         'English version: %s/en/' % BASE, '',
+         ] + ['%s: %s/%s' % (P(L, 'llms_lang_line'), BASE, L.prefix) for L in ALT] + ['',
          '## Услуги / Services', '']
 # ссылками, а не плоским перечнем: модель цитирует то, на что может сослаться
 for _s in RU.services:
@@ -2735,10 +2751,12 @@ lines += ['', '## Проекты', '']
 for slug in ORDER:
     p = RU.pmap.get(slug, {})
     lines.append('- [%s](%s/work/%s/): %s' % (p.get('title'), BASE, slug, RU.meta_desc(slug)))
-lines += ['', '## Projects (English)', '']
-for slug in ORDER:
-    p = EN.pmap.get(slug, {})
-    lines.append('- [%s](%s/en/work/%s/): %s' % (p.get('title'), BASE, slug, EN.meta_desc(slug)))
+for _L in ALT:
+    lines += ['', P(_L, 'llms_projects_heading'), '']
+    for slug in ORDER:
+        p = _L.pmap.get(slug, {})
+        lines.append('- [%s](%s/%swork/%s/): %s'
+                     % (p.get('title'), BASE, _L.prefix, slug, _L.meta_desc(slug)))
 # ---- Результаты: цифры отдельным разделом (22.08.2026) ----
 # Языковой модели нужен не рассказ о процессе, а «сколько людей прошло и что
 # изменилось». Такой фрагмент она цитирует целиком, поэтому даём его списком с
@@ -2797,20 +2815,11 @@ def home_block(L):
               "name": L.pmap.get(slug, {}).get('title')} for i, slug in enumerate(ORDER)]
     ld = [
         {"@context": "https://schema.org", "@type": "Organization", "name": "playdisplay",
-         "url": BASE + '/', "description": (ORG_DESC_EN if L.code == 'en' else ORG_DESC),
+         "url": BASE + '/', "description": P(L, 'org_desc'),
          "logo": BASE + '/assets/logos/logo.svg', "sameAs": SOCIALS,
          "email": "info@playdisplay.com", "foundingDate": "2011",
          "areaServed": "Worldwide",
-         "knowsAbout": ([
-             "museum concept design", "interactive exhibition design", "multimedia installations",
-             "immersive exhibitions", "visitor centre design", "projection mapping",
-             "augmented and virtual reality", "interactive showrooms"
-         ] if L.code == 'en' else [
-             "разработка концепции музея", "дизайн интерактивной экспозиции",
-             "мультимедийные инсталляции", "иммерсивные выставки", "visitor centre",
-             "проекционный маппинг", "дополненная и виртуальная реальность",
-             "интерактивные шоурумы"
-         ]),
+         "knowsAbout": P(L, 'knows_about'),
          "contactPoint": {"@type": "ContactPoint", "contactType": "sales",
                           "email": "info@playdisplay.com",
                           "availableLanguage": ["Russian", "English", "Portuguese"]},
@@ -2831,7 +2840,7 @@ def home_block(L):
         {"@context": "https://schema.org", "@type": "WebSite", "name": "playdisplay",
          "url": L.url(), "inLanguage": L.code},
         {"@context": "https://schema.org", "@type": "ItemList",
-         "name": ('playdisplay projects' if L.code == 'en' else 'Проекты playdisplay'),
+         "name": P(L, 'projects_list_name'),
          "itemListElement": items},
     ]
     ld_block = '\n'.join('<script type="application/ld+json">%s</script>' % json.dumps(x, ensure_ascii=False) for x in ld)
@@ -2855,7 +2864,7 @@ def home_block(L):
         ns_atl = '<p><a href="%satlas/">%s</a></p>' % ('' if L.code == 'ru' else '/' + L.prefix,
                                                        esc(L.t('Атлас: как мы думаем о пространстве')))
     noscript = ('<noscript><section><h2>%s</h2><ul>%s</ul></section>%s%s</noscript>'
-                % (('playdisplay projects' if L.code == 'en' else 'Проекты playdisplay'), ns_items, ns_cnc, ns_atl))
+                % (P(L, 'projects_list_name'), ns_items, ns_cnc, ns_atl))
     return '<!--SEO-->\n' + ld_block + '\n' + noscript + '\n<!--/SEO-->'
 
 # ---------- SEO-блок русской главной вставляем САМИ ----------
@@ -2868,6 +2877,17 @@ _home = open(os.path.join(SITE, 'index.html'), encoding='utf-8').read()
 if '<!--SEO-->' not in _home:
     raise SystemExit('в site/index.html нет маркеров <!--SEO-->…<!--/SEO--> — вставлять некуда')
 _new = re.sub(r'<!--SEO-->.*?<!--/SEO-->', lambda m: home_block(RU), _home, count=1, flags=re.S)
+
+# Список языков — из одного источника. Раньше язык надо было вписывать ДВАЖДЫ: в LANGS
+# здесь и в LANGS внутри site/index.html. Ступень, которую надо помнить, однажды не
+# делают — ровно так /en/index.html отставала на несколько поставок. Теперь список
+# собирается из langs и подставляется между маркерами, как и SEO-блок.
+if '<!--LANGS-->' not in _new:
+    raise SystemExit('в site/index.html нет маркеров <!--LANGS-->…<!--/LANGS--> — вставлять некуда')
+_langs_js = ('<!--LANGS--><script>window.PD_LANGS=%s;</script><!--/LANGS-->'
+             % json.dumps([[L.code, L.name, '/' + L.prefix] for L in langs],
+                          ensure_ascii=False, separators=(',', ':')))
+_new = re.sub(r'<!--LANGS-->.*?<!--/LANGS-->', lambda m: _langs_js, _new, count=1, flags=re.S)
 
 # ЧИСЛА НА СЛАЙДЕ ОБОРУДОВАНИЯ СЧИТАЮТСЯ ИЗ ДАННЫХ, а не живут в разметке.
 # Библиотека растёт, и «63 типа» уже один раз разъехались с настоящими 65 —
@@ -2899,75 +2919,93 @@ if _new != _home:
 else:
     print('index.html: уже актуален')
 
-# ---------- /en/index.html — копия главной под английский ----------
-src = _new
-EN_TITLE = ('playdisplay — spaces people remember: museums, exhibitions, interactive exhibits')
-EN_DESC = ORG_DESC_EN
-EN_KEYS = ('museum concept design, interactive exhibit design, turnkey multimedia exhibition, '
-           'visitor centre concept, immersive exhibition, interactive showroom, multimedia installation, '
-           'projection mapping, museum exhibition, playdisplay, Andrey Sudarikov')
-en = src
-en = en.replace('<html lang="ru">', '<html lang="en">', 1)
-# base — чтобы относительные пути (assets, videos, data) считались от корня, а не от /en/
-en = en.replace('<head>', '<head>\n<base href="/">', 1)
-en = re.sub(r'<title>.*?</title>', '<title>%s</title>' % esc(EN_TITLE), en, count=1, flags=re.S)
-en = re.sub(r'<meta name="description" content="[^"]*">', '<meta name="description" content="%s">' % esc(EN_DESC), en, count=1)
-en = re.sub(r'<meta name="keywords" content="[^"]*">', '<meta name="keywords" content="%s">' % esc(EN_KEYS), en, count=1)
-en = re.sub(r'\n?<link rel="alternate" hreflang="[^"]*" href="[^"]*">', '', en)   # чужие/русские — долой
-en = en.replace('<link rel="canonical" href="%s/">' % BASE,
-                '<link rel="canonical" href="%s/en/">\n%s' % (BASE, alternates('')), 1)
-en = en.replace('<meta property="og:locale" content="ru_RU">', '<meta property="og:locale" content="en_US">', 1)
-en = re.sub(r'<meta property="og:title" content="[^"]*">',
-            '<meta property="og:title" content="playdisplay — spaces people remember">', en, count=1)
-en = re.sub(r'<meta property="og:description" content="[^"]*">',
-            '<meta property="og:description" content="%s">' % esc(EN_DESC), en, count=1)
-en = en.replace('<meta property="og:url" content="%s/">' % BASE,
-                '<meta property="og:url" content="%s/en/">' % BASE, 1)
-en = re.sub(r'<meta name="twitter:title" content="[^"]*">',
-            '<meta name="twitter:title" content="playdisplay — spaces people remember">', en, count=1)
-en = re.sub(r'<meta name="twitter:description" content="[^"]*">',
-            '<meta name="twitter:description" content="%s">' % esc(EN_DESC), en, count=1)
-# карточка превью тоже переводная — на ней набран текст
-_og_en = og_card('home', 'en')
-_n_og = en.count(og_card('home'))
-if _n_og != 2:
-    raise SystemExit('в главной ожидались 2 ссылки на карточку превью (og и twitter), найдено %d' % _n_og)
-en = en.replace(og_card('home'), _og_en)
-# язык и словарь — до основного скрипта, поэтому в самом конце head
-# к словарю добавляем отпечаток содержимого: браузер держит его в кэше, и без метки
-# правки перевода доезжали бы до посетителя только после сброса кэша
-import hashlib
-dic_path = os.path.join(SITE, 'data/i18n/en.js')
-dic_ver = hashlib.sha1(open(dic_path, 'rb').read()).hexdigest()[:8]
-# сцене язык передаём в адресе: она подхватит тот же словарь
-en = re.sub(r'(src="hero-scene\.html[^"]*)"',
-            lambda m: m.group(1) + '&lang=en"', en, count=1)
-en = en.replace('</head>', "<script>window.PD_LANG='en';</script>\n"
-                           '<script src="data/i18n/en.js?v=%s"></script>\n</head>' % dic_ver, 1)
-# SEO-блок русской главной меняем на английский
-en = re.sub(r'<!--SEO-->.*?<!--/SEO-->', lambda m: home_block(EN), en, count=1, flags=re.S)
-# ссылка «Услуги» в меню: на английской копии ведёт в английский раздел.
-# У /en/index.html стоит <base href="/">, поэтому и относительный путь, и абсолютный
-# без префикса увели бы посетителя на русские страницы. Подписи переводит словарь
-# на клиенте, адрес словарь не трогает — его меняем здесь.
-_n_srv = en.count('href="/services/"')
-if _n_srv != 2:
-    raise SystemExit('в главной ожидались 2 ссылки на /services/ (шапка и мобильное меню), найдено %d' % _n_srv)
-en = en.replace('href="/services/"', 'href="/en/services/"')
-# то же для библиотеки оборудования: шапка, мобильное меню и кнопка в полосе
-# Ловим ВСЕ адреса раздела, а не только хаб: на слайде есть ещё три ссылки
-# в категории вида /library/output/, и с точным «/library/"» они оставались
-# русскими — человек с английской главной уходил на русскую страницу.
-_n_lib = en.count('href="/library/')
-if _n_lib != 6:
-    raise SystemExit('в главной ожидались 6 ссылок на /library/ (шапка, мобильное меню, '
-                     'три категории и кнопка), найдено %d' % _n_lib)
-en = en.replace('href="/library/', 'href="/en/library/')
-en = en.replace('name="Landing — Spatial Capture (RU)"', 'name="Landing — Spatial Capture (EN)"', 1)
-en = en.replace('PlayDisplay long-form landing (RU)', 'PlayDisplay long-form landing (EN)', 1)
-os.makedirs(os.path.join(SITE, 'en'), exist_ok=True)
-open(os.path.join(SITE, 'en/index.html'), 'w', encoding='utf-8').write(en)
-print('en/index.html: %.0f КБ, словарь %d строк' % (len(en) / 1024, len(EN.dic)))
+# ---------- языковые копии главной: /en/index.html, /pt/index.html ----------
+# Копия делается ИЗ русской главной, а не пишется отдельным файлом: именно так однажды
+# и разошлись версии — /en/index.html отстала на 50 КБ и несколько поставок, а ассистент
+# на ней остался прошлого поколения. Один источник, остальное подставляется здесь.
+def build_home(L, src):
+    """копия главной под язык L: мета, base, словарь, SEO-блок и адреса разделов"""
+    h = src
+    h = h.replace('<html lang="ru">', '<html lang="%s">' % L.html, 1)
+    # base — чтобы относительные пути (assets, videos, data) считались от корня, а не от /<lang>/
+    h = h.replace('<head>', '<head>\n<base href="/">', 1)
+    desc = P(L, 'home_desc')
+    h = re.sub(r'<title>.*?</title>', '<title>%s</title>' % esc(P(L, 'home_title')), h, count=1, flags=re.S)
+    h = re.sub(r'<meta name="description" content="[^"]*">',
+               '<meta name="description" content="%s">' % esc(desc), h, count=1)
+    h = re.sub(r'<meta name="keywords" content="[^"]*">',
+               '<meta name="keywords" content="%s">' % esc(P(L, 'home_keys')), h, count=1)
+    h = re.sub(r'\n?<link rel="alternate" hreflang="[^"]*" href="[^"]*">', '', h)   # чужие/русские — долой
+    h = h.replace('<link rel="canonical" href="%s/">' % BASE,
+                  '<link rel="canonical" href="%s/%s">\n%s' % (BASE, L.prefix, alternates('')), 1)
+    h = h.replace('<meta property="og:locale" content="ru_RU">',
+                  '<meta property="og:locale" content="%s">' % L.locale, 1)
+    og_title = P(L, 'home_og_title')
+    h = re.sub(r'<meta property="og:title" content="[^"]*">',
+               '<meta property="og:title" content="%s">' % esc(og_title), h, count=1)
+    h = re.sub(r'<meta property="og:description" content="[^"]*">',
+               '<meta property="og:description" content="%s">' % esc(desc), h, count=1)
+    h = h.replace('<meta property="og:url" content="%s/">' % BASE,
+                  '<meta property="og:url" content="%s/%s">' % (BASE, L.prefix), 1)
+    h = re.sub(r'<meta name="twitter:title" content="[^"]*">',
+               '<meta name="twitter:title" content="%s">' % esc(og_title), h, count=1)
+    h = re.sub(r'<meta name="twitter:description" content="[^"]*">',
+               '<meta name="twitter:description" content="%s">' % esc(desc), h, count=1)
+    # карточка превью тоже переводная — на ней набран текст
+    n_og = h.count(og_card('home'))
+    if n_og != 2:
+        raise SystemExit('в главной ожидались 2 ссылки на карточку превью (og и twitter), найдено %d' % n_og)
+    h = h.replace(og_card('home'), og_card('home', L.code))
+    # язык и словарь — до основного скрипта, поэтому в самом конце head.
+    # К словарю добавляем отпечаток содержимого: браузер держит его в кэше, и без метки
+    # правки перевода доезжали бы до посетителя только после сброса кэша.
+    dic_path = os.path.join(SITE, 'data/i18n/%s.js' % L.code)
+    if not os.path.exists(dic_path):
+        raise SystemExit('нет словаря %s — язык %r собирать нечем'
+                         % (os.path.relpath(dic_path, ROOT), L.code))
+    dic_ver = hashlib.sha1(open(dic_path, 'rb').read()).hexdigest()[:8]
+    # сцене язык передаём в адресе: она подхватит тот же словарь
+    h = re.sub(r'(src="hero-scene\.html[^"]*)"',
+               lambda m: m.group(1) + '&lang=%s"' % L.code, h, count=1)
+    lang_js = "window.PD_LANG='%s';" % L.code
+    if L.html != L.code:
+        # Атрибут lang у <html> не всегда равен коду языка: у бразильского он pt-BR,
+        # а код — pt (папка /pt/ и data/i18n/pt.js). Пишем вторым ключом, чтобы код
+        # остался коротким там, где по нему выбираются пути и словарь.
+        lang_js += "window.PD_HTML_LANG='%s';" % L.html
+    h = h.replace('</head>', '<script>%s</script>\n' % lang_js
+                  + '<script src="data/i18n/%s.js?v=%s"></script>\n</head>' % (L.code, dic_ver), 1)
+    # SEO-блок русской главной меняем на блок этого языка
+    h = re.sub(r'<!--SEO-->.*?<!--/SEO-->', lambda m: home_block(L), h, count=1, flags=re.S)
+    # Ссылка «Услуги» в меню: на языковой копии ведёт в свой раздел. У копии стоит
+    # <base href="/">, поэтому и относительный путь, и абсолютный без префикса увели бы
+    # посетителя на русские страницы. Подписи переводит словарь на клиенте, адрес
+    # словарь не трогает — его меняем здесь.
+    n_srv = h.count('href="/services/"')
+    if n_srv != 2:
+        raise SystemExit('в главной ожидались 2 ссылки на /services/ (шапка и мобильное меню), найдено %d' % n_srv)
+    h = h.replace('href="/services/"', 'href="/%sservices/"' % L.prefix)
+    # То же для библиотеки оборудования: шапка, мобильное меню и кнопка в полосе.
+    # Ловим ВСЕ адреса раздела, а не только хаб: на слайде есть ещё три ссылки
+    # в категории вида /library/output/, и с точным «/library/"» они оставались
+    # русскими — человек с языковой главной уходил на русскую страницу.
+    n_lib = h.count('href="/library/')
+    if n_lib != 6:
+        raise SystemExit('в главной ожидались 6 ссылок на /library/ (шапка, мобильное меню, '
+                         'три категории и кнопка), найдено %d' % n_lib)
+    h = h.replace('href="/library/', 'href="/%slibrary/' % L.prefix)
+    tag = L.code.upper()
+    h = h.replace('name="Landing — Spatial Capture (RU)"',
+                  'name="Landing — Spatial Capture (%s)"' % tag, 1)
+    h = h.replace('PlayDisplay long-form landing (RU)', 'PlayDisplay long-form landing (%s)' % tag, 1)
+    return h
+
+
+for _L in ALT:
+    _home = build_home(_L, _new)
+    os.makedirs(os.path.join(SITE, _L.prefix.rstrip('/')), exist_ok=True)
+    open(os.path.join(SITE, _L.prefix, 'index.html'), 'w', encoding='utf-8').write(_home)
+    print('%sindex.html: %.0f КБ, словарь %d строк' % (_L.prefix, len(_home) / 1024, len(_L.dic)))
 print('sitemap/robots/llms + home JSON-LD ready; noscript items:', len(ORDER))
 if MISSING:
     # без dict.fromkeys список удваивался: страницы работ рисуются дважды (второй раз —

@@ -1,0 +1,274 @@
+{
+ "org_desc": {
+  "_": "Описание студии: JSON-LD Organization, llms.txt, мета-описание главной",
+  "ru": "playdisplay проектирует пространства и впечатления, которые люди запоминают: современные музеи, интерактивные экспозиции, visitor centre, шоурумы и иммерсивные выставки. Превращаем идею, историю или бренд в опыт, который хочется пережить.",
+  "en": "playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of."
+ },
+ "foot": {
+  "_": "Подвал всех сгенерированных страниц",
+  "ru": "playdisplay — пространства, которые люди запоминают: музеи, интерактивные экспозиции, visitor centre и иммерсивные выставки.",
+  "en": "playdisplay — spaces people remember: museums, interactive exhibits, visitor centres and immersive exhibitions."
+ },
+ "srv_hub_lead": {
+  "_": "Лид хаба услуг /services/",
+  "ru": "Пять направлений, в которых мы работаем с 2011 года. Внутри каждого — что входит, как идёт работа, что определяет срок и стоимость, и проекты, на которых это уже сделано.",
+  "en": "Five directions we have been working in since 2011. Each page covers what is included, how the work goes, what drives cost and schedule, and the projects where we have done it."
+ },
+ "cnc_hub_lead": {
+  "_": "Лид хаба концепций /concepts/",
+  "ru": "Двадцать восемь готовых к реализации концепций: замысел, что он решает, как устроен и где применим. Это не портфолио — это форматы, которые можно взять в проект.",
+  "en": "Twenty-eight concepts ready to be built: the idea, what it solves, how it works and where it applies. Not a portfolio — formats you can take into a project."
+ },
+ "atlas_lead": {
+  "_": "Лид Атласа /atlas/",
+  "ru": "Пятьдесят принципов, приёмов и наблюдений, по которым студия работает. Не манифест ради манифеста: это то, на что мы опираемся, когда решаем, каким будет объект.",
+  "en": "Fifty principles, techniques and observations the studio works by. Not a manifesto for its own sake: this is what we lean on when deciding what an object will be."
+ },
+ "lib_lead": {
+  "_": "Лид библиотеки оборудования. %d и %s подставляет сборка — оставить как есть",
+  "ru": "%d %s оборудования: что каждое реально умеет, где привирают в презентациях и обо что спотыкаются на второй год. Мы это железо не продаём — мы им работаем.",
+  "en": "%d %s of equipment: what each one actually does, where the sales deck stretches the truth, and what trips people up in year two. We do not sell this kit — we work with it."
+ },
+ "lib_intro": {
+  "_": "Вступление хаба библиотеки, HTML. Теги не трогать",
+  "ru": "<p>Справочник собран не по прайс-листу, а по роли в системе. Любой интерактивный экспонат — замкнутый круг: человек что-то делает, машина считывает, экспозиция отвечает. Три категории ниже — три четверти этого круга. Слабое звено решает за все остальные.</p><p>Одна мысль проходит через каждую страницу: <b>железо выбирают последним</b>. Сначала — что человек унесёт с собой. Потом — что он для этого сделает руками. И только потом — чем это выдержать. Смету, собранную наоборот, легко узнать через год: по тёмным экранам.</p>",
+  "en": "<p>Organised by role in the system, not by price list. Every interactive exhibit is a closed loop: a person acts, a machine reads it, the exhibition answers. The three categories below are three quarters of that loop, and the weakest link decides for all the others.</p><p>One idea runs through every page: <b>the hardware is chosen last</b>. First, what the visitor walks out with. Then, what they do with their hands to get there. Only then, what has to survive it. A budget built the other way round is easy to spot a year later — by the dark screens.</p>"
+ },
+ "lib_tail": {
+  "_": "Блок «Интеграция от Playdisplay» внизу страниц библиотеки, HTML",
+  "ru": "<h2>Интеграция от Playdisplay</h2><p>Мы интеграторы: собираем из этого железа работающие экспозиции — от сценария до запуска. Знаем его не по каталогам, а по залам, которые сами проектировали, монтировали и потом чинили. Что из каждой позиции выжимается, где она подведёт и чем её заменить, когда бюджет не сходится, — знаем на своём опыте, а не на чужих обещаниях.</p><p>В наших руках обычный монитор становится витриной, у которой останавливаются. Тот же монитор без сценария — доска объявлений. Разница не в мониторе, а в том, что на нём происходит и почему человек это заметил.</p><p>Мы независимы от поставщиков: своего склада нет, процента с продажи железа нет. Поэтому решение подбирается под задачу, а не под остатки. Поставку возьмут наши партнёры — любое железо из этого списка на лучших для вас условиях. За нами сценарий, содержание, интерактив, софт и интеграция: программно-аппаратный комплекс целиком, а не коробки от пяти поставщиков, которые друг о друге не знают.</p><p><b>Есть спецификация на руках?</b> Пришлите. Скажем, что лишнее, чего не хватает и что не доживёт до второго года. Бесплатно, без обязательств и без коммерческого предложения следом.</p>",
+  "en": "<h2>Integration by Playdisplay</h2><p>We are integrators: we build working exhibitions out of this kit, from the story to opening day. We know it from the rooms we designed, installed and later repaired, not from catalogues. What each item really gives you, where it will let you down, and what to swap it for when the budget will not close — we know from our own work rather than from somebody else’s promises.</p><p>In our hands an ordinary monitor becomes a display people stop at. The same monitor with no story is a noticeboard. The difference is not the monitor — it is what happens on it, and why anyone noticed.</p><p>We are independent of suppliers: no warehouse of our own, no commission on hardware. So the solution gets picked for the job rather than for the stock. Supply is handled by our partners — anything on this list, on the best terms for you. Ours is the story, the content, the interaction, the software and the integration: one hardware-and-software system, rather than boxes from five vendors who have never heard of each other.</p><p><b>Got a specification in hand?</b> Send it over. We will tell you what is redundant, what is missing and what will not see year two. Free, no obligation, and no sales pitch afterwards.</p>"
+ },
+ "nbsp_words": {
+  "_": "Короткие служебные слова, которые приклеиваются к следующему неразрывным пробелом. Список слов языка, а не перевод: для португальского — предлоги и артикли (a, o, de, em, com...)",
+  "ru": [
+   "в",
+   "во",
+   "на",
+   "с",
+   "со",
+   "к",
+   "ко",
+   "о",
+   "об",
+   "обо",
+   "у",
+   "за",
+   "из",
+   "изо",
+   "от",
+   "ото",
+   "по",
+   "при",
+   "над",
+   "под",
+   "про",
+   "для",
+   "без",
+   "через",
+   "между",
+   "и",
+   "а",
+   "но",
+   "да",
+   "или",
+   "же",
+   "ли",
+   "бы",
+   "не",
+   "ни",
+   "что",
+   "как",
+   "чем",
+   "чтобы",
+   "то",
+   "ведь",
+   "уже",
+   "ещё"
+  ],
+  "en": [
+   "a",
+   "an",
+   "the",
+   "in",
+   "on",
+   "at",
+   "to",
+   "of",
+   "for",
+   "and",
+   "or",
+   "but",
+   "with",
+   "by",
+   "from",
+   "as",
+   "is",
+   "it",
+   "we",
+   "you",
+   "our",
+   "your",
+   "no",
+   "not",
+   "its",
+   "their",
+   "this",
+   "that"
+  ]
+ },
+ "projects_list_name": {
+  "_": "Заголовок списка проектов в JSON-LD и noscript главной",
+  "ru": "Проекты playdisplay",
+  "en": "playdisplay projects"
+ },
+ "lib_hub_link": {
+  "_": "Подпись ссылки на библиотеку в подвале",
+  "ru": "Библиотека оборудования",
+  "en": "Equipment library"
+ },
+ "knows_about": {
+  "_": "knowsAbout в JSON-LD: слова, по которым студию можно опознать",
+  "ru": [
+   "разработка концепции музея",
+   "дизайн интерактивной экспозиции",
+   "мультимедийные инсталляции",
+   "иммерсивные выставки",
+   "visitor centre",
+   "проекционный маппинг",
+   "дополненная и виртуальная реальность",
+   "интерактивные шоурумы"
+  ],
+  "en": [
+   "museum concept design",
+   "interactive exhibition design",
+   "multimedia installations",
+   "immersive exhibitions",
+   "visitor centre design",
+   "projection mapping",
+   "augmented and virtual reality",
+   "interactive showrooms"
+  ]
+ },
+ "lib_ui": {
+  "_": "Подписи разделов библиотеки оборудования. pos/man/kind — формы множественного числа: для русского три (позиция/позиции/позиций), для языков с двумя формами вторая и третья совпадают",
+  "ru": {
+   "brands": "Производители",
+   "good": "Когда работает",
+   "bad": "Когда не работает",
+   "compare": "Два принципа",
+   "hw": "Важно для спецификации",
+   "spec": "Как считать",
+   "warn": "Наше мнение",
+   "principle": "Принцип категории",
+   "other": "Другие категории",
+   "ourcase": "Как это сделано у нас: ",
+   "service": "Где применяем: ",
+   "hub": "Библиотека оборудования",
+   "cta": "Прислать спецификацию на проверку →",
+   "open": "Открыть раздел",
+   "search": "Поиск по названию, задаче или бренду",
+   "nothing": "Ничего не нашлось. Попробуйте другое слово.",
+   "work": "Проекты",
+   "atlas": "Атлас",
+   "hubnav": "Оборудование",
+   "talk": "▶ Обсудить идею",
+   "back": "Назад",
+   "top": "Наверх",
+   "studio": "Студия",
+   "sndoff": "Выключить звук",
+   "sndon": "Включить звук",
+   "concepts": "Библиотека",
+   "services": "Услуги",
+   "home": "На главную",
+   "all": "Все проекты",
+   "h1": "Библиотека оборудования интерактивных экспозиций",
+   "pos": [
+    "позиция",
+    "позиции",
+    "позиций"
+   ],
+   "man": [
+    "производитель",
+    "производителя",
+    "производителей"
+   ],
+   "kind": [
+    "тип",
+    "типа",
+    "типов"
+   ]
+  },
+  "en": {
+   "brands": "Manufacturers",
+   "good": "Works when",
+   "bad": "Falls short when",
+   "compare": "Two principles",
+   "hw": "Watch out in the spec",
+   "spec": "How to size it",
+   "warn": "Our take",
+   "principle": "The principle here",
+   "other": "Other categories",
+   "ourcase": "How we built it: ",
+   "service": "Where we apply it: ",
+   "hub": "Equipment library",
+   "cta": "Send us your specification for a free review →",
+   "open": "Open the section",
+   "search": "Search by name, job or brand",
+   "nothing": "Nothing matched. Try another word.",
+   "work": "Work",
+   "atlas": "Atlas",
+   "hubnav": "Equipment",
+   "talk": "▶ Book a call",
+   "back": "Back",
+   "top": "Top",
+   "studio": "Studio",
+   "sndoff": "Mute",
+   "sndon": "Unmute",
+   "concepts": "Concepts",
+   "services": "Services",
+   "home": "Home",
+   "all": "All projects",
+   "h1": "An equipment library for interactive exhibitions",
+   "pos": [
+    "entry",
+    "entries",
+    "entries"
+   ],
+   "man": [
+    "manufacturer",
+    "manufacturers",
+    "manufacturers"
+   ],
+   "kind": [
+    "type",
+    "types",
+    "types"
+   ]
+  }
+ },
+ "home_title": {
+  "_": "Заголовок <title> языковой копии главной",
+  "en": "playdisplay — spaces people remember: museums, exhibitions, interactive exhibits"
+ },
+ "home_desc": {
+  "_": "Мета-описание языковой копии главной. По умолчанию = org_desc",
+  "en": "playdisplay designs spaces and experiences people remember: contemporary museums, interactive exhibits, visitor centres, showrooms and immersive exhibitions. We turn ideas, stories, spaces and brands into experiences people want to be part of."
+ },
+ "home_keys": {
+  "_": "Мета keywords языковой копии главной",
+  "en": "museum concept design, interactive exhibit design, turnkey multimedia exhibition, visitor centre concept, immersive exhibition, interactive showroom, multimedia installation, projection mapping, museum exhibition, playdisplay, Andrey Sudarikov"
+ },
+ "home_og_title": {
+  "_": "og:title и twitter:title языковой копии главной",
+  "en": "playdisplay — spaces people remember"
+ },
+ "llms_lang_line": {
+  "_": "Строка в llms.txt со ссылкой на языковую версию: «<это>: https://…/en/»",
+  "en": "English version"
+ },
+ "llms_projects_heading": {
+  "_": "Заголовок раздела проектов языковой версии в llms.txt, с решётками markdown",
+  "en": "## Projects (English)"
+ }
+}
