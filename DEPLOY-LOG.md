@@ -8,6 +8,70 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-19 13:27 — hybrid-v8 @ 516e916
+
+**Коммиты в этой поставке**
+```
+516e916 Вычитка и публикация португальской версии
+73bd5ea Первая версия перевода на бразильский португальский: 2704 строки
+0c083f2 ТЗ на перевод сцены и мини-игры: опись, диагноз и правила
+83f68fb Памятка: как переводить батчи и что проверяет сборка
+3d25809 Ассистент и распознавание речи переведены на бразильский португальский
+5e9ba71 Конвейер перевода: выгрузка батчей, сборка обратно с проверками, скан страниц
+edc59ee Контакты к целям раннего захода
+9a3a8da Генератор готов к третьему языку: проза в данных, язык вписывается один раз
+ebc2d8f Стратегия раннего захода вместо участия в чужих конкурсах
+47f1e6e Монитор ранних сигналов: кто СОБИРАЕТСЯ заказывать экспозицию
+8d2809d Чтобы не терять тех, кто приходит по старым ссылкам
+9076e10 Журнал деплоя: 1ec40f7
+```
+
+**На сервер отправлено файлов:** 197, удалено: 0
+```
+.htaccess
+index.html
+llms.txt
+robots.txt
+sitemap.xml
+api/lib/brief.php
+api/lib/prompts.php
+assets/og/og-atlas.jpg
+assets/og/og-concepts.jpg
+assets/og/og-corp-museum.jpg
+assets/og/og-equipment.jpg
+assets/og/og-equipping.jpg
+assets/og/og-home.jpg
+assets/og/og-lib-input.jpg
+assets/og/og-lib-output.jpg
+assets/og/og-lib-proc.jpg
+assets/og/og-library.jpg
+assets/og/og-mm-equipment.jpg
+assets/og/og-services.jpg
+assets/og/og-space.jpg
+assets/og/og-web.jpg
+assets/og/en/og-atlas.jpg
+assets/og/en/og-concepts.jpg
+assets/og/en/og-corp-museum.jpg
+assets/og/en/og-equipment.jpg
+assets/og/en/og-equipping.jpg
+assets/og/en/og-home.jpg
+assets/og/en/og-lib-input.jpg
+assets/og/en/og-lib-output.jpg
+assets/og/en/og-lib-proc.jpg
+assets/og/en/og-library.jpg
+assets/og/en/og-mm-equipment.jpg
+assets/og/en/og-services.jpg
+assets/og/en/og-space.jpg
+assets/og/en/og-web.jpg
+assets/og/pt/
+assets/og/pt/og-atlas.jpg
+assets/og/pt/og-concepts.jpg
+assets/og/pt/og-corp-museum.jpg
+assets/og/pt/og-equipment.jpg
+…и ещё 157
+```
+
+
 ## 2026-09-18 13:36 — hybrid-v8 @ 1ec40f7
 
 **Коммиты в этой поставке**
