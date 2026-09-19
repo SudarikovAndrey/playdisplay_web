@@ -148,14 +148,14 @@
    "path": "categories/2/sections/2/items/3/bad/2",
    "ru": "Лицензия платная и считается по машинам — парк из десяти точек это ощутит",
    "en": "Paid licensing counted per machine — an estate of ten points will feel it",
-   "pt": "Licenciamento pago contado por máquina — um parque de dez pontos sente"
+   "pt": "Licenciamento pago por máquina — um parque com dez pontos sente no orçamento"
   },
   {
    "id": "library-06#022",
    "path": "categories/2/sections/2/items/3/bad/3",
    "ru": "Один экспонат с простой логикой: избыточно",
    "en": "One exhibit with simple logic: overkill",
-   "pt": "Um exponente com lógica simples: exagero"
+   "pt": "Um módulo com lógica simples: exagero"
   },
   {
    "id": "library-06#023",
@@ -204,7 +204,7 @@
    "path": "categories/2/sections/2/items/4/bad/0",
    "ru": "Специалистов ещё меньше, чем по TouchDesigner: передать проект будет некому",
    "en": "Even fewer specialists than for TouchDesigner: there will be nobody to hand it to",
-   "pt": "Ainda menos especialistas que para TouchDesigner: não vai haver a quem passar"
+   "pt": "Ainda menos especialistas do que em TouchDesigner: depois não haverá para quem transferir o projeto"
   },
   {
    "id": "library-06#030",
@@ -274,7 +274,7 @@
    "path": "categories/2/sections/2/items/5/good/2",
    "ru": "Нужен пульт, за который сядет человек и поведёт показ руками",
    "en": "You need a desk that a person sits at and drives the show by hand",
-   "pt": "É preciso uma mesa em que alguém se senta e conduz o espetáculo na mão"
+   "pt": "É preciso um console em que alguém se senta e conduz o espetáculo ao vivo"
   },
   {
    "id": "library-06#040",
@@ -540,14 +540,14 @@
    "path": "categories/2/sections/3/items/1/good/2",
    "ru": "Смотритель должен уметь перезапустить экспонат сам",
    "en": "An attendant has to be able to restart an exhibit unaided",
-   "pt": "Um atendente precisa conseguir reiniciar um exponente sozinho"
+   "pt": "Um atendente precisa conseguir reiniciar um módulo sozinho"
   },
   {
    "id": "library-06#078",
    "path": "categories/2/sections/3/items/1/bad/0",
    "ru": "Один-два экспоната: обычная розетка с таймером решает то же",
    "en": "One or two exhibits: a socket with a timer does the same",
-   "pt": "Um ou dois exponentes: uma tomada com temporizador faz o mesmo"
+   "pt": "Um ou dois módulos: uma tomada com temporizador faz o mesmo"
   },
   {
    "id": "library-06#079",
@@ -596,7 +596,7 @@
    "path": "categories/2/sections/3/items/2/what",
    "ru": "Система сообщает, что экспонат погас, лампа выработала ресурс или машина перезагрузилась ночью. Без неё о неполадке узнают из отзыва в интернете.",
    "en": "The system reports that an exhibit has gone dark, a lamp has reached end of life, or a machine rebooted overnight. Without it you hear about the fault from an online review.",
-   "pt": "O sistema avisa que um exponente apagou, que uma lâmpada chegou ao fim da vida ou que uma máquina reiniciou de madrugada. Sem isso você fica sabendo da falha por uma avaliação na internet."
+   "pt": "O sistema avisa que um módulo apagou, que uma lâmpada chegou ao fim da vida ou que uma máquina reiniciou de madrugada. Sem isso, você fica sabendo da falha por uma avaliação na internet."
   },
   {
    "id": "library-06#086",
@@ -659,7 +659,7 @@
    "path": "categories/2/sections/3/items/3/what",
    "ru": "Панель, через которую музей сам правит подписи, меняет фотографии и добавляет язык. Самая важная строка приёмки и самая часто отсутствующая.",
    "en": "The panel through which the museum edits captions itself, swaps photographs and adds a language. The most important line in the acceptance list and the most frequently absent.",
-   "pt": "O painel pelo qual o museu edita legendas sozinho, troca fotos e acrescenta um idioma. A linha mais importante da lista de recebimento e a mais frequentemente ausente."
+   "pt": "O painel pelo qual o museu edita legendas sozinho, troca fotos e acrescenta um idioma. A linha mais importante do checklist de aceite e a que mais costuma faltar."
   },
   {
    "id": "library-06#095",
@@ -687,21 +687,21 @@
    "path": "categories/2/sections/3/items/3/bad/0",
    "ru": "Экспонат разовый и меняться не будет — редкий случай, но бывает",
    "en": "A one-off exhibit that will never change — rare, but it happens",
-   "pt": "Um exponente único que nunca vai mudar — raro, mas acontece"
+   "pt": "Um módulo único que nunca vai mudar — raro, mas acontece"
   },
   {
    "id": "library-06#099",
    "path": "categories/2/sections/3/items/3/bad/1",
    "ru": "Некому пользоваться: панель без обученного сотрудника мертва",
    "en": "Nobody to use it: a panel without a trained member of staff is dead",
-   "pt": "Ninguém para usar: um painel sem um funcionário treinado é morto"
+   "pt": "Ninguém para usar: um painel sem funcionário treinado não serve para nada"
   },
   {
    "id": "library-06#100",
    "path": "categories/2/sections/3/items/3/warn",
    "ru": "Требовать на приёмке прямо: показать, как сотрудник музея меняет подпись на экспонате, при вас и без звонка подрядчику. Если это невозможно — вы купили зависимость.",
    "en": "Demand it explicitly at acceptance: have a member of museum staff change a caption on an exhibit, in front of you, without phoning the contractor. If that is impossible, you have bought a dependency.",
-   "pt": "Exija isso explicitamente no recebimento: peça que um funcionário do museu mude uma legenda de um exponente, na sua frente, sem telefonar para o fornecedor. Se isso for impossível, você comprou uma dependência."
+   "pt": "No aceite, exija uma demonstração: peça que um funcionário do museu mude a legenda de um módulo, na sua frente, sem telefonar para o fornecedor. Se isso for impossível, você comprou uma dependência."
   },
   {
    "id": "library-06#101",
@@ -827,7 +827,7 @@
    "path": "categories/2/sections/3/items/5/warn",
    "ru": "Просить на приёмке отдельно: образы машин, исходники содержания и инструкцию восстановления на бумаге. Это то, что музей получает в собственность, а не берёт в пользование.",
    "en": "Ask for these separately at acceptance: machine images, content source files and a printed recovery procedure. This is what the museum owns outright, rather than borrows for the duration.",
-   "pt": "Peça isso separadamente no recebimento: imagens das máquinas, arquivos-fonte do conteúdo e um procedimento de recuperação impresso. É isso que o museu tem para si, em vez de tomar emprestado por um tempo."
+   "pt": "No aceite, peça separadamente: imagens das máquinas, arquivos-fonte do conteúdo e um procedimento de recuperação impresso. É isso que o museu recebe como propriedade, em vez de tomar emprestado por um tempo."
   },
   {
    "id": "library-06#119",

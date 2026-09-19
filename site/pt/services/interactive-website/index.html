@@ -71,10 +71,18 @@
 "mainEntity": [
 {
 "@type": "Question",
+"name": "Quanto custa um site interativo?",
+"acceptedAnswer": {
+"@type": "Answer",
+"text": "Depende do que exatamente é vivo nele. Uma cena na primeira tela e páginas comuns depois têm uma ordem de custo. Um site em que cada seção é uma cena e as transições acontecem sem recarregar a página tem outra. Orçamos a partir do roteiro e sempre mostramos o que dá para cortar sem perder o sentido."
+}
+},
+{
+"@type": "Question",
 "name": "Vai funcionar no celular?",
 "acceptedAnswer": {
 "@type": "Answer",
-"text": "Vai, e isso é projetado desde o começo, não conferido no fim. A cena é construída em vários pesos: um celular forte recebe a versão completa, um fraco recebe uma versão reduzida, e um aparelho sem WebGL vê uma versão estática com a mesma estrutura. Testamos em aparelhos reais."
+"text": "Vai, e isso é projetado desde o começo, não testado só no fim. A cena é construída em diferentes níveis de carga: um celular potente recebe a versão completa; um aparelho mais fraco, uma versão simplificada; e quem não consegue rodar WebGL vê uma versão estática com a mesma estrutura. Testamos em aparelhos reais, não em emuladores."
 }
 },
 {
@@ -82,15 +90,7 @@
 "name": "Vocês fazem o site inteiro ou só a parte interativa?",
 "acceptedAnswer": {
 "@type": "Answer",
-"text": "Normalmente o site inteiro — mais barato e mais rápido, porque a cena e a marcação não brigam entre si. Mas se vocês já têm um fornecedor de web, dá para entregar só a cena como um módulo documentado. Já trabalhamos assim também."
-}
-},
-{
-"@type": "Question",
-"name": "A equipe do site é a mesma da exposição?",
-"acceptedAnswer": {
-"@type": "Answer",
-"text": "É a mesma, e essa é a principal vantagem. O motor que roda uma cena no navegador roda ela também em uma tela no salão. Um projeto na web e um projeto no espaço podem compartilhar um roteiro e um fluxo de conteúdo em vez de serem encomendados em dois lugares e costurados depois."
+"text": "Normalmente o site inteiro — fica mais barato e mais rápido, porque a cena e a página não brigam entre si. Mas, se vocês já têm um fornecedor de web, podemos entregar apenas a cena como um módulo pronto e documentado. Também já trabalhamos assim."
 }
 },
 {
@@ -106,7 +106,7 @@
 "name": "Site e exposição são a mesma equipe?",
 "acceptedAnswer": {
 "@type": "Answer",
-"text": "É uma só, e essa é a principal vantagem. O motor que roda a cena no navegador roda ela também na tela do salão. Por isso um projeto na web e um projeto no espaço podem ser feitos com um roteiro comum e um conteúdo comum, em vez de encomendados em dois lugares e depois costurados."
+"text": "É uma só, e essa é a principal vantagem. O motor que roda a cena no navegador também a roda na tela da sala. Por isso um projeto na web e um projeto no espaço podem ser feitos com um roteiro comum e um conteúdo comum, em vez de encomendados em dois lugares e depois costurados."
 }
 }
 ]
@@ -287,22 +287,22 @@
 <ol class="steps"><li>O produto é complexo e precisa de volume. Um objeto que dá para girar, desmontar e remontar no navegador se explica em um minuto, onde texto e fotos não conseguem.</li><li>Um território, um terreno, uma maquete. Um empreendimento, uma fábrica, um resort: as pessoas precisam entender onde as coisas estão, não ler uma descrição.</li><li>A marca precisa que as pessoas fiquem. Um site comum ganha oito segundos. Uma cena que dá para girar, iniciar e jogar segura minutos.</li></ol>
 <h2>Jogos de marca</h2>
 <p>Um gênero à parte que nasceu deste site. O motor de voo da primeira tela virou um jogo completo, com fases, combustível e melhorias — ele vive em play.playdisplay.com e foi feito inteiramente em casa.</p>
-<p>Um jogo assim resolve tarefas que um banner não alcança: segurar uma fila no estande, dar um motivo para voltar ao site, explicar o produto pela ação, coletar contatos em troca de um resultado no ranking. Funciona no navegador e na tela do salão — o motor é o mesmo.</p>
+<p>Um jogo assim resolve problemas que um banner não alcança: entreter quem está na fila do estande, dar um motivo para voltar ao site, explicar o produto pela ação, coletar contatos em troca de um resultado no ranking. Funciona no navegador e na tela da sala — o motor é o mesmo.</p>
 <ul class="notes"><li>Não é “gamificação” com pontos e medalhas. É um jogo de verdade, jogado por vontade própria e não em troca de desconto.</li><li>Os prazos são diferentes dos de um site: mecânica simples — semanas, história com fases — meses. A gente diz isso antes do orçamento, não depois.</li><li>Um jogo vive mais que a campanha se tiver ranking e um motivo para voltar. Dá para fazer descartável, mas aí sai mais caro que um banner com o mesmo efeito.</li></ul>
-<h2>Do mesmo jeito que um salão: primeiro se decide o que a pessoa deve fazer e sentir, depois se escolhe a tecnologia. Uma cena pode ser WebGL, vídeo com pontos interativos ou 3D honesto em tempo real — os orçamentos diferem em múltiplos, e essa escolha deve ser deliberada, e não movida pela palavra “3D” no briefing.</h2>
-<p>Atlas: os princípios pelos quais projetamos →</p>
+<h2>Como o trabalho acontece</h2>
+<p>Do mesmo jeito que em uma sala: primeiro decidimos o que a pessoa deve fazer e sentir; depois, escolhemos a tecnologia. A cena pode usar WebGL, vídeo com pontos interativos ou 3D real em tempo real — os orçamentos variam várias vezes, e essa escolha deve ser consciente, não ditada pela palavra “3D” no briefing.</p>
 <p>Contamos à parte o que normalmente se esquece: como o site vai se comportar em um celular de cinco anos atrás e o que vai ver a pessoa em quem o WebGL não abriu. Uma cena bonita que mostra tela preta para metade do público não é um site interativo, é um erro caro.</p>
 <p class="golink"><a href="/atlas/">Atlas: os princípios pelos quais projetamos isso →</a></p>
     <h2>Quantas pessoas viram isso</h2><ul class="stats figures"><li><b>200 000+</b> downloads do app AR Moscow City<br><a href="../../../pt/work/pano360/">Panorama 360</a></li></ul>
     <h2>Projetos onde isso foi feito</h2>
     <ul class="cases"><li><a href="../../../pt/work/pano360/"><b>Panorama 360</b></a> — Guia móvel em realidade aumentada</li><li><a href="../../../pt/work/bmwx5/"><b>BMW X5</b></a> — Configurador de carro</li><li><a href="../../../pt/work/coalco/"><b>Porto seco COALCO</b></a> — Instalação interativa e filme 3D</li></ul>
-    <h2>Perguntas frequentes</h2><div class="qa"><h3>Vai funcionar no celular?</h3><p>Vai, e isso é projetado desde o começo, não conferido no fim. A cena é construída em vários pesos: um celular forte recebe a versão completa, um fraco recebe uma versão reduzida, e um aparelho sem WebGL vê uma versão estática com a mesma estrutura. Testamos em aparelhos reais.</p></div><div class="qa"><h3>Vocês fazem o site inteiro ou só a parte interativa?</h3><p>Normalmente o site inteiro — mais barato e mais rápido, porque a cena e a marcação não brigam entre si. Mas se vocês já têm um fornecedor de web, dá para entregar só a cena como um módulo documentado. Já trabalhamos assim também.</p></div><div class="qa"><h3>A equipe do site é a mesma da exposição?</h3><p>É a mesma, e essa é a principal vantagem. O motor que roda uma cena no navegador roda ela também em uma tela no salão. Um projeto na web e um projeto no espaço podem compartilhar um roteiro e um fluxo de conteúdo em vez de serem encomendados em dois lugares e costurados depois.</p></div><div class="qa"><h3>Qual a diferença do seu jogo para gamificação?</h3><p>Gamificação são pontos e medalhas por cima de uma interface comum; ninguém joga isso, as pessoas toleram. A gente faz um jogo que se joga por vontade própria: com mecânica, dificuldade e vontade de jogar de novo. Conferir é simples — jogue o nosso, ele está aberto e não pede nada em troca.</p></div><div class="qa"><h3>Site e exposição são a mesma equipe?</h3><p>É uma só, e essa é a principal vantagem. O motor que roda a cena no navegador roda ela também na tela do salão. Por isso um projeto na web e um projeto no espaço podem ser feitos com um roteiro comum e um conteúdo comum, em vez de encomendados em dois lugares e depois costurados.</p></div>
+    <h2>Perguntas frequentes</h2><div class="qa"><h3>Quanto custa um site interativo?</h3><p>Depende do que exatamente é vivo nele. Uma cena na primeira tela e páginas comuns depois têm uma ordem de custo. Um site em que cada seção é uma cena e as transições acontecem sem recarregar a página tem outra. Orçamos a partir do roteiro e sempre mostramos o que dá para cortar sem perder o sentido.</p></div><div class="qa"><h3>Vai funcionar no celular?</h3><p>Vai, e isso é projetado desde o começo, não testado só no fim. A cena é construída em diferentes níveis de carga: um celular potente recebe a versão completa; um aparelho mais fraco, uma versão simplificada; e quem não consegue rodar WebGL vê uma versão estática com a mesma estrutura. Testamos em aparelhos reais, não em emuladores.</p></div><div class="qa"><h3>Vocês fazem o site inteiro ou só a parte interativa?</h3><p>Normalmente o site inteiro — fica mais barato e mais rápido, porque a cena e a página não brigam entre si. Mas, se vocês já têm um fornecedor de web, podemos entregar apenas a cena como um módulo pronto e documentado. Também já trabalhamos assim.</p></div><div class="qa"><h3>Qual a diferença do seu jogo para gamificação?</h3><p>Gamificação são pontos e medalhas por cima de uma interface comum; ninguém joga isso, as pessoas toleram. A gente faz um jogo que se joga por vontade própria: com mecânica, dificuldade e vontade de jogar de novo. Conferir é simples — jogue o nosso, ele está aberto e não pede nada em troca.</p></div><div class="qa"><h3>Site e exposição são a mesma equipe?</h3><p>É uma só, e essa é a principal vantagem. O motor que roda a cena no navegador também a roda na tela da sala. Por isso um projeto na web e um projeto no espaço podem ser feitos com um roteiro comum e um conteúdo comum, em vez de encomendados em dois lugares e depois costurados.</p></div>
     <a class="cta" href="../../../pt/">Agendar uma sessão criativa →</a>
   </article>
   <footer>
     <p>playdisplay — espaços que as pessoas lembram: museus, exposições interativas, centros de visitantes e mostras imersivas.</p>
     <h3 style="margin-top:26px">Outras frentes</h3>
-    <ul class="other"><li><a href="../../../pt/services/museum-concept/">Concepção de museu</a></li><li><a href="../../../pt/services/corporate-museum/">Museu corporativo</a></li><li><a href="../../../pt/services/interactive-exhibition/">Exposição interativa</a></li><li><a href="../../../pt/services/museum-equipment/">Equipamentos para museu</a></li><li><a href="../../../pt/services/museum-equipping/">Equipagem de museus</a></li><li><a href="../../../pt/services/multimedia-equipment/">Equipamentos multimídia</a></li><li><a href="../../../pt/services/exhibition-stand/">Estande de exposição</a></li><li><a href="../../../pt/services/holographic-showcase/">Vitrines holográficas</a></li><li><a href="../../../pt/services/projection-mapping/">Maquetes e mapeamento</a></li><li><a href="../../../pt/services/showroom/">Espaço multimídia</a></li></ul>
+    <ul class="other"><li><a href="../../../pt/services/museum-concept/">Concepção de museu</a></li><li><a href="../../../pt/services/corporate-museum/">Museu corporativo</a></li><li><a href="../../../pt/services/interactive-exhibition/">Exposição interativa</a></li><li><a href="../../../pt/services/museum-equipment/">Equipamentos para museu</a></li><li><a href="../../../pt/services/museum-equipping/">Projeto técnico</a></li><li><a href="../../../pt/services/multimedia-equipment/">Equipamentos multimídia</a></li><li><a href="../../../pt/services/exhibition-stand/">Estande de exposição</a></li><li><a href="../../../pt/services/holographic-showcase/">Vitrines holográficas</a></li><li><a href="../../../pt/services/projection-mapping/">Maquetes e mapeamento</a></li><li><a href="../../../pt/services/showroom/">Espaço multimídia</a></li></ul>
     <p style="margin-top:22px"><a href="../../../pt/">Página inicial</a> · <a href="../../../pt/#work">Todos os projetos</a> · <a href="../../../pt/services/">Serviços</a> · <a href="../../../pt/concepts/">Conceitos</a> · <a href="../../../pt/atlas/">Atlas</a> · <a href="../../../pt/library/">Biblioteca de equipamentos</a></p>
   </footer>
 </main>

@@ -498,7 +498,7 @@
    "path": "services/10/flow/6/text",
    "ru": "Такая игра решает задачи, до которых баннеру не дотянуться: удержать на стенде очередь, дать повод вернуться на сайт, объяснить продукт через действие, собрать контакты за результат в таблице лидеров. Работает и в браузере, и на экране в зале — движок один.",
    "en": null,
-   "pt": "Um jogo assim resolve tarefas que um banner não alcança: segurar uma fila no estande, dar um motivo para voltar ao site, explicar o produto pela ação, coletar contatos em troca de um resultado no ranking. Funciona no navegador e na tela do salão — o motor é o mesmo."
+   "pt": "Um jogo assim resolve problemas que um banner não alcança: entreter quem está na fila do estande, dar um motivo para voltar ao site, explicar o produto pela ação, coletar contatos em troca de um resultado no ranking. Funciona no navegador e na tela da sala — o motor é o mesmo."
   },
   {
    "id": "services-06#069",
@@ -526,14 +526,14 @@
    "path": "services/10/flow/8/text",
    "ru": "Как устроена работа",
    "en": "The same way as a hall: first decide what a person should do and feel, then choose the technology. A scene can be WebGL, video with interactive points, or honest real-time 3D — the budgets differ by multiples, and that choice should be deliberate rather than driven by the word “3D” in a brief.",
-   "pt": "Do mesmo jeito que um salão: primeiro se decide o que a pessoa deve fazer e sentir, depois se escolhe a tecnologia. Uma cena pode ser WebGL, vídeo com pontos interativos ou 3D honesto em tempo real — os orçamentos diferem em múltiplos, e essa escolha deve ser deliberada, e não movida pela palavra “3D” no briefing."
+   "pt": "Como o trabalho acontece"
   },
   {
    "id": "services-06#073",
    "path": "services/10/flow/9/text",
    "ru": "Так же, как с залом: сначала решаем, что человек должен сделать и почувствовать, потом выбираем технику. Сцена может быть на WebGL, на видео с интерактивными точками или на честном 3D в реальном времени — разница в бюджете отличается кратно, и выбирать это надо осознанно, а не по слову «3D» в брифе.",
    "en": "Atlas: the principles we design by →",
-   "pt": "Atlas: os princípios pelos quais projetamos →"
+   "pt": "Do mesmo jeito que em uma sala: primeiro decidimos o que a pessoa deve fazer e sentir; depois, escolhemos a tecnologia. A cena pode usar WebGL, vídeo com pontos interativos ou 3D real em tempo real — os orçamentos variam várias vezes, e essa escolha deve ser consciente, não ditada pela palavra “3D” no briefing."
   },
   {
    "id": "services-06#074",
@@ -554,42 +554,42 @@
    "path": "services/10/faq/0/q",
    "ru": "Сколько стоит интерактивный сайт?",
    "en": "Will it work on a phone?",
-   "pt": "Vai funcionar no celular?"
+   "pt": "Quanto custa um site interativo?"
   },
   {
    "id": "services-06#077",
    "path": "services/10/faq/0/a",
    "ru": "Зависит от того, что именно в нём живое. Одна сцена на первом экране и обычные страницы дальше — это один порядок. Сайт, где каждый раздел — сцена, а между ними переходы без перезагрузки, — другой. Мы считаем от сценария и всегда показываем, что можно убрать без потери смысла.",
    "en": "Yes, and that is designed in from the start rather than checked at the end. The scene is built at several weights: a strong phone gets the full version, a weak one a reduced version, and a device without WebGL sees a static version with the same structure. We test on real devices.",
-   "pt": "Vai, e isso é projetado desde o começo, não conferido no fim. A cena é construída em vários pesos: um celular forte recebe a versão completa, um fraco recebe uma versão reduzida, e um aparelho sem WebGL vê uma versão estática com a mesma estrutura. Testamos em aparelhos reais."
+   "pt": "Depende do que exatamente é vivo nele. Uma cena na primeira tela e páginas comuns depois têm uma ordem de custo. Um site em que cada seção é uma cena e as transições acontecem sem recarregar a página tem outra. Orçamos a partir do roteiro e sempre mostramos o que dá para cortar sem perder o sentido."
   },
   {
    "id": "services-06#078",
    "path": "services/10/faq/1/q",
    "ru": "А на телефоне это будет работать?",
    "en": "Do you build the whole site or only the interactive part?",
-   "pt": "Vocês fazem o site inteiro ou só a parte interativa?"
+   "pt": "Vai funcionar no celular?"
   },
   {
    "id": "services-06#079",
    "path": "services/10/faq/1/a",
    "ru": "Да, и это закладывается с самого начала, а не проверяется в конце. Сцена делается в нескольких уровнях тяжести: мощный телефон получает полную, слабый — упрощённую, а тот, у кого не запустился WebGL, видит статичную версию с той же структурой. Проверяем на реальных устройствах, а не в эмуляторе.",
    "en": "Usually the whole thing — cheaper and faster, because the scene and the markup do not fight each other. But if you already have a web contractor we can deliver only the scene as a documented module. We have worked that way too.",
-   "pt": "Normalmente o site inteiro — mais barato e mais rápido, porque a cena e a marcação não brigam entre si. Mas se vocês já têm um fornecedor de web, dá para entregar só a cena como um módulo documentado. Já trabalhamos assim também."
+   "pt": "Vai, e isso é projetado desde o começo, não testado só no fim. A cena é construída em diferentes níveis de carga: um celular potente recebe a versão completa; um aparelho mais fraco, uma versão simplificada; e quem não consegue rodar WebGL vê uma versão estática com a mesma estrutura. Testamos em aparelhos reais, não em emuladores."
   },
   {
    "id": "services-06#080",
    "path": "services/10/faq/2/q",
    "ru": "Вы делаете сайт целиком или только интерактивную часть?",
    "en": "Is the site team the same as the exhibition team?",
-   "pt": "A equipe do site é a mesma da exposição?"
+   "pt": "Vocês fazem o site inteiro ou só a parte interativa?"
   },
   {
    "id": "services-06#081",
    "path": "services/10/faq/2/a",
    "ru": "Обычно целиком — так дешевле и быстрее, потому что сцена и вёрстка не воюют между собой. Но если у вас есть подрядчик по сайту, можем сделать только сцену и отдать её как готовый модуль с документацией. Так тоже работали.",
    "en": "The same, and that is the main advantage. The engine that drives a scene in the browser drives it on a screen in a hall. A web project and a spatial project can share one script and one content pipeline instead of being ordered in two places and stitched together later.",
-   "pt": "É a mesma, e essa é a principal vantagem. O motor que roda uma cena no navegador roda ela também em uma tela no salão. Um projeto na web e um projeto no espaço podem compartilhar um roteiro e um fluxo de conteúdo em vez de serem encomendados em dois lugares e costurados depois."
+   "pt": "Normalmente o site inteiro — fica mais barato e mais rápido, porque a cena e a página não brigam entre si. Mas, se vocês já têm um fornecedor de web, podemos entregar apenas a cena como um módulo pronto e documentado. Também já trabalhamos assim."
   },
   {
    "id": "services-06#082",
@@ -617,7 +617,7 @@
    "path": "services/10/faq/4/a",
    "ru": "Одна, и это главное преимущество. Движок, который крутит сцену в браузере, крутит её же на экране в зале. Поэтому проект в вебе и проект в пространстве можно делать общим сценарием и общим содержанием, а не заказывать в двух местах и потом сводить.",
    "en": null,
-   "pt": "É uma só, e essa é a principal vantagem. O motor que roda a cena no navegador roda ela também na tela do salão. Por isso um projeto na web e um projeto no espaço podem ser feitos com um roteiro comum e um conteúdo comum, em vez de encomendados em dois lugares e depois costurados."
+   "pt": "É uma só, e essa é a principal vantagem. O motor que roda a cena no navegador também a roda na tela da sala. Por isso um projeto na web e um projeto no espaço podem ser feitos com um roteiro comum e um conteúdo comum, em vez de encomendados em dois lugares e depois costurados."
   }
  ]
 }

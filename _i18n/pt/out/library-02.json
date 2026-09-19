@@ -204,7 +204,7 @@
    "path": "categories/0/sections/3/items/2/good/2",
    "ru": "Экспонат для одного-двух человек за раз",
    "en": "An exhibit for one or two people at a time",
-   "pt": "Um exponente para uma ou duas pessoas por vez"
+   "pt": "Um módulo para uma ou duas pessoas por vez"
   },
   {
    "id": "library-02#030",
@@ -470,7 +470,7 @@
    "path": "categories/0/sections/4/items/1/good/2",
    "ru": "Экспонат вне здания — двор, парк, улица",
    "en": "An exhibit outside the building — a courtyard, a park, a street",
-   "pt": "Um exponente fora do prédio — um pátio, um parque, uma rua"
+   "pt": "Uma instalação fora do prédio — um pátio, um parque, uma rua"
   },
   {
    "id": "library-02#068",
@@ -491,7 +491,7 @@
    "path": "categories/0/sections/4/items/1/bad/2",
    "ru": "Экспонат должен работать всегда: телефон разряжается, планшеты воруют",
    "en": "The exhibit has to work always: phones run flat, tablets get stolen",
-   "pt": "O exponente precisa funcionar sempre: celulares descarregam, tablets somem"
+   "pt": "O módulo precisa funcionar sempre: celulares descarregam, tablets somem"
   },
   {
    "id": "library-02#071",
@@ -540,7 +540,7 @@
    "path": "categories/0/sections/5/items/0/what",
    "ru": "Звук, ограниченный узкой зоной: посетитель у экспоната слышит рассказ, сосед в метре — тишину, и наушники никому не нужны. Лечит главную беду мультимедийной экспозиции — когда десять экспонатов говорят разом и не слышно ни одного.",
    "en": "Sound confined to a narrow zone: the visitor at the exhibit hears the story, a neighbour a metre away hears nothing, and nobody needs headphones. It cures the chief affliction of multimedia exhibitions — ten exhibits talking at once and none of them audible.",
-   "pt": "Som confinado a uma zona estreita: o visitante no exponente ouve a história, alguém a um metro não ouve nada, e ninguém precisa de fones. Isso cura a principal doença das exposições multimídia — dez exponentes falando ao mesmo tempo e nenhum deles audível."
+   "pt": "Som confinado a uma zona estreita: o visitante diante do módulo ouve a história, alguém a um metro não ouve nada, e ninguém precisa de fones. Isso resolve o principal problema das exposições multimídia — dez módulos falando ao mesmo tempo e nenhum deles audível."
   },
   {
    "id": "library-02#078",
@@ -554,7 +554,7 @@
    "path": "categories/0/sections/5/items/0/good/0",
    "ru": "Несколько экспонатов со звуком в одном зале",
    "en": "Several exhibits with sound in one room",
-   "pt": "Vários exponentes com som em uma mesma sala"
+   "pt": "Vários módulos com som em uma mesma sala"
   },
   {
    "id": "library-02#080",
@@ -722,7 +722,7 @@
    "path": "categories/0/sections/5/items/2/what",
    "ru": "От классического аудиогида до раздачи звука на телефон посетителя. Единственный способ дать длинный текст, несколько языков и разную глубину на одном и том же экспонате.",
    "en": "From a classic audio guide to streaming audio to the visitor's phone. The only way to deliver a long text, several languages and different depths from one and the same exhibit.",
-   "pt": "Do audioguia clássico ao áudio transmitido para o celular do visitante. O único jeito de entregar um texto longo, vários idiomas e profundidades diferentes a partir de um mesmo exponente."
+   "pt": "Do audioguia clássico ao áudio transmitido para o celular do visitante. O único jeito de entregar um texto longo, vários idiomas e profundidades diferentes a partir de um mesmo módulo."
   },
   {
    "id": "library-02#104",
@@ -988,7 +988,7 @@
    "path": "categories/0/sections/6/items/0/line",
    "ru": "Экспонат двигается по-настоящему",
    "en": "The exhibit genuinely moves",
-   "pt": "O exponente se move de verdade"
+   "pt": "A peça exposta se move de verdade"
   },
   {
    "id": "library-02#142",

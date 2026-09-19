@@ -59,7 +59,7 @@
    "ru": "цифровая экспозиция",
    "en": "interactive exhibits",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "exponentes interativos"
+   "pt": "módulos interativos para museus"
   },
   {
    "id": "services-02#009",
@@ -83,7 +83,7 @@
    "ru": "мультимедийная экспозиция",
    "en": "science centre exhibits",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "exponentes de centro de ciência"
+   "pt": "módulos interativos para centros de ciência"
   },
   {
    "id": "services-02#012",
@@ -183,7 +183,7 @@
    "path": "services/2/flow/5/items/3",
    "ru": "Голографические витрины и объёмные экспонаты для показа техники, которую нельзя привезти.",
    "en": "Holographic showcases and volumetric exhibits for equipment that cannot be brought in.",
-   "pt": "Vitrines holográficas e exponentes volumétricos para equipamentos que não podem ser trazidos."
+   "pt": "Vitrines holográficas e displays volumétricos para equipamentos que não podem ser trazidos."
   },
   {
    "id": "services-02#026",
@@ -197,7 +197,7 @@
    "path": "services/2/flow/5/items/5",
    "ru": "Экспонаты-механизмы: физическое действие руками, а не тап по экрану.",
    "en": "Mechanism exhibits: physical action with your hands, not a tap on a screen.",
-   "pt": "Exponentes de mecanismo: ação física com as mãos, não um toque na tela."
+   "pt": "Módulos mecânicos: ação física com as mãos, não um toque na tela."
   },
   {
    "id": "services-02#028",
@@ -218,7 +218,7 @@
    "path": "services/2/flow/8/text",
    "ru": "Второе правило — про эксплуатацию. Экспозиция живёт годами, и её обслуживает не разработчик, а смотритель зала. Поэтому объекты проектируются на перезапуск одной кнопкой, на антивандальность и на то, что однажды упадёт сеть или сгорит проектор. Экспонат, который работает только при идеальных условиях, в музее не работает вовсе.",
    "en": "The second rule is about operation. An exhibition lives for years, and it is maintained not by its developer but by the person who looks after the hall. So objects are designed to restart with one button, to survive rough handling, and to expect that one day the network drops or a projector dies. An exhibit that only works in ideal conditions does not work in a museum at all.",
-   "pt": "A segunda regra é sobre operação. Uma exposição vive por anos, e quem faz a manutenção não é quem a desenvolveu, e sim quem cuida do salão. Por isso os objetos são projetados para reiniciar com um botão, aguentar uso bruto e contar que um dia a rede vai cair ou um projetor vai morrer. Um exponente que só funciona em condições ideais não funciona em museu nenhum."
+   "pt": "A segunda regra é sobre operação. Uma exposição vive por anos, e quem faz a manutenção não é quem a desenvolveu, e sim quem cuida da sala. Por isso os módulos são projetados para reiniciar com um botão, aguentar uso bruto e partir do princípio de que um dia a rede vai cair ou um projetor vai queimar. Um módulo que só funciona em condições ideais não funciona em museu nenhum."
   },
   {
    "id": "services-02#031",
@@ -274,7 +274,7 @@
    "path": "services/2/flow/12/items/0/label",
    "ru": "инсталляций в одной экспозиции — центр «Космонавтика и авиация» на ВДНХ",
    "en": "exhibits in a single exhibition — Cosmonautics and Aviation Centre, VDNH",
-   "pt": "exponentes em uma única exposição — Centro de Cosmonáutica e Aviação, VDNH"
+   "pt": "módulos em uma única exposição — Centro de Cosmonáutica e Aviação, VDNH"
   },
   {
    "id": "services-02#039",
@@ -309,7 +309,7 @@
    "path": "services/2/faq/0/q",
    "ru": "Сколько живёт интерактивный экспонат?",
    "en": "How long does an interactive exhibit last?",
-   "pt": "Quanto tempo dura um exponente interativo?"
+   "pt": "Quanto tempo dura um módulo interativo?"
   },
   {
    "id": "services-02#044",
@@ -323,7 +323,7 @@
    "path": "services/2/faq/1/q",
    "ru": "Что происходит, когда экспонат ломается в выходной?",
    "en": "What happens when an exhibit fails on a weekend?",
-   "pt": "O que acontece se um exponente falhar num fim de semana?"
+   "pt": "O que acontece se um módulo falhar no fim de semana?"
   },
   {
    "id": "services-02#046",
@@ -419,7 +419,7 @@
    "ru": "мультимедийное оборудование музея",
    "en": "interactive exhibits",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "exponentes interativos"
+   "pt": "módulos interativos"
   },
   {
    "id": "services-02#059",
@@ -451,7 +451,7 @@
    "ru": "интерактивные экспонаты",
    "en": null,
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "exponentes interativos"
+   "pt": "módulos interativos"
   },
   {
    "id": "services-02#063",
@@ -473,7 +473,7 @@
    "path": "services/3/flow/1/text",
    "ru": "Мультимедийная техника ничего не рассказывает сама. Сенсорный стол без продуманного содержания — это дорогой планшет на ножках, к которому через месяц перестают подходить. Проектор без сценария — светлое пятно на стене. Разница между музеем, где к экспонату очередь, и музеем, где экраны выключены с позапрошлого года, лежит не в марке техники и не в разрешении матрицы.",
    "en": "Multimedia hardware tells nothing by itself. A touch table without content worth digging into is an expensive tablet on legs that people stop approaching within a month. A projector without a scenario is a bright patch on a wall. The difference between a museum with a queue at an exhibit and a museum whose screens have been off since last year is not the brand of the hardware.",
-   "pt": "Hardware multimídia não conta nada por si só. Uma mesa de toque sem conteúdo que valha a pena vasculhar é um tablet caro com pernas, de que as pessoas param de se aproximar em um mês. Um projetor sem roteiro é uma mancha clara na parede. A diferença entre um museu com fila num exponente e um museu cujas telas estão desligadas desde o ano passado não é a marca do hardware."
+   "pt": "Hardware multimídia não conta nada por si só. Uma mesa de toque sem conteúdo que valha a pena explorar é um tablet caro com pernas, do qual as pessoas deixam de se aproximar em um mês. Um projetor sem roteiro é uma mancha clara na parede. A diferença entre um museu com fila diante de um módulo e outro cujas telas estão desligadas desde o ano passado não é a marca do hardware."
   },
   {
    "id": "services-02#066",
@@ -501,7 +501,7 @@
    "path": "services/3/flow/3/items/2",
    "ru": "Где посетитель стоит и сколько времени. Экспонат, мимо которого идут в гардероб, и экспонат, у которого садятся на пять минут, — это разное оборудование.",
    "en": "Where the visitor stands and for how long. An exhibit people pass on the way to the cloakroom and an exhibit people sit down at for five minutes are different machines.",
-   "pt": "Onde o visitante fica e por quanto tempo. Um exponente pelo qual se passa a caminho do guarda-volumes e um exponente em que se senta por cinco minutos são máquinas diferentes."
+   "pt": "Onde o visitante fica e por quanto tempo. Um módulo pelo qual se passa a caminho do guarda-volumes e outro diante do qual se senta por cinco minutos são máquinas diferentes."
   },
   {
    "id": "services-02#070",
@@ -564,7 +564,7 @@
    "path": "services/3/flow/5/items/4",
    "ru": "Бесконтактные интерфейсы — жест, приближение, датчики. Экспонат оживает сам, без таблички «нажмите здесь», и это единственный способ вовлечь тех, кто стесняется трогать.",
    "en": "Touchless interfaces — gesture, proximity, sensors. The exhibit comes alive by itself, with no “press here” label, and it is the only way to reach visitors who are shy about touching things.",
-   "pt": "Interfaces sem toque — gesto, aproximação, sensores. O exponente ganha vida sozinho, sem etiqueta de “aperte aqui”, e é o único jeito de alcançar visitantes que têm vergonha de tocar nas coisas."
+   "pt": "Interfaces sem toque — gesto, aproximação, sensores. O módulo ganha vida sozinho, sem placa de “aperte aqui”, e é o único jeito de envolver visitantes que têm receio de tocar nas coisas."
   },
   {
    "id": "services-02#079",
@@ -585,35 +585,35 @@
    "path": "services/3/flow/6/text",
    "ru": "Разбор каждого типа по отдельности — с производителями, ограничениями и тем, когда он не работает — мы вынесли в отдельный раздел. Там больше шестидесяти позиций, разложенных по роли: чем экспозиция показывает, чем слышит посетителя и что считает между этим.",
    "en": "What “modern” actually means",
-   "pt": "O que “moderno” significa de verdade"
+   "pt": "A análise detalhada de cada tipo — com fabricantes, limitações e situações em que não funciona — está em uma seção própria. São mais de sessenta itens organizados por função: como a exposição mostra, como percebe o visitante e como processa o que acontece entre uma coisa e outra."
   },
   {
    "id": "services-02#082",
    "path": "services/3/flow/7/text",
    "ru": "Библиотека оборудования: 65 типов, что каждый умеет и кто выпускает →",
    "en": "A museum is not modern because of the manufacturing year of its hardware or the size of its diagonal. An exhibit is modern when it is understood without instructions. Five seconds for a child to work out what to do. Five minutes for a specialist to find the depth they came for. The same object serves both. If it takes reading a rules plate to start, the object gets redesigned — however new the hardware underneath it is.",
-   "pt": "Um museu não é moderno pelo ano de fabricação do hardware nem pelo tamanho da diagonal. Um exponente é moderno quando se entende sem instruções. Cinco segundos para uma criança descobrir o que fazer. Cinco minutos para um especialista encontrar a profundidade que veio buscar. O mesmo objeto serve aos dois. Se for preciso ler uma placa de regras para começar, o objeto é refeito — por mais novo que seja o hardware embaixo dele."
+   "pt": "Biblioteca de equipamentos: 65 tipos, o que cada um faz e quem fabrica →"
   },
   {
    "id": "services-02#083",
    "path": "services/3/flow/8/text",
    "ru": "Что значит «современно»",
    "en": "How we choose the equipment",
-   "pt": "Como escolhemos o equipamento"
+   "pt": "O que “moderno” significa de verdade"
   },
   {
    "id": "services-02#084",
    "path": "services/3/flow/9/text",
    "ru": "Современность музея — не год выпуска техники и не диагональ. Экспонат современен, если его понимают без инструкции. Пять секунд ребёнку, чтобы догадаться, что делать. Пять минут специалисту, чтобы найти глубину, за которой он пришёл. Один и тот же объект работает на обоих. Если для запуска надо прочитать табличку с правилами — объект переделывается, каким бы новым ни было железо под ним.",
    "en": "We start from the effect we want, not from a particular technology. First we settle what the visitor should walk out with, and only then what to build it from. We are tied to no manufacturer and sell nothing off our own shelf, so the solution is picked for the job rather than for what is familiar or already in stock. Supply is handled by our partners: any equipment, on the best terms for the client. Our part is the story, the content, the interaction, the software and the integration — we build complex hardware-and-software systems and answer for the whole of it working as one thing, not as a pile of boxes from different vendors.",
-   "pt": "Partimos do efeito desejado, não de uma tecnologia específica. Primeiro definimos o que o visitante deve levar embora, e só então com o que construir isso. Não temos vínculo com fabricante nenhum e não vendemos nada do nosso próprio estoque, então a solução é escolhida para a tarefa, e não para o que é familiar ou já está no depósito. O fornecimento fica com nossos parceiros: qualquer equipamento, nas melhores condições para o cliente. A nossa parte é a história, o conteúdo, a interação, o software e a integração — construímos sistemas complexos de hardware e software e respondemos pelo conjunto funcionando como uma coisa só, e não como uma pilha de caixas de fornecedores diferentes."
+   "pt": "Um museu não é moderno por causa do ano de fabricação do equipamento nem do tamanho da tela. Um módulo expositivo é moderno quando funciona sem instruções. Cinco segundos para uma criança descobrir o que fazer. Cinco minutos para um especialista encontrar a profundidade que procura. O mesmo objeto serve aos dois. Se é preciso ler uma placa de regras para começar, o objeto precisa ser refeito — por mais novo que seja o hardware por baixo."
   },
   {
    "id": "services-02#085",
    "path": "services/3/flow/10/text",
    "ru": "Как мы подбираем оборудование",
    "en": "What drives the cost",
-   "pt": "O que define o custo"
+   "pt": "Como escolhemos os equipamentos"
   }
  ]
 }

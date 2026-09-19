@@ -253,7 +253,7 @@
    "path": "categories/1/principle",
    "ru": "Главный вопрос не «как человек управляет», а «откуда он вообще понял, что можно». Экспонату, которому нужна табличка с правилами, нужен не датчик, а переделка.",
    "en": "The question is not how a person operates it, but how they worked out that they could. An exhibit that needs a plate of rules does not need a better sensor — it needs redesigning.",
-   "pt": "A pergunta não é como a pessoa opera aquilo, e sim como ela descobriu que podia. Um exponente que precisa de uma placa de regras não precisa de um sensor melhor — precisa ser refeito."
+   "pt": "A pergunta não é como a pessoa opera aquilo, e sim como ela descobriu que podia. Um módulo que precisa de uma placa de regras não precisa de um sensor melhor — precisa ser refeito."
   },
   {
    "id": "library-03#037",
@@ -288,7 +288,7 @@
    "path": "categories/1/sections/0/items/0/what",
    "ru": "Плёнка или стекло, чувствующие палец по электрическому полю. Точность высокая, мультитач честный, стекло можно ставить толстое — тач срабатывает насквозь, и экспонат переживает удар.",
    "en": "Film or glass sensing a finger through an electric field. High precision, honest multi-touch, and the glass can be thick — touch reads straight through, so the exhibit survives a blow.",
-   "pt": "Película ou vidro que sente o dedo por um campo elétrico. Alta precisão, multitoque honesto, e o vidro pode ser grosso — o toque lê direto através dele, então o exponente sobrevive a uma pancada."
+   "pt": "Película ou vidro que detecta o dedo por um campo elétrico. Alta precisão, multitoque de verdade, e o vidro pode ser grosso — o toque atravessa o material, então o módulo sobrevive a uma pancada."
   },
   {
    "id": "library-03#042",
@@ -344,7 +344,7 @@
    "path": "categories/1/sections/0/items/0/brands/1/note",
    "ru": "проекционно-ёмкостные системы",
    "en": "проекционно-ёмкостные системы",
-   "pt": "sistemas projetado-capacitivos"
+   "pt": "sistemas capacitivos projetados"
   },
   {
    "id": "library-03#050",
@@ -365,7 +365,7 @@
    "path": "categories/1/sections/0/items/1/line",
    "ru": "Дёшево, крупно, работает в варежках",
    "en": "Cheap, large, works in mittens",
-   "pt": "Barata, grande, funciona de luva"
+   "pt": "Barata, grande, funciona com luvas"
   },
   {
    "id": "library-03#053",
@@ -666,7 +666,7 @@
    "path": "categories/1/sections/1/items/0/good/2",
    "ru": "Экспонат должен пережить миллион нажатий и школьную экскурсию",
    "en": "The exhibit must survive a million presses and a school outing",
-   "pt": "O exponente precisa sobreviver a um milhão de apertos e a uma excursão escolar"
+   "pt": "O módulo precisa sobreviver a um milhão de apertos e a uma excursão escolar"
   },
   {
    "id": "library-03#096",
@@ -925,7 +925,7 @@
    "path": "categories/1/sections/1/items/3/what",
    "ru": "Билет или браслет с меткой. Приложил — экспонат заговорил на твоём языке и продолжил с того места, где ты остановился. В конце маршрута выдаёт личный итог: что посмотрел, что собрал.",
    "en": "A ticket or wristband with a tag. Touch it and the exhibit speaks your language and resumes where you left off. At the end of the route it hands you a personal summary of what you saw and gathered.",
-   "pt": "Um ingresso ou pulseira com etiqueta. Encoste e o exponente fala o seu idioma e retoma de onde você parou. No fim do percurso ele entrega um resumo pessoal do que você viu e juntou."
+   "pt": "Um ingresso ou pulseira com etiqueta. Encoste e o módulo fala o seu idioma e retoma de onde você parou. No fim do percurso, entrega um resumo pessoal do que você viu e reuniu."
   },
   {
    "id": "library-03#133",
@@ -1016,7 +1016,7 @@
    "path": "categories/1/sections/1/items/4/good/1",
    "ru": "Коврик у экспоната, который включает сцену, когда на него встали",
    "en": "A mat by an exhibit that starts the scene when someone steps on it",
-   "pt": "Um tapete junto a um exponente que inicia a cena quando alguém pisa"
+   "pt": "Um tapete junto a um módulo que inicia a cena quando alguém pisa"
   }
  ]
 }

@@ -135,7 +135,7 @@
    "path": "services/0/flow/3/items/3",
    "ru": "Состав экспозиции: перечень экспонатов и интерактивных объектов с описанием, что каждый делает и зачем стоит именно здесь.",
    "en": "Exhibition inventory: every exhibit and interactive object described by what it does and why it stands exactly there.",
-   "pt": "Inventário expositivo: cada exponente e objeto interativo descrito pelo que faz e por que está exatamente ali."
+   "pt": "Inventário expositivo: cada peça e objeto interativo descrito pelo que faz e por que está exatamente ali."
   },
   {
    "id": "services-01#019",
@@ -170,7 +170,7 @@
    "path": "services/0/flow/5/text",
    "ru": "Любой объект в экспозиции считывается за пять секунд и раскрывается за пять минут. За пять секунд ребёнок понимает, что делать, — без инструкции на табличке. За пять минут специалист находит глубину, за которой пришёл. Один объект работает на всех зрителей сразу, и это ограничение мы держим на каждом экспонате: если понять его можно только прочитав правила, объект переделывается.",
    "en": "Every object in the exhibition reads in five seconds and opens up over five minutes. In five seconds a child understands what to do — with no instructions on a label. In five minutes a specialist finds the depth they came for. One object works for every visitor at once, and we hold that constraint on each exhibit: if it can only be understood after reading the rules, the exhibit gets redesigned.",
-   "pt": "Cada objeto da exposição se entende em cinco segundos e se abre ao longo de cinco minutos. Em cinco segundos uma criança entende o que fazer — sem instrução na etiqueta. Em cinco minutos um especialista encontra a profundidade que veio buscar. Um mesmo objeto funciona para todos os visitantes ao mesmo tempo, e mantemos essa exigência em cada exponente: se ele só se entende depois de ler as regras, o exponente é refeito."
+   "pt": "Cada objeto da exposição se entende em cinco segundos e se revela ao longo de cinco minutos. Em cinco segundos uma criança entende o que fazer — sem instrução na etiqueta. Em cinco minutos um especialista encontra a profundidade que procura. Um mesmo objeto funciona para todos os visitantes ao mesmo tempo, e mantemos essa exigência em cada módulo: se ele só se entende depois de ler as regras, precisa ser refeito."
   },
   {
    "id": "services-01#024",
@@ -471,7 +471,7 @@
    "path": "services/1/flow/6/items/1",
    "ru": "Настоящий предмет в центре. Деталь, инструмент, образец продукции — а мультимедиа вокруг него объясняет, чем он замечателен. Голая цифра без предмета мертва, предмет без объяснения нем.",
    "en": "A real object at the centre. A part, a tool, a product — with media around it explaining why it matters. A number without an object is dead; an object without explanation is mute.",
-   "pt": "Um objeto real no centro. Uma peça, uma ferramenta, um produto — com mídia em volta explicando por que aquilo importa. Um número sem objeto é morto; um objeto sem explicação é mudo."
+   "pt": "Um objeto real no centro. Uma peça, uma ferramenta, um produto — com mídia em volta explicando por que aquilo importa. Um número sem objeto não diz nada; um objeto sem explicação é mudo."
   },
   {
    "id": "services-01#066",
@@ -499,14 +499,14 @@
    "path": "services/1/flow/8/text",
    "ru": "Тем, что решение принимаете вы. Нет 44-ФЗ, нет тендерной процедуры на полгода, нет согласования с методсоветом. Есть заказчик, у которого свой бюджет и свой срок — обычно юбилей, и он не двигается.",
    "en": "You decide. No procurement law, no six-month tender, no methodological council. There is a client with a budget and a date — usually an anniversary, and it does not move.",
-   "pt": "Quem decide é você. Sem lei de licitações, sem seis meses de processo, sem conselho metodológico. Existe um cliente com orçamento e uma data — normalmente um aniversário, e ele não se mexe."
+   "pt": "A diferença é que a decisão é sua. Sem lei de licitações, sem seis meses de processo, sem conselho metodológico. Há um cliente com orçamento e prazo próprios — normalmente um aniversário, e essa data não muda."
   },
   {
    "id": "services-01#070",
    "path": "services/1/flow/9/text",
    "ru": "Поэтому и работаем иначе: сначала короткая сессия, где вместе находим главную мысль экспозиции, потом сценарий и смета, потом производство. Первый разговор ни к чему не обязывает и ничего не стоит.",
    "en": "Equipment library: what these exhibitions are built from →",
-   "pt": "Biblioteca de equipamentos: com o que essas exposições são montadas →"
+   "pt": "Por isso trabalhamos de outro jeito: primeiro, uma sessão curta para encontrarmos juntos a ideia central da exposição; depois, roteiro e orçamento; por fim, produção. A primeira conversa não cria compromisso e não custa nada."
   },
   {
    "id": "services-01#071",

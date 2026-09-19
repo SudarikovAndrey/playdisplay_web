@@ -71,7 +71,7 @@
    "path": "categories/0/sections/0/items/0/what",
    "ru": "Лазер вместо лампы: 20 000 часов без замены, мгновенный старт, вешается хоть вверх ногами. Ламповые в новые экспозиции больше не ставят — не потому что хуже светят, а потому что лампу надо менять, а менять её некому.",
    "en": "Laser instead of a lamp: 20,000 hours without a change, instant start, mounts upside down if it has to. Lamp models are no longer specified for new exhibitions — not because they throw less light, but because someone has to change the lamp, and there is nobody to do it.",
-   "pt": "Laser no lugar de lâmpada: 20 mil horas sem troca, partida instantânea, monta de cabeça para baixo se precisar. Modelos de lâmpada não são mais especificados para exposições novas — não porque iluminem menos, mas porque alguém tem que trocar a lâmpada, e não há quem faça isso."
+   "pt": "Laser no lugar de lâmpada: 20 mil horas sem troca, partida instantânea, pode ser instalado de cabeça para baixo. Modelos de lâmpada não são mais especificados para exposições novas — não porque iluminem menos, mas porque alguém tem que trocar a lâmpada, e não há quem faça isso."
   },
   {
    "id": "library-01#011",
@@ -365,7 +365,7 @@
    "path": "categories/0/sections/0/items/3/bad/1",
    "ru": "Макет ещё не построен — калибровка делается по факту, а не по чертежу",
    "en": "The model is not built yet — calibration is done against the real thing, not the drawing",
-   "pt": "A maquete ainda não foi construída — a calibração se faz contra a coisa real, não contra o desenho"
+   "pt": "A maquete ainda não foi construída — a calibração é feita no objeto real, não no desenho"
   },
   {
    "id": "library-01#053",
@@ -897,7 +897,7 @@
    "path": "categories/0/sections/2/items/1/what",
    "ru": "Изображение висит на стекле, а экспонат виден насквозь. Подлинник остаётся подлинником, а разрезы, подписи и анимация ложатся на него слоем. Выключили — осталось просто стекло.",
    "en": "The image hangs on glass and the exhibit shows through. The original stays original while cutaways, labels and animation lie over it as a layer. Switch it off and only glass remains.",
-   "pt": "A imagem fica sobre o vidro e o exponente aparece atrás. O original continua original enquanto cortes, legendas e animação ficam por cima como uma camada. Desligue e sobra só o vidro."
+   "pt": "A imagem fica sobre o vidro e a peça exposta aparece atrás. O original continua original enquanto cortes, legendas e animação ficam por cima como uma camada. Desligue e sobra só o vidro."
   },
   {
    "id": "library-01#129",

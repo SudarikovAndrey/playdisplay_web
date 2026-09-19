@@ -106,7 +106,7 @@
    "path": "services/3/faq/1/a",
    "ru": "Цифра выводится из сценария, а не из прайса: пока неизвестно, сколько экспонатов и что на них происходит, любая сумма — фантазия. Но одну пропорцию можно назвать заранее: в бюджете мультимедийной экспозиции само железо редко занимает больше трети. Остальное — содержание и работа над ним. Бюджеты, где на технику ушло всё, а на наполнение не осталось, узнаются по выключенным экранам.",
    "en": "The figure comes out of the scenario, not out of a price list: until the number of exhibits and what happens on them is known, any sum is fiction. One proportion can be stated in advance though — in a multimedia exhibition budget the hardware itself rarely exceeds a third. The rest is content and the work on it. Budgets where everything went into the kit and nothing was left for content are recognisable by their switched-off screens.",
-   "pt": "O número sai do roteiro, não de uma tabela de preços: enquanto não se sabe o número de exponentes e o que acontece neles, qualquer valor é ficção. Uma proporção, porém, dá para afirmar de antemão — no orçamento de uma exposição multimídia o hardware raramente passa de um terço. O resto é conteúdo e o trabalho em cima dele. Orçamentos em que tudo foi para o equipamento e nada sobrou para conteúdo se reconhecem pelas telas desligadas."
+   "pt": "O número sai do roteiro, não de uma tabela de preços: enquanto não se sabe quantos módulos haverá e o que acontece em cada um, qualquer valor é ficção. Uma proporção, porém, dá para afirmar de antemão — no orçamento de uma exposição multimídia o hardware raramente passa de um terço. O resto é conteúdo e o trabalho em cima dele. Orçamentos em que tudo foi para o equipamento e nada sobrou para conteúdo se reconhecem pelas telas desligadas."
   },
   {
    "id": "services-03#016",
@@ -120,7 +120,7 @@
    "path": "services/3/faq/2/a",
    "ru": "Один хорошо придуманный экспонат сильнее пяти посредственных, и это особенно верно при небольшом бюджете. Дешевле всего работают проекция на физический макет и содержание, сделанное под уже имеющийся экран. Дороже всего — попытка закрыть все стены панелями.",
    "en": "One well-conceived exhibit beats five mediocre ones, and that is especially true on a small budget. The cheapest things that genuinely work are projection onto a physical model, and content built for a screen you already own. The most expensive mistake is trying to cover every wall with panels.",
-   "pt": "Um exponente bem pensado vale mais que cinco medianos, e isso vale ainda mais com orçamento pequeno. As coisas mais baratas que funcionam de verdade são projeção sobre maquete física e conteúdo feito para uma tela que você já tem. O erro mais caro é tentar cobrir todas as paredes com painéis."
+   "pt": "Um módulo bem pensado vale mais que cinco medianos, e isso vale ainda mais com orçamento pequeno. As soluções mais baratas que funcionam de verdade são projeção sobre maquete física e conteúdo feito para uma tela que você já tem. O erro mais caro é tentar cobrir todas as paredes com painéis."
   },
   {
    "id": "services-03#018",
@@ -134,7 +134,7 @@
    "path": "services/3/faq/3/a",
    "ru": "По двум признакам. Первый: перезапускается ли экспонат одной кнопкой силами смотрителя. Второй: может ли музей сам менять содержание, не вызывая подрядчика. Если оба ответа «нет», через год это будет мебель.",
    "en": "Two tests. First: can an attendant restart the exhibit with a single button. Second: can the museum change the content without calling the contractor. If both answers are no, in a year it will be furniture.",
-   "pt": "Dois testes. Primeiro: um atendente consegue reiniciar o exponente com um único botão. Segundo: o museu consegue mudar o conteúdo sem chamar o fornecedor. Se as duas respostas forem não, em um ano aquilo será mobília."
+   "pt": "Dois testes. Primeiro: um atendente consegue reiniciar o módulo com um único botão. Segundo: o museu consegue mudar o conteúdo sem chamar o fornecedor. Se as duas respostas forem não, em um ano aquilo será mobília."
   },
   {
    "id": "services-03#020",
@@ -155,21 +155,21 @@
    "path": "services/4/title",
    "ru": "Техническое оснащение музея",
    "en": "Technical fit-out for museums",
-   "pt": "Equipagem técnica de museus"
+   "pt": "Projeto técnico para museus"
   },
   {
    "id": "services-03#023",
    "path": "services/4/nav",
    "ru": "Оснащение музея",
    "en": "Museum fit-out",
-   "pt": "Equipagem de museus"
+   "pt": "Projeto técnico"
   },
   {
    "id": "services-03#024",
    "path": "services/4/subtitle",
    "ru": "Пишем и проверяем техническое задание, подбираем состав оборудования и отвечаем за то, чтобы всё это работало как одна система.",
    "en": "We write and audit the specification, put together the equipment list, and answer for all of it working as one system.",
-   "pt": "Escrevemos e auditamos a especificação, montamos a lista de equipamentos e respondemos por tudo isso funcionar como um sistema único."
+   "pt": "Escrevemos e revisamos o termo de referência, definimos a lista de equipamentos e respondemos pelo conjunto funcionando como um único sistema."
   },
   {
    "id": "services-03#025",
@@ -177,7 +177,7 @@
    "ru": "оснащение музеев",
    "en": "museum fit-out",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "equipagem de museu"
+   "pt": "projeto técnico para museu"
   },
   {
    "id": "services-03#026",
@@ -193,7 +193,7 @@
    "ru": "техническое оснащение муниципальных музеев",
    "en": "museum equipment specification",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "especificação de equipamento para museu"
+   "pt": "especificação de equipamentos para museu"
   },
   {
    "id": "services-03#028",
@@ -201,7 +201,7 @@
    "ru": "оснащение региональных и муниципальных музеев",
    "en": "multimedia museum brief",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "briefing de museu multimídia"
+   "pt": "projeto técnico para museu municipal"
   },
   {
    "id": "services-03#029",
@@ -209,7 +209,7 @@
    "ru": "тз на мультимедийное оснащение музея",
    "en": "equipping a museum",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "equipar um museu"
+   "pt": "termo de referência para equipamentos multimídia"
   },
   {
    "id": "services-03#030",
@@ -217,7 +217,7 @@
    "ru": "оснащение музея оборудованием",
    "en": "museum tender specification",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "termo de referência para licitação de museu"
+   "pt": "licitação de equipamentos para museu"
   },
   {
    "id": "services-03#031",
@@ -225,7 +225,7 @@
    "ru": "оснащение школьных музеев",
    "en": null,
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "equipagem de museus escolares"
+   "pt": "equipamentos para museu escolar"
   },
   {
    "id": "services-03#032",
@@ -246,7 +246,7 @@
    "path": "services/4/flow/2/text",
    "ru": "Что входит в оснащение, кроме железа",
    "en": "What a fit-out contains besides hardware",
-   "pt": "O que uma equipagem contém além de hardware"
+   "pt": "O que um projeto técnico inclui além do hardware"
   },
   {
    "id": "services-03#035",
@@ -260,7 +260,7 @@
    "path": "services/4/flow/3/items/1",
    "ru": "Состав экспонатов: сколько их, какие, где стоят и сколько людей обслуживает каждый одновременно.",
    "en": "The exhibit list: how many, which ones, where they stand and how many people each serves at once.",
-   "pt": "A lista de exponentes: quantos, quais, onde ficam e quantas pessoas cada um atende por vez."
+   "pt": "A lista de módulos expositivos: quantos, quais, onde ficam e quantas pessoas cada um atende por vez."
   },
   {
    "id": "services-03#037",
@@ -274,7 +274,7 @@
    "path": "services/4/flow/3/items/3",
    "ru": "Программная часть и интеграция: чтобы десять экспонатов были системой, а не десятью коробками.",
    "en": "Software and integration: so that ten exhibits are a system rather than ten boxes.",
-   "pt": "Software e integração: para que dez exponentes sejam um sistema, e não dez caixas."
+   "pt": "Software e integração: para que dez módulos sejam um sistema, e não dez caixas."
   },
   {
    "id": "services-03#039",
@@ -316,7 +316,7 @@
    "path": "services/4/flow/5/items/2",
    "ru": "Плохое не описывает приёмку. Рабочее говорит прямо: экспонат поднимается одной кнопкой силами смотрителя, музей сам меняет подписи, подрядчик сдаёт образы машин и исходники.",
    "en": "A bad one does not describe acceptance. A working one says plainly: an attendant restarts an exhibit with one button, the museum changes captions itself, the contractor hands over machine images and content sources.",
-   "pt": "O ruim não descreve o recebimento. O que funciona diz com todas as letras: o atendente reinicia um exponente com um botão, o museu muda as legendas sozinho, o fornecedor entrega imagens das máquinas e arquivos-fonte do conteúdo."
+   "pt": "Um termo ruim não define o aceite. Um bom termo diz com todas as letras: o atendente reinicia um módulo com um botão, o museu muda as legendas sozinho, o fornecedor entrega imagens das máquinas e arquivos-fonte do conteúdo."
   },
   {
    "id": "services-03#045",
@@ -344,7 +344,7 @@
    "path": "services/4/flow/7/text",
    "ru": "Бюджет здесь меньше, а требований к отчётности больше. Работает одно правило: один хорошо придуманный экспонат сильнее пяти посредственных. Дешевле всего дают результат проекция на физический макет и содержание, сделанное под уже имеющийся экран. Дороже всего обходится попытка закрыть панелями все стены.",
    "en": "Smaller budget, more reporting. One rule holds: one well-conceived exhibit beats five mediocre ones. The cheapest things that genuinely work are projection onto a physical model, and content built for a screen you already own. The most expensive mistake is covering every wall with panels.",
-   "pt": "Orçamento menor, mais prestação de contas. Uma regra se mantém: um exponente bem pensado vale mais que cinco medianos. As coisas mais baratas que funcionam de verdade são projeção sobre maquete física e conteúdo feito para uma tela que você já tem. O erro mais caro é cobrir todas as paredes com painéis."
+   "pt": "Orçamento menor, mais prestação de contas. Uma regra se mantém: um módulo bem pensado vale mais que cinco medianos. As soluções mais baratas que funcionam de verdade são projeção sobre maquete física e conteúdo feito para uma tela que você já tem. O erro mais caro é cobrir todas as paredes com painéis."
   },
   {
    "id": "services-03#049",
@@ -470,14 +470,14 @@
    "path": "services/4/faq/3/a",
    "ru": "Это нормальная задача, и она решается. Смотрим, что уже есть в зале, и вкладываемся в один-два сильных экспоната вместо равномерного слоя техники по всем стенам. Проверить вашу смету и сказать, где деньги потрачены зря, мы можем бесплатно.",
    "en": "That is a normal brief and it is solvable. We look at what the room already has and put the money into one or two strong exhibits rather than an even layer of technology across every wall. Reviewing your estimate and pointing out where money is wasted costs you nothing.",
-   "pt": "É um briefing normal e tem solução. A gente olha o que a sala já tem e coloca o dinheiro em um ou dois exponentes fortes, em vez de uma camada uniforme de tecnologia em todas as paredes. Revisar seu orçamento e apontar onde há desperdício não custa nada."
+   "pt": "É um briefing normal e tem solução. A gente olha o que a sala já tem e coloca o dinheiro em um ou dois módulos fortes, em vez de uma camada uniforme de tecnologia em todas as paredes. Revisar seu orçamento e apontar onde há desperdício não custa nada."
   },
   {
    "id": "services-03#067",
    "path": "services/4/faq/4/q",
    "ru": "Что вы просите на приёмке?",
    "en": "What do you insist on at acceptance?",
-   "pt": "Em que vocês insistem no recebimento?"
+   "pt": "O que vocês exigem no aceite?"
   },
   {
    "id": "services-03#068",
@@ -545,7 +545,7 @@
    "ru": "мультимедийное оборудование",
    "en": "interactive exhibit hardware",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "hardware para exponente interativo"
+   "pt": "hardware para módulo interativo"
   },
   {
    "id": "services-03#077",
@@ -561,7 +561,7 @@
    "ru": "окпд2 мультимедийное оборудование",
    "en": null,
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "licitação de equipamento multimídia"
+   "pt": "licitação de equipamentos audiovisuais"
   },
   {
    "id": "services-03#079",
@@ -569,7 +569,7 @@
    "ru": "поставка мультимедийного оборудования",
    "en": null,
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "fornecimento de equipamento multimídia"
+   "pt": "fornecimento de equipamentos multimídia"
   },
   {
    "id": "services-03#080",
@@ -577,7 +577,7 @@
    "ru": "комплекс мультимедийного оборудования",
    "en": null,
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "sistema de equipamento multimídia"
+   "pt": "sistema multimídia integrado"
   },
   {
    "id": "services-03#081",

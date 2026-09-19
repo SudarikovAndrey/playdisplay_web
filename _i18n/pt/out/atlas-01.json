@@ -106,14 +106,14 @@
    "path": "items/2/title",
    "ru": "Поток требует предельного внимания",
    "en": "Flow demands total attention",
-   "pt": "O fluxo exige atenção inteira"
+   "pt": "O fluxo exige atenção total"
   },
   {
    "id": "atlas-01#016",
    "path": "items/2/desc",
    "ru": "Сильные решения редко рождаются между делом. Дизайнер полностью погружается в задачу, замечает связи, отбрасывает очевидные ответы и удерживает идею, пока она не приобретает точную форму.",
    "en": "Strong solutions rarely arrive in passing. The designer goes all the way into the problem, notices connections, discards the obvious answers and holds the idea until it takes exact form.",
-   "pt": "Soluções fortes raramente chegam de passagem. O designer entra na tarefa até o fim, percebe conexões, descarta as respostas óbvias e segura a ideia até ela ganhar forma exata."
+   "pt": "Soluções fortes raramente surgem por acaso. O designer mergulha no problema, percebe conexões, descarta as respostas óbvias e sustenta a ideia até ela ganhar uma forma precisa."
   },
   {
    "id": "atlas-01#017",
@@ -141,7 +141,7 @@
    "path": "items/4/desc",
    "ru": "Бюджет, сроки, архитектура, безопасность и существующее оборудование задают давление, из которого рождается точное решение.",
    "en": "Budget, schedule, architecture, safety and existing equipment apply the pressure that an exact solution is born out of.",
-   "pt": "Orçamento, prazo, arquitetura, segurança e o equipamento já existente criam a pressão da qual nasce a solução exata."
+   "pt": "Orçamento, prazo, arquitetura, segurança e os equipamentos existentes criam a pressão da qual nasce uma solução precisa."
   },
   {
    "id": "atlas-01#021",
@@ -197,7 +197,7 @@
    "path": "items/8/desc",
    "ru": "Экраны, проекторы и программное обеспечение можно купить. Настоящая работа — спроектировать, как люди будут двигаться, останавливаться, удивляться и взаимодействовать.",
    "en": "Screens, projectors and software can be bought. The real work is designing how people will move, stop, wonder and interact.",
-   "pt": "Telas, projetores e software dá para comprar. O trabalho de verdade é projetar como as pessoas vão andar, parar, se surpreender e interagir."
+   "pt": "Telas, projetores e software: tudo isso se compra. O trabalho de verdade é projetar como as pessoas vão andar, parar, se surpreender e interagir."
   },
   {
    "id": "atlas-01#029",
@@ -533,7 +533,7 @@
    "path": "items/32/desc",
    "ru": "То, на что человек повлиял сам, воспринимается как более значимое.",
    "en": "Whatever a person has influenced themselves feels more significant to them.",
-   "pt": "O que a pessoa mesma influenciou parece mais importante para ela."
+   "pt": "Aquilo que a própria pessoa influenciou parece mais importante para ela."
   },
   {
    "id": "atlas-01#077",
@@ -694,7 +694,7 @@
    "path": "items/44/title",
    "ru": "Настоящее начинается там, где заканчиваются экраны",
    "en": "The real thing begins where the screens end",
-   "pt": "O de verdade começa onde as telas acabam"
+   "pt": "A experiência real começa onde as telas terminam"
   },
   {
    "id": "atlas-01#100",

@@ -162,7 +162,7 @@
    "path": "services/5/faq/3/a",
    "ru": "Профессиональные панели и светодиод — пять-семь лет при десятичасовом дне. Проекторы упираются в ресурс источника света, у лазерных это порядка двадцати тысяч часов. Машины морально устаревают быстрее, чем ломаются. Планировать замену стоит заранее и строкой в бюджете: экспозиция, у которой нет плана обновления, начинает выглядеть старой примерно на третий год.",
    "en": "An integrator is responsible for the equipment working. We are responsible for the exhibition working. The difference shows at handover: a system can be installed flawlessly and still leave the visitor unmoved. That is why we start with the script and the content, and derive the equipment list from those.",
-   "pt": "O integrador responde pelo equipamento funcionar. Nós respondemos pela exposição funcionar. A diferença aparece no recebimento: um sistema pode estar instalado de forma impecável e ainda assim deixar o visitante indiferente. Por isso começamos pelo roteiro e pelo conteúdo, e derivamos deles a lista de equipamentos."
+   "pt": "O integrador responde pelo equipamento funcionar. Nós respondemos pela exposição funcionar. A diferença aparece no aceite: um sistema pode estar instalado de forma impecável e ainda assim deixar o visitante indiferente. Por isso começamos pelo roteiro e pelo conteúdo e, a partir deles, definimos a lista de equipamentos."
   },
   {
    "id": "services-04#024",
@@ -176,7 +176,7 @@
    "path": "services/5/faq/4/a",
    "ru": "Интегратор отвечает за то, чтобы техника работала. Мы отвечаем за то, чтобы работала экспозиция. Разница видна на приёмке: комплекс может быть смонтирован безупречно и при этом оставлять посетителя равнодушным. Поэтому мы начинаем со сценария и содержания, а состав оборудования выводим уже из них.",
    "en": null,
-   "pt": "O integrador responde pela técnica funcionar. Nós respondemos pela exposição funcionar. A diferença aparece no recebimento: o sistema pode estar montado de forma impecável e ainda assim deixar o visitante indiferente. Por isso começamos pelo roteiro e pelo conteúdo, e a composição dos equipamentos já sai deles."
+   "pt": "O integrador responde pela técnica funcionar. Nós respondemos pela exposição funcionar. A diferença aparece no aceite: o sistema pode estar montado de forma impecável e ainda assim deixar o visitante indiferente. Por isso começamos pelo roteiro e pelo conteúdo, e a composição dos equipamentos já sai deles."
   },
   {
    "id": "services-04#026",
@@ -245,7 +245,7 @@
    "ru": "стенд для выставки",
    "en": "trade show exhibit",
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "exponente para feira"
+   "pt": "instalação interativa para feira"
   },
   {
    "id": "services-04#035",
@@ -269,7 +269,7 @@
    "ru": "экспонат для выставки",
    "en": null,
    "nota": "Consulta de busca, não frase corrida: escreva o que as pessoas realmente digitam no Brasil, em vez de traduzir palavra por palavra.",
-   "pt": "exponente para exposição"
+   "pt": "instalação interativa para exposição"
   },
   {
    "id": "services-04#038",
@@ -297,7 +297,7 @@
    "path": "services/6/flow/3/items/0",
    "ru": "Центральный экспонат — объект, вокруг которого собирается всё остальное. Обычно он и делает стенд узнаваемым.",
    "en": "A centrepiece exhibit — the object everything else gathers around. Usually it is what makes the stand memorable.",
-   "pt": "Um exponente central — o objeto em volta do qual todo o resto se organiza. Normalmente é ele que faz o estande ser lembrado."
+   "pt": "Uma instalação central — o objeto em torno do qual todo o resto se organiza. Normalmente é ela que faz o estande ser lembrado."
   },
   {
    "id": "services-04#042",
@@ -346,7 +346,7 @@
    "path": "services/6/flow/5/text",
    "ru": "Это про промышленность, авиацию, энергетику, транспортное машиностроение — всё, где изделие нельзя поставить на стол. Экспонат, который позволяет заглянуть внутрь двигателя или собрать состав, делает за менеджера половину разговора: посетитель сам задаёт следующий вопрос, и это уже другой разговор, чем «возьмите буклет».",
    "en": "This is about industry, aviation, energy, rolling stock — anything where the product will not fit on a table. An exhibit that lets someone look inside an engine or assemble a train does half the sales conversation: the visitor asks the next question themselves, and that is a different conversation from “take a brochure”.",
-   "pt": "Isso vale para indústria, aviação, energia, material rodante — qualquer coisa cujo produto não cabe em uma mesa. Um exponente que deixa alguém olhar dentro de um motor ou montar um trem já faz metade da conversa de venda: o visitante faz sozinho a próxima pergunta, e essa é uma conversa diferente de “leve um folheto”."
+   "pt": "Isso vale para indústria, aviação, energia, material rodante — qualquer setor cujo produto não cabe em uma mesa. Uma instalação que permite olhar dentro de um motor ou montar um trem já faz metade da conversa de venda: o visitante faz sozinho a próxima pergunta, e essa é uma conversa diferente de “leve um folheto”."
   },
   {
    "id": "services-04#049",
@@ -360,7 +360,7 @@
    "path": "services/6/flow/7/text",
    "ru": "Дата открытия выставки не переносится. Самый быстрый интерактивный стенд мы сделали под ключ за три недели, и это был не единичный случай — три недели от задачи до работающего экспоната в павильоне повторялись. Но такой срок означает жёсткие ограничения по составу: не всё, что придумано, можно реализовать за три недели, и мы говорим об этом до подписания, а не после.",
    "en": "An opening date does not move. Our fastest turnkey interactive stand took three weeks, and it was not a one-off — three weeks from brief to a working exhibit in the hall has happened more than once. But that schedule means hard limits on scope: not everything imagined can be built in three weeks, and we say so before signing rather than after.",
-   "pt": "Uma data de abertura não se mexe. Nosso estande interativo chave na mão mais rápido levou três semanas, e não foi caso isolado — três semanas do briefing a um exponente funcionando no pavilhão já aconteceu mais de uma vez. Mas esse prazo impõe limites duros de escopo: nem tudo que se imagina dá para construir em três semanas, e a gente diz isso antes de assinar, não depois."
+   "pt": "A data de abertura não muda. Nosso estande interativo chave na mão mais rápido levou três semanas, e não foi um caso isolado — já fomos do briefing a uma instalação funcionando no pavilhão nesse prazo mais de uma vez. Mas três semanas impõem limites duros de escopo: nem tudo o que se imagina dá para construir, e a gente diz isso antes de assinar, não depois."
   },
   {
    "id": "services-04#051",
@@ -402,7 +402,7 @@
    "path": "services/6/flow/10/text",
    "ru": "Обычно ничего — и это потерянные деньги. Экспонат, спроектированный с расчётом на вторую жизнь, уезжает на следующую выставку, встаёт в офис продаж или в корпоративный музей. Это решается на этапе конструкции: разборность, транспортная тара, автономность от конкретного помещения. Стоит немного дороже на входе и заметно дешевле в пересчёте на количество показов.",
    "en": "Usually nothing, and that is money thrown away. An exhibit designed for a second life travels to the next fair, moves into a sales office or into a corporate museum. It is decided at the engineering stage: demountability, transport cases, independence from one particular room. Slightly more expensive up front and noticeably cheaper per showing.",
-   "pt": "Normalmente nada, e isso é dinheiro jogado fora. Um exponente projetado para uma segunda vida vai para a próxima feira, muda para um escritório de vendas ou para um museu corporativo. Isso se decide na etapa de engenharia: desmontabilidade, caixas de transporte, independência de uma sala específica. Um pouco mais caro no começo e bem mais barato por exibição."
+   "pt": "Normalmente nada, e isso é dinheiro jogado fora. Uma instalação projetada para uma segunda vida vai para a próxima feira, muda para um escritório de vendas ou para um museu corporativo. Isso se decide na etapa de engenharia: desmontabilidade, caixas de transporte, independência de uma sala específica. Um pouco mais caro no começo e bem mais barato por evento."
   },
   {
    "id": "services-04#057",
@@ -437,7 +437,7 @@
    "path": "services/6/faq/0/a",
    "ru": "Три недели — наш реальный минимум под ключ, и он проверен несколькими проектами. Это возможно при готовности принимать решения быстро и при ограниченном составе: один сильный экспонат вместо пяти средних.",
    "en": "Three weeks is our real turnkey minimum, proven on several projects. It is possible when decisions are made quickly and the scope stays tight: one strong exhibit instead of five average ones.",
-   "pt": "Três semanas é o nosso mínimo real chave na mão, comprovado em vários projetos. É possível quando as decisões são tomadas rápido e o escopo fica enxuto: um exponente forte em vez de cinco medianos."
+   "pt": "Três semanas é o nosso mínimo real chave na mão, comprovado em vários projetos. É possível quando as decisões são tomadas rápido e o escopo fica enxuto: uma instalação forte em vez de cinco medianas."
   },
   {
    "id": "services-04#062",
@@ -451,7 +451,7 @@
    "path": "services/6/faq/1/a",
    "ru": "Работаем и так, и так. Часто конструкцию строит выставочный подрядчик, а мы делаем экспонаты и содержание — тогда важно состыковаться на этапе планировки, потому что интерактивному объекту нужны место, свет, питание и расстояние до зрителя.",
    "en": "Both ways. Often the structure is built by an exhibition contractor while we make the exhibits and the content — then it matters that we align at the layout stage, because an interactive object needs space, light, power and a viewing distance.",
-   "pt": "Dos dois jeitos. Muitas vezes a estrutura é feita por um montador de estandes enquanto nós fazemos os exponentes e o conteúdo — e aí importa combinar tudo ainda na etapa de layout, porque um objeto interativo precisa de espaço, luz, energia e distância de visão."
+   "pt": "Dos dois jeitos. Muitas vezes a estrutura é feita por um montador de estandes enquanto nós fazemos as instalações e o conteúdo — e aí é importante combinar tudo ainda na etapa de layout, porque um objeto interativo precisa de espaço, luz, energia e distância de visão."
   },
   {
    "id": "services-04#064",
@@ -472,14 +472,14 @@
    "path": "services/6/faq/3/q",
    "ru": "Можно ли повторно использовать экспонат на другой выставке?",
    "en": "Can an exhibit be reused at another fair?",
-   "pt": "Um exponente pode ser reaproveitado em outra feira?"
+   "pt": "Uma instalação pode ser reaproveitada em outra feira?"
   },
   {
    "id": "services-04#067",
    "path": "services/6/faq/3/a",
    "ru": "Да, если это заложено в конструкции: разборность, тара, независимость от конкретной планировки. Скажите об этом в начале — переделывать готовый экспонат под перевозку дороже, чем сразу так его собрать.",
    "en": "Yes, if the engineering allows for it: demountability, cases, independence from a particular layout. Say so at the start — converting a finished exhibit for travel costs more than building it that way.",
-   "pt": "Pode, se a engenharia previu isso: desmontabilidade, caixas, independência de um layout específico. Diga desde o começo — converter um exponente pronto para viagem custa mais do que já construí-lo assim."
+   "pt": "Pode, se a engenharia previu isso: desmontabilidade, caixas, independência de um layout específico. Diga desde o começo — adaptar uma instalação pronta para viajar custa mais do que já construí-la assim."
   },
   {
    "id": "services-04#068",

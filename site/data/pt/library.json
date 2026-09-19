@@ -19,7 +19,7 @@
        "id": "laser-projector",
        "name": "Projetor laser de instalação",
        "line": "O cavalo de batalha. Roda por anos e nunca pede lâmpada",
-       "what": "Laser no lugar de lâmpada: 20 mil horas sem troca, partida instantânea, monta de cabeça para baixo se precisar. Modelos de lâmpada não são mais especificados para exposições novas — não porque iluminem menos, mas porque alguém tem que trocar a lâmpada, e não há quem faça isso.",
+       "what": "Laser no lugar de lâmpada: 20 mil horas sem troca, partida instantânea, pode ser instalado de cabeça para baixo. Modelos de lâmpada não são mais especificados para exposições novas — não porque iluminem menos, mas porque alguém tem que trocar a lâmpada, e não há quem faça isso.",
        "good": [
         "Uma imagem maior que uma tela física — de três metros a uma parede inteira",
         "Uma superfície que não é plana: uma maquete, uma abóbada, uma coluna, uma fachada",
@@ -136,7 +136,7 @@
        ],
        "bad": [
         "O objeto é pequeno: para qualquer coisa abaixo de um metro, uma tela comum ao lado sai mais barata e mais nítida",
-        "A maquete ainda não foi construída — a calibração se faz contra a coisa real, não contra o desenho"
+        "A maquete ainda não foi construída — a calibração é feita no objeto real, não no desenho"
        ],
        "brands": [
         {
@@ -355,7 +355,7 @@
        "id": "transparent",
        "name": "Tela transparente",
        "line": "Dados sobre o objeto real",
-       "what": "A imagem fica sobre o vidro e o exponente aparece atrás. O original continua original enquanto cortes, legendas e animação ficam por cima como uma camada. Desligue e sobra só o vidro.",
+       "what": "A imagem fica sobre o vidro e a peça exposta aparece atrás. O original continua original enquanto cortes, legendas e animação ficam por cima como uma camada. Desligue e sobra só o vidro.",
        "good": [
         "Uma vitrine com um original que precisa ser explicado sem ser coberto",
         "Um corte, um diagrama ou uma trajetória sobre um produto real",
@@ -450,7 +450,7 @@
        "good": [
         "Um único objeto a ser examinado de todos os lados — um produto, uma molécula, uma peça",
         "Volume sem óculos e sem instruções",
-        "Um exponente para uma ou duas pessoas por vez"
+        "Um módulo para uma ou duas pessoas por vez"
        ],
        "bad": [
         "Público grande e tamanhos grandes",
@@ -556,12 +556,12 @@
        "good": [
         "Completar o que não sobreviveu: uma ruína, um interior perdido, uma máquina desativada",
         "Mostrar o invisível sobre o visível: fluxos, cortes, processos",
-        "Um exponente fora do prédio — um pátio, um parque, uma rua"
+        "Uma instalação fora do prédio — um pátio, um parque, uma rua"
        ],
        "bad": [
         "Contar com o celular do visitante sem orientação: só uma parte consegue fazer funcionar",
         "Conectividade ruim e falta de vontade de instalar um app",
-        "O exponente precisa funcionar sempre: celulares descarregam, tablets somem"
+        "O módulo precisa funcionar sempre: celulares descarregam, tablets somem"
        ],
        "brands": [
         {
@@ -593,10 +593,10 @@
        "id": "sound-shower",
        "name": "Chuveiro sonoro, áudio direcional",
        "line": "Audível aqui, silencioso um passo adiante",
-       "what": "Som confinado a uma zona estreita: o visitante no exponente ouve a história, alguém a um metro não ouve nada, e ninguém precisa de fones. Isso cura a principal doença das exposições multimídia — dez exponentes falando ao mesmo tempo e nenhum deles audível.",
+       "what": "Som confinado a uma zona estreita: o visitante diante do módulo ouve a história, alguém a um metro não ouve nada, e ninguém precisa de fones. Isso resolve o principal problema das exposições multimídia — dez módulos falando ao mesmo tempo e nenhum deles audível.",
        "compare": "São dois princípios diferentes, e confundi-los sai caro. Uma **cúpula parabólica** é um alto-falante comum dentro de um refletor: o som é honesto e cheio, a zona embaixo da cúpula tem cerca de um metro e não há distorção. Um **emissor paramétrico ultrassônico** é um feixe estreito de ultrassom que vira som no próprio ar: a zona é bem mais estreita e alcança mais longe, mas o grave se perde e a fala soa mais seca. Para voz e atmosfera, a cúpula; para um feixe pontual atravessando a sala, o paramétrico.",
        "good": [
-        "Vários exponentes com som em uma mesma sala",
+        "Vários módulos com som em uma mesma sala",
         "Uma história que só interessa a quem está parado ali",
         "Fones não são bem-vindos — fluxo de público ou higiene"
        ],
@@ -669,7 +669,7 @@
        "id": "headphones",
        "name": "Fones e áudio pessoal",
        "line": "Quando a história é longa e pessoal",
-       "what": "Do audioguia clássico ao áudio transmitido para o celular do visitante. O único jeito de entregar um texto longo, vários idiomas e profundidades diferentes a partir de um mesmo exponente.",
+       "what": "Do audioguia clássico ao áudio transmitido para o celular do visitante. O único jeito de entregar um texto longo, vários idiomas e profundidades diferentes a partir de um mesmo módulo.",
        "good": [
         "Muitos idiomas e profundidades diferentes — infantil, geral, especializada",
         "Uma história mais longa que dois minutos",
@@ -779,7 +779,7 @@
       {
        "id": "kinetic",
        "name": "Cinética e mecânica",
-       "line": "O exponente se move de verdade",
+       "line": "A peça exposta se move de verdade",
        "what": "Atuadores e mecanismos: uma maquete se abre, uma máquina gira, um corte se separa. Outra ordem de impressão — o objeto é real, e se lê do outro lado do salão.",
        "good": [
         "Como um produto é feito: mostrado em corte, com a forma real se abrindo",
@@ -896,7 +896,7 @@
    "full": "Equipamentos de entrada",
    "line": "Como a pessoa responde",
    "lead": "Dedos, mãos, corpo, voz, a simples presença. A linha mais barata do orçamento e a que decide tudo: é aqui que “interativo” se separa de “ligado”.",
-   "principle": "A pergunta não é como a pessoa opera aquilo, e sim como ela descobriu que podia. Um exponente que precisa de uma placa de regras não precisa de um sensor melhor — precisa ser refeito.",
+   "principle": "A pergunta não é como a pessoa opera aquilo, e sim como ela descobriu que podia. Um módulo que precisa de uma placa de regras não precisa de um sensor melhor — precisa ser refeito.",
    "sections": [
     {
      "name": "Toque",
@@ -906,7 +906,7 @@
        "id": "capacitive-touch",
        "name": "Toque capacitivo",
        "line": "Como um celular, só que grande",
-       "what": "Película ou vidro que sente o dedo por um campo elétrico. Alta precisão, multitoque honesto, e o vidro pode ser grosso — o toque lê direto através dele, então o exponente sobrevive a uma pancada.",
+       "what": "Película ou vidro que detecta o dedo por um campo elétrico. Alta precisão, multitoque de verdade, e o vidro pode ser grosso — o toque atravessa o material, então o módulo sobrevive a uma pancada.",
        "good": [
         "Uma vitrine em que se toca através de vidro de proteção",
         "Multitoque confiante: um mapa que duas pessoas giram e esticam juntas",
@@ -926,7 +926,7 @@
         {
          "n": "3M Touch",
          "u": "https://www.3m.com/",
-         "note": "sistemas projetado-capacitivos"
+         "note": "sistemas capacitivos projetados"
         },
         {
          "n": "Elo Touch",
@@ -938,7 +938,7 @@
       {
        "id": "ir-frame",
        "name": "Moldura infravermelha",
-       "line": "Barata, grande, funciona de luva",
+       "line": "Barata, grande, funciona com luvas",
        "what": "Uma moldura na borda capta o feixe interrompido. Responde a qualquer coisa — dedo, luva, ponteira, cotovelo. Em um museu do norte no inverno isso é metade da sala.",
        "good": [
         "Diagonais grandes, em que o toque capacitivo custa o mesmo que a tela",
@@ -1050,7 +1050,7 @@
        "good": [
         "Uma exposição sobre máquinas: você deve operá-la com o que de fato a operava",
         "Crianças e visitantes mais velhos — entendido sem uma única palavra",
-        "O exponente precisa sobreviver a um milhão de apertos e a uma excursão escolar"
+        "O módulo precisa sobreviver a um milhão de apertos e a uma excursão escolar"
        ],
        "bad": [
         "O conteúdo muda com frequência: cada roteiro precisa do próprio objeto",
@@ -1153,7 +1153,7 @@
        "id": "rfid-card",
        "name": "Cartão do visitante, RFID e NFC",
        "line": "A exposição sabe quem está ali",
-       "what": "Um ingresso ou pulseira com etiqueta. Encoste e o exponente fala o seu idioma e retoma de onde você parou. No fim do percurso ele entrega um resumo pessoal do que você viu e juntou.",
+       "what": "Um ingresso ou pulseira com etiqueta. Encoste e o módulo fala o seu idioma e retoma de onde você parou. No fim do percurso, entrega um resumo pessoal do que você viu e reuniu.",
        "good": [
         "Um percurso longo com narrativa contínua e acúmulo",
         "Muitos idiomas sem um único botão de idioma",
@@ -1184,11 +1184,11 @@
        "what": "Células de carga, tapetes de pressão, sensores de rotação. Baratos e absolutamente honestos: aplique força e algo acontece. Nada a explicar.",
        "good": [
         "Comparar esforço ou massa: levantar, apertar, puxar",
-        "Um tapete junto a um exponente que inicia a cena quando alguém pisa",
-        "O exponente precisa funcionar para uma pessoa de qualquer altura e de qualquer mão"
+        "Um tapete junto a um módulo que inicia a cena quando alguém pisa",
+        "O módulo precisa funcionar para pessoas de qualquer altura, destras ou canhotas"
        ],
        "bad": [
-        "Medida precisa como conteúdo: sensores domésticos desviam com o tempo",
+        "Medição precisa como conteúdo: sensores domésticos perdem a calibração com o tempo",
         "Carga constante desgasta a mecânica mais rápido que a eletrônica"
        ],
        "brands": [
@@ -1219,7 +1219,7 @@
        "note_hw": "Importante para a especificação: a Microsoft encerrou a produção do Azure Kinect DK em 2023 e passou a tecnologia a parceiros. O sucessor direto é o Orbbec Femto Bolt, com a mesma tecnologia de profundidade e interface de programação compatível: o código de Kinect migra quase sem alterações. Se a sua especificação ainda diz “Kinect”, isso é um sinal de alerta — o documento foi escrito com modelos antigos.",
        "good": [
         "Movimento de corpo inteiro: copiar, desviar, dançar, ficar parado",
-        "Várias pessoas ao mesmo tempo diante de um mesmo exponente",
+        "Várias pessoas ao mesmo tempo diante de um mesmo módulo",
         "Contar a fila e saber se há alguém ali"
        ],
        "bad": [
@@ -1258,7 +1258,7 @@
        "good": [
         "Higiene acima de tudo: medicina, museu infantil, restrições sanitárias",
         "Uma ação sobre um objeto: girar, abrir, desmontar",
-        "O exponente deve parecer mágica"
+        "O módulo deve parecer mágico"
        ],
        "bad": [
         "O volume útil é pequeno — cerca de um metro cúbico acima do aparelho, não mais",
@@ -1276,17 +1276,17 @@
       {
        "id": "presence-sensor",
        "name": "Sensor de presença",
-       "line": "O exponente acorda sozinho",
-       "what": "Um sensor infravermelho ou de radar percebe alguém por perto. A peça mais barata de toda a especificação e uma das mais úteis: o exponente chama, e em uma sala vazia ele economiza a própria vida.",
+       "line": "O módulo acorda sozinho",
+       "what": "Um sensor infravermelho ou de radar percebe alguém por perto. A peça mais barata de toda a especificação e uma das mais úteis: o módulo chama e, em uma sala vazia, poupa sua própria vida útil.",
        "good": [
-        "O exponente deve chamar em vez de esperar ser apertado",
+        "O módulo deve chamar em vez de esperar ser apertado",
         "Economizar horas de painel e de projetor nos períodos vazios",
         "Estatística honesta de fluxo por zona"
        ],
        "bad": [
         "Um corredor de passagem: dispara com todo mundo que passa",
         "O radar enxerga através de uma divisória fina — a sala ao lado vai ficar acordando a sua",
-        "Uma partida abrupta assusta as pessoas: suba o efeito com suavidade"
+        "Uma partida abrupta assusta: ative o efeito aos poucos"
        ],
        "brands": [
         {
@@ -1309,12 +1309,12 @@
       {
        "id": "eeg",
        "name": "Leitura de atividade cerebral",
-       "line": "Um exponente que se opera não fazendo nada",
-       "what": "Uma faixa leve lê a atividade cerebral e distingue estados — concentração, relaxamento, um pico de atenção. Ela não lê pensamentos, e dizer isso com todas as letras no exponente já é metade do roteiro.",
+       "line": "Um módulo operado sem fazer nada",
+       "what": "Uma faixa leve lê a atividade cerebral e distingue estados — concentração, relaxamento, um pico de atenção. Ela não lê pensamentos, e dizer isso com todas as letras no módulo já é metade do roteiro.",
        "note_hw": "As expectativas precisam ser baixadas antes. Modelos de consumo dão alguns canais e distinguem dois ou três estados com atraso de segundos. Qualquer coisa que prometa mais de uma faixa de consumo é marketing.",
        "good": [
         "O tema da exposição é o próprio cérebro, a atenção, a meditação, a consciência",
-        "Um exponente de disputa: quem relaxa ou se concentra mais rápido",
+        "Um módulo de disputa: quem relaxa ou se concentra mais rápido",
         "Uma zona com atendimento, onde a equipe coloca o aparelho e explica",
         "Deseja-se uma conversa sobre a tecnologia, não apenas um efeito"
        ],
@@ -1396,7 +1396,7 @@
        "id": "face-recognition",
        "name": "Reconhecimento facial e de emoções",
        "line": "Tecnicamente fácil, juridicamente caro",
-       "what": "Idade, gênero, emoção, identidade — a partir de um rosto. Funciona de forma confiável e custa pouco. A gente instala isso raramente e discute à parte: biometria é uma categoria especial de dado pessoal, e as regras são mais duras do que parecem na demonstração do fornecedor.",
+       "what": "Idade, gênero, emoção, identidade — a partir de um rosto. Funciona de forma confiável e custa pouco. A gente instala isso raramente e discute à parte: dados biométricos são dados pessoais sensíveis, e as regras são mais rígidas do que parecem na demonstração do fornecedor.",
        "good": [
         "Estatística anônima sem guardar quadros: quantas pessoas, de que faixa etária aproximada",
         "Uma narrativa em que o reconhecimento é o tema da exposição e o visitante concordou com isso"
@@ -1449,7 +1449,7 @@
        "what": "Uma etiqueta no ingresso e receptores pelo prédio: o sistema sabe quem está onde, com precisão de dezenas de centímetros. O conteúdo chega pela localização, e você ganha um mapa dos percursos que as pessoas realmente fazem.",
        "good": [
         "Uma área grande com narrativa contínua e percurso pessoal",
-        "Um audioguia que sabe sozinho diante de que exponente você está",
+        "Um audioguia que sabe sozinho diante de qual peça você está",
         "Análise de percurso: por onde as pessoas realmente andam e onde fica a zona morta"
        ],
        "bad": [
@@ -1550,20 +1550,20 @@
        "name": "O celular como sistema completo",
        "line": "Entrada, saída e processamento ao mesmo tempo — às custas de outra pessoa",
        "what": "Um celular já tem toque, câmera, microfone, sensores, lidar nos modelos superiores, tela, som e potência suficiente para realidade aumentada. Nada gasto em hardware. Você paga em outro lugar: cada passo antes de iniciar perde gente.",
-       "spec": "Conte o funil com honestidade. Cem pessoas chegam ao exponente; metade nota o convite; um terço dessas tira o celular; um punhado instala um aplicativo. Uma página web sem instalação muda essa aritmética várias vezes, e quase sempre é a escolha certa.",
+       "spec": "Conte o funil com honestidade. Cem pessoas chegam ao módulo; metade nota o convite; um terço dessas tira o celular; um punhado instala um aplicativo. Uma página web sem instalação muda essa aritmética várias vezes, e quase sempre é a escolha certa.",
        "good": [
-        "Um exponente fora do prédio: um pátio, um parque, uma rua, um percurso pela cidade",
+        "Uma instalação fora do prédio: um pátio, um parque, uma rua, um percurso pela cidade",
         "Um percurso pessoal e algo para levar: uma foto, um resultado, um link",
         "Muitos idiomas sem botão — o celular sabe o idioma do dono",
         "Uma exposição temporária em que não há o que construir, mas há o que contar",
         "Acessibilidade: a tela da pessoa, o tamanho de letra dela, os ajustes de visão dela"
        ],
        "bad": [
-        "Como exponente principal do percurso: parte dos visitantes simplesmente não vai tirar o celular",
+        "Como atração principal do percurso: parte dos visitantes simplesmente não vai tirar o celular",
         "Contar que um aplicativo seja instalado para uma visita única — quase ninguém vai",
         "Público mais velho e grupos escolares sem celular",
         "Conectividade fraca: a rede de visitantes tem que ser testada antes, não no dia da abertura",
-        "Bateria: um roteiro longo esgota ela, e a culpa vai para o museu"
+        "Bateria: um roteiro longo acaba com ela, e a culpa recai sobre o museu"
        ],
        "brands": [
         {
@@ -1600,7 +1600,7 @@
    "full": "Processamento e controle",
    "line": "O que ninguém vê e sustenta tudo",
    "lead": "Máquinas, engines, rede, controle da sala. Nada disso aparece em uma única foto de exposição, e é por isso que é a primeira coisa cortada do orçamento. Um ano depois é exatamente essa parte que decide se o lugar funciona ou fica parado.",
-   "principle": "Recebimento em duas perguntas: o exponente sobe com um botão apertado por um atendente, e o museu consegue mudar o texto sozinho? Dois nãos e você comprou um fornecedor perpétuo, não um sistema.",
+   "principle": "O aceite se resume a duas perguntas: o módulo liga com um botão operado por um atendente, e o museu consegue mudar o texto sozinho? Duas respostas negativas significam que você comprou um fornecedor para sempre, não um sistema.",
    "sections": [
     {
      "name": "Máquinas",
@@ -1640,7 +1640,7 @@
        "what": "Gabinete selado, refrigeração passiva e anos com o mesmo modelo disponível. Esse último ponto importa mais que velocidade: daqui a três anos você vai precisar exatamente do mesmo.",
        "note_hw": "Uma montagem de escritório comum dentro de um pedestal sobrevive até o primeiro verão: a poeira assenta na ventoinha, a temperatura sobe e a máquina reduz o desempenho no dia mais movimentado. Esse é o erro mais comum nas especificações prontas.",
        "good": [
-        "Um exponente dentro de uma caixa fechada ou em uma sala empoeirada",
+        "Um módulo dentro de uma caixa fechada ou em uma sala empoeirada",
         "Funcionar por meses sem ser desligado",
         "Uma garantia de que a mesma unidade poderá ser comprada daqui a três anos"
        ],
@@ -1673,7 +1673,7 @@
        "what": "Um computador do tamanho da palma cobre metade dos pontos de uma exposição: um sensor, um botão, som em um gatilho, iluminação, vídeo simples. Em todo lugar onde de outro jeito ficaria um PC completo “por precaução”.",
        "good": [
         "Muitos pontos pequenos: um sensor, um botão, uma lâmpada, uma resposta em áudio",
-        "O exponente se esconde em um pedestal sem espaço e sem ventilação",
+        "O módulo se esconde em um pedestal sem espaço e sem ventilação",
         "Reposição importa: manter três na prateleira é barato",
         "Uma ligação com o mundo físico — sensores e atuadores conectam direto"
        ],
@@ -1780,7 +1780,7 @@
         "Um parque misto de três sistemas em uma mesma galeria: não vai haver quem faça a manutenção",
         "Escolher pelo hábito do fornecedor e não pelo software — o motivo mais comum de um museu acabar amarrado a um único prestador"
        ],
-       "warn": "Seja qual for a escolha, desative atualizações automáticas e suspensão automática, configure o roteiro para iniciar no boot e habilite o login automático. Teste isso no recebimento do jeito simples: tire da tomada e veja se o exponente volta sozinho, sem teclado.",
+       "warn": "Seja qual for a escolha, desative atualizações automáticas e suspensão automática, configure o roteiro para iniciar no boot e habilite o login automático. Teste isso no aceite do jeito simples: tire da tomada e veja se o módulo reinicia sozinho, sem teclado.",
        "brands": [
         {
          "n": "Windows IoT Enterprise LTSC",
@@ -1895,10 +1895,10 @@
       {
        "id": "unity",
        "name": "Unity",
-       "line": "O cavalo de batalha dos exponentes interativos",
+       "line": "O cavalo de batalha dos módulos interativos",
        "what": "O padrão da interatividade museológica: 3D em tempo real, qualquer sensor, builds para tudo, de uma tela de galeria a um óculos e a um celular. Mais especialistas no mercado do que para qualquer outra ferramenta desta lista, e um fornecedor fácil de substituir.",
        "good": [
-        "Um exponente interativo com lógica e estado de verdade",
+        "Um módulo interativo com lógica e estado de verdade",
         "Um mesmo corpo de conteúdo em vários aparelhos: galeria, óculos, celular",
         "Você quer um fornecedor que possa ser substituído com facilidade depois"
        ],
@@ -1973,8 +1973,8 @@
        "bad": [
         "Só Windows",
         "Bem menos especialistas no mercado do que para Unity",
-        "Licenciamento pago contado por máquina — um parque de dez pontos sente",
-        "Um exponente com lógica simples: exagero"
+        "Licenciamento pago por máquina — um parque com dez pontos sente no orçamento",
+        "Um módulo com lógica simples: exagero"
        ],
        "brands": [
         {
@@ -1996,7 +1996,7 @@
         "Um protótipo a ser testado contra hardware real, e não na tela"
        ],
        "bad": [
-        "Ainda menos especialistas que para TouchDesigner: não vai haver a quem passar",
+        "Ainda menos especialistas do que em TouchDesigner: depois não haverá para quem transferir o projeto",
         "Windows",
         "Barreira de entrada alta e documentação rala em alguns pontos",
         "Um display simples com um filme em laço — marreta para matar mosquito"
@@ -2022,7 +2022,7 @@
        "good": [
         "Um evento, uma inauguração, um espetáculo em fachada",
         "O efeito tem que reagir a um sinal ao vivo — som, câmera, operador",
-        "É preciso uma mesa em que alguém se senta e conduz o espetáculo na mão"
+        "É preciso um console em que alguém se senta e conduz o espetáculo ao vivo"
        ],
        "bad": [
         "Uma exposição permanente sem operador",
@@ -2132,10 +2132,10 @@
        "good": [
         "Mais de cinco aparelhos em uma sala",
         "Abrir e fechar por programação, sem ninguém presente",
-        "Um atendente precisa conseguir reiniciar um exponente sozinho"
+        "Um atendente precisa conseguir reiniciar um módulo sozinho"
        ],
        "bad": [
-        "Um ou dois exponentes: uma tomada com temporizador faz o mesmo",
+        "Um ou dois módulos: uma tomada com temporizador faz o mesmo",
         "Nenhuma pessoa treinada: isso também exige um mínimo de competência"
        ],
        "brands": [
@@ -2160,7 +2160,7 @@
        "id": "monitoring",
        "name": "Monitoramento e acesso remoto",
        "line": "Saber da falha antes do visitante",
-       "what": "O sistema avisa que um exponente apagou, que uma lâmpada chegou ao fim da vida ou que uma máquina reiniciou de madrugada. Sem isso você fica sabendo da falha por uma avaliação na internet.",
+       "what": "O sistema avisa que um módulo apagou, que uma lâmpada chegou ao fim da vida ou que uma máquina reiniciou de madrugada. Sem isso, você fica sabendo da falha por uma avaliação na internet.",
        "good": [
         "Uma exposição com mais de uma sala",
         "O fornecedor não fica na sua cidade",
@@ -2186,17 +2186,17 @@
        "id": "cms",
        "name": "Sistema de gestão de conteúdo",
        "line": "Para que o texto mude sem o fornecedor",
-       "what": "O painel pelo qual o museu edita legendas sozinho, troca fotos e acrescenta um idioma. A linha mais importante da lista de recebimento e a mais frequentemente ausente.",
+       "what": "O painel pelo qual o museu edita legendas sozinho, troca fotos e acrescenta um idioma. A linha mais importante do checklist de aceite e a que mais costuma faltar.",
        "good": [
         "O conteúdo vai mudar — e vai mesmo",
         "Vários idiomas, acrescentados ao longo do tempo",
         "Exposições temporárias dentro de uma mostra permanente"
        ],
        "bad": [
-        "Um exponente único que nunca vai mudar — raro, mas acontece",
-        "Ninguém para usar: um painel sem um funcionário treinado é morto"
+        "Um módulo único que nunca vai mudar — raro, mas acontece",
+        "Ninguém para usar: um painel sem funcionário treinado não serve para nada"
        ],
-       "warn": "Exija isso explicitamente no recebimento: peça que um funcionário do museu mude uma legenda de um exponente, na sua frente, sem telefonar para o fornecedor. Se isso for impossível, você comprou uma dependência.",
+       "warn": "No aceite, exija uma demonstração: peça que um funcionário do museu mude a legenda de um módulo, na sua frente, sem telefonar para o fornecedor. Se isso for impossível, você comprou uma dependência.",
        "brands": []
       },
       {
@@ -2239,7 +2239,7 @@
        "bad": [
         "Nenhuma pessoa que vá seguir o procedimento — aí é preciso um contrato de manutenção"
        ],
-       "warn": "Peça isso separadamente no recebimento: imagens das máquinas, arquivos-fonte do conteúdo e um procedimento de recuperação impresso. É isso que o museu tem para si, em vez de tomar emprestado por um tempo.",
+       "warn": "No aceite, peça separadamente: imagens das máquinas, arquivos-fonte do conteúdo e um procedimento de recuperação impresso. É isso que o museu recebe como propriedade, em vez de tomar emprestado por um tempo.",
        "brands": [
         {
          "n": "Clonezilla",

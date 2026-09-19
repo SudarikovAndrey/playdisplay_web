@@ -134,7 +134,7 @@
       "Conceito e design do projeto",
       "Engenharia da solução multimídia, produção dos gráficos",
       "Integração dos gráficos ao espaço: ajuste, calibração, acabamento",
-      "Instalação e regulagem dos exponentes, suporte no local"
+      "Instalação e regulagem dos módulos expositivos, suporte no local"
      ]
     }
    ]
@@ -208,7 +208,7 @@
    "year": 2021,
    "wi": 12,
    "cover": "https://playdisplay.com/wp-content/uploads/2021/06/01_logo_v03-960x960.jpg",
-   "goal": "Criar o exponente central na entrada do pavilhão Rostec Expo e reunir os produtos de todas as empresas do grupo Rostec em um único espaço holográfico.",
+   "goal": "Criar a instalação central na entrada do pavilhão Rostec Expo e reunir os produtos de todas as empresas do grupo Rostec em um único espaço holográfico.",
    "solution": "Uma instalação holográfica com a forma do logotipo da Rostec. A tela transparente mantém o salão visível através dela, e um console de controle abre o catálogo completo de produtos do grupo — tudo dentro de um único espaço holográfico.",
    "result": {
     "text": [
@@ -280,7 +280,7 @@
       "Botão que volta um nível no catálogo.",
       "Janela com data e hora atuais.",
       "Seletor de idioma — RU / ENG.",
-      "Janela que acorda a instalação // devolve ela ao modo de espera inicial. As duas se alternam.",
+      "Janela que acorda a instalação // a devolve ao modo de espera inicial. As duas se alternam.",
       "Bloco de navegação — mostra o estado da animação em reprodução e se aquele elemento está com áudio.",
       "Controle de volume da instalação.",
       "Joystick 3D para girar e conduzir o modelo tridimensional. Em alguns cenários nem todos os eixos de rotação estão ativos.",
@@ -828,7 +828,7 @@
     "instalação",
     "museu"
    ],
-   "client": "Holding Sinara Transport Machines (STM)",
+   "client": "Sinara Transport Machines (STM) Holding",
    "term": "3 semanas",
    "year": 2018,
    "wi": 5,
@@ -867,7 +867,7 @@
   {
    "slug": "vdnh-space",
    "url": "https://playdisplay.com/work/vdnh_space/",
-   "title": "VDNH Espaço",
+   "title": "VDNH Space",
    "subtitle": "A instalação História do Voo Espacial Tripulado",
    "tags": [
     "instalação",
@@ -961,7 +961,7 @@
     },
     {
      "t": "p",
-     "text": "Um sistema de informação único acompanha cada exponente do Centro de Cosmonáutica e Aviação, na VDNH. Os visitantes operam ele pela interface da instalação, e ele entrega quase qualquer fato sobre o espaço e sobre o que a humanidade alcançou além do nosso planeta."
+     "text": "Um sistema de informação único acompanha cada peça exposta no Centro de Cosmonáutica e Aviação, na VDNH. Os visitantes acessam o sistema pela interface da instalação e encontram praticamente qualquer informação sobre o espaço e sobre o que a humanidade alcançou além do nosso planeta."
     },
     {
      "t": "img",

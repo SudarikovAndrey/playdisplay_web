@@ -8,14 +8,14 @@
    "path": "categories/1/sections/1/items/4/good/2",
    "ru": "Экспонат должен работать для человека с любым ростом и любыми руками",
    "en": "The exhibit has to work for a person of any height and any hands",
-   "pt": "O exponente precisa funcionar para uma pessoa de qualquer altura e de qualquer mão"
+   "pt": "O módulo precisa funcionar para pessoas de qualquer altura, destras ou canhotas"
   },
   {
    "id": "library-04#002",
    "path": "categories/1/sections/1/items/4/bad/0",
    "ru": "Точное измерение как содержание: бытовые датчики плывут со временем",
    "en": "Precise measurement as the content: consumer sensors drift over time",
-   "pt": "Medida precisa como conteúdo: sensores domésticos desviam com o tempo"
+   "pt": "Medição precisa como conteúdo: sensores domésticos perdem a calibração com o tempo"
   },
   {
    "id": "library-04#003",
@@ -92,7 +92,7 @@
    "path": "categories/1/sections/2/items/0/good/1",
    "ru": "Несколько человек одновременно перед одним экспонатом",
    "en": "Several people at once in front of one exhibit",
-   "pt": "Várias pessoas ao mesmo tempo diante de um mesmo exponente"
+   "pt": "Várias pessoas ao mesmo tempo diante de um mesmo módulo"
   },
   {
    "id": "library-04#014",
@@ -190,7 +190,7 @@
    "path": "categories/1/sections/2/items/1/good/2",
    "ru": "Экспонат должен выглядеть как магия",
    "en": "The exhibit should look like magic",
-   "pt": "O exponente deve parecer mágica"
+   "pt": "O módulo deve parecer mágico"
   },
   {
    "id": "library-04#028",
@@ -232,21 +232,21 @@
    "path": "categories/1/sections/2/items/2/line",
    "ru": "Экспонат просыпается сам",
    "en": "The exhibit wakes up by itself",
-   "pt": "O exponente acorda sozinho"
+   "pt": "O módulo acorda sozinho"
   },
   {
    "id": "library-04#034",
    "path": "categories/1/sections/2/items/2/what",
    "ru": "Инфракрасный или радарный датчик замечает человека рядом. Самая дешёвая деталь во всей спецификации и одна из самых полезных: экспонат зовёт, а в пустом зале бережёт ресурс.",
    "en": "An infrared or radar sensor notices someone nearby. The cheapest part in the whole specification and one of the most useful: the exhibit calls out, and in an empty room it saves its own life.",
-   "pt": "Um sensor infravermelho ou de radar percebe alguém por perto. A peça mais barata de toda a especificação e uma das mais úteis: o exponente chama, e em uma sala vazia ele economiza a própria vida."
+   "pt": "Um sensor infravermelho ou de radar percebe alguém por perto. A peça mais barata de toda a especificação e uma das mais úteis: o módulo chama e, em uma sala vazia, poupa sua própria vida útil."
   },
   {
    "id": "library-04#035",
    "path": "categories/1/sections/2/items/2/good/0",
    "ru": "Экспонат должен звать, а не ждать нажатия",
    "en": "The exhibit should call out rather than wait to be pressed",
-   "pt": "O exponente deve chamar em vez de esperar ser apertado"
+   "pt": "O módulo deve chamar em vez de esperar ser apertado"
   },
   {
    "id": "library-04#036",
@@ -281,7 +281,7 @@
    "path": "categories/1/sections/2/items/2/bad/2",
    "ru": "Резкий запуск пугает: включать плавно",
    "en": "An abrupt start startles people: bring it up gently",
-   "pt": "Uma partida abrupta assusta as pessoas: suba o efeito com suavidade"
+   "pt": "Uma partida abrupta assusta: ative o efeito aos poucos"
   },
   {
    "id": "library-04#041",
@@ -316,14 +316,14 @@
    "path": "categories/1/sections/2/items/3/line",
    "ru": "Экспонат, которым управляют, ничего не делая",
    "en": "An exhibit you operate by doing nothing",
-   "pt": "Um exponente que se opera não fazendo nada"
+   "pt": "Um módulo operado sem fazer nada"
   },
   {
    "id": "library-04#046",
    "path": "categories/1/sections/2/items/3/what",
    "ru": "Лёгкий обруч снимает активность мозга и различает состояния — сосредоточенность, расслабление, всплеск внимания. Мысли он не читает, и честно сказать это со сцены — уже половина сценария.",
    "en": "A light headband reads brain activity and tells states apart — concentration, relaxation, a spike of attention. It does not read thoughts, and saying so plainly on the exhibit is already half the scenario.",
-   "pt": "Uma faixa leve lê a atividade cerebral e distingue estados — concentração, relaxamento, um pico de atenção. Ela não lê pensamentos, e dizer isso com todas as letras no exponente já é metade do roteiro."
+   "pt": "Uma faixa leve lê a atividade cerebral e distingue estados — concentração, relaxamento, um pico de atenção. Ela não lê pensamentos, e dizer isso com todas as letras no módulo já é metade do roteiro."
   },
   {
    "id": "library-04#047",
@@ -344,7 +344,7 @@
    "path": "categories/1/sections/2/items/3/good/1",
    "ru": "Экспонат-соревнование: кто быстрее расслабится или сосредоточится",
    "en": "A contest exhibit: who can relax or concentrate faster",
-   "pt": "Um exponente de disputa: quem relaxa ou se concentra mais rápido"
+   "pt": "Um módulo de disputa: quem relaxa ou se concentra mais rápido"
   },
   {
    "id": "library-04#050",
@@ -540,7 +540,7 @@
    "path": "categories/1/sections/3/items/1/what",
    "ru": "Возраст, пол, эмоция, личность — по лицу. Работает надёжно и стоит недорого. Ставим редко и обсуждаем отдельно: биометрия — данные особой категории, и правила строже, чем кажется на демонстрации у поставщика.",
    "en": "Age, gender, emotion, identity — from a face. It works reliably and costs little. We install it rarely and discuss it separately: biometrics are a special category of personal data, and the rules are stricter than they look in a vendor demo.",
-   "pt": "Idade, gênero, emoção, identidade — a partir de um rosto. Funciona de forma confiável e custa pouco. A gente instala isso raramente e discute à parte: biometria é uma categoria especial de dado pessoal, e as regras são mais duras do que parecem na demonstração do fornecedor."
+   "pt": "Idade, gênero, emoção, identidade — a partir de um rosto. Funciona de forma confiável e custa pouco. A gente instala isso raramente e discute à parte: dados biométricos são dados pessoais sensíveis, e as regras são mais rígidas do que parecem na demonstração do fornecedor."
   },
   {
    "id": "library-04#078",
@@ -701,7 +701,7 @@
    "path": "categories/1/sections/3/items/3/good/1",
    "ru": "Аудиогид, который сам знает, у какого экспоната вы стоите",
    "en": "An audio guide that knows for itself which exhibit you are standing at",
-   "pt": "Um audioguia que sabe sozinho diante de que exponente você está"
+   "pt": "Um audioguia que sabe sozinho diante de qual peça você está"
   },
   {
    "id": "library-04#101",

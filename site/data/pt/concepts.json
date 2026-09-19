@@ -89,12 +89,12 @@
    "spaces": "Indústria • museus de tecnologia • educação • medicina • showrooms • exposições",
    "mechanics": [
     "Reconhecimento de objetos",
-    "Gráficos 3D registrados com precisão",
+    "Gráficos 3D alinhados com precisão",
     "Animação dos processos internos",
     "Camadas interativas",
-    "Telas de mão ou fixas"
+    "Telas móveis ou fixas"
    ],
-   "comment": "Sistemas complexos são difíceis de explicar com palavras e diagramas. Quando o gráfico digital trava com precisão sobre o objeto real, a pessoa vê a forma e o princípio de funcionamento ao mesmo tempo. O caminho da curiosidade ao entendimento fica bem mais curto, e o objeto pode ser revelado camada por camada.",
+   "comment": "Sistemas complexos são difíceis de explicar com palavras e diagramas. Quando os gráficos digitais se alinham com precisão ao objeto real, a pessoa vê a forma e o princípio de funcionamento ao mesmo tempo. O caminho da curiosidade ao entendimento fica bem mais curto, e o objeto pode ser revelado camada por camada.",
    "adapt": "Aeronaves, carros, máquinas-ferramenta, prédios, sistemas prediais, o corpo humano, camadas geológicas, artefatos históricos.",
    "relatedProjectSlugs": [],
    "thumb": "assets/concepts/ar-xray/thumb.jpg"
@@ -132,7 +132,7 @@
     "QR code ou entrega direta do resultado",
     "Cenário de fila e de revisita"
    ],
-   "comment": "A personalização prende a atenção na hora: a pessoa se encontra dentro do exponente. A espera curta cria expectativa, e o retrato pronto vira uma continuação concreta da visita — salvo, mandado para amigos, publicado.",
+   "comment": "A personalização prende a atenção na hora: a pessoa se encontra dentro da experiência. A espera curta cria expectativa, e o retrato pronto vira uma continuação concreta da visita — salvo, mandado para amigos, publicado.",
    "adapt": "Estilos de artistas específicos, épocas, culturas, temas científicos, marcas e eventos. Os retratos podem ser feitos para casais, famílias e grupos inteiros.",
    "relatedProjectSlugs": [],
    "thumb": "assets/concepts/art-portrait/thumb.jpg"
@@ -240,7 +240,7 @@
     "Amarra várias telas em uma narrativa única.",
     "Coloca todo o conteúdo sob um mesmo console de controle."
    ],
-   "essence": "Telas, pilares e superfícies curvas formam uma composição contínua. O conteúdo flui de um plano para outro, e o espectador lê o exponente como um objeto único.",
+   "essence": "Telas, pilares e superfícies curvas formam uma composição contínua. O conteúdo flui de um plano para outro, e o espectador percebe a instalação como um objeto único.",
    "feel": "Estou dentro de uma interface, não na frente de um painel de monitores.",
    "spaces": "Exposições • museus • showrooms • centros de apresentação • espaços corporativos",
    "mechanics": [
@@ -501,8 +501,8 @@
      "poster": "assets/concepts/floating-object/clip-poster.jpg"
     }
    ],
-   "line": "Quando um produto ou um exponente precisa dominar a sala e ser explorado em três dimensões.",
-   "need": "Quando um produto ou um exponente precisa dominar a sala e ser explorado em três dimensões.",
+   "line": "Quando um produto ou uma peça exposta precisa ocupar o centro da sala e se revelar em três dimensões.",
+   "need": "Quando um produto ou uma peça exposta precisa ocupar o centro da sala e se revelar em três dimensões.",
    "solves": [
     "Cria a ilusão de um objeto 3D flutuando no ar.",
     "Deixa manipular o modelo sem óculos de VR.",
@@ -657,7 +657,7 @@
    "need": "Quando é preciso um centro de atenção simples e fisicamente convincente.",
    "solves": [
     "Coloca uma pergunta visual imediata.",
-    "Tira um produto ou um exponente do ruído informativo.",
+    "Destaca um produto ou uma peça exposta em meio ao ruído informativo.",
     "Funciona sem tela nenhuma e sem interface nenhuma."
    ],
    "essence": "O objeto flutua no ar, girando devagar. Forma, luz e material são escolhidos para que o peso dele pareça absolutamente real.",
@@ -705,7 +705,7 @@
    "solves": [
     "Funde conhecimento, jogo e sensação de presença.",
     "Deixa o visitante entrar no papel de explorador.",
-    "Transforma exponentes separados em um percurso coerente."
+    "Transforma peças separadas em um percurso coerente."
    ],
    "essence": "Os visitantes entram em uma base em Marte, olham a superfície do planeta por uma tela hemisférica e cumprem tarefas em estações interativas.",
    "feel": "A gente não está estudando Marte. A gente mora e trabalha aqui.",
@@ -899,8 +899,8 @@
      "src": "assets/concepts/living-ship/4.jpg"
     }
    ],
-   "line": "Quando um exponente físico precisa ganhar movimento, escala e acontecimentos.",
-   "need": "Quando um exponente físico precisa ganhar movimento, escala e acontecimentos.",
+   "line": "Quando uma peça física precisa ganhar movimento, escala e acontecimentos.",
+   "need": "Quando uma peça física precisa ganhar movimento, escala e acontecimentos.",
    "solves": [
     "Dá vida a maquetes estáticas.",
     "Mostra processos que nunca caberiam na construção física.",

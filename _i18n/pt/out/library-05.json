@@ -8,14 +8,14 @@
    "path": "categories/1/sections/4/items/0/spec",
    "ru": "Считать воронку честно. До экспоната доходит сто человек; заметили призыв — половина; достали телефон — треть от них; поставили приложение — единицы. Веб-страница без установки меняет арифметику кратно, и почти всегда стоит выбрать её.",
    "en": "Count the funnel honestly. A hundred people reach the exhibit; half notice the invitation; a third of those get their phone out; a handful install an app. A web page with no installation changes that arithmetic several times over, and is almost always the right choice.",
-   "pt": "Conte o funil com honestidade. Cem pessoas chegam ao exponente; metade nota o convite; um terço dessas tira o celular; um punhado instala um aplicativo. Uma página web sem instalação muda essa aritmética várias vezes, e quase sempre é a escolha certa."
+   "pt": "Conte o funil com honestidade. Cem pessoas chegam ao módulo; metade nota o convite; um terço dessas tira o celular; um punhado instala um aplicativo. Uma página web sem instalação muda essa aritmética várias vezes, e quase sempre é a escolha certa."
   },
   {
    "id": "library-05#002",
    "path": "categories/1/sections/4/items/0/good/0",
    "ru": "Экспонат вне здания: двор, парк, улица, маршрут по городу",
    "en": "An exhibit outside the building: a courtyard, a park, a street, a city route",
-   "pt": "Um exponente fora do prédio: um pátio, um parque, uma rua, um percurso pela cidade"
+   "pt": "Uma instalação fora do prédio: um pátio, um parque, uma rua, um percurso pela cidade"
   },
   {
    "id": "library-05#003",
@@ -50,7 +50,7 @@
    "path": "categories/1/sections/4/items/0/bad/0",
    "ru": "Основной экспонат маршрута: часть посетителей просто не достанет телефон",
    "en": "As the main exhibit on the route: some visitors will simply not take a phone out",
-   "pt": "Como exponente principal do percurso: parte dos visitantes simplesmente não vai tirar o celular"
+   "pt": "Como atração principal do percurso: parte dos visitantes simplesmente não vai tirar o celular"
   },
   {
    "id": "library-05#008",
@@ -78,7 +78,7 @@
    "path": "categories/1/sections/4/items/0/bad/4",
    "ru": "Заряд: длинный сценарий сажает батарею, и виноватым окажется музей",
    "en": "Battery: a long scenario drains it, and the museum will get the blame",
-   "pt": "Bateria: um roteiro longo esgota ela, e a culpa vai para o museu"
+   "pt": "Bateria: um roteiro longo acaba com ela, e a culpa recai sobre o museu"
   },
   {
    "id": "library-05#012",
@@ -141,7 +141,7 @@
    "path": "categories/2/principle",
    "ru": "Приёмка в два вопроса: поднимается ли экспонат одной кнопкой силами смотрителя и может ли музей сам поменять текст. Два «нет» — вы купили не систему, а подрядчика в вечное пользование.",
    "en": "Acceptance in two questions: does the exhibit come up on one button pressed by an attendant, and can the museum change the text itself. Two nos and you have bought a contractor in perpetuity, not a system.",
-   "pt": "Recebimento em duas perguntas: o exponente sobe com um botão apertado por um atendente, e o museu consegue mudar o texto sozinho? Dois nãos e você comprou um fornecedor perpétuo, não um sistema."
+   "pt": "O aceite se resume a duas perguntas: o módulo liga com um botão operado por um atendente, e o museu consegue mudar o texto sozinho? Duas respostas negativas significam que você comprou um fornecedor para sempre, não um sistema."
   },
   {
    "id": "library-05#021",
@@ -260,7 +260,7 @@
    "path": "categories/2/sections/0/items/1/good/0",
    "ru": "Экспонат в закрытом коробе или в пыльном зале",
    "en": "An exhibit inside a sealed box or in a dusty room",
-   "pt": "Um exponente dentro de uma caixa fechada ou em uma sala empoeirada"
+   "pt": "Um módulo dentro de uma caixa fechada ou em uma sala empoeirada"
   },
   {
    "id": "library-05#038",
@@ -344,7 +344,7 @@
    "path": "categories/2/sections/0/items/2/good/1",
    "ru": "Экспонат прячется в постамент, где нет места и вентиляции",
    "en": "The exhibit hides in a plinth with no room and no ventilation",
-   "pt": "O exponente se esconde em um pedestal sem espaço e sem ventilação"
+   "pt": "O módulo se esconde em um pedestal sem espaço e sem ventilação"
   },
   {
    "id": "library-05#050",
@@ -631,7 +631,7 @@
    "path": "categories/2/sections/0/items/5/warn",
    "ru": "Что бы ни выбрали, отключить автоматические обновления и автоматический сон, поставить автозапуск сценария и автоматический вход в систему. Проверить на приёмке простым способом: выдернуть питание и посмотреть, поднимется ли экспонат сам, без клавиатуры.",
    "en": "Whatever is chosen, disable automatic updates and automatic sleep, set the scenario to launch on boot, and enable automatic login. Test it at acceptance the simple way: pull the power and see whether the exhibit comes back up on its own, with no keyboard.",
-   "pt": "Seja qual for a escolha, desative atualizações automáticas e suspensão automática, configure o roteiro para iniciar no boot e habilite o login automático. Teste isso no recebimento do jeito simples: tire da tomada e veja se o exponente volta sozinho, sem teclado."
+   "pt": "Seja qual for a escolha, desative atualizações automáticas e suspensão automática, configure o roteiro para iniciar no boot e habilite o login automático. Teste isso no aceite do jeito simples: tire da tomada e veja se o módulo reinicia sozinho, sem teclado."
   },
   {
    "id": "library-05#091",
@@ -862,7 +862,7 @@
    "path": "categories/2/sections/2/items/0/line",
    "ru": "Рабочая лошадь интерактивных экспонатов",
    "en": "The workhorse of interactive exhibits",
-   "pt": "O cavalo de batalha dos exponentes interativos"
+   "pt": "O cavalo de batalha dos módulos interativos"
   },
   {
    "id": "library-05#124",
@@ -876,7 +876,7 @@
    "path": "categories/2/sections/2/items/0/good/0",
    "ru": "Интерактивный экспонат с настоящей логикой и состоянием",
    "en": "An interactive exhibit with real logic and state",
-   "pt": "Um exponente interativo com lógica e estado de verdade"
+   "pt": "Um módulo interativo com lógica e estado de verdade"
   },
   {
    "id": "library-05#126",
