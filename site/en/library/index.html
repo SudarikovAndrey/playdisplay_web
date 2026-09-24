@@ -79,6 +79,13 @@
   a { color:#2be0c6; }
   h1 { font-size:clamp(34px,6vw,64px); line-height:1.05; margin:0 0 10px; letter-spacing:-.02em; }
   h2 { font-size:clamp(22px,3vw,32px); margin:52px 0 14px; }
+  /* 320px: замер показал 14 обрезанных заголовков на /concepts/ и один на /atlas/
+     после смены гарнитуры. Правило общее по тегам — следующий заголовок чинить
+     не придётся. break-word рядом с hyphens не избыточен: без словаря языка
+     hyphens молчит, и слово так и осталось бы обрезанным. */
+  @media (max-width: 400px) {
+    h1, h2, h3, .lead { -webkit-hyphens:auto; hyphens:auto; overflow-wrap:break-word; }
+  }
   h3 { font-size:20px; margin:28px 0 6px; color:#fff; }
   .lead { color:#9fb4c8; font-size:22px; line-height:1.5; margin:0 0 8px; }
   ol.steps { padding-left:1.3em; } li { margin:10px 0; }

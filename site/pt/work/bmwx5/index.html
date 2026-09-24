@@ -76,6 +76,13 @@
   a { color:#2be0c6; }
   h1 { font-size:clamp(34px,6vw,64px); line-height:1.05; margin:0 0 10px; letter-spacing:-.02em; }
   h2 { font-size:clamp(22px,3vw,32px); margin:52px 0 14px; }
+  /* 320px: длинные русские слова в узкой колонке. Заголовок здесь на clamp
+     с минимумом 34px, и на телефоне срабатывает именно минимум. hyphens переносит
+     по слогам, break-word — страховка, если у браузера нет словаря языка.
+     Обрезать заголовок нельзя ни при каких условиях. */
+  @media (max-width: 400px) {
+    h1, h2, h3, .lead { -webkit-hyphens:auto; hyphens:auto; overflow-wrap:break-word; }
+  }
   .meta { display:flex; flex-wrap:wrap; gap:28px; color:#9fb4c8; font:500 13px/1.5 monospace; letter-spacing:.14em; text-transform:uppercase; margin:24px 0 40px; }
   .meta b { display:block; color:#fff; font:600 18px sans-serif; letter-spacing:0; text-transform:none; margin-top:6px; }
   img { width:100%; height:auto; display:block; margin:16px 0; border-radius:4px; }
