@@ -43,6 +43,15 @@
   a { color: inherit; text-decoration: none; }
   ::selection { background: var(--signal-amber); color: var(--space-void); }
 
+  /* ВЕС ЗАГОЛОВКОВ ПОДНЯТ НА 150 (24.09.2026). Не вкусовщина, а компенсация смены
+     гарнитуры: замер при одинаковых font-size и font-weight показал, что TikTok Sans
+     кладёт на 13,5% меньше краски, чем Unbounded (19,06% против 16,48% тёмных
+     пикселей на слове «Превращаем пространство»). Заголовки читались тоньше прежних,
+     хотя в стилях не менялось ничего. Смещение +150 возвращает плотность с точностью
+     до 3%; у 800 потолок оси — 900, поэтому там прибавка меньше и разрыв с 850 сузился.
+     Высота буквы при этом не восстанавливается ничем: прописная у TikTok Sans на 6%
+     ниже при том же кегле, это свойство рисунка, а не веса. Кегли НЕ тронуты.
+     Вес 200 у стрелки в цепочке оставлен: это знак, а не текст. */
   .wrap { max-width: 1440px; margin: 0 auto; padding: 0 64px; }
   .mono { font-family: var(--font-mono); }
   /* ---------- эффектное проявление: карточки/блоки всплывают из глубины с лёгким расфокусом ----------
@@ -207,7 +216,7 @@
   .mnav-links { display: flex; flex-direction: column; }
   .mnav-links a {
     display: block; padding: 18px 0; border-bottom: 1px solid var(--space-line);
-    font: 600 26px/1.1 var(--font-display); letter-spacing: var(--tracking-display);
+    font: 750 26px/1.1 var(--font-display); letter-spacing: var(--tracking-display);
     color: rgba(241,251,252,0.94);
     /* пункты въезжают по очереди — переход виден и не выглядит рывком */
     opacity: 0; transform: translateY(14px); transition: opacity .4s ease, transform .4s cubic-bezier(.2,.8,.2,1);
@@ -233,7 +242,7 @@
     background: rgba(43,224,198,0.05); border: 1px solid rgba(43,224,198,0.38);
     transition: background .3s ease, border-color .3s ease; }
   .mnav-game::before { content: "▶︎"; float: right; color: var(--signal-teal); font-size: 13px; margin-top: 3px; }
-  .mnav-game .mg-t { display: block; font: 700 15px var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
+  .mnav-game .mg-t { display: block; font: 850 15px var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
   .mnav-game .mg-s { display: block; margin-top: 4px; font: 400 12px var(--font-mono);
     letter-spacing: 0.06em; color: var(--scan-white-faint); }
   .mnav-game:active { background: rgba(43,224,198,0.12); border-color: var(--signal-teal); }
@@ -294,7 +303,7 @@
     animation: arcFadeIn .5s ease; }
   @keyframes arcFadeIn { from { opacity: 0; } to { opacity: 1; } }
   body.arc-on .work .wrap { opacity: 0; transition: opacity .6s; }
-  .hero h1 { font: 600 clamp(24px, 2.6vw, 42px)/1.08 var(--font-display); letter-spacing: var(--tracking-display); color: rgba(241,251,252,0.94); max-width: 17ch; text-shadow: 0 4px 40px rgba(3,12,16,0.9); }
+  .hero h1 { font: 750 clamp(24px, 2.6vw, 42px)/1.08 var(--font-display); letter-spacing: var(--tracking-display); color: rgba(241,251,252,0.94); max-width: 17ch; text-shadow: 0 4px 40px rgba(3,12,16,0.9); }
   .hero h1 em { font-style: normal; color: var(--signal-teal); }
   /* типы пространств в левом верхнем углу: ниже шапки и угловой скобки, по сетке .wrap */
   .hero-top { position: absolute; left: 0; right: 0; top: clamp(104px, 15vh, 172px);
@@ -379,7 +388,7 @@
   /* манифест + подход читаются как одна композиция: тезис сверху, сразу под ним — подход,
      без большого провала между секциями (укорочены отступы снизу/сверху) */
   .manifesto { background: var(--space-deep); padding-top: 118px; padding-bottom: 48px; }
-  .manifesto .lines { font: 700 clamp(32px,4.2vw,68px)/1.06 var(--font-display); letter-spacing: -0.02em; max-width: 20ch; }
+  .manifesto .lines { font: 850 clamp(32px,4.2vw,68px)/1.06 var(--font-display); letter-spacing: -0.02em; max-width: 20ch; }
   .manifesto .lines p { color: rgba(220,238,240,0.28); transition: color var(--duration-slow) var(--ease-standard); margin-bottom: 6px; }
   .manifesto .lines p.lit { color: #F1FBFC; }
   .manifesto .lines em { font-style: normal; color: var(--signal-teal); }
@@ -393,23 +402,23 @@
   .numbers .grid { display: grid; grid-template-columns: repeat(4, 1fr); }
   .numbers .cell { padding: 54px 32px; border-right: 1px solid var(--space-line); }
   .numbers .cell:last-child { border-right: none; }
-  .numbers .big { font: 800 clamp(30px,3vw,52px)/1 var(--font-display); color: var(--signal-teal); letter-spacing: -0.02em; }
+  .numbers .big { font: 900 clamp(30px,3vw,52px)/1 var(--font-display); color: var(--signal-teal); letter-spacing: -0.02em; }
   .numbers .lbl { margin-top: 14px; font: 400 13px/1.4 var(--font-body); color: var(--scan-white-dim); }
 
   /* ---------- подход: Смысл → Сценарий → Опыт → Технология ---------- */
   .how { background: var(--space-deep); padding-top: 60px; } /* подтянут к манифесту — единый блок без дыры */
-  .approach-lead { font: 700 clamp(26px,3vw,48px)/1.2 var(--font-display); letter-spacing: -0.015em;
+  .approach-lead { font: 850 clamp(26px,3vw,48px)/1.2 var(--font-display); letter-spacing: -0.015em;
     color: #F1FBFC; max-width: 24ch; }
   .approach-lead em { font-style: normal; color: var(--signal-teal); }
   /* вторая строка тезиса: тише по тону, но той же гарнитурой — продолжение мысли */
-  .approach-lead2 { margin-top: 18px; font: 500 clamp(19px,1.9vw,30px)/1.35 var(--font-display);
+  .approach-lead2 { margin-top: 18px; font: 650 clamp(19px,1.9vw,30px)/1.35 var(--font-display);
     letter-spacing: -0.01em; color: var(--scan-white-dim); max-width: 30ch; }
   /* цепочка без крупных номеров 01/02/03 — спокойные смысловые объекты со стрелками */
   .chain { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
     gap: 24px; align-items: start; margin-top: 72px; }
   .chain .ch { border-top: 1px solid var(--space-line); padding-top: 22px; transition: border-color .3s; }
   .chain .ch:hover { border-top-color: var(--signal-teal); }
-  .chain .ch h3 { font: 700 22px var(--font-display); color: #F1FBFC; }
+  .chain .ch h3 { font: 850 22px var(--font-display); color: #F1FBFC; }
   .chain .ch p { margin-top: 12px; font: 400 14.5px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 24ch; }
   .chain .ch-arrow { font: 200 28px var(--font-display); color: var(--signal-teal); padding-top: 18px; }
   @media (max-width: 900px) {
@@ -419,12 +428,12 @@
 
   /* ---------- trust ---------- */
   .trust { background: var(--space-void); }
-  .trust p { font: 500 clamp(22px,2.4vw,36px)/1.35 var(--font-display); letter-spacing: -0.01em; max-width: 22ch; color: #F1FBFC; }
+  .trust p { font: 650 clamp(22px,2.4vw,36px)/1.35 var(--font-display); letter-spacing: -0.01em; max-width: 22ch; color: #F1FBFC; }
   .trust p b { color: var(--signal-teal); font-weight: 700; }
 
   /* ---------- work ---------- */
   .work { background: var(--space-deep); }
-  .work h2 { font: 800 clamp(40px,5vw,80px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .work h2 { font: 900 clamp(40px,5vw,80px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
   .work .intro-sub { margin-top: 18px; font: 400 18px var(--font-body); color: var(--scan-white-dim); }
   .filter { display: flex; gap: 12px; margin: 40px 0 44px; flex-wrap: wrap; }
   .filter button {
@@ -489,7 +498,7 @@
   .card:hover .card-media .play { opacity: 1; }
   .card-body { padding: 26px 4px 4px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
   .card-body .cmeta { margin-bottom: 2px; }
-  .card-body h3 { font: 800 24px var(--font-display); color: #F1FBFC; letter-spacing: -0.02em; }
+  .card-body h3 { font: 900 24px var(--font-display); color: #F1FBFC; letter-spacing: -0.02em; }
   .card-body .oneline { font: 400 15px/1.62 var(--font-body); color: var(--scan-white-dim); flex: 1; }
   .card-stats { display: flex; gap: 8px; flex-wrap: wrap; }
   .stat { font: 500 10.5px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--signal-teal); border: 1px solid rgba(43,224,198,0.3); padding: 5px 9px; }
@@ -497,7 +506,7 @@
   /* ---------- авторские концепции ---------- */
   /* заголовок и фильтр компактные — максимум высоты отдаём самой ленте карточек */
   .concepts { background: var(--space-void); padding-top: 96px; padding-bottom: 100px; }
-  .concepts h2 { font: 800 clamp(28px,3.2vw,48px)/1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .concepts h2 { font: 900 clamp(28px,3.2vw,48px)/1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
   .concepts .intro-sub { margin-top: 12px; font: 400 16px/1.5 var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
   .c-toolbar { display: flex; gap: 14px; margin-top: 24px; flex-wrap: wrap; align-items: center; }
   .c-search { font: 400 14px var(--font-body); color: var(--scan-white); background: rgba(16,30,37,0.5);
@@ -586,7 +595,7 @@
   .c-tile:hover .ct-body { border-top-color: rgba(43,224,198,0.6); }
   .ct-cat { font: 600 8px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase;
     color: var(--signal-teal); }
-  .ct-body h3 { margin-top: 3px; font: 800 clamp(12.5px, 0.95vw, 15px)/1.18 var(--font-display);
+  .ct-body h3 { margin-top: 3px; font: 900 clamp(12.5px, 0.95vw, 15px)/1.18 var(--font-display);
     letter-spacing: -0.015em; color: #F1FBFC;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   /* HUD-номер в срезанном углу — сериальность, как маркировка на корпусе */
@@ -640,7 +649,7 @@
   .c-media { height: clamp(420px, 62vh, 820px); position: relative; overflow: hidden; }
   .c-media .v-gal, .c-media .v-gal-track, .c-media .v-gal-track .gs { height: 100%; }
   .c-view-in .kicker { margin: 34px 0 18px; }
-  .c-view-in h2 { font: 800 clamp(34px,4vw,58px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .c-view-in h2 { font: 900 clamp(34px,4vw,58px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
   .c-essence { margin-top: 24px; font: 400 clamp(17px,1.5vw,21px)/1.65 var(--font-body); color: rgba(233,244,246,0.88); max-width: 62ch; }
   .c-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 44px; }
   .c-meta .m { background: rgba(16,30,37,0.5); border: 1px solid rgba(159,180,200,0.13);
@@ -659,7 +668,7 @@
     font: 400 15px/1.6 var(--font-body); color: rgba(233,244,246,0.8); }
   .c-mech li::before { content: "▶︎"; color: var(--signal-teal); font-size: 11px; padding-top: 4px; }
   .c-note { margin-top: 44px; border-left: 2px solid var(--signal-amber); padding-left: 24px;
-    font: 500 clamp(17px,1.5vw,21px)/1.6 var(--font-display); color: #F1FBFC; max-width: 56ch; }
+    font: 650 clamp(17px,1.5vw,21px)/1.6 var(--font-display); color: #F1FBFC; max-width: 56ch; }
   .c-note small { display: block; margin-top: 12px; font: 500 11px var(--font-mono); letter-spacing: 0.22em;
     text-transform: uppercase; color: var(--signal-teal); }
   /* реплика посетителя — курсивом, как цитата из зала */
@@ -682,7 +691,7 @@
   .c-nav .c-next.prev:hover .cn-a { transform: translateX(-6px); }
   .c-nav .c-next.next:hover .cn-a { transform: translateX(6px); }
   .c-nav .cn-k { font: 500 11px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--scan-white-dim); }
-  .c-nav .cn-t { margin-top: 6px; font: 700 clamp(17px,2vw,24px)/1.15 var(--font-display); color: #F1FBFC; transition: color .3s; }
+  .c-nav .cn-t { margin-top: 6px; font: 850 clamp(17px,2vw,24px)/1.15 var(--font-display); color: #F1FBFC; transition: color .3s; }
   .c-nav .c-next:hover .cn-t { color: var(--signal-teal); }
   @media (max-width: 900px) {
     /* Разбор концепции на телефоне открывался «картинкой на весь экран»: 62vh под кадр
@@ -700,7 +709,7 @@
 
   /* ---------- atlas ---------- */
   .atlas { background: var(--space-deep); }
-  .atlas h2 { font: 800 clamp(34px,4.4vw,64px)/1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .atlas h2 { font: 900 clamp(34px,4.4vw,64px)/1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
   .atlas .intro-sub { margin-top: 18px; font: 400 18px var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
   /* Лента Атласа: вертикальные плитки, прокрутка вбок — как в библиотеке концепций,
      чтобы шесть десятков карточек не разгоняли страницу вниз на несколько экранов.
@@ -734,7 +743,7 @@
   .a-card.thesis { cursor: default; }
   .a-card .ac-cat { font: 600 9px var(--font-mono); letter-spacing: 0.22em; text-transform: uppercase;
     color: var(--signal-teal); flex: 0 0 auto; }
-  .a-card h3 { font: 800 clamp(15px, 1.15vw, 17.5px)/1.2 var(--font-display); color: #F1FBFC;
+  .a-card h3 { font: 900 clamp(15px, 1.15vw, 17.5px)/1.2 var(--font-display); color: #F1FBFC;
     letter-spacing: -0.015em; flex: 0 0 auto; transition: color .35s;
     display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
   .a-card:hover h3 { color: #fff; }
@@ -808,7 +817,7 @@
   .a-view.open { opacity: 1; pointer-events: auto; }
   .a-view-in { max-width: 880px; margin: 0 auto; padding: 96px 72px 120px; }
   .a-view-in .kicker { margin-bottom: 18px; }
-  .a-view-in h2 { font: 800 clamp(32px,3.6vw,52px)/1.05 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .a-view-in h2 { font: 900 clamp(32px,3.6vw,52px)/1.05 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
   .a-view-in .av-desc { margin-top: 20px; font: 400 clamp(17px,1.4vw,20px)/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 62ch; }
   .av-block { margin-top: 44px; }
   .av-block .mt { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 14px; }
@@ -827,7 +836,7 @@
   .ai-invite { background: var(--space-void); border-top: 1px solid var(--space-line); border-bottom: 1px solid var(--space-line); }
   .ai-invite-in { text-align: center; }
   .ai-invite .kicker::before { display: none; }
-  .ai-invite h2 { font: 700 clamp(28px,3.4vw,54px)/1.1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .ai-invite h2 { font: 850 clamp(28px,3.4vw,54px)/1.1 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
   .ai-sub { margin: 22px auto 0; max-width: 52ch; font: 400 17px/1.65 var(--font-body); color: var(--scan-white-dim); }
   .ai-invite-cta { margin-top: 44px; }
   /* ГЛИФ МИКРОФОНА — ОДИН на весь сайт: <symbol id="mic-glyph"> в начале body,
@@ -927,7 +936,7 @@
   .ai-stage { display: none; width: min(820px, 92vw); text-align: center; }
   .ai-stage.on { display: block; animation: aiStage .7s ease; }
   @keyframes aiStage { from { opacity: 0; transform: translateY(16px); } }
-  .ai-stage h2 { font: 700 clamp(28px,4vw,58px)/1.08 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; margin-top: 18px; }
+  .ai-stage h2 { font: 850 clamp(28px,4vw,58px)/1.08 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; margin-top: 18px; }
   .ai-stage p { margin: 22px auto 0; max-width: 56ch; font: 400 17px/1.65 var(--font-body); color: var(--scan-white-dim); }
   /* большая кнопка записи появляется с задержкой — сначала пауза, потом действие */
   /* БОЛЬШАЯ КНОПКА: ни рамки, ни залитого круга (26.08.2026). Было кольцо
@@ -1266,7 +1275,7 @@
     text-transform: uppercase; color: var(--scan-white-faint); margin-bottom: 14px; }
   @media (max-width: 700px) { .cl-cap { display: block; } }
   .cl-block .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
-  .cl-block h4 { font: 700 24px var(--font-display); color: #F1FBFC; margin-bottom: 6px; }
+  .cl-block h4 { font: 850 24px var(--font-display); color: #F1FBFC; margin-bottom: 6px; }
   .cl-block .cl-sub { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 56ch; }
   /* лента во всю ширину окна, края растворяются */
   .cl-strip { margin: 26px calc(50% - 50vw) 0; overflow: hidden;
@@ -1326,7 +1335,7 @@
   /* ---------- география: глобус из точек ---------- */
   .wm-block { margin-top: 64px; border-top: 1px solid var(--space-line); padding-top: 44px; }
   .wm-block .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
-  .wm-block h4 { font: 700 24px var(--font-display); color: #F1FBFC; margin-bottom: 4px; }
+  .wm-block h4 { font: 850 24px var(--font-display); color: #F1FBFC; margin-bottom: 4px; }
   .wm-block .wm-sub { font: 400 15px/1.6 var(--font-body); color: var(--scan-white-dim); max-width: 52ch; }
   /* сцена на всю ширину окна: глобус — главный объект блока, а не иллюстрация в углу */
   .wm-stage { position: relative; margin: 10px calc(50% - 50vw) 0;
@@ -1353,13 +1362,13 @@
 
   /* ---------- studio ---------- */
   .studio { background: var(--space-void); }
-  .studio .manifest-full { font: 600 clamp(20px,2vw,30px)/1.4 var(--font-display); letter-spacing: -0.01em; max-width: 26ch; color: #F1FBFC; }
+  .studio .manifest-full { font: 750 clamp(20px,2vw,30px)/1.4 var(--font-display); letter-spacing: -0.01em; max-width: 26ch; color: #F1FBFC; }
   .studio .manifest-full em { font-style: normal; color: var(--signal-teal); }
-  .studio .press-note { display: block; margin-top: 24px; font: 700 clamp(22px,2.2vw,34px) var(--font-display); color: var(--signal-amber); }
+  .studio .press-note { display: block; margin-top: 24px; font: 850 clamp(22px,2.2vw,34px) var(--font-display); color: var(--signal-amber); }
   .studio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 72px; }
   .panel { background: var(--space-panel); border: 1px solid var(--space-line); padding: 34px; }
   .panel .ptitle { font: 500 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-teal); margin-bottom: 18px; }
-  .panel h4 { font: 700 20px var(--font-display); color: #F1FBFC; margin-bottom: 12px; }
+  .panel h4 { font: 850 20px var(--font-display); color: #F1FBFC; margin-bottom: 12px; }
   .panel p { font: 400 15px/1.65 var(--font-body); color: var(--scan-white-dim); }
   .panel p + p { margin-top: 12px; }
   /* Основатель: портрет и очень короткое резюме. Фотографии может ещё не быть —
@@ -1370,7 +1379,7 @@
   .founder .f-portrait img { width: 100%; height: 100%; object-fit: cover; display: block;
     filter: grayscale(0.35) contrast(1.05); }
   .founder .f-mono { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
-    font: 800 34px var(--font-display); letter-spacing: -0.02em; color: rgba(43,224,198,0.55); }
+    font: 900 34px var(--font-display); letter-spacing: -0.02em; color: rgba(43,224,198,0.55); }
   .founder.noportrait .f-portrait img { display: none; }
   .founder.noportrait .f-mono { display: flex; }
   .founder .f-role { font: 500 12px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;
@@ -1387,11 +1396,11 @@
   .contact { background: var(--space-deep); border-top: 1px solid var(--space-line); }
   /* нижняя граница была 56px — на 390px «Креативная» не влезала и уезжала за экран.
      На десктопе размер не меняется: там работает 8vw (115px при 1440). */
-  .contact h2 { font: 800 clamp(38px,8vw,140px)/0.9 var(--font-display); letter-spacing: -0.03em; color: #F1FBFC; }
+  .contact h2 { font: 900 clamp(38px,8vw,140px)/0.9 var(--font-display); letter-spacing: -0.03em; color: #F1FBFC; }
   .contact .csub { margin-top: 24px; max-width: 40ch; font: 400 clamp(17px,1.4vw,21px)/1.6 var(--font-body); color: var(--scan-white-dim); }
   /* подпись основателя под заголовком сессии — коротко, без длинных объяснений */
   .cs-founder { margin-top: 30px; display: flex; align-items: baseline; gap: 14px; }
-  .cs-founder b { font: 700 19px var(--font-display); color: #F1FBFC; }
+  .cs-founder b { font: 850 19px var(--font-display); color: #F1FBFC; }
   .cs-founder span { font: 400 13px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--scan-white-dim); }
   .channels { display: flex; gap: 14px; margin-top: 44px; align-items: center; flex-wrap: wrap; }
   .wa {
@@ -1467,7 +1476,7 @@
   .bf-done { display: none; max-width: 46ch; }
   .book-form.sent .bf-grid, .book-form.sent .bf-foot { display: none; }
   .book-form.sent .bf-done { display: block; }
-  .bf-done h3 { font: 700 clamp(22px,2.4vw,30px)/1.2 var(--font-display); color: #F1FBFC; }
+  .bf-done h3 { font: 850 clamp(22px,2.4vw,30px)/1.2 var(--font-display); color: #F1FBFC; }
   .bf-done p { margin-top: 14px; font: 400 16px/1.6 var(--font-body); color: var(--scan-white-dim); }
   .bf-done a { color: var(--signal-teal); text-decoration: none; border-bottom: 1px solid rgba(43,224,198,.35); }
   .bf-done a:hover { border-bottom-color: var(--signal-teal); }
@@ -1503,7 +1512,7 @@
     border-left-color: var(--signal-amber); transform: translateY(-3px); }
   .tr-kind { font: 600 9px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase;
     color: var(--signal-amber); opacity: .85; }
-  .tr-org { font: 700 clamp(15px,1.15vw,18px)/1.25 var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
+  .tr-org { font: 850 clamp(15px,1.15vw,18px)/1.25 var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
   .tr-full { font: 400 11.5px/1.45 var(--font-body); color: var(--scan-white-faint); }
   .tr-for { font: 400 13.5px/1.55 var(--font-body); color: var(--scan-white-dim); }
   /* Цитата есть только у писем-благодарностей; у дипломов её нет, и карточка
@@ -1667,14 +1676,14 @@
   .v-media .v-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 92px; height: 92px; border-radius: 50%; border: 1.5px solid rgba(43,224,198,0.7); display: flex; align-items: center; justify-content: center; background: rgba(3,12,16,0.3); }
   .v-media .v-play .tri { width: 0; height: 0; border-left: 20px solid #F1FBFC; border-top: 12px solid transparent; border-bottom: 12px solid transparent; margin-left: 5px; }
   .v-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 34px 0 26px; gap: 24px; flex-wrap: wrap; }
-  .v-head h2 { font: 800 clamp(34px,4vw,58px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
+  .v-head h2 { font: 900 clamp(34px,4vw,58px)/0.98 var(--font-display); letter-spacing: -0.02em; color: #F1FBFC; }
   .v-stats { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--space-line); margin-bottom: 34px; }
   .v-stats .s { padding: 26px 24px; border-right: 1px solid var(--space-line); }
   .v-stats .s:last-child { border-right: none; }
-  .v-stats .sv { font: 800 clamp(22px,2.4vw,38px)/1 var(--font-display); color: var(--signal-teal); letter-spacing: -0.01em; }
+  .v-stats .sv { font: 900 clamp(22px,2.4vw,38px)/1 var(--font-display); color: var(--signal-teal); letter-spacing: -0.01em; }
   .v-stats .sl { margin-top: 10px; font: 400 12px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--scan-white-dim); }
   .v-desc { font: 400 clamp(17px,1.5vw,21px)/1.65 var(--font-body); color: rgba(233,244,246,0.88); max-width: 62ch; margin-top: 34px; }
-  .v-desc .punch { display: block; margin-top: 22px; font: 700 clamp(20px,2vw,28px)/1.3 var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
+  .v-desc .punch { display: block; margin-top: 22px; font: 850 clamp(20px,2vw,28px)/1.3 var(--font-display); color: #F1FBFC; letter-spacing: -0.01em; }
   /* ===== полная лента проекта (контент оригинала): воздух, плашки, каскад ===== */
   /* мета на сочных плашках: акцентная кромка, крупные дисплейные значения */
   .v-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 44px 0 10px; }
@@ -1684,7 +1693,7 @@
     font: 500 11px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--scan-white-dim);
     transition: border-color .3s, background .3s; }
   .v-meta .m:hover { border-top-color: var(--signal-teal); background: rgba(16,30,37,0.75); }
-  .v-meta .m b { display: block; margin-top: 14px; font: 700 clamp(19px,1.8vw,29px)/1.25 var(--font-display);
+  .v-meta .m b { display: block; margin-top: 14px; font: 850 clamp(19px,1.8vw,29px)/1.25 var(--font-display);
     letter-spacing: -0.01em; color: #F1FBFC; text-transform: none; }
   .v-flow { margin-top: 72px; display: flex; flex-direction: column; gap: 72px; }
   .vb { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
@@ -1695,7 +1704,7 @@
   .vb .v-gal, .vb .v-embed, .vb .v-imgs { transform: scale(0.965); opacity: 0;
     transition: transform 1s cubic-bezier(.22,.9,.24,1), opacity .9s ease; }
   .vb.lit .v-gal, .vb.lit .v-embed, .vb.lit .v-imgs { transform: none; opacity: 1; }
-  .vb h3 { font: 700 clamp(28px,3.2vw,46px)/1.1 var(--font-display); color: #F1FBFC; letter-spacing: -0.015em; max-width: 26ch; }
+  .vb h3 { font: 850 clamp(28px,3.2vw,46px)/1.1 var(--font-display); color: #F1FBFC; letter-spacing: -0.015em; max-width: 26ch; }
   .vb h3::after { content: ""; display: block; width: 0; height: 1px; margin-top: 20px;
     background: linear-gradient(90deg, var(--signal-teal), transparent); transition: width 1.1s ease .25s; }
   .vb.lit h3::after { width: 100%; }
@@ -1782,7 +1791,7 @@
   .v-next { border-top: 1px solid rgba(159,180,200,0.15); padding-top: 44px; cursor: pointer; }
   .v-next .vn-k { font: 500 11px var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--scan-white-dim); }
   .v-next .vn-row { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-top: 18px; }
-  .v-next .vn-t { font: 800 clamp(30px,4vw,56px)/1.05 var(--font-display); color: #F1FBFC; letter-spacing: -0.02em;
+  .v-next .vn-t { font: 900 clamp(30px,4vw,56px)/1.05 var(--font-display); color: #F1FBFC; letter-spacing: -0.02em;
     transition: color .3s; }
   .v-next:hover .vn-t { color: var(--signal-teal); }
   .v-next .vn-img { flex: 0 0 clamp(180px, 22vw, 320px); height: clamp(110px, 13vw, 190px); overflow: hidden; }
@@ -2008,11 +2017,11 @@
   .equip .wrap { position: relative; }
   /* Размер и начертание — ровно как у атласа: у каждой секции своё правило,
      и без него заголовок падал на общий шрифт и выглядел вдвое мельче соседей. */
-  .equip h2 { font: 800 clamp(34px,4.4vw,64px)/1 var(--font-display); letter-spacing: -0.02em;
+  .equip h2 { font: 900 clamp(34px,4.4vw,64px)/1 var(--font-display); letter-spacing: -0.02em;
               color: #F1FBFC; margin: 14px 0 12px; }
   .equip .intro-sub { max-width: 58ch; }
   .eq-nums { display: flex; flex-wrap: wrap; gap: 30px 64px; margin: 42px 0 0; }
-  .eq-nums b { display: block; font: 700 clamp(30px,3.6vw,46px)/1 var(--font-display);
+  .eq-nums b { display: block; font: 850 clamp(30px,3.6vw,46px)/1 var(--font-display);
                color: var(--signal-teal); letter-spacing: -0.02em; }
   .eq-nums span { display: block; margin-top: 8px; font: 600 11px var(--font-mono);
                   letter-spacing: var(--tracking-hud); text-transform: uppercase; color: var(--scan-white-dim); }
@@ -2033,7 +2042,7 @@
               transition: background var(--duration-base), border-color var(--duration-base); }
   .eq-cat:hover i { background: rgba(43,224,198,0.12); border-color: var(--signal-teal); }
   .eq-cat i svg { display: block; width: 100%; height: 100%; }
-  .eq-cat b { display: block; margin: 16px 0 5px; font: 600 20px/1.2 var(--font-display);
+  .eq-cat b { display: block; margin: 16px 0 5px; font: 750 20px/1.2 var(--font-display);
               letter-spacing: -0.01em; color: #F1FBFC; }
   .eq-cat em { display: block; font-style: normal; font-size: 15px; line-height: 1.5; color: var(--scan-white-dim); }
   .eq-cat u { display: block; margin-top: 16px; text-decoration: none; font: 600 11px var(--font-mono);
@@ -2062,7 +2071,7 @@
     transition: border-color var(--duration-base), color var(--duration-base);
   }
   .tv li:hover { border-color: var(--signal-teal); color: var(--scan-white); }
-  .tv span { font: 700 13px/1 var(--font-display); letter-spacing: 0.01em; color: #F1FBFC; }
+  .tv span { font: 850 13px/1 var(--font-display); letter-spacing: 0.01em; color: #F1FBFC; }
   .tv i { font: 600 10px/1 var(--font-mono); font-style: normal;
           letter-spacing: var(--tracking-hud); text-transform: uppercase; }
   @media (max-width: 700px) { .tv { gap: 6px; } .tv li { padding: 7px 10px; } }
