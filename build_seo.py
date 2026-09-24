@@ -982,7 +982,7 @@ def with_chrome(tpl):
     шрифтом и читалась как чужая, пришитая сбоку."""
     return tpl.replace(
         '<style>{css}</style>',
-        '<link rel="preload" href="{up}assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>\n'
+        '<link rel="preload" href="{up}assets/fonts/tiktoksans-cyrillic.woff2" as="font" type="font/woff2" crossorigin>\n'
         '<link rel="stylesheet" href="{up}assets/fonts/fonts.css">\n'
         '<link rel="stylesheet" href="{up}styles.css">\n'
         '<style>{css}</style>'

@@ -1514,6 +1514,15 @@
     letter-spacing: 0.08em; color: var(--scan-white-faint); }
   .tr-who .tr-year { color: var(--signal-amber); opacity: .8; }
 
+  /* Полоса прокрутки ленты. Только на мобиле: на десктопе сетка, указывать нечего.
+     Разметка и механика — копия .cards-rail у ленты проектов, вплоть до структуры
+     «полоса + span внутри». Второй механизм для той же задачи со временем разъехался бы
+     с первым. Янтарь, а не бирюза: в этом блоке янтарь означает «что из этого вышло». */
+  .tr-rail { display: none; position: relative; height: 2px; margin-top: 14px;
+    background: var(--space-line); }
+  .tr-rail span { position: absolute; top: 0; left: 0; height: 100%; width: 20%;
+    background: var(--signal-amber); transition: left .18s linear, width .18s linear; }
+
   /* Вылет из глубины — тот же приём, что у плиток Атласа, но ЗЕРКАЛЬНЫЙ: там
      карточки приходят справа с поворотом -42°, здесь слева с +38°. Механика общая
      (.tile-in ставит дальнюю точку, .on возвращает), поэтому каскад и уважение к
@@ -1527,11 +1536,34 @@
                 box-shadow 1s ease; }
   .tr-card.tile-in.on { opacity: 1; transform: none; box-shadow: 0 0 0 rgba(0,0,0,0); }
   @media (max-width: 700px) {
-    /* Одна колонка, а не лента: горизонтальная полоса стояла бы прямо над такой же
-       полосой логотипов, и секция превратилась бы в два одинаковых свайпа подряд. */
-    .tr-grid { grid-template-columns: 1fr; gap: 10px; }
-    .tr-card { padding: 15px 16px 13px; }
+    /* ЛЕНТА, а не колонка (24.09.2026, по просьбе владельца). Девять карточек
+       столбиком давали экран в четыре роста, и до стены логотипов доходил не всякий.
+       Прежний довод против ленты — «две одинаковые полосы подряд» — снят тем, что
+       полосы РАЗНЫЕ ПО ПРИРОДЕ: логотипы едут сами и не останавливаются, отзывы
+       стоят и слушаются пальца. Чтобы это было видно сразу, а не после попытки,
+       у ленты есть три признака, которых у логотипов нет: прилипание к карточке,
+       выглядывающий край следующей и полоса прокрутки под ней. */
+    .tr-grid {
+      display: flex; grid-template-columns: none; gap: 10px;
+      overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory;
+      /* выход за поля .wrap в край экрана: карточка, обрезанная полем, читается
+         как обрубленная колонка, а не как лента, которую можно тянуть */
+      margin-left: -20px; margin-right: -20px;
+      padding-left: 20px; padding-right: 20px; scroll-padding-left: 20px;
+      padding-bottom: 2px; scrollbar-width: none;
+      /* перспектива нужна была только 3D-каскаду, а он в ленте выключен (ниже) */
+      perspective: none;
+    }
+    .tr-grid::-webkit-scrollbar { display: none; }
+    /* 82%, а не 100%: край следующей карточки обязан выглядывать — это единственное,
+       что отличает ленту от одинокой карточки по центру экрана */
+    .tr-card { flex: 0 0 82%; scroll-snap-align: start; padding: 15px 16px 13px; }
+    /* ВЫЛЕТ ИЗ ГЛУБИНЫ В ЛЕНТЕ ВЫКЛЮЧЕН. translate3d(-70px, 22px, -480px) у карточки
+       внутри overflow-x расширяет прокручиваемую ширину на время анимации: лента
+       дёргается под пальцем и уезжает в пустоту. Подъёма достаточно. */
+    .tr-card.tile-in { transform: translateY(16px); box-shadow: none; }
     .tr-block { margin: 32px 0 4px; }
+    .tr-rail { display: block; }
   }
   @media (prefers-reduced-motion: reduce) { .tr-card { transition: none; } }
 

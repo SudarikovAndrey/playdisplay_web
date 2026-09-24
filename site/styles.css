@@ -117,21 +117,23 @@
 
 /* PlayDisplay — Type tokens · "Spatial Capture" system
 
-   Unbounded (display) is monumental and geometric — used at large sizes with
-   tight negative tracking; NOT forced all-caps like the old system (title/
-   sentence case reads more modern and cinematic). Onest carries body/UI.
+   TikTok Sans (display) заменил Unbounded 24.09.2026: тот же широкий
+   геометрический характер, но бока плоские и углы острые — читается суше
+   и техничнее. Ширина закреплена на wdth 150 в @font-face (см. fonts.css),
+   поэтому сокращённая запись `font:` в стилях её не сбрасывает. Набор —
+   строчными, не капсом; трекинг прежний, --tracking-display. Onest carries body/UI.
    Roboto Mono carries every technical readout (telemetry, coordinates,
    counts, labels) — the "instrument" voice of the brand. */
 
 :root {
-  --font-display: "Unbounded", "Arial Black", sans-serif;
+  --font-display: "TikTok Sans", "Unbounded", "Arial Black", sans-serif;
   --font-body: "Onest", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "Roboto Mono", "SF Mono", Consolas, monospace;
 
   /* Legacy brand face — logo/print only */
   --font-brand-legacy: "Blender Pro", "Eurostile", sans-serif;
 
-  /* Sizes — display uses Unbounded */
+  /* Sizes — display uses TikTok Sans */
   --text-display-1: 800 6rem/0.92 var(--font-display);
   --text-display-2: 800 4rem/0.94 var(--font-display);
   --text-h1: 700 2.75rem/1.02 var(--font-display);

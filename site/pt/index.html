@@ -41,16 +41,16 @@
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/png" href="/assets/logos/favicon-32.png?v=be32f3d0" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/logos/favicon-180.png?v=c9973eae">
-<link rel="stylesheet" href="styles.css?v=20d8f814">
+<link rel="stylesheet" href="styles.css?v=d1c4c654">
 <!-- Шрифты лежат у нас, а не на fonts.googleapis.com (15.08.2026). Внешний запрос на
      первом экране — это лишние DNS и TLS до двух чужих хостов, зависимость от их
      доступности и адрес посетителя, уходящий третьей стороне (вопрос по 152-ФЗ).
      Описание набора и как его пересобрать — в шапке assets/fonts/fonts.css.
      Заголовок героя — Unbounded 600, кириллица: греем ровно этот файл. Один preload,
      а не пачка: каждый лишний отнимает полосу у того, что нужно прямо сейчас. -->
-<link rel="preload" href="assets/fonts/unbounded-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/tiktoksans-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="landing.css?v=bb1828d7">
+<link rel="stylesheet" href="landing.css?v=c91b9d99">
 <script>
 /* Выбор подачи проектов на мобиле: ?mob=lenta | grid | more. Ставится на <html> ДО отрисовки,
    иначе сетка успевает мигнуть в старом виде. Без параметра атрибута нет и всё работает как раньше.
@@ -315,6 +315,9 @@
     <div class="tr-block" id="trBlock" hidden>
       <div class="tr-cap">Отзывы и благодарности</div>
       <div class="tr-grid" id="trGrid"></div>
+      <!-- Полоса прокрутки ленты: видна только на мобиле, там где .tr-grid становится
+           лентой. На десктопе это сетка, и указывать нечего — см. landing.css. -->
+      <div class="tr-rail" id="trRail"><span></span></div>
     </div>
 
     <!-- ===== КЛИЕНТЫ: лента логотипов. Список дублируется — так шов ленты не виден ===== -->
@@ -4470,7 +4473,29 @@
       }).join('');
       block.hidden = false;
       dropInTrust();
+      railInit();
     }).catch(function(){ /* данных нет — блок остаётся скрытым, секция цела */ });
+
+    // Указатель ленты на мобиле: доля прокрутки → положение бегунка, ширина бегунка =
+    // доля видимого. Один в один как у ленты проектов (workLayouts) — механика общая,
+    // расходиться им нельзя. Слушатель вешается ПОСЛЕ отрисовки карточек: до неё у
+    // пустой сетки scrollWidth равен clientWidth, и бегунок встал бы во всю полосу.
+    function railInit(){
+      var rail = document.getElementById('trRail');
+      if (!rail) return;
+      var fill = rail.firstElementChild;
+      function upd(){
+        var max = grid.scrollWidth - grid.clientWidth;
+        // сетка (десктоп) не прокручивается вбок — полоса там и скрыта стилями
+        if (max < 8) return;
+        var vis = Math.max(0.08, grid.clientWidth / grid.scrollWidth);
+        fill.style.width = (vis * 100).toFixed(1) + '%';
+        fill.style.left = ((grid.scrollLeft / max) * (100 - vis * 100)).toFixed(1) + '%';
+      }
+      grid.addEventListener('scroll', upd, { passive: true });
+      addEventListener('resize', upd, { passive: true });
+      upd();
+    }
 
     // Каскадный вылет из глубины. Приём тот же, что у плиток Атласа: .tile-in ставит
     // дальнюю точку, .on возвращает на место, задержка растёт по номеру карточки.
