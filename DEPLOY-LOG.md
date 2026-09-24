@@ -8,6 +8,60 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-24 15:44 — hybrid-v8 @ 7a01099
+
+**Коммиты в этой поставке**
+```
+7a01099 Заголовочный шрифт: Unbounded → TikTok Sans; отзывы на мобиле — лентой
+a75c206 Журнал деплоя: 516e916
+```
+
+**На сервер отправлено файлов:** 118, удалено: 0
+```
+index.html
+landing.css
+llms.txt
+robots.txt
+sitemap.xml
+styles.css
+ai-pack/short.html
+ai-pack/assets/ai-pack-team-v1.jpg
+ai-pack/assets/brain-points.bin
+ai-pack/assets/brain-source.md
+ai-pack/assets/build-brain-points.cjs
+ai-pack/assets/hero-morph.js
+assets/fonts/fonts.css
+assets/fonts/tiktoksans-cyrillic-ext.woff2
+assets/fonts/tiktoksans-cyrillic.woff2
+assets/fonts/tiktoksans-latin-ext.woff2
+assets/fonts/tiktoksans-latin.woff2
+atlas/index.html
+concepts/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/library/index.html
+en/library/input/index.html
+en/library/output/index.html
+en/library/processing/index.html
+en/services/index.html
+en/services/corporate-museum/index.html
+en/services/exhibition-stand/index.html
+en/services/holographic-showcase/index.html
+en/services/interactive-exhibition/index.html
+en/services/interactive-website/index.html
+en/services/multimedia-equipment/index.html
+en/services/museum-concept/index.html
+en/services/museum-equipment/index.html
+en/services/museum-equipping/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+…и ещё 78
+```
+
+
 ## 2026-09-19 13:27 — hybrid-v8 @ 516e916
 
 **Коммиты в этой поставке**
