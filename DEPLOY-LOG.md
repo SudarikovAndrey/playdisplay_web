@@ -8,6 +8,60 @@
 
 <!-- НОВЫЕ ЗАПИСИ ДОБАВЛЯЮТСЯ ПОД ЭТОЙ СТРОКОЙ. НЕ УДАЛЯТЬ. -->
 
+## 2026-09-24 16:22 — hybrid-v8 @ aa45ffa
+
+**Коммиты в этой поставке**
+```
+aa45ffa То же правило для ссылок: знак после </a> уходит внутрь
+e7beae1 Журнал деплоя: ba44e92
+```
+
+**На сервер отправлено файлов:** 108, удалено: 0
+```
+404.html
+llms.txt
+privacy.html
+robots.txt
+sitemap.xml
+ai-pack/universal.html
+atlas/index.html
+concepts/index.html
+digital/index.html
+en/index.html
+en/atlas/index.html
+en/concepts/index.html
+en/library/index.html
+en/library/input/index.html
+en/library/output/index.html
+en/library/processing/index.html
+en/services/index.html
+en/services/corporate-museum/index.html
+en/services/exhibition-stand/index.html
+en/services/holographic-showcase/index.html
+en/services/interactive-exhibition/index.html
+en/services/interactive-website/index.html
+en/services/multimedia-equipment/index.html
+en/services/museum-concept/index.html
+en/services/museum-equipment/index.html
+en/services/museum-equipping/index.html
+en/services/projection-mapping/index.html
+en/services/showroom/index.html
+en/work/airports/index.html
+en/work/bmwx5/index.html
+en/work/coalco/index.html
+en/work/industry-rf/index.html
+en/work/mig2019/index.html
+en/work/odk-oak/index.html
+en/work/pano360/index.html
+en/work/proryv/index.html
+en/work/ptk-group/index.html
+en/work/rostec/index.html
+en/work/sinara/index.html
+en/work/stalingrad/index.html
+…и ещё 68
+```
+
+
 ## 2026-09-24 16:20 — hybrid-v8 @ ba44e92
 
 **Коммиты в этой поставке**
