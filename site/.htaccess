@@ -236,6 +236,10 @@ RewriteRule ^technology(/.*)?$ https://playdisplay.com/services/ [R=301,L]
 # слаг после work/, и пустой путь тем правилом не ловится.
 RewriteRule ^work/?$ https://playdisplay.com/#work [R=301,L,NE]
 RewriteRule ^en/work/?$ https://playdisplay.com/en/#work [R=301,L,NE]
+# Португальская версия появилась в сентябре 2026, и тот же 403 повторился на ней:
+# папка /pt/work/ есть, своей страницы у неё нет. Якорь #work на португальской
+# главной тот же, что на русской и английской, — проверено в site/pt/index.html.
+RewriteRule ^pt/work/?$ https://playdisplay.com/pt/#work [R=301,L,NE]
 
 # ---------- ещё четыре семейства старых адресов (23.08.2026) ----------
 # Найдено в отчёте Search Console «Не найдено (404)»: 16 адресов, и это не 16 случаев,

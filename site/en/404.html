@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found &mdash; playdisplay</title>
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/assets/logos/favicon-32.png" sizes="32x32">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  /* Страница отдаётся с кодом 404 и с ЛЮБОЙ глубины вложенности, поэтому все
+     адреса здесь абсолютные. Относительные сломались бы на /work/что-то/. */
+  body { margin:0; background:var(--space-void); color:var(--scan-white);
+         font:400 18px/1.7 var(--font-body); }
+  .wrap { max-width:840px; margin:0 auto; padding:14vh 24px 100px; }
+  .code { font:500 13px/1 monospace; letter-spacing:.2em; text-transform:uppercase;
+          color:#9fb4c8; margin:0 0 26px; }
+  h1 { font-family:var(--font-display); font-weight:800; letter-spacing:-.02em;
+       font-size:clamp(32px,6vw,58px); line-height:1.05; margin:0 0 18px; color:#F1FBFC; }
+  .lead { color:#9fb4c8; font-size:21px; line-height:1.5; margin:0 0 14px; }
+  .lead b { color:#c8d8e2; font-weight:500; }
+  h2 { font-family:var(--font-display); font-weight:800; font-size:15px;
+       letter-spacing:.14em; text-transform:uppercase; color:#9fb4c8;
+       margin:52px 0 18px; }
+  ul { list-style:none; padding:0; margin:0; display:grid; gap:2px;
+       grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+  li a { display:block; padding:15px 18px; text-decoration:none; color:#F1FBFC;
+         border:1px solid rgba(159,180,200,.2); font-weight:500;
+         transition:border-color .2s, background .2s; }
+  li a span { display:block; color:#9fb4c8; font-size:15px; font-weight:400;
+              margin-top:3px; }
+  li a:hover { border-color:#2be0c6; background:rgba(43,224,198,.06); }
+  .back { display:inline-block; margin-top:46px; padding:15px 26px;
+          border:1px solid #2be0c6; color:#2be0c6; text-decoration:none; font-weight:600; }
+  footer { margin-top:70px; color:#9fb4c8; font-size:14px;
+           border-top:1px solid rgba(159,180,200,.22); padding-top:22px; }
+  footer a { color:#2be0c6; }
+  .en { margin-top:10px; font-size:14px; color:#7e93a6; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <p class="code">404 &mdash; page not found</p>
+  <h1>This page doesn&rsquo;t exist</h1>
+  <p class="lead">You have most likely followed a link to <b>the old version of the site</b>. We rebuilt it, and some addresses changed. Nothing is gone &mdash; here is where to look.</p>
+
+  <h2>Sections</h2>
+  <ul>
+    <li><a href="/en/#work">Work<span>museums, exhibitions, showcases</span></a></li>
+    <li><a href="/en/services/">Services<span>from concept to launch in the hall</span></a></li>
+    <li><a href="/en/concepts/">Concepts<span>ready solutions for spaces</span></a></li>
+    <li><a href="/en/library/">Library<span>what an exhibition is built from</span></a></li>
+    <li><a href="/en/atlas/">Atlas<span>techniques and where they apply</span></a></li>
+    <li><a href="/en/#contact">Contact<span>+7 495 231-64-23</span></a></li>
+  </ul>
+
+  <h2>Frequently looked for</h2>
+  <ul>
+    <li><a href="/en/work/vdnh-space-center/">Cosmonautics and Aviation Centre, VDNH<span>115 interactive installations</span></a></li>
+    <li><a href="/en/work/stalingrad/">Battle of Stalingrad panorama museum<span>the whole exhibition</span></a></li>
+    <li><a href="/en/services/projection-mapping/">Projection mapping<span>formerly &ldquo;video mapping&rdquo;</span></a></li>
+    <li><a href="/en/services/interactive-exhibition/">Interactive exhibition<span>formerly &ldquo;augmented reality&rdquo;</span></a></li>
+  </ul>
+
+  <a class="back" href="/en/">Go to the homepage</a>
+  <p class="en">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;: <a href="/" style="color:#2be0c6">playdisplay.com</a></p>
+
+  <footer>
+    Can&rsquo;t find what you need &mdash; write to
+    <a href="mailto:info@playdisplay.com">info@playdisplay.com</a>
+    or call <a href="tel:+74952316423">+7 495 231-64-23</a>.
+  </footer>
+</div>
+</body>
+</html>
