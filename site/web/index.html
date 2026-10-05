@@ -30,6 +30,7 @@
     .lead { margin: 34px 0 0; max-width: 62ch; font-size: 15px; line-height: 1.65; color: var(--muted); }
     .lead b { color: var(--paper); font-weight: 500; }
     @media (max-width: 700px) { .wrap { width: calc(100vw - 36px); padding: 28px 0 60px; } }
+    .proto-card--cover .proto-shot img { height:100% !important; max-height:none; object-fit:cover; object-position:center; filter:none; }
   </style>
 </head>
 <body>
@@ -40,8 +41,8 @@
     </header>
 
     <p class="lead"><b>Прототипы на вебе.</b> Всё, что студия собрала и выложила в сеть.
-       Каждая карточка ведёт на живой адрес — не на макет и не на видео. Превью снято
-       с самой страницы, поэтому устаревает вместе с ней. Закрытые проекты открываются
+       Каждая карточка ведёт на живой адрес — не на макет и не на видео. Обложки показывают
+       образ и содержание проекта. Закрытые проекты открываются
        по паролю, у каждого свой.</p>
 
     <div class="proto-grid" id="protoGrid"></div>
@@ -67,7 +68,7 @@
      вернуть карточку — снять одно слово, а не собирать её заново вместе с превью.
      Их кадры так и лежат в shots/ по той же причине. */
   var PROTOS = [
-    { url:'/web/cityexpo/#/expo', shot:'shots/cityexpo.png?v=20261005-2', kind:'3D-выставка', when:'2021', open:true, tint:'#8d65ce', title:'Город.Детали · MR Expo', desc:'Виртуальная выставка городской среды: прогулка по 3D-пространству, объекты и мини-игры.' },
+    { url:'/web/cityexpo/#/expo', cover:true, shot:'shots/cityexpo-cover-v3.png', kind:'3D-выставка', when:'2021', open:true, tint:'#8d65ce', title:'Город.Детали · MR Expo', desc:'Виртуальная выставка городской среды: прогулка по 3D-пространству, объекты и мини-игры.' },
     { url:'/immersive/',    shot:'shots/immersive.jpg',    kind:'Презентация',  when:'2026', open:true,
       title:'MR One', desc:'Иммерсивная комната как инструмент продаж: сценарии, экраны, свет.' },
     // Опубликован статическим снимком боевой сборки — см. шапку /mare/index.html.
@@ -94,7 +95,7 @@
       title:'Библиотека оборудования', desc:'65 типов техники: что каждая умеет и обо что спотыкаются на второй год.' },
     { hidden:true, url:'/layer/',    shot:'shots/layer.jpg',    kind:'AI-помощник',when:'2026', open:true,
       title:'Сперотон AR', desc:'Голосовой помощник: о продукте, составе, применении и мужском здоровье.' },
-    { url:'/aipack/', shot:'shots/aipack.png?v=20261005', kind:'AI-презентация', when:'2026', open:true,
+    { url:'/aipack/', cover:true, shot:'shots/aipack-cover-v2.jpg', kind:'AI-презентация', when:'2026', open:true,
       title:'AI Pack · один AI, три задачи', desc:'Продуктовый интеллект для покупателей, команды и развития бизнеса.' },
     { hidden:true, url:'/akvion/',   shot:'shots/akvion.jpg',   kind:'Предложение',when:'2026', open:true,
       title:'AI Pack · светлая версия', desc:'То же предложение в светлой теме.' },
@@ -141,7 +142,7 @@
         + '<p>' + esc(p.desc) + '</p>'
         + '<span class="proto-go">' + go + '</span>'
         + '</span></span>';
-      var cls = 'proto-card' + (p.open ? '' : ' proto-card--locked') + (p.url ? '' : ' proto-card--soon');
+      var cls = 'proto-card' + (p.cover ? ' proto-card--cover' : '') + (p.open ? '' : ' proto-card--locked') + (p.url ? '' : ' proto-card--soon');
       var style = p.tint ? ' style="--tint:' + esc(p.tint) + '"' : '';
       // Без адреса это не ссылка: кликабельная карточка в никуда обманывает.
       if (!p.url) return '<div class="' + cls + '"' + style + '>' + inner + '</div>';
