@@ -71,7 +71,7 @@
      Их кадры так и лежат в shots/ по той же причине. */
   var PROTOS = [
     { url:'/web/cityexpo/#/expo', cover:true, shot:'shots/cityexpo-cover-v3.png', kind:'3D-выставка', when:'2021', open:true, tint:'#8d65ce', title:'Город.Детали · MR Expo', desc:'Виртуальная выставка городской среды: прогулка по 3D-пространству, объекты и мини-игры.' },
-    { url:'/immersive/',    shot:'shots/immersive.jpg',    kind:'Презентация',  when:'2026', open:true,
+    { url:'/immersive/',    contain:true, newTab:true, shot:'shots/immersive-v2.png',    kind:'Презентация',  when:'2026', open:true,
       title:'MR One', desc:'Иммерсивная комната как инструмент продаж: сценарии, экраны, свет.' },
     // Опубликован статическим снимком боевой сборки — см. шапку /mare/index.html.
     { url:'/mare/',         shot:'shots/mare.jpg',         kind:'WebGPU-опыт',  when:'2026', open:true, tint:'#2f7fa8',
@@ -149,7 +149,7 @@
       // Без адреса это не ссылка: кликабельная карточка в никуда обманывает.
       if (!p.url) return '<div class="' + cls + '"' + style + '>' + inner + '</div>';
       return '<a class="' + cls + '"' + style + ' href="' + esc(p.url) + '"'
-        + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + inner + '</a>';
+        + ((ext || p.newTab) ? ' target="_blank" rel="noopener"' : '') + '>' + inner + '</a>';
     }).join('');
 
     // Каскадное «вываливание» плиток, как в библиотеке: карточки падают из глубины
