@@ -31,6 +31,8 @@
     .lead b { color: var(--paper); font-weight: 500; }
     @media (max-width: 700px) { .wrap { width: calc(100vw - 36px); padding: 28px 0 60px; } }
     .proto-card--cover .proto-shot img { height:100% !important; max-height:none; object-fit:cover; object-position:center; filter:none; }
+    .proto-card--contain .proto-shot { background:#101010; }
+    .proto-card--contain .proto-shot img, a.proto-card--contain:hover .proto-shot img { width:100%; height:100% !important; max-height:none; object-fit:contain; object-position:center; transform:none; filter:none; }
   </style>
 </head>
 <body>
@@ -76,7 +78,7 @@
       title:'MARÉ · океан', desc:'Вода на three/webgpu и шейдерах WGSL: якорная стоянка, облёт, свободный полёт.' },
     // Один файл на 9 МБ: build.py проекта вшивает модели, окружения, фотографии
     // и ролик логотипа прямо в разметку. Подробности — в шапке /poemiq/index.html.
-    { url:'/poemiq/',       cover:true, shot:'shots/poemiq-gold-v2.png',       kind:'Витрина бренда', when:'2026', open:true,
+    { url:'/poemiq/',       contain:true, shot:'shots/poemiq-gold-v2.png',       kind:'Витрина бренда', when:'2026', open:true,
       title:'POEMIQ', desc:'Ювелирный бренд: кольца в 3D, выбор металла, камня и размера прямо на витрине.' },
     { url:'/boxingcartel/', shot:'shots/boxingcartel.jpg', kind:'Бренд',        when:'2026', open:true,
       title:'Boxing Cartel', desc:'Монохромный combatwear-бренд: дисциплина, которую носят в чёрном.' },
@@ -142,7 +144,7 @@
         + '<p>' + esc(p.desc) + '</p>'
         + '<span class="proto-go">' + go + '</span>'
         + '</span></span>';
-      var cls = 'proto-card' + (p.cover ? ' proto-card--cover' : '') + (p.open ? '' : ' proto-card--locked') + (p.url ? '' : ' proto-card--soon');
+      var cls = 'proto-card' + (p.cover ? ' proto-card--cover' : '') + (p.contain ? ' proto-card--contain' : '') + (p.open ? '' : ' proto-card--locked') + (p.url ? '' : ' proto-card--soon');
       var style = p.tint ? ' style="--tint:' + esc(p.tint) + '"' : '';
       // Без адреса это не ссылка: кликабельная карточка в никуда обманывает.
       if (!p.url) return '<div class="' + cls + '"' + style + '>' + inner + '</div>';
