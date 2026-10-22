@@ -43,19 +43,23 @@
 (() => {
   const art = document.querySelector('.system-art');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  const descriptions = {
-    knowledge: 'Регламенты, инструкции и экспертиза компании в единой базе знаний.',
-    learning: 'Помощь новичкам и наставникам в освоении процессов и стандартов.',
-    ai: 'Ответы по внутренним материалам и помощь с повторяющимися задачами.'
-  };
   if (art) {
-    art.dataset.active = 'ai';
-    art.querySelectorAll('[data-layer]').forEach(button => button.addEventListener('click', () => {
-      const layer = button.dataset.layer;
+    const layers = ['knowledge', 'learning', 'ai'];
+    let current = 0, timer = 0, visible = true;
+    const show = () => {
+      const layer = layers[current];
       art.dataset.active = layer;
-      art.querySelectorAll('[data-layer]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.layer === layer)));
-      document.getElementById('layer-description').textContent = descriptions[layer];
-    }));
+      art.querySelectorAll('[data-layer]').forEach(pane => pane.classList.toggle('is-current',pane.dataset.layer===layer));
+    };
+    const schedule = () => {
+      clearInterval(timer);
+      if (!motion.matches && !document.hidden && visible) timer = setInterval(() => {current=(current+1)%layers.length;show();},4200);
+      art.classList.toggle('motion-paused',motion.matches || document.hidden || !visible);
+    };
+    show(); schedule();
+    motion.addEventListener('change',schedule);
+    document.addEventListener('visibilitychange',schedule);
+    if ('IntersectionObserver' in window) new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;schedule();},{threshold:0}).observe(art);
     let frame = 0;
     art.addEventListener('pointermove', event => {
       if (motion.matches || event.pointerType === 'touch') return;
@@ -74,8 +78,6 @@
     const reset = () => {if(frame) cancelAnimationFrame(frame); frame=0; ['--rx','--ry','--lx','--ly'].forEach(key=>art.style.removeProperty(key));};
     art.addEventListener('pointerleave', reset);
     motion.addEventListener('change', reset);
-    document.addEventListener('visibilitychange',()=>art.classList.toggle('motion-paused',document.hidden));
-    if ('IntersectionObserver' in window) new IntersectionObserver(entries=>art.classList.toggle('motion-paused',!entries[0].isIntersecting),{threshold:0}).observe(art);
   }
   if (!('IntersectionObserver' in window) || motion.matches) return;
   const targets = document.querySelectorAll('.hero-copy > *, .system-art, .section-heading > *, .benefit-grid article, .demo > div, .demo > figure, .demo > p, .scenario, .calculator-grid > div, .learning-grid article, .learning-cost > div, .steps li, .format-grid article, .partner-grid article, .faq > h2, .faq details, .contact-grid > div > *, .contact-grid form, footer > *');
