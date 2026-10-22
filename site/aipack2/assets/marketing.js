@@ -38,3 +38,60 @@
   });
   form.elements.name.addEventListener('input',()=>form.elements.name.setCustomValidity(''));
 })();
+
+// Motion is progressive enhancement; content remains readable without JavaScript.
+(() => {
+  const art = document.querySelector('.system-art');
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const descriptions = {
+    knowledge: 'Регламенты, инструкции и экспертиза компании в единой базе знаний.',
+    learning: 'Помощь новичкам и наставникам в освоении процессов и стандартов.',
+    ai: 'Ответы по внутренним материалам и помощь с повторяющимися задачами.'
+  };
+  if (art) {
+    art.dataset.active = 'ai';
+    art.querySelectorAll('[data-layer]').forEach(button => button.addEventListener('click', () => {
+      const layer = button.dataset.layer;
+      art.dataset.active = layer;
+      art.querySelectorAll('[data-layer]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.layer === layer)));
+      document.getElementById('layer-description').textContent = descriptions[layer];
+    }));
+    let frame = 0;
+    art.addEventListener('pointermove', event => {
+      if (motion.matches || event.pointerType === 'touch') return;
+      if (frame) cancelAnimationFrame(frame);
+      const rect = art.getBoundingClientRect();
+      const x = Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+      const y = Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height));
+      frame = requestAnimationFrame(() => {
+        art.style.setProperty('--ry', `${(x-.5)*18}deg`);
+        art.style.setProperty('--rx', `${(.5-y)*12}deg`);
+        art.style.setProperty('--lx', `${x*100}%`);
+        art.style.setProperty('--ly', `${y*100}%`);
+        frame = 0;
+      });
+    });
+    const reset = () => {if(frame) cancelAnimationFrame(frame); frame=0; ['--rx','--ry','--lx','--ly'].forEach(key=>art.style.removeProperty(key));};
+    art.addEventListener('pointerleave', reset);
+    motion.addEventListener('change', reset);
+    document.addEventListener('visibilitychange',()=>art.classList.toggle('motion-paused',document.hidden));
+    if ('IntersectionObserver' in window) new IntersectionObserver(entries=>art.classList.toggle('motion-paused',!entries[0].isIntersecting),{threshold:0}).observe(art);
+  }
+  if (!('IntersectionObserver' in window) || motion.matches) return;
+  const targets = document.querySelectorAll('.hero-copy > *, .system-art, .section-heading > *, .benefit-grid article, .demo > div, .demo > figure, .demo > p, .scenario, .calculator-grid > div, .learning-grid article, .learning-cost > div, .steps li, .format-grid article, .partner-grid article, .faq > h2, .faq details, .contact-grid > div > *, .contact-grid form, footer > *');
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.add('is-visible');
+    const icon = entry.target.querySelector('.symbol');
+    if (icon) icon.classList.add('icon-enter');
+    observer.unobserve(entry.target);
+  }),{threshold:0,rootMargin:'0px 0px -25px 0px'});
+  targets.forEach((target,index) => {
+    // Never hide a focused control or an already visible anchor target.
+    if (target.getBoundingClientRect().top < innerHeight && target.getBoundingClientRect().bottom > 0) return;
+    target.style.setProperty('--reveal-delay',`${index%3*65}ms`);
+    target.classList.add('scroll-reveal'); observer.observe(target);
+    target.addEventListener('focusin',()=>target.classList.add('is-visible'));
+  });
+  motion.addEventListener('change',()=>{if(motion.matches){observer.disconnect();targets.forEach(target=>target.classList.add('is-visible'));}});
+})();
