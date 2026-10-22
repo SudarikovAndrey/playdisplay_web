@@ -23,3 +23,7 @@
 @media(max-width:1050px){.system-meanings{gap:9px}.system-meanings span{font-size:11px}.pane-wordmark{font-size:53px}.system-meanings p br{display:none}}
 @media(max-width:760px){.system-meanings{margin:20px 3px 0;gap:12px}.system-meanings span{font-size:11px}.system-meanings p{font-size:10px}.pane-wordmark{font-size:58px}}
 @media(max-width:380px){.pane-wordmark{font-size:49px}.system-meanings{gap:10px}.system-meanings span{font-size:10px}}
+/* Feather the ambient field before it reaches the scene boundary. */
+.glass-stage{overflow:visible}
+.light-field{inset:0;mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%)}
+@media(max-width:760px){.hero.wrap{overflow-x:clip;overflow-y:visible}}
