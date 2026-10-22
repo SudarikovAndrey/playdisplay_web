@@ -27,3 +27,23 @@
 .glass-stage{overflow:visible}
 .light-field{inset:0;mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%)}
 @media(max-width:760px){.hero.wrap{overflow-x:clip;overflow-y:visible}}
+/* Each benefit has its own quiet, continuous motion while visible. */
+@media(prefers-reduced-motion:no-preference){
+.benefit-grid .symbol svg{animation:none!important}
+.benefit-grid article:nth-child(1) .symbol svg path{stroke-dasharray:30;stroke-dashoffset:0;animation:document-lines 4s ease-in-out infinite}
+.benefit-grid article:nth-child(2) .symbol svg path:first-child{stroke-dasharray:55;animation:growth-line 4.5s cubic-bezier(.4,0,.2,1) infinite}
+.benefit-grid article:nth-child(3) .symbol svg path{transform-origin:16px 16px;animation:assistant-rays 12s linear infinite}
+.benefit-grid article:nth-child(3) .symbol svg circle{transform-origin:16px 16px;animation:assistant-core 3s ease-in-out infinite}
+.benefit-grid article:nth-child(4) .symbol svg path{transform-origin:16px 16px;animation:clock-hands 16s linear infinite}
+.benefit-grid .symbol{animation:icon-light 5s ease-in-out infinite}
+.benefit-grid article:nth-child(2) .symbol{animation-delay:-1s}
+.benefit-grid article:nth-child(3) .symbol{animation-delay:-2s}
+.benefit-grid article:nth-child(4) .symbol{animation-delay:-3s}
+.benefit-grid:not(.icons-running) .symbol,.benefit-grid:not(.icons-running) .symbol svg *{animation-play-state:paused!important}
+}
+@keyframes document-lines{0%,12%{stroke-dashoffset:30;opacity:.35}45%,85%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:-30;opacity:.35}}
+@keyframes growth-line{0%,10%{stroke-dashoffset:55;opacity:.4}50%,90%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:.4}}
+@keyframes assistant-rays{to{transform:rotate(360deg)}}
+@keyframes assistant-core{0%,100%{transform:scale(.85);opacity:.65}50%{transform:scale(1.12);opacity:1}}
+@keyframes clock-hands{to{transform:rotate(360deg)}}
+@keyframes icon-light{0%,100%{box-shadow:inset 0 1px 1px white,0 6px 18px #2356a509}50%{box-shadow:inset 0 1px 1px white,0 6px 22px #3385ff25}}

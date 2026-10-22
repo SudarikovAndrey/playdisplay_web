@@ -97,3 +97,14 @@
   });
   motion.addEventListener('change',()=>{if(motion.matches){observer.disconnect();targets.forEach(target=>target.classList.add('is-visible'));}});
 })();
+
+(() => {
+  const grid = document.querySelector('.benefit-grid');
+  if (!grid) return;
+  let visible = false;
+  const sync = () => grid.classList.toggle('icons-running', visible && !document.hidden);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {visible=entries[0].isIntersecting;sync();}, {threshold:0}).observe(grid);
+  } else {visible=true;sync();}
+  document.addEventListener('visibilitychange',sync);
+})();
